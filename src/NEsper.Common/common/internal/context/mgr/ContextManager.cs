@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -19,7 +19,7 @@ namespace com.espertech.esper.common.@internal.context.mgr
 {
     public interface ContextManager : FilterFaultHandler
     {
-        void SetStatementContext(StatementContext value);
+        StatementContext StatementContext { set; }
 
         void AddStatement(
             ContextControllerStatementDesc statement,
@@ -30,7 +30,7 @@ namespace com.espertech.esper.common.@internal.context.mgr
             string statementName,
             string statementDeploymentId);
 
-        int CountStatements(Func<StatementContext, Boolean> filter);
+        int CountStatements(Func<StatementContext, bool> filter);
 
         IDictionary<int, ContextControllerStatementDesc> Statements { get; }
 
@@ -59,6 +59,8 @@ namespace com.espertech.esper.common.@internal.context.mgr
         ContextPartitionCollection GetContextPartitions(ContextPartitionSelector selector);
 
         ISet<int> GetContextPartitionIds(ContextPartitionSelector selector);
+
+        long ContextPartitionCount { get; }
 
         void AddListener(ContextPartitionStateListener listener);
 

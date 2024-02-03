@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -119,6 +119,10 @@ namespace com.espertech.esper.common.@internal.view.timetolive
                     var oldDataItem = oldData[i];
                     object sortValues = GetTimestamp(oldDataItem);
                     var result = CollectionUtil.RemoveEventByKeyLazyListMap(sortValues, oldDataItem, sortedEvents);
+                    if (!result) {
+                        result = CollectionUtil.RemoveEventUnkeyedLazyListMap(oldDataItem, sortedEvents);
+                    }
+
                     if (result) {
                         eventCount--;
                         if (postOldEventsArray == null) {
@@ -241,7 +245,7 @@ namespace com.espertech.esper.common.@internal.view.timetolive
         protected long? GetTimestamp(EventBean newEvent)
         {
             eventsPerStream[0] = newEvent;
-            return (long?) factory.timestampEval.Evaluate(eventsPerStream, true, agentInstanceContext);
+            return (long?)factory.timestampEval.Evaluate(eventsPerStream, true, agentInstanceContext);
         }
 
         public override string ToString()
@@ -269,15 +273,14 @@ namespace com.espertech.esper.common.@internal.view.timetolive
                     break;
                 }
 
-                oldestKey = (long?) sortedEvents.First().Key;
+                oldestKey = (long?)sortedEvents.First().Key;
                 if (oldestKey >= expireBeforeTimestamp) {
                     break;
                 }
 
                 var released = sortedEvents.Delete(oldestKey);
                 if (released != null) {
-                    if (released is IList<EventBean>) {
-                        var releasedEventList = (IList<EventBean>) released;
+                    if (released is IList<EventBean> releasedEventList) {
                         if (releaseEvents == null) {
                             releaseEvents = releasedEventList;
                         }
@@ -288,7 +291,7 @@ namespace com.espertech.esper.common.@internal.view.timetolive
                         eventCount -= releasedEventList.Count;
                     }
                     else {
-                        var releasedEvent = (EventBean) released;
+                        var releasedEvent = (EventBean)released;
                         if (releaseEvents == null) {
                             releaseEvents = new List<EventBean>(4);
                         }
@@ -317,7 +320,7 @@ namespace com.espertech.esper.common.@internal.view.timetolive
             }
 
             // Next callback
-            long callbackWait = oldestKey.Value - expireBeforeTimestamp + 1;
+            var callbackWait = oldestKey.Value - expireBeforeTimestamp + 1;
             agentInstanceContext.AuditProvider.ScheduleAdd(
                 callbackWait,
                 agentInstanceContext,
@@ -327,7 +330,7 @@ namespace com.espertech.esper.common.@internal.view.timetolive
             agentInstanceContext.StatementContext.SchedulingService.Add(callbackWait, handle, scheduleSlot);
             isCallbackScheduled = true;
         }
-        
+
         public void Transfer(AgentInstanceTransferServices services)
         {
         }

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -23,12 +23,12 @@ namespace com.espertech.esper.runtime.@internal.kernel.faf
         public EPFireAndForgetPreparedQueryParameterizedImpl(
             AtomicBoolean serviceProviderStatus,
             FAFQueryMethodAssignerSetter fields,
-            FAFQueryMethod queryMethod,
+            FAFQueryMethodSessionPrepared prepared,
             FAFQueryInformationals queryInformationals)
         {
             ServiceProviderStatus = serviceProviderStatus;
             Fields = fields;
-            QueryMethod = queryMethod;
+            Prepared = prepared;
             types = queryInformationals.SubstitutionParamsTypes;
             Names = queryInformationals.SubstitutionParamsNames;
             if (types != null && types.Length > 0) {
@@ -44,7 +44,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.faf
 
         public FAFQueryMethodAssignerSetter Fields { get; }
 
-        public FAFQueryMethod QueryMethod { get; }
+        public FAFQueryMethodSessionPrepared Prepared { get; }
 
         public AtomicBoolean ServiceProviderStatus { get; }
 
@@ -137,6 +137,11 @@ namespace com.espertech.esper.runtime.@internal.kernel.faf
             if (UnsatisfiedParamsOneOffset.IsEmpty()) {
                 UnsatisfiedParamsOneOffset = new EmptySet<int>();
             }
+        }
+
+        public void Close()
+        {
+            Prepared.Close();
         }
     }
 } // end of namespace

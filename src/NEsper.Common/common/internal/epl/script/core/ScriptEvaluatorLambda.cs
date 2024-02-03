@@ -11,8 +11,9 @@ namespace com.espertech.esper.common.@internal.epl.script.core
 {
     public class ScriptEvaluatorLambda : ScriptEvaluatorBase
     {
-        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-        
+        private static readonly ILog Log =
+            LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         private readonly Func<ScriptArgs, object> _scriptAction;
 
         public ScriptEvaluatorLambda(
@@ -59,7 +60,10 @@ namespace com.espertech.esper.common.@internal.epl.script.core
                 bindings.Put(parameterName, parameterValue);
             }
 
-            return EvaluateInternal(new ScriptArgs { Bindings = bindings });
+            return EvaluateInternal(new ScriptArgs {
+                Bindings = bindings,
+                Context = exprEvaluatorContext
+            });
         }
 
         public object EvaluateInternal(ScriptArgs scriptArgs)
@@ -73,7 +77,8 @@ namespace com.espertech.esper.common.@internal.epl.script.core
                 return result;
             }
             catch (Exception e) {
-                string message = "Unexpected exception executing script '" + ScriptName + "': " + e.Message;
+                var context = scriptArgs.Context;
+                var message = $"Unexpected exception executing script '{ScriptName}' for statement '{context.StatementName}' : {e.Message}";
                 Log.Error(message, e);
                 throw new EPException(message, e);
             }

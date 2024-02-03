@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -114,7 +114,7 @@ namespace NEsper.Examples.MatchMaker.monitor
             var args = new CompilerArguments();
             args.Path.Add(_runtime.RuntimePath);
             args.Options.AccessModifierNamedWindow = env => NameAccessModifier.PUBLIC;
-            args.Configuration.Compiler.ByteCode.AllowSubscriber = true;
+            args.Configuration.Compiler.ByteCode.IsAllowSubscriber = true;
 
             var compiled = EPCompilerProvider.Compiler.Compile(epl, args);
             var deployment = _runtime.DeploymentService.Deploy(compiled);

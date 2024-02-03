@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -32,8 +32,8 @@ namespace com.espertech.esper.common.@internal.schedule
         public Action<long> Set { get; set; }
 
         public long Time {
-            get { return Get(); }
-            set { Set(value); }
+            get => Get();
+            set => Set(value);
         }
     }
 } // End of namespace

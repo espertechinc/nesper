@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -28,7 +28,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
         {
             var writer = new StringWriter();
             writer.Write("\n");
-            foreach (LogicalChannel channel in channels) {
+            foreach (var channel in channels) {
                 writer.WriteLine(channel);
             }
 
@@ -41,10 +41,10 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
             IDictionary<int, IList<LogicalChannelProducingPortCompiled>> compiledOutputPorts)
         {
             var ports = new List<LogicalChannelProducingPortCompiled>();
-            foreach (int @operator in incomingOpNums) {
+            foreach (var @operator in incomingOpNums) {
                 var opPorts = compiledOutputPorts.Get(@operator);
                 if (opPorts != null) { // Can be null if referring to itself
-                    foreach (LogicalChannelProducingPortCompiled opPort in opPorts) {
+                    foreach (var opPort in opPorts) {
                         ports.AddRange(
                             inputStreamNames.Where(name => name == opPort.StreamName).Select(streamName => opPort));
                     }

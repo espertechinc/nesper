@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -13,6 +13,7 @@ using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.support.subscriber
 {
@@ -47,7 +48,7 @@ namespace com.espertech.esper.regressionlib.support.subscriber
         {
             AssertStmtOneReceived(stmt);
 
-            Assert.AreEqual(1, indicate.Count);
+            ClassicAssert.AreEqual(1, indicate.Count);
             var result = indicate[0];
             AssertValues(firstExpected, result.First);
             AssertValues(secondExpected, result.Second);
@@ -60,7 +61,7 @@ namespace com.espertech.esper.regressionlib.support.subscriber
             object[] received)
         {
             if (expected == null) {
-                Assert.IsNull(received);
+                ClassicAssert.IsNull(received);
                 return;
             }
 

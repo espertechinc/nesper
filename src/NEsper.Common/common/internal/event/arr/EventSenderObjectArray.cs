@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -53,7 +53,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
                     "Unexpected event object of type " + theEvent.GetType().CleanName() + ", expected Object[]");
             }
 
-            var arr = (object[]) theEvent;
+            var arr = (object[])theEvent;
             EventBean objectArrayEvent =
                 eventBeanTypedEventFactory.AdapterForTypedObjectArray(arr, objectArrayEventType);
 
@@ -72,7 +72,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
                     "Unexpected event object of type " + theEvent.GetType().CleanName() + ", expected Object[]");
             }
 
-            var arr = (object[]) theEvent;
+            var arr = (object[])theEvent;
             EventBean objectArrayEvent =
                 eventBeanTypedEventFactory.AdapterForTypedObjectArray(arr, objectArrayEventType);
             runtimeEventSender.RouteEventBean(objectArrayEvent);

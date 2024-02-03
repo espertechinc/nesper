@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -22,7 +22,6 @@ namespace com.espertech.esper.common.@internal.type
         /// <summary>
         ///     Computer for math op.
         /// </summary>
-        [Serializable]
         public class SubtractDecimalConvComputer : Computer
         {
             private readonly Coercer convOne;
@@ -45,8 +44,8 @@ namespace com.espertech.esper.common.@internal.type
                 object d1,
                 object d2)
             {
-                decimal s1 = convOne.CoerceBoxed(d1).AsDecimal();
-                decimal s2 = convTwo.CoerceBoxed(d2).AsDecimal();
+                var s1 = convOne.CoerceBoxed(d1).AsDecimal();
+                var s2 = convTwo.CoerceBoxed(d2).AsDecimal();
                 return s1 - s2;
             }
 
@@ -63,8 +62,8 @@ namespace com.espertech.esper.common.@internal.type
                     .AddParam(ltype, "d1")
                     .AddParam(rtype, "d2")
                     .Block
-                    .DeclareVar<decimal?>("s1", convOne.CoerceCodegen(Ref("d1"), ltype))
-                    .DeclareVar<decimal?>("s2", convTwo.CoerceCodegen(Ref("d2"), rtype))
+                    .DeclareVar<decimal?>("s1", convOne.CoerceCodegen(Ref("d1"), ltype, codegenMethodScope, codegenClassScope))
+                    .DeclareVar<decimal?>("s2", convTwo.CoerceCodegen(Ref("d2"), rtype, codegenMethodScope, codegenClassScope))
                     .MethodReturn(
                         Op(
                             ExprDotName(Ref("s1"), "Value"),

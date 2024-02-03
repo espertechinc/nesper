@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -11,7 +11,6 @@ using System.Xml;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.regressionlib.framework;
-using com.espertech.esper.runtime.client;
 
 namespace com.espertech.esper.regressionlib.support.util
 {
@@ -45,18 +44,11 @@ namespace com.espertech.esper.regressionlib.support.util
             "\t</nested3>\n" +
             "</simpleEvent>";
 
-        public static XmlDocument SendDefaultEvent(
-            EPEventService runtime,
-            string value,
-            string eventTypeName)
+        public static XmlDocument MakeDefaultEvent(string value)
         {
             var xml = XML.Replace("VAL1", value);
-
             var simpleDoc = new XmlDocument();
             simpleDoc.LoadXml(xml);
-
-            runtime.SendEventXMLDOM(simpleDoc, eventTypeName);
-
             return simpleDoc;
         }
 

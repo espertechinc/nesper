@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -26,10 +26,10 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
 
         {
             try {
-                ConfigurationCommonMethodRef configCache =
+                var configCache =
                     agentInstanceContext.ImportServiceRuntime.GetConfigurationMethodRef(factory.ConfigurationName);
-                ConfigurationCommonCache dataCacheDesc = configCache != null ? configCache.DataCacheDesc : null;
-                this.DataCache = agentInstanceContext.HistoricalDataCacheFactory.GetDataCache(
+                var dataCacheDesc = configCache?.DataCacheDesc;
+                dataCache = agentInstanceContext.HistoricalDataCacheFactory.GetDataCache(
                     dataCacheDesc,
                     agentInstanceContext,
                     factory.StreamNumber,

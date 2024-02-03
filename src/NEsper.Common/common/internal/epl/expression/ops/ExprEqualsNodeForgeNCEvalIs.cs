@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -26,9 +26,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             ExprEvaluator lhs,
             ExprEvaluator rhs)
         {
-            this._parent = parent;
-            this._lhs = lhs;
-            this._rhs = rhs;
+            _parent = parent;
+            _lhs = lhs;
+            _rhs = rhs;
         }
 
         public object Evaluate(

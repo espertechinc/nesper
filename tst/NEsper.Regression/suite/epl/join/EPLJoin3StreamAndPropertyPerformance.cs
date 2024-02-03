@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -10,24 +10,28 @@ using System.Collections.Generic;
 using System.Reflection;
 
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.epl.join
 {
     public class EPLJoin3StreamAndPropertyPerformance
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
+#if REGRESSION_EXECUTIONS
             WithAllProps(execs);
             WithPartialProps(execs);
-            WithPartialStreams(execs);
+            With(PartialStreams)(execs);
+#endif
             return execs;
         }
 
@@ -61,21 +65,21 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             env.CompileDeployAddListenerMileZero(epl, "s0");
 
             // Send events for each stream
-            log.Info(methodName + " Preloading events");
+            Log.Info($"{methodName} Preloading events");
             var startTime = PerformanceObserver.MilliTime;
             for (var i = 0; i < 100; i++) {
-                SendEvent(env, new SupportBean_A("CSCO_" + i));
-                SendEvent(env, new SupportBean_B("IBM_" + i));
-                SendEvent(env, new SupportBean_C("GE_" + i));
+                SendEvent(env, new SupportBean_A($"CSCO_{i}"));
+                SendEvent(env, new SupportBean_B($"IBM_{i}"));
+                SendEvent(env, new SupportBean_C($"GE_{i}"));
             }
 
-            log.Info(methodName + " Done preloading");
+            Log.Info($"{methodName} Done preloading");
 
             var endTime = PerformanceObserver.MilliTime;
-            log.Info(methodName + " delta=" + (endTime - startTime));
+            Log.Info($"{methodName} delta={(endTime - startTime)}");
 
             // Stay below 500, no index would be 4 sec plus
-            Assert.IsTrue(endTime - startTime < 500);
+            ClassicAssert.IsTrue(endTime - startTime < 500);
 
             env.UndeployAll();
         }
@@ -89,10 +93,15 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
         internal class EPLJoinPerfAllProps : RegressionExecution
         {
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.PERFORMANCE);
+            }
+
             public void Run(RegressionEnvironment env)
             {
                 // Statement where all streams are reachable from each other via properties
-                var stmt = "@Name('s0') select * from " +
+                var stmt = "@name('s0') select * from " +
                            "SupportBean_A()#length(1000000) S1," +
                            "SupportBean_B()#length(1000000) S2," +
                            "SupportBean_C()#length(1000000) S3" +
@@ -103,10 +112,15 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
         internal class EPLJoinPerfPartialProps : RegressionExecution
         {
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.PERFORMANCE);
+            }
+
             public void Run(RegressionEnvironment env)
             {
                 // Statement where the s1 stream is not reachable by joining s2 to s3 and s3 to s1
-                var stmt = "@Name('s0') select * from " +
+                var stmt = "@name('s0') select * from " +
                            "SupportBean_A#length(1000000) S1," +
                            "SupportBean_B#length(1000000) S2," +
                            "SupportBean_C#length(1000000) S3" +
@@ -117,12 +131,17 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
         internal class EPLJoinPerfPartialStreams : RegressionExecution
         {
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.PERFORMANCE);
+            }
+
             public void Run(RegressionEnvironment env)
             {
                 var methodName = ".testPerfPartialStreams";
 
                 // Statement where the s1 stream is not reachable by joining s2 to s3 and s3 to s1
-                var epl = "@Name('s0') select * from " +
+                var epl = "@name('s0') select * from " +
                           "SupportBean_A#length(1000000) S1," +
                           "SupportBean_B#length(1000000) S2," +
                           "SupportBean_C#length(1000000) S3" +
@@ -133,20 +152,20 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 SendEvent(env, new SupportBean_C("GE_0"));
 
                 // Send events for each stream
-                log.Info(methodName + " Preloading events");
+                Log.Info($"{methodName} Preloading events");
                 var startTime = PerformanceObserver.MilliTime;
                 for (var i = 0; i < 1000; i++) {
-                    SendEvent(env, new SupportBean_A("CSCO_" + i));
-                    SendEvent(env, new SupportBean_B("IBM_" + i));
+                    SendEvent(env, new SupportBean_A($"CSCO_{i}"));
+                    SendEvent(env, new SupportBean_B($"IBM_{i}"));
                 }
 
-                log.Info(methodName + " Done preloading");
+                Log.Info($"{methodName} Done preloading");
 
                 var endTime = PerformanceObserver.MilliTime;
-                log.Info(methodName + " delta=" + (endTime - startTime));
+                Log.Info($"{methodName} delta={(endTime - startTime)}");
 
                 // Stay below 500, no index would be 4 sec plus
-                Assert.IsTrue(endTime - startTime < 500);
+                ClassicAssert.IsTrue(endTime - startTime < 500);
                 env.UndeployAll();
             }
         }

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Serialization;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.module;
@@ -19,6 +20,7 @@ using com.espertech.esper.runtime.client;
 using com.espertech.esper.runtime.@internal.kernel.service;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.client.runtime
 {
@@ -66,7 +68,8 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             return execs;
         }
 
-        public static IList<RegressionExecution> WithItselfTransientConfiguration(IList<RegressionExecution> execs = null)
+        public static IList<RegressionExecution> WithItselfTransientConfiguration(
+            IList<RegressionExecution> execs = null)
         {
             execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ClientRuntimeItselfTransientConfiguration());
@@ -77,9 +80,9 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
         {
             public void Run(RegressionEnvironment env)
             {
-                var beanEventTypeService = new EPRuntimeBeanAnonymousTypeService(env.Container);
-                var beanEventType = beanEventTypeService.MakeBeanEventTypeAnonymous(typeof(MyBeanAnonymousType));
-                Assert.AreEqual(typeof(int), beanEventType.GetPropertyType("Prop"));
+                var beanEventType = new EPRuntimeBeanAnonymousTypeService(env.Container)
+                    .MakeBeanEventTypeAnonymous(typeof(MyBeanAnonymousType));
+                ClassicAssert.AreEqual(typeof(int), beanEventType.GetPropertyType("Prop"));
             }
         }
 
@@ -88,9 +91,9 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             public void Run(RegressionEnvironment env)
             {
                 env.CompileDeploy(
-                    "@Name('a') select * from SupportBean;\n" +
-                    "@Name('b') select * from SupportBean(TheString='xxx');\n");
-                var spi = (EPRuntimeSPI) env.Runtime;
+                    "@name('a') select * from SupportBean;\n" +
+                    "@name('b') select * from SupportBean(TheString='xxx');\n");
+                var spi = (EPRuntimeSPI)env.Runtime;
 
                 var myTraverse = new MyStatementTraverse();
                 spi.TraverseStatements(myTraverse.Accept);
@@ -106,6 +109,11 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
 
                 env.UndeployAll();
             }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.RUNTIMEOPS);
+            }
         }
 
         private class ClientRuntimeWrongCompileMethod : RegressionExecution
@@ -113,7 +121,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                env.CompileDeploy("create window SomeWindow#keepall as SupportBean", path);
+                env.CompileDeploy("@public create window SomeWindow#keepall as SupportBean", path);
 
                 var compiledFAF = env.CompileFAF("select * from SomeWindow", path);
                 var compiledModule = env.Compile("select * from SomeWindow", path);
@@ -125,15 +133,16 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                     Assert.Fail();
                 }
                 catch (EPDeployException ex) {
-                    Assert.AreEqual(msgInvalidDeployFAF, ex.Message);
+                    ClassicAssert.AreEqual(msgInvalidDeployFAF, ex.Message);
                 }
 
                 try {
-                    env.Runtime.DeploymentService.Rollout(Collections.SingletonList(new EPDeploymentRolloutCompiled(compiledFAF)));
+                    env.Runtime.DeploymentService.Rollout(
+                        Collections.SingletonList(new EPDeploymentRolloutCompiled(compiledFAF)));
                     Assert.Fail();
                 }
                 catch (EPDeployException ex) {
-                    Assert.AreEqual(msgInvalidDeployFAF, ex.Message);
+                    ClassicAssert.AreEqual(msgInvalidDeployFAF, ex.Message);
                 }
 
                 try {
@@ -141,12 +150,17 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                     Assert.Fail();
                 }
                 catch (EPException ex) {
-                    Assert.AreEqual(
+                    ClassicAssert.AreEqual(
                         "Cannot execute a fire-and-forget query that was compiled as module EPL, make sure to use the 'compileQuery' method of the compiler",
                         ex.Message);
                 }
 
                 env.UndeployAll();
+            }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.RUNTIMEOPS);
             }
         }
 
@@ -159,50 +173,49 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                     "insert into MyWindow select * from SupportBean;\n");
                 env.SendEventBean(new SupportBean("E1", 10));
 
-                var spi = (EPRuntimeSPI) env.Runtime;
+                var spi = (EPRuntimeSPI)env.Runtime;
                 var svc = spi.ReflectiveCompileSvc;
-                Assert.IsTrue(svc.IsCompilerAvailable);
+                ClassicAssert.IsTrue(svc.IsCompilerAvailable);
 
                 var compiledFAF = svc.ReflectiveCompileFireAndForget("select * from MyWindow");
                 var result = env.Runtime.FireAndForgetService.ExecuteQuery(compiledFAF);
                 EPAssertionUtil.AssertPropsPerRow(
                     result.GetEnumerator(),
-                    new string[] {"TheString"},
-                    new object[][] {
-                        new object[] {"E1"}
-                    });
+                    new string[] { "TheString" },
+                    new object[][] { new object[] { "E1" } });
 
-                var compiledFromEPL = svc.ReflectiveCompile("@Name('s0') select * from MyWindow");
+                var compiledFromEPL = svc.ReflectiveCompile("@name('s0') select * from MyWindow");
                 env.Deploy(compiledFromEPL);
-                EPAssertionUtil.AssertPropsPerRow(
-                    env.GetEnumerator("s0"),
-                    new string[] {"TheString"},
-                    new object[][] {
-                        new object[] {"E1"}
-                    });
+                env.AssertPropsPerRowIterator(
+                    "s0",
+                    new string[] { "TheString" },
+                    new object[][] { new object[] { "E1" } });
 
                 var module = new Module();
-                module.Items.Add(new ModuleItem("@Name('s1') select * from MyWindow"));
+                module.Items.Add(new ModuleItem("@name('s1') select * from MyWindow"));
                 var compiledFromModule = svc.ReflectiveCompile(module);
                 env.Deploy(compiledFromModule);
-                EPAssertionUtil.AssertPropsPerRow(
-                    env.GetEnumerator("s1"),
-                    new string[] {"TheString"},
-                    new object[][] {
-                        new object[] {"E1"}
-                    });
+                env.AssertPropsPerRowIterator(
+                    "s1",
+                    new string[] { "TheString" },
+                    new object[][] { new object[] { "E1" } });
 
                 var node = svc.ReflectiveCompileExpression("1*1", null, null);
-                Assert.AreEqual(1, node.Forge.ExprEvaluator.Evaluate(null, true, null));
+                ClassicAssert.AreEqual(1, node.Forge.ExprEvaluator.Evaluate(null, true, null));
 
                 var model = spi.ReflectiveCompileSvc.ReflectiveEPLToModel("select * from MyWindow");
-                Assert.IsNotNull(model);
+                ClassicAssert.IsNotNull(model);
 
                 var moduleParsed = spi.ReflectiveCompileSvc.ReflectiveParseModule("select * from MyWindow");
-                Assert.AreEqual(1, moduleParsed.Items.Count);
-                Assert.AreEqual("select * from MyWindow", moduleParsed.Items[0].Expression);
+                ClassicAssert.AreEqual(1, moduleParsed.Items.Count);
+                ClassicAssert.AreEqual("select * from MyWindow", moduleParsed.Items[0].Expression);
 
                 env.UndeployAll();
+            }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.RUNTIMEOPS);
             }
         }
 
@@ -210,61 +223,78 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
         {
             public void Run(RegressionEnvironment env)
             {
-                env.CompileDeploy("@Name('s0') select * from SupportBean");
+                env.CompileDeploy("@name('s0') select * from SupportBean");
                 var listener = new MyListener();
                 env.Statement("s0").AddListener(listener);
 
                 env.SendEventBean(new SupportBean());
-                Assert.AreEqual(TEST_SECRET_VALUE, listener.SecretValue);
+                ClassicAssert.AreEqual(TEST_SECRET_VALUE, listener.SecretValue);
 
                 env.UndeployAll();
+            }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.OBSERVEROPS);
             }
         }
 
         public class MyLocalService
         {
-            public int SecretValue { get; }
-
+            [JsonConstructor]
             public MyLocalService(int secretValue)
             {
-                SecretValue = secretValue;
+                this.SecretValue = secretValue;
             }
+
+            [JsonPropertyName("SecretValue")]
+            public int SecretValue { get; }
         }
 
         public class MyListener : UpdateListener
         {
-            public int SecretValue { get; private set; }
+            private int _secretValue;
 
             public void Update(
                 object sender,
                 UpdateEventArgs eventArgs)
             {
-                var svc = (MyLocalService) eventArgs.Runtime.ConfigurationTransient.Get(TEST_SERVICE_NAME);
-                SecretValue = svc.SecretValue;
+                var runtime = eventArgs.Runtime;
+                var svc = (MyLocalService)runtime.ConfigurationTransient.Get(TEST_SERVICE_NAME);
+                _secretValue = svc.SecretValue;
             }
+
+            public int SecretValue => _secretValue;
         }
 
         private class MyStatementTraverse
         {
-            public IList<EPStatement> Statements { get; } = new List<EPStatement>();
+            private readonly IList<EPStatement> _statements = new List<EPStatement>();
 
             public void Accept(
                 EPDeployment epDeployment,
                 EPStatement epStatement)
             {
-                Statements.Add(epStatement);
+                _statements.Add(epStatement);
             }
+
+            public IList<EPStatement> Statements => _statements;
 
             public void AssertAndReset(params EPStatement[] expected)
             {
-                EPAssertionUtil.AssertEqualsExactOrder(Statements.ToArray(), expected);
-                Statements.Clear();
+                EPAssertionUtil.AssertEqualsExactOrder(_statements.ToArray(), expected);
+                _statements.Clear();
             }
         }
 
         public class MyBeanAnonymousType
         {
-            public int Prop { get; }
+            private int prop;
+
+            public int GetProp()
+            {
+                return prop;
+            }
         }
     }
 } // end of namespace

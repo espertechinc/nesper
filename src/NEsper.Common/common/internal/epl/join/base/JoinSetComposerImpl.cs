@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
         private readonly bool joinRemoveStream;
         internal readonly QueryStrategy[] queryStrategies;
         internal readonly EventTable[][] repositories;
-        
+
         // Set semantic eliminates duplicates in result set, use Linked set to preserve order
         internal ISet<MultiKeyArrayOfKeys<EventBean>> oldResults = new LinkedHashSet<MultiKeyArrayOfKeys<EventBean>>();
         internal ISet<MultiKeyArrayOfKeys<EventBean>> newResults = new LinkedHashSet<MultiKeyArrayOfKeys<EventBean>>();

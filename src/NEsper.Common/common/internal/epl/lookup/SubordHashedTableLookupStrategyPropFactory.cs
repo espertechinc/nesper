@@ -1,12 +1,11 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.index.@base;
 using com.espertech.esper.common.@internal.epl.index.hash;
@@ -42,10 +41,10 @@ namespace com.espertech.esper.common.@internal.epl.lookup
 
         public SubordTableLookupStrategy MakeStrategy(
             EventTable[] eventTable,
-            AgentInstanceContext agentInstanceContext,
+            ExprEvaluatorContext exprEvaluatorContext,
             VirtualDWView vdw)
         {
-            return new SubordHashedTableLookupStrategyProp(this, (PropertyHashedEventTable) eventTable[0]);
+            return new SubordHashedTableLookupStrategyProp(this, (PropertyHashedEventTable)eventTable[0]);
         }
 
         public LookupStrategyDesc LookupStrategyDesc => new LookupStrategyDesc(
@@ -56,9 +55,9 @@ namespace com.espertech.esper.common.@internal.epl.lookup
         {
             return GetType().Name +
                    " indexProps=" +
-                   CompatExtensions.RenderAny(Properties) +
+                   Properties.RenderAny() +
                    " keyStreamNums=" +
-                   CompatExtensions.RenderAny(KeyStreamNums);
+                   KeyStreamNums.RenderAny();
         }
     }
 } // end of namespace

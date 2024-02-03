@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -27,14 +27,17 @@ namespace com.espertech.esper.common.client
         /// <param name="fragmentType">the event type for a property value for an event.</param>
         /// <param name="indexed">true to indicate that property value is an array of events</param>
         /// <param name="isNative">true</param>
+        /// <param name="isCanInsertEventBean">whether the fragment can hold {@link EventBean} instances or only native objects</param>
         public FragmentEventType(
             EventType fragmentType,
             bool indexed,
-            bool isNative)
+            bool isNative,
+            bool isCanInsertEventBean)
         {
             FragmentType = fragmentType;
             IsIndexed = indexed;
             IsNative = isNative;
+            IsCanInsertEventBean = isCanInsertEventBean;
         }
 
         /// <summary>
@@ -55,5 +58,10 @@ namespace com.espertech.esper.common.client
         /// </summary>
         /// <value>indicator whether fragment is a type.</value>
         public bool IsNative { get; private set; }
+
+        /// <summary>
+        /// Returns true if  the fragment can hold <see cref="EventBean"/> instances or only native objects
+        /// </summary>
+        public bool IsCanInsertEventBean { get; private set; }
     }
 }

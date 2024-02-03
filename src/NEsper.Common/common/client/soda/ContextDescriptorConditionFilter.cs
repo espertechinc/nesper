@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Context condition that start/initiated or ends/terminates context partitions based on a filter expression.
     /// </summary>
-    [Serializable]
     public class ContextDescriptorConditionFilter : ContextDescriptorCondition
     {
         /// <summary>Ctor. </summary>
@@ -46,8 +45,7 @@ namespace com.espertech.esper.common.client.soda
             EPStatementFormatter formatter)
         {
             Filter.ToEPL(writer, formatter);
-            if (OptionalAsName != null)
-            {
+            if (OptionalAsName != null) {
                 writer.Write(" as ");
                 writer.Write(OptionalAsName);
             }

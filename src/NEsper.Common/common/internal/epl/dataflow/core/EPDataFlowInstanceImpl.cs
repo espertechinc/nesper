@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -177,8 +177,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.core
                 IDictionary<string, EPDataFlowEmitterOperator> emitters =
                     new Dictionary<string, EPDataFlowEmitterOperator>();
                 foreach (var operatorStatePair in _operators.Values) {
-                    if (operatorStatePair.First is EPDataFlowEmitterOperator) {
-                        var emitterOp = (EPDataFlowEmitterOperator) operatorStatePair.First;
+                    if (operatorStatePair.First is EPDataFlowEmitterOperator emitterOp) {
                         emitters.Put(emitterOp.Name, emitterOp);
                     }
                 }
@@ -291,9 +290,8 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.core
         {
             foreach (var opNum in _dataflowDesc.OperatorBuildOrder) {
                 var operatorStatePair = _operators.Get(opNum);
-                if (operatorStatePair.First is DataFlowOperatorLifecycle) {
+                if (operatorStatePair.First is DataFlowOperatorLifecycle lf) {
                     try {
-                        var lf = (DataFlowOperatorLifecycle) operatorStatePair.First;
                         lf.Open(new DataFlowOpOpenContext(opNum));
                     }
                     catch (EPException) {
@@ -302,7 +300,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.core
                     catch (Exception ex) {
                         throw new EPDataFlowExecutionException(
                             "Exception encountered opening data flow 'FlowOne' in operator " +
-                            operatorStatePair.First.GetType().GetSimpleName() +
+                            lf.GetType().GetSimpleName() +
                             ": " +
                             ex.Message,
                             ex,
@@ -317,9 +315,8 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.core
             lock (this) {
                 foreach (var opNum in _dataflowDesc.OperatorBuildOrder) {
                     var operatorStatePair = _operators.Get(opNum);
-                    if (operatorStatePair.First is DataFlowOperatorLifecycle && !operatorStatePair.Second) {
+                    if (operatorStatePair.First is DataFlowOperatorLifecycle lf && !operatorStatePair.Second) {
                         try {
-                            var lf = (DataFlowOperatorLifecycle) operatorStatePair.First;
                             lf.Close(new DataFlowOpCloseContext(opNum));
                         }
                         catch (EPException) {

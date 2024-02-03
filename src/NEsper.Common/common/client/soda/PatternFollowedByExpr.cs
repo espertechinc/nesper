@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -15,7 +15,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Followed-by for use in pattern expressions.
     /// </summary>
-    [Serializable]
     public class PatternFollowedByExpr : PatternExprBase
     {
         /// <summary>
@@ -47,8 +46,7 @@ namespace com.espertech.esper.common.client.soda
         {
             AddChild(first);
             AddChild(second);
-            for (int i = 0; i < patternExprs.Length; i++)
-            {
+            for (var i = 0; i < patternExprs.Length; i++) {
                 AddChild(patternExprs[i]);
             }
         }
@@ -64,10 +62,7 @@ namespace com.espertech.esper.common.client.soda
             return this;
         }
 
-        public override PatternExprPrecedenceEnum Precedence
-        {
-            get { return PatternExprPrecedenceEnum.FOLLOWED_BY; }
-        }
+        public override PatternExprPrecedenceEnum Precedence => PatternExprPrecedenceEnum.FOLLOWED_BY;
 
         /// <summary>Returns the instance limits, if any, for pattern-subexpressions. </summary>
         /// <value>list of max-limit or null</value>
@@ -77,19 +72,16 @@ namespace com.espertech.esper.common.client.soda
             TextWriter writer,
             EPStatementFormatter formatter)
         {
-            string delimiter = "";
-            int childNum = 0;
-            foreach (PatternExpr child in Children)
-            {
+            var delimiter = "";
+            var childNum = 0;
+            foreach (var child in Children) {
                 writer.Write(delimiter);
                 child.ToEPL(writer, Precedence, formatter);
 
                 delimiter = " -> ";
-                if (OptionalMaxPerSubexpression != null && OptionalMaxPerSubexpression.Count > childNum)
-                {
+                if (OptionalMaxPerSubexpression != null && OptionalMaxPerSubexpression.Count > childNum) {
                     var maxExpr = OptionalMaxPerSubexpression[childNum];
-                    if (maxExpr != null)
-                    {
+                    if (maxExpr != null) {
                         var inner = new StringWriter();
                         maxExpr.ToEPL(inner, ExpressionPrecedenceEnum.MINIMUM);
                         delimiter = " -[" + inner.ToString() + "]> ";

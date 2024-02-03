@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -10,27 +10,30 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.Json.Serialization;
 
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
+
 namespace com.espertech.esper.common.@internal.epl.expression.ops
 {
     /// <summary>
-    ///     Represents an equals-for-group (= ANY/ALL/SOME (expression list)) comparator in a expression tree.
+    /// Represents an equals-for-group (= ANY/ALL/SOME (expression list)) comparator in a expression tree.
     /// </summary>
-    [Serializable]
     public class ExprEqualsAllAnyNode : ExprNodeBase
     {
-        [NonSerialized] private ExprEqualsAllAnyNodeForge _forge;
+        [JsonIgnore]
+        [NonSerialized]
+        private ExprEqualsAllAnyNodeForge _forge;
 
         /// <summary>
-        ///     Ctor.
+        /// Ctor.
         /// </summary>
-        /// <param name="isNotEquals">true if this is a (!=) not equals rather then equals, false if its a '=' equals</param>
-        /// <param name="isAll">true if all, false for any</param>
+        /// <param name = "isNotEquals">true if this is a (!=) not equals rather then equals, false if its a '=' equals</param>
+        /// <param name = "isAll">true if all, false for any</param>
         public ExprEqualsAllAnyNode(
             bool isNotEquals,
             bool isAll)
@@ -52,15 +55,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 return _forge;
             }
         }
-
+        
         /// <summary>
-        ///     Returns true if this is a NOT EQUALS node, false if this is a EQUALS node.
+        /// Returns true if this is a NOT EQUALS node, false if this is a EQUALS node.
         /// </summary>
         /// <returns>true for !=, false for =</returns>
         public bool IsNot { get; }
 
         /// <summary>
-        ///     True if all.
+        /// True if all.
         /// </summary>
         /// <returns>all-flag</returns>
         public bool IsAll { get; }
@@ -77,14 +80,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             }
 
             // Must be the same boxed type returned by expressions under this
-            Type typeOne = ChildNodes[0].Forge.EvaluationType.GetBoxedType();
-
-            // collections, array or map not supported
-            if (typeOne.IsArray || typeOne.IsGenericCollection() || typeOne.IsGenericStringDictionary()) {
-                throw new ExprValidationException(
-                    "Collection or array comparison is not allowed for the IN, ANY, SOME or ALL keywords");
-            }
-
+            var typeOne = ChildNodes[0].Forge.EvaluationType.GetBoxedType();
+            
+            ExprNodeUtilityValidate.ValidateLHSTypeAnyAllSomeIn(typeOne);
+            
             IList<Type> comparedTypes = new List<Type>();
             comparedTypes.Add(typeOne);
             var hasCollectionOrArray = false;
@@ -119,10 +118,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 throw new ExprValidationException("Implicit conversion not allowed: " + ex.Message);
             }
 
+            if (coercionTypeBoxed == null) {
+                throw new ExprValidationException("Implicit conversion to null-type is not allowed");
+            }
+
             // Check if we need to coerce
             var mustCoerce = false;
             Coercer coercer = null;
-            if (coercionTypeBoxed.IsNumeric()) {
+            if (coercionTypeBoxed.IsTypeNumeric()) {
                 foreach (var compareType in comparedTypes) {
                     if (coercionTypeBoxed != compareType.GetBoxedType()) {
                         mustCoerce = true;
@@ -130,7 +133,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 }
 
                 if (mustCoerce) {
-                    coercer = SimpleNumberCoercerFactory.GetCoercer(null, coercionTypeBoxed.GetBoxedType());
+                    coercer = SimpleNumberCoercerFactory.GetCoercer(null, coercionTypeBoxed);
                 }
             }
 
@@ -138,7 +141,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             return null;
         }
 
-        public override void ToPrecedenceFreeEPL(TextWriter writer,
+        public override void ToPrecedenceFreeEPL(
+            TextWriter writer,
             ExprNodeRenderableFlags flags)
         {
             ChildNodes[0].ToEPL(writer, Precedence, flags);
@@ -160,7 +164,6 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             }
 
             writer.Write("(");
-
             var delimiter = "";
             for (var i = 0; i < ChildNodes.Length - 1; i++) {
                 writer.Write(delimiter);
@@ -175,11 +178,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             ExprNode node,
             bool ignoreStreamPrefix)
         {
-            if (!(node is ExprEqualsAllAnyNode)) {
+            if (!(node is ExprEqualsAllAnyNode other)) {
                 return false;
             }
 
-            var other = (ExprEqualsAllAnyNode) node;
             return other.IsNot == IsNot && other.IsAll == IsAll;
         }
     }

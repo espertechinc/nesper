@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -8,10 +8,12 @@
 
 using System;
 
+using com.espertech.esper.common.client.metric;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.filtersvc;
 using com.espertech.esper.common.@internal.schedule;
 using com.espertech.esper.compat.diagnostics;
+using com.espertech.esper.compat.function;
 
 namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
 {
@@ -107,5 +109,7 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
         void SetMetricsReportingDisabled();
 
         bool IsMetricsReportingEnabled { get; }
+
+        void EnumerateMetrics(Consumer<EPMetricsStatementGroup> consumer);
     }
 } // end of namespace

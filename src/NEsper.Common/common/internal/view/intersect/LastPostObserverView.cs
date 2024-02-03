@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -18,9 +18,9 @@ namespace com.espertech.esper.common.@internal.view.intersect
     /// </summary>
     public class LastPostObserverView : ViewSupport
     {
-        protected internal new Viewable parent;
-        protected internal readonly int streamId;
-        protected internal LastPostObserver observer;
+        private Viewable parent;
+        private readonly int streamId;
+        private LastPostObserver observer;
 
         /// <summary>
         /// Ctor.
@@ -36,13 +36,11 @@ namespace com.espertech.esper.common.@internal.view.intersect
         /// </summary>
         /// <value>to be called when results are available</value>
         public LastPostObserver Observer {
-            get => this.observer;
-            set => this.observer = value;
+            get => observer;
+            set => observer = value;
         }
 
-        public override EventType EventType {
-            get => parent.EventType;
-        }
+        public override EventType EventType => parent.EventType;
 
         public override IEnumerator<EventBean> GetEnumerator()
         {

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -8,7 +8,7 @@
 
 using System;
 using System.Collections.Generic;
-
+using System.Xml;
 using com.espertech.esper.common.@internal.@event.avro;
 
 namespace com.espertech.esper.common.client.util
@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.client.util
         ///     Event representation is Avro (GenericRecord).
         /// </summary>
         AVRO,
-        
+
         /// <summary>
         /// Event representation is JSON with underlying generation.
         /// </summary>
@@ -62,18 +62,14 @@ namespace com.espertech.esper.common.client.util
         /// <returns>default underlying type</returns>
         public static Type GetUnderlyingClass(this EventUnderlyingType underlyingType)
         {
-            switch (underlyingType) {
-                case EventUnderlyingType.OBJECTARRAY:
-                    return typeof(object[]);
-                case EventUnderlyingType.MAP:
-                    return typeof(IDictionary<string, object>);
-                case EventUnderlyingType.AVRO:
-                    return null;
-                case EventUnderlyingType.JSON:
-                    return typeof(object);
-            }
-
-            throw new ArgumentException("invalid value", nameof(underlyingType));
+            return underlyingType switch
+            {
+                EventUnderlyingType.OBJECTARRAY => typeof(object[]),
+                EventUnderlyingType.MAP => typeof(IDictionary<string, object>),
+                EventUnderlyingType.AVRO => null,
+                EventUnderlyingType.JSON => typeof(object),
+                _ => throw new ArgumentException("invalid value", nameof(underlyingType))
+            };
         }
 
         /// <summary>

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -17,6 +18,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.compile.stage3;
+using com.espertech.esper.common.@internal.compile.util;
 using com.espertech.esper.common.@internal.context.activator;
 using com.espertech.esper.common.@internal.context.aifactory.select;
 using com.espertech.esper.common.@internal.context.module;
@@ -24,8 +26,10 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.namedwindow.core;
 using com.espertech.esper.common.@internal.epl.namedwindow.path;
 using com.espertech.esper.common.@internal.epl.resultset.core;
+using com.espertech.esper.common.@internal.epl.resultset.select.core;
 using com.espertech.esper.common.@internal.epl.streamtype;
 using com.espertech.esper.common.@internal.epl.virtualdw;
+using com.espertech.esper.common.@internal.fabric;
 using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.common.@internal.schedule;
 using com.espertech.esper.common.@internal.view.core;
@@ -36,11 +40,11 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
 {
     public class StmtForgeMethodCreateWindow : StmtForgeMethod
     {
-        private readonly StatementBaseInfo _base;
+        private readonly StatementBaseInfo @base;
 
         public StmtForgeMethodCreateWindow(StatementBaseInfo @base)
         {
-            this._base = @base;
+            this.@base = @base;
         }
 
         public StmtForgeMethodResult Make(
@@ -54,13 +58,13 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
             catch (ExprValidationException) {
                 throw;
             }
-            catch (Exception t) {
+            catch (Exception ex) {
                 throw new ExprValidationException(
                     "Unexpected exception creating named window '" +
-                    _base.StatementSpec.Raw.CreateWindowDesc.WindowName +
+                    @base.StatementSpec.Raw.CreateWindowDesc.WindowName +
                     "': " +
-                    t.Message,
-                    t);
+                    ex.Message,
+                    ex);
             }
         }
 
@@ -69,13 +73,14 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
             string classPostfix,
             StatementCompileTimeServices services)
         {
-            var additionalForgeables = new List<StmtClassForgeableFactory>();
-            var compileResult = CreateWindowUtil.HandleCreateWindow(_base, services);
-            additionalForgeables.AddRange(compileResult.AdditionalForgeables);
+            IList<StmtClassForgeableFactory> additionalForgeables = new List<StmtClassForgeableFactory>(2);
+            var fabricCharge = services.StateMgmtSettingsProvider.NewCharge();
+            var compileResult = CreateWindowUtil.HandleCreateWindow(@base, services);
+            additionalForgeables.AddAll(compileResult.AdditionalForgeables);
             var namedWindowType = compileResult.FilterSpecCompiled.FilterForEventType;
 
             // view must be non-empty list
-            var createWindowDesc = _base.StatementSpec.Raw.CreateWindowDesc;
+            var createWindowDesc = @base.StatementSpec.Raw.CreateWindowDesc;
             if (createWindowDesc.ViewSpecs.IsEmpty()) {
                 throw new ExprValidationException(NamedWindowManagementServiceConstants.ERROR_MSG_DATAWINDOWS);
             }
@@ -91,23 +96,23 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
             var viewSpecs = createWindowDesc.ViewSpecs;
             var viewArgs = new ViewFactoryForgeArgs(
                 0,
-                false,
-                -1,
+                null,
                 createWindowDesc.StreamSpecOptions,
                 createWindowDesc.WindowName,
-                _base.StatementRawInfo,
+                @base.StatementRawInfo,
                 services);
-            ViewFactoryForgeDesc viewForgeDesc = ViewFactoryForgeUtil.CreateForges(viewSpecs.ToArray(), viewArgs, namedWindowType);
-            additionalForgeables.AddRange(viewForgeDesc.MultikeyForges);
+            var viewForgeDesc = ViewFactoryForgeUtil.CreateForges(viewSpecs.ToArray(), viewArgs, namedWindowType);
+            additionalForgeables.AddAll(viewForgeDesc.MultikeyForges);
+            fabricCharge.Add(viewForgeDesc.FabricCharge);
+            var schedules = viewForgeDesc.Schedules;
 
-            IList<ViewFactoryForge> viewForges = viewForgeDesc.Forges;
-            IList<ScheduleHandleCallbackProvider> schedules = new List<ScheduleHandleCallbackProvider>();
-            ViewFactoryForgeUtil.DetermineViewSchedules(viewForges, schedules);
+            var viewForges = viewForgeDesc.Forges;
+
             VerifyDataWindowViewFactoryChain(viewForges);
             var optionalUniqueKeyProps =
                 StreamJoinAnalysisResultCompileTime.GetUniqueCandidateProperties(
                     viewForges,
-                    _base.StatementSpec.Annotations);
+                    @base.StatementSpec.Annotations);
             var uniqueKeyProArray = optionalUniqueKeyProps?.ToArray();
 
             NamedWindowMetaData insertFromNamedWindow = null;
@@ -136,7 +141,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
                         true);
                     var validationContext = new ExprValidationContextBuilder(
                         streamTypeService,
-                        _base.StatementRawInfo,
+                        @base.StatementRawInfo,
                         services).Build();
                     insertFromFilter = ExprNodeUtilityValidate.GetValidatedSubtree(
                         ExprNodeOrigin.CREATEWINDOWFILTER,
@@ -147,24 +152,25 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
 
             // handle output format
             var defaultSelectAllSpec = new StatementSpecCompiled();
-            defaultSelectAllSpec.SelectClauseCompiled.WithSelectExprList(new SelectClauseElementWildcard());
+            defaultSelectAllSpec.SelectClauseCompiled.SelectExprList = new[] { new SelectClauseElementWildcard() };
             defaultSelectAllSpec.Raw.SelectStreamDirEnum = SelectClauseStreamSelectorEnum.RSTREAM_ISTREAM_BOTH;
             StreamTypeService typeService = new StreamTypeServiceImpl(
-                new[] {namedWindowType},
-                new[] {createWindowDesc.WindowName},
-                new[] {true},
+                new EventType[] { namedWindowType },
+                new string[] { createWindowDesc.WindowName },
+                new bool[] { true },
                 false,
                 false);
             var resultSetProcessor = ResultSetProcessorFactoryFactory.GetProcessorPrototype(
+                ResultSetProcessorAttributionKeyStatement.INSTANCE,
                 new ResultSetSpec(defaultSelectAllSpec),
                 typeService,
                 null,
                 new bool[1],
                 false,
-                _base.ContextPropertyRegistry,
+                @base.ContextPropertyRegistry,
                 false,
                 false,
-                _base.StatementRawInfo,
+                @base.StatementRawInfo,
                 services);
             var classNameRSP = CodeGenerationIDGenerator.GenerateClassNameSimple(
                 typeof(ResultSetProcessorFactoryProvider),
@@ -185,12 +191,12 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
             var virtualDataWindow = viewForges[0] is VirtualDWViewFactoryForge;
             var isEnableIndexShare = virtualDataWindow ||
                                      HintEnum.ENABLE_WINDOW_SUBQUERY_INDEXSHARE.GetHint(
-                                         _base.StatementSpec.Annotations) !=
+                                         @base.StatementSpec.Annotations) !=
                                      null;
             var metaData = new NamedWindowMetaData(
                 namedWindowType,
-                _base.ModuleName,
-                _base.ContextName,
+                @base.ModuleName,
+                @base.ContextName,
                 uniqueKeyProArray,
                 isBatchingDataWindow,
                 isEnableIndexShare,
@@ -198,20 +204,38 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
                 virtualDataWindow);
             services.NamedWindowCompileTimeRegistry.NewNamedWindow(metaData);
 
+            // fabric named window descriptor
+            services.StateMgmtSettingsProvider.NamedWindow(
+                fabricCharge,
+                @base.StatementRawInfo,
+                metaData,
+                namedWindowType);
+
+            var filterSpecCompiled = Collections.SingletonList(
+                new FilterSpecTracked(CallbackAttributionNamedWindow.INSTANCE, compileResult.FilterSpecCompiled));
+
             // build forge list
+            IList<StmtClassForgeable> forgeables = new List<StmtClassForgeable>(2);
 
             var statementFieldsClassName =
                 CodeGenerationIDGenerator.GenerateClassNameSimple(typeof(StatementFields), classPostfix);
             var namespaceScope = new CodegenNamespaceScope(
                 @namespace,
                 statementFieldsClassName,
-                services.IsInstrumented);
+                services.IsInstrumented,
+                services.Configuration.Compiler.ByteCode);
 
-            var forgeables = additionalForgeables
-                .Select(additional => additional.Make(namespaceScope, classPostfix))
-                .ToList();
+            foreach (var additional in additionalForgeables) {
+                forgeables.Add(additional.Make(namespaceScope, classPostfix));
+            }
 
-            forgeables.Add(new StmtClassForgeableRSPFactoryProvider(classNameRSP, resultSetProcessor, namespaceScope, _base.StatementRawInfo));
+            forgeables.Add(
+                new StmtClassForgeableRSPFactoryProvider(
+                    classNameRSP,
+                    resultSetProcessor,
+                    namespaceScope,
+                    @base.StatementRawInfo,
+                    services.SerdeResolver.IsTargetHA));
 
             var aiFactoryProviderClassName = CodeGenerationIDGenerator.GenerateClassNameSimple(
                 typeof(StatementAIFactoryProvider),
@@ -226,10 +250,10 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
             var statementProviderClassName =
                 CodeGenerationIDGenerator.GenerateClassNameSimple(typeof(StatementProvider), classPostfix);
             var informationals = StatementInformationalsUtil.GetInformationals(
-                _base,
-                Collections.SingletonList(compileResult.FilterSpecCompiled),
+                @base,
+                filterSpecCompiled,
                 schedules,
-                EmptyList<NamedWindowConsumerStreamSpec>.Instance,
+                EmptyList<NamedWindowConsumerStreamSpec>.Instance, 
                 true,
                 selectSubscriberDescriptor,
                 namespaceScope,
@@ -242,18 +266,16 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
                     statementProviderClassName,
                     informationals,
                     namespaceScope));
-            forgeables.Add(
-                new StmtClassForgeableStmtFields(
-                    statementFieldsClassName,
-                    namespaceScope,
-                    1));
+            forgeables.Add(new StmtClassForgeableStmtFields(statementFieldsClassName, namespaceScope));
 
             return new StmtForgeMethodResult(
                 forgeables,
-                Collections.SingletonList(compileResult.FilterSpecCompiled),
+                filterSpecCompiled,
                 schedules,
-                EmptyList<NamedWindowConsumerStreamSpec>.Instance,
-                EmptyList<FilterSpecParamExprNodeForge>.Instance);
+                EmptyList<NamedWindowConsumerStreamSpec>.Instance, 
+                EmptyList<FilterSpecParamExprNodeForge>.Instance, 
+                namespaceScope,
+                fabricCharge);
         }
 
         private static bool DetermineBatchingDataWindow(IList<ViewFactoryForge> forges)
@@ -270,13 +292,12 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
         private void VerifyDataWindowViewFactoryChain(IList<ViewFactoryForge> forges)
         {
             var hasDataWindow = new AtomicBoolean();
-            ViewForgeVisitor visitor = new ProxyViewForgeVisitor() {
-                ProcVisit = forge => {
+            ViewForgeVisitor visitor = new ProxyViewForgeVisitor(
+                forge => {
                     if (forge is DataWindowViewForge) {
                         hasDataWindow.Set(true);
                     }
-                }
-            };
+                });
 
             foreach (var forge in forges) {
                 forge.Accept(visitor);

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -30,34 +30,34 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
 
         public override AggregationForgeFactory ValidateAggregationChild(ExprValidationContext validationContext)
         {
-            string message =
+            var message =
                 "The nth aggregation function requires two parameters, an expression returning aggregation values and a numeric index constant";
-            if (this.positionalParams.Length != 2) {
+            if (positionalParams.Length != 2) {
                 throw new ExprValidationException(message);
             }
 
-            ExprNode first = this.positionalParams[0];
-            ExprNode second = this.positionalParams[1];
+            var first = positionalParams[0];
+            var second = positionalParams[1];
             if (!second.Forge.ForgeConstantType.IsCompileTimeConstant) {
                 throw new ExprValidationException(message);
             }
 
             var num = second.Forge.ExprEvaluator.Evaluate(null, true, null);
-            int size = num.AsInt32();
+            var size = num.AsInt32();
 
             if (optionalFilter != null) {
-                this.positionalParams = ExprNodeUtilityMake.AddExpression(positionalParams, optionalFilter);
+                positionalParams = ExprNodeUtilityMake.AddExpression(positionalParams, optionalFilter);
             }
 
             var childType = first.Forge.EvaluationType;
-            var serde = validationContext.SerdeResolver.SerdeForAggregationDistinct(childType, validationContext.StatementRawInfo);
+            var serde = validationContext.SerdeResolver.SerdeForAggregationDistinct(
+                childType,
+                validationContext.StatementRawInfo);
             var distinctValueSerde = isDistinct ? serde : null;
             return new AggregationForgeFactoryNth(this, childType, serde, distinctValueSerde, size);
         }
 
-        public override string AggregationFunctionName {
-            get => "nth";
-        }
+        public override string AggregationFunctionName => "nth";
 
         public override bool EqualsNodeAggregateMethodOnly(ExprAggregateNode node)
         {

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -42,7 +42,7 @@ namespace com.espertech.esper.regressionrun.suite.client
 
             configuration.Common.AddVariable("preconfigured_variable", typeof(int), 5, true);
 
-            configuration.Compiler.ByteCode.AttachModuleEPL = true;
+            configuration.Compiler.ByteCode.IsAttachModuleEPL = true;
             configuration.Common.AddImportType(typeof(SupportBean));
             configuration.Common.AddImportType(typeof(ClientCompileSubstitutionParams.IKey));
             configuration.Common.AddImportType(typeof(ClientCompileSubstitutionParams.MyObjectKeyConcrete));
@@ -365,7 +365,7 @@ namespace com.espertech.esper.regressionrun.suite.client
             [Test, RunInApplicationDomain]
             public void WithODAInvalidConstantUseSubsParamsInstead() => RegressionRunner.Run(
                 _session,
-                ClientCompileSubstitutionParams.WithODAInvalidConstantUseSubsParamsInstead());
+                ClientCompileSubstitutionParams.WithSODAInvalidConstantUseSubsParamsInstead());
 
             [Test, RunInApplicationDomain]
             public void WithSubstParamArray() => RegressionRunner.Run(

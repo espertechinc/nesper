@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -67,8 +67,8 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 			// --------------------------------------------------------------------------------
 
 			var tryGetPropertyMethod = CodegenMethod
-				.MakeParentNode(typeof(bool), this.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
-				.AddParam(new CodegenNamedParam(typeof(string), "name"))
+				.MakeParentNode(typeof(bool), GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+				.AddParam(new CodegenNamedParam(typeof(int), "index"))
 				.AddParam(new CodegenNamedParam(typeof(object), "underlying"))
 				.AddParam(new CodegenNamedParam(typeof(object), "value").WithOutputModifier());
 			tryGetPropertyMethod = MakeTryGetProperty(tryGetPropertyMethod);
@@ -78,10 +78,11 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 			// --------------------------------------------------------------------------------
 
 			var trySetPropertyMethod = CodegenMethod
-				.MakeParentNode(typeof(bool), this.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
-				.AddParam(new CodegenNamedParam(typeof(string), "name"))
-				.AddParam(new CodegenNamedParam(typeof(object), "underlying"))
-				.AddParam(new CodegenNamedParam(typeof(object), "value"));
+				.MakeParentNode(typeof(bool), GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+				.AddParam(new CodegenNamedParam(typeof(int), "index"))
+				.AddParam(new CodegenNamedParam(typeof(object), "value"))
+				.AddParam(new CodegenNamedParam(typeof(object), "underlying"));
+
 			trySetPropertyMethod = MakeTrySetProperty(trySetPropertyMethod);
 
 			// --------------------------------------------------------------------------------
@@ -89,7 +90,7 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 			// --------------------------------------------------------------------------------
 
 			var tryCopyMethod = CodegenMethod
-				.MakeParentNode(typeof(object), this.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+				.MakeParentNode(typeof(object), GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
 				.AddParam(new CodegenNamedParam(typeof(object), "source"));
 			tryCopyMethod = MakeTryCopy(tryCopyMethod, classScope);
 
@@ -138,15 +139,15 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 			CodegenMethod trySetPropertyMethod)
 		{
 			trySetPropertyMethod.Block
-				.IfRefNullReturnFalse("name")
 				.IfRefNullReturnFalse("underlying")
 				.DeclareVar(_underlyingClassName, "und", Cast(_underlyingClassName, Ref("underlying")));
 
 			var cases = _desc.PropertiesThisType
-				.Select(_ => Constant(_.Key))
+				.Select(_ => _desc.FieldDescriptorsInclSupertype.Get(_.Key))
+				.Select(_ => Constant(_.PropertyNumber))
 				.ToArray();
 				
-			var switchStmt = trySetPropertyMethod.Block.SwitchBlockExpressions(Ref("name"), cases, true, false);
+			var switchStmt = trySetPropertyMethod.Block.SwitchBlockExpressions(Ref("index"), cases, true, false);
 			var switchIndx = 0;
 				
 			foreach (var property in _desc.PropertiesThisType) {
@@ -169,15 +170,15 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 		{
 			method.Block
 				.AssignRef(Ref("value"), DefaultValue())
-				.IfRefNullReturnFalse("name")
 				.IfRefNullReturnFalse("underlying")
 				.DeclareVar(_underlyingClassName, "und", Cast(_underlyingClassName, Ref("underlying")));
 
 			var cases = _desc.PropertiesThisType
-				.Select(_ => Constant(_.Key))
+				.Select(_ => _desc.FieldDescriptorsInclSupertype.Get(_.Key))
+				.Select(_ => Constant(_.PropertyNumber))
 				.ToArray();
 			
-			var switchStmt = method.Block.SwitchBlockExpressions(Ref("name"), cases, true, false);
+			var switchStmt = method.Block.SwitchBlockExpressions(Ref("index"), cases, true, false);
 			var switchIndx = 0;
 			
 			foreach (var property in _desc.PropertiesThisType) {

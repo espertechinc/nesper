@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -21,7 +21,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
     {
         public long Coerce(object date)
         {
-            return CoerceToMillis((DateTime) date);
+            return CoerceToMillis((DateTime)date);
         }
 
         public CodegenExpression Codegen(
@@ -30,7 +30,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
             CodegenClassScope codegenClassScope)
         {
             if (valueType.GetBoxedType() != typeof(DateTime?)) {
-                throw new IllegalStateException("Expected a DateTime type, but received \"" + valueType.CleanName() + "\"");
+                throw new IllegalStateException(
+                    "Expected a DateTime type, but received \"" + valueType.CleanName() + "\"");
             }
 
             var timeZoneField = codegenClassScope.AddOrGetDefaultFieldSharable(
@@ -53,10 +54,11 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
             return dateTime.UtcMillis();
         }
 
-        public static long CoerceToMillis(DateTime? dateTime, TimeZoneInfo timeZoneInfo)
+        public static long CoerceToMillis(
+            DateTime? dateTime,
+            TimeZoneInfo timeZoneInfo)
         {
-            if (dateTime == null)
-            {
+            if (dateTime == null) {
                 throw new ArgumentNullException(nameof(dateTime), nameof(dateTime) + " cannot be null");
             }
 
@@ -65,16 +67,18 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
                 .ToDateTimeOffset(timeZoneInfo)
                 .InMillis();
         }
-        
-        public static long CoerceToMillis(DateTime dateTime, TimeZoneInfo timeZoneInfo)
+
+        public static long CoerceToMillis(
+            DateTime dateTime,
+            TimeZoneInfo timeZoneInfo)
         {
             return dateTime
                 .ToDateTimeOffset(timeZoneInfo)
                 .InMillis();
-                
-                //.ToUniversalTime()
-                //.UtcDateTime
-                //.UtcMillis();
+
+            //.ToUniversalTime()
+            //.UtcDateTime
+            //.UtcMillis();
         }
     }
 } // end of namespace

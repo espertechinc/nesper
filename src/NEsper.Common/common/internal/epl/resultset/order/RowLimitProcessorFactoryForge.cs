@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -49,20 +49,20 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                         "Limit clause variable by name '" + rowLimitSpec.NumRowsVariable + "' has not been declared");
                 }
 
-                string message = VariableUtil.CheckVariableContextName(optionalContextName, numRowsVariableMetaData);
+                var message = VariableUtil.CheckVariableContextName(optionalContextName, numRowsVariableMetaData);
                 if (message != null) {
                     throw new ExprValidationException(message);
                 }
 
-                if (!TypeHelper.IsNumeric(numRowsVariableMetaData.Type)) {
+                if (!numRowsVariableMetaData.Type.IsTypeNumeric()) {
                     throw new ExprValidationException("Limit clause requires a variable of numeric type");
                 }
             }
             else {
                 numRowsVariableMetaData = null;
-                currentRowLimit = rowLimitSpec.NumRows.GetValueOrDefault(Int32.MaxValue);
+                currentRowLimit = rowLimitSpec.NumRows.GetValueOrDefault(int.MaxValue);
                 if (currentRowLimit < 0) {
-                    currentRowLimit = Int32.MaxValue;
+                    currentRowLimit = int.MaxValue;
                 }
             }
 
@@ -75,12 +75,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                         "' has not been declared");
                 }
 
-                string message = VariableUtil.CheckVariableContextName(optionalContextName, offsetVariableMetaData);
+                var message = VariableUtil.CheckVariableContextName(optionalContextName, offsetVariableMetaData);
                 if (message != null) {
                     throw new ExprValidationException(message);
                 }
 
-                if (!TypeHelper.IsNumeric(offsetVariableMetaData.Type)) {
+                if (!offsetVariableMetaData.Type.IsTypeNumeric()) {
                     throw new ExprValidationException("Limit clause requires a variable of numeric type");
                 }
             }
@@ -103,23 +103,23 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
             CodegenMethodScope parent,
             CodegenClassScope classScope)
         {
-            CodegenExpression numRowsVariable = ConstantNull();
+            var numRowsVariable = ConstantNull();
             if (numRowsVariableMetaData != null) {
                 numRowsVariable = VariableDeployTimeResolver.MakeVariableField(
                     numRowsVariableMetaData,
                     classScope,
-                    this.GetType());
+                    GetType());
             }
 
-            CodegenExpression offsetVariable = ConstantNull();
+            var offsetVariable = ConstantNull();
             if (offsetVariableMetaData != null) {
                 offsetVariable = VariableDeployTimeResolver.MakeVariableField(
                     offsetVariableMetaData,
                     classScope,
-                    this.GetType());
+                    GetType());
             }
 
-            CodegenMethod method = parent.MakeChild(typeof(RowLimitProcessorFactory), this.GetType(), classScope);
+            var method = parent.MakeChild(typeof(RowLimitProcessorFactory), GetType(), classScope);
             method.Block
                 .DeclareVar<RowLimitProcessorFactory>("factory", NewInstance(typeof(RowLimitProcessorFactory)))
                 .SetProperty(Ref("factory"), "NumRowsVariable", numRowsVariable)

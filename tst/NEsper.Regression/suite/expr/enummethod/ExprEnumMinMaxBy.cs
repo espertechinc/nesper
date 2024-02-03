@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -14,7 +14,11 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.expreval;
 
-using static com.espertech.esper.regressionlib.support.util.LambdaAssertionUtil;
+// INTEGERBOXED
+// STRING
+using static com.espertech.esper.common.@internal.support.SupportEventPropUtil; // assertTypes
+
+// assertTypesAllSame
 
 namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 {
@@ -22,9 +26,17 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
     {
         public static ICollection<RegressionExecution> Executions()
         {
-            var execs = new List<RegressionExecution>();
+            IList<RegressionExecution> execs = new List<RegressionExecution>();
             WithEvents(execs);
             WithScalar(execs);
+            WithInvalid(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumMinMaxByInvalid());
             return execs;
         }
 
@@ -42,7 +54,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             return execs;
         }
 
-        internal class ExprEnumMinMaxByEvents : RegressionExecution
+        private class ExprEnumMinMaxByEvents : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
@@ -52,44 +64,51 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 builder.WithExpression(fields[1], "Contained.maxBy(x => P00)");
                 builder.WithExpression(fields[2], "Contained.minBy(x => P00).Id");
                 builder.WithExpression(fields[3], "Contained.maxBy(x => P00).P00");
-                builder.WithExpression(fields[4], "Contained.minBy( (x, i) => case when i < 1 then P00 else P00*10 end).P00");
-                builder.WithExpression(fields[5], "Contained.maxBy( (x, i) => case when i < 1 then P00 else P00*10 end).P00");
-                builder.WithExpression(fields[6], "Contained.minBy( (x, i, s) => case when i < 1 and s > 2 then P00 else P00*10 end).P00");
-                builder.WithExpression(fields[7], "Contained.maxBy( (x, i, s) => case when i < 1 and s > 2 then P00 else P00*10 end).P00");
+                builder.WithExpression(
+                    fields[4],
+                    "Contained.minBy( (x, i) => case when i < 1 then P00 else P00*10 end).P00");
+                builder.WithExpression(
+                    fields[5],
+                    "Contained.maxBy( (x, i) => case when i < 1 then P00 else P00*10 end).P00");
+                builder.WithExpression(
+                    fields[6],
+                    "Contained.minBy( (x, i, s) => case when i < 1 and s > 2 then P00 else P00*10 end).P00");
+                builder.WithExpression(
+                    fields[7],
+                    "Contained.maxBy( (x, i, s) => case when i < 1 and s > 2 then P00 else P00*10 end).P00");
 
                 builder.WithStatementConsumer(
                     stmt => AssertTypes(
                         stmt.EventType,
                         fields,
-                        new[] {
-                            typeof(SupportBean_ST0),
-                            typeof(SupportBean_ST0),
-                            typeof(String),
-                            typeof(int?),
-                            typeof(int?),
-                            typeof(int?),
-                            typeof(int?),
-                            typeof(int?)
+                        new Type[] {
+                            typeof(SupportBean_ST0), typeof(SupportBean_ST0), typeof(string), typeof(int?),
+                            typeof(int?), typeof(int?), typeof(int?), typeof(int?)
                         }));
 
                 var beanOne = SupportBean_ST0_Container.Make2Value("E1,12", "E2,11", "E2,2");
-                builder.WithAssertion(beanOne).Expect(fields, beanOne.Contained[2], beanOne.Contained[0], "E2", 12, 12, 11, 12, 11);
+                builder.WithAssertion(beanOne)
+                    .Expect(fields, beanOne.Contained[2], beanOne.Contained[0], "E2", 12, 12, 11, 12, 11);
 
                 var beanTwo = SupportBean_ST0_Container.Make2Value("E1,12");
-                builder.WithAssertion(beanTwo).Expect(fields, beanTwo.Contained[0], beanTwo.Contained[0], "E1", 12, 12, 12, 12, 12);
+                builder.WithAssertion(beanTwo)
+                    .Expect(fields, beanTwo.Contained[0], beanTwo.Contained[0], "E1", 12, 12, 12, 12, 12);
 
-                builder.WithAssertion(SupportBean_ST0_Container.Make2Value(null)).Expect(fields, null, null, null, null, null, null, null, null);
+                builder.WithAssertion(SupportBean_ST0_Container.Make2ValueNull())
+                    .Expect(fields, null, null, null, null, null, null, null, null);
 
-                builder.WithAssertion(SupportBean_ST0_Container.Make2Value()).Expect(fields, null, null, null, null, null, null, null, null);
+                builder.WithAssertion(SupportBean_ST0_Container.Make2Value())
+                    .Expect(fields, null, null, null, null, null, null, null, null);
 
                 var beanThree = SupportBean_ST0_Container.Make2Value("E1,12", "E2,11");
-                builder.WithAssertion(beanThree).Expect(fields, beanThree.Contained[1], beanThree.Contained[0], "E2", 12, 12, 11, 11, 12);
+                builder.WithAssertion(beanThree)
+                    .Expect(fields, beanThree.Contained[1], beanThree.Contained[0], "E2", 12, 12, 11, 11, 12);
 
                 builder.Run(env);
             }
         }
 
-        internal class ExprEnumMinMaxByScalar : RegressionExecution
+        private class ExprEnumMinMaxByScalar : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
@@ -99,22 +118,44 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 builder.WithExpression(fields[1], "Strvals.maxBy(v => extractNum(v))");
                 builder.WithExpression(fields[2], "Strvals.minBy( (v, i) => extractNum(v) + i*10)");
                 builder.WithExpression(fields[3], "Strvals.maxBy( (v, i) => extractNum(v) + i*10)");
-                builder.WithExpression(fields[4], "Strvals.minBy( (v, i, s) => extractNum(v) + (case when s > 2 then i*10 else 0 end))");
-                builder.WithExpression(fields[5], "Strvals.maxBy( (v, i, s) => extractNum(v) + (case when s > 2 then i*10 else 0 end))");
+                builder.WithExpression(
+                    fields[4],
+                    "Strvals.minBy( (v, i, s) => extractNum(v) + (case when s > 2 then i*10 else 0 end))");
+                builder.WithExpression(
+                    fields[5],
+                    "Strvals.maxBy( (v, i, s) => extractNum(v) + (case when s > 2 then i*10 else 0 end))");
 
-                builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(String)));
+                builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(string)));
 
-                builder.WithAssertion(SupportCollection.MakeString("E2,E1,E5,E4")).Expect(fields, "E1", "E5", "E2", "E4", "E2", "E4");
+                builder.WithAssertion(SupportCollection.MakeString("E2,E1,E5,E4"))
+                    .Expect(fields, "E1", "E5", "E2", "E4", "E2", "E4");
 
-                builder.WithAssertion(SupportCollection.MakeString("E1")).Expect(fields, "E1", "E1", "E1", "E1", "E1", "E1");
+                builder.WithAssertion(SupportCollection.MakeString("E1"))
+                    .Expect(fields, "E1", "E1", "E1", "E1", "E1", "E1");
 
-                builder.WithAssertion(SupportCollection.MakeString(null)).Expect(fields, null, null, null, null, null, null);
+                builder.WithAssertion(SupportCollection.MakeString(null))
+                    .Expect(fields, null, null, null, null, null, null);
 
-                builder.WithAssertion(SupportCollection.MakeString("")).Expect(fields, null, null, null, null, null, null);
+                builder.WithAssertion(SupportCollection.MakeString(""))
+                    .Expect(fields, null, null, null, null, null, null);
 
-                builder.WithAssertion(SupportCollection.MakeString("E8,E2")).Expect(fields, "E2", "E8", "E8", "E2", "E2", "E8");
+                builder.WithAssertion(SupportCollection.MakeString("E8,E2"))
+                    .Expect(fields, "E2", "E8", "E8", "E2", "E2", "E8");
 
                 builder.Run(env);
+            }
+        }
+
+        private class ExprEnumMinMaxByInvalid : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                string epl;
+
+                epl = "select Contained.minBy(x => null) from SupportBean_ST0_Container";
+                env.TryInvalidCompile(
+                    epl,
+                    "Failed to validate select-clause expression 'Contained.minBy()': Null-type is not allowed");
             }
         }
     }

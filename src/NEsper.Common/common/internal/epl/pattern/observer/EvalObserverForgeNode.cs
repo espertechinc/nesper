@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -11,9 +11,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 
+using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.compile.stage2;
+using com.espertech.esper.common.@internal.compile.util;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.pattern.core;
@@ -37,7 +39,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
         ///     Constructor.
         /// </summary>
         /// <param name="patternObserverSpec">is the factory to use to get an observer instance</param>
-        public EvalObserverForgeNode(bool attachPatternText, PatternObserverSpec patternObserverSpec) : base(attachPatternText)
+        public EvalObserverForgeNode(
+            bool attachPatternText,
+            PatternObserverSpec patternObserverSpec) : base(attachPatternText)
         {
             PatternObserverSpec = patternObserverSpec;
         }
@@ -58,15 +62,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
             set => observerForge = value;
         }
 
-        protected override Type TypeOfFactory()
-        {
-            return typeof(EvalObserverFactoryNode);
-        }
+        protected override Type TypeOfFactory => typeof(EvalObserverFactoryNode);
 
-        protected override string NameOfFactory()
-        {
-            return "Observer";
-        }
+        protected override string NameOfFactory => "Observer";
 
         protected override void InlineCodegen(
             CodegenMethod method,
@@ -78,10 +76,11 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
         }
 
         public override void CollectSelfFilterAndSchedule(
-            IList<FilterSpecCompiled> filters,
-            IList<ScheduleHandleCallbackProvider> schedules)
+            Func<short, CallbackAttribution> callbackAttribution,
+            IList<FilterSpecTracked> filters,
+            IList<ScheduleHandleTracked> schedules)
         {
-            observerForge.CollectSchedule(schedules);
+            observerForge.CollectSchedule(FactoryNodeId, callbackAttribution,schedules);
         }
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
@@ -99,6 +98,11 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
             var writer = new StringWriter();
             ToPrecedenceFreeEPL(writer);
             return writer.ToString();
+        }
+
+        public override AppliesTo AppliesTo()
+        {
+            return client.annotation.AppliesTo.PATTERN_OBSERVER;
         }
     }
 } // end of namespace

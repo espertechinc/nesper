@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -49,8 +49,8 @@ namespace NEsper.Avro.Getter
                     typeof(object),
                     typeof(AvroEventBeanGetterMappedRuntimeKeyed),
                     codegenClassScope)
-                .AddParam(typeof(EventBean), "@event")
-                .AddParam(typeof(string), "key")
+                .AddParam<EventBean>("@event")
+                .AddParam<string>("key")
                 .Block
                 .DeclareVar<GenericRecord>(
                     "record",

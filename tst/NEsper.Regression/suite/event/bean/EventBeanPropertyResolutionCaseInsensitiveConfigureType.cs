@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -17,13 +17,13 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
             EventBeanPropertyResolutionCaseInsensitiveEngineDefault.TryCaseInsensitive(
                 env,
                 "BeanWithCaseInsensitive",
-                "@Name('s0') select THESTRING, INTPRIMITIVE from BeanWithCaseInsensitive where THESTRING='A'",
+                "@name('s0') select THESTRING, INTPRIMITIVE from BeanWithCaseInsensitive where THESTRING='A'",
                 "THESTRING",
                 "INTPRIMITIVE");
             EventBeanPropertyResolutionCaseInsensitiveEngineDefault.TryCaseInsensitive(
                 env,
                 "BeanWithCaseInsensitive",
-                "@Name('s0') select ThEsTrInG, INTprimitIVE from BeanWithCaseInsensitive where THESTRing='A'",
+                "@name('s0') select ThEsTrInG, INTprimitIVE from BeanWithCaseInsensitive where THESTRing='A'",
                 "ThEsTrInG",
                 "INTprimitIVE");
         }

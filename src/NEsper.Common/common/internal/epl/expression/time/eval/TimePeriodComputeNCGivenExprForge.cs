@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -37,14 +37,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.eval
         {
             var method = parent.MakeChild(typeof(TimePeriodComputeNCGivenExprEval), GetType(), classScope);
             method.Block
-                .DeclareVar<TimePeriodComputeNCGivenExprEval>(
-                    "eval",
-                    NewInstance(typeof(TimePeriodComputeNCGivenExprEval)))
+                .DeclareVarNewInstance<TimePeriodComputeNCGivenExprEval>("eval")
                 .SetProperty(
                     Ref("eval"),
                     "SecondsEvaluator",
                     ExprNodeUtilityCodegen.CodegenEvaluator(_secondsEvaluator, method, GetType(), classScope))
-                .SetProperty(Ref("eval"), "TimeAbacus", classScope.AddOrGetDefaultFieldSharable(TimeAbacusField.INSTANCE))
+                .SetProperty(
+                    Ref("eval"),
+                    "TimeAbacus",
+                    classScope.AddOrGetDefaultFieldSharable(TimeAbacusField.INSTANCE))
                 .MethodReturn(Ref("eval"));
             return LocalMethod(method);
         }

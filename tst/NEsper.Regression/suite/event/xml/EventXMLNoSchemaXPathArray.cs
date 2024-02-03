@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -8,7 +8,6 @@
 
 using System.Collections.Generic;
 
-using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.regressionlib.framework;
 
 using static com.espertech.esper.regressionlib.support.util.SupportXML;
@@ -20,8 +19,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
         public static List<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
+#if REGRESSION_EXECUTIONS
             WithPreconfig(execs);
-            WithCreateSchema(execs);
+            With(CreateSchema)(execs);
+#endif
             return execs;
         }
 
@@ -79,15 +80,14 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
                       "</Participants>\n" +
                       "</Event>";
 
-            env.CompileDeploy("@Name('s0') select * from " + eventTypeName, path).AddListener("s0");
+            env.CompileDeploy("@name('s0') select * from " + eventTypeName, path).AddListener("s0");
 
             SendXMLEvent(env, xml, eventTypeName);
 
-            var theEvent = env.Listener("s0").AssertOneGetNewAndReset();
-            EPAssertionUtil.AssertProps(
-                theEvent,
-                new[] {"A"},
-                new object[] {new object[] {"987654321", "9876543210"}});
+            env.AssertPropsNew(
+                "s0",
+                new[] { "A" },
+                new object[] { new object[] { "987654321", "9876543210" } });
 
             env.UndeployAll();
         }

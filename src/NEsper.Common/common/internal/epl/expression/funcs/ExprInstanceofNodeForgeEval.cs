@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -23,18 +23,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 {
     public class ExprInstanceofNodeForgeEval : ExprEvaluator
     {
-        private readonly ExprEvaluator evaluator;
-        private readonly ExprInstanceofNodeForge forge;
+        private readonly ExprEvaluator _evaluator;
+        private readonly ExprInstanceofNodeForge _forge;
 
-        private readonly CopyOnWriteList<Pair<Type, bool>> resultCache =
+        private readonly CopyOnWriteList<Pair<Type, bool>> _resultCache =
             new CopyOnWriteList<Pair<Type, bool>>();
 
         public ExprInstanceofNodeForgeEval(
             ExprInstanceofNodeForge forge,
             ExprEvaluator evaluator)
         {
-            this.forge = forge;
-            this.evaluator = evaluator;
+            _forge = forge;
+            _evaluator = evaluator;
         }
 
         public object Evaluate(
@@ -42,12 +42,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            var result = evaluator.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+            var result = _evaluator.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
             if (result == null) {
                 return false;
             }
 
-            return InstanceofCacheCheckOrAdd(forge.Classes, resultCache, result);
+            return InstanceofCacheCheckOrAdd(_forge.Classes, _resultCache, result);
         }
 
         /// <summary>
@@ -63,7 +63,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             object result)
         {
             // return cached value
-            foreach (Pair<Type, bool> pair in resultCache) {
+            foreach (var pair in resultCache) {
                 if (pair.First == result.GetType()) {
                     return pair.Second;
                 }
@@ -115,7 +115,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         {
             lock (resultCache) {
                 // check again in synchronized block
-                foreach (Pair<Type, bool> pair in resultCache) {
+                foreach (var pair in resultCache) {
                     if (pair.First == type) {
                         return pair.Second;
                     }

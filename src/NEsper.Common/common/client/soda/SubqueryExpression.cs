@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Subquery-expression returns values returned by a lookup modelled by a further <seealso cref="EPStatementObjectModel" />.
     /// </summary>
-    [Serializable]
     public class SubqueryExpression : ExpressionBase
     {
         private EPStatementObjectModel model;
@@ -35,10 +34,7 @@ namespace com.espertech.esper.common.client.soda
             this.model = model;
         }
 
-        public override ExpressionPrecedenceEnum Precedence
-        {
-            get => ExpressionPrecedenceEnum.UNARY;
-        }
+        public override ExpressionPrecedenceEnum Precedence => ExpressionPrecedenceEnum.UNARY;
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -37,9 +37,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             this.wideners = wideners;
         }
 
-        public EventType ResultEventType {
-            get => resultEventType;
-        }
+        public EventType ResultEventType => resultEventType;
 
         public CodegenMethod ProcessCodegen(
             CodegenExpression resultEventTypeExpr,
@@ -72,13 +70,13 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             int[] remapped,
             TypeWidenerSPI[] optionalWideners)
         {
-            CodegenMethod methodNode = codegenMethodScope.MakeChild(
+            var methodNode = codegenMethodScope.MakeChild(
                 typeof(EventBean),
                 typeof(SelectEvalInsertNoWildcardObjectArrayRemapWWiden),
                 codegenClassScope);
-            CodegenBlock block = methodNode.Block
+            var block = methodNode.Block
                 .DeclareVar<object[]>("result", NewArrayByLength(typeof(object), Constant(propertyNames.Length)));
-            for (int i = 0; i < forges.Length; i++) {
+            for (var i = 0; i < forges.Length; i++) {
                 CodegenExpression value;
                 if (optionalWideners != null && optionalWideners[i] != null) {
                     value = forges[i]

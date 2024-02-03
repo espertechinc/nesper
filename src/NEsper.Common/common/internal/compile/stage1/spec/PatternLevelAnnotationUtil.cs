@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
                 return flags;
             }
 
-            foreach (AnnotationPart part in parts) {
+            foreach (var part in parts) {
                 ValidateSetFlags(flags, part.Name);
             }
 
@@ -61,9 +61,9 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
                 flags.IsDiscardPartialsOnMatch = true;
             }
             else if (string.Equals(
-                annotation,
-                SUPPRESSOVERLAPPINGMATCHES,
-                StringComparison.InvariantCultureIgnoreCase)) {
+                         annotation,
+                         SUPPRESSOVERLAPPINGMATCHES,
+                         StringComparison.InvariantCultureIgnoreCase)) {
                 flags.IsSuppressSameEventMatches = true;
             }
             else {

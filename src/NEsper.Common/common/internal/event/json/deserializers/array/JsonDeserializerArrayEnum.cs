@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -28,19 +28,20 @@ namespace com.espertech.esper.common.@internal.@event.json.deserializers.array
 
         protected IList<object> DeserializeToList(JsonElement element)
         {
-            return JsonElementExtensions
-                .ElementToArray(element, e => {
-                    var baseValue = e.GetString();
-                    return Enum.Parse(_enumType, baseValue);
-                    // throw new FormatException("unexpected value for enum \"" + baseValue + "\"");
-                });
+            return element
+                .ElementToArray(
+                    e => {
+                        var baseValue = e.GetString();
+                        return Enum.Parse(_enumType, baseValue);
+                        // throw new FormatException("unexpected value for enum \"" + baseValue + "\"");
+                    });
         }
-        
+
         public override object Deserialize(JsonElement element)
         {
             var baseArray = DeserializeToList(element);
             var trueArray = Array.CreateInstance(_enumType, baseArray.Count);
-            for (int ii = 0; ii < baseArray.Count; ii++) {
+            for (var ii = 0; ii < baseArray.Count; ii++) {
                 trueArray.SetValue(baseArray[ii], ii);
             }
 

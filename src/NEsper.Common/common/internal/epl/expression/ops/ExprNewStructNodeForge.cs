@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             EventType = eventType;
         }
 
-        public ExprTypableReturnEval TypableReturnEvaluator => (ExprTypableReturnEval) ExprEvaluator;
+        public ExprTypableReturnEval TypableReturnEvaluator => (ExprTypableReturnEval)ExprEvaluator;
 
         public bool IsAllConstants { get; }
 
@@ -69,7 +69,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             return ExprNewStructNodeForgeEval.Codegen(this, codegenMethodScope, exprSymbol, codegenClassScope);
         }
 
-        public Type EvaluationType => typeof(IDictionary<object, object>);
+        public Type EvaluationType => typeof(IDictionary<string, object>);
 
         public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
 
@@ -80,11 +80,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             }
         }
 
-        public bool? IsMultirow {
-            get {
-                return false; // New itself can only return a single row
-            }
-        }
+        public bool? IsMultirow => false; // New itself can only return a single row
 
         public CodegenExpression EvaluateTypableSingleCodegen(
             CodegenMethodScope codegenMethodScope,

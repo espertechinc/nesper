@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Globalization;
 using System.IO;
 using System.Numerics;
 
@@ -16,6 +17,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.schedule;
+using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
@@ -31,46 +33,47 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
     /// </summary>
     public partial class ExprCastNode : ExprNodeBase
     {
-        private ExprCastNodeForge forge;
+        private ExprCastNodeForge _forge; 
 
         /// <summary>
         ///     Ctor.
         /// </summary>
         /// <param name="classIdentifierWArray">the the name of the type to cast to</param>
-        public ExprCastNode(ClassIdentifierWArray classIdentifierWArray)
+        public ExprCastNode(ClassDescriptor classIdentifierWArray)
         {
             ClassIdentifierWArray = classIdentifierWArray;
         }
 
         public ExprEvaluator ExprEvaluator {
             get {
-                CheckValidated(forge);
-                return forge.ExprEvaluator;
+                CheckValidated(_forge);
+                return _forge.ExprEvaluator;
             }
         }
 
         public override ExprForge Forge {
             get {
-                CheckValidated(forge);
-                return forge;
+                CheckValidated(_forge);
+                return _forge;
             }
         }
 
-        public ClassIdentifierWArray ClassIdentifierWArray { get; }
+        public ClassDescriptor ClassIdentifierWArray { get; }
 
         public bool IsConstantResult {
             get {
-                CheckValidated(forge);
-                return forge.IsConstant;
+                CheckValidated(_forge);
+                return _forge.IsConstant;
             }
         }
 
         public Type TargetType {
             get {
-                CheckValidated(forge);
-                return forge.EvaluationType;
+                CheckValidated(_forge);
+                return _forge.EvaluationType;
             }
         }
+
 
         public override ExprPrecedenceEnum Precedence => ExprPrecedenceEnum.UNARY;
 
@@ -84,7 +87,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             var classIdentifier = ClassIdentifierWArray.ClassIdentifier;
             var classIdentifierInvariant = classIdentifier.Trim();
             var arrayDimensions = ClassIdentifierWArray.ArrayDimensions;
-
+            
             // Local function to match a class identifier
             bool MatchesClassIdentifier(string identifier)
             {
@@ -93,18 +96,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                     identifier,
                     StringComparison.InvariantCultureIgnoreCase);
             }
-            
+
             // determine date format parameter
-            var namedParams =
-                ExprNodeUtilityValidate.GetNamedExpressionsHandleDups(ChildNodes);
-            ExprNodeUtilityValidate.ValidateNamed(namedParams, new[] {"dateformat"});
+            var namedParams = ExprNodeUtilityValidate.GetNamedExpressionsHandleDups(Arrays.AsList(ChildNodes));
+            ExprNodeUtilityValidate.ValidateNamed(namedParams, new[] { "dateformat" });
             var dateFormatParameter = namedParams.Get("dateformat");
             if (dateFormatParameter != null) {
                 ExprNodeUtilityValidate.ValidateNamedExpectType(
                     dateFormatParameter,
                     new[] {
-                        typeof(string), 
-                        typeof(DateFormat), 
+                        typeof(string),
+                        typeof(DateFormat),
                         typeof(DateTimeFormat)
                     });
             }
@@ -112,15 +114,24 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             // identify target type
             // try the primitive names including "string"
             SimpleTypeCaster caster;
-            var targetType = TypeHelper.GetPrimitiveTypeForName(classIdentifier.Trim());
-            if (!ClassIdentifierWArray.IsArrayOfPrimitive) {
-                targetType = targetType.GetBoxedType();
+            Type clazzSimpleNamed = null;
+            if (ClassIdentifierWArray.TypeParameters.IsEmpty()) {
+                clazzSimpleNamed = TypeHelper.GetPrimitiveTypeForName(ClassIdentifierWArray.ClassIdentifier.Trim());
             }
 
-            targetType = ApplyDimensions(targetType);
+            Type targetType = null;
+            if (clazzSimpleNamed != null) {
+                targetType = clazzSimpleNamed;
+                if (!ClassIdentifierWArray.IsArrayOfPrimitive) {
+                    targetType = targetType.GetBoxedType();
+                }
+
+                targetType = ApplyDimensions(targetType);
+            }
 
             bool numeric;
             CasterParserComputerForge casterParserComputerForge = null;
+            var classIdentifierLower = ClassIdentifierWArray.ClassIdentifier.Trim().ToLowerInvariant();
             if (dateFormatParameter != null) {
                 if (fromType != typeof(string)) {
                     throw new ExprValidationException(
@@ -131,10 +142,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 
                 if (targetType == null) {
                     try {
-                        targetType = TypeHelper.GetClassForName(
-                            classIdentifier.Trim(),
+                        targetType = TypeHelper.GetTypeForName(
+                            ClassIdentifierWArray.ClassIdentifier.Trim(),
                             validationContext.ImportService.TypeResolver);
                         targetType = ApplyDimensions(targetType);
+                        // expected
                     }
                     catch (TypeLoadException) {
                         // expected
@@ -144,7 +156,6 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 // dynamic or static date format
                 numeric = false;
                 caster = null;
-
                 if (targetType == typeof(DateTimeEx) ||
                     MatchesClassIdentifier("calendar") ||
                     MatchesClassIdentifier("dateTimeEx")) {
@@ -156,8 +167,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                     }
                     else if (desc.StaticDateFormat != null) {
                         casterParserComputerForge = new StringToDateTimExWStaticFormatComputer(
-                            desc.StaticDateFormat,
-                            TimeZoneInfo.Utc); // Note how code-generation does not use the default time zone
+                            desc.StaticDateFormat, TimeZoneInfo.Utc);
                     }
                     else {
                         casterParserComputerForge = new StringToDateTimeExWExprFormatComputer(
@@ -175,18 +185,19 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                         casterParserComputerForge = new StringToDateTimeOffsetIsoFormatComputer();
                     }
                     else if (desc.StaticDateFormat != null) {
-                        casterParserComputerForge =
-                            new StringToDateTimeOffsetWStaticFormatComputer(desc.StaticDateFormat);
+                        casterParserComputerForge = new StringToDateTimeOffsetWStaticFormatComputer(
+                            desc.StaticDateFormat); // Note how code-generation does not use the default time zone
                     }
                     else {
-                        casterParserComputerForge =
-                            new StringToDateTimeOffsetWExprFormatComputerForge(desc.DynamicDateFormat);
+                        casterParserComputerForge = new StringToDateTimeOffsetWExprFormatComputerForge(
+                            desc.DynamicDateFormat);
                     }
                 }
                 else if (targetType == typeof(DateTime) ||
                          targetType == typeof(DateTime?) ||
                          MatchesClassIdentifier("datetime")) {
                     targetType = typeof(DateTime);
+                    
                     var desc = ValidateDateFormat(dateFormatParameter, validationContext);
                     if (desc.IsIso8601Format) {
                         casterParserComputerForge = new StringToDateTimeIsoFormatComputer();
@@ -238,19 +249,19 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 numeric = true;
             }
             else {
-                try {
-                    targetType = TypeHelper.GetClassForName(
-                        classIdentifier.Trim(),
-                        validationContext.ImportService.TypeResolver);
-                }
-                catch (TypeLoadException e) {
+                targetType = ImportTypeUtil.ResolveClassIdentifierToType(
+                    ClassIdentifierWArray,
+                    false,
+                    validationContext.ImportService,
+                    validationContext.ClassProvidedExtension);
+                if (targetType == null) {
                     throw new ExprValidationException(
-                        "Class as listed in cast function by name '" + classIdentifier + "' cannot be loaded",
-                        e);
+                        "Class as listed in cast function by name '" +
+                        ClassIdentifierWArray.ToEPL() +
+                        "' cannot be found");
                 }
 
-                targetType = ApplyDimensions(targetType);
-                numeric = targetType.IsNumeric();
+                numeric = targetType.IsTypeNumeric();
                 if (numeric) {
                     caster = SimpleTypeCasterFactory.GetCaster(fromType, targetType);
                 }
@@ -267,7 +278,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 }
                 else if (fromType == typeof(string) && targetType != typeof(char)) {
                     // parse
-                    SimpleTypeParserSPI parser = SimpleTypeParserFactory.GetParser(targetType.GetBoxedType());
+                    var parser = SimpleTypeParserFactory.GetParser(targetType.GetBoxedType());
                     casterParserComputerForge = new StringParserComputer(parser);
                 }
                 else if (numeric) {
@@ -292,12 +303,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                         : casterParserComputerForge.EvaluatorComputer.Compute(@in, null, true, null);
                 }
             }
-            
-            forge = new ExprCastNodeForge(this, casterParserComputerForge, targetType, isConstant, theConstant);
+
+            _forge = new ExprCastNodeForge(this, casterParserComputerForge, targetType, isConstant, theConstant);
             return null;
         }
 
-        public override void ToPrecedenceFreeEPL(TextWriter writer,
+        public override void ToPrecedenceFreeEPL(
+            TextWriter writer,
             ExprNodeRenderableFlags flags)
         {
             writer.Write("cast(");
@@ -316,14 +328,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             ExprNode node,
             bool ignoreStreamPrefix)
         {
-            if (!(node is ExprCastNode)) {
+            if (!(node is ExprCastNode other)) {
                 return false;
             }
 
-            var other = (ExprCastNode) node;
             return other.ClassIdentifierWArray.Equals(ClassIdentifierWArray);
         }
-
+        
         public static EPException HandleParseException(
             DateFormat format,
             string date,
@@ -356,7 +367,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         {
             return new EPException("Exception parsing iso8601 date '" + date + "': " + ex.Message, ex);
         }
-
+        
         private ExprCastNodeDateDesc ValidateDateFormat(
             ExprNamedParameterNode dateFormatParameter,
             ExprValidationContext validationContext)
@@ -406,7 +417,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 staticFormatString,
                 formatForge.ForgeConstantType.IsConstant);
         }
-
+        
+        
         /// <summary>
         ///     NOTE: Code-generation-invoked method, method name and parameter order matters
         /// </summary>
@@ -464,8 +476,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             var formatEval = CodegenLegoMethodExpression.CodegenExpression(
                 formatExpr,
                 codegenClassScope.NamespaceScope.InitMethod,
-                codegenClassScope,
-                true);
+                codegenClassScope);
             CodegenExpression formatInit = LocalMethod(formatEval, ConstantNull(), ConstantTrue(), ConstantNull());
             return codegenClassScope.AddDefaultFieldUnshared(true, type, formatInit);
         }

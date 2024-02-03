@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -7,16 +7,18 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esper.regressionlib.support.client.SupportCompileDeployUtil;
 
 namespace com.espertech.esper.regressionlib.suite.multithread
@@ -27,12 +29,19 @@ namespace com.espertech.esper.regressionlib.suite.multithread
     /// </summary>
     public class MultithreadContextTemporalStartStop : RegressionExecution
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
+        }
 
         public void Run(RegressionEnvironment env)
         {
             var path = new RegressionPath();
-            env.CompileDeploy("create context EverySecond as start (*, *, *, *, *, *) end (*, *, *, *, *, *)", path);
+            env.CompileDeploy(
+                "@public create context EverySecond as start (*, *, *, *, *, *) end (*, *, *, *, *, *)",
+                path);
             env.CompileDeploy("context EverySecond select * from SupportBean", path);
 
             var timerRunnable = new TimerRunnable(env, 0, 24 * 60 * 60 * 1000, 1000);
@@ -48,8 +57,8 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 
             ThreadJoin(timerThread);
             ThreadJoin(eventThread);
-            Assert.IsNull(eventRunnable.Exception);
-            Assert.IsNull(timerRunnable.Exception);
+            ClassicAssert.IsNull(eventRunnable.Exception);
+            ClassicAssert.IsNull(timerRunnable.Exception);
 
             env.UndeployAll();
         }
@@ -78,7 +87,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 
             public void Run()
             {
-                log.Info("Started time drive");
+                Log.Info("Started time drive");
                 try {
                     var current = start;
                     long stepCount = 0;
@@ -89,16 +98,16 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                         stepCount++;
 
                         if (stepCount % 10000 == 0) {
-                            log.Info("Sending step #" + stepCount + " of " + expectedSteps);
+                            Log.Info("Sending step #" + stepCount + " of " + expectedSteps);
                         }
                     }
                 }
                 catch (Exception ex) {
-                    log.Error("Exception encountered: " + ex.Message, ex);
+                    Log.Error("Exception encountered: " + ex.Message, ex);
                     Exception = ex;
                 }
 
-                log.Info("Completed time drive");
+                Log.Info("Completed time drive");
             }
         }
 
@@ -119,7 +128,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 
             public void Run()
             {
-                log.Info("Started event send");
+                Log.Info("Started event send");
                 try {
                     long count = 0;
                     while (count < numEvents) {
@@ -127,16 +136,16 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                         count++;
 
                         if (count % 10000 == 0) {
-                            log.Info("Sending event #" + count);
+                            Log.Info("Sending event #" + count);
                         }
                     }
                 }
                 catch (Exception ex) {
-                    log.Error("Exception encountered: " + ex.Message, ex);
+                    Log.Error("Exception encountered: " + ex.Message, ex);
                     Exception = ex;
                 }
 
-                log.Info("Completed event send");
+                Log.Info("Completed event send");
             }
         }
     }

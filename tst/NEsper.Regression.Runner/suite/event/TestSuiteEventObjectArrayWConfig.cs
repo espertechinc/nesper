@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -16,6 +16,7 @@ using com.espertech.esper.regressionrun.runner;
 using com.espertech.esper.regressionrun.suite.core;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionrun.suite.@event
 {
@@ -55,7 +56,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
                 Assert.Fail();
             }
             catch (ConfigurationException ex) {
-                Assert.AreEqual("Object-array event types only allow a single supertype", ex.Message);
+                ClassicAssert.AreEqual("Object-array event types only allow a single supertype", ex.Message);
             }
 
             // mismatched property number
@@ -68,7 +69,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
                 Assert.Fail();
             }
             catch (ConfigurationException ex) {
-                Assert.AreEqual(
+                ClassicAssert.AreEqual(
                     "Number of property names and property types do not match, found 1 property names and 2 property types",
                     ex.Message);
             }

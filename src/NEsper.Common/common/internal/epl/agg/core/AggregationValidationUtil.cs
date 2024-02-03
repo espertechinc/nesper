@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -22,10 +22,21 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             Type requiredParam,
             Type providedParam)
         {
-            Type boxedRequired = requiredParam.GetBoxedType();
-            Type boxedProvided = providedParam.GetBoxedType();
-            if (boxedRequired != boxedProvided &&
-                !TypeHelper.IsSubclassOrImplementsInterface(boxedProvided, boxedRequired)) {
+            bool matches;
+
+            if (requiredParam == null) {
+                matches = providedParam == null;
+            }
+            else if (providedParam == null) {
+                matches = false;
+            }
+            else {
+                var boxedRequired = requiredParam.GetBoxedType();
+                var boxedProvided = providedParam.GetBoxedType();
+                matches = boxedRequired == boxedProvided || TypeHelper.IsSubclassOrImplementsInterface(boxedProvided, boxedRequired);
+            }
+
+            if (!matches) {
                 throw new ExprValidationException(
                     "The required parameter type is " +
                     requiredParam.CleanName() +

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -20,16 +20,18 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
         private CompositeIndexLookup _next;
         private readonly MultiKeyFromObjectArray _multiKeyTransform;
 
-        public CompositeIndexLookupKeyed(object[] keys, MultiKeyFromObjectArray multiKeyTransform)
+        public CompositeIndexLookupKeyed(
+            object[] keys,
+            MultiKeyFromObjectArray multiKeyTransform)
         {
-            this._keys = keys;
-            this._multiKeyTransform = multiKeyTransform;
+            _keys = keys;
+            _multiKeyTransform = multiKeyTransform;
         }
 
         public MultiKeyFromObjectArray MultiKeyTransform => _multiKeyTransform;
 
         public CompositeIndexLookup Next {
-            set { this._next = value; }
+            set => _next = value;
         }
 
         public void Lookup(

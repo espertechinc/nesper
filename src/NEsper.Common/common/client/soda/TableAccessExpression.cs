@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -17,7 +17,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Table access expression.
     /// </summary>
-    [Serializable]
     public class TableAccessExpression : ExpressionBase
     {
         private string _tableName;
@@ -47,23 +46,18 @@ namespace com.espertech.esper.common.client.soda
             _optionalColumn = optionalColumn;
         }
 
-        public override ExpressionPrecedenceEnum Precedence
-        {
-            get => ExpressionPrecedenceEnum.UNARY;
-        }
+        public override ExpressionPrecedenceEnum Precedence => ExpressionPrecedenceEnum.UNARY;
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             writer.Write(_tableName);
-            if (_keyExpressions != null && !_keyExpressions.IsEmpty())
-            {
+            if (_keyExpressions != null && !_keyExpressions.IsEmpty()) {
                 writer.Write("[");
                 ExpressionBase.ToPrecedenceFreeEPL(_keyExpressions, writer);
                 writer.Write("]");
             }
 
-            if (_optionalColumn != null)
-            {
+            if (_optionalColumn != null) {
                 writer.Write(".");
                 writer.Write(_optionalColumn);
             }

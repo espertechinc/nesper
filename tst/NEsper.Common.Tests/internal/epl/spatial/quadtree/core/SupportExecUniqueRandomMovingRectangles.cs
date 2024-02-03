@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -15,7 +15,7 @@ using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.compat.collections;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esper.common.@internal.epl.spatial.quadtree.core.SupportQuadTreeUtil;
 
 namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.core
@@ -27,7 +27,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.core
             double rectangleWidth,
             double rectangleHeight)
         {
-            Assert.IsNull(tools.generator);
+            ClassicAssert.IsNull(tools.generator);
 
             SupportQuadTreeConfig[] configs = {
                 new SupportQuadTreeConfig(0, 0, 100, 100, 4, 20),

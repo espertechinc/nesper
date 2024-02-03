@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -74,13 +74,13 @@ namespace NEsper.Avro.Core
                     eventType, factory, makeUndLambda);
 
             //var makeUndMethod = CodegenMethod.MakeMethod(typeof(GenericRecord), GetType(), codegenClassScope)
-            //    .AddParam(typeof(object[]), "properties");
+            //    .AddParam<object[]>("properties");
             //manufacturer.AddMethod("MakeUnderlying", makeUndMethod);
             //MakeUnderlyingCodegen(makeUndMethod, codegenClassScope);
 
             //var makeMethod = CodegenMethod
             //    .MakeMethod(typeof(EventBean), GetType(), codegenClassScope)
-            //    .AddParam(typeof(object[]), "properties");
+            //    .AddParam<object[]>("properties");
             //manufacturer.AddMethod("Make", makeMethod);
             //makeMethod.Block
             //    .DeclareVar<GenericRecord>("und", LocalMethod(makeUndMethod, Ref("properties")))

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -87,7 +87,7 @@ namespace NEsper.Avro.Core
 
             var cached = fragmentTypeCache.Get(recordSchema.Name);
             if (cached != null) {
-                return new FragmentEventType(cached, indexed, false);
+                return new FragmentEventType(cached, indexed, false, false);
             }
 
             var metadata = new EventTypeMetadata(
@@ -110,7 +110,7 @@ namespace NEsper.Avro.Core
                 null);
 
             fragmentTypeCache.Add(recordSchema.Name, fragmentType);
-            return new FragmentEventType(fragmentType, indexed, false);
+            return new FragmentEventType(fragmentType, indexed, false, false);
         }
     }
 } // end of namespace

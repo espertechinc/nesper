@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -127,7 +127,8 @@ namespace com.espertech.esper.common.@internal.@event.eventtypefactory
             string representsOriginalTypeName,
             BeanEventTypeFactory beanEventTypeFactory,
             XMLFragmentEventTypeFactory xmlFragmentEventTypeFactory,
-            EventTypeNameResolver eventTypeNameResolver)
+            EventTypeNameResolver eventTypeNameResolver,
+            EventTypeXMLXSDHandler xmlXsdHandler)
         {
             if (metadata.IsPropertyAgnostic) {
                 return new SimpleXMLEventType(
@@ -146,7 +147,8 @@ namespace com.espertech.esper.common.@internal.@event.eventtypefactory
                 representsOriginalTypeName,
                 beanEventTypeFactory.EventBeanTypedEventFactory,
                 eventTypeNameResolver,
-                xmlFragmentEventTypeFactory);
+                xmlFragmentEventTypeFactory,
+                xmlXsdHandler);
         }
 
         public VariantEventType CreateVariant(
@@ -158,7 +160,7 @@ namespace com.espertech.esper.common.@internal.@event.eventtypefactory
 
         public JsonEventType CreateJson(
             EventTypeMetadata metadata,
-            IDictionary<String, Object> properties,
+            IDictionary<string, object> properties,
             string[] superTypes,
             string startTimestampPropertyName,
             string endTimestampPropertyName,
@@ -166,7 +168,10 @@ namespace com.espertech.esper.common.@internal.@event.eventtypefactory
             EventTypeNameResolver eventTypeNameResolver,
             JsonEventTypeDetail detail)
         {
-            var st = EventTypeUtility.GetSuperTypesDepthFirst(superTypes, EventUnderlyingType.JSON, eventTypeNameResolver);
+            var st = EventTypeUtility.GetSuperTypesDepthFirst(
+                superTypes,
+                EventUnderlyingType.JSON,
+                eventTypeNameResolver);
             properties = BaseNestableEventUtil.ResolvePropertyTypes(properties, eventTypeNameResolver);
             var getterFactoryJson = new EventTypeNestableGetterFactoryJson(detail);
             // We use a null-stand-in class as the actual underlying class is provided later

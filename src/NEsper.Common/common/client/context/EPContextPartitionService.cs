@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -69,6 +69,14 @@ namespace com.espertech.esper.common.client.context
             string contextName,
             ContextPartitionSelector selector);
 
+        /// <summary>
+        /// Returns the current count of context partition.
+        /// </summary>
+        /// <param name="deploymentId">deployment id of context (deployment id of create-context statement)</param>
+        /// <param name="contextName">context name</param>
+        /// <returns>context partition count</returns>
+        long GetContextPartitionCount(string deploymentId, string contextName);
+        
         /// <summary>
         ///     Returning the descriptor of a given context partition.
         /// </summary>

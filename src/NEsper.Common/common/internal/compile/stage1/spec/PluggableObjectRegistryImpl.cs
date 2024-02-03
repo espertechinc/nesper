@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         {
             // Handle namespace-provided
             if (nameSpace != null) {
-                for (int i = 0; i < _collections.Length; i++) {
+                for (var i = 0; i < _collections.Length; i++) {
                     if (_collections[i].Pluggables.TryGetValue(nameSpace, out var names)) {
                         if (names.TryGetValue(name, out var entry)) {
                             return entry;
@@ -43,7 +43,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
             // Handle namespace-not-provided
             ISet<string> entriesDuplicate = null;
             KeyValuePair<string, Pair<Type, PluggableObjectEntry>>? found = null;
-            for (int i = 0; i < _collections.Length; i++) {
+            for (var i = 0; i < _collections.Length; i++) {
                 foreach (var collEntry in _collections[i].Pluggables) {
                     foreach (var viewEntry in collEntry.Value) {
                         if (viewEntry.Key.Equals(name)) {

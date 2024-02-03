@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -11,7 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using com.espertech.esper.common.client;
-using com.espertech.esper.common.@internal.context.util;
+using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.index.@base;
 using com.espertech.esper.common.@internal.epl.index.sorted;
 
@@ -20,27 +20,39 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
     public class PollResultIndexingStrategySorted : PollResultIndexingStrategy
     {
         private PropertySortedEventTableFactory factory;
+        private string propertyName;
+        private int streamNum;
+        private EventPropertyValueGetter valueGetter;
+        private Type valueType;
 
-        public int StreamNum { get; set; }
+        public int StreamNum {
+            set => streamNum = value;
+        }
 
-        public string PropertyName { get; set; }
+        public string PropertyName {
+            set => propertyName = value;
+        }
 
-        public EventPropertyValueGetter ValueGetter { get; set; }
+        public EventPropertyValueGetter ValueGetter {
+            set => valueGetter = value;
+        }
 
-        public Type ValueType { get; set; }
+        public Type ValueType {
+            set => valueType = value;
+        }
 
         public EventTable[] Index(
             IList<EventBean> pollResult,
             bool isActiveCache,
-            AgentInstanceContext agentInstanceContext)
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             if (!isActiveCache) {
-                return new EventTable[] {new UnindexedEventTableList(pollResult, StreamNum)};
+                return new EventTable[] { new UnindexedEventTableList(pollResult, streamNum) };
             }
 
-            var tables = factory.MakeEventTables(agentInstanceContext, null);
+            var tables = factory.MakeEventTables(exprEvaluatorContext, null);
             foreach (var table in tables) {
-                table.Add(pollResult.ToArray(), agentInstanceContext);
+                table.Add(pollResult.ToArray(), exprEvaluatorContext);
             }
 
             return tables;
@@ -48,7 +60,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
 
         public void Init()
         {
-            factory = new PropertySortedEventTableFactory(StreamNum, PropertyName, ValueGetter, ValueType);
+            factory = new PropertySortedEventTableFactory(streamNum, propertyName, valueGetter, valueType);
         }
     }
 } // end of namespace

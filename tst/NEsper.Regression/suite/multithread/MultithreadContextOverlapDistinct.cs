@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -15,36 +15,44 @@ using com.espertech.esper.runtime.client;
 using com.espertech.esper.runtime.client.scopetest;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esper.regressionlib.support.client.SupportCompileDeployUtil;
 
 namespace com.espertech.esper.regressionlib.suite.multithread
 {
-    public class MultithreadContextOverlapDistinct
+    public class MultithreadContextOverlapDistinct : RegressionExecutionPreConfigured
     {
-        public void Run(Configuration configuration)
+        private readonly Configuration _configuration;
+
+        public MultithreadContextOverlapDistinct(Configuration configuration)
+        {
+            _configuration = configuration;
+        }
+
+        public void Run()
         {
             // Test uses system time
             //
-            configuration.Runtime.Threading.IsInternalTimerEnabled = true;
-            configuration.Common.AddEventType(typeof(TestEvent));
+            _configuration.Runtime.Threading.IsInternalTimerEnabled = true;
+            _configuration.Common.AddEventType(typeof(TestEvent));
 
             var runtimeProvider = new EPRuntimeProvider();
-            var runtime = runtimeProvider.GetRuntimeInstance(GetType().Name, configuration);
+            var runtime = runtimeProvider.GetRuntimeInstance(GetType().Name, _configuration);
             runtime.Initialize();
 
             var path = new RegressionPath();
-            var eplCtx = "@Name('ctx') create context theContext " +
-                         " initiated by distinct(PartitionKey) TestEvent as test " +
-                         " terminated after 100 milliseconds";
-            var compiledContext = Compile(eplCtx, configuration, path);
+            var eplCtx =
+                "@name('ctx') @public create context theContext " +
+                " initiated by distinct(PartitionKey) TestEvent as test " +
+                " terminated after 100 milliseconds";
+            var compiledContext = Compile(eplCtx, _configuration, path);
             path.Add(compiledContext);
             Deploy(compiledContext, runtime);
 
             var eplStmt = "context theContext " +
                           "select sum(Value) as thesum, count(*) as thecnt " +
                           "from TestEvent output snapshot when terminated";
-            var compiledStmt = Compile(eplStmt, configuration, path);
+            var compiledStmt = Compile(eplStmt, _configuration, path);
             var listener = new SupportUpdateListener();
             DeployAddListener(compiledStmt, "s0", listener, runtime);
 
@@ -63,7 +71,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 
             var numDeliveries = listener.NewDataList.Count;
             Console.Out.WriteLine("Done " + numLoops + " loops, have " + numDeliveries + " deliveries");
-            Assert.IsTrue(numDeliveries > 3);
+            ClassicAssert.IsTrue(numDeliveries > 3);
 
             ThreadSleep(1000);
 
@@ -71,7 +79,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             long count = 0;
             foreach (var @event in listener.NewDataListFlattened) {
                 var sumBatch = @event.Get("thesum").AsBoxedInt32();
-                // Comment-Me-In: System.out.println(EventBeanUtility.summarize(event));
+                // Comment-Me-In: Console.WriteLine(EventBeanUtility.summarize(event));
                 if (sumBatch != null) { // can be null when there is nothing to deliver
                     sum += sumBatch.Value;
                     count += @event.Get("thecnt").AsInt64();
@@ -79,8 +87,8 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             }
 
             Console.Out.WriteLine($"count={count}  sum={sum}");
-            Assert.AreEqual(numEvents, count);
-            Assert.AreEqual(0, sum);
+            ClassicAssert.AreEqual(numEvents, count);
+            ClassicAssert.AreEqual(0, sum);
 
             runtime.Destroy();
         }

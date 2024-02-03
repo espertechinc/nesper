@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -17,7 +17,7 @@ using com.espertech.esper.runtime.client;
 using com.espertech.esperio.csv;
 using com.espertech.esperio.support.util;
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esperio.support.util.CompileUtil;
 
 namespace com.espertech.esperio.regression.adapter
@@ -90,7 +90,7 @@ namespace com.espertech.esperio.regression.adapter
 
             adapter.Runtime = _runtime;
             adapter.Start();
-            Assert.AreEqual(3, _listener.GetNewDataList().Count);
+            ClassicAssert.AreEqual(3, _listener.GetNewDataList().Count);
         }
 
         private void AssertEvent(int howManyBack,
@@ -98,14 +98,14 @@ namespace com.espertech.esperio.regression.adapter
             double? myDouble,
             String myString)
         {
-            Assert.IsTrue(_listener.IsInvoked());
-            Assert.IsTrue(howManyBack < _listener.GetNewDataList().Count);
+            ClassicAssert.IsTrue(_listener.IsInvoked);
+            ClassicAssert.IsTrue(howManyBack < _listener.GetNewDataList().Count);
             var data = _listener.GetNewDataList()[howManyBack];
-            Assert.AreEqual(1, data.Length);
+            ClassicAssert.AreEqual(1, data.Length);
             var theEvent = data[0];
-            Assert.AreEqual(myInt, theEvent.Get("MyInt"));
-            Assert.AreEqual(myDouble, theEvent.Get("MyDouble"));
-            Assert.AreEqual(myString, theEvent.Get("MyString"));
+            ClassicAssert.AreEqual(myInt, theEvent.Get("MyInt"));
+            ClassicAssert.AreEqual(myDouble, theEvent.Get("MyDouble"));
+            ClassicAssert.AreEqual(myString, theEvent.Get("MyString"));
         }
 
         private void SendTimeEvent(int timeIncrement)
@@ -130,7 +130,7 @@ namespace com.espertech.esperio.regression.adapter
         private void AssertEvent(Object[] properties)
         {
             if (properties.Length == 1) {
-                Assert.IsFalse(_listener.GetAndClearIsInvoked());
+                ClassicAssert.IsFalse(_listener.GetAndClearIsInvoked());
             }
             else if (properties.Length == 4) {
                 // properties = [callbackDelay, myInt, myDouble, myString]
@@ -152,12 +152,12 @@ namespace com.espertech.esperio.regression.adapter
             Object myDouble,
             Object myString)
         {
-            Assert.IsTrue(_listener.GetAndClearIsInvoked());
-            Assert.AreEqual(1, _listener.GetLastNewData().Length);
+            ClassicAssert.IsTrue(_listener.GetAndClearIsInvoked());
+            ClassicAssert.AreEqual(1, _listener.GetLastNewData().Length);
             var theEvent = _listener.GetLastNewData()[0];
-            Assert.AreEqual(myInt, theEvent.Get("MyInt"));
-            Assert.AreEqual(myDouble, theEvent.Get("MyDouble"));
-            Assert.AreEqual(myString, theEvent.Get("MyString"));
+            ClassicAssert.AreEqual(myInt, theEvent.Get("MyInt"));
+            ClassicAssert.AreEqual(myDouble, theEvent.Get("MyDouble"));
+            ClassicAssert.AreEqual(myString, theEvent.Get("MyString"));
             _listener.Reset();
         }
 
@@ -168,20 +168,20 @@ namespace com.espertech.esperio.regression.adapter
             double? doubleTwo,
             String stringTwo)
         {
-            Assert.IsTrue(_listener.IsInvoked());
-            Assert.AreEqual(2, _listener.GetNewDataList().Count);
+            ClassicAssert.IsTrue(_listener.IsInvoked);
+            ClassicAssert.AreEqual(2, _listener.GetNewDataList().Count);
 
-            Assert.AreEqual(1, _listener.GetNewDataList()[0].Length);
+            ClassicAssert.AreEqual(1, _listener.GetNewDataList()[0].Length);
             var theEvent = _listener.GetNewDataList()[0][0];
-            Assert.AreEqual(intOne, theEvent.Get("MyInt"));
-            Assert.AreEqual(doubleOne, theEvent.Get("MyDouble"));
-            Assert.AreEqual(stringOne, theEvent.Get("MyString"));
+            ClassicAssert.AreEqual(intOne, theEvent.Get("MyInt"));
+            ClassicAssert.AreEqual(doubleOne, theEvent.Get("MyDouble"));
+            ClassicAssert.AreEqual(stringOne, theEvent.Get("MyString"));
 
-            Assert.AreEqual(1, _listener.GetNewDataList()[1].Length);
+            ClassicAssert.AreEqual(1, _listener.GetNewDataList()[1].Length);
             theEvent = _listener.GetNewDataList()[1][0];
-            Assert.AreEqual(intTwo, theEvent.Get("MyInt"));
-            Assert.AreEqual(doubleTwo, theEvent.Get("MyDouble"));
-            Assert.AreEqual(stringTwo, theEvent.Get("MyString"));
+            ClassicAssert.AreEqual(intTwo, theEvent.Get("MyInt"));
+            ClassicAssert.AreEqual(doubleTwo, theEvent.Get("MyDouble"));
+            ClassicAssert.AreEqual(stringTwo, theEvent.Get("MyString"));
         }
 
 
@@ -283,10 +283,10 @@ namespace com.espertech.esperio.regression.adapter
 
             SendTimeEvent(100);
 
-            Assert.IsTrue(_listener.GetAndClearIsInvoked());
-            Assert.AreEqual(1, _listener.GetLastNewData().Length);
-            Assert.AreEqual("1", _listener.GetLastNewData()[0].Get("intTwo"));
-            Assert.AreEqual("0", _listener.GetLastNewData()[0].Get("intOne"));
+            ClassicAssert.IsTrue(_listener.GetAndClearIsInvoked());
+            ClassicAssert.AreEqual(1, _listener.GetLastNewData().Length);
+            ClassicAssert.AreEqual("1", _listener.GetLastNewData()[0].Get("intTwo"));
+            ClassicAssert.AreEqual("0", _listener.GetLastNewData()[0].Get("intOne"));
         }
 
         [Test]
@@ -295,7 +295,7 @@ namespace com.espertech.esperio.regression.adapter
             const string filename = "regression/timestampOne.csv";
             StartAdapter(filename, -1, false, true, "timestamp", _propertyOrderTimestamps);
             _adapter.Destroy();
-            Assert.AreEqual(AdapterState.DESTROYED, _adapter.State);
+            ClassicAssert.AreEqual(AdapterState.DESTROYED, _adapter.State);
         }
 
         [Test]
@@ -441,7 +441,7 @@ namespace com.espertech.esperio.regression.adapter
 
             StartAdapter(filename, -1, false, true, null, _propertyOrderTimestamps);
 
-            Assert.AreEqual(3, _listener.GetNewDataList().Count);
+            ClassicAssert.AreEqual(3, _listener.GetNewDataList().Count);
             AssertEvent(0, 1, 1.1, "timestampOne.one");
             AssertEvent(1, 3, 3.3, "timestampOne.three");
             AssertEvent(2, 5, 5.5, "timestampOne.five");
@@ -457,9 +457,9 @@ namespace com.espertech.esperio.regression.adapter
             long endTime = Environment.TickCount;
 
             // The last event should be sent after 500 ms
-            Assert.IsTrue(endTime - startTime > 500);
+            ClassicAssert.IsTrue(endTime - startTime > 500);
 
-            Assert.AreEqual(3, _listener.GetNewDataList().Count);
+            ClassicAssert.AreEqual(3, _listener.GetNewDataList().Count);
             AssertEvent(0, 1, 1.1, "timestampOne.one");
             AssertEvent(1, 3, 3.3, "timestampOne.three");
             AssertEvent(2, 5, 5.5, "timestampOne.five");
@@ -475,9 +475,9 @@ namespace com.espertech.esperio.regression.adapter
             long endTime = Environment.TickCount;
 
             // The last event should be sent after 600 ms
-            Assert.IsTrue(endTime - startTime > 600);
+            ClassicAssert.IsTrue(endTime - startTime > 600);
 
-            Assert.AreEqual(3, _listener.GetNewDataList().Count);
+            ClassicAssert.AreEqual(3, _listener.GetNewDataList().Count);
             AssertEvent(0, 1, 1.1, "noTimestampOne.one");
             AssertEvent(1, 2, 2.2, "noTimestampOne.two");
             AssertEvent(2, 3, 3.3, "noTimestampOne.three");
@@ -509,8 +509,8 @@ namespace com.espertech.esperio.regression.adapter
             _adapter.Pause();
 
             SendTimeEvent(100);
-            Assert.AreEqual(AdapterState.PAUSED, _adapter.State);
-            Assert.IsFalse(_listener.GetAndClearIsInvoked());
+            ClassicAssert.AreEqual(AdapterState.PAUSED, _adapter.State);
+            ClassicAssert.IsFalse(_listener.GetAndClearIsInvoked());
         }
 
         [Test]
@@ -529,7 +529,7 @@ namespace com.espertech.esperio.regression.adapter
             _adapter.Pause();
             // time is 200
             SendTimeEvent(50);
-            Assert.IsFalse(_listener.GetAndClearIsInvoked());
+            ClassicAssert.IsFalse(_listener.GetAndClearIsInvoked());
             _adapter.Resume();
 
             AssertEvent(2, 2.2, "noTimestampOne.two");
@@ -546,7 +546,7 @@ namespace com.espertech.esperio.regression.adapter
 
             _adapter.Pause();
             SendTimeEvent(100);
-            Assert.IsFalse(_listener.GetAndClearIsInvoked());
+            ClassicAssert.IsFalse(_listener.GetAndClearIsInvoked());
             _adapter.Resume();
 
 
@@ -576,7 +576,7 @@ namespace com.espertech.esperio.regression.adapter
         {
             const string filename = "regression/emptyFile.csv";
             StartAdapter(filename, -1, true, true, null, _propertyOrderTimestamps);
-            Assert.IsFalse(_listener.GetAndClearIsInvoked());
+            ClassicAssert.IsFalse(_listener.GetAndClearIsInvoked());
         }
 
         [Test]
@@ -707,7 +707,7 @@ namespace com.espertech.esperio.regression.adapter
             const string filename = "regression/titleRowOnly.csv";
             _propertyOrderNoTimestamps = null;
             StartAdapter(filename, -1, true, true, "timestamp", null);
-            Assert.IsFalse(_listener.GetAndClearIsInvoked());
+            ClassicAssert.IsFalse(_listener.GetAndClearIsInvoked());
         }
 
         [Test]
@@ -752,7 +752,7 @@ namespace com.espertech.esperio.regression.adapter
             _adapter.Stop();
 
             SendTimeEvent(1000);
-            Assert.IsFalse(_listener.GetAndClearIsInvoked());
+            ClassicAssert.IsFalse(_listener.GetAndClearIsInvoked());
 
             _adapter.Start();
             AssertFlatEvents(events);
@@ -763,7 +763,7 @@ namespace com.espertech.esperio.regression.adapter
         {
             const string filename = "regression/timestampOne.csv";
             StartAdapter(filename, -1, false, false, "timestamp", _propertyOrderTimestamps);
-            Assert.AreEqual(AdapterState.OPENED, _adapter.State);
+            ClassicAssert.AreEqual(AdapterState.OPENED, _adapter.State);
         }
 
         [Test]

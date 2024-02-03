@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 
+using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -33,20 +34,24 @@ namespace com.espertech.esper.common.@internal.view.expression
             ExpiryExpression = parameters[0];
         }
 
-        internal override Type TypeOfFactory()
-        {
-            return typeof(ExpressionWindowViewFactory);
-        }
+        internal override Type TypeOfFactory => typeof(ExpressionWindowViewFactory);
 
-        internal override void MakeSetters(
+        protected override void MakeSetters(
             CodegenExpressionRef factory,
             CodegenBlock block)
         {
         }
 
-        internal override string FactoryMethod()
+        internal override string FactoryMethod => "Expr";
+
+        public override AppliesTo AppliesTo()
         {
-            return "Expr";
+            return client.annotation.AppliesTo.WINDOW_EXPRESSION;
+        }
+
+        public override T Accept<T>(ViewFactoryForgeVisitor<T> visitor)
+        {
+            return visitor.Visit(this);
         }
     }
 } // end of namespace

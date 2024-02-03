@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -15,7 +15,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Abstract base class for all pattern expressions.
     /// </summary>
-    [Serializable]
     public abstract class PatternExprBase : PatternExpr
     {
         public string TreeObjectName { get; set; }
@@ -39,14 +38,12 @@ namespace com.espertech.esper.common.client.soda
             PatternExprPrecedenceEnum parentPrecedence,
             EPStatementFormatter formatter)
         {
-            if (Precedence.GetLevel() < parentPrecedence.GetLevel())
-            {
+            if (Precedence.GetLevel() < parentPrecedence.GetLevel()) {
                 writer.Write("(");
                 ToPrecedenceFreeEPL(writer, formatter);
                 writer.Write(")");
             }
-            else
-            {
+            else {
                 ToPrecedenceFreeEPL(writer, formatter);
             }
         }

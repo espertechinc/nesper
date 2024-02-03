@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -48,7 +48,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                 : ExprNodeUtilityCodegen.CodegenEvaluator(optionalIndexEval.Forge, method, GetType(), classScope);
 
             method.Block
-                .DeclareVar(typeof(AggregationMethodLinearFirstLastIndex), "strat", NewInstance(typeof(AggregationMethodLinearFirstLastIndex)))
+                .DeclareVar<AggregationMethodLinearFirstLastIndex>(
+                    "strat",
+                    NewInstance(typeof(AggregationMethodLinearFirstLastIndex)))
                 .SetProperty(Ref("strat"), "AccessType", Constant(accessType))
                 .SetProperty(Ref("strat"), "OptionalConstIndex", Constant(optionalConstant))
                 .SetProperty(Ref("strat"), "OptionalIndexEval", optionalIndexExpr)

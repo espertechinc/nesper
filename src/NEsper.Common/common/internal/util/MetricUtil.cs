@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -46,13 +46,13 @@ namespace com.espertech.esper.common.@internal.util
         /// </summary>
         /// <value>The user processor time.</value>
         public static TimeSpan UserProcessorTime =>
-            CurrentProcessThread != null ? CurrentProcessThread.UserProcessorTime : TimeSpan.Zero;
+            CurrentProcessThread?.UserProcessorTime ?? TimeSpan.Zero;
 
         /// <summary>
         ///     Gets the total processor time for the current thread.
         /// </summary>
         /// <value>The total processor time.</value>
         public static TimeSpan TotalProcessorTime =>
-            CurrentProcessThread != null ? CurrentProcessThread.TotalProcessorTime : TimeSpan.Zero;
+            CurrentProcessThread?.TotalProcessorTime ?? TimeSpan.Zero;
     }
 }

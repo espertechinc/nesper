@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -23,6 +23,12 @@ namespace com.espertech.esper.regressionlib.support.extend.aggfunc
         {
             builder = new StringBuilder();
             delimiter = "";
+        }
+
+        public SupportConcatWManagedAggregationFunction(StringBuilder builder)
+        {
+            this.builder = builder;
+            this.delimiter = Convert.ToString(DELIMITER);
         }
 
         public void Enter(object value)

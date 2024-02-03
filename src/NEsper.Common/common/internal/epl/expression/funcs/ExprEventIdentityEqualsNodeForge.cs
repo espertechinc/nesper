@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -17,14 +17,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 {
     public class ExprEventIdentityEqualsNodeForge : ExprForge
     {
-        private readonly ExprEventIdentityEqualsNode node;
+        private readonly ExprEventIdentityEqualsNode _node;
 
         public ExprEventIdentityEqualsNodeForge(
             ExprEventIdentityEqualsNode node,
             ExprStreamUnderlyingNode undLeft,
             ExprStreamUnderlyingNode undRight)
         {
-            this.node = node;
+            _node = node;
             UndLeft = undLeft;
             UndRight = undRight;
         }
@@ -48,6 +48,6 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 
         public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
 
-        public ExprNodeRenderable ExprForgeRenderable => node;
+        public ExprNodeRenderable ExprForgeRenderable => _node;
     }
 } // end of namespace

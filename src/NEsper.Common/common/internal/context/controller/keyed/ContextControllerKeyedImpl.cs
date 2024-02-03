@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -18,16 +18,16 @@ using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.function;
 
+
 namespace com.espertech.esper.common.@internal.context.controller.keyed
 {
-    public class ContextControllerKeyedImpl : ContextControllerKeyed
+    public partial class ContextControllerKeyedImpl : ContextControllerKeyed
     {
-        internal readonly ContextControllerKeyedSvc keyedSvc;
+        protected readonly ContextControllerKeyedSvc keyedSvc;
 
         public ContextControllerKeyedImpl(
             ContextControllerKeyedFactory factory,
-            ContextManagerRealization realization)
-            : base(realization, factory)
+            ContextManagerRealization realization) : base(realization, factory)
         {
             keyedSvc = ContextControllerKeyedUtil.GetService(factory, realization);
         }
@@ -39,7 +39,10 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
             IDictionary<string, object> optionalTriggeringPattern)
         {
             keyedSvc.MgmtCreate(path, parentPartitionKeys);
-            var filterEntries = ActivateFilters(optionalTriggeringEvent, path, parentPartitionKeys);
+            var filterEntries = ActivateFilters(
+                optionalTriggeringEvent,
+                path,
+                parentPartitionKeys);
             keyedSvc.MgmtSetFilters(path, filterEntries);
         }
 
@@ -47,13 +50,13 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
             IntSeqKey path,
             bool terminateChildContexts)
         {
-            if (path.Length != Factory.FactoryEnv.NestingLevel - 1) {
+            if (path.Length != KeyedFactory.FactoryEnv.NestingLevel - 1) {
                 throw new IllegalStateException("Unrecognized controller path");
             }
 
             var filters = keyedSvc.MgmtGetFilters(path);
             foreach (var callback in filters) {
-                ((ContextControllerKeyedFilterEntry) callback).Destroy();
+                ((ContextControllerKeyedFilterEntry)callback).Destroy();
             }
 
             if (KeyedFactory.KeyedSpec.OptionalTermination != null) {
@@ -77,7 +80,7 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
             IntSeqKey controllerPath,
             string optionalInitCondAsName)
         {
-            if (controllerPath.Length != Factory.FactoryEnv.NestingLevel - 1) {
+            if (controllerPath.Length != KeyedFactory.FactoryEnv.NestingLevel - 1) {
                 throw new IllegalStateException("Unrecognized controller path");
             }
 
@@ -91,7 +94,7 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
             LastTerminatingEvent = null;
 
             var partitionKey = getterKey;
-            if (KeyedFactory.KeyedSpec.HasAsName) {
+            if (KeyedFactory.keyedSpec.HasAsName) {
                 partitionKey = new ContextControllerKeyedPartitionKeyWInit(
                     getterKey,
                     optionalInitCondAsName,
@@ -167,13 +170,14 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
         {
             ContextControllerConditionCallback callback = new ProxyContextControllerConditionCallback(
                 (
-                    conditionPathArg,
+                    conditionPath,
                     originEndpoint,
                     optionalTriggeringEvent,
                     optionalTriggeringPattern,
                     optionalTriggeringEventPattern,
-                    optionalPatternForInclusiveEval) => {
-                    var parentPath = conditionPathArg.RemoveFromEnd();
+                    optionalPatternForInclusiveEval,
+                    terminationProperties) => {
+                    var parentPath = conditionPath.RemoveFromEnd();
                     var getterKey = KeyedFactory.GetGetterKey(partitionKey);
                     var removed = keyedSvc.KeyRemove(parentPath, getterKey);
                     if (removed == null) {
@@ -181,14 +185,12 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
                     }
 
                     // remember the terminating event, we don't want it to initiate a new partition
-                    LastTerminatingEvent = optionalTriggeringEvent != null
-                        ? optionalTriggeringEvent
-                        : optionalTriggeringEventPattern;
+                    LastTerminatingEvent = optionalTriggeringEvent ?? optionalTriggeringEventPattern;
                     realization.ContextPartitionTerminate(
                         conditionPath.RemoveFromEnd(),
                         removed.SubpathOrCPId,
                         this,
-                        optionalTriggeringPattern, 
+                        terminationProperties,
                         false,
                         null);
                     removed.TerminationCondition.Deactivate();
@@ -200,14 +202,22 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
                 partitionKeys,
                 KeyedFactory.keyedSpec.OptionalTermination,
                 callback,
-                this,
-                false);
+                this);
 
             ContextControllerEndConditionMatchEventProvider endConditionMatchEventProvider = null;
             if (optionalInitCondAsName != null) {
                 endConditionMatchEventProvider = new ProxyContextControllerEndConditionMatchEventProvider(
-                    (map, triggeringEventArg) => ContextControllerKeyedUtil.PopulatePriorMatch(optionalInitCondAsName, map, triggeringEventArg),
-                    (map, triggeringPattern) => { });
+                    (
+                        map,
+                        triggeringEventArg) => ContextControllerKeyedUtil.PopulatePriorMatch(
+                        optionalInitCondAsName,
+                        map,
+                        triggeringEventArg),
+                    (
+                        map,
+                        triggeringPattern,
+                        eventBeanTypedEventFactory) => {
+                    });
             }
 
             terminationCondition.Activate(triggeringEvent, endConditionMatchEventProvider, null);
@@ -233,12 +243,12 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
             IntSeqKey controllerPath,
             object[] parentPartitionKeys)
         {
-            var factory = KeyedFactory;
-            var inits = factory.KeyedSpec.OptionalInit;
+            var inits = KeyedFactory.KeyedSpec.OptionalInit;
             var filterEntries = new ContextControllerFilterEntry[inits.Length];
             for (var i = 0; i < inits.Length; i++) {
                 var init = inits[i];
-                var found = ContextControllerKeyedUtil.FindInitMatchingKey(factory.KeyedSpec.Items, init);
+                var found =
+                    ContextControllerKeyedUtil.FindInitMatchingKey(KeyedFactory.KeyedSpec.Items, init);
                 filterEntries[i] = ActivateFilterWithInit(
                     init,
                     found,
@@ -274,7 +284,8 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
             IntSeqKey controllerPath,
             object[] parentPartitionKeys)
         {
-            var callback = new ContextControllerKeyedFilterEntryNoInit(this, controllerPath, parentPartitionKeys, item);
+            var callback =
+                new ContextControllerKeyedFilterEntryNoInit(this, controllerPath, parentPartitionKeys, item);
             if (optionalTriggeringEvent != null) {
                 var match = AgentInstanceUtil.EvaluateFilterForStatement(
                     optionalTriggeringEvent,
@@ -304,14 +315,13 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
             bool transferChildContexts,
             AgentInstanceTransferServices xfer)
         {
-            var factory = KeyedFactory;
-            ContextControllerFilterEntry[] filters = keyedSvc.MgmtGetFilters(path);
-            for (int i = 0; i < factory.KeyedSpec.Items.Length; i++) {
-                ContextControllerDetailKeyedItem item = factory.KeyedSpec.Items[i];
+            var filters = keyedSvc.MgmtGetFilters(path);
+            for (var i = 0; i < KeyedFactory.KeyedSpec.Items.Length; i++) {
+                var item = KeyedFactory.KeyedSpec.Items[i];
                 filters[i].Transfer(item.FilterSpecActivatable, xfer);
             }
 
-            if (factory.KeyedSpec.OptionalTermination != null) {
+            if (KeyedFactory.KeyedSpec.OptionalTermination != null) {
                 keyedSvc.KeyVisitEntry(path, entry => entry.TerminationCondition.Transfer(xfer));
             }
 
@@ -326,22 +336,6 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
                     subpathId) => {
                     realization.TransferRecursive(path, subpathId, this, xfer);
                 });
-        }
-
-        public class ContextControllerWTerminationFilterFaultHandler : FilterFaultHandler
-        {
-            public static readonly FilterFaultHandler INSTANCE = new ContextControllerWTerminationFilterFaultHandler();
-
-            private ContextControllerWTerminationFilterFaultHandler()
-            {
-            }
-
-            public bool HandleFilterFault(
-                EventBean theEvent,
-                long version)
-            {
-                return true;
-            }
         }
     }
 } // end of namespace

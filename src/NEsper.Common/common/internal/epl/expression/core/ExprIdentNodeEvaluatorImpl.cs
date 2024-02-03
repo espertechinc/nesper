@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -53,7 +53,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         }
 
         public bool OptionalEvent {
-            set { _optionalEvent = value; }
+            get => _optionalEvent;
+            set => _optionalEvent = value;
         }
 
         public object Evaluate(
@@ -79,8 +80,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 return _returnType;
             }
 
-            bool requiredIsBoxed = requiredType.IsBoxedType();
-            bool returnIsBoxed = _returnType.IsBoxedType();
+            var requiredIsBoxed = requiredType.IsBoxedType();
+            var returnIsBoxed = _returnType.IsBoxedType();
 
             if (requiredIsBoxed && requiredType == _returnType.GetBoxedType()) {
                 // Case: TX? is requested, we have TX
@@ -101,9 +102,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             if (requiredIsBoxed) {
                 return requiredType;
             }
-            
+
             return _returnType;
-            
+
             //throw new ArgumentException(nameof(requiredType) + " and " + nameof(returnType) + " are incompatible");
         }
 
@@ -146,9 +147,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
             var castTargetType = GetCodegenReturnType(requiredType);
             var useUnderlying = exprSymbol.IsAllowUnderlyingReferences &&
-                                 !_identNode.ResolvedPropertyName.Contains("?") &&
-                                 !(_eventType is WrapperEventType) &&
-                                 !(_eventType is VariantEventType);
+                                !_identNode.ResolvedPropertyName.Contains("?") &&
+                                !(_eventType is WrapperEventType) &&
+                                !(_eventType is VariantEventType);
             if (useUnderlying && !_optionalEvent) {
                 var underlying = exprSymbol.GetAddRequiredUnderlying(
                     codegenMethodScope,
@@ -160,7 +161,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             }
 
             var method = codegenMethodScope.MakeChild(
-                castTargetType, GetType(), codegenClassScope);
+                castTargetType,
+                GetType(),
+                codegenClassScope);
             var block = method.Block;
 
             if (useUnderlying) {
@@ -189,7 +192,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                         _propertyGetter.UnderlyingGetCodegen(underlying, method, codegenClassScope)));
             }
             else {
-                var refEPS = exprSymbol.GetAddEPS(method);
+                var refEPS = exprSymbol.GetAddEps(method);
                 method.Block.DeclareVar<EventBean>("@event", ArrayAtIndex(refEPS, Constant(_streamNum)));
                 if (_optionalEvent) {
                     if (castTargetType.CanNotBeNull()) {
@@ -215,13 +218,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             return LocalMethod(method);
         }
 
-        public Type EvaluationType {
-            get => _returnType;
-        }
+        public Type EvaluationType => _returnType;
 
-        public EventPropertyGetterSPI Getter {
-            get => _propertyGetter;
-        }
+        public EventPropertyGetterSPI Getter => _propertyGetter;
 
         /// <summary>
         /// Returns true if the property exists, or false if not.

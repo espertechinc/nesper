@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -108,88 +108,88 @@ namespace com.espertech.esper.common.@internal.view.derived
         {
             switch (value) {
                 case ViewFieldEnum.UNIVARIATE_STATISTICS__DATAPOINTS:
-                    return ("datapoints");
+                    return "datapoints";
 
                 case ViewFieldEnum.UNIVARIATE_STATISTICS__TOTAL:
-                    return ("total");
+                    return "total";
 
                 case ViewFieldEnum.UNIVARIATE_STATISTICS__AVERAGE:
-                    return ("average");
+                    return "average";
 
                 case ViewFieldEnum.UNIVARIATE_STATISTICS__STDDEVPA:
-                    return ("stddevpa");
+                    return "stddevpa";
 
                 case ViewFieldEnum.UNIVARIATE_STATISTICS__STDDEV:
-                    return ("stddev");
+                    return "stddev";
 
                 case ViewFieldEnum.UNIVARIATE_STATISTICS__VARIANCE:
-                    return ("variance");
+                    return "variance";
 
                 case ViewFieldEnum.WEIGHTED_AVERAGE__AVERAGE:
-                    return ("average");
+                    return "average";
 
                 case ViewFieldEnum.CORRELATION__CORRELATION:
-                    return ("correlation");
+                    return "correlation";
 
                 case ViewFieldEnum.REGRESSION__SLOPE:
-                    return ("slope");
+                    return "slope";
 
                 case ViewFieldEnum.REGRESSION__YINTERCEPT:
-                    return ("YIntercept");
+                    return "YIntercept";
 
                 case ViewFieldEnum.SIZE_VIEW__SIZE:
-                    return ("size");
+                    return "size";
 
                 case ViewFieldEnum.REGRESSION__XAVERAGE:
-                    return ("XAverage");
+                    return "XAverage";
 
                 case ViewFieldEnum.REGRESSION__XSTANDARDDEVIATIONPOP:
-                    return ("XStandardDeviationPop");
+                    return "XStandardDeviationPop";
 
                 case ViewFieldEnum.REGRESSION__XSTANDARDDEVIATIONSAMPLE:
-                    return ("XStandardDeviationSample");
+                    return "XStandardDeviationSample";
 
                 case ViewFieldEnum.REGRESSION__XSUM:
-                    return ("XSum");
+                    return "XSum";
 
                 case ViewFieldEnum.REGRESSION__XVARIANCE:
-                    return ("XVariance");
+                    return "XVariance";
 
                 case ViewFieldEnum.REGRESSION__YAVERAGE:
-                    return ("YAverage");
+                    return "YAverage";
 
                 case ViewFieldEnum.REGRESSION__YSTANDARDDEVIATIONPOP:
-                    return ("YStandardDeviationPop");
+                    return "YStandardDeviationPop";
 
                 case ViewFieldEnum.REGRESSION__YSTANDARDDEVIATIONSAMPLE:
-                    return ("YStandardDeviationSample");
+                    return "YStandardDeviationSample";
 
                 case ViewFieldEnum.REGRESSION__YSUM:
-                    return ("YSum");
+                    return "YSum";
 
                 case ViewFieldEnum.REGRESSION__YVARIANCE:
-                    return ("YVariance");
+                    return "YVariance";
 
                 case ViewFieldEnum.REGRESSION__DATAPOINTS:
-                    return ("dataPoints");
+                    return "dataPoints";
 
                 case ViewFieldEnum.REGRESSION__N:
-                    return ("n");
+                    return "n";
 
                 case ViewFieldEnum.REGRESSION__SUMX:
-                    return ("sumX");
+                    return "sumX";
 
                 case ViewFieldEnum.REGRESSION__SUMXSQ:
-                    return ("sumXSq");
+                    return "sumXSq";
 
                 case ViewFieldEnum.REGRESSION__SUMXY:
-                    return ("sumXY");
+                    return "sumXY";
 
                 case ViewFieldEnum.REGRESSION__SUMY:
-                    return ("sumY");
+                    return "sumY";
 
                 case ViewFieldEnum.REGRESSION__SUMYSQ:
-                    return ("sumYSq");
+                    return "sumYSq";
             }
 
             throw new ArgumentException();

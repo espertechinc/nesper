@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -14,17 +14,20 @@ using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.client.meta;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.@event.bean.core;
+using com.espertech.esper.common.@internal.@event.bean.introspect;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.eventtypefactory;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 
+
 namespace com.espertech.esper.common.@internal.@event.bean.service
 {
     public class BeanEventTypeFactoryPrivate : BeanEventTypeFactory
     {
+        private readonly EventBeanTypedEventFactory typedEventFactory;
+        private readonly EventTypeFactory eventTypeFactory;
         private readonly BeanEventTypeStemService stemFactory;
-
         private readonly IDictionary<Type, BeanEventType> types = new Dictionary<Type, BeanEventType>();
 
         public BeanEventTypeFactoryPrivate(
@@ -32,14 +35,14 @@ namespace com.espertech.esper.common.@internal.@event.bean.service
             EventTypeFactory eventTypeFactory,
             BeanEventTypeStemService stemFactory)
         {
-            EventBeanTypedEventFactory = typedEventFactory;
-            EventTypeFactory = eventTypeFactory;
+            this.typedEventFactory = typedEventFactory;
+            this.eventTypeFactory = eventTypeFactory;
             this.stemFactory = stemFactory;
         }
 
-        public NameAccessModifier Visibility => NameAccessModifier.TRANSIENT;
-
-        public BeanEventType GetCreateBeanType(Type clazz, bool publicFields)
+        public BeanEventType GetCreateBeanType(
+            Type clazz,
+            bool publicFields)
         {
             var existing = types.Get(clazz);
             if (existing != null) {
@@ -63,14 +66,12 @@ namespace com.espertech.esper.common.@internal.@event.bean.service
                 NameAccessModifier.TRANSIENT,
                 EventTypeBusModifier.NONBUS,
                 false,
-                ComputeTypeId(clazz.Name));
-
+                ComputeTypeId(clazz.FullName));
             // supertypes
             var superTypes = GetSuperTypes(stem.SuperTypes);
             var deepSuperTypes = GetDeepSupertypes(stem.DeepSuperTypes);
-
             // bean type
-            var eventType = EventTypeFactory.CreateBeanType(
+            var eventType = eventTypeFactory.CreateBeanType(
                 stem,
                 metadata,
                 this,
@@ -78,14 +79,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.service
                 deepSuperTypes,
                 null,
                 null);
-
             types.Put(clazz, eventType);
             return eventType;
         }
-
-        public EventBeanTypedEventFactory EventBeanTypedEventFactory { get; }
-
-        public EventTypeFactory EventTypeFactory { get; }
 
         public EventTypeIdPair ComputeTypeId(string eventTypeName)
         {
@@ -110,7 +106,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.service
         private ISet<EventType> GetDeepSupertypes(ISet<Type> superTypes)
         {
             if (superTypes == null || superTypes.IsEmpty()) {
-                return new EmptySet<EventType>();
+                return EmptySet<EventType>.Instance;
             }
 
             var supers = new LinkedHashSet<EventType>();
@@ -120,5 +116,11 @@ namespace com.espertech.esper.common.@internal.@event.bean.service
 
             return supers;
         }
+
+        public EventBeanTypedEventFactory EventBeanTypedEventFactory => typedEventFactory;
+
+        public NameAccessModifier Visibility => NameAccessModifier.TRANSIENT;
+
+        public EventTypeFactory EventTypeFactory => eventTypeFactory;
     }
 } // end of namespace

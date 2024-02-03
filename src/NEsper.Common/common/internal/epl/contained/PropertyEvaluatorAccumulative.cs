@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -56,7 +56,7 @@ namespace com.espertech.esper.common.@internal.epl.contained
             EventBean theEvent,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            ArrayDeque<EventBean[]> resultEvents = new ArrayDeque<EventBean[]>();
+            var resultEvents = new ArrayDeque<EventBean[]>();
             var eventsPerStream = new EventBean[fragmentEventTypeIsIndexed.Length + 1];
             eventsPerStream[0] = theEvent;
             PopulateEvents(eventsPerStream, theEvent, 0, resultEvents, exprEvaluatorContext);
@@ -80,15 +80,15 @@ namespace com.espertech.esper.common.@internal.epl.contained
                 var levels = fragmentEventTypeIsIndexed.Length + 1;
 
                 if (fragmentEventTypeIsIndexed[level]) {
-                    var fragments = (EventBean[]) result;
+                    var fragments = (EventBean[])result;
                     if (level == lastLevel) {
                         if (whereClauses[level] != null) {
                             foreach (var theEvent in fragments) {
                                 eventsPerStream[level + 1] = theEvent;
                                 if (ExprNodeUtilityEvaluate.ApplyFilterExpression(
-                                    whereClauses[level],
-                                    eventsPerStream,
-                                    exprEvaluatorContext)) {
+                                        whereClauses[level],
+                                        eventsPerStream,
+                                        exprEvaluatorContext)) {
                                     var eventsPerRow = new EventBean[levels];
                                     Array.Copy(eventsPerStream, 0, eventsPerRow, 0, levels);
                                     events.Add(eventsPerRow);
@@ -109,9 +109,9 @@ namespace com.espertech.esper.common.@internal.epl.contained
                             foreach (var next in fragments) {
                                 eventsPerStream[level + 1] = next;
                                 if (ExprNodeUtilityEvaluate.ApplyFilterExpression(
-                                    whereClauses[level],
-                                    eventsPerStream,
-                                    exprEvaluatorContext)) {
+                                        whereClauses[level],
+                                        eventsPerStream,
+                                        exprEvaluatorContext)) {
                                     PopulateEvents(eventsPerStream, next, level + 1, events, exprEvaluatorContext);
                                 }
                             }
@@ -125,14 +125,14 @@ namespace com.espertech.esper.common.@internal.epl.contained
                     }
                 }
                 else {
-                    var fragment = (EventBean) result;
+                    var fragment = (EventBean)result;
                     if (level == lastLevel) {
                         if (whereClauses[level] != null) {
                             eventsPerStream[level + 1] = fragment;
                             if (ExprNodeUtilityEvaluate.ApplyFilterExpression(
-                                whereClauses[level],
-                                eventsPerStream,
-                                exprEvaluatorContext)) {
+                                    whereClauses[level],
+                                    eventsPerStream,
+                                    exprEvaluatorContext)) {
                                 var eventsPerRow = new EventBean[levels];
                                 Array.Copy(eventsPerStream, 0, eventsPerRow, 0, levels);
                                 events.Add(eventsPerRow);
@@ -149,9 +149,9 @@ namespace com.espertech.esper.common.@internal.epl.contained
                         if (whereClauses[level] != null) {
                             eventsPerStream[level + 1] = fragment;
                             if (ExprNodeUtilityEvaluate.ApplyFilterExpression(
-                                whereClauses[level],
-                                eventsPerStream,
-                                exprEvaluatorContext)) {
+                                    whereClauses[level],
+                                    eventsPerStream,
+                                    exprEvaluatorContext)) {
                                 PopulateEvents(eventsPerStream, fragment, level + 1, events, exprEvaluatorContext);
                             }
                         }

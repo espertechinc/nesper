@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -8,6 +8,7 @@
 
 using System;
 using System.Text;
+using System.Text.Json.Serialization;
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -24,9 +25,15 @@ namespace com.espertech.esper.common.@internal.filterspec
     /// </summary>
     public class FilterForEvalDeployTimeConstForge : FilterSpecParamInValueForge
     {
-        [NonSerialized] private readonly ExprNodeDeployTimeConst _deployTimeConst;
-        [NonSerialized] private readonly Coercer _numberCoercer;
-        [NonSerialized] private readonly Type _returnType;
+        [JsonIgnore]
+        [NonSerialized]
+        private readonly ExprNodeDeployTimeConst _deployTimeConst;
+        [JsonIgnore]
+        [NonSerialized]
+        private readonly Coercer _numberCoercer;
+        [JsonIgnore]
+        [NonSerialized]
+        private readonly Type _returnType;
 
         public FilterForEvalDeployTimeConstForge(
             ExprNodeDeployTimeConst deployTimeConst,
@@ -43,7 +50,7 @@ namespace com.espertech.esper.common.@internal.filterspec
             CodegenMethodScope parent)
         {
             var method = parent.MakeChild(typeof(object), GetType(), classScope)
-				.AddParam(GET_FILTER_VALUE_FP);
+                .AddParam(GET_FILTER_VALUE_FP);
 
             var value = _deployTimeConst.CodegenGetDeployTimeConstValue(classScope);
             if (_numberCoercer != null) {
@@ -76,7 +83,7 @@ namespace com.espertech.esper.common.@internal.filterspec
                 return false;
             }
 
-            var that = (FilterForEvalDeployTimeConstForge) o;
+            var that = (FilterForEvalDeployTimeConstForge)o;
 
             return _deployTimeConst.Equals(that._deployTimeConst);
         }
@@ -85,8 +92,9 @@ namespace com.espertech.esper.common.@internal.filterspec
         {
             return _deployTimeConst.GetHashCode();
         }
-        
-        public void ValueToString(StringBuilder @out) {
+
+        public void ValueToString(StringBuilder @out)
+        {
             @out.Append("deploy-time constant ");
             _deployTimeConst.RenderForFilterPlan(@out);
         }

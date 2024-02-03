@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -28,7 +28,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.nth
             : base(distinct, hasFilter, inputValueType)
 
         {
-            this.Size = size;
+            Size = size;
         }
 
         public AggregationPortableValidationNth()
@@ -57,7 +57,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.nth
             string intoExpression,
             AggregationForgeFactory factory)
         {
-            AggregationPortableValidationNth that = (AggregationPortableValidationNth) intoTableAgg;
+            var that = (AggregationPortableValidationNth)intoTableAgg;
             if (Size != that.Size) {
                 throw new ExprValidationException(
                     "The size is " +

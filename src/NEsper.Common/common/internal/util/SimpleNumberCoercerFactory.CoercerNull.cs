@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -18,10 +18,11 @@ namespace com.espertech.esper.common.@internal.util
         private class CoercerNull : Coercer
         {
             public static readonly CoercerNull INSTANCE = new CoercerNull(typeof(object));
+            private readonly Type _returnType;
 
             public CoercerNull(Type returnType)
             {
-                ReturnType = returnType;
+                _returnType = returnType;
             }
 
             public object CoerceBoxed(object value)
@@ -29,11 +30,11 @@ namespace com.espertech.esper.common.@internal.util
                 return value;
             }
 
-            public Type ReturnType { get; }
+            public Type GetReturnType(Type valueType) => _returnType;
 
             public CodegenExpression CoerceCodegen(
                 CodegenExpression value,
-                Type valueType)
+                Type valueType, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope)
             {
                 return value;
             }

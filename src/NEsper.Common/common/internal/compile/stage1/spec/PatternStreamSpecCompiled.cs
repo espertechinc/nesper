@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -107,15 +107,15 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
                     eventTypes[count++] = eventType;
                 }
 
-                string[] arrayTags = ArrayEventTypes.IsEmpty() ? null : ArrayEventTypes.Keys.ToArray();
+                var arrayTags = ArrayEventTypes.IsEmpty() ? null : ArrayEventTypes.Keys.ToArray();
                 return new MatchedEventMapMeta(tags, eventTypes, arrayTags);
             }
         }
 
         private bool IsConsumingFiltersRecursive(EvalForgeNode evalNode)
         {
-            if (evalNode is EvalFilterForgeNode) {
-                return ((EvalFilterForgeNode) evalNode).ConsumptionLevel != null;
+            if (evalNode is EvalFilterForgeNode node) {
+                return node.ConsumptionLevel != null;
             }
 
             var consumption = false;

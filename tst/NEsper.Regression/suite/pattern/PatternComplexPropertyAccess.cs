@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -15,14 +15,15 @@ using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.patternassert;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.pattern
 {
     public class PatternComplexPropertyAccess
     {
-        public static IList<RegressionExecution> Executions()
+        public static ICollection<RegressionExecution> Executions()
         {
-            var execs = new List<RegressionExecution>();
+            IList<RegressionExecution> execs = new List<RegressionExecution>();
             WithComplexProperties(execs);
             WithIndexedFilterProp(execs);
             WithIndexedValueProp(execs);
@@ -66,127 +67,113 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             return execs;
         }
 
-        private static void RunIndexedValueProp(RegressionEnvironment env)
-        {
-            object eventOne = new SupportBeanComplexProps(new[] {3});
-            env.SendEventBean(eventOne);
-            Assert.IsFalse(env.Listener("s0").IsInvoked);
-
-            object theEvent = new SupportBeanComplexProps(new[] {6});
-            env.SendEventBean(theEvent);
-            Assert.IsFalse(env.Listener("s0").IsInvoked);
-
-            object eventTwo = new SupportBeanComplexProps(new[] {3});
-            env.SendEventBean(eventTwo);
-            var eventBean = env.Listener("s0").AssertOneGetNewAndReset();
-            Assert.AreSame(eventOne, eventBean.Get("a"));
-            Assert.AreSame(eventTwo, eventBean.Get("b"));
-        }
-
-        internal class PatternComplexProperties : RegressionExecution
+        private class PatternComplexProperties : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
-                var events = EventCollectionFactory.GetSetSixComplexProperties();
+                EventCollection events = EventCollectionFactory.GetSetSixComplexProperties();
+                var testCaseList = new CaseList();
                 EventExpressionCase testCase;
 
                 testCase = new EventExpressionCase("s=SupportBeanComplexProps(Mapped('keyOne') = 'valueOne')");
                 testCase.Add("e1", "s", events.GetEvent("e1"));
-                PatternTestHarness.RunSingle(env, events, testCase, GetType());
+                testCaseList.AddTest(testCase);
 
                 testCase = new EventExpressionCase("s=SupportBeanComplexProps(Indexed[1] = 2)");
                 testCase.Add("e1", "s", events.GetEvent("e1"));
-                PatternTestHarness.RunSingle(env, events, testCase, GetType());
+                testCaseList.AddTest(testCase);
 
                 testCase = new EventExpressionCase("s=SupportBeanComplexProps(Indexed[0] = 2)");
-                PatternTestHarness.RunSingle(env, events, testCase, GetType());
+                testCaseList.AddTest(testCase);
 
                 testCase = new EventExpressionCase("s=SupportBeanComplexProps(ArrayProperty[1] = 20)");
                 testCase.Add("e1", "s", events.GetEvent("e1"));
-                PatternTestHarness.RunSingle(env, events, testCase, GetType());
+                testCaseList.AddTest(testCase);
 
                 testCase = new EventExpressionCase("s=SupportBeanComplexProps(ArrayProperty[1] in (10:30))");
                 testCase.Add("e1", "s", events.GetEvent("e1"));
-                PatternTestHarness.RunSingle(env, events, testCase, GetType());
+                testCaseList.AddTest(testCase);
 
                 testCase = new EventExpressionCase("s=SupportBeanComplexProps(ArrayProperty[2] = 20)");
-                PatternTestHarness.RunSingle(env, events, testCase, GetType());
+                testCaseList.AddTest(testCase);
 
                 testCase = new EventExpressionCase("s=SupportBeanComplexProps(Nested.NestedValue = 'NestedValue')");
                 testCase.Add("e1", "s", events.GetEvent("e1"));
-                PatternTestHarness.RunSingle(env, events, testCase, GetType());
+                testCaseList.AddTest(testCase);
 
                 testCase = new EventExpressionCase("s=SupportBeanComplexProps(Nested.NestedValue = 'dummy')");
-                PatternTestHarness.RunSingle(env, events, testCase, GetType());
+                testCaseList.AddTest(testCase);
 
                 testCase = new EventExpressionCase(
                     "s=SupportBeanComplexProps(Nested.NestedNested.NestedNestedValue = 'NestedNestedValue')");
                 testCase.Add("e1", "s", events.GetEvent("e1"));
-                PatternTestHarness.RunSingle(env, events, testCase, GetType());
+                testCaseList.AddTest(testCase);
 
                 testCase = new EventExpressionCase(
                     "s=SupportBeanComplexProps(Nested.NestedNested.NestedNestedValue = 'x')");
-                PatternTestHarness.RunSingle(env, events, testCase, GetType());
+                testCaseList.AddTest(testCase);
 
                 testCase = new EventExpressionCase(
                     "s=SupportBeanCombinedProps(Indexed[1].Mapped('1mb').Value = '1ma1')");
                 testCase.Add("e2", "s", events.GetEvent("e2"));
-                PatternTestHarness.RunSingle(env, events, testCase, GetType());
+                testCaseList.AddTest(testCase);
 
                 testCase = new EventExpressionCase("s=SupportBeanCombinedProps(Indexed[0].Mapped('1ma').Value = 'x')");
-                PatternTestHarness.RunSingle(env, events, testCase, GetType());
+                testCaseList.AddTest(testCase);
 
                 testCase = new EventExpressionCase("s=SupportBeanCombinedProps(Array[0].Mapped('0ma').Value = '0ma0')");
                 testCase.Add("e2", "s", events.GetEvent("e2"));
-                PatternTestHarness.RunSingle(env, events, testCase, GetType());
+                testCaseList.AddTest(testCase);
 
                 testCase = new EventExpressionCase("s=SupportBeanCombinedProps(Array[2].Mapped('x').Value = 'x')");
-                PatternTestHarness.RunSingle(env, events, testCase, GetType());
+                testCaseList.AddTest(testCase);
 
                 testCase = new EventExpressionCase("s=SupportBeanCombinedProps(Array[879787].Mapped('x').Value = 'x')");
-                PatternTestHarness.RunSingle(env, events, testCase, GetType());
+                testCaseList.AddTest(testCase);
 
                 testCase = new EventExpressionCase("s=SupportBeanCombinedProps(Array[0].Mapped('xxx').Value = 'x')");
-                PatternTestHarness.RunSingle(env, events, testCase, GetType());
+                testCaseList.AddTest(testCase);
+
+                var util = new PatternTestHarness(events, testCaseList);
+                util.RunTest(env);
             }
         }
 
-        internal class PatternIndexedFilterProp : RegressionExecution
+        private class PatternIndexedFilterProp : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
-                var pattern = "@Name('s0') select * from pattern[every a=SupportBeanComplexProps(Indexed[0]=3)]";
+                var pattern = "@name('s0') select * from pattern[every a=SupportBeanComplexProps(Indexed[0]=3)]";
                 env.CompileDeploy(pattern).AddListener("s0");
 
-                object theEvent = new SupportBeanComplexProps(new[] {3, 4});
-                env.SendEventBean(theEvent);
-                Assert.AreSame(theEvent, env.Listener("s0").AssertOneGetNewAndReset().Get("a"));
+                object theEventOne = new SupportBeanComplexProps(new int[] { 3, 4 });
+                env.SendEventBean(theEventOne);
+                env.AssertEventNew("s0", @event => ClassicAssert.AreSame(theEventOne, @event.Get("a")));
 
-                theEvent = new SupportBeanComplexProps(new[] {6});
-                env.SendEventBean(theEvent);
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+                env.SendEventBean(new SupportBeanComplexProps(new int[] { 6 }));
+                env.AssertListenerNotInvoked("s0");
 
-                theEvent = new SupportBeanComplexProps(new[] {3});
-                env.SendEventBean(theEvent);
-                Assert.AreSame(theEvent, env.Listener("s0").AssertOneGetNewAndReset().Get("a"));
+                object theEventTwo = new SupportBeanComplexProps(new int[] { 3 });
+                env.SendEventBean(theEventTwo);
+                env.AssertEventNew("s0", @event => ClassicAssert.AreSame(theEventTwo, @event.Get("a")));
 
                 env.UndeployAll();
             }
         }
 
-        internal class PatternIndexedValueProp : RegressionExecution
+        private class PatternIndexedValueProp : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 var pattern =
-                    "@Name('s0') select * from pattern[every a=SupportBeanComplexProps -> b=SupportBeanComplexProps(Indexed[0] = a.Indexed[0])]";
+                    "@name('s0') select * from pattern[every a=SupportBeanComplexProps -> b=SupportBeanComplexProps(Indexed[0] = a.Indexed[0])]";
                 env.CompileDeploy(pattern).AddListener("s0");
                 RunIndexedValueProp(env);
                 env.UndeployAll();
             }
         }
 
-        internal class PatternIndexedValuePropOM : RegressionExecution
+        private class PatternIndexedValuePropOM : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
@@ -205,7 +192,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                                   " -> b=" +
                                   type +
                                   "(Indexed[0]=a.Indexed[0])]";
-                Assert.AreEqual(patternText, model.ToEPL());
+                ClassicAssert.AreEqual(patternText, model.ToEPL());
 
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
                 env.CompileDeploy(model).AddListener("s0");
@@ -214,16 +201,36 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             }
         }
 
-        internal class PatternIndexedValuePropCompile : RegressionExecution
+        private class PatternIndexedValuePropCompile : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 var patternText =
-                    "@Name('s0') select * from pattern [every a=SupportBeanComplexProps -> b=SupportBeanComplexProps(Indexed[0]=a.Indexed[0])]";
+                    "@name('s0') select * from pattern [every a=SupportBeanComplexProps -> b=SupportBeanComplexProps(Indexed[0]=a.Indexed[0])]";
                 env.EplToModelCompileDeploy(patternText).AddListener("s0");
                 RunIndexedValueProp(env);
                 env.UndeployAll();
             }
+        }
+
+        private static void RunIndexedValueProp(RegressionEnvironment env)
+        {
+            object eventOne = new SupportBeanComplexProps(new int[] { 3 });
+            env.SendEventBean(eventOne);
+            env.AssertListenerNotInvoked("s0");
+
+            object theEvent = new SupportBeanComplexProps(new int[] { 6 });
+            env.SendEventBean(theEvent);
+            env.AssertListenerNotInvoked("s0");
+
+            object eventTwo = new SupportBeanComplexProps(new int[] { 3 });
+            env.SendEventBean(eventTwo);
+            env.AssertEventNew(
+                "s0",
+                @event => {
+                    ClassicAssert.AreSame(eventOne, @event.Get("a"));
+                    ClassicAssert.AreSame(eventTwo, @event.Get("b"));
+                });
         }
     }
 } // end of namespace

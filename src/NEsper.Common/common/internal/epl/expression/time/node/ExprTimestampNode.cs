@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -31,21 +31,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
         {
         }
 
-        public ExprEvaluator ExprEvaluator {
-            get => this;
-        }
+        public ExprEvaluator ExprEvaluator => this;
 
-        public Type EvaluationType {
-            get => typeof(long?);
-        }
+        public Type EvaluationType => typeof(long?);
 
-        public override ExprForge Forge {
-            get => this;
-        }
+        public override ExprForge Forge => this;
 
-        public ExprNodeRenderable ExprForgeRenderable {
-            get => this;
-        }
+        public ExprNodeRenderable ExprForgeRenderable => this;
 
         public CodegenExpression EvaluateCodegen(
             Type requiredType,
@@ -54,7 +46,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
             CodegenClassScope codegenClassScope)
         {
             return new InstrumentationBuilderExpr(
-                this.GetType(),
+                GetType(),
                 this,
                 "ExprTimestamp",
                 requiredType,
@@ -69,26 +61,22 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenExpressionRef refExprEvalCtx = exprSymbol.GetAddExprEvalCtx(codegenMethodScope);
+            var refExprEvalCtx = exprSymbol.GetAddExprEvalCtx(codegenMethodScope);
             return ExprDotMethodChain(refExprEvalCtx).Get("TimeProvider").Get("Time");
         }
 
-        public ExprForgeConstantType ForgeConstantType {
-            get => ExprForgeConstantType.NONCONST;
-        }
+        public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
 
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
-            if (this.ChildNodes.Length != 0) {
+            if (ChildNodes.Length != 0) {
                 throw new ExprValidationException("current_timestamp function node cannot have a child node");
             }
 
             return null;
         }
 
-        public bool IsConstantResult {
-            get => false;
-        }
+        public bool IsConstantResult => false;
 
         public object Evaluate(
             EventBean[] eventsPerStream,
@@ -105,9 +93,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
             writer.Write("current_timestamp()");
         }
 
-        public override ExprPrecedenceEnum Precedence {
-            get => ExprPrecedenceEnum.UNARY;
-        }
+        public override ExprPrecedenceEnum Precedence => ExprPrecedenceEnum.UNARY;
 
         public override bool EqualsNode(
             ExprNode node,

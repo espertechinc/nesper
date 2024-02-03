@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -12,21 +12,22 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.serde;
 using com.espertech.esper.common.@internal.epl.index.@base;
 
+
 namespace com.espertech.esper.common.@internal.epl.index.composite
 {
     public class PropertyCompositeEventTableFactoryFactory : EventTableFactoryFactory
     {
-        private readonly int _indexedStreamNum;
-        private readonly bool _isFireAndForget;
-        private readonly EventPropertyValueGetter _keyGetter;
-        private readonly string[] _keyProps;
-        private readonly Type[] _keyTypes;
-        private readonly DataInputOutputSerde _keySerde;
-        private readonly EventPropertyValueGetter[] _rangeGetters;
-        private readonly string[] _rangeProps;
-        private readonly Type[] _rangeTypes;
-        private readonly DataInputOutputSerde[] _rangeKeySerdes;
-        private readonly int? _subqueryNum;
+        private readonly int indexedStreamNum;
+        private readonly int? subqueryNum;
+        private readonly bool isFireAndForget;
+        private readonly string[] keyProps;
+        private readonly Type[] keyTypes;
+        private readonly EventPropertyValueGetter keyGetter;
+        private readonly DataInputOutputSerde keySerde;
+        private readonly string[] rangeProps;
+        private readonly Type[] rangeTypes;
+        private readonly EventPropertyValueGetter[] rangeGetters;
+        private readonly DataInputOutputSerde[] rangeKeySerdes;
 
         public PropertyCompositeEventTableFactoryFactory(
             int indexedStreamNum,
@@ -41,17 +42,17 @@ namespace com.espertech.esper.common.@internal.epl.index.composite
             EventPropertyValueGetter[] rangeGetters,
             DataInputOutputSerde[] rangeKeySerdes)
         {
-            this._indexedStreamNum = indexedStreamNum;
-            this._subqueryNum = subqueryNum;
-            this._isFireAndForget = isFireAndForget;
-            this._keyProps = keyProps;
-            this._keyTypes = keyTypes;
-            this._keyGetter = keyGetter;
-            this._keySerde = keySerde;
-            this._rangeProps = rangeProps;
-            this._rangeTypes = rangeTypes;
-            this._rangeGetters = rangeGetters;
-            this._rangeKeySerdes = rangeKeySerdes;
+            this.indexedStreamNum = indexedStreamNum;
+            this.subqueryNum = subqueryNum;
+            this.isFireAndForget = isFireAndForget;
+            this.keyProps = keyProps;
+            this.keyTypes = keyTypes;
+            this.keyGetter = keyGetter;
+            this.keySerde = keySerde;
+            this.rangeProps = rangeProps;
+            this.rangeTypes = rangeTypes;
+            this.rangeGetters = rangeGetters;
+            this.rangeKeySerdes = rangeKeySerdes;
         }
 
         public EventTableFactory Create(
@@ -59,19 +60,19 @@ namespace com.espertech.esper.common.@internal.epl.index.composite
             EventTableFactoryFactoryContext eventTableFactoryContext)
         {
             return eventTableFactoryContext.EventTableIndexService.CreateComposite(
-                _indexedStreamNum,
+                indexedStreamNum,
                 eventType,
-                _keyProps,
-                _keyTypes,
-                _keyGetter,
+                keyProps,
+                keyTypes,
+                keyGetter,
                 null,
-                _keySerde,
-                _rangeProps,
-                _rangeTypes,
-                _rangeGetters,
-                _rangeKeySerdes,
+                keySerde,
+                rangeProps,
+                rangeTypes,
+                rangeGetters,
+                rangeKeySerdes,
                 null,
-                _isFireAndForget);
+                isFireAndForget);
         }
     }
 } // end of namespace

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -8,10 +8,11 @@
 
 using System.Collections.Generic;
 
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esper.compiler.@internal.util.CompilerVersion;
 
 namespace com.espertech.esper.regressionlib.suite.client.compile
@@ -21,7 +22,9 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            WithManifestSimple(execs);
+#if REGRESSION_EXECUTIONS
+            With(ManifestSimple)(execs);
+#endif
             return execs;
         }
 
@@ -39,8 +42,13 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 var compiled = env.Compile("select * from SupportBean");
 
                 var manifest = compiled.Manifest;
-                Assert.AreEqual(COMPILER_VERSION, manifest.CompilerVersion);
-                Assert.IsNotNull(manifest.ModuleProviderClassName);
+                ClassicAssert.AreEqual(COMPILER_VERSION, manifest.CompilerVersion);
+                ClassicAssert.IsNotNull(manifest.ModuleProviderClassName);
+            }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.COMPILEROPS);
             }
         }
     }

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -29,8 +29,8 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
             RangeIndexLookupValue lookupValue,
             Type coercionType)
         {
-            this._lookupValue = lookupValue;
-            this._coercionType = coercionType;
+            _lookupValue = lookupValue;
+            _coercionType = coercionType;
         }
 
         public void Lookup(
@@ -50,39 +50,39 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
                 return;
             }
 
-            var lookup = (RangeIndexLookupValueRange) _lookupValue;
-            var treeMap = (IOrderedDictionary<object, CompositeIndexEntry>) parent;
+            var lookup = (RangeIndexLookupValueRange)_lookupValue;
+            var treeMap = (IOrderedDictionary<object, CompositeIndexEntry>)parent;
             var rangeValue = lookup.Value;
             if (lookup.Operator == QueryGraphRangeEnum.RANGE_CLOSED) {
-                var range = (Range) rangeValue;
+                var range = (Range)rangeValue;
                 LookupRange(result, treeMap, range.LowEndpoint, true, range.HighEndpoint, true, true, postProcessor);
             }
             else if (lookup.Operator == QueryGraphRangeEnum.RANGE_HALF_OPEN) {
-                var range = (Range) rangeValue;
+                var range = (Range)rangeValue;
                 LookupRange(result, treeMap, range.LowEndpoint, true, range.HighEndpoint, false, true, postProcessor);
             }
             else if (lookup.Operator == QueryGraphRangeEnum.RANGE_HALF_CLOSED) {
-                var range = (Range) rangeValue;
+                var range = (Range)rangeValue;
                 LookupRange(result, treeMap, range.LowEndpoint, false, range.HighEndpoint, true, true, postProcessor);
             }
             else if (lookup.Operator == QueryGraphRangeEnum.RANGE_OPEN) {
-                var range = (Range) rangeValue;
+                var range = (Range)rangeValue;
                 LookupRange(result, treeMap, range.LowEndpoint, false, range.HighEndpoint, false, true, postProcessor);
             }
             else if (lookup.Operator == QueryGraphRangeEnum.NOT_RANGE_CLOSED) {
-                var range = (Range) rangeValue;
+                var range = (Range)rangeValue;
                 LookupRangeInverted(result, treeMap, range.LowEndpoint, true, range.HighEndpoint, true, postProcessor);
             }
             else if (lookup.Operator == QueryGraphRangeEnum.NOT_RANGE_HALF_OPEN) {
-                var range = (Range) rangeValue;
+                var range = (Range)rangeValue;
                 LookupRangeInverted(result, treeMap, range.LowEndpoint, true, range.HighEndpoint, false, postProcessor);
             }
             else if (lookup.Operator == QueryGraphRangeEnum.NOT_RANGE_HALF_CLOSED) {
-                var range = (Range) rangeValue;
+                var range = (Range)rangeValue;
                 LookupRangeInverted(result, treeMap, range.LowEndpoint, false, range.HighEndpoint, true, postProcessor);
             }
             else if (lookup.Operator == QueryGraphRangeEnum.NOT_RANGE_OPEN) {
-                var range = (Range) rangeValue;
+                var range = (Range)rangeValue;
                 LookupRangeInverted(
                     result,
                     treeMap,
@@ -125,7 +125,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
 
             keyStart = Coerce(keyStart);
             keyEnd = Coerce(keyEnd);
-         
+
             IDictionary<object, CompositeIndexEntry> submap;
             if (propertyIndex.KeyComparer.Compare(keyStart, keyEnd) <= 0) {
                 submap = propertyIndex.Between(keyStart, includeStart, keyEnd, includeEnd);
@@ -232,19 +232,19 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
 
             if (_next == null) {
                 if (postProcessor != null) {
-                    foreach (KeyValuePair<object, CompositeIndexEntry> entry in submap) {
+                    foreach (var entry in submap) {
                         postProcessor.Add(entry.Value.AssertCollection(), result);
                     }
                 }
                 else {
-                    foreach (KeyValuePair<object, CompositeIndexEntry> entry in submap) {
-                        ICollection<EventBean> set = entry.Value.AssertCollection();
+                    foreach (var entry in submap) {
+                        var set = entry.Value.AssertCollection();
                         result.AddAll(set);
                     }
                 }
             }
             else {
-                foreach (KeyValuePair<object, CompositeIndexEntry> entry in submap) {
+                foreach (var entry in submap) {
                     var index = entry.Value.AssertIndex();
                     _next.Lookup(index, result, postProcessor);
                 }
@@ -262,7 +262,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
         }
 
         public CompositeIndexLookup Next {
-            set { this._next = value; }
+            set => _next = value;
         }
     }
 } // end of namespace

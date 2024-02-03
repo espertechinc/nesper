@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -20,8 +20,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.inner
 {
     public class InnerDotEnumerableEventBeanForge : ExprDotEvalRootChildInnerForge
     {
-        internal readonly ExprEnumerationForge rootLambdaForge;
-        internal readonly EventType eventType;
+        private readonly ExprEnumerationForge rootLambdaForge;
+        private readonly EventType eventType;
 
         public InnerDotEnumerableEventBeanForge(
             ExprEnumerationForge rootLambdaForge,
@@ -31,9 +31,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.inner
             this.eventType = eventType;
         }
 
-        public ExprDotEvalRootChildInnerEval InnerEvaluator {
-            get => new InnerDotEnumerableEventBeanEval(rootLambdaForge.ExprEvaluatorEnumeration);
-        }
+        public ExprDotEvalRootChildInnerEval InnerEvaluator =>
+            new InnerDotEnumerableEventBeanEval(rootLambdaForge.ExprEvaluatorEnumeration);
 
         public CodegenExpression CodegenEvaluate(
             CodegenMethod parentMethod,
@@ -67,20 +66,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.inner
             return rootLambdaForge.EvaluateGetEventBeanCodegen(parentMethod, exprSymbol, codegenClassScope);
         }
 
-        public EventType EventTypeCollection {
-            get => null;
-        }
+        public EventType EventTypeCollection => null;
 
-        public Type ComponentTypeCollection {
-            get => null;
-        }
+        public Type ComponentTypeCollection => null;
 
-        public EventType EventTypeSingle {
-            get => eventType;
-        }
+        public EventType EventTypeSingle => eventType;
 
-        public EPType TypeInfo {
-            get => EPTypeHelper.SingleEvent(eventType);
-        }
+        public EPChainableType TypeInfo => EPChainableTypeHelper.SingleEvent(eventType);
     }
 } // end of namespace

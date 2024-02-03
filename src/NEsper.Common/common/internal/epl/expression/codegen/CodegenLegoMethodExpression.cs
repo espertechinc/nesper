@@ -1,16 +1,18 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -38,36 +40,28 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
             CodegenMethod parent,
             CodegenClassScope classScope)
         {
-            return CodegenExpression(forge, parent, classScope, true);
-        }
-        
-        public static CodegenMethod CodegenExpression(
-            ExprForge forge,
-            CodegenMethod parent,
-            CodegenClassScope classScope,
-            bool returnMissingValueAsNull)
-        {
+            var methodReturnType = typeof(object);
             var evaluationType = forge.EvaluationType;
-            if (returnMissingValueAsNull) {
-                evaluationType = evaluationType.GetBoxedType();
+            if (evaluationType  != null) {
+                methodReturnType = evaluationType.GetBoxedType();
             }
-            
+
             var exprSymbol = new ExprForgeCodegenSymbol(true, null);
             var exprMethod = parent
-                .MakeChildWithScope(evaluationType, typeof(CodegenLegoMethodExpression), exprSymbol, classScope)
+                .MakeChildWithScope(methodReturnType, typeof(CodegenLegoMethodExpression), exprSymbol, classScope)
                 .AddParam(ExprForgeCodegenNames.PARAMS);
-
-            exprMethod.Block.DebugStack();
-            
-            var expression = forge.EvaluateCodegen(evaluationType, exprMethod, exprSymbol, classScope);
-            exprSymbol.DerivedSymbolsCodegen(parent, exprMethod.Block, classScope);
-
-            if (evaluationType != typeof(void)) {
-                exprMethod.Block.MethodReturn(expression);
-                //CodegenLegoCast.CastSafeFromObjectType(evaluationType, expression);
+            if (evaluationType == null) {
+                exprMethod.Block.MethodReturn(ConstantNull());
             }
             else {
-                exprMethod.Block.Expression(expression);
+                var expression = forge.EvaluateCodegen(methodReturnType, exprMethod, exprSymbol, classScope);
+                exprSymbol.DerivedSymbolsCodegen(parent, exprMethod.Block, classScope);
+                if (!methodReturnType.IsTypeVoid()) {
+                    exprMethod.Block.MethodReturn(expression);
+                }
+                else {
+                    exprMethod.Block.Expression(expression);
+                }
             }
 
             return exprMethod;
@@ -87,7 +81,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
             var expression = forge.EvaluateCodegen(evaluationType, exprMethod, exprSymbol, classScope);
             exprSymbol.DerivedSymbolsCodegen(parent, exprMethod.Block, classScope);
 
-            if (evaluationType.CanNotBeNull()) {
+            if (evaluationType.IsPrimitive) {
                 exprMethod.Block.MethodReturn(expression);
             }
             else {
@@ -104,7 +98,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
         private static void CheckEvaluationType(ExprForge forge)
         {
             var evaluationType = forge.EvaluationType;
-            if (evaluationType != typeof(bool) && evaluationType != typeof(bool?)) {
+            if (!evaluationType.IsTypeBoolean()) {
                 throw new IllegalStateException("Invalid non-boolean expression");
             }
         }

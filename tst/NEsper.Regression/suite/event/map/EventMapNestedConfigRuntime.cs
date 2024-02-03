@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -18,10 +18,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
         {
             var path = new RegressionPath();
             var epl =
-                "create schema N1N1 (n1n1 string);\n" +
-                "create schema N1 (n1 string, n2 N1N1);\n" +
-                "create schema NestedMapWithSimpleProps (nested N1);\n";
-            env.CompileDeployWBusPublicType(epl, path);
+                "@buseventtype @public create schema N1N1 (n1n1 string);\n" +
+                "@buseventtype @public create schema N1 (n1 string, n2 N1N1);\n" +
+                "@buseventtype @public create schema NestedMapWithSimpleProps (Nested N1);\n";
+            env.CompileDeploy(epl, path);
 
             RunAssertion(env, path);
         }

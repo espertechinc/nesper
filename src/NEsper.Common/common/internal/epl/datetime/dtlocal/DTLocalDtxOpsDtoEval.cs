@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -34,7 +34,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            DateTimeOffset dto = (DateTimeOffset) target;
+            var dto = (DateTimeOffset)target;
             return DTLocalUtil.EvaluateCalOpsDto(calendarOps, dto, eventsPerStream, isNewData, exprEvaluatorContext);
         }
 
@@ -48,7 +48,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
         {
             var methodNode = codegenMethodScope
                 .MakeChild(typeof(DateTimeOffset), typeof(DTLocalDtxOpsDtoEval), codegenClassScope)
-                .AddParam(typeof(DateTimeOffset), "target");
+                .AddParam<DateTimeOffset>("target");
             var block = methodNode.Block;
             DTLocalUtil.EvaluateCalOpsDtoCodegen(
                 block,

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -50,9 +50,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                 typeof(EventType),
                 EventTypeUtility.ResolveTypeCodegen(resultEventType, EPStatementInitServicesConstants.REF));
             var methodNode = codegenMethodScope.MakeChild(typeof(EventBean), GetType(), codegenClassScope);
-            var refEPS = exprSymbol.GetAddEPS(methodNode);
+            var refEPS = exprSymbol.GetAddEps(methodNode);
             methodNode.Block
-                .DeclareVar(resultEventType.UnderlyingType, "tuple", NewInstanceInner(resultEventType.Detail.UnderlyingClassName));
+                .DeclareVar(
+                    resultEventType.UnderlyingType,
+                    "tuple",
+                    NewInstanceInner(resultEventType.Detail.UnderlyingClassName));
             for (var i = 0; i < streamNames.Length; i++) {
                 var @event = ArrayAtIndex(refEPS, Constant(i));
                 var field = resultEventType.Detail.FieldDescriptors.Get(streamNames[i]);

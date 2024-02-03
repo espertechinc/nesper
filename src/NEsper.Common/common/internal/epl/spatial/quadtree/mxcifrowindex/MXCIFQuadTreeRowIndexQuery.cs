@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -39,7 +39,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
                 return Visit(leaf, x, y, width, height, result);
             }
 
-            var branch = (MXCIFQuadTreeNodeBranch) node;
+            var branch = (MXCIFQuadTreeNodeBranch)node;
             result = Visit(branch, x, y, width, height, result);
             result = QueryNode(branch.Nw, x, y, width, height, result);
             result = QueryNode(branch.Ne, x, y, width, height, result);
@@ -63,12 +63,14 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
 
             if (data is XYWHRectangleMultiType point) {
                 return Visit(point, x, y, width, height, result);
-            } else if (data is IList<XYWHRectangleMultiType> listData) {
+            }
+            else if (data is IList<XYWHRectangleMultiType> listData) {
                 var listDataCount = listData.Count;
                 for (var ii = 0; ii < listDataCount; ii++) {
                     result = Visit(listData[ii], x, y, width, height, result);
                 }
-            } else if (data is IEnumerable<XYWHRectangleMultiType> enumData) {
+            }
+            else if (data is IEnumerable<XYWHRectangleMultiType> enumData) {
                 foreach (var rectangle in enumData) {
                     result = Visit(rectangle, x, y, width, height, result);
                 }
@@ -89,14 +91,14 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
             ICollection<object> result)
         {
             if (!BoundingBox.IntersectsBoxIncludingEnd(
-                x,
-                y,
-                x + width,
-                y + height,
-                rectangle.X,
-                rectangle.Y,
-                rectangle.W,
-                rectangle.H)) {
+                    x,
+                    y,
+                    x + width,
+                    y + height,
+                    rectangle.X,
+                    rectangle.Y,
+                    rectangle.W,
+                    rectangle.H)) {
                 return result;
             }
 

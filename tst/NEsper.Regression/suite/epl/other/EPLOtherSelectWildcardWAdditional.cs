@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -7,16 +7,18 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+using System.Linq;
 
-using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.soda;
+using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
-
-using static com.espertech.esper.regressionlib.framework.SupportMessageAssertUtil;
+using NUnit.Framework.Legacy;
+using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A;
+using SupportBeanSimple = com.espertech.esper.regressionlib.support.bean.SupportBeanSimple;
 
 namespace com.espertech.esper.regressionlib.suite.epl.other
 {
@@ -25,6 +27,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
+#if REGRESSION_EXECUTIONS
             WithSingleOM(execs);
             WithSingle(execs);
             WithSingleInsertInto(execs);
@@ -33,7 +36,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             WithJoinCommonProperties(execs);
             WithCombinedProperties(execs);
             WithWildcardMapEvent(execs);
-            WithInvalidRepeatedProperties(execs);
+            With(InvalidRepeatedProperties)(execs);
+#endif
             return execs;
         }
 
@@ -100,73 +104,270 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             return execs;
         }
 
+        private class EPLOtherSingleOM : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var model = new EPStatementObjectModel();
+                model.SelectClause = SelectClause.CreateWildcard()
+                    .Add(Expressions.Concat("MyString", "MyString"), "concat");
+                model.FromClause = FromClause.Create(
+                    FilterStream.Create("SupportBeanSimple").AddView(View.Create("length", Expressions.Constant(5))));
+                model = env.CopyMayFail(model);
+
+                var text = "select *, MyString||MyString as concat from SupportBeanSimple#length(5)";
+                ClassicAssert.AreEqual(text, model.ToEPL());
+                model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
+                env.CompileDeploy(model).AddListener("s0");
+
+                AssertSimple(env);
+
+                env.AssertStatement(
+                    "s0",
+                    statement => SupportEventPropUtil.AssertPropsEquals(
+                        statement.EventType.PropertyDescriptors.ToArray(),
+                        new SupportEventPropDesc("MyString", typeof(string)),
+                        new SupportEventPropDesc("MyInt", typeof(int)),
+                        new SupportEventPropDesc("concat", typeof(string))));
+
+                env.UndeployAll();
+            }
+        }
+
+        private class EPLOtherSingle : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var text = "@name('s0') select *, MyString||MyString as concat from SupportBeanSimple#length(5)";
+                env.CompileDeploy(text).AddListener("s0");
+                AssertSimple(env);
+                env.UndeployAll();
+            }
+        }
+
+        private class EPLOtherSingleInsertInto : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var path = new RegressionPath();
+                var text =
+                    "@name('insert') @public insert into SomeEvent select *, MyString||MyString as concat from SupportBeanSimple#length(5)";
+                env.CompileDeploy(text, path).AddListener("insert");
+
+                var textTwo = "@name('s0') select * from SomeEvent#length(5)";
+                env.CompileDeploy(textTwo, path).AddListener("s0");
+                AssertSimple(env);
+                AssertProperties(env, "insert", Collections.EmptyDataMap);
+
+                env.UndeployAll();
+            }
+        }
+
+        private class EPLOtherJoinInsertInto : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var path = new RegressionPath();
+                var text = "@name('insert') @public insert into SomeJoinEvent select *, MyString||MyString as concat " +
+                           "from SupportBeanSimple#length(5) as eventOne, SupportMarketDataBean#length(5) as eventTwo";
+                env.CompileDeploy(text, path).AddListener("insert");
+
+                var textTwo = "@name('s0') select * from SomeJoinEvent#length(5)";
+                env.CompileDeploy(textTwo, path).AddListener("s0");
+
+                AssertNoCommonProperties(env);
+                AssertProperties(env, "insert", Collections.EmptyDataMap);
+
+                env.UndeployAll();
+            }
+        }
+
+        private class EPLOtherJoinNoCommonProperties : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var eventNameOne = nameof(SupportBeanSimple);
+                var eventNameTwo = nameof(SupportMarketDataBean);
+                var text = "@name('s0') select *, MyString||MyString as concat " +
+                           "from " +
+                           eventNameOne +
+                           "#length(5) as eventOne, " +
+                           eventNameTwo +
+                           "#length(5) as eventTwo";
+                env.CompileDeploy(text).AddListener("s0");
+
+                AssertNoCommonProperties(env);
+
+                env.UndeployAll();
+
+                text = "@name('s0') select *, MyString||MyString as concat " +
+                       "from " +
+                       eventNameOne +
+                       "#length(5) as eventOne, " +
+                       eventNameTwo +
+                       "#length(5) as eventTwo " +
+                       "where eventOne.MyString = eventTwo.Symbol";
+                env.CompileDeploy(text).AddListener("s0");
+
+                AssertNoCommonProperties(env);
+
+                env.UndeployAll();
+            }
+        }
+
+        private class EPLOtherJoinCommonProperties : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var eventNameOne = nameof(SupportBean_A);
+                var eventNameTwo = nameof(SupportBean_B);
+                var text = "@name('s0') select *, eventOne.Id||eventTwo.Id as concat " +
+                           "from " +
+                           eventNameOne +
+                           "#length(5) as eventOne, " +
+                           eventNameTwo +
+                           "#length(5) as eventTwo ";
+                env.CompileDeploy(text).AddListener("s0");
+
+                AssertCommonProperties(env);
+
+                env.UndeployAll();
+
+                text = "@name('s0') select *, eventOne.Id||eventTwo.Id as concat " +
+                       "from " +
+                       eventNameOne +
+                       "#length(5) as eventOne, " +
+                       eventNameTwo +
+                       "#length(5) as eventTwo " +
+                       "where eventOne.Id = eventTwo.Id";
+                env.CompileDeploy(text).AddListener("s0");
+
+                AssertCommonProperties(env);
+
+                env.UndeployAll();
+            }
+        }
+
+        private class EPLOtherCombinedProperties : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var text =
+                    "@name('s0') select *, Indexed[0].Mapped('0ma').Value||Indexed[0].Mapped('0mb').Value as concat from SupportBeanCombinedProps#length(5)";
+                env.CompileDeploy(text).AddListener("s0");
+                AssertCombinedProps(env);
+                env.UndeployAll();
+            }
+        }
+
+        private class EPLOtherWildcardMapEvent : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var text = "@name('s0') select *, TheString||TheString as concat from MyMapEventIntString#length(5)";
+                env.CompileDeploy(text).AddListener("s0");
+
+                // The map to send into the eventService
+                IDictionary<string, object> props = new Dictionary<string, object>();
+                props.Put("int", 1);
+                props.Put("TheString", "xx");
+                env.SendEventMap(props, "MyMapEventIntString");
+
+                // The map of expected results
+                IDictionary<string, object> properties = new Dictionary<string, object>();
+                properties.Put("int", 1);
+                properties.Put("TheString", "xx");
+                properties.Put("concat", "xxxx");
+
+                AssertProperties(env, "s0", properties);
+
+                env.UndeployAll();
+            }
+        }
+
+        private class EPLOtherInvalidRepeatedProperties : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var text = "select *, MyString||MyString as MyString from SupportBeanSimple#length(5)";
+                env.TryInvalidCompile(text, "skip");
+            }
+        }
+
         private static void AssertNoCommonProperties(RegressionEnvironment env)
         {
             var eventSimple = SendSimpleEvent(env, "string");
             var eventMarket = SendMarketEvent(env, "string");
 
-            var theEvent = env.Listener("s0").LastNewData[0];
-            IDictionary<string, object> properties = new Dictionary<string, object>();
-            properties.Put("concat", "stringstring");
-            AssertProperties(env, "s0", properties);
-            Assert.AreSame(eventSimple, theEvent.Get("eventOne"));
-            Assert.AreSame(eventMarket, theEvent.Get("eventTwo"));
+            env.AssertListener(
+                "s0",
+                listener => {
+                    var theEvent = listener.LastNewData[0];
+                    IDictionary<string, object> properties = new Dictionary<string, object>();
+                    properties.Put("concat", "stringstring");
+                    AssertProperties(env, "s0", properties);
+                    ClassicAssert.AreSame(eventSimple, theEvent.Get("eventOne"));
+                    ClassicAssert.AreSame(eventMarket, theEvent.Get("eventTwo"));
+                });
         }
 
         private static void AssertSimple(RegressionEnvironment env)
         {
             var theEvent = SendSimpleEvent(env, "string");
 
-            Assert.AreEqual("stringstring", env.Listener("s0").LastNewData[0].Get("concat"));
-            IDictionary<string, object> properties = new Dictionary<string, object>();
-            properties.Put("concat", "stringstring");
-            properties.Put("MyString", "string");
-            properties.Put("MyInt", 0);
-            AssertProperties(env, "s0", properties);
+            env.AssertListener(
+                "s0",
+                listener => {
+                    ClassicAssert.AreEqual("stringstring", listener.LastNewData[0].Get("concat"));
+                    IDictionary<string, object> properties = new Dictionary<string, object>();
+                    properties.Put("concat", "stringstring");
+                    properties.Put("MyString", "string");
+                    properties.Put("MyInt", 0);
+                    AssertProperties(env, "s0", properties);
 
-            Assert.That(
-                env.Listener("s0").LastNewData[0].EventType.UnderlyingType,
-                Is.EqualTo(typeof(Pair<object, IDictionary<string, object>>)));
-
-            // More type erasure crazyness???  Note that the exposed underlying type uses EventPropertyWriterSPI
-            // but the actual implementation comes in as a string dictionary.
-
-            Assert.That(
-                env.Listener("s0").LastNewData[0].Underlying,
-                Is.InstanceOf<Pair<object, IDictionary<string, object>>>());
-
-            var pair = (Pair<object, IDictionary<string, object>>) env.Listener("s0").LastNewData[0].Underlying;
-            Assert.AreEqual(theEvent, pair.First);
-
-            Assert.That(pair.Second, Is.Not.Null);
-            Assert.That(pair.Second.Get("concat"), Is.EqualTo("stringstring"));
+                    ClassicAssert.AreEqual(
+                        typeof(Pair<object, IDictionary<string, object>>),
+                        listener.LastNewData[0].EventType.UnderlyingType);
+                    ClassicAssert.IsTrue(listener.LastNewData[0].Underlying is Pair<object, IDictionary<string, object>>);
+                    var pair = (Pair<object, IDictionary<string, object>>)listener.LastNewData[0].Underlying;
+                    ClassicAssert.AreEqual(theEvent, pair.First);
+                    ClassicAssert.AreEqual("stringstring", pair.Second.Get("concat"));
+                });
         }
 
         private static void AssertCommonProperties(RegressionEnvironment env)
         {
             SendABEvents(env, "string");
-            var theEvent = env.Listener("s0").LastNewData[0];
-            IDictionary<string, object> properties = new Dictionary<string, object>();
-            properties.Put("concat", "stringstring");
-            AssertProperties(env, "s0", properties);
-            Assert.IsNotNull(theEvent.Get("eventOne"));
-            Assert.IsNotNull(theEvent.Get("eventTwo"));
+            env.AssertListener(
+                "s0",
+                listener => {
+                    var theEvent = listener.LastNewData[0];
+                    IDictionary<string, object> properties = new Dictionary<string, object>();
+                    properties.Put("concat", "stringstring");
+                    AssertProperties(env, "s0", properties);
+                    ClassicAssert.IsNotNull(theEvent.Get("eventOne"));
+                    ClassicAssert.IsNotNull(theEvent.Get("eventTwo"));
+                });
         }
 
         private static void AssertCombinedProps(RegressionEnvironment env)
         {
             SendCombinedProps(env);
-            var eventBean = env.Listener("s0").LastNewData[0];
+            env.AssertListener(
+                "s0",
+                listener => {
+                    var eventBean = listener.LastNewData[0];
 
-            Assert.AreEqual("0ma0", eventBean.Get("Indexed[0].Mapped('0ma').Value"));
-            Assert.AreEqual("0ma1", eventBean.Get("Indexed[0].Mapped('0mb').Value"));
-            Assert.AreEqual("1ma0", eventBean.Get("Indexed[1].Mapped('1ma').Value"));
-            Assert.AreEqual("1ma1", eventBean.Get("Indexed[1].Mapped('1mb').Value"));
+                    ClassicAssert.AreEqual("0ma0", eventBean.Get("Indexed[0].Mapped('0ma').Value"));
+                    ClassicAssert.AreEqual("0ma1", eventBean.Get("Indexed[0].Mapped('0mb').Value"));
+                    ClassicAssert.AreEqual("1ma0", eventBean.Get("Indexed[1].Mapped('1ma').Value"));
+                    ClassicAssert.AreEqual("1ma1", eventBean.Get("Indexed[1].Mapped('1mb').Value"));
 
-            Assert.AreEqual("0ma0", eventBean.Get("Array[0].Mapped('0ma').Value"));
-            Assert.AreEqual("1ma1", eventBean.Get("Array[1].Mapped('1mb').Value"));
+                    ClassicAssert.AreEqual("0ma0", eventBean.Get("Array[0].Mapped('0ma').Value"));
+                    ClassicAssert.AreEqual("1ma1", eventBean.Get("Array[1].Mapped('1mb').Value"));
 
-            Assert.AreEqual("0ma00ma1", eventBean.Get("concat"));
+                    ClassicAssert.AreEqual("0ma00ma1", eventBean.Get("concat"));
+                });
         }
 
         private static void AssertProperties(
@@ -174,10 +375,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             string statementName,
             IDictionary<string, object> properties)
         {
-            var theEvent = env.Listener(statementName).LastNewData[0];
-            foreach (var property in properties.Keys) {
-                Assert.AreEqual(properties.Get(property), theEvent.Get(property));
-            }
+            env.AssertListener(
+                statementName,
+                listener => {
+                    var theEvent = listener.LastNewData[0];
+                    foreach (var property in properties.Keys) {
+                        ClassicAssert.AreEqual(properties.Get(property), theEvent.Get(property));
+                    }
+                });
         }
 
         private static SupportBeanSimple SendSimpleEvent(
@@ -211,197 +416,6 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         private static void SendCombinedProps(RegressionEnvironment env)
         {
             env.SendEventBean(SupportBeanCombinedProps.MakeDefaultBean());
-        }
-
-        internal class EPLOtherSingleOM : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var model = new EPStatementObjectModel();
-                model.SelectClause = SelectClause.CreateWildcard()
-                    .Add(Expressions.Concat("MyString", "MyString"), "concat");
-                model.FromClause =
-                    FromClause.Create(
-                        FilterStream.Create("SupportBeanSimple")
-                            .AddView(View.Create("length", Expressions.Constant(5))));
-                model = env.CopyMayFail(model);
-
-                var text = "select *, MyString||MyString as concat from SupportBeanSimple#length(5)";
-                Assert.AreEqual(text, model.ToEPL());
-                model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
-                env.CompileDeploy(model).AddListener("s0");
-
-                AssertSimple(env);
-
-                CollectionAssert.AreEquivalent(
-                    new EventPropertyDescriptor[] {
-                        new EventPropertyDescriptor("MyString", typeof(string), typeof(char), false, false, true, false, false),
-                        new EventPropertyDescriptor("MyInt", typeof(int), null, false, false, false, false, false),
-                        new EventPropertyDescriptor("concat", typeof(string), typeof(char), false, false, true, false, false)
-                    },
-                    env.Statement("s0").EventType.PropertyDescriptors);
-
-                env.UndeployAll();
-            }
-        }
-
-        internal class EPLOtherSingle : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var text = "@Name('s0') select *, MyString||MyString as concat from SupportBeanSimple#length(5)";
-                env.CompileDeploy(text).AddListener("s0");
-                AssertSimple(env);
-                env.UndeployAll();
-            }
-        }
-
-        internal class EPLOtherSingleInsertInto : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var path = new RegressionPath();
-                var text =
-                    "@Name('insert') insert into SomeEvent select *, MyString||MyString as concat from SupportBeanSimple#length(5)";
-                env.CompileDeploy(text, path).AddListener("insert");
-
-                var textTwo = "@Name('s0') select * from SomeEvent#length(5)";
-                env.CompileDeploy(textTwo, path).AddListener("s0");
-                AssertSimple(env);
-                AssertProperties(env, "insert", Collections.EmptyDataMap);
-
-                env.UndeployAll();
-            }
-        }
-
-        internal class EPLOtherJoinInsertInto : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var path = new RegressionPath();
-                var text = "@Name('insert') insert into SomeJoinEvent select *, MyString||MyString as concat " +
-                           "from SupportBeanSimple#length(5) as eventOne, SupportMarketDataBean#length(5) as eventTwo";
-                env.CompileDeploy(text, path).AddListener("insert");
-
-                var textTwo = "@Name('s0') select * from SomeJoinEvent#length(5)";
-                env.CompileDeploy(textTwo, path).AddListener("s0");
-
-                AssertNoCommonProperties(env);
-                AssertProperties(env, "insert", Collections.EmptyDataMap);
-
-                env.UndeployAll();
-            }
-        }
-
-        internal class EPLOtherJoinNoCommonProperties : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var eventNameOne = nameof(SupportBeanSimple);
-                var eventNameTwo = nameof(SupportMarketDataBean);
-                var text = "@Name('s0') select *, MyString||MyString as concat from " +
-                           eventNameOne +
-                           "#length(5) as eventOne, " +
-                           eventNameTwo +
-                           "#length(5) as eventTwo";
-                env.CompileDeploy(text).AddListener("s0");
-
-                AssertNoCommonProperties(env);
-
-                env.UndeployAll();
-
-                text = "@Name('s0') select *, MyString||MyString as concat " +
-                       "from " +
-                       eventNameOne +
-                       "#length(5) as eventOne, " +
-                       eventNameTwo +
-                       "#length(5) as eventTwo " +
-                       "where eventOne.MyString = eventTwo.Symbol";
-                env.CompileDeploy(text).AddListener("s0");
-
-                AssertNoCommonProperties(env);
-
-                env.UndeployAll();
-            }
-        }
-
-        internal class EPLOtherJoinCommonProperties : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var eventNameOne = nameof(SupportBean_A);
-                var eventNameTwo = nameof(SupportBean_B);
-                var text = "@Name('s0') select *, eventOne.Id||eventTwo.Id as concat " +
-                           "from " +
-                           eventNameOne +
-                           "#length(5) as eventOne, " +
-                           eventNameTwo +
-                           "#length(5) as eventTwo ";
-                env.CompileDeploy(text).AddListener("s0");
-
-                AssertCommonProperties(env);
-
-                env.UndeployAll();
-
-                text = "@Name('s0') select *, eventOne.Id||eventTwo.Id as concat " +
-                       "from " +
-                       eventNameOne +
-                       "#length(5) as eventOne, " +
-                       eventNameTwo +
-                       "#length(5) as eventTwo " +
-                       "where eventOne.Id = eventTwo.Id";
-                env.CompileDeploy(text).AddListener("s0");
-
-                AssertCommonProperties(env);
-
-                env.UndeployAll();
-            }
-        }
-
-        internal class EPLOtherCombinedProperties : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var text = "@Name('s0') select *, Indexed[0].Mapped('0ma').Value||Indexed[0].Mapped('0mb').Value as concat " +
-                           " from SupportBeanCombinedProps#length(5)";
-                env.CompileDeploy(text).AddListener("s0");
-                AssertCombinedProps(env);
-                env.UndeployAll();
-            }
-        }
-
-        internal class EPLOtherWildcardMapEvent : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var text = "@Name('s0') select *, TheString||TheString as concat from MyMapEventIntString#length(5)";
-                env.CompileDeploy(text).AddListener("s0");
-
-                // The map to send into the eventService
-                IDictionary<string, object> props = new Dictionary<string, object>();
-                props.Put("int", 1);
-                props.Put("TheString", "xx");
-                env.SendEventMap(props, "MyMapEventIntString");
-
-                // The map of expected results
-                IDictionary<string, object> properties = new Dictionary<string, object>();
-                properties.Put("int", 1);
-                properties.Put("TheString", "xx");
-                properties.Put("concat", "xxxx");
-
-                AssertProperties(env, "s0", properties);
-
-                env.UndeployAll();
-            }
-        }
-
-        internal class EPLOtherInvalidRepeatedProperties : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var text = "select *, MyString||MyString as MyString from SupportBeanSimple#length(5)";
-                TryInvalidCompile(env, text, "skip");
-            }
         }
     }
 } // end of namespace

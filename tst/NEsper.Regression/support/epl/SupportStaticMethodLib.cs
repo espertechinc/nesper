@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -108,7 +108,7 @@ namespace com.espertech.esper.regressionlib.support.epl
         public static IDictionary<string, object>[] FetchResult12(int? value)
         {
             if (value == null) {
-                return new IDictionary<string, object>[0];
+                return Array.Empty<IDictionary<string, object>>();
             }
 
             var result = new IDictionary<string, object>[2];
@@ -129,7 +129,7 @@ namespace com.espertech.esper.regressionlib.support.epl
         public static IDictionary<string, object>[] FetchResult23(int? value)
         {
             if (value == null) {
-                return new IDictionary<string, object>[0];
+                return Array.Empty<IDictionary<string, object>>();
             }
 
             var result = new IDictionary<string, object>[2];
@@ -182,11 +182,11 @@ namespace com.espertech.esper.regressionlib.support.epl
             int? upper)
         {
             if (lower == null || upper == null) {
-                return new IDictionary<string, object>[0];
+                return Array.Empty<IDictionary<string, object>>();
             }
 
             if (upper < lower) {
-                return new IDictionary<string, object>[0];
+                return Array.Empty<IDictionary<string, object>>();
             }
 
             var delta = upper.Value - lower.Value + 1;
@@ -206,11 +206,11 @@ namespace com.espertech.esper.regressionlib.support.epl
             int? upper)
         {
             if (lower == null || upper == null) {
-                return new IDictionary<string, object>[0];
+                return Array.Empty<IDictionary<string, object>>();
             }
 
             if (upper < lower) {
-                return new IDictionary<string, object>[0];
+                return Array.Empty<IDictionary<string, object>>();
             }
 
             var delta = upper.Value - lower.Value + 1;
@@ -248,7 +248,7 @@ namespace com.espertech.esper.regressionlib.support.epl
             }
 
             if (id == 0) {
-                return new IDictionary<string, object>[0];
+                return Array.Empty<IDictionary<string, object>>();
             }
 
             var rows = new IDictionary<string, object>[id];
@@ -272,7 +272,7 @@ namespace com.espertech.esper.regressionlib.support.epl
             }
 
             if (id == 0) {
-                return new object[0][];
+                return Array.Empty<object[]>();
             }
 
             var rows = new object[id][];
@@ -379,7 +379,7 @@ namespace com.espertech.esper.regressionlib.support.epl
             return upd;
         }
 
-        public static String ConvertEventJson(JsonEventObject row)
+        public static string ConvertEventJson(JsonEventObject row)
         {
             var val1 = row.Get("one").ToString();
             var val2 = row.Get("two").ToString();
@@ -485,7 +485,7 @@ namespace com.espertech.esper.regressionlib.support.epl
             }
 
             if (numGenerate == 0) {
-                return new FetchedData[0];
+                return Array.Empty<FetchedData>();
             }
 
             if (numGenerate == 1) {
@@ -680,7 +680,7 @@ namespace com.espertech.esper.regressionlib.support.epl
         public static LinkedHashMap<string, object> FetchTwoRows3ColsMetadata()
         {
             var values = new LinkedHashMap<string, object>();
-            values.Put("pKey0", typeof(string));
+            values.Put("pkey0", typeof(string));
             values.Put("pkey1", typeof(int?));
             values.Put("c0", typeof(long?));
             return values;
@@ -690,11 +690,11 @@ namespace com.espertech.esper.regressionlib.support.epl
         {
             IDictionary<string, object>[] result = {new Dictionary<string, object>(), new Dictionary<string, object>()};
 
-            result[0].Put("pKey0", "E1");
+            result[0].Put("pkey0", "E1");
             result[0].Put("pkey1", 10);
             result[0].Put("c0", 100L);
 
-            result[1].Put("pKey0", "E2");
+            result[1].Put("pkey0", "E2");
             result[1].Put("pkey1", 20);
             result[1].Put("c0", 200L);
 
@@ -751,7 +751,7 @@ namespace com.espertech.esper.regressionlib.support.epl
             }
 
             if (id == 0) {
-                return new MyMethodReturn[0];
+                return Array.Empty<MyMethodReturn>();
             }
 
             var rows = new MyMethodReturn[id];
@@ -964,7 +964,6 @@ namespace com.espertech.esper.regressionlib.support.epl
             CountInvoked = 0;
         }
 
-        [Serializable]
         public class FetchedData
         {
             private string id;
@@ -980,7 +979,6 @@ namespace com.espertech.esper.regressionlib.support.epl
             }
         }
 
-        [Serializable]
         public class MyMethodReturn
         {
             public MyMethodReturn(

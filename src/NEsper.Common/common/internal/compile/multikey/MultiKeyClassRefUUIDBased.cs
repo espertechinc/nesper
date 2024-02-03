@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -13,28 +13,41 @@ using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 using com.espertech.esper.compat.collections;
 
-using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder; //newInstance;
+using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.compile.multikey
 {
     public class MultiKeyClassRefUUIDBased : MultiKeyClassRef
     {
         private readonly string uuid;
+        private readonly Type[] mkTypes;
+        private readonly DataInputOutputSerdeForge[] serdes;
         private string classPostfix;
 
-        public MultiKeyClassRefUUIDBased(Type[] mkTypes)
+        public MultiKeyClassRefUUIDBased(
+            Type[] mkTypes,
+            DataInputOutputSerdeForge[] serdes)
         {
             uuid = CodeGenerationIDGenerator.GenerateClassNameUUID();
-            MKTypes = mkTypes;
+            this.mkTypes = mkTypes;
+            this.serdes = serdes;
         }
 
-        public NameOrType ClassNameMK {
-            get {
-                CheckClassPostfix();
-                return new NameOrType(GetClassNameMK(classPostfix));
-            }
+        public string GetClassNameMK(string classPostfix)
+        {
+            AssignPostfix(classPostfix);
+            return CodeGenerationIDGenerator.GenerateClassNameWithUUID(typeof(HashableMultiKey), classPostfix, uuid);
+        }
+
+        public string GetClassNameMKSerde(string classPostfix)
+        {
+            return CodeGenerationIDGenerator.GenerateClassNameWithUUID(
+                typeof(DataInputOutputSerde),
+                classPostfix,
+                uuid);
         }
 
         public CodegenExpression GetExprMKSerde(
@@ -45,21 +58,6 @@ namespace com.espertech.esper.common.@internal.compile.multikey
             return NewInstanceInner(GetClassNameMKSerde(classPostfix));
         }
 
-        public Type[] MKTypes { get; }
-
-        public string GetClassNameMK(string classPostfix)
-        {
-            AssignPostfix(classPostfix);
-            return CodeGenerationIDGenerator.GenerateClassNameWithUUID(
-                typeof(HashableMultiKey), classPostfix, uuid);
-        }
-
-        public string GetClassNameMKSerde(string classPostfix)
-        {
-            return CodeGenerationIDGenerator.GenerateClassNameWithUUID(
-                typeof(DataInputOutputSerde<>), classPostfix, uuid);
-        }
-
         public override string ToString()
         {
             return "MultiKeyClassRefUUIDBased{" +
@@ -67,11 +65,16 @@ namespace com.espertech.esper.common.@internal.compile.multikey
                    uuid +
                    '\'' +
                    ", mkTypes=" +
-                   CompatExtensions.RenderAny(MKTypes) +
+                   mkTypes.RenderAny() +
                    ", classPostfix='" +
                    classPostfix +
                    '\'' +
                    '}';
+        }
+
+        public T Accept<T>(MultiKeyClassRefVisitor<T> visitor)
+        {
+            return visitor.Visit(this);
         }
 
         private void CheckClassPostfix()
@@ -92,5 +95,18 @@ namespace com.espertech.esper.common.@internal.compile.multikey
                 throw new ArgumentException("Invalid class postfix");
             }
         }
+
+        public NameOrType ClassNameMK {
+            get {
+                CheckClassPostfix();
+                return new NameOrType(GetClassNameMK(classPostfix));
+            }
+        }
+
+        public Type[] MKTypes => mkTypes;
+
+        public DataInputOutputSerdeForge[] Serdes => serdes;
+
+        public DataInputOutputSerdeForge[] SerdeForges => serdes;
     }
 } // end of namespace

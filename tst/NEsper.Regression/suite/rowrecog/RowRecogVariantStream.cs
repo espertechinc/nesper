@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -17,10 +17,10 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
         public void Run(RegressionEnvironment env)
         {
             var path = new RegressionPath();
-            env.CompileDeploy("create variant schema MyVariantType as SupportBean_S0, SupportBean_S1", path);
+            env.CompileDeploy("@public create variant schema MyVariantType as SupportBean_S0, SupportBean_S1", path);
 
-            var fields = new [] { "a","b" };
-            var text = "@Name('s0') select * from MyVariantType#keepall " +
+            var fields = new[] { "a", "b" };
+            var text = "@name('s0') select * from MyVariantType#keepall " +
                        "match_recognize (" +
                        "  measures A.Id? as a, B.Id? as b" +
                        "  pattern (A B) " +
@@ -35,14 +35,14 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
 
             env.SendEventBean(new SupportBean_S0(1, "S0"));
             env.SendEventBean(new SupportBean_S1(2, "S1"));
-            EPAssertionUtil.AssertPropsPerRow(
-                env.Listener("s0").GetAndResetLastNewData(),
+            env.AssertPropsPerRowLastNew(
+                "s0",
                 fields,
-                new[] {new object[] {1, 2}});
+                new[] { new object[] { 1, 2 } });
             EPAssertionUtil.AssertPropsPerRow(
                 env.Statement("s0").GetEnumerator(),
                 fields,
-                new[] {new object[] {1, 2}});
+                new[] { new object[] { 1, 2 } });
 
             var epl = "// Declare one sample type\n" +
                       "create schema ST0 as (col string)\n;" +

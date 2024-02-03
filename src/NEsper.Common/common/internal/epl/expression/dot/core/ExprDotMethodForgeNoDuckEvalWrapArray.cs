@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -17,67 +17,72 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.rettype;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 {
-	public class ExprDotMethodForgeNoDuckEvalWrapArray : ExprDotMethodForgeNoDuckEvalPlain
-	{
-		public ExprDotMethodForgeNoDuckEvalWrapArray(
-			ExprDotMethodForgeNoDuck forge,
-			ExprEvaluator[] parameters)
-			: base(forge, parameters)
-		{
-		}
+    public class ExprDotMethodForgeNoDuckEvalWrapArray : ExprDotMethodForgeNoDuckEvalPlain
+    {
+        public ExprDotMethodForgeNoDuckEvalWrapArray(
+            ExprDotMethodForgeNoDuck forge,
+            ExprEvaluator[] parameters)
+            : base(forge, parameters)
+        {
+        }
 
+        public override EPChainableType TypeInfo {
+            get {
+                var returnType = Forge.Method.ReturnType;
+                var componentType = returnType.GetComponentType();
+                return EPChainableTypeHelper.CollectionOfSingleValue(componentType);
+            }
+        }
 
-		public override EPType TypeInfo => 
-			EPTypeHelper.CollectionOfSingleValue(
-				forge.Method.ReturnType.GetElementType(),
-				forge.Method.ReturnType);
+        public override object Evaluate(
+            object target,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
+        {
+            var result = base.Evaluate(target, eventsPerStream, isNewData, exprEvaluatorContext);
+            if (result == null || !result.GetType().IsArray) {
+                return null;
+            }
 
-		public override object Evaluate(
-			object target,
-			EventBean[] eventsPerStream,
-			bool isNewData,
-			ExprEvaluatorContext exprEvaluatorContext)
-		{
-			var result = base.Evaluate(target, eventsPerStream, isNewData, exprEvaluatorContext);
-			if (result == null || !result.GetType().IsArray) {
-				return null;
-			}
+            return CollectionUtil.ArrayToCollectionAllowNull<object>(result);
+        }
 
-			return CollectionUtil.ArrayToCollectionAllowNull<object>(result);
-		}
+        public static CodegenExpression CodegenWrapArray(
+            ExprDotMethodForgeNoDuck forge,
+            CodegenExpression inner,
+            Type innerType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
+        {
+            var returnType = forge.Method.ReturnType;
+            var elementType = returnType.GetComponentType();
 
-		public static CodegenExpression CodegenWrapArray(
-			ExprDotMethodForgeNoDuck forge,
-			CodegenExpression inner,
-			Type innerType,
-			CodegenMethodScope codegenMethodScope,
-			ExprForgeCodegenSymbol exprSymbol,
-			CodegenClassScope codegenClassScope)
-		{
-			var methodNode = codegenMethodScope.MakeChild(
-					typeof(ICollection<object>),
-					typeof(ExprDotMethodForgeNoDuckEvalWrapArray),
-					codegenClassScope)
-				.AddParam(innerType, "target");
+            var methodNode = codegenMethodScope.MakeChild(
+                    typeof(ICollection<>).MakeGenericType(elementType),
+                    typeof(ExprDotMethodForgeNoDuckEvalWrapArray),
+                    codegenClassScope)
+                .AddParam(innerType, "target");
 
-			var returnType = forge.Method.ReturnType;
-			methodNode.Block
-				.DeclareVar(
-					returnType.GetBoxedType(),
-					"array",
-					CodegenPlain(forge, Ref("target"), innerType, methodNode, exprSymbol, codegenClassScope))
-				.MethodReturn(
-					CollectionUtil.ArrayToCollectionAllowNullCodegen(
-						methodNode,
-						returnType,
-						Ref("array"),
-						codegenClassScope));
-			return LocalMethod(methodNode, inner);
-		}
-	}
+            methodNode.Block
+                .DeclareVar(
+                    returnType.GetBoxedType(),
+                    "array",
+                    CodegenPlain(forge, Ref("target"), innerType, methodNode, exprSymbol, codegenClassScope))
+                .MethodReturn(
+                    CollectionUtil.ArrayToCollectionAllowNullCodegen(
+                        methodNode,
+                        returnType,
+                        Ref("array"),
+                        codegenClassScope));
+            return LocalMethod(methodNode, inner);
+        }
+    }
 } // end of namespace

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -44,7 +44,7 @@ namespace com.espertech.esper.common.@internal.filterspec
                 return false;
             }
 
-            var that = (ExprNodeAdapterMSBase) o;
+            var that = (ExprNodeAdapterMSBase)o;
 
             // Array-of-events comparison must consider array-tag holders
             for (var i = 0; i < prototypeArray.Length; i++) {
@@ -67,11 +67,11 @@ namespace com.espertech.esper.common.@internal.filterspec
                 }
 
                 // these events holds array-matches
-                var mineMapped = (MappedEventBean) mine;
-                var otherMapped = (MappedEventBean) other;
+                var mineMapped = (MappedEventBean)mine;
+                var otherMapped = (MappedEventBean)other;
                 var propName = mineMapped.EventType.PropertyNames[0];
-                var mineEvents = (EventBean[]) mineMapped.Properties.Get(propName);
-                var otherEvents = (EventBean[]) otherMapped.Properties.Get(propName);
+                var mineEvents = (EventBean[])mineMapped.Properties.Get(propName);
+                var otherEvents = (EventBean[])otherMapped.Properties.Get(propName);
                 if (!mineEvents.AreEqual(otherEvents)) {
                     return false;
                 }

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -19,6 +19,7 @@ using com.espertech.esper.compat.threading.locks;
 using com.espertech.esper.runtime.@internal.support;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 {
@@ -49,7 +50,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             FilterParamIndexIn index = new FilterParamIndexIn(
                 MakeLookupable("LongBoxed"),
                 new SlimReaderWriterLock());
-            Assert.AreEqual(FilterOperator.IN_LIST_OF_VALUES, index.FilterOperator);
+            ClassicAssert.AreEqual(FilterOperator.IN_LIST_OF_VALUES, index.FilterOperator);
 
             HashableMultiKey inList = new HashableMultiKey(new object[] { 2L, 5L });
             index.Put(inList, testEvaluator);
@@ -63,16 +64,16 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             Verify(index, 999L, 0);
             Verify(index, null, 0);
 
-            Assert.AreEqual(testEvaluator, index.Get(inList));
-            Assert.IsTrue(index.ReadWriteLock != null);
+            ClassicAssert.AreEqual(testEvaluator, index.Get(inList));
+            ClassicAssert.IsTrue(index.ReadWriteLock != null);
             index.Remove(inList);
             index.Remove(inList);
-            Assert.AreEqual(null, index.Get(inList));
+            ClassicAssert.AreEqual(null, index.Get(inList));
 
             try
             {
                 index.Put("a", testEvaluator);
-                Assert.IsTrue(false);
+                ClassicAssert.IsTrue(false);
             }
             catch (Exception)
             {
@@ -84,7 +85,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
         {
             testBean.LongBoxed = testValue;
             index.MatchEvent(testEventBean, matchesList, null);
-            Assert.AreEqual(numExpected, testEvaluator.GetAndResetCountInvoked());
+            ClassicAssert.AreEqual(numExpected, testEvaluator.GetAndResetCountInvoked());
         }
 
         private ExprFilterSpecLookupable MakeLookupable(string fieldName)

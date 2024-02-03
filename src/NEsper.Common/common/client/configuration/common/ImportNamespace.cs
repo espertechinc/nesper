@@ -1,5 +1,5 @@
 ﻿///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -8,23 +8,25 @@
 
 using System;
 using System.Reflection;
+using System.Text.Json.Serialization;
 
-using com.espertech.esper.common.client.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.logging;
 
 namespace com.espertech.esper.common.client.configuration.common
 {
-    [Serializable]
     public class ImportNamespace : Import
     {
         public ImportNamespace()
         {
         }
 
-        public ImportNamespace(string ns, string assemblyName = null)
+        [JsonConstructor]
+        public ImportNamespace(
+            string @namespace,
+            string assemblyName = null)
         {
-            Namespace = ns;
+            Namespace = @namespace;
             AssemblyName = assemblyName;
         }
 
@@ -34,8 +36,8 @@ namespace com.espertech.esper.common.client.configuration.common
             AssemblyName = typeInNamespace.Assembly.FullName;
         }
 
-        public string AssemblyName { get; set; }
         public string Namespace { get; set; }
+        public string AssemblyName { get; set; }
 
         public override Type Resolve(
             string providedTypeName,
@@ -59,7 +61,7 @@ namespace com.espertech.esper.common.client.configuration.common
 
         protected bool Equals(ImportNamespace other)
         {
-            return string.Equals(AssemblyName, other.AssemblyName) && 
+            return string.Equals(AssemblyName, other.AssemblyName) &&
                    string.Equals(Namespace, other.Namespace);
         }
 
@@ -73,17 +75,17 @@ namespace com.espertech.esper.common.client.configuration.common
                 return true;
             }
 
-            if (obj.GetType() != this.GetType()) {
+            if (obj.GetType() != GetType()) {
                 return false;
             }
 
-            return Equals((ImportNamespace) obj);
+            return Equals((ImportNamespace)obj);
         }
 
         public override int GetHashCode()
         {
             unchecked {
-                return ((AssemblyName != null ? AssemblyName.GetHashCode() : 0) * 397) ^ 
+                return ((AssemblyName != null ? AssemblyName.GetHashCode() : 0) * 397) ^
                        (Namespace != null ? Namespace.GetHashCode() : 0);
             }
         }

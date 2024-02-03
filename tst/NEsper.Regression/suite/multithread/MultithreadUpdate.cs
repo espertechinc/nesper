@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -17,6 +17,7 @@ using com.espertech.esper.regressionlib.support.multithread;
 using com.espertech.esper.regressionlib.support.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.multithread
 {
@@ -26,15 +27,20 @@ namespace com.espertech.esper.regressionlib.suite.multithread
     /// </summary>
     public class MultithreadUpdate : RegressionExecution
     {
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
+        }
+
         public void Run(RegressionEnvironment env)
         {
-            env.CompileDeploy("@Name('s0') select TheString from SupportBean");
+            env.CompileDeploy("@name('s0') select TheString from SupportBean");
 
             IList<string> strings = new List<string>().AsSyncList();
             env.Statement("s0").Events += (
                     sender,
                     updateEventArgs) =>
-                strings.Add((string) updateEventArgs.NewEvents[0].Get("TheString"));
+                strings.Add((string)updateEventArgs.NewEvents[0].Get("TheString"));
 
             TrySend(env, 2, 50000);
 
@@ -45,7 +51,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                 }
             }
 
-            Assert.IsTrue(found);
+            ClassicAssert.IsTrue(found);
 
             env.UndeployAll();
         }
@@ -55,7 +61,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             int numThreads,
             int numRepeats)
         {
-            var compiled = env.Compile("@Name('upd') update istream SupportBean set TheString='a'");
+            var compiled = env.Compile("@name('upd') update istream SupportBean set TheString='a'");
 
             var threadPool = Executors.NewFixedThreadPool(
                 numThreads,

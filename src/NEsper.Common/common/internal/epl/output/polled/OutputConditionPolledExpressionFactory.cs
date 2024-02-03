@@ -1,18 +1,20 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+
 using com.espertech.esper.common.client;
-using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.output.condition;
 using com.espertech.esper.common.@internal.epl.variable.core;
 using com.espertech.esper.common.@internal.@event.arr;
 using com.espertech.esper.common.@internal.@event.bean.service;
+
 
 namespace com.espertech.esper.common.@internal.epl.output.polled
 {
@@ -21,84 +23,53 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
     /// </summary>
     public class OutputConditionPolledExpressionFactory : OutputConditionPolledFactory
     {
-        private ExprEvaluator whenExpression;
-        private VariableReadWritePackage variableReadWritePackage;
-        private bool isUsingBuiltinProperties;
-        private EventType builtinPropertiesEventType;
-
-        public ExprEvaluator WhenExpression {
-            get => whenExpression;
-            set => whenExpression = value;
-        }
-
-        public VariableReadWritePackage VariableReadWritePackage {
-            get => variableReadWritePackage;
-            set => variableReadWritePackage = value;
-        }
-
-        public bool IsUsingBuiltinProperties {
-            get => isUsingBuiltinProperties;
-            set => isUsingBuiltinProperties = value;
-        }
-
-        public OutputConditionPolledExpressionFactory SetWhenExpression(ExprEvaluator whenExpression)
-        {
-            this.whenExpression = whenExpression;
-            return this;
-        }
-
-        public OutputConditionPolledExpressionFactory SetVariableReadWritePackage(VariableReadWritePackage variableReadWritePackage)
-        {
-            this.variableReadWritePackage = variableReadWritePackage;
-            return this;
-        }
-
-        public OutputConditionPolledExpressionFactory SetUsingBuiltinProperties(bool usingBuiltinProperties)
-        {
-            isUsingBuiltinProperties = usingBuiltinProperties;
-            return this;
-        }
+        private EventType _builtinPropertiesEventType;
 
         public OutputConditionPolled MakeFromState(
-            AgentInstanceContext agentInstanceContext,
+            ExprEvaluatorContext exprEvaluatorContext,
             OutputConditionPolledState state)
         {
             ObjectArrayEventBean builtinProperties = null;
-            if (isUsingBuiltinProperties) {
-                InitType(agentInstanceContext);
+            if (IsUsingBuiltinProperties) {
+                InitType(exprEvaluatorContext);
                 builtinProperties = new ObjectArrayEventBean(
                     OutputConditionExpressionTypeUtil.OAPrototype,
-                    builtinPropertiesEventType);
+                    _builtinPropertiesEventType);
             }
 
-            OutputConditionPolledExpressionState expressionState = (OutputConditionPolledExpressionState) state;
-            return new OutputConditionPolledExpression(this, expressionState, agentInstanceContext, builtinProperties);
+            var expressionState = (OutputConditionPolledExpressionState)state;
+            return new OutputConditionPolledExpression(this, expressionState, exprEvaluatorContext, builtinProperties);
         }
 
-        public OutputConditionPolled MakeNew(AgentInstanceContext agentInstanceContext)
+        public OutputConditionPolled MakeNew(ExprEvaluatorContext exprEvaluatorContext)
         {
             ObjectArrayEventBean builtinProperties = null;
             long? lastOutputTimestamp = null;
-            if (isUsingBuiltinProperties) {
-                InitType(agentInstanceContext);
+            if (IsUsingBuiltinProperties) {
+                InitType(exprEvaluatorContext);
                 builtinProperties = new ObjectArrayEventBean(
                     OutputConditionExpressionTypeUtil.OAPrototype,
-                    builtinPropertiesEventType);
-                lastOutputTimestamp = agentInstanceContext.StatementContext.SchedulingService.Time;
+                    _builtinPropertiesEventType);
+                lastOutputTimestamp = exprEvaluatorContext.TimeProvider.Time;
             }
 
-            OutputConditionPolledExpressionState state =
-                new OutputConditionPolledExpressionState(0, 0, 0, 0, lastOutputTimestamp);
-            return new OutputConditionPolledExpression(this, state, agentInstanceContext, builtinProperties);
+            var state = new OutputConditionPolledExpressionState(0, 0, 0, 0, lastOutputTimestamp);
+            return new OutputConditionPolledExpression(this, state, exprEvaluatorContext, builtinProperties);
         }
 
-        private void InitType(AgentInstanceContext agentInstanceContext)
+        private void InitType(ExprEvaluatorContext exprEvaluatorContext)
         {
-            if (builtinPropertiesEventType == null) {
-                builtinPropertiesEventType = OutputConditionExpressionTypeUtil.GetBuiltInEventType(
-                    agentInstanceContext.ModuleName,
-                    new BeanEventTypeFactoryDisallow(agentInstanceContext.EventBeanTypedEventFactory));
+            if (_builtinPropertiesEventType == null) {
+                _builtinPropertiesEventType = OutputConditionExpressionTypeUtil.GetBuiltInEventType(
+                    exprEvaluatorContext.ModuleName,
+                    new BeanEventTypeFactoryDisallow(exprEvaluatorContext.EventBeanTypedEventFactory));
             }
         }
+
+        public ExprEvaluator WhenExpression { get; set; }
+
+        public VariableReadWritePackage VariableReadWritePackage { get; set; }
+
+        public bool IsUsingBuiltinProperties { get; set; }
     }
 } // end of namespace

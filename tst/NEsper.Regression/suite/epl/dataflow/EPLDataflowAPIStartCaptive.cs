@@ -1,10 +1,13 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
+
+using System;
+using System.Collections.Generic;
 
 using com.espertech.esper.common.client.dataflow.core;
 using com.espertech.esper.common.client.dataflow.util;
@@ -14,6 +17,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 {
@@ -21,10 +25,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
     {
         public void Run(RegressionEnvironment env)
         {
-            var fields = new [] { "p0","p1" };
+            var fields = new[] { "p0", "p1" };
 
             env.CompileDeploy(
-                "@Name('flow') create dataflow MyDataFlow " +
+                "@name('flow') create dataflow MyDataFlow " +
                 "Emitter -> outstream<MyOAEventType> {name:'src1'}" +
                 "DefaultSupportCaptureOp(outstream) {}");
 
@@ -34,54 +38,54 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 
             var instance = env.Runtime.DataFlowService.Instantiate(env.DeploymentId("flow"), "MyDataFlow", options);
             var captiveStart = instance.StartCaptive();
-            Assert.AreEqual(0, captiveStart.Runnables.Count);
-            Assert.AreEqual(1, captiveStart.Emitters.Count);
+            ClassicAssert.AreEqual(0, captiveStart.Runnables.Count);
+            ClassicAssert.AreEqual(1, captiveStart.Emitters.Count);
             var emitter = captiveStart.Emitters.Get("src1");
-            Assert.AreEqual(EPDataFlowState.RUNNING, instance.State);
+            ClassicAssert.AreEqual(EPDataFlowState.RUNNING, instance.State);
 
-            emitter.Submit(new object[] {"E1", 10});
+            emitter.Submit(new object[] { "E1", 10 });
             EPAssertionUtil.AssertPropsPerRow(
                 env.Container,
                 captureOp.Current,
                 fields,
-                new[] {new object[] {"E1", 10}});
+                new[] { new object[] { "E1", 10 } });
 
-            emitter.Submit(new object[] {"E2", 20});
+            emitter.Submit(new object[] { "E2", 20 });
             EPAssertionUtil.AssertPropsPerRow(
                 env.Container,
                 captureOp.Current,
                 fields,
-                new[] {new object[] {"E1", 10}, new object[] {"E2", 20}});
+                new[] { new object[] { "E1", 10 }, new object[] { "E2", 20 } });
 
             emitter.SubmitSignal(new EPDataFlowSignalFinalMarkerImpl());
             EPAssertionUtil.AssertPropsPerRow(
                 env.Container,
                 captureOp.Current,
                 fields,
-                new object[0][]);
+                Array.Empty<object[]>());
             EPAssertionUtil.AssertPropsPerRow(
                 env.Container,
                 captureOp.GetAndReset()[0].UnwrapIntoArray<object>(),
                 fields,
-                new[] {new object[] {"E1", 10}, new object[] {"E2", 20}});
+                new[] { new object[] { "E1", 10 }, new object[] { "E2", 20 } });
 
-            emitter.Submit(new object[] {"E3", 30});
+            emitter.Submit(new object[] { "E3", 30 });
             EPAssertionUtil.AssertPropsPerRow(
                 env.Container,
                 captureOp.Current,
                 fields,
-                new[] {new object[] {"E3", 30}});
+                new[] { new object[] { "E3", 30 } });
 
             // stays running until cancelled (no transition to complete)
-            Assert.AreEqual(EPDataFlowState.RUNNING, instance.State);
+            ClassicAssert.AreEqual(EPDataFlowState.RUNNING, instance.State);
 
             instance.Cancel();
-            Assert.AreEqual(EPDataFlowState.CANCELLED, instance.State);
+            ClassicAssert.AreEqual(EPDataFlowState.CANCELLED, instance.State);
 
             env.UndeployAll();
 
             // test doc sample
-            var epl = "@Name('flow') create dataflow HelloWorldDataFlow\n" +
+            var epl = "@name('flow') create dataflow HelloWorldDataFlow\n" +
                       "  create schema SampleSchema(text string),\t// sample type\t\t\n" +
                       "\t\n" +
                       "  Emitter -> helloworld.stream<SampleSchema> { name: 'myemitter' }\n" +
@@ -90,6 +94,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             env.Runtime.DataFlowService.Instantiate(env.DeploymentId("flow"), "HelloWorldDataFlow");
 
             env.UndeployAll();
+        }
+
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.DATAFLOW);
         }
     }
 } // end of namespace

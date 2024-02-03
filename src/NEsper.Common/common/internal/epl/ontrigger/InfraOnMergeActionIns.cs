@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -11,9 +11,12 @@ using System;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.util;
+using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.resultset.select.core;
 using com.espertech.esper.common.@internal.epl.table.core;
+using com.espertech.esper.compat;
+
 
 namespace com.espertech.esper.common.@internal.epl.ontrigger
 {
@@ -23,20 +26,21 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
         private readonly Table insertIntoTable;
         private readonly bool audit;
         private readonly bool route;
+        private readonly ExprEvaluator eventPrecedence;
 
         public InfraOnMergeActionIns(
             ExprEvaluator optionalFilter,
             SelectExprProcessor insertHelper,
             Table insertIntoTable,
             bool audit,
-            bool route)
-            : base(optionalFilter)
-
+            bool route,
+            ExprEvaluator eventPrecedence) : base(optionalFilter)
         {
             this.insertHelper = insertHelper;
             this.insertIntoTable = insertIntoTable;
             this.audit = audit;
             this.route = route;
+            this.eventPrecedence = eventPrecedence;
         }
 
         public override void Apply(
@@ -47,7 +51,6 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
             AgentInstanceContext agentInstanceContext)
         {
             var theEvent = insertHelper.Process(eventsPerStream, true, true, agentInstanceContext);
-
             if (insertIntoTable != null) {
                 var tableInstance = insertIntoTable.GetTableInstance(agentInstanceContext.AgentInstanceId);
                 tableInstance.AddEventUnadorned(theEvent);
@@ -58,18 +61,22 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
                 newData.Add(theEvent);
                 return;
             }
-            
-            if (insertIntoTable != null) {
-                var tableInstance = insertIntoTable.GetTableInstance(agentInstanceContext.AgentInstanceId);
-                tableInstance.AddEventUnadorned(theEvent);
-                return;
-            }
 
             if (audit) {
                 agentInstanceContext.AuditProvider.Insert(theEvent, agentInstanceContext);
             }
 
-            agentInstanceContext.InternalEventRouter.Route(theEvent, agentInstanceContext, false);
+            var precedence = 0;
+            if (eventPrecedence != null) {
+                var result = eventPrecedence
+                    .Evaluate(new EventBean[] { theEvent }, true, agentInstanceContext)
+                    .AsBoxedInt32();
+                if (result != null) {
+                    precedence = result.Value;
+                }
+            }
+
+            agentInstanceContext.InternalEventRouter.Route(theEvent, agentInstanceContext, false, precedence);
         }
 
         public override void Apply(
@@ -83,13 +90,15 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
             var theEvent = insertHelper.Process(eventsPerStream, true, true, agentInstanceContext);
             if (!route) {
                 var aggs = tableStateInstance.Table.AggregationRowFactory.Make();
-                ((Array) theEvent.Underlying).SetValue(aggs, 0);
+                ((object[])theEvent.Underlying)[0] = aggs;
                 tableStateInstance.AddEvent(theEvent);
-                changeHandlerAdded?.Add(theEvent, eventsPerStream, true, agentInstanceContext);
+                if (changeHandlerAdded != null) {
+                    changeHandlerAdded.Add(theEvent, eventsPerStream, true, agentInstanceContext);
+                }
 
                 return;
             }
-            
+
             if (insertIntoTable != null) {
                 var tableInstance = insertIntoTable.GetTableInstance(agentInstanceContext.AgentInstanceId);
                 tableInstance.AddEventUnadorned(theEvent);
@@ -100,11 +109,15 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
                 agentInstanceContext.AuditProvider.Insert(theEvent, agentInstanceContext);
             }
 
-            agentInstanceContext.InternalEventRouter.Route(theEvent, agentInstanceContext, false);
+            // Evaluate event precedence
+            var precedence = ExprNodeUtilityEvaluate.EvaluateIntOptional(
+                eventPrecedence,
+                theEvent,
+                0,
+                agentInstanceContext);
+            agentInstanceContext.InternalEventRouter.Route(theEvent, agentInstanceContext, false, precedence);
         }
 
-        public override string Name {
-            get { return route ? "insert-into" : "select"; }
-        }
+        public override string Name => route ? "insert-into" : "select";
     }
 } // end of namespace

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -54,13 +54,13 @@ namespace com.espertech.esper.common.client.hook.vdw
                 return false;
             }
 
-            var that = (VirtualDataWindowKeyRange) o;
+            var that = (VirtualDataWindowKeyRange)o;
 
-            if (End != null ? !End.Equals(that.End) : that.End != null) {
+            if (!End?.Equals(that.End) ?? that.End != null) {
                 return false;
             }
 
-            if (Start != null ? !Start.Equals(that.Start) : that.Start != null) {
+            if (!Start?.Equals(that.Start) ?? that.Start != null) {
                 return false;
             }
 

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -13,7 +13,6 @@ using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.suite.@event.bean;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionrun.runner;
@@ -26,36 +25,33 @@ using SupportBeanComplexProps = com.espertech.esper.regressionlib.support.bean.S
 namespace com.espertech.esper.regressionrun.suite.@event
 {
     [TestFixture]
-    public class TestSuiteEventBean : AbstractTestBase
-    {
+    public class TestSuiteEventBean : AbstractTestBase {
         public static void Configure(Configuration configuration)
         {
             var myLegacyNestedEvent = new ConfigurationCommonEventTypeBean();
             myLegacyNestedEvent.AccessorStyle = AccessorStyle.EXPLICIT;
             myLegacyNestedEvent.AddFieldProperty("fieldNestedClassValue", "fieldNestedValue");
             myLegacyNestedEvent.AddMethodProperty("readNestedClassValue", "ReadNestedValue");
-            configuration.Common.AddEventType(
-                "MyLegacyNestedEvent",
-                typeof(SupportLegacyBean.LegacyNested),
+            configuration.Common.AddEventType("MyLegacyNestedEvent", typeof(SupportLegacyBean.LegacyNested),
                 myLegacyNestedEvent);
-
-            foreach (var clazz in new[] {
-                typeof(SupportBean),
-                typeof(SupportOverrideOne),
-                typeof(SupportOverrideOneA),
-                typeof(SupportOverrideBase),
-                typeof(SupportOverrideOneB),
-                typeof(ISupportBaseAB),
-                typeof(ISupportA),
-                typeof(ISupportB),
-                typeof(ISupportC),
-                typeof(ISupportAImplSuperG),
-                typeof(ISupportAImplSuperGImplPlus),
-                typeof(SupportBeanComplexProps),
-                typeof(SupportBeanWriteOnly),
-                typeof(SupportBeanDupProperty),
-                typeof(SupportBeanCombinedProps)
-            }) {
+            foreach (var clazz in new[]
+                     {
+                         typeof(SupportBean),
+                         typeof(SupportOverrideOne),
+                         typeof(SupportOverrideOneA),
+                         typeof(SupportOverrideBase),
+                         typeof(SupportOverrideOneB),
+                         typeof(ISupportBaseAB),
+                         typeof(ISupportA),
+                         typeof(ISupportB),
+                         typeof(ISupportC),
+                         typeof(ISupportAImplSuperG),
+                         typeof(ISupportAImplSuperGImplPlus),
+                         typeof(SupportBeanComplexProps),
+                         typeof(SupportBeanWriteOnly),
+                         typeof(SupportBeanDupProperty),
+                         typeof(SupportBeanCombinedProps)
+                     }) {
                 configuration.Common.AddEventType(clazz.Name, clazz);
             }
 
@@ -83,33 +79,41 @@ namespace com.espertech.esper.regressionrun.suite.@event
             defType.Put("value", typeof(string));
             defType.Put("properties", typeof(IDictionary<string, object>));
             configuration.Common.AddEventType("InputEvent", defType);
-
-            configuration.Common.AddEventType(
-                "ObjectArrayEvent",
-                new[] {"Mapped", "Indexed"},
-                new object[] {new Dictionary<string, object>(), typeof(int[])});
+            configuration.Common.AddEventType("ObjectArrayEvent", new[] { "Mapped", "Indexed" },
+                new object[] { new Dictionary<string, object>(), typeof(int[]) });
 
             var myEventWithField = new ConfigurationCommonEventTypeBean();
             myEventWithField.AccessorStyle = AccessorStyle.PUBLIC;
             configuration.Common.AddEventType(
-                typeof(EventBeanPropertyIterableMapList.MyEventWithField).Name,
-                typeof(EventBeanPropertyIterableMapList.MyEventWithField),
-                myEventWithField);
+                nameof(EventBeanPropertyIterableMapList.MyEventWithField),
+                typeof(EventBeanPropertyIterableMapList.MyEventWithField), myEventWithField);
 
             var configNoCglib = new ConfigurationCommonEventTypeBean();
             configuration.Common.AddEventType(
-                typeof(EventBeanPropertyIterableMapList.MyEventWithMethod).Name,
-                typeof(EventBeanPropertyIterableMapList.MyEventWithMethod),
-                configNoCglib);
+                nameof(EventBeanPropertyIterableMapList.MyEventWithMethod),
+                typeof(EventBeanPropertyIterableMapList.MyEventWithMethod), configNoCglib);
 
             IDictionary<string, object> mapOuter = new Dictionary<string, object>();
             mapOuter.Put("p0int", typeof(int));
             mapOuter.Put("p0intarray", typeof(int[]));
             mapOuter.Put("p0map", typeof(IDictionary<string, object>));
+
             configuration.Common.AddEventType("MSTypeOne", mapOuter);
 
-            string[] props = {"p0int", "p0intarray", "p0map"};
-            object[] types = {typeof(int), typeof(int[]), typeof(IDictionary<string, object>)};
+            string[] props =
+            {
+                "p0int",
+                "p0intarray",
+                "p0map"
+            };
+
+            object[] types =
+            {
+                typeof(int),
+                typeof(int[]),
+                typeof(IDictionary<string, object>)
+            };
+
             configuration.Common.AddEventType("OASimple", props, types);
 
             IDictionary<string, object> frostyLev0 = new Dictionary<string, object>();
@@ -120,13 +124,9 @@ namespace com.espertech.esper.regressionrun.suite.@event
             frosty.Put("p0simple", "FrostyLev0");
             frosty.Put("p0bean", typeof(SupportBeanComplexProps));
             configuration.Common.AddEventType("Frosty", frosty);
-
-            configuration.Common.AddEventType(
-                "WheatLev0", new[] {"p1id"}, new object[] {typeof(int)});
-            configuration.Common.AddEventType(
-                "WheatRoot",
-                new[] {"p0simple", "p0bean"},
-                new object[] {"WheatLev0", typeof(SupportBeanComplexProps)});
+            configuration.Common.AddEventType("WheatLev0", new[] { "p1id" }, new object[] { typeof(int) });
+            configuration.Common.AddEventType("WheatRoot", new[] { "p0simple", "p0bean" },
+                new object[] { "WheatLev0", typeof(SupportBeanComplexProps) });
 
             IDictionary<string, object> homerunLev0 = new Dictionary<string, object>();
             homerunLev0.Put("p1id", typeof(int));
@@ -136,15 +136,13 @@ namespace com.espertech.esper.regressionrun.suite.@event
             homerunRoot.Put("p0simple", "HomerunLev0");
             homerunRoot.Put("p0array", "HomerunLev0[]");
             configuration.Common.AddEventType("HomerunRoot", homerunRoot);
-
-            configuration.Common.AddEventType("GoalLev0", new[] {"p1id"}, new object[] {typeof(int)});
-            configuration.Common.AddEventType(
-                "GoalRoot",
-                new[] {"p0simple", "p0array"},
-                new object[] {"GoalLev0", "GoalLev0[]"});
+            configuration.Common.AddEventType("GoalLev0", new[] { "p1id" }, new object[] { typeof(int) });
+            configuration.Common.AddEventType("GoalRoot", new[] { "p0simple", "p0array" },
+                new object[] { "GoalLev0", "GoalLev0[]" });
 
             IDictionary<string, object> flywheelTypeLev0 = new Dictionary<string, object>();
             flywheelTypeLev0.Put("p1id", typeof(int));
+
             IDictionary<string, object> flywheelRoot = new Dictionary<string, object>();
             flywheelRoot.Put("p0simple", flywheelTypeLev0);
             configuration.Common.AddEventType("FlywheelRoot", flywheelRoot);
@@ -161,16 +159,33 @@ namespace com.espertech.esper.regressionrun.suite.@event
             typeMap.Put("complexarray", typeof(SupportBeanComplexProps[]));
             typeMap.Put("map", "GistInner");
             typeMap.Put("maparray", "GistInner[]");
+
             configuration.Common.AddEventType("GistMapOne", typeMap);
             configuration.Common.AddEventType("GistMapTwo", typeMap);
+            configuration.Common.AddEventType("CashInner", new[] { "p2id" }, new object[] { typeof(int) });
 
-            configuration.Common.AddEventType("CashInner", new[] {"p2id"}, new object[] {typeof(int)});
-
-            string[] propsCash = {"id", "bean", "beanarray", "complex", "complexarray", "map", "maparray"};
-            object[] typesCash = {
-                typeof(int), typeof(SupportBean), typeof(SupportBean[]), typeof(SupportBeanComplexProps),
-                typeof(SupportBeanComplexProps[]), "CashInner", "CashInner[]"
+            string[] propsCash =
+            {
+                "id",
+                "bean",
+                "beanarray",
+                "complex",
+                "complexarray",
+                "map",
+                "maparray"
             };
+
+            object[] typesCash =
+            {
+                typeof(int),
+                typeof(SupportBean),
+                typeof(SupportBean[]),
+                typeof(SupportBeanComplexProps),
+                typeof(SupportBeanComplexProps[]),
+                "CashInner",
+                "CashInner[]"
+            };
+
             configuration.Common.AddEventType("CashMapOne", propsCash, typesCash);
             configuration.Common.AddEventType("CashMapTwo", propsCash, typesCash);
 
@@ -186,15 +201,35 @@ namespace com.espertech.esper.regressionrun.suite.@event
             txTypeRoot.Put("p0array", "TXTypeLev0[]");
             configuration.Common.AddEventType("TXTypeRoot", txTypeRoot);
 
-            string[] localTypeLev0 = {"p1simple", "p1array", "p1complex", "p1complexarray"};
-            object[] typesLev0 = {
-                typeof(SupportBean), typeof(SupportBean[]), typeof(SupportBeanComplexProps),
+            string[] localTypeLev0 =
+            {
+                "p1simple",
+                "p1array",
+                "p1complex",
+                "p1complexarray"
+            };
+
+            object[] typesLev0 =
+            {
+                typeof(SupportBean),
+                typeof(SupportBean[]),
+                typeof(SupportBeanComplexProps),
                 typeof(SupportBeanComplexProps[])
             };
             configuration.Common.AddEventType("LocalTypeLev0", localTypeLev0, typesLev0);
 
-            string[] localTypeRoot = {"p0simple", "p0array"};
-            object[] typesOuter = {"LocalTypeLev0", "LocalTypeLev0[]"};
+            string[] localTypeRoot =
+            {
+                "p0simple",
+                "p0array"
+            };
+
+            object[] typesOuter =
+            {
+                "LocalTypeLev0",
+                "LocalTypeLev0[]"
+            };
+
             configuration.Common.AddEventType("LocalTypeRoot", localTypeRoot, typesOuter);
 
             IDictionary<string, object> jimTypeLev1 = new Dictionary<string, object>();
@@ -210,16 +245,11 @@ namespace com.espertech.esper.regressionrun.suite.@event
             jimTypeRoot.Put("p0simple", "JimTypeLev0");
             jimTypeRoot.Put("p0array", "JimTypeLev0[]");
             configuration.Common.AddEventType("JimTypeRoot", jimTypeRoot);
-
-            configuration.Common.AddEventType("JackTypeLev1", new[] {"p2id"}, new object[] {typeof(int)});
-            configuration.Common.AddEventType(
-                "JackTypeLev0",
-                new[] {"p1simple", "p1array"},
-                new object[] {"JackTypeLev1", "JackTypeLev1[]"});
-            configuration.Common.AddEventType(
-                "JackTypeRoot",
-                new[] {"p0simple", "p0array"},
-                new object[] {"JackTypeLev0", "JackTypeLev0[]"});
+            configuration.Common.AddEventType("JackTypeLev1", new[] { "p2id" }, new object[] { typeof(int) });
+            configuration.Common.AddEventType("JackTypeLev0", new[] { "p1simple", "p1array" },
+                new object[] { "JackTypeLev1", "JackTypeLev1[]" });
+            configuration.Common.AddEventType("JackTypeRoot", new[] { "p0simple", "p0array" },
+                new object[] { "JackTypeLev0", "JackTypeLev0[]" });
 
             IDictionary<string, object> mmInner = new Dictionary<string, object>();
             mmInner.Put("p2id", typeof(int));
@@ -243,18 +273,15 @@ namespace com.espertech.esper.regressionrun.suite.@event
             myTypeDef.Put("select", typeof(int));
             myTypeDef.Put("children's books", typeof(int[]));
             myTypeDef.Put("my <> map", typeof(IDictionary<string, object>));
-            configuration.Common.AddEventType("MyType", myTypeDef);
 
+            configuration.Common.AddEventType("MyType", myTypeDef);
             configuration.Common.AddEventType(typeof(EventBeanPropertyResolutionWDefaults.LocalEventWithEnum));
             configuration.Common.AddEventType(typeof(EventBeanPropertyResolutionWDefaults.LocalEventWithGroup));
 
             var anotherLegacyNestedEvent = new ConfigurationCommonEventTypeBean();
             anotherLegacyNestedEvent.AccessorStyle = AccessorStyle.PUBLIC;
-            configuration.Common.AddEventType(
-                "AnotherLegacyNestedEvent",
-                typeof(SupportLegacyBean.LegacyNested),
+            configuration.Common.AddEventType("AnotherLegacyNestedEvent", typeof(SupportLegacyBean.LegacyNested),
                 anotherLegacyNestedEvent);
-
             configuration.Common.AddImportType(typeof(EventBeanPropertyResolutionWDefaults.LocalEventEnum));
             configuration.Common.AddImportType(typeof(EventBeanPropertyResolutionWDefaults.GROUP));
         }
@@ -269,12 +296,6 @@ namespace com.espertech.esper.regressionrun.suite.@event
         public void TestEventBeanFinalClass()
         {
             RegressionRunner.Run(_session, new EventBeanFinalClass());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestEventBeanInheritAndInterface()
-        {
-            RegressionRunner.Run(_session, EventBeanInheritAndInterface.Executions());
         }
 
         [Test, RunInApplicationDomain]
@@ -302,20 +323,125 @@ namespace com.espertech.esper.regressionrun.suite.@event
         }
 
         [Test, RunInApplicationDomain]
-        public void TestEventBeanPropertyResolutionFragment()
+        public void TestEventBeanPropertyAccessPerformance()
         {
-            RegressionRunner.Run(_session, EventBeanPropertyResolutionFragment.Executions());
-        }
-        
-        [Test, RunInApplicationDomain]
-        public void TestEventBeanPropertyAccessPerformance() {
             RegressionRunner.Run(_session, new EventBeanPropertyAccessPerformance());
         }
 
-        [Test, RunInApplicationDomain]
-        public void TestEventBeanPropertyResolutionWDefaults()
-        {
-            RegressionRunner.Run(_session, EventBeanPropertyResolutionWDefaults.Executions());
+        /// <summary>
+        /// Auto-test(s): EventBeanInheritAndInterface
+        /// <code>
+        /// RegressionRunner.Run(_session, EventBeanInheritAndInterface.Executions());
+        /// </code>
+        /// </summary>
+        public class TestEventBeanInheritAndInterface : AbstractTestBase {
+            public TestEventBeanInheritAndInterface() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithOverridingSubclass() =>
+                RegressionRunner.Run(_session, EventBeanInheritAndInterface.WithOverridingSubclass());
+
+            [Test, RunInApplicationDomain]
+            public void WithImplementationClass() => RegressionRunner.Run(_session,
+                EventBeanInheritAndInterface.WithImplementationClass());
+        }
+
+        /// <summary>
+        /// Auto-test(s): EventBeanPropertyResolutionFragment
+        /// <code>
+        /// RegressionRunner.Run(_session, EventBeanPropertyResolutionFragment.Executions());
+        /// </code>
+        /// </summary>
+        public class TestEventBeanPropertyResolutionFragment : AbstractTestBase {
+            public TestEventBeanPropertyResolutionFragment() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithMapSimpleTypes() => RegressionRunner.Run(_session,
+                EventBeanPropertyResolutionFragment.WithMapSimpleTypes());
+
+            [Test, RunInApplicationDomain]
+            public void WithObjectArraySimpleTypes() => RegressionRunner.Run(_session,
+                EventBeanPropertyResolutionFragment.WithObjectArraySimpleTypes());
+
+            [Test, RunInApplicationDomain]
+            public void WithWrapperFragmentWithMap() => RegressionRunner.Run(_session,
+                EventBeanPropertyResolutionFragment.WithWrapperFragmentWithMap());
+
+            [Test, RunInApplicationDomain]
+            public void WithWrapperFragmentWithObjectArray() => RegressionRunner.Run(_session,
+                EventBeanPropertyResolutionFragment.WithWrapperFragmentWithObjectArray());
+
+            [Test, RunInApplicationDomain]
+            public void WithNativeBeanFragment() => RegressionRunner.Run(_session,
+                EventBeanPropertyResolutionFragment.WithNativeBeanFragment());
+
+            [Test, RunInApplicationDomain]
+            public void WithMapFragmentMapNested() => RegressionRunner.Run(_session,
+                EventBeanPropertyResolutionFragment.WithMapFragmentMapNested());
+
+            [Test, RunInApplicationDomain]
+            public void WithObjectArrayFragmentObjectArrayNested() => RegressionRunner.Run(_session,
+                EventBeanPropertyResolutionFragment.WithObjectArrayFragmentObjectArrayNested());
+
+            [Test, RunInApplicationDomain]
+            public void WithMapFragmentMapUnnamed() => RegressionRunner.Run(_session,
+                EventBeanPropertyResolutionFragment.WithMapFragmentMapUnnamed());
+
+            [Test, RunInApplicationDomain]
+            public void WithMapFragmentTransposedMapEventBean() => RegressionRunner.Run(_session,
+                EventBeanPropertyResolutionFragment.WithMapFragmentTransposedMapEventBean());
+
+            [Test, RunInApplicationDomain]
+            public void WithObjectArrayFragmentTransposedMapEventBean() => RegressionRunner.Run(_session,
+                EventBeanPropertyResolutionFragment.WithObjectArrayFragmentTransposedMapEventBean());
+
+            [Test, RunInApplicationDomain]
+            public void WithMapFragmentMapBeans() => RegressionRunner.Run(_session,
+                EventBeanPropertyResolutionFragment.WithMapFragmentMapBeans());
+
+            [Test, RunInApplicationDomain]
+            public void WithObjectArrayFragmentBeans() => RegressionRunner.Run(_session,
+                EventBeanPropertyResolutionFragment.WithObjectArrayFragmentBeans());
+
+            [Test, RunInApplicationDomain]
+            public void WithMapFragmentMap3Level() => RegressionRunner.Run(_session,
+                EventBeanPropertyResolutionFragment.WithMapFragmentMap3Level());
+
+            [Test, RunInApplicationDomain]
+            public void WithObjectArrayFragment3Level() => RegressionRunner.Run(_session,
+                EventBeanPropertyResolutionFragment.WithObjectArrayFragment3Level());
+
+            [Test, RunInApplicationDomain]
+            public void WithFragmentMapMulti() => RegressionRunner.Run(_session,
+                EventBeanPropertyResolutionFragment.WithFragmentMapMulti());
+        }
+
+        /// <summary>
+        /// Auto-test(s): EventBeanPropertyResolutionWDefaults
+        /// <code>
+        /// RegressionRunner.Run(_session, EventBeanPropertyResolutionWDefaults.Executions());
+        /// </code>
+        /// </summary>
+        public class TestEventBeanPropertyResolutionWDefaults : AbstractTestBase {
+            public TestEventBeanPropertyResolutionWDefaults() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithReservedKeywordEscape() => RegressionRunner.Run(_session,
+                EventBeanPropertyResolutionWDefaults.WithReservedKeywordEscape());
+
+            [Test, RunInApplicationDomain]
+            public void WithWriteOnly() =>
+                RegressionRunner.Run(_session, EventBeanPropertyResolutionWDefaults.WithWriteOnly());
+
+            [Test, RunInApplicationDomain]
+            public void WithCaseSensitive() =>
+                RegressionRunner.Run(_session, EventBeanPropertyResolutionWDefaults.WithCaseSensitive());
         }
     }
 } // end of namespace

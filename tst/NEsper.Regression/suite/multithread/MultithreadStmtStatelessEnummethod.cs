@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -18,6 +18,7 @@ using com.espertech.esper.regressionlib.support.multithread;
 using com.espertech.esper.regressionlib.support.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.multithread
 {
@@ -26,6 +27,11 @@ namespace com.espertech.esper.regressionlib.suite.multithread
     /// </summary>
     public class MultithreadStmtStatelessEnummethod : RegressionExecution
     {
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
+        }
+
         public void Run(RegressionEnvironment env)
         {
             ICollection<string> vals = Arrays.AsList("a", "b", "c", "d", "e", "f", "g", "h", "i", "j");
@@ -36,7 +42,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                 return bean;
             };
 
-            var enumFilter = "@Name('s0') select Strvals.anyOf(v -> v = 'j') from SupportCollection";
+            var enumFilter = "@name('s0') select Strvals.anyOf(v -> v = 'j') from SupportCollection";
             TryCount(env, 4, 1000, enumFilter, enumCallback);
             env.UndeployAll();
         }
@@ -68,7 +74,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             SupportCompileDeployUtil.ExecutorAwait(threadPool, 10, TimeUnit.SECONDS);
             SupportCompileDeployUtil.AssertFutures(future);
 
-            Assert.AreEqual(numMessages * numThreads, listener.GetNewDataListFlattened().Length);
+            ClassicAssert.AreEqual(numMessages * numThreads, listener.NewDataListFlattened.Length);
         }
     }
 }

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -21,7 +21,6 @@ namespace com.espertech.esper.common.@internal.type
         /// <summary>
         ///     Computer for type-specific arith operations.
         /// </summary>
-        [Serializable]
         public class DivideDecimal : Computer
         {
             private readonly bool _divisionByZeroReturnsNull;
@@ -76,7 +75,7 @@ namespace com.espertech.esper.common.@internal.type
                 }
 
                 var method = block.MethodReturn(
-                    Op(Ref("b1"), "/",  Ref("b2")));
+                    Op(Ref("b1"), "/", Ref("b2")));
                 return LocalMethod(method, left, right);
             }
         }

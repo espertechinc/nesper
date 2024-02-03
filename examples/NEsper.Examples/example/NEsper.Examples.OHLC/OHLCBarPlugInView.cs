@@ -34,9 +34,9 @@ namespace NEsper.Examples.OHLC
             OHLCBarPlugInViewFactory factory,
             AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext)
         {
-            this._factory = factory;
-            this._agentInstanceViewFactoryContext = agentInstanceViewFactoryContext;
-            this._scheduleSlot = agentInstanceViewFactoryContext.StatementContext.ScheduleBucket.AllocateSlot();
+            _factory = factory;
+            _agentInstanceViewFactoryContext = agentInstanceViewFactoryContext;
+            _scheduleSlot = agentInstanceViewFactoryContext.StatementContext.ScheduleBucket.AllocateSlot();
         }
 
         public override EventType EventType => _factory.EventType;
@@ -142,10 +142,10 @@ namespace NEsper.Examples.OHLC
             var barValue = new OHLCBarValue(_currentTimestampMinute.Value, _first, _last, _max, _min);
             var outgoing = _agentInstanceViewFactoryContext.StatementContext.EventBeanTypedEventFactory.AdapterForTypedObject(barValue, _factory.EventType);
             if (_lastEvent == null) {
-                child.Update(new EventBean[] {outgoing}, null);
+                Child.Update(new EventBean[] {outgoing}, null);
             }
             else {
-                child.Update(new EventBean[] {outgoing}, new EventBean[] {_lastEvent});
+                Child.Update(new EventBean[] {outgoing}, new EventBean[] {_lastEvent});
             }
 
             _lastEvent = outgoing;

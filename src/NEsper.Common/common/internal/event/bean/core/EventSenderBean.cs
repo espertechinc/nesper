@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -45,11 +45,11 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
             ThreadingCommon threadingService)
         {
-            this._runtime = runtime;
-            this._beanEventType = beanEventType;
-            this._eventBeanTypedEventFactory = eventBeanTypedEventFactory;
+            _runtime = runtime;
+            _beanEventType = beanEventType;
+            _eventBeanTypedEventFactory = eventBeanTypedEventFactory;
             _compatibleClasses = new HashSet<Type>();
-            this._threadingService = threadingService;
+            _threadingService = threadingService;
         }
 
         public void SendEvent(object theEvent)
@@ -82,8 +82,8 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
                 lock (this) {
                     if (!_compatibleClasses.Contains(theEvent.GetType())) {
                         if (TypeHelper.IsSubclassOrImplementsInterface(
-                            theEvent.GetType(),
-                            _beanEventType.UnderlyingType)) {
+                                theEvent.GetType(),
+                                _beanEventType.UnderlyingType)) {
                             _compatibleClasses.Add(theEvent.GetType());
                         }
                         else {

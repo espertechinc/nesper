@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -14,94 +14,80 @@ using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.epl.expression.core.ExprNodeUtilityValidate; //getValidatedSubtree
 
-namespace com.espertech.esper.common.@internal.epl.expression.chain
-{
-    public abstract class Chainable
-    {
-        protected Chainable() : this(false, false)
-        {
-        }
+namespace com.espertech.esper.common.@internal.epl.expression.chain {
+    public abstract class Chainable {
+        protected Chainable () : this (false, false) { }
 
-        protected Chainable(
+        protected Chainable (
             bool distinct,
-            bool optional)
-        {
+            bool optional) {
             IsDistinct = distinct;
             IsOptional = optional;
         }
 
         public bool IsDistinct { get; }
-
         public bool IsOptional { get; }
 
-        public abstract void AddParametersTo(ICollection<ExprNode> result);
+        public abstract void AddParametersTo (ICollection<ExprNode> result);
+        public abstract void Accept (ExprNodeVisitor visitor);
+        public abstract void Accept (ExprNodeVisitorWithParent visitor);
 
-        public abstract void Accept(ExprNodeVisitor visitor);
-
-        public abstract void Accept(ExprNodeVisitorWithParent visitor);
-
-        public abstract void Accept(
+        public abstract void Accept (
             ExprNodeVisitorWithParent visitor,
             ExprNode parent);
 
-        public abstract string GetRootNameOrEmptyString();
-
-        public abstract IList<ExprNode> GetParametersOrEmpty();
-
-        public abstract void ValidateExpressions(
+        public abstract void ValidateExpressions (
             ExprNodeOrigin origin,
             ExprValidationContext validationContext);
 
-        public static bool IsPlainPropertyChain(Chainable chainable)
-        {
-            return chainable is ChainableName && chainable.GetRootNameOrEmptyString().Contains(".");
+        public static bool IsPlainPropertyChain (Chainable chainable) {
+            return chainable is ChainableName && chainable.RootNameOrEmptyString.Contains (".");
         }
 
-        public void Validate(
+        public void Validate (
             ExprNodeOrigin origin,
-            ExprValidationContext validationContext)
-        {
-            foreach (var node in GetParametersOrEmpty()) {
+            ExprValidationContext validationContext) {
+            foreach (var node in ParametersOrEmpty) {
                 if (node is ExprNamedParameterNode) {
-                    throw new ExprValidationException("Named parameters are not allowed");
+                    throw new ExprValidationException ("Named parameters are not allowed");
                 }
             }
 
-            ValidateExpressions(origin, validationContext);
+            ValidateExpressions (origin, validationContext);
         }
 
-        public static IList<Chainable> ChainForDot(Chainable chainable)
-        {
+        public static IList<Chainable> ChainForDot (Chainable chainable) {
             if (!(chainable is ChainableName)) {
-                return new List<Chainable>(Collections.SingletonList(chainable));
+                return new List<Chainable> (Collections.SingletonList (chainable));
             }
 
-            var values = chainable.GetRootNameOrEmptyString().Split('.');
-            var chain = new List<Chainable>(values.Length + 1);
+            var values = chainable.RootNameOrEmptyString.Split ('.');
+            var chain = new List<Chainable> (values.Length + 1);
             foreach (var value in values) {
-                chain.Add(new ChainableName(value));
+                chain.Add (new ChainableName (value));
             }
 
             return chain;
         }
 
-        internal static void ValidateExpressions(
+        internal static void ValidateExpressions (
             IList<ExprNode> expressions,
             ExprNodeOrigin origin,
-            ExprValidationContext validationContext)
-        {
+            ExprValidationContext validationContext) {
             for (var i = 0; i < expressions.Count; i++) {
                 var node = expressions[i];
-                var validated = GetValidatedSubtree(origin, node, validationContext);
+                var validated = GetValidatedSubtree (origin, node, validationContext);
                 if (node != validated) {
                     expressions[i] = validated;
                 }
             }
         }
 
-        protected bool EqualsChainable(Chainable that)
-        {
+        protected bool EqualsChainable (Chainable that) {
             return that.IsDistinct == IsDistinct && that.IsOptional == IsOptional;
         }
+
+        public virtual string RootNameOrEmptyString { get; }
+        public virtual IList<ExprNode> ParametersOrEmpty { get; }
     }
 } // end of namespace

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -12,6 +12,7 @@ using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.supportunit.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.epl.expression.funcs
 {
@@ -44,9 +45,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         [Test]
         public void TestEquals()
         {
-            Assert.IsFalse(instanceofNodes[0].EqualsNode(new ExprEqualsNodeImpl(true, false), false));
-            Assert.IsFalse(instanceofNodes[0].EqualsNode(instanceofNodes[1], false));
-            Assert.IsTrue(instanceofNodes[0].EqualsNode(instanceofNodes[0], false));
+            ClassicAssert.IsFalse(instanceofNodes[0].EqualsNode(new ExprEqualsNodeImpl(true, false), false));
+            ClassicAssert.IsFalse(instanceofNodes[0].EqualsNode(instanceofNodes[1], false));
+            ClassicAssert.IsTrue(instanceofNodes[0].EqualsNode(instanceofNodes[0], false));
         }
 
         [Test]
@@ -57,11 +58,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 instanceofNodes[i].Validate(SupportExprValidationContextFactory.MakeEmpty(container));
             }
 
-            Assert.AreEqual(true, instanceofNodes[0].Forge.ExprEvaluator.Evaluate(null, false, null));
-            Assert.AreEqual(true, instanceofNodes[1].Forge.ExprEvaluator.Evaluate(null, false, null));
-            Assert.AreEqual(false, instanceofNodes[2].Forge.ExprEvaluator.Evaluate(null, false, null));
-            Assert.AreEqual(false, instanceofNodes[3].Forge.ExprEvaluator.Evaluate(null, false, null));
-            Assert.AreEqual(true, instanceofNodes[4].Forge.ExprEvaluator.Evaluate(null, false, null));
+            ClassicAssert.AreEqual(true, instanceofNodes[0].Forge.ExprEvaluator.Evaluate(null, false, null));
+            ClassicAssert.AreEqual(true, instanceofNodes[1].Forge.ExprEvaluator.Evaluate(null, false, null));
+            ClassicAssert.AreEqual(false, instanceofNodes[2].Forge.ExprEvaluator.Evaluate(null, false, null));
+            ClassicAssert.AreEqual(false, instanceofNodes[3].Forge.ExprEvaluator.Evaluate(null, false, null));
+            ClassicAssert.AreEqual(true, instanceofNodes[4].Forge.ExprEvaluator.Evaluate(null, false, null));
         }
 
         [Test]
@@ -70,14 +71,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             for (var i = 0; i < instanceofNodes.Length; i++)
             {
                 instanceofNodes[i].Validate(SupportExprValidationContextFactory.MakeEmpty(container));
-                Assert.AreEqual(typeof(bool?), instanceofNodes[i].Forge.EvaluationType);
+                ClassicAssert.AreEqual(typeof(bool?), instanceofNodes[i].Forge.EvaluationType);
             }
         }
 
         [Test]
         public void TestToExpressionString()
         {
-            Assert.AreEqual(
+            ClassicAssert.AreEqual(
                 "instanceof(\"\"," + typeof(SupportBean).FullName + ",int,string)",
                 ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(instanceofNodes[1]));
         }

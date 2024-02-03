@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -12,6 +12,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.historical.method.poll;
 using com.espertech.esper.common.@internal.epl.variable.compiletime;
 using com.espertech.esper.compat.collections;
+
 
 namespace com.espertech.esper.common.@internal.epl.historical.method.core
 {
@@ -28,8 +29,8 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
             // class-based evaluation
             if (metadata.MethodProviderClass != null) {
                 // Construct polling strategy as a method invocation
-                MethodPollingExecStrategyEnum strategy = metadata.Strategy;
-                VariableMetaData variable = metadata.Variable;
+                var strategy = metadata.Strategy;
+                var variable = metadata.Variable;
                 if (variable == null) {
                     target = new MethodTargetStrategyStaticMethodForge(metadata.MethodProviderClass, targetMethod);
                 }

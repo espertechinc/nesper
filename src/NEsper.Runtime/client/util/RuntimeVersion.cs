@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -19,7 +19,7 @@ namespace com.espertech.esper.runtime.client.util
         /// <summary>
         ///     Current runtime version.
         /// </summary>
-        public const string RUNTIME_VERSION = "8.5.8";
+        public const string RUNTIME_VERSION = "8.9.0";
 
         /// <summary>
         ///     Current runtime major version.
@@ -72,7 +72,7 @@ namespace com.espertech.esper.runtime.client.util
             }
         }
 
-        private static MajorMinorPatch ParseVersion(string version)
+        public static MajorMinorPatch ParseVersion(string version)
         {
             if (version == null || version.Trim().Length == 0) {
                 throw new FormatException("Null or empty semantic version");
@@ -113,7 +113,6 @@ namespace com.espertech.esper.runtime.client.util
             public int Patch { get; }
         }
 
-        [Serializable]
         public class VersionException : Exception
         {
             public VersionException(string message) : base(message)

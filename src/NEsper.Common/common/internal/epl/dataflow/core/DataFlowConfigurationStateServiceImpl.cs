@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -29,9 +29,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.core
             savedConfigs.Put(savedConfiguration.SavedConfigurationName, savedConfiguration);
         }
 
-        public string[] SavedConfigNames {
-            get { return savedConfigs.Keys.ToArray(); }
-        }
+        public string[] SavedConfigNames => savedConfigs.Keys.ToArray();
 
         public EPDataFlowSavedConfiguration GetSavedConfig(string savedConfigName)
         {

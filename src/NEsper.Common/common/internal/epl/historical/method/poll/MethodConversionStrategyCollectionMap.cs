@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -7,7 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.common.client;
-using com.espertech.esper.common.@internal.context.util;
+using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.historical.method.poll
@@ -16,9 +16,9 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.poll
     {
         protected override EventBean GetEventBean(
             object value,
-            AgentInstanceContext agentInstanceContext)
+            ExprEvaluatorContext exprEvaluatorContext)
         {
-            return agentInstanceContext.EventBeanTypedEventFactory.AdapterForTypedMap(
+            return exprEvaluatorContext.EventBeanTypedEventFactory.AdapterForTypedMap(
                 value.UnwrapStringDictionary(),
                 eventType);
         }

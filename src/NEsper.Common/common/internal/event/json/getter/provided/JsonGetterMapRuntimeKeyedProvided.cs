@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -18,36 +18,36 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
 namespace com.espertech.esper.common.@internal.@event.json.getter.provided
 {
-	/// <summary>
-	/// Property getter for Json underlying fields.
-	/// </summary>
-	public sealed class JsonGetterMapRuntimeKeyedProvided : EventPropertyGetterMappedSPI
-	{
-		private readonly FieldInfo field;
+    /// <summary>
+    /// Property getter for Json underlying fields.
+    /// </summary>
+    public sealed class JsonGetterMapRuntimeKeyedProvided : EventPropertyGetterMappedSPI
+    {
+        private readonly FieldInfo _field;
 
-		public JsonGetterMapRuntimeKeyedProvided(FieldInfo field)
-		{
-			this.field = field;
-		}
+        public JsonGetterMapRuntimeKeyedProvided(FieldInfo field)
+        {
+            _field = field;
+        }
 
-		public CodegenExpression EventBeanGetMappedCodegen(
-			CodegenMethodScope codegenMethodScope,
-			CodegenClassScope codegenClassScope,
-			CodegenExpression beanExpression,
-			CodegenExpression key)
-		{
-			return StaticMethod(
-				typeof(CollectionUtil),
-				"GetMapValueChecked",
-				ExprDotName(CastUnderlying(field.DeclaringType, beanExpression), field.Name),
-				key);
-		}
+        public CodegenExpression EventBeanGetMappedCodegen(
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope,
+            CodegenExpression beanExpression,
+            CodegenExpression key)
+        {
+            return StaticMethod(
+                typeof(CollectionUtil),
+                "GetMapValueChecked",
+                ExprDotName(CastUnderlying(_field.DeclaringType, beanExpression), _field.Name),
+                key);
+        }
 
-		public object Get(
-			EventBean eventBean,
-			string mapKey)
-		{
-			return JsonFieldGetterHelperProvided.GetJsonProvidedMappedProp(eventBean.Underlying, field, mapKey);
-		}
-	}
+        public object Get(
+            EventBean eventBean,
+            string mapKey)
+        {
+            return JsonFieldGetterHelperProvided.GetJsonProvidedMappedProp(eventBean.Underlying, _field, mapKey);
+        }
+    }
 } // end of namespace

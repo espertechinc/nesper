@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -50,8 +50,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                 true,
                 typeof(EventType),
                 EventTypeUtility.ResolveTypeCodegen(wrappingEventType, EPStatementInitServicesConstants.REF));
-            CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(methodNode);
-            CodegenExpression wrapped = ExprDotMethod(
+            var refEPS = exprSymbol.GetAddEps(methodNode);
+            var wrapped = ExprDotMethod(
                 eventBeanFactory,
                 "AdapterForTypedWrapper",
                 ArrayAtIndex(refEPS, Constant(0)),

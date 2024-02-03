@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -9,8 +9,10 @@
 using System;
 using System.Collections.Generic;
 
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.common.@internal.compile.util;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.variable.compiletime;
@@ -23,12 +25,14 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
 {
     public class OutputConditionCountForge : OutputConditionFactoryForge
     {
-        internal readonly int eventRate;
-        internal readonly VariableMetaData variableMetaData;
+        protected readonly int eventRate;
+        protected readonly VariableMetaData variableMetaData;
+        protected readonly StateMgmtSetting stateMgmtSetting;
 
         public OutputConditionCountForge(
             int eventRate,
-            VariableMetaData variableMetaData)
+            VariableMetaData variableMetaData,
+            StateMgmtSetting stateMgmtSetting)
         {
             if (eventRate < 1 && variableMetaData == null) {
                 throw new ArgumentException(
@@ -37,6 +41,7 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
 
             this.eventRate = eventRate;
             this.variableMetaData = variableMetaData;
+            this.stateMgmtSetting = stateMgmtSetting;
         }
 
         public CodegenExpression Make(
@@ -56,11 +61,17 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
                 .MethodReturn(
                     ExprDotMethodChain(symbols.GetAddInitSvc(method))
                         .Get(EPStatementInitServicesConstants.RESULTSETPROCESSORHELPERFACTORY)
-                        .Add("MakeOutputConditionCount", Constant(eventRate), variableExpression));
+                        .Add(
+                            "MakeOutputConditionCount",
+                            Constant(eventRate),
+                            variableExpression,
+                            stateMgmtSetting.ToExpression()));
             return LocalMethod(method);
         }
 
-        public void CollectSchedules(IList<ScheduleHandleCallbackProvider> scheduleHandleCallbackProviders)
+        public void CollectSchedules(
+            CallbackAttributionOutputRate callbackAttribution,
+            IList<ScheduleHandleTracked> scheduleHandleCallbackProviders)
         {
         }
     }

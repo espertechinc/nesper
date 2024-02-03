@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -18,16 +18,20 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
 namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
 {
-	/// <summary>
-	///     Property getter for Json underlying fields.
-	/// </summary>
-	public class JsonGetterSimpleSchemaWFragment : JsonGetterSimpleSchemaBase
+    /// <summary>
+    ///     Property getter for Json underlying fields.
+    /// </summary>
+    public class JsonGetterSimpleSchemaWFragment : JsonGetterSimpleSchemaBase
     {
         public JsonGetterSimpleSchemaWFragment(
             JsonUnderlyingField field,
             string underlyingClassName,
             EventType fragmentType,
-            EventBeanTypedEventFactory eventBeanTypedEventFactory) : base(field, underlyingClassName, fragmentType, eventBeanTypedEventFactory)
+            EventBeanTypedEventFactory eventBeanTypedEventFactory) : base(
+            field,
+            underlyingClassName,
+            fragmentType,
+            eventBeanTypedEventFactory)
         {
         }
 
@@ -36,7 +40,10 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return UnderlyingFragmentCodegen(CastUnderlying(UnderlyingClassName, beanExpression), codegenMethodScope, codegenClassScope);
+            return UnderlyingFragmentCodegen(
+                CastUnderlying(UnderlyingClassName, beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
         public override CodegenExpression UnderlyingFragmentCodegen(
@@ -48,7 +55,8 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
                 return ConstantNull();
             }
 
-            CodegenExpression factory = codegenClassScope.AddOrGetDefaultFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
+            CodegenExpression factory =
+                codegenClassScope.AddOrGetDefaultFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
             CodegenExpression eventType = codegenClassScope.AddDefaultFieldUnshared(
                 true,
                 typeof(EventType),
@@ -57,7 +65,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
                 typeof(JsonFieldGetterHelperSchema),
                 "HandleJsonCreateFragmentSimple",
                 underlyingExpression,
-                Constant(Field.PropertyName),
+                Constant(Field.PropertyNumber),
                 eventType,
                 factory);
         }
@@ -69,8 +77,8 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
             }
 
             return JsonFieldGetterHelperSchema.HandleJsonCreateFragmentSimple(
-                (JsonEventObjectBase) @object,
-                Field.PropertyName,
+                (JsonEventObjectBase)@object,
+                Field.PropertyNumber,
                 FragmentType,
                 EventBeanTypedEventFactory);
         }

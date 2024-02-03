@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -9,18 +9,18 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.Json.Serialization;
 
 namespace com.espertech.esper.common.client.soda
 {
     /// <summary>
     ///     Guard is the where timer-within pattern object for use in pattern expressions.
     /// </summary>
-    [Serializable]
     public class PatternGuardExpr : EPBaseNamedObject,
         PatternExpr
     {
-        private IList<PatternExpr> guarded;
-        private string treeObjectName;
+        private IList<PatternExpr> _guarded;
+        private string _treeObjectName;
 
         /// <summary>
         ///     Ctor - for use to create a pattern expression tree, without pattern child expression.
@@ -34,7 +34,7 @@ namespace com.espertech.esper.common.client.soda
             IList<Expression> parameters)
             : base(@namespace, name, parameters)
         {
-            guarded = new List<PatternExpr>();
+            _guarded = new List<PatternExpr>();
         }
 
         /// <summary>
@@ -49,7 +49,7 @@ namespace com.espertech.esper.common.client.soda
             string name,
             Expression[] parameters,
             PatternExpr guarded)
-            : this(@namespace, name, (IList<Expression>) parameters, guarded)
+            : this(@namespace, name, (IList<Expression>)parameters, guarded)
         {
         }
 
@@ -67,32 +67,51 @@ namespace com.espertech.esper.common.client.soda
             PatternExpr guardedPattern)
             : base(@namespace, name, parameters)
         {
-            guarded = new List<PatternExpr>();
-            guarded.Add(guardedPattern);
+            _guarded = new List<PatternExpr>();
+            _guarded.Add(guardedPattern);
+        }
+
+        /// <summary>
+        /// Internal constructor.  For JSON deserialization.
+        /// </summary>
+        /// <param name="namespace"></param>
+        /// <param name="name"></param>
+        /// <param name="parameters"></param>
+        /// <param name="guarded"></param>
+        /// <param name="treeObjectName"></param>
+        [JsonConstructor]
+        public PatternGuardExpr(
+            string @namespace,
+            string name,
+            IList<Expression> parameters,
+            IList<PatternExpr> guarded,
+            string treeObjectName) : base(@namespace, name, parameters)
+        {
+            _guarded = guarded;
+            _treeObjectName = treeObjectName;
         }
 
         /// <summary>
         ///     Get sub expression
         /// </summary>
         /// <returns>sub pattern</returns>
-        public IList<PatternExpr> Guarded
-        {
-            get => guarded;
-            set => guarded = value;
+        public IList<PatternExpr> Guarded {
+            get => _guarded;
+            set => _guarded = value;
         }
 
-        public IList<PatternExpr> Children
-        {
-            get => guarded;
-            set => guarded = value;
+        [JsonIgnore]
+        public IList<PatternExpr> Children {
+            get => _guarded;
+            set => _guarded = value;
         }
 
-        public string TreeObjectName
-        {
-            get => treeObjectName;
-            set => treeObjectName = value;
+        public string TreeObjectName {
+            get => _treeObjectName;
+            set => _treeObjectName = value;
         }
 
+        [JsonIgnore]
         public PatternExprPrecedenceEnum Precedence => PatternExprPrecedenceEnum.GUARD;
 
         public void ToEPL(
@@ -100,14 +119,12 @@ namespace com.espertech.esper.common.client.soda
             PatternExprPrecedenceEnum parentPrecedence,
             EPStatementFormatter formatter)
         {
-            if (Precedence.GetLevel() < parentPrecedence.GetLevel())
-            {
+            if (Precedence.GetLevel() < parentPrecedence.GetLevel()) {
                 writer.Write("(");
                 ToPrecedenceFreeEPL(writer, formatter);
                 writer.Write(")");
             }
-            else
-            {
+            else {
                 ToPrecedenceFreeEPL(writer, formatter);
             }
         }
@@ -122,15 +139,13 @@ namespace com.espertech.esper.common.client.soda
             TextWriter writer,
             EPStatementFormatter formatter)
         {
-            guarded[0].ToEPL(writer, Precedence, formatter);
-            if (GuardEnumExtensions.IsWhile(Namespace, Name))
-            {
+            _guarded[0].ToEPL(writer, Precedence, formatter);
+            if (GuardEnumExtensions.IsWhile(Namespace, Name)) {
                 writer.Write(" while (");
                 Parameters[0].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                 writer.Write(")");
             }
-            else
-            {
+            else {
                 writer.Write(" where ");
                 base.ToEPL(writer);
             }

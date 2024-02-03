@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Match-recognize pattern descriptor for repetition
     /// </summary>
-    [Serializable]
     public class MatchRecognizeRegExRepeat
     {
         /// <summary>
@@ -71,12 +70,10 @@ namespace com.espertech.esper.common.client.soda
         public void WriteEPL(TextWriter writer)
         {
             writer.Write("{");
-            if (Single != null)
-            {
+            if (Single != null) {
                 Single.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
             }
-            else
-            {
+            else {
                 Low?.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
 
                 writer.Write(",");

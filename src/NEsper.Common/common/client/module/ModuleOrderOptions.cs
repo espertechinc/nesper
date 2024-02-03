@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.module
     ///     Options class passed to #GetModuleOrder(ICollection, ModuleOrderOptions)} for controlling the behavior of
     ///     ordering and dependency checking logic.
     /// </summary>
-    [Serializable]
     public class ModuleOrderOptions
     {
         private bool checkCircularDependency = true;

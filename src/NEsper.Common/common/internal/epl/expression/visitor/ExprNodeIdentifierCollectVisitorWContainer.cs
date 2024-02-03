@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -17,7 +17,6 @@ namespace com.espertech.esper.common.@internal.epl.expression.visitor
     /// <summary>
     ///     Visitor that collects event property identifier information under expression nodes.
     /// </summary>
-    [Serializable]
     public class ExprNodeIdentifierCollectVisitorWContainer : ExprNodeVisitorWithParent
     {
         /// <summary>Ctor. </summary>
@@ -25,7 +24,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.visitor
         {
             ExprProperties = new List<Pair<ExprNode, ExprIdentNode>>(2);
         }
-        
+
         public bool IsWalkDeclExprParam => true;
 
         /// <summary>

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -16,7 +16,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Named parameter expression of the form "name:expression" or "name:(expression, expression...)"
     /// </summary>
-    [Serializable]
     public class NamedParameterExpression : ExpressionBase
     {
         private string name;
@@ -56,30 +55,24 @@ namespace com.espertech.esper.common.client.soda
             return this;
         }
 
-        public override ExpressionPrecedenceEnum Precedence
-        {
-            get => ExpressionPrecedenceEnum.UNARY;
-        }
+        public override ExpressionPrecedenceEnum Precedence => ExpressionPrecedenceEnum.UNARY;
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             writer.Write(name);
             writer.Write(':');
-            if (Children.Count > 1 || Children.IsEmpty())
-            {
+            if (Children.Count > 1 || Children.IsEmpty()) {
                 writer.Write('(');
             }
 
-            string delimiter = "";
-            foreach (Expression expr in Children)
-            {
+            var delimiter = "";
+            foreach (var expr in Children) {
                 writer.Write(delimiter);
                 expr.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                 delimiter = ",";
             }
 
-            if (Children.Count > 1 || Children.IsEmpty())
-            {
+            if (Children.Count > 1 || Children.IsEmpty()) {
                 writer.Write(')');
             }
         }

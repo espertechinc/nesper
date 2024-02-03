@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -8,12 +8,13 @@
 
 using System.Collections.Generic;
 
-using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.resultset.querytype
 {
@@ -22,57 +23,38 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         private const string SYMBOL_DELL = "DELL";
         private const string SYMBOL_IBM = "IBM";
 
-        public static IList<RegressionExecution> Executions()
+        public static ICollection<RegressionExecution> Executions()
         {
-            var execs = new List<RegressionExecution>();
-            execs.Add(new ResultSetQueryTypeGroupByHaving(false));
-            execs.Add(new ResultSetQueryTypeGroupByHaving(true));
-            execs.Add(new ResultSetQueryTypeSumOneView());
+            IList<RegressionExecution> execs = new List<RegressionExecution>();
+            WithGroupByHaving(execs);
+            WithSumOneView(execs);
+            WithSumJoin(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSumJoin(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ResultSetQueryTypeSumJoin());
             return execs;
         }
 
-        private static void TryAssertionSum(RegressionEnvironment env)
+        public static IList<RegressionExecution> WithSumOneView(IList<RegressionExecution> execs = null)
         {
-            // assert select result type
-            Assert.AreEqual(typeof(string), env.Statement("s0").EventType.GetPropertyType("Symbol"));
-            Assert.AreEqual(typeof(long?), env.Statement("s0").EventType.GetPropertyType("Volume"));
-            Assert.AreEqual(typeof(double?), env.Statement("s0").EventType.GetPropertyType("mySum"));
-
-            var fields = new [] { "Symbol","Volume","mySum" };
-            SendEvent(env, SYMBOL_DELL, 10000, 49);
-            Assert.IsFalse(env.Listener("s0").IsInvoked);
-
-            SendEvent(env, SYMBOL_DELL, 20000, 54);
-            EPAssertionUtil.AssertProps(
-                env.Listener("s0").AssertOneGetNewAndReset(),
-                fields,
-                new object[] {SYMBOL_DELL, 20000L, 103d});
-
-            SendEvent(env, SYMBOL_IBM, 1000, 10);
-            Assert.IsFalse(env.Listener("s0").IsInvoked);
-
-            SendEvent(env, SYMBOL_IBM, 5000, 20);
-            EPAssertionUtil.AssertProps(
-                env.Listener("s0").AssertOneGetOldAndReset(),
-                fields,
-                new object[] {SYMBOL_DELL, 10000L, 54d});
-
-            SendEvent(env, SYMBOL_IBM, 6000, 5);
-            Assert.IsFalse(env.Listener("s0").IsInvoked);
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetQueryTypeSumOneView());
+            return execs;
         }
 
-        private static void SendEvent(
-            RegressionEnvironment env,
-            string symbol,
-            long volume,
-            double price)
+        public static IList<RegressionExecution> WithGroupByHaving(IList<RegressionExecution> execs = null)
         {
-            var bean = new SupportMarketDataBean(symbol, price, volume, null);
-            env.SendEventBean(bean);
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetQueryTypeGroupByHaving(false));
+            execs.Add(new ResultSetQueryTypeGroupByHaving(true));
+            return execs;
         }
 
-        internal class ResultSetQueryTypeGroupByHaving : RegressionExecution
+        private class ResultSetQueryTypeGroupByHaving : RegressionExecution
         {
             private readonly bool join;
 
@@ -84,8 +66,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 var epl = !join
-                    ? "@Name('s0') select * from SupportBean#length_batch(3) group by TheString having count(*) > 1"
-                    : "@Name('s0') select TheString, IntPrimitive from SupportBean_S0#lastevent, SupportBean#length_batch(3) group by TheString having count(*) > 1";
+                    ? "@name('s0') select * from SupportBean#length_batch(3) group by TheString having count(*) > 1"
+                    : "@name('s0') select TheString, IntPrimitive from SupportBean_S0#lastevent, SupportBean#length_batch(3) group by TheString having count(*) > 1";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean_S0(1));
@@ -96,22 +78,30 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 env.SendEventBean(new SupportBean("E2", 20));
                 env.SendEventBean(new SupportBean("E2", 21));
 
-                var received = env.Listener("s0").NewDataListFlattened;
-                EPAssertionUtil.AssertPropsPerRow(
-                    received,
-                    new [] { "TheString","IntPrimitive" },
-                    new[] {new object[] {"E2", 20}, new object[] {"E2", 21}});
+                env.AssertPropsPerRowNewFlattened(
+                    "s0",
+                    "TheString,IntPrimitive".SplitCsv(),
+                    new object[][] { new object[] { "E2", 20 }, new object[] { "E2", 21 } });
 
                 env.UndeployAll();
             }
+
+            public string Name()
+            {
+                return this.GetType().Name +
+                       "{" +
+                       "join=" +
+                       join +
+                       '}';
+            }
         }
 
-        internal class ResultSetQueryTypeSumOneView : RegressionExecution
+        private class ResultSetQueryTypeSumOneView : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 // Every event generates a new row, this time we sum the price by symbol and output volume
-                var epl = "@Name('s0') select irstream Symbol, Volume, sum(Price) as mySum " +
+                var epl = "@name('s0') select irstream Symbol, Volume, sum(Price) as mySum " +
                           "from SupportMarketDataBean#length(3) " +
                           "where Symbol='DELL' or Symbol='IBM' or Symbol='GE' " +
                           "group by Symbol " +
@@ -124,12 +114,12 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             }
         }
 
-        internal class ResultSetQueryTypeSumJoin : RegressionExecution
+        private class ResultSetQueryTypeSumJoin : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 // Every event generates a new row, this time we sum the price by symbol and output volume
-                var epl = "@Name('s0') select irstream Symbol, Volume, sum(Price) as mySum " +
+                var epl = "@name('s0') select irstream Symbol, Volume, sum(Price) as mySum " +
                           "from SupportBeanString#length(100) as one, " +
                           "SupportMarketDataBean#length(3) as two " +
                           "where (Symbol='DELL' or Symbol='IBM' or Symbol='GE') " +
@@ -145,6 +135,44 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
 
                 env.UndeployAll();
             }
+        }
+
+        private static void TryAssertionSum(RegressionEnvironment env)
+        {
+            // assert select result type
+            env.AssertStatement(
+                "s0",
+                statement => {
+                    ClassicAssert.AreEqual(typeof(string), statement.EventType.GetPropertyType("Symbol"));
+                    ClassicAssert.AreEqual(typeof(long?), statement.EventType.GetPropertyType("Volume"));
+                    ClassicAssert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("mySum"));
+                });
+
+            var fields = "Symbol,Volume,mySum".SplitCsv();
+            SendEvent(env, SYMBOL_DELL, 10000, 49);
+            env.AssertListenerNotInvoked("s0");
+
+            SendEvent(env, SYMBOL_DELL, 20000, 54);
+            env.AssertPropsNew("s0", fields, new object[] { SYMBOL_DELL, 20000L, 103d });
+
+            SendEvent(env, SYMBOL_IBM, 1000, 10);
+            env.AssertListenerNotInvoked("s0");
+
+            SendEvent(env, SYMBOL_IBM, 5000, 20);
+            env.AssertPropsOld("s0", fields, new object[] { SYMBOL_DELL, 10000L, 54d });
+
+            SendEvent(env, SYMBOL_IBM, 6000, 5);
+            env.AssertListenerNotInvoked("s0");
+        }
+
+        private static void SendEvent(
+            RegressionEnvironment env,
+            string symbol,
+            long volume,
+            double price)
+        {
+            var bean = new SupportMarketDataBean(symbol, price, volume, null);
+            env.SendEventBean(bean);
         }
     }
 } // end of namespace

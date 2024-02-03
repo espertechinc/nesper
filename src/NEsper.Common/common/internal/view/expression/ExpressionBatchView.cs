@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -94,12 +94,12 @@ namespace com.espertech.esper.common.@internal.view.expression
 
                 foreach (var newEvent in newData) {
                     window.Add(newEvent);
-                    aggregationService?.ApplyEnter(new[] {newEvent}, null, agentInstanceContext);
+                    aggregationService?.ApplyEnter(new[] { newEvent }, null, agentInstanceContext);
 
                     newestEvent = newEvent;
                     if (!fireBatch) {
                         fireBatch = EvaluateExpression(newEvent, window.Count);
-                        if (fireBatch && !((ExpressionBatchViewFactory) factory).IsIncludeTriggeringEvent) {
+                        if (fireBatch && !((ExpressionBatchViewFactory)factory).IsIncludeTriggeringEvent) {
                             numEventsInBatch = window.Count - 1;
                         }
                     }
@@ -125,7 +125,7 @@ namespace com.espertech.esper.common.@internal.view.expression
                 // post
                 if (batchNewData != null || lastBatch != null) {
                     agentInstanceContext.InstrumentationProvider.QViewIndicate(factory, batchNewData, lastBatch);
-                    child.Update(batchNewData, lastBatch);
+                    Child.Update(batchNewData, lastBatch);
                     agentInstanceContext.InstrumentationProvider.AViewIndicate();
                 }
 
@@ -149,7 +149,7 @@ namespace com.espertech.esper.common.@internal.view.expression
 
                 // post
                 agentInstanceContext.InstrumentationProvider.QViewIndicate(factory, batchNewData, lastBatch);
-                child.Update(batchNewData, lastBatch);
+                Child.Update(batchNewData, lastBatch);
                 agentInstanceContext.InstrumentationProvider.AViewIndicate();
 
                 // clear

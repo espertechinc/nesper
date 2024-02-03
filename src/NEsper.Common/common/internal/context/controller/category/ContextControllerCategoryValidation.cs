@@ -1,10 +1,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
+
+using System;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -15,6 +17,7 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.util;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.function;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -22,12 +25,17 @@ namespace com.espertech.esper.common.@internal.context.controller.category
 {
     public class ContextControllerCategoryValidation : ContextControllerPortableInfo
     {
-        public ContextControllerCategoryValidation(EventType categoryEventType)
-        {
-            CategoryEventType = categoryEventType;
+        private readonly EventType _categoryEventType;
+
+        public EventType CategoryEventType {
+            get => _categoryEventType;
+            set => throw new NotSupportedException();
         }
 
-        public EventType CategoryEventType { get; }
+        public ContextControllerCategoryValidation(EventType categoryEventType)
+        {
+            _categoryEventType = categoryEventType;
+        }
 
         public CodegenExpression Make(CodegenExpressionRef addInitSvc)
         {
@@ -78,6 +86,11 @@ namespace com.espertech.esper.common.@internal.context.controller.category
 
                 throw new ExprValidationException(message);
             }
+        }
+
+        public void VisitFilterAddendumEventTypes(Consumer<EventType> consumer)
+        {
+            consumer.Invoke(CategoryEventType);
         }
     }
 } // end of namespace

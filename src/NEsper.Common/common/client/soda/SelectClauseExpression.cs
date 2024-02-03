@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Part of a select-clause to describe individual select-clause expressions.
     /// </summary>
-    [Serializable]
     public class SelectClauseExpression : SelectClauseElement
     {
         /// <summary>Ctor. </summary>
@@ -56,13 +55,11 @@ namespace com.espertech.esper.common.client.soda
         public void ToEPLElement(TextWriter writer)
         {
             Expression.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
-            if (IsAnnotatedByEventFlag)
-            {
+            if (IsAnnotatedByEventFlag) {
                 writer.Write(" @eventbean");
             }
 
-            if (AsName != null)
-            {
+            if (AsName != null) {
                 writer.Write(" as ");
                 writer.Write(AsName);
             }

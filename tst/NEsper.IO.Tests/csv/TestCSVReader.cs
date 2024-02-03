@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -18,6 +18,7 @@ using com.espertech.esper.runtime.client;
 using com.espertech.esperio.support.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esperio.csv
 {
@@ -79,35 +80,35 @@ namespace com.espertech.esperio.csv
 
             var nextRecord = reader.GetNextRecord();
             var expected = new[] {"8", "8.0", "c", "'c'", "string", "string"};
-            Assert.AreEqual(expected, nextRecord);
+            ClassicAssert.AreEqual(expected, nextRecord);
 
             nextRecord = reader.GetNextRecord();
             expected = new[] {"", "string", "", "string", "", "", ""};
-            Assert.AreEqual(expected, nextRecord);
+            ClassicAssert.AreEqual(expected, nextRecord);
 
             nextRecord = reader.GetNextRecord();
             expected = new[] {"leading spaces", "trailing spaces", ""};
-            Assert.AreEqual(expected, nextRecord);
+            ClassicAssert.AreEqual(expected, nextRecord);
 
             nextRecord = reader.GetNextRecord();
             expected = new[] {"unquoted value 1", "unquoted value 2", ""};
-            Assert.AreEqual(expected, nextRecord);
+            ClassicAssert.AreEqual(expected, nextRecord);
 
             nextRecord = reader.GetNextRecord();
             expected = new[] {"value with embedded \"\" quotes"};
-            Assert.AreEqual(expected, nextRecord);
+            ClassicAssert.AreEqual(expected, nextRecord);
 
             nextRecord = reader.GetNextRecord();
             expected = new[] {string.Format("value{0}with newline", Environment.NewLine)};//"\n")};
-            Assert.AreEqual(expected, nextRecord);
+            ClassicAssert.AreEqual(expected, nextRecord);
 
             nextRecord = reader.GetNextRecord();
             expected = new[] {"value after empty lines"};
-            Assert.AreEqual(expected, nextRecord);
+            ClassicAssert.AreEqual(expected, nextRecord);
 
             nextRecord = reader.GetNextRecord();
             expected = new[] {"value after comments"};
-            Assert.AreEqual(expected, nextRecord);
+            ClassicAssert.AreEqual(expected, nextRecord);
 
             try {
                 reader.GetNextRecord();
@@ -125,17 +126,17 @@ namespace com.espertech.esperio.csv
 
             var nextRecord = reader.GetNextRecord();
             var expected = new[] {"first line", "1"};
-            Assert.AreEqual(expected, nextRecord);
+            ClassicAssert.AreEqual(expected, nextRecord);
 
             reader.Reset();
 
             nextRecord = reader.GetNextRecord();
-            Assert.AreEqual(expected, nextRecord);
+            ClassicAssert.AreEqual(expected, nextRecord);
 
             reader.Reset();
 
             nextRecord = reader.GetNextRecord();
-            Assert.AreEqual(expected, nextRecord);
+            ClassicAssert.AreEqual(expected, nextRecord);
         }
 
         [Test]
@@ -147,7 +148,7 @@ namespace com.espertech.esperio.csv
             // isUsingTitleRow is false by default, so get the title row
             var nextRecord = reader.GetNextRecord();
             var expected = new[] {"MyString", "MyInt", "timestamp", "MyDouble"};
-            Assert.AreEqual(expected, nextRecord);
+            ClassicAssert.AreEqual(expected, nextRecord);
 
             // Acknowledge the title row and reset the file afterwards
             reader.IsUsingTitleRow = true;
@@ -156,41 +157,41 @@ namespace com.espertech.esperio.csv
             // First time through the file
             nextRecord = reader.GetNextRecord();
             expected = new[] {"one", "1", "100", "1.1"};
-            Assert.AreEqual(expected, nextRecord);
+            ClassicAssert.AreEqual(expected, nextRecord);
 
             nextRecord = reader.GetNextRecord();
             expected = new[] {"three", "3", "300", "3.3"};
-            Assert.AreEqual(expected, nextRecord);
+            ClassicAssert.AreEqual(expected, nextRecord);
 
             nextRecord = reader.GetNextRecord();
             expected = new[] {"five", "5", "500", "5.5"};
-            Assert.AreEqual(expected, nextRecord);
+            ClassicAssert.AreEqual(expected, nextRecord);
 
             // Second time through the file
             nextRecord = reader.GetNextRecord();
             expected = new[] {"one", "1", "100", "1.1"};
-            Assert.AreEqual(expected, nextRecord);
+            ClassicAssert.AreEqual(expected, nextRecord);
 
             nextRecord = reader.GetNextRecord();
             expected = new[] {"three", "3", "300", "3.3"};
-            Assert.AreEqual(expected, nextRecord);
+            ClassicAssert.AreEqual(expected, nextRecord);
 
             nextRecord = reader.GetNextRecord();
             expected = new[] {"five", "5", "500", "5.5"};
-            Assert.AreEqual(expected, nextRecord);
+            ClassicAssert.AreEqual(expected, nextRecord);
 
             // Pretend no title row again
             reader.IsUsingTitleRow = false;
 
             nextRecord = reader.GetNextRecord();
             expected = new[] {"MyString", "MyInt", "timestamp", "MyDouble"};
-            Assert.AreEqual(expected, nextRecord);
+            ClassicAssert.AreEqual(expected, nextRecord);
 
             reader.Reset();
 
             nextRecord = reader.GetNextRecord();
             expected = new[] {"MyString", "MyInt", "timestamp", "MyDouble"};
-            Assert.AreEqual(expected, nextRecord);
+            ClassicAssert.AreEqual(expected, nextRecord);
         }
 
         [Test]
@@ -213,10 +214,10 @@ namespace com.espertech.esperio.csv
             var adapter = new CSVInputAdapter(runtime, spec);
             adapter.Start();
 
-            Assert.IsTrue(ul.IsInvoked());
+            ClassicAssert.IsTrue(ul.IsInvoked);
             var e = ul.AssertOneGetNewAndReset();
             var f = (Figure) e.Underlying;
-            Assert.AreEqual(1, f.Point.X);
+            ClassicAssert.AreEqual(1, f.Point.X);
         }
 
         [Test]
@@ -244,9 +245,9 @@ namespace com.espertech.esperio.csv
             var adapter = new CSVInputAdapter(runtime, spec);
             adapter.Start();
 
-            Assert.IsTrue(ul.IsInvoked());
+            ClassicAssert.IsTrue(ul.IsInvoked);
             var e = ul.AssertOneGetNewAndReset();
-            Assert.AreEqual(1, e.Get("Point.X"));
+            ClassicAssert.AreEqual(1, e.Get("Point.X"));
         }
 
         private void AssertLooping(String path)
@@ -256,33 +257,33 @@ namespace com.espertech.esperio.csv
 
             var nextRecord = reader.GetNextRecord();
             var expected = new[] { "first line", "1" };
-            Assert.AreEqual(expected, nextRecord);
+            ClassicAssert.AreEqual(expected, nextRecord);
 
-            Assert.IsTrue(reader.GetAndClearIsReset());
-
-            nextRecord = reader.GetNextRecord();
-            expected = new[] { "second line", "2" };
-            Assert.AreEqual(expected, nextRecord);
-
-            Assert.IsFalse(reader.GetAndClearIsReset());
-
-            nextRecord = reader.GetNextRecord();
-            expected = new[] { "first line", "1" };
-            Assert.AreEqual(expected, nextRecord);
-
-            Assert.IsTrue(reader.GetAndClearIsReset());
+            ClassicAssert.IsTrue(reader.GetAndClearIsReset());
 
             nextRecord = reader.GetNextRecord();
             expected = new[] { "second line", "2" };
-            Assert.AreEqual(expected, nextRecord);
+            ClassicAssert.AreEqual(expected, nextRecord);
 
-            Assert.IsFalse(reader.GetAndClearIsReset());
+            ClassicAssert.IsFalse(reader.GetAndClearIsReset());
 
             nextRecord = reader.GetNextRecord();
             expected = new[] { "first line", "1" };
-            Assert.AreEqual(expected, nextRecord);
+            ClassicAssert.AreEqual(expected, nextRecord);
 
-            Assert.IsTrue(reader.GetAndClearIsReset());
+            ClassicAssert.IsTrue(reader.GetAndClearIsReset());
+
+            nextRecord = reader.GetNextRecord();
+            expected = new[] { "second line", "2" };
+            ClassicAssert.AreEqual(expected, nextRecord);
+
+            ClassicAssert.IsFalse(reader.GetAndClearIsReset());
+
+            nextRecord = reader.GetNextRecord();
+            expected = new[] { "first line", "1" };
+            ClassicAssert.AreEqual(expected, nextRecord);
+
+            ClassicAssert.IsTrue(reader.GetAndClearIsReset());
 
             reader.Close();
         }
@@ -293,11 +294,11 @@ namespace com.espertech.esperio.csv
 
             var nextRecord = reader.GetNextRecord();
             var expected = new[] { "first line", "1" };
-            Assert.AreEqual(expected, nextRecord);
+            ClassicAssert.AreEqual(expected, nextRecord);
 
             nextRecord = reader.GetNextRecord();
             expected = new[] { "second line", "2" };
-            Assert.AreEqual(expected, nextRecord);
+            ClassicAssert.AreEqual(expected, nextRecord);
 
             try
             {

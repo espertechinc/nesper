@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -68,7 +68,7 @@ namespace com.espertech.esper.common.@internal.filterspec
         /// <returns>event instances for the tag</returns>
         public EventBean GetMatchingEvent(int tag)
         {
-            return (EventBean) MatchingEvents[tag];
+            return (EventBean)MatchingEvents[tag];
         }
 
         public object GetMatchingEventAsObject(int tag)
@@ -83,11 +83,10 @@ namespace com.espertech.esper.common.@internal.filterspec
         /// <param name="other">is the other instance to merge in.</param>
         public void Merge(MatchedEventMap other)
         {
-            if (!(other is MatchedEventMapImpl)) {
+            if (!(other is MatchedEventMapImpl otherImpl)) {
                 throw new UnsupportedOperationException("Merge requires same types");
             }
 
-            var otherImpl = (MatchedEventMapImpl) other;
             for (var i = 0; i < MatchingEvents.Length; i++) {
                 if (otherImpl.MatchingEvents[i] == null) {
                     continue;
@@ -102,7 +101,7 @@ namespace com.espertech.esper.common.@internal.filterspec
         public EventBean GetMatchingEventByTag(string resultEventAsName)
         {
             var obj = GetMatchingEventAsObjectByTag(resultEventAsName);
-            return (EventBean) obj;
+            return (EventBean)obj;
         }
 
         public object GetMatchingEventAsObjectByTag(string key)

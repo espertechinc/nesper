@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -19,7 +19,7 @@ using NEsper.Examples.StockTicker.eventbean;
 using NEsper.Examples.StockTicker.monitor;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using Configuration = com.espertech.esper.common.client.configuration.Configuration;
 
 namespace NEsper.Examples.StockTicker
@@ -76,37 +76,37 @@ namespace NEsper.Examples.StockTicker
 
             // Set a limit
             SendEvent(new PriceLimit(USER_ID_ONE, STOCK_NAME, LIMIT_PERCENT));
-            Assert.IsTrue(_listener.Count == 0);
+            ClassicAssert.IsTrue(_listener.Count == 0);
 
             // First stock ticker sets the initial price
             SendEvent(new StockTick(STOCK_NAME, STOCK_PRICE));
 
             // Go within the limit, expect no response
             SendEvent(new StockTick(STOCK_NAME, STOCK_PRICE_WITHIN_LIMIT_LOW));
-            Assert.IsTrue(_listener.Count == 0);
+            ClassicAssert.IsTrue(_listener.Count == 0);
 
             // Go outside the limit, expect an event
             SendEvent(new StockTick(STOCK_NAME, STOCK_PRICE_OUTSIDE_LIMIT_LOW));
             Sleep(500);
-            Assert.IsTrue(_listener.Count == 1);
+            ClassicAssert.IsTrue(_listener.Count == 1);
             _listener.ClearMatched();
 
             // Go within the limit, expect no response
             SendEvent(new StockTick(STOCK_NAME, STOCK_PRICE_WITHIN_LIMIT_HIGH));
-            Assert.IsTrue(_listener.Count == 0);
+            ClassicAssert.IsTrue(_listener.Count == 0);
 
             // Go outside the limit, expect an event
             SendEvent(new StockTick(STOCK_NAME, STOCK_PRICE_OUTSIDE_LIMIT_HIGH));
             Sleep(500);
-            Assert.IsTrue(_listener.Count == 1);
+            ClassicAssert.IsTrue(_listener.Count == 1);
             var alert = (LimitAlert) _listener.MatchEvents[0];
             _listener.ClearMatched();
-            Assert.IsTrue(alert.InitialPrice == STOCK_PRICE);
-            Assert.IsTrue(alert.PriceLimit.UserId.Equals(USER_ID_ONE));
-            Assert.IsTrue(alert.PriceLimit.StockSymbol.Equals(STOCK_NAME));
-            Assert.IsTrue(alert.PriceLimit.LimitPct == LIMIT_PERCENT);
-            Assert.IsTrue(alert.Tick.StockSymbol.Equals(STOCK_NAME));
-            Assert.IsTrue(alert.Tick.Price == STOCK_PRICE_OUTSIDE_LIMIT_HIGH);
+            ClassicAssert.IsTrue(alert.InitialPrice == STOCK_PRICE);
+            ClassicAssert.IsTrue(alert.PriceLimit.UserId.Equals(USER_ID_ONE));
+            ClassicAssert.IsTrue(alert.PriceLimit.StockSymbol.Equals(STOCK_NAME));
+            ClassicAssert.IsTrue(alert.PriceLimit.LimitPct == LIMIT_PERCENT);
+            ClassicAssert.IsTrue(alert.Tick.StockSymbol.Equals(STOCK_NAME));
+            ClassicAssert.IsTrue(alert.Tick.Price == STOCK_PRICE_OUTSIDE_LIMIT_HIGH);
 
             // Set a new limit for the same stock
             // With the new limit none of these should fire
@@ -116,7 +116,7 @@ namespace NEsper.Examples.StockTicker
             SendEvent(new StockTick(STOCK_NAME, STOCK_PRICE_WITHIN_LIMIT_HIGH));
             SendEvent(new StockTick(STOCK_NAME, STOCK_PRICE_OUTSIDE_LIMIT_HIGH));
             Sleep(500);
-            Assert.IsTrue(_listener.Count == 0);
+            ClassicAssert.IsTrue(_listener.Count == 0);
 
             // Set a smaller limit for another couple of users
             SendEvent(new PriceLimit(USER_ID_TWO, STOCK_NAME, LIMIT_PERCENT));
@@ -131,7 +131,7 @@ namespace NEsper.Examples.StockTicker
             Sleep(500);
 
             Log.Info(".performEventFlowTest listSize=" + _listener.Count);
-            Assert.IsTrue(_listener.Count == 4);
+            ClassicAssert.IsTrue(_listener.Count == 4);
         }
 
         public void PerformBoundaryTest()
@@ -144,12 +144,12 @@ namespace NEsper.Examples.StockTicker
             SendEvent(new StockTick(STOCK_NAME, 46.0 - 11.5));
             SendEvent(new StockTick(STOCK_NAME, 46.0 + 11.5));
             Sleep(500);
-            Assert.IsTrue(_listener.Count == 0);
+            ClassicAssert.IsTrue(_listener.Count == 0);
 
             SendEvent(new StockTick(STOCK_NAME, 46.0 - 11.5001));
             SendEvent(new StockTick(STOCK_NAME, 46.0 + 11.5001));
             Sleep(500);
-            Assert.IsTrue(_listener.Count == 2);
+            ClassicAssert.IsTrue(_listener.Count == 2);
         }
 
         private void Sleep(int msec)

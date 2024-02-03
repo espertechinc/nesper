@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -22,7 +22,8 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
             double height)
         {
             if (!bb.IntersectsBoxIncludingEnd(x, y, width, height)) {
-                throw new EPException($"Rectangle ({x.RenderAny()},{y.RenderAny()},{width.RenderAny()},{height.RenderAny()}) not in {bb}");
+                throw new EPException(
+                    $"Rectangle ({x.RenderAny()},{y.RenderAny()},{width.RenderAny()},{height.RenderAny()}) not in {bb}");
             }
         }
     }

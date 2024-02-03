@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -9,7 +9,7 @@
 
 namespace com.espertech.esper.compat
 {
-    public sealed class Cache2D<K, V> : ICache<K, V> where K : class
+    public sealed class Cache2D<TK, TV> : ICache<TK, TV> where TK : class
     {
         private Entry _entry1;
         private Entry _entry2;
@@ -19,7 +19,7 @@ namespace com.espertech.esper.compat
             Invalidate();
         }
 
-        public bool TryGet(K key, out V value)
+        public bool TryGet(TK key, out TV value)
         {
             Entry e = _entry1;
             if (key == e.Key)
@@ -35,19 +35,19 @@ namespace com.espertech.esper.compat
                 return true;
             }
 
-            value = default(V);
+            value = default(TV);
             return false;
         }
 
-        public V Get(K key)
+        public TV Get(TK key)
         {
             Entry e = _entry1;
             if (key == e.Key) return e.Value;
             e = _entry2; if (key == e.Key) return e.Value;
-            return default(V);
+            return default(TV);
         }
 
-        public V Put(K key, V value)
+        public TV Put(TK key, TV value)
         {
             _entry1 = _entry2;
             _entry2 = new Entry(key, value);
@@ -56,15 +56,15 @@ namespace com.espertech.esper.compat
 
         public void Invalidate()
         {
-            _entry1 = _entry2 = new Entry(null, default(V));
+            _entry1 = _entry2 = new Entry(null, default(TV));
         }
 
         class Entry
         {
-            public readonly K Key;
-            public readonly V Value;
+            public readonly TK Key;
+            public readonly TV Value;
 
-            public Entry(K key, V value)
+            public Entry(TK key, TV value)
             {
                 Key = key;
                 Value = value;

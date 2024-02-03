@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -10,7 +10,9 @@ using System;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.serde;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.epl.index.@base;
+
 
 namespace com.espertech.esper.common.@internal.epl.index.inkeyword
 {
@@ -23,6 +25,7 @@ namespace com.espertech.esper.common.@internal.epl.index.inkeyword
         private readonly bool unique;
         private readonly EventPropertyValueGetter[] propertyGetters;
         private readonly bool isFireAndForget;
+        private readonly StateMgmtSetting stateMgmtSettings;
 
         public PropertyHashedArrayFactoryFactory(
             int streamNum,
@@ -31,7 +34,8 @@ namespace com.espertech.esper.common.@internal.epl.index.inkeyword
             DataInputOutputSerde[] propertySerdes,
             bool unique,
             EventPropertyValueGetter[] propertyGetters,
-            bool isFireAndForget)
+            bool isFireAndForget,
+            StateMgmtSetting stateMgmtSettings)
         {
             this.streamNum = streamNum;
             this.propertyNames = propertyNames;
@@ -40,9 +44,12 @@ namespace com.espertech.esper.common.@internal.epl.index.inkeyword
             this.unique = unique;
             this.propertyGetters = propertyGetters;
             this.isFireAndForget = isFireAndForget;
+            this.stateMgmtSettings = stateMgmtSettings;
         }
 
-        public EventTableFactory Create(EventType eventType, EventTableFactoryFactoryContext eventTableFactoryContext)
+        public EventTableFactory Create(
+            EventType eventType,
+            EventTableFactoryFactoryContext eventTableFactoryContext)
         {
             return eventTableFactoryContext.EventTableIndexService.CreateInArray(
                 streamNum,
@@ -53,7 +60,7 @@ namespace com.espertech.esper.common.@internal.epl.index.inkeyword
                 unique,
                 propertyGetters,
                 isFireAndForget,
-                eventTableFactoryContext);
+                stateMgmtSettings);
         }
     }
 } // end of namespace

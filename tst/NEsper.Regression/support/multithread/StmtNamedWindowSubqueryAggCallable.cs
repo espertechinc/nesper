@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -22,7 +22,7 @@ namespace com.espertech.esper.regressionlib.support.multithread
 {
     public class StmtNamedWindowSubqueryAggCallable : ICallable<bool?>
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private readonly int numRepeats;
         private readonly EPRuntime runtime;
         private readonly EPStatement targetStatement;
@@ -57,7 +57,7 @@ namespace com.espertech.esper.regressionlib.support.multithread
                     runtime.EventService.SendEventBean(new SupportBean(generalKey, -1), "SupportBean");
 
                     // assert trigger event received
-                    var events = listener.GetNewDataListCopy();
+                    var events = listener.NewDataListCopy;
                     var found = false;
                     foreach (var arr in events) {
                         foreach (var item in arr) {
@@ -90,7 +90,7 @@ namespace com.espertech.esper.regressionlib.support.multithread
                 }
             }
             catch (Exception ex) {
-                log.Error("Error in thread " + Thread.CurrentThread.ManagedThreadId, ex);
+                Log.Error("Error in thread " + Thread.CurrentThread.ManagedThreadId, ex);
                 return false;
             }
 

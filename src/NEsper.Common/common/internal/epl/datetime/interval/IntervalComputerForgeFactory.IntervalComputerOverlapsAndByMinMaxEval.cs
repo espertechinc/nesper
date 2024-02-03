@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -43,8 +43,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                 ExprEvaluatorContext context)
             {
                 if (overlaps) {
-                    long minThreshold = minEval.Evaluate(leftStart, eventsPerStream, newData, context);
-                    long maxThreshold = maxEval.Evaluate(leftEnd, eventsPerStream, newData, context);
+                    var minThreshold = minEval.Evaluate(leftStart, eventsPerStream, newData, context);
+                    var maxThreshold = maxEval.Evaluate(leftEnd, eventsPerStream, newData, context);
                     return IntervalComputerOverlapsAndByThresholdEval.ComputeIntervalOverlaps(
                         leftStart,
                         leftEnd,
@@ -54,8 +54,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                         maxThreshold);
                 }
                 else {
-                    long minThreshold = minEval.Evaluate(rightStart, eventsPerStream, newData, context);
-                    long maxThreshold = maxEval.Evaluate(rightEnd, eventsPerStream, newData, context);
+                    var minThreshold = minEval.Evaluate(rightStart, eventsPerStream, newData, context);
+                    var maxThreshold = maxEval.Evaluate(rightEnd, eventsPerStream, newData, context);
                     return IntervalComputerOverlapsAndByThresholdEval.ComputeIntervalOverlaps(
                         rightStart,
                         rightEnd,

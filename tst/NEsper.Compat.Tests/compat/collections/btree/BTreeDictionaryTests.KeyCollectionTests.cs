@@ -2,6 +2,7 @@
 using System.Linq;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.compat.collections.btree
 {

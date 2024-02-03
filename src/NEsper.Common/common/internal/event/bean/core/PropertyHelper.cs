@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -17,7 +17,6 @@ using com.espertech.esper.common.@internal.@event.bean.service;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.magic;
 
 namespace com.espertech.esper.common.@internal.@event.bean.core
@@ -166,21 +165,27 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             var stemPropName = baseStem.PropertyName;
 
             if (mergeStem.AccessorProp != null) {
-                if (accessorProp != null)
+                if (accessorProp != null) {
                     throw new ArgumentException($"base stem already defines {nameof(baseStem.AccessorProp)}");
+                }
+
                 accessorProp = mergeStem.AccessorProp;
             }
 
             if (mergeStem.AccessorField != null) {
-                if (accessorField != null)
+                if (accessorField != null) {
                     throw new ArgumentException($"base stem already defines {nameof(baseStem.AccessorField)}");
+                }
+
                 accessorField = mergeStem.AccessorField;
             }
 
 
             if (mergeStem.ReadMethod != null) {
-                if (accessorMethod != null)
+                if (accessorMethod != null) {
                     throw new ArgumentException($"base stem already defines {nameof(baseStem.ReadMethod)}");
+                }
+
                 accessorMethod = mergeStem.ReadMethod;
             }
 
@@ -313,7 +318,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
                     continue;
                 }
 
-                Type[] parameterTypes = methods[i].GetParameterTypes();
+                var parameterTypes = methods[i].GetParameterTypes();
                 if (parameterTypes.Length != 1) {
                     continue;
                 }
@@ -402,7 +407,5 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             writer.Write(propertyName.Substring(1));
             return writer.ToString();
         }
-
-        private static readonly ILog log = LogManager.GetLogger(typeof(PropertyHelper));
     }
 } // end of namespace

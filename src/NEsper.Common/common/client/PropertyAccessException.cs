@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -15,7 +15,6 @@ namespace com.espertech.esper.common.client
     /// <summary>
     /// This exception is thrown to indicate a problem with a accessing a property of an EventBean />.
     /// </summary>
-    [Serializable]
     public class PropertyAccessException : Exception
     {
         private readonly string _expression;
@@ -63,7 +62,8 @@ namespace com.espertech.esper.common.client
         {
         }
 
-        protected PropertyAccessException(SerializationInfo info,
+        protected PropertyAccessException(
+            SerializationInfo info,
             StreamingContext context) : base(info, context)
         {
         }
@@ -82,27 +82,22 @@ namespace com.espertech.esper.common.client
         /// <summary>
         /// Gets a message that describes the current exception.
         /// </summary>
-        public override string Message
-        {
+        public override string Message {
             get {
                 StringBuilder msg;
 
-                if (!string.IsNullOrEmpty(base.Message))
-                {
+                if (!string.IsNullOrEmpty(base.Message)) {
                     msg = new StringBuilder(base.Message);
                 }
-                else
-                {
+                else {
                     msg = new StringBuilder("Unexpected exception");
-                    if (InnerException != null)
-                    {
+                    if (InnerException != null) {
                         msg.Append(" : ");
                         msg.Append(InnerException.Message);
                     }
                 }
 
-                if (_expression != null)
-                {
+                if (_expression != null) {
                     msg.Append(" [");
                     msg.Append(_expression);
                     msg.Append(']');

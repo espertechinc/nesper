@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -35,8 +35,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             ExprSubselectEvalMatchSymbol symbols,
             CodegenClassScope classScope)
         {
+            if (Subselect.EvaluationType == null) {
+                return ConstantNull();
+            }
+
             var eventToPublic = TableDeployTimeResolver.MakeTableEventToPublicField(table, classScope, GetType());
-            var method = parent.MakeChild(subselect.EvaluationType, GetType(), classScope);
+            var method = parent.MakeChild(Subselect.EvaluationType, GetType(), classScope);
             method.Block
                 .IfCondition(
                     Relational(
@@ -55,7 +59,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                         eventToPublic,
                         "ConvertToUnd",
                         Ref("@event"),
-                        symbols.GetAddEPS(method),
+                        symbols.GetAddEps(method),
                         symbols.GetAddIsNewData(method),
                         symbols.GetAddExprEvalCtx(method)));
             return LocalMethod(method);

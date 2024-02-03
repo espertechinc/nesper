@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -7,7 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
+using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.compat;
 
@@ -24,8 +24,8 @@ namespace com.espertech.esper.common.@internal.type
                 object objOne,
                 object objTwo)
             {
-                object s1 = (object) objOne;
-                object s2 = (object) objTwo;
+                var s1 = objOne;
+                var s2 = objTwo;
                 return s1.AsFloat() < s2.AsFloat();
             }
 
@@ -33,11 +33,13 @@ namespace com.espertech.esper.common.@internal.type
                 CodegenExpression lhs,
                 Type lhsType,
                 CodegenExpression rhs,
-                Type rhsType)
+                Type rhsType, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope)
             {
                 return RelationalOpEnumExtensions.CodegenFloat(
-                    lhs, lhsType, 
-                    rhs, rhsType, 
+                    lhs,
+                    lhsType,
+                    rhs,
+                    rhsType,
                     RelationalOpEnum.LT);
             }
         }

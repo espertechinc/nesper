@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -39,7 +39,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.filter
             EvalFilterNode evalFilterNode)
             : base(parentNode)
         {
-            this._evalFilterNode = evalFilterNode;
+            _evalFilterNode = evalFilterNode;
         }
 
         public override EvalNode FactoryNode => _evalFilterNode;
@@ -149,7 +149,10 @@ namespace com.espertech.esper.common.@internal.epl.pattern.filter
         {
             var agentInstanceContext = _evalFilterNode.Context.AgentInstanceContext;
             agentInstanceContext.InstrumentationProvider.QPatternFilterQuit(_evalFilterNode.factoryNode, _beginState);
-            agentInstanceContext.AuditProvider.PatternInstance(false, _evalFilterNode.factoryNode, agentInstanceContext);
+            agentInstanceContext.AuditProvider.PatternInstance(
+                false,
+                _evalFilterNode.factoryNode,
+                agentInstanceContext);
 
             _isStarted = false;
             StopFiltering();
@@ -197,7 +200,10 @@ namespace com.espertech.esper.common.@internal.epl.pattern.filter
             if (PatternConsumptionUtil.ContainsEvent(matchEvent, _beginState)) {
                 Quit();
                 var agentInstanceContext = _evalFilterNode.Context.AgentInstanceContext;
-                agentInstanceContext.AuditProvider.PatternFalse(_evalFilterNode.FactoryNode, this, agentInstanceContext);
+                agentInstanceContext.AuditProvider.PatternFalse(
+                    _evalFilterNode.FactoryNode,
+                    this,
+                    agentInstanceContext);
                 ParentEvaluator.EvaluateFalse(this, true);
             }
         }
@@ -215,7 +221,8 @@ namespace com.espertech.esper.common.@internal.epl.pattern.filter
             if (_handle != null && filterValues != null) {
                 filterService.Remove(_handle, filterSpec.FilterForEventType, filterValues);
                 var filtersVersionX = filterService.FiltersVersion;
-                _evalFilterNode.Context.AgentInstanceContext.EpStatementAgentInstanceHandle.StatementFilterVersion.StmtFilterVersion = filtersVersionX;
+                _evalFilterNode.Context.AgentInstanceContext.EpStatementAgentInstanceHandle.StatementFilterVersion
+                    .StmtFilterVersion = filtersVersionX;
             }
 
             _handle = null;
@@ -224,11 +231,13 @@ namespace com.espertech.esper.common.@internal.epl.pattern.filter
             _evalFilterNode.Context.AgentInstanceContext.EpStatementAgentInstanceHandle.StatementFilterVersion
                 .StmtFilterVersion = filtersVersion;
         }
-        
-        public override void Transfer(AgentInstanceTransferServices services) {
+
+        public override void Transfer(AgentInstanceTransferServices services)
+        {
             if (_handle == null) {
                 return;
             }
+
             var filterSpec = _evalFilterNode.FactoryNode.FilterSpec;
             var filterValues = filterSpec.GetValueSet(
                 _beginState,
@@ -236,7 +245,10 @@ namespace com.espertech.esper.common.@internal.epl.pattern.filter
                 services.AgentInstanceContext,
                 services.AgentInstanceContext.StatementContextFilterEvalEnv);
             if (filterValues != null) {
-                services.AgentInstanceContext.FilterService.Remove(_handle, filterSpec.FilterForEventType, filterValues);
+                services.AgentInstanceContext.FilterService.Remove(
+                    _handle,
+                    filterSpec.FilterForEventType,
+                    filterValues);
                 services.TargetFilterService.Add(filterSpec.FilterForEventType, filterValues, _handle);
             }
         }

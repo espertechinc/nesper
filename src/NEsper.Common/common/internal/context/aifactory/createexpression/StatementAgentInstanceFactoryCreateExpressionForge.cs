@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -33,14 +33,12 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createexpressio
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            CodegenMethod method = parent.MakeChild(
+            var method = parent.MakeChild(
                 typeof(StatementAgentInstanceFactoryCreateExpression),
-                this.GetType(),
+                GetType(),
                 classScope);
             method.Block
-                .DeclareVar<StatementAgentInstanceFactoryCreateExpression>(
-                    "saiff",
-                    NewInstance(typeof(StatementAgentInstanceFactoryCreateExpression)))
+                .DeclareVarNewInstance<StatementAgentInstanceFactoryCreateExpression>("saiff")
                 .SetProperty(
                     Ref("saiff"),
                     "StatementEventType",

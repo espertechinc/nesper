@@ -1,12 +1,11 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client.dataflow.annotations;
@@ -15,88 +14,134 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.dataflow.interfaces;
+using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
+using static
+    com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder; // constantNull
 using NUnit.Framework;
-
-using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
-using static com.espertech.esper.regressionlib.framework.SupportMessageAssertUtil;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 {
     // Further relevant tests in JSONUtil/PopulateUtil
     public class EPLDataflowCustomProperties
     {
-        public static IList<RegressionExecution> Executions()
+        public static ICollection<RegressionExecution> Executions()
         {
-            var execs = new List<RegressionExecution>();
-WithInvalid(execs);
-WithCustomProps(execs);
+            IList<RegressionExecution> execs = new List<RegressionExecution>();
+            WithInvalid(execs);
+            WithCustomProps(execs);
+            WithNestedProps(execs);
+            WithCatchAllProps(execs);
             return execs;
         }
-public static IList<RegressionExecution> WithCustomProps(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new EPLDataflowCustomProps());
-    return execs;
-}public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new EPLDataflowInvalid());
-    return execs;
-}
-        /// <summary>
-        ///     - GraphSource always has output ports:
-        ///     (A) Either as declared through @OutputTypes annotation
-        ///     (B) Or as assigned via stream (GraphSource -&gt; OutStream&lt;Type&gt;)
-        ///     <para />
-        ///     - Operator properties are explicit:
-        ///     (A) There is a public setter method
-        ///     (B) Or the @GraphOpProperty annotation is declared on a field or setter method (optionally can provide a name)
-        ///     (C) Or the @GraphOpProperty annotation is declared on a catch-all method
-        ///     <para />
-        ///     - Graph op property types
-        ///     (A) Scalar type
-        ///     (B) or ExprNode
-        ///     (C) or Json for nested objects and array
-        ///     (D) or EPL select
-        ///     <para />
-        ///     - Graph op communicate the underlying events
-        ///     - should EventBean be need for event evaluation, the EventBean instance is pooled/shared locally by the op
-        ///     - if the event bus should evaluate the event, a new anonymous event gets created with the desired type attached
-        ///     dynamically
-        ///     <para />
-        ///     - Exception handlings
-        ///     - Validation of syntax is performed during "createEPL"
-        ///     - Resolution of operators and types is performed during "instantiate"
-        ///     - Runtime exception handling depends on how the data flow gets started and always uses an exception handler
-        ///     (another subject therefore)
-        /// </summary>
-        internal class EPLDataflowInvalid : RegressionExecution
+
+        public static IList<RegressionExecution> WithCatchAllProps(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDataflowCatchAllProps());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNestedProps(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDataflowNestedProps());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithCustomProps(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDataflowCustomProps());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDataflowInvalid());
+            return execs;
+        }
+
+        private class EPLDataflowInvalid : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 string epl;
 
                 epl = "create dataflow MyGraph ABC { field: { a: a}}";
-                TryInvalidCompile(env, epl, "Incorrect syntax near 'a' at line 1 column 42 [");
+                env.TryInvalidCompile(epl, "Incorrect syntax near 'a' at line 1 column 42 [");
 
                 epl = "create dataflow MyGraph ABC { field: { a:1x b:2 }}";
-                TryInvalidCompile(env, epl, "Incorrect syntax near 'x' at line 1 column 42 [");
+                env.TryInvalidCompile(epl, "Incorrect syntax near 'x' at line 1 column 42 [");
+            }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.DATAFLOW, RegressionFlag.INVALIDITY);
             }
         }
 
-        internal class EPLDataflowCustomProps : RegressionExecution
+        private class EPLDataflowCatchAllProps : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
-                Environment.SetEnvironmentVariable("test.variable", "test.value");
-                
+                MyOperatorFourForge.Operators.Clear();
+                env.Compile(
+                    "@name('flow') create dataflow MyGraph MyOperatorFourForge {" +
+                    "    myTestParameter: 'abc' \n" +
+                    "}");
+                ClassicAssert.AreEqual(1, MyOperatorFourForge.Operators.Count);
+                var instance = MyOperatorFourForge.Operators[0];
+
+                var node = instance.AllProperties.Get("myTestParameter");
+                ClassicAssert.AreEqual("abc", node.Forge.ExprEvaluator.Evaluate(null, true, null));
+            }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.DATAFLOW);
+            }
+        }
+
+        private class EPLDataflowNestedProps : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                MyOperatorThreeForge.Operators.Clear();
+                env.Compile(
+                    "@name('flow') create dataflow MyGraph MyOperatorThree {" +
+                    "    settings: {\n" +
+                    "      class: 'EPLDataflowCustomProperties$MyOperatorThreeSettingsABC',\n" +
+                    "      parameterOne : 'ValueOne'" +
+                    "    }\n" +
+                    "}");
+                ClassicAssert.AreEqual(1, MyOperatorThreeForge.Operators.Count);
+                var instance = MyOperatorThreeForge.Operators[0];
+
+                var abc = (MyOperatorThreeSettingsABC)instance.Settings;
+                ClassicAssert.AreEqual("ValueOne", abc.parameterOne.Forge.ExprEvaluator.Evaluate(null, true, null));
+            }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.DATAFLOW);
+            }
+        }
+
+        private class EPLDataflowCustomProps : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
                 // test simple properties
                 MyOperatorOneForge.Operators.Clear();
                 env.Compile(
-                    "@Name('flow') create dataflow MyGraph MyOperatorOne {" +
+                    "@name('flow') create dataflow MyGraph MyOperatorOne {" +
                     "  theString = 'a'," +
                     "  theInt: 1," +
                     "  theBool: true," +
@@ -108,29 +153,28 @@ public static IList<RegressionExecution> WithCustomProps(IList<RegressionExecuti
                     "  theFloatOne: 1f," +
                     "  theFloatTwo: 2," +
                     "  TheStringWithSetter: 'b'," +
-                    "  theSystemProperty: systemProperties('test.variable')" +
+                    "  theSystemProperty: systemProperties('log4j.configuration')" +
                     "}");
-                Assert.AreEqual(1, MyOperatorOneForge.Operators.Count);
+                ClassicAssert.AreEqual(1, MyOperatorOneForge.Operators.Count);
                 var instanceOne = MyOperatorOneForge.Operators[0];
 
-                Assert.AreEqual("a", instanceOne.TheString);
-                Assert.AreEqual(null, instanceOne.TheNotSetString);
-                Assert.AreEqual(1, instanceOne.TheInt);
-                Assert.AreEqual(true, instanceOne.TheBool);
-                Assert.AreEqual(1L, (long) instanceOne.TheLongOne);
-                Assert.AreEqual(2, instanceOne.TheLongTwo);
-                Assert.AreEqual(null, instanceOne.TheLongThree);
-                Assert.AreEqual(1.0, instanceOne.TheDoubleOne);
-                Assert.AreEqual(2.0, instanceOne.TheDoubleTwo);
-                Assert.AreEqual(1f, instanceOne.TheFloatOne);
-                Assert.AreEqual(2f, instanceOne.TheFloatTwo);
-                Assert.AreEqual(">b<", instanceOne.TheStringWithSetter);
-                Assert.AreEqual("test.value", instanceOne.TheSystemProperty);
+                ClassicAssert.AreEqual("a", instanceOne.TheString);
+                ClassicAssert.AreEqual(null, instanceOne.TheNotSetString);
+                ClassicAssert.AreEqual(1, instanceOne.TheInt);
+                ClassicAssert.AreEqual(true, instanceOne.TheBool);
+                ClassicAssert.AreEqual(1L, (long)instanceOne.TheLongOne);
+                ClassicAssert.AreEqual(2, instanceOne.TheLongTwo);
+                ClassicAssert.AreEqual(null, instanceOne.TheLongThree);
+                ClassicAssert.AreEqual(1.0, instanceOne.TheDoubleOne, 0);
+                Assert.That(instanceOne.TheDoubleTwo, Is.EqualTo(2.0d));
+                ClassicAssert.AreEqual(1f, instanceOne.TheFloatOne, 0);
+                Assert.That(instanceOne.TheFloatTwo, Is.EqualTo(2.0f));
+                ClassicAssert.AreEqual(">b<", instanceOne.TheStringWithSetter);
 
                 // test array etc. properties
                 MyOperatorTwoForge.Operators.Clear();
                 env.Compile(
-                    "@Name('flow') create dataflow MyGraph MyOperatorTwo {\n" +
+                    "@name('flow') create dataflow MyGraph MyOperatorTwo {\n" +
                     "  TheStringArray: ['a', \"b\"],\n" +
                     "  TheIntArray: [1, 2, 3],\n" +
                     "  TheObjectArray: ['a', 1],\n" +
@@ -148,20 +192,21 @@ public static IList<RegressionExecution> WithCustomProps(IList<RegressionExecuti
                     "'\n" +
                     "  },\n" + // NOTE the last comma here, it's acceptable
                     "}");
-                Assert.AreEqual(1, MyOperatorTwoForge.Operators.Count);
+                ClassicAssert.AreEqual(1, MyOperatorTwoForge.Operators.Count);
                 var instanceTwo = MyOperatorTwoForge.Operators[0];
 
-                EPAssertionUtil.AssertEqualsExactOrder(new[] {"a", "b"}, instanceTwo.TheStringArray);
-                EPAssertionUtil.AssertEqualsExactOrder(new[] {1, 2, 3}, instanceTwo.TheIntArray);
-                EPAssertionUtil.AssertEqualsExactOrder(new object[] {"a", 1}, instanceTwo.TheObjectArray);
-                EPAssertionUtil.AssertPropsMap(
-                    instanceTwo.TheMap,
-                    new [] { "a","b" },
-                    10,
-                    "xyz");
-                Assert.AreEqual("x", instanceTwo.TheInnerOp.fieldOne);
-                Assert.AreEqual(2, instanceTwo.TheInnerOp.fieldTwo);
-                Assert.IsInstanceOf<MyOperatorTwoInterfaceImplTwo>(instanceTwo.TheInnerOpInterface);
+                EPAssertionUtil.AssertEqualsExactOrder(new string[] { "a", "b" }, instanceTwo.TheStringArray);
+                EPAssertionUtil.AssertEqualsExactOrder(new int[] { 1, 2, 3 }, instanceTwo.TheIntArray);
+                EPAssertionUtil.AssertEqualsExactOrder(new object[] { "a", 1 }, instanceTwo.TheObjectArray);
+                EPAssertionUtil.AssertPropsMap(instanceTwo.TheMap, "a,b".SplitCsv(), new object[] { 10, "xyz" });
+                ClassicAssert.AreEqual("x", instanceTwo.TheInnerOp.fieldOne);
+                ClassicAssert.AreEqual(2, instanceTwo.TheInnerOp.fieldTwo);
+                ClassicAssert.IsTrue(instanceTwo.TheInnerOpInterface is MyOperatorTwoInterfaceImplTwo);
+            }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.DATAFLOW);
             }
         }
 
@@ -179,9 +224,9 @@ public static IList<RegressionExecution> WithCustomProps(IList<RegressionExecuti
             [DataFlowOpParameter] private float theFloatOne;
             [DataFlowOpParameter] private float? theFloatTwo;
             [DataFlowOpParameter] private string theSystemProperty;
-            
+
             private string theStringWithSetter;
-            
+
             public MyOperatorOneForge()
             {
                 Operators.Add(this);
@@ -279,7 +324,7 @@ public static IList<RegressionExecution> WithCustomProps(IList<RegressionExecuti
                 get => theMap;
                 set => theMap = value;
             }
-
+            
             public DataFlowOpForgeInitializeResult InitializeForge(DataFlowOpForgeInitializeContext context)
             {
                 return null;
@@ -310,6 +355,85 @@ public static IList<RegressionExecution> WithCustomProps(IList<RegressionExecuti
 
         public class MyOperatorTwoInterfaceImplTwo : MyOperatorTwoInterface
         {
+        }
+
+        public class MyOperatorThreeForge : DataFlowOperatorForge
+        {
+            [DataFlowOpParameter] private MyOperatorThreeSettings settings;
+
+            private static IList<MyOperatorThreeForge> operators = new List<MyOperatorThreeForge>();
+
+            public static IList<MyOperatorThreeForge> Operators => operators;
+
+            public MyOperatorThreeForge()
+            {
+                operators.Add(this);
+            }
+
+            public DataFlowOpForgeInitializeResult InitializeForge(DataFlowOpForgeInitializeContext context)
+            {
+                return null;
+            }
+
+            public CodegenExpression Make(
+                CodegenMethodScope parent,
+                SAIFFInitializeSymbol symbols,
+                CodegenClassScope classScope)
+            {
+                return ConstantNull();
+            }
+
+            public MyOperatorThreeSettings Settings => settings;
+        }
+
+        public interface MyOperatorThreeSettings
+        {
+        }
+
+        public class MyOperatorThreeSettingsABC : MyOperatorThreeSettings
+        {
+            [DataFlowOpParameter] internal ExprNode parameterOne;
+
+            public MyOperatorThreeSettingsABC()
+            {
+            }
+        }
+
+        public class MyOperatorFourForge : DataFlowOperatorForge
+        {
+            private IDictionary<string, ExprNode> allProperties = new LinkedHashMap<string, ExprNode>();
+
+            [DataFlowOpParameter(IsAll = true)]
+            public void SetProperty(
+                string name,
+                ExprNode value)
+            {
+                allProperties.Put(name, value);
+            }
+
+            public IDictionary<string, ExprNode> AllProperties => allProperties;
+
+            private static IList<MyOperatorFourForge> operators = new List<MyOperatorFourForge>();
+
+            public static IList<MyOperatorFourForge> Operators => operators;
+
+            public MyOperatorFourForge()
+            {
+                operators.Add(this);
+            }
+
+            public DataFlowOpForgeInitializeResult InitializeForge(DataFlowOpForgeInitializeContext context)
+            {
+                return null;
+            }
+
+            public CodegenExpression Make(
+                CodegenMethodScope parent,
+                SAIFFInitializeSymbol symbols,
+                CodegenClassScope classScope)
+            {
+                return ConstantNull();
+            }
         }
     }
 } // end of namespace

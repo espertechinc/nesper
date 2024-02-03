@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -53,8 +53,8 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
 
             filter = DataFlowParameterValidation.Validate("filter", filter, eventType, typeof(bool?), context);
 
-            GraphTypeDesc[] typesPerPort = new GraphTypeDesc[context.OutputPorts.Count];
-            for (int i = 0; i < typesPerPort.Length; i++) {
+            var typesPerPort = new GraphTypeDesc[context.OutputPorts.Count];
+            for (var i = 0; i < typesPerPort.Length; i++) {
                 typesPerPort[i] = new GraphTypeDesc(false, true, eventType);
             }
 
@@ -68,7 +68,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
         {
             return new SAIFFInitializeBuilder(
                     OP_PACKAGE_NAME + ".filter.FilterFactory",
-                    this.GetType(),
+                    GetType(),
                     "filter",
                     parent,
                     symbols,

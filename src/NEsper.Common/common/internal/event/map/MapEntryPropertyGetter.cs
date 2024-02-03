@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -21,36 +21,40 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 namespace com.espertech.esper.common.@internal.@event.map
 {
     /// <summary>
-    ///     A getter for use with Map-based events simply returns the value for the key.
+    /// A getter for use with Map-based events simply returns the value for the key.
     /// </summary>
     public class MapEntryPropertyGetter : MapEventPropertyGetter
     {
         private readonly EventBeanTypedEventFactory eventBeanTypedEventFactory;
         private readonly BeanEventType eventType;
         private readonly string propertyName;
+        private readonly bool canFragment;
 
         /// <summary>
-        ///     Ctor.
+        /// Ctor.
         /// </summary>
         /// <param name="propertyName">property to get</param>
         /// <param name="eventBeanTypedEventFactory">factory for event beans and event types</param>
         /// <param name="eventType">type of the entry returned</param>
+        /// <param name="canFragment">whether the property value can be an EventBean instance</param>
         public MapEntryPropertyGetter(
             string propertyName,
             BeanEventType eventType,
-            EventBeanTypedEventFactory eventBeanTypedEventFactory)
+            EventBeanTypedEventFactory eventBeanTypedEventFactory,
+            bool canFragment)
         {
             this.propertyName = propertyName;
             this.eventBeanTypedEventFactory = eventBeanTypedEventFactory;
             this.eventType = eventType;
+            this.canFragment = canFragment;
         }
 
         public object GetMap(IDictionary<string, object> map)
         {
             // If the map does not contain the key, this is allowed and represented as null
             var value = map.Get(propertyName);
-            if (value is EventBean) {
-                return ((EventBean) value).Underlying;
+            if (value is EventBean bean) {
+                return bean.Underlying;
             }
 
             return value;
@@ -154,12 +158,16 @@ namespace com.espertech.esper.common.@internal.@event.map
                 mType,
                 mSvc);
         }
-
+        
         private CodegenExpression GetMapCodegen(
             CodegenExpression underlyingExpression,
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
+            if (!canFragment) {
+                return ExprDotMethod(underlyingExpression, "Get", Constant(propertyName));
+            }
+
             var method = codegenMethodScope.MakeChild(typeof(object), typeof(MapEntryPropertyGetter), codegenClassScope)
                 .AddParam(typeof(IDictionary<string, object>), "map")
                 .Block

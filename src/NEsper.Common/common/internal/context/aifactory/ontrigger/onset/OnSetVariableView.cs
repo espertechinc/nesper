@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -53,7 +53,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onset
                 values = new Dictionary<string, object>();
             }
 
-            eventsPerStream[0] = newData[newData.Length - 1];
+            eventsPerStream[0] = newData[^1];
             factory.VariableReadWrite.WriteVariables(eventsPerStream, values, agentInstanceContext);
 
             if (values != null) {

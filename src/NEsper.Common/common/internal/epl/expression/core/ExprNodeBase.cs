@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -23,7 +23,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
     [Serializable]
     public abstract class ExprNodeBase : ExprNode
     {
-        private static readonly ExprNode[] EMPTY_EXPR_ARRAY = new ExprNode[0];
+        private static readonly ExprNode[] EMPTY_EXPR_ARRAY = Array.Empty<ExprNode>();
 
         public ExprNode[] ChildNodes { get; set; }
 
@@ -75,12 +75,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
         public virtual void AddChildNode(ExprNode childNode)
         {
-            ChildNodes = (ExprNode[]) CollectionUtil.ArrayExpandAddSingle(ChildNodes, childNode);
+            ChildNodes = (ExprNode[])CollectionUtil.ArrayExpandAddSingle(ChildNodes, childNode);
         }
 
         public virtual void AddChildNodes(ICollection<ExprNode> childNodeColl)
         {
-            ChildNodes = (ExprNode[]) CollectionUtil.ArrayExpandAddElements(ChildNodes, childNodeColl);
+            ChildNodes = CollectionUtil.ArrayExpandAddElements(ChildNodes, childNodeColl);
         }
 
         public virtual void ReplaceUnlistedChildNode(
@@ -119,12 +119,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         public abstract void ToPrecedenceFreeEPL(
             TextWriter writer,
             ExprNodeRenderableFlags flags);
-        
+
         public abstract ExprNode Validate(ExprValidationContext validationContext);
 
         public void AddChildNodeToFront(ExprNode childNode)
         {
-            ChildNodes = CollectionUtil.ArrayExpandAddElements<ExprNode>(new[] {childNode}, ChildNodes);
+            ChildNodes = CollectionUtil.ArrayExpandAddElements<ExprNode>(new[] { childNode }, ChildNodes);
         }
 
         protected internal static void CheckValidated(ExprForge forge)

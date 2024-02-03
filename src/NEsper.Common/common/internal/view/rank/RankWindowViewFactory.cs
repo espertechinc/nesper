@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -44,9 +44,9 @@ namespace com.espertech.esper.common.@internal.view.rank
         public Type[] CriteriaTypes { get; set; }
 
         public DataInputOutputSerde KeySerde { get; set; }
-        
+
         public DataInputOutputSerde[] SortSerdes { get; set; }
-        
+
         public string ViewName => ViewEnum.RANK_WINDOW.GetViewName();
 
         public void Init(
@@ -61,11 +61,11 @@ namespace com.espertech.esper.common.@internal.view.rank
 
         public View MakeView(AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext)
         {
-            int sortWindowSize = ViewFactoryUtil.EvaluateSizeParam(
+            var sortWindowSize = ViewFactoryUtil.EvaluateSizeParam(
                 ViewName,
                 SizeEvaluator,
                 agentInstanceViewFactoryContext.AgentInstanceContext);
-            IStreamSortRankRandomAccess rankedRandomAccess =
+            var rankedRandomAccess =
                 agentInstanceViewFactoryContext.StatementContext.ViewServicePreviousFactory
                     .GetOptPreviousExprSortedRankedAccess(agentInstanceViewFactoryContext);
             return new RankWindowView(this, sortWindowSize, rankedRandomAccess, agentInstanceViewFactoryContext);

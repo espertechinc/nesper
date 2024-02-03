@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -18,15 +18,12 @@ namespace com.espertech.esper.runtime.@internal.dataflow.op.filter
 {
     public class FilterOp : DataFlowOperator
     {
-        private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        private static int _gid = 0;
-        private int _id = ++_gid;
-        
-        private readonly FilterFactory factory;
-        private readonly AgentInstanceContext agentInstanceContext;
-        private EventBeanSPI theEvent;
-        private readonly EventBean[] eventsPerStream = new EventBean[1];
+        private readonly FilterFactory _factory;
+        private readonly AgentInstanceContext _agentInstanceContext;
+        private EventBeanSPI _theEvent;
+        private readonly EventBean[] _eventsPerStream = new EventBean[1];
 
 #pragma warning disable 649
         [DataFlowContext] private EPDataFlowEmitter graphContext;
@@ -34,38 +31,38 @@ namespace com.espertech.esper.runtime.@internal.dataflow.op.filter
 
         public FilterOp(FilterFactory factory, AgentInstanceContext agentInstanceContext)
         {
-            this.factory = factory;
-            this.agentInstanceContext = agentInstanceContext;
+            this._factory = factory;
+            this._agentInstanceContext = agentInstanceContext;
 
-            theEvent = EventTypeUtility.GetShellForType(factory.EventType);
-            eventsPerStream[0] = theEvent;
+            _theEvent = EventTypeUtility.GetShellForType(factory.EventType);
+            _eventsPerStream[0] = _theEvent;
         }
 
         public void OnInput(object row)
         {
-            if (log.IsDebugEnabled)
+            if (Log.IsDebugEnabled)
             {
-                log.Debug("Received row for filtering: " + row.RenderAny());
+                Log.Debug("Received row for filtering: " + row.RenderAny());
             }
 
             if (!(row is EventBeanSPI))
             {
-                theEvent.UnderlyingSpi = row;
+                _theEvent.Underlying = row;
             }
             else
             {
-                theEvent = (EventBeanSPI) row;
+                _theEvent = (EventBeanSPI) row;
             }
 
-            object pass = factory.Filter.Evaluate(eventsPerStream, true, agentInstanceContext);
+            object pass = _factory.Filter.Evaluate(_eventsPerStream, true, _agentInstanceContext);
             if (pass != null && true.Equals(pass))
             {
-                if (log.IsDebugEnabled)
+                if (Log.IsDebugEnabled)
                 {
-                    log.Debug("Submitting row " + row.RenderAny());
+                    Log.Debug("Submitting row " + row.RenderAny());
                 }
 
-                if (factory.IsSingleOutputPort)
+                if (_factory.IsSingleOutputPort)
                 {
                     graphContext.Submit(row);
                 }
@@ -76,7 +73,7 @@ namespace com.espertech.esper.runtime.@internal.dataflow.op.filter
             }
             else
             {
-                if (!factory.IsSingleOutputPort)
+                if (!_factory.IsSingleOutputPort)
                 {
                     graphContext.SubmitPort(1, row);
                 }

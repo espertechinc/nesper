@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -20,6 +20,7 @@ using com.espertech.esper.container;
 using com.espertech.esper.runtime.@internal.support;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 {
@@ -146,7 +147,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             return supportEventBeanFactory.CreateObject(bean);
         }
 
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         /// <summary>
         ///     Test for removing a callback that is waiting to occur,
@@ -204,9 +205,9 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 
                     if (matches[j] != callback.GetAndResetCountInvoked())
                     {
-                        log.Debug(".testEvalEvents Match failed, event=" + events[i].Underlying);
-                        log.Debug(".testEvalEvents Match failed, eventNumber=" + i + " index=" + j);
-                        Assert.IsTrue(false);
+                        Log.Debug(".testEvalEvents Match failed, event=" + events[i].Underlying);
+                        Log.Debug(".testEvalEvents Match failed, eventNumber=" + i + " index=" + j);
+                        ClassicAssert.IsTrue(false);
                     }
                 }
             }
@@ -234,7 +235,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
                 EventBean theEvent,
                 ICollection<FilterHandleCallback> allStmtMatches)
             {
-                log.Debug(".matchFound Removing callbackTwo");
+                Log.Debug(".matchFound Removing callbackTwo");
                 filterService.Remove(callback, eventType, spec);
             }
         }

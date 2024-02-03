@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -18,6 +18,7 @@ using com.espertech.esper.runtime.@internal.kernel.stage;
 using com.espertech.esper.runtime.@internal.kernel.statement;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.support.util
 {
@@ -28,8 +29,12 @@ namespace com.espertech.esper.regressionlib.support.util
             string stmtname,
             bool flag)
         {
-            var stmt = (EPStatementSPI) GetRequireStatement(stmtname, env.Runtime);
-            Assert.AreEqual(flag, stmt.StatementContext.IsStatelessSelect);
+            env.AssertStatement(
+                stmtname,
+                statement => {
+                    var stmt = (EPStatementSPI)statement;
+                    ClassicAssert.AreEqual(flag, stmt.StatementContext.IsStatelessSelect);
+                });
         }
 
         public static SupportListener GetRequireStatementListener(
@@ -38,6 +43,19 @@ namespace com.espertech.esper.regressionlib.support.util
         {
             var statement = GetRequireStatement(statementName, runtime);
             return GetRequireListener(statementName, statement);
+        }
+
+        public static SupportSubscriber GetRequireStatementSubscriber(
+            string statementName,
+            EPRuntime runtime)
+        {
+            var statement = GetRequireStatement(statementName, runtime);
+            var subscriber = (SupportSubscriber)statement.Subscriber;
+            if (subscriber == null) {
+                throw new ArgumentException("Subscriber not set for statement '" + statementName + "'");
+            }
+
+            return subscriber;
         }
 
         public static SupportListener GetRequireStatementListener(

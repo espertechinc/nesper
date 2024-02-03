@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -23,100 +23,110 @@ using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.common.@internal.schedule;
 using com.espertech.esper.compat.collections;
 
+
 namespace com.espertech.esper.common.@internal.context.aifactory.core
 {
-	public abstract class StmtForgeMethodCreateSimpleBase : StmtForgeMethod
-	{
-		private readonly StatementBaseInfo _base;
+    public abstract class StmtForgeMethodCreateSimpleBase : StmtForgeMethod
+    {
+        protected readonly StatementBaseInfo _base;
 
-		protected abstract string Register(StatementCompileTimeServices services);
+        protected abstract StmtForgeMethodRegisterResult Register(StatementCompileTimeServices services);
 
-		protected abstract StmtClassForgeable AiFactoryForgable(
-			string className,
-			CodegenNamespaceScope namespaceScope,
-			EventType statementEventType,
-			string objectName);
+        protected abstract StmtClassForgeable AiFactoryForgable(
+            string className,
+            CodegenNamespaceScope namespaceScope,
+            EventType statementEventType,
+            string objectName);
 
-		public StmtForgeMethodCreateSimpleBase(StatementBaseInfo @base)
-		{
-			this._base = @base;
-		}
+        public StmtForgeMethodCreateSimpleBase(StatementBaseInfo @base)
+        {
+            _base = @base;
+        }
 
-		public StatementBaseInfo Base => _base;
+        public StmtForgeMethodResult Make(
+            string @namespace,
+            string classPostfix,
+            StatementCompileTimeServices services)
+        {
+            var registerResult = Register(services);
+            var objectName = registerResult.ObjectName;
 
-		public StmtForgeMethodResult Make(
-			string @namespace,
-			string classPostfix,
-			StatementCompileTimeServices services)
-		{
-			string objectName = Register(services);
+            // define output event type
+            var statementEventTypeName = services.EventTypeNameGeneratorStatement.AnonymousTypeName;
+            var statementTypeMetadata = new EventTypeMetadata(
+                statementEventTypeName,
+                _base.ModuleName,
+                EventTypeTypeClass.STATEMENTOUT,
+                EventTypeApplicationType.MAP,
+                NameAccessModifier.TRANSIENT,
+                EventTypeBusModifier.NONBUS,
+                false,
+                EventTypeIdPair.Unassigned());
+            EventType statementEventType = BaseNestableEventUtil.MakeMapTypeCompileTime(
+                statementTypeMetadata,
+                EmptyDictionary<string, object>.Instance, 
+                null,
+                null,
+                null,
+                null,
+                services.BeanEventTypeFactoryPrivate,
+                services.EventTypeCompileTimeResolver);
+            services.EventTypeCompileTimeRegistry.NewType(statementEventType);
 
-			// define output event type
-			string statementEventTypeName = services.EventTypeNameGeneratorStatement.AnonymousTypeName;
-			EventTypeMetadata statementTypeMetadata = new EventTypeMetadata(
-				statementEventTypeName,
-				_base.ModuleName,
-				EventTypeTypeClass.STATEMENTOUT,
-				EventTypeApplicationType.MAP,
-				NameAccessModifier.TRANSIENT,
-				EventTypeBusModifier.NONBUS,
-				false,
-				EventTypeIdPair.Unassigned());
-			EventType statementEventType = BaseNestableEventUtil.MakeMapTypeCompileTime(
-				statementTypeMetadata,
-				EmptyDictionary<string, object>.Instance,
-				null,
-				null,
-				null,
-				null,
-				services.BeanEventTypeFactoryPrivate,
-				services.EventTypeCompileTimeResolver);
-			services.EventTypeCompileTimeRegistry.NewType(statementEventType);
+            var statementFieldsClassName =
+                CodeGenerationIDGenerator.GenerateClassNameSimple(typeof(StatementFields), classPostfix);
 
-			string statementFieldsClassName =
-				CodeGenerationIDGenerator.GenerateClassNameSimple(typeof(StatementFields), classPostfix);
+            var namespaceScope = new CodegenNamespaceScope(
+                @namespace,
+                statementFieldsClassName,
+                services.IsInstrumented,
+                services.Configuration.Compiler.ByteCode);
 
-			CodegenNamespaceScope namespaceScope = new CodegenNamespaceScope(
-				@namespace,
-				statementFieldsClassName,
-				services.IsInstrumented);
+            var aiFactoryProviderClassName = CodeGenerationIDGenerator.GenerateClassNameSimple(
+                typeof(StatementAIFactoryProvider),
+                classPostfix);
+            var aiFactoryForgeable = AiFactoryForgable(
+                aiFactoryProviderClassName,
+                namespaceScope,
+                statementEventType,
+                objectName);
 
-			string aiFactoryProviderClassName = CodeGenerationIDGenerator.GenerateClassNameSimple(typeof(StatementAIFactoryProvider), classPostfix);
-			StmtClassForgeable aiFactoryForgeable = AiFactoryForgable(aiFactoryProviderClassName, namespaceScope, statementEventType, objectName);
+            var selectSubscriberDescriptor = new SelectSubscriberDescriptor();
+            var informationals = StatementInformationalsUtil.GetInformationals(
+                _base,
+                EmptyList<FilterSpecTracked>.Instance,
+                EmptyList<ScheduleHandleTracked>.Instance,
+                EmptyList<NamedWindowConsumerStreamSpec>.Instance, 
+                false,
+                selectSubscriberDescriptor,
+                namespaceScope,
+                services);
+            informationals.Properties.Put(StatementProperty.CREATEOBJECTNAME, objectName);
+            var statementProviderClassName =
+                CodeGenerationIDGenerator.GenerateClassNameSimple(typeof(StatementProvider), classPostfix);
+            var stmtProvider = new StmtClassForgeableStmtProvider(
+                aiFactoryProviderClassName,
+                statementProviderClassName,
+                informationals,
+                namespaceScope);
 
-			SelectSubscriberDescriptor selectSubscriberDescriptor = new SelectSubscriberDescriptor();
-			StatementInformationalsCompileTime informationals = StatementInformationalsUtil.GetInformationals(
-				_base,
-				EmptyList<FilterSpecCompiled>.Instance,
-				EmptyList<ScheduleHandleCallbackProvider>.Instance,
-				EmptyList<NamedWindowConsumerStreamSpec>.Instance, 
-				false,
-				selectSubscriberDescriptor,
-				namespaceScope,
-				services);
-			informationals.Properties.Put(StatementProperty.CREATEOBJECTNAME, objectName);
-			string statementProviderClassName = CodeGenerationIDGenerator.GenerateClassNameSimple(typeof(StatementProvider), classPostfix);
-			StmtClassForgeableStmtProvider stmtProvider = new StmtClassForgeableStmtProvider(
-				aiFactoryProviderClassName,
-				statementProviderClassName,
-				informationals,
-				namespaceScope);
+            var stmtClassForgeableStmtFields = new StmtClassForgeableStmtFields(
+                statementFieldsClassName,
+                namespaceScope,
+                false);
 
-			var stmtClassForgeableStmtFields = new StmtClassForgeableStmtFields(
-				statementFieldsClassName,
-				namespaceScope,
-				1);
-			
-			IList<StmtClassForgeable> forgeables = new List<StmtClassForgeable>();
-			forgeables.Add(aiFactoryForgeable);
-			forgeables.Add(stmtProvider);
-			forgeables.Add(stmtClassForgeableStmtFields);
-			return new StmtForgeMethodResult(
-				forgeables,
-				EmptyList<FilterSpecCompiled>.Instance, 
-				EmptyList<ScheduleHandleCallbackProvider>.Instance, 
-				EmptyList<NamedWindowConsumerStreamSpec>.Instance, 
-				EmptyList<FilterSpecParamExprNodeForge>.Instance);
-		}
-	}
+            IList<StmtClassForgeable> forgeables = new List<StmtClassForgeable>();
+            forgeables.Add(aiFactoryForgeable);
+            forgeables.Add(stmtProvider);
+            forgeables.Add(stmtClassForgeableStmtFields);
+            return new StmtForgeMethodResult(
+                forgeables,
+                EmptyList<FilterSpecTracked>.Instance,
+                EmptyList<ScheduleHandleTracked>.Instance,
+                EmptyList<NamedWindowConsumerStreamSpec>.Instance,
+                EmptyList<FilterSpecParamExprNodeForge>.Instance, 
+                namespaceScope,
+                registerResult.FabricCharge);
+        }
+    }
 } // end of namespace

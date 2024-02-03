@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -21,15 +21,21 @@ using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.multithread
 {
     public class MultithreadPatternTimer : RegressionExecutionWithConfigure
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private readonly static IDictionary<string, SupportCountListener> _supportCountListeners =
+        private static readonly IDictionary<string, SupportCountListener> _supportCountListeners =
             new Dictionary<string, SupportCountListener>();
+
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
+        }
 
         public void Configure(Configuration configuration)
         {
@@ -55,16 +61,16 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                 new SupportThreadFactory(typeof(MultithreadPatternTimer)).ThreadFactory);
 
             // create statements
-            log.Info("Creating statements");
+            Log.Info("Creating statements");
             for (var i = 0; i < numStatements; i++) {
                 var statementName = "s" + i;
                 var stmtText =
-                    $"@Name('s{i}')select * from pattern" +
+                    $"@name('s{i}')select * from pattern" +
                     $" [ every e1=SupportByteArrEventLongId(Id={i}) -> timer:interval(1 seconds)]";
 
                 var supportCountListener = new SupportCountListener();
                 _supportCountListeners[statementName] = supportCountListener;
-                
+
                 env.CompileDeploy(
                     stmtText,
                     options => options.SetStatementUserObject(
@@ -76,14 +82,14 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 
             // submit events
             var startTime = DateTimeHelper.CurrentTimeMillis;
-            log.Info("Submitting " + numEvents + " events to queue");
+            Log.Info("Submitting " + numEvents + " events to queue");
             var random = new Random();
             for (var i = 0; i < numEvents; i++) {
                 var @event = new SupportByteArrEventLongId(random.Next(numStatements), 0);
                 threadPool.Submit(() => env.SendEventBean(@event));
             }
 
-            log.Info("Waiting for completion");
+            Log.Info("Waiting for completion");
             while (!queue.IsEmpty()) {
                 try {
                     Thread.Sleep(5000);
@@ -92,14 +98,14 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                     Assert.Fail();
                 }
 
-                log.Info("Queue size is " + queue.Count);
+                Log.Info("Queue size is " + queue.Count);
             }
 
             var endTime = DateTimeHelper.CurrentTimeMillis;
-            log.Info("Time to complete: " + (endTime - startTime) / 1000 + " sec");
+            Log.Info("Time to complete: " + (endTime - startTime) / 1000 + " sec");
 
             // wait for completion
-            log.Info("Waiting for remaining callbacks");
+            Log.Info("Waiting for remaining callbacks");
             var startWaitTime = DateTimeHelper.CurrentTimeMillis;
             while (true) {
                 try {
@@ -118,16 +124,16 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                     Assert.Fail();
                 }
 
-                log.Info("Waiting for remaining callbacks: " + countTotal + " of " + numEvents);
+                Log.Info("Waiting for remaining callbacks: " + countTotal + " of " + numEvents);
             }
 
             // assert
             var total = GetCount(env, numStatements);
-            Assert.AreEqual(numEvents, total);
+            ClassicAssert.AreEqual(numEvents, total);
 
             env.UndeployAll();
         }
-        
+
         private long GetCount(
             RegressionEnvironment env,
             int numStatements)

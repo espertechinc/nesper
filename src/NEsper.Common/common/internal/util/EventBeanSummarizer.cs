@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -22,7 +22,7 @@ namespace com.espertech.esper.common.@internal.util
                 return "(null)";
             }
 
-            StringWriter writer = new StringWriter();
+            var writer = new StringWriter();
             Summarize(theEvent, writer);
             return writer.ToString();
         }
@@ -48,7 +48,7 @@ namespace com.espertech.esper.common.@internal.util
                 return "(null)";
             }
 
-            StringWriter writer = new StringWriter();
+            var writer = new StringWriter();
             SummarizeUnderlying(underlying, writer);
             return writer.ToString();
         }
@@ -57,7 +57,7 @@ namespace com.espertech.esper.common.@internal.util
             object underlying,
             TextWriter writer)
         {
-            CompatExtensions.RenderAny(underlying, writer);
+            underlying.RenderAny(writer);
         }
 
         public static string Summarize(EventBean[] events)
@@ -70,9 +70,9 @@ namespace com.espertech.esper.common.@internal.util
                 return "(empty)";
             }
 
-            StringWriter writer = new StringWriter();
-            string delimiter = "";
-            for (int i = 0; i < events.Length; i++) {
+            var writer = new StringWriter();
+            var delimiter = "";
+            for (var i = 0; i < events.Length; i++) {
                 writer.Write(delimiter);
                 writer.Write("event ");
                 writer.Write(Convert.ToString(i));

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -7,30 +7,29 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-using System.Reflection;
 
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.compiler.client;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
-
-using static com.espertech.esper.regressionlib.framework.SupportMessageAssertUtil;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.epl.other
 {
     public class EPLOtherInvalid
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
+#if REGRESSION_EXECUTIONS
             WithInvalidFuncParams(execs);
             WithInvalidSyntax(execs);
             WithLongTypeConstant(execs);
-            WithDifferentJoins(execs);
+            With(DifferentJoins)(execs);
+#endif
             return execs;
         }
 
@@ -62,67 +61,31 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             return execs;
         }
 
-        private static void TryInvalid(
-            RegressionEnvironment env,
-            string eplInvalidEPL)
-        {
-            try {
-                env.CompileWCheckedEx(eplInvalidEPL);
-                Assert.Fail();
-            }
-            catch (EPCompileException) {
-                // Expected exception
-            }
-        }
-
-        private static void TryValid(
-            RegressionEnvironment env,
-            string invalidEPL)
-        {
-            env.CompileDeploy(invalidEPL);
-        }
-
-        private static string GetSyntaxExceptionEPL(
-            RegressionEnvironment env,
-            string expression)
-        {
-            string exceptionText = null;
-            try {
-                env.CompileWCheckedEx(expression);
-                Assert.Fail();
-            }
-            catch (EPCompileException ex) {
-                exceptionText = ex.Message;
-                log.Debug(".getSyntaxExceptionEPL epl=" + expression, ex);
-                // Expected exception
-            }
-
-            return exceptionText;
-        }
-
-        internal class EPLOtherInvalidFuncParams : RegressionExecution
+        private class EPLOtherInvalidFuncParams : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
-                TryInvalidCompile(
-                    env,
+                env.TryInvalidCompile(
                     "select count(TheString, TheString, TheString) from SupportBean",
                     "Failed to validate select-clause expression 'count(TheString,TheString,TheString)': The 'count' function expects at least 1 and up to 2 parameters");
 
-                TryInvalidCompile(
-                    env,
+                env.TryInvalidCompile(
                     "select leaving(TheString) from SupportBean",
                     "Failed to validate select-clause expression 'leaving(TheString)': The 'leaving' function expects no parameters");
             }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.INVALIDITY);
+            }
         }
 
-        internal class EPLOtherInvalidSyntax : RegressionExecution
+        private class EPLOtherInvalidSyntax : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 var exceptionText = GetSyntaxExceptionEPL(env, "select * from *");
                 StringAssert.StartsWith(
-                    "Error during compilation: " + 
                     "Incorrect syntax near '*' at line 1 column 14, please check the from clause [select * from *]",
                     exceptionText);
 
@@ -130,37 +93,38 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     env,
                     "select * from SupportBean a where a.IntPrimitive between r.start and r.end");
                 StringAssert.StartsWith(
-                    "Error during compilation: " + 
                     "Incorrect syntax near 'start' (a reserved keyword) at line 1 column 59, please check the where clause [select * from SupportBean a where a.IntPrimitive between r.start and r.end]",
                     exceptionText);
 
-                TryInvalidCompile(
-                    env,
+                env.TryInvalidCompile(
                     "select * from SupportBean(1=2=3)",
                     "Failed to validate filter expression '1=2': Invalid use of equals, expecting left-hand side and right-hand side but received 3 expressions");
             }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.INVALIDITY);
+            }
         }
 
-        internal class EPLOtherLongTypeConstant : RegressionExecution
+        private class EPLOtherLongTypeConstant : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@Name('s0') select 2512570244 as value from SupportBean";
+                var stmtText = "@name('s0') select 2512570244 as value from SupportBean";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 env.SendEventBean(new SupportBean());
-                Assert.AreEqual(2512570244L, env.Listener("s0").AssertOneGetNewAndReset().Get("value"));
+                env.AssertEqualsNew("s0", "value", 2512570244L);
 
                 env.UndeployAll();
             }
         }
 
-        internal class EPLOtherDifferentJoins : RegressionExecution
+        private class EPLOtherDifferentJoins : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
-                TryInvalidCompile(env, "select *", "The from-clause is required but has not been specified");
-
                 var streamDef = "select * from " +
                                 "SupportBean#length(3) as sa," +
                                 "SupportBean#length(3) as sb" +
@@ -253,6 +217,51 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 env.UndeployAll();
             }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.INVALIDITY);
+            }
         }
+
+        private static void TryInvalid(
+            RegressionEnvironment env,
+            string eplInvalidEPL)
+        {
+            try {
+                env.CompileWCheckedEx(eplInvalidEPL);
+                Assert.Fail();
+            }
+            catch (EPCompileException) {
+                // Expected exception
+            }
+        }
+
+        private static void TryValid(
+            RegressionEnvironment env,
+            string invalidEPL)
+        {
+            env.CompileDeploy(invalidEPL);
+        }
+
+        private static string GetSyntaxExceptionEPL(
+            RegressionEnvironment env,
+            string expression)
+        {
+            string exceptionText = null;
+            try {
+                env.CompileWCheckedEx(expression);
+                Assert.Fail();
+            }
+            catch (EPCompileException ex) {
+                exceptionText = ex.Message;
+                Log.Debug(".getSyntaxExceptionEPL epl=" + expression, ex);
+                // Expected exception
+            }
+
+            return exceptionText;
+        }
+
+        private static readonly ILog Log = LogManager.GetLogger(typeof(EPLOtherInvalid));
     }
 } // end of namespace

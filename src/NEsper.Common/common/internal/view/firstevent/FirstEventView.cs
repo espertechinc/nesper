@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -39,12 +39,9 @@ namespace com.espertech.esper.common.@internal.view.firstevent
             this.agentInstanceContext = agentInstanceContext;
         }
 
-        public override EventType EventType {
-            get {
-                // The schema is the parent view's schema
-                return parent.EventType;
-            }
-        }
+        public override EventType EventType =>
+            // The schema is the parent view's schema
+            Parent.EventType;
 
         public override void Update(
             EventBean[] newData,
@@ -57,24 +54,24 @@ namespace com.espertech.esper.common.@internal.view.firstevent
             EventBean[] oldDataToPost = null;
 
             if (oldData != null) {
-                for (int i = 0; i < oldData.Length; i++) {
+                for (var i = 0; i < oldData.Length; i++) {
                     if (oldData[i] == firstEvent) {
-                        oldDataToPost = new EventBean[] {firstEvent};
+                        oldDataToPost = new EventBean[] { firstEvent };
                         firstEvent = null;
                     }
                 }
             }
 
-            if ((newData != null) && (newData.Length != 0)) {
+            if (newData != null && newData.Length != 0) {
                 if (firstEvent == null) {
                     firstEvent = newData[0];
-                    newDataToPost = new EventBean[] {firstEvent};
+                    newDataToPost = new EventBean[] { firstEvent };
                 }
             }
 
-            if ((child != null) && ((newDataToPost != null) || (oldDataToPost != null))) {
+            if (Child != null && (newDataToPost != null || oldDataToPost != null)) {
                 agentInstanceContext.InstrumentationProvider.QViewIndicate(viewFactory, newDataToPost, oldDataToPost);
-                child.Update(newDataToPost, oldDataToPost);
+                Child.Update(newDataToPost, oldDataToPost);
                 agentInstanceContext.InstrumentationProvider.AViewIndicate();
             }
 
@@ -88,12 +85,12 @@ namespace com.espertech.esper.common.@internal.view.firstevent
 
         public override string ToString()
         {
-            return this.GetType().Name;
+            return GetType().Name;
         }
 
         public EventBean FirstEvent {
-            get => this.firstEvent;
-            set => this.firstEvent = value;
+            get => firstEvent;
+            set => firstEvent = value;
         }
 
         public void VisitView(ViewDataVisitor viewDataVisitor)
@@ -101,8 +98,6 @@ namespace com.espertech.esper.common.@internal.view.firstevent
             viewDataVisitor.VisitPrimary(firstEvent, FirstEventViewFactory.NAME);
         }
 
-        public ViewFactory ViewFactory {
-            get => viewFactory;
-        }
+        public ViewFactory ViewFactory => viewFactory;
     }
 } // end of namespace

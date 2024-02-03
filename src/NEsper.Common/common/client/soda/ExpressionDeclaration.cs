@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -17,7 +17,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Represents a single expression declaration that applies to a given statement.
     /// </summary>
-    [Serializable]
     public class ExpressionDeclaration
     {
         /// <summary>
@@ -81,15 +80,12 @@ namespace com.espertech.esper.common.client.soda
             IList<ExpressionDeclaration> expressionDeclarations,
             EPStatementFormatter formatter)
         {
-            if ((expressionDeclarations == null) || (expressionDeclarations.IsEmpty()))
-            {
+            if (expressionDeclarations == null || expressionDeclarations.IsEmpty()) {
                 return;
             }
 
-            foreach (var part in expressionDeclarations)
-            {
-                if (part.Name == null)
-                {
+            foreach (var part in expressionDeclarations) {
+                if (part.Name == null) {
                     continue;
                 }
 
@@ -106,24 +102,19 @@ namespace com.espertech.esper.common.client.soda
         {
             writer.Write("expression ");
             writer.Write(Name);
-            if (IsAlias)
-            {
+            if (IsAlias) {
                 writer.Write(" alias for");
             }
 
             writer.Write(" {");
-            if (!IsAlias)
-            {
-                if (ParameterNames != null && ParameterNames.Count == 1)
-                {
+            if (!IsAlias) {
+                if (ParameterNames != null && ParameterNames.Count == 1) {
                     writer.Write(ParameterNames[0]);
                 }
-                else if (ParameterNames != null && !ParameterNames.IsEmpty())
-                {
+                else if (ParameterNames != null && !ParameterNames.IsEmpty()) {
                     var delimiter = "";
                     writer.Write("(");
-                    foreach (var name in ParameterNames)
-                    {
+                    foreach (var name in ParameterNames) {
                         writer.Write(delimiter);
                         writer.Write(name);
                         delimiter = ",";
@@ -132,8 +123,7 @@ namespace com.espertech.esper.common.client.soda
                     writer.Write(")");
                 }
 
-                if (ParameterNames != null && !ParameterNames.IsEmpty())
-                {
+                if (ParameterNames != null && !ParameterNames.IsEmpty()) {
                     writer.Write(" => ");
                 }
             }

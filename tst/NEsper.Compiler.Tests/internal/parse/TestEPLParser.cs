@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -17,6 +17,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.compiler.@internal.parse
 {
@@ -37,7 +38,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 			var listener = SupportEPLTreeWalkerFactory.MakeWalker(container, ast.Second);
 
 			var walker = new ParseTreeWalker(); // create standard walker
-			walker.Walk(listener, (IParseTree) ast.First); // initiate walk of tree with listener
+			walker.Walk(listener, (IParseTree)ast.First); // initiate walk of tree with listener
 		}
 
 		[Test]
@@ -135,7 +136,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 			AssertIsInvalid("select * from x where like");
 			AssertIsInvalid("select * from x where like escape");
 			AssertIsInvalid("select * from x where like a escape");
-			AssertIsInvalid("select * from x where order");
+			AssertIsInvalid("select * from x where Order");
 			AssertIsInvalid("select * from x where field rlike 'aa' escape '!'");
 			AssertIsInvalid("select * from x where field regexp 'aa' escape '!'");
 			AssertIsInvalid("select * from x where regexp 'aa'");
@@ -238,7 +239,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 			AssertIsValid("select a from B output snapshot when myvar*count > 10");
 			AssertIsValid("select a from B output snapshot when myvar*count > 10 then set myvar = 1, myvar2 = 2*5");
 
-			AssertIsValid(preFill + "(string='test',intPrimitive=20).win:lenght(100)");
+			AssertIsValid(preFill + "(string='test',IntPrimitive=20).win:lenght(100)");
 			AssertIsValid(preFill + "(string in ('b', 'a'))");
 			AssertIsValid(preFill + "(string in ('b'))");
 			AssertIsValid(preFill + "(string in ('b', 'c', 'x'))");
@@ -246,20 +247,20 @@ namespace com.espertech.esper.compiler.@internal.parse
 			AssertIsValid(preFill + "(string in [1:2])");
 			AssertIsValid(preFill + "(string in (1:2))");
 			AssertIsValid(preFill + "(string in (1:2])");
-			AssertIsValid(preFill + "(intPrimitive = 08)");
-			AssertIsValid(preFill + "(intPrimitive = 09)");
-			AssertIsValid(preFill + "(intPrimitive = 008)");
-			AssertIsValid(preFill + "(intPrimitive = 0008)");
-			AssertIsValid(preFill + "(intPrimitive between 1 and 2)");
-			AssertIsValid(preFill + "(intPrimitive not between 1 and 2)");
-			AssertIsValid(preFill + "(intPrimitive not in [1:2])");
-			AssertIsValid(preFill + "(intPrimitive not in (1, 2, 3))");
+			AssertIsValid(preFill + "(IntPrimitive = 08)");
+			AssertIsValid(preFill + "(IntPrimitive = 09)");
+			AssertIsValid(preFill + "(IntPrimitive = 008)");
+			AssertIsValid(preFill + "(IntPrimitive = 0008)");
+			AssertIsValid(preFill + "(IntPrimitive between 1 and 2)");
+			AssertIsValid(preFill + "(IntPrimitive not between 1 and 2)");
+			AssertIsValid(preFill + "(IntPrimitive not in [1:2])");
+			AssertIsValid(preFill + "(IntPrimitive not in (1, 2, 3))");
 			AssertIsValid(preFill + "().win:lenght()");
 			AssertIsValid(preFill + "().win:lenght(4,5)");
 			AssertIsValid(preFill + "().win:lenght(4)");
 			AssertIsValid(preFill + "().win:lenght(\"\",5)");
 			AssertIsValid(preFill + "().win:lenght(10.9,1E30,-4.4,\"\",5)");
-			AssertIsValid(preFill + "().win:lenght(4).n:c(3.3, -3.3).n:other(\"price\")");
+			AssertIsValid(preFill + "().win:lenght(4).n:c(3.3, -3.3).n:other(\"Price\")");
 			AssertIsValid(preFill + "().win:lenght().n:c().n:da().n:e().n:f().n:g().n:xh(2.0)");
 			AssertIsValid(preFill + "().win:lenght({\"s\"})");
 			AssertIsValid(preFill + "().win:lenght({\"a\",\"b\"})");
@@ -276,16 +277,16 @@ namespace com.espertech.esper.compiler.@internal.parse
 			AssertIsValid(preFill + "(string in (1:2) and dodo=3, lax like '%e%' and oppol / yyy = 5, yunc(3))");
 			AssertIsValid(preFill + "()[myprop]");
 			AssertIsValid(preFill + "[myprop]#keepall");
-			AssertIsValid(preFill + "[myprop as orderId][mythirdprop]#keepall");
-			AssertIsValid(preFill + "[select *, abc, a.b from myprop as orderId where a=s][mythirdprop]#keepall");
+			AssertIsValid(preFill + "[myprop as OrderId][mythirdprop]#keepall");
+			AssertIsValid(preFill + "[select *, abc, a.b from myprop as OrderId where a=s][mythirdprop]#keepall");
 			AssertIsValid(preFill + "[xyz][select *, abc, a.b from myprop]#keepall");
 			AssertIsValid(preFill + "[xyz][myprop where a=x]#keepall");
 			AssertIsValid("select * from A where (select * from B[myprop])");
 
-			AssertIsValid("select max(intPrimitive, intBoxed) from " + className + "().std:win(20)");
-			AssertIsValid("select max(intPrimitive, intBoxed, longBoxed) from " + className + "().std:win(20)");
-			AssertIsValid("select min(intPrimitive, intBoxed) from " + className + "().std:win(20)");
-			AssertIsValid("select min(intPrimitive, intBoxed, longBoxed) from " + className + "().std:win(20)");
+			AssertIsValid("select max(IntPrimitive, IntBoxed) from " + className + "().std:win(20)");
+			AssertIsValid("select max(IntPrimitive, IntBoxed, LongBoxed) from " + className + "().std:win(20)");
+			AssertIsValid("select min(IntPrimitive, IntBoxed) from " + className + "().std:win(20)");
+			AssertIsValid("select min(IntPrimitive, IntBoxed, LongBoxed) from " + className + "().std:win(20)");
 
 			AssertIsValid(preFill + "().win:lenght(3) where a = null");
 			AssertIsValid(preFill + "().win:lenght(3) where a is null");
@@ -314,7 +315,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 			);
 
 			AssertIsValid(
-				"select intPrimitive from " +
+				"select IntPrimitive from " +
 				className +
 				"(a=1).win:lenght(10) as win1," +
 				className +
@@ -331,15 +332,15 @@ namespace com.espertech.esper.compiler.@internal.parse
 
 			// complex property access
 			AssertIsValid(
-				"select array[1], map('a'), map(\"b\"), nested.nested " +
-				"from a.b(string='test',intPrimitive=20).win:lenght(100) " +
-				"where array[1].map('a').nested = 5");
+				"select array[1], map('a'), map(\"b\"), Nested.Nested " +
+				"from a.b(string='test',IntPrimitive=20).win:lenght(100) " +
+				"where array[1].map('a').Nested = 5");
 			AssertIsValid(
 				"select array[1] as b " +
 				"from a.b(string[0]='test').win:lenght(100) as x " +
 				"left outer join " +
 				"a.b(string[0]='test').win:lenght(100) as y " +
-				"on y.array[1].map('a').nested = x.nested2");
+				"on y.array[1].map('a').Nested = x.Nested2");
 			AssertIsValid(
 				"select * " +
 				"from A " +
@@ -360,24 +361,29 @@ namespace com.espertech.esper.compiler.@internal.parse
 			AssertIsValid("select sum(distinct a), avg(distinct b) from b#length(1)");
 			AssertIsValid("select sum(sum(a)) from b#length(1)");
 			AssertIsValid("select sum(3*a), sum(a - b - c) from b#length(1)");
-			AssertIsValid("select count(*), count(a), count(all b), count(distinct 2*a), count(5*a/2) from b#length(1)");
-			AssertIsValid("select max(volume), min(volume), min(all volume/44), min(distinct 2*a), max(distinct 5*a/2) from b#length(1)");
-			AssertIsValid("select median(volume), median(all volume*2/3), median(distinct 2*a) from b#length(1)");
-			AssertIsValid("select stddev(volume), stddev(all volume), stddev(distinct 2*a) from b#length(1)");
-			AssertIsValid("select avedev(volume), avedev(all volume), avedev(distinct 2*a) from b#length(1)");
+			AssertIsValid(
+				"select count(*), count(a), count(all b), count(distinct 2*a), count(5*a/2) from b#length(1)");
+			AssertIsValid(
+				"select max(Volume), min(Volume), min(all Volume/44), min(distinct 2*a), max(distinct 5*a/2) from b#length(1)");
+			AssertIsValid("select median(Volume), median(all Volume*2/3), median(distinct 2*a) from b#length(1)");
+			AssertIsValid("select stddev(Volume), stddev(all Volume), stddev(distinct 2*a) from b#length(1)");
+			AssertIsValid("select avedev(Volume), avedev(all Volume), avedev(distinct 2*a) from b#length(1)");
 
 			// group-by
 			AssertIsValid("select sum(a), x, y from b#length(1) group by a");
-			AssertIsValid("select 1 from b#length(1) where a=b and b=d group by a,b,3*x,max(4, 3),'a', \"a\", true, 5*(1+a+y/2)");
+			AssertIsValid(
+				"select 1 from b#length(1) where a=b and b=d group by a,b,3*x,max(4, 3),'a', \"a\", true, 5*(1+a+y/2)");
 			AssertIsValid("select 1 from b#length(1) where a"); // since a could be a boolean
 			AssertIsValid("select sum(distinct a), x, y from b#length(1) group by a");
 
 			// having
 			AssertIsValid("select sum(a), x, y from b#length(1) group by a having x > y");
-			AssertIsValid("select 1 from b#length(1) where a=b and b=d group by a having (max(3*b - 2, 5) > 1) or 'a'=b");
+			AssertIsValid(
+				"select 1 from b#length(1) where a=b and b=d group by a having (max(3*b - 2, 5) > 1) or 'a'=b");
 			AssertIsValid("select 1 from b#length(1) group by a having a"); // a could be boolean
 			AssertIsValid("select 1 from b#length(1) having a>5");
-			AssertIsValid("SELECT 1 FROM b#length(1) WHERE a=b AND b=d GROUP BY a HAVING (max(3*b - 2, 5) > 1) OR 'a'=b");
+			AssertIsValid(
+				"SELECT 1 FROM b#length(1) WHERE a=b AND b=d GROUP BY a HAVING (max(3*b - 2, 5) > 1) OR 'a'=b");
 
 			// insert into
 			AssertIsValid("insert into MyEvent select 1 from b#length(1)");
@@ -399,9 +405,10 @@ namespace com.espertech.esper.compiler.@internal.parse
 			AssertIsValid("select istream 1, 2 from xxx");
 
 			// coalesce
-			AssertIsValid("select coalesce(processTimeEvent.price, 0) from x");
-			AssertIsValid("select coalesce(processTimeEvent.price, null, -1) from x");
-			AssertIsValid("select coalesce(processTimeEvent.price, processTimeEvent.price, processTimeEvent.price, processTimeEvent.price) from x");
+			AssertIsValid("select coalesce(processTimeEvent.Price, 0) from x");
+			AssertIsValid("select coalesce(processTimeEvent.Price, null, -1) from x");
+			AssertIsValid(
+				"select coalesce(processTimeEvent.Price, processTimeEvent.Price, processTimeEvent.Price, processTimeEvent.Price) from x");
 
 			// time intervals
 			AssertIsValid("select * from x#time(1 seconds)");
@@ -420,8 +427,10 @@ namespace com.espertech.esper.compiler.@internal.parse
 			AssertIsValid("select * from x#time(5 hour)");
 			AssertIsValid("select * from x#time(5 days)");
 			AssertIsValid("select * from x#time(5 day)");
-			AssertIsValid("select * from x#time(3 years 1 month 2 weeks 5 days 2 hours 88 minutes 1 seconds 9.8 milliseconds)");
-			AssertIsValid("select * from x#time(3 years 1 month 2 weeks 5 days 2 hours 88 minutes 1 seconds 9.8 milliseconds 1001 microseconds)");
+			AssertIsValid(
+				"select * from x#time(3 years 1 month 2 weeks 5 days 2 hours 88 minutes 1 seconds 9.8 milliseconds)");
+			AssertIsValid(
+				"select * from x#time(3 years 1 month 2 weeks 5 days 2 hours 88 minutes 1 seconds 9.8 milliseconds 1001 microseconds)");
 			AssertIsValid("select * from x#time(5 days 2 hours 88 minutes 1 seconds 9.8 milliseconds)");
 			AssertIsValid("select * from x#time(5 day 2 hour 88 minute 1 second 9.8 millisecond)");
 			AssertIsValid("select * from x#time(5 days 2 hours 88 minutes 1 seconds)");
@@ -434,7 +443,8 @@ namespace com.espertech.esper.compiler.@internal.parse
 			AssertIsValid("select * from x#time(88 minutes 1 seconds)");
 			AssertIsValid("select * from x#time(1 seconds 9.8 milliseconds)");
 			AssertIsValid("select * from x#time(1 seconds 9.8 milliseconds)#goodie(1 sec)");
-			AssertIsValid("select * from x#time(1 seconds 9.8 milliseconds)#win:goodie(1 sec)#win:otto(1.1 days 1.1 msec)");
+			AssertIsValid(
+				"select * from x#time(1 seconds 9.8 milliseconds)#win:goodie(1 sec)#win:otto(1.1 days 1.1 msec)");
 
 			// in
 			AssertIsValid("select * from x where a in('a')");
@@ -455,7 +465,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 			AssertIsValid("select * from x where abc*3 between a*2 and sum(b)");
 
 			// custom aggregation func
-			AssertIsValid("select myfunc(price) from x");
+			AssertIsValid("select myfunc(Price) from x");
 
 			// like and regexp
 			AssertIsValid("select * from x where abc like 'dog'");
@@ -472,21 +482,21 @@ namespace com.espertech.esper.compiler.@internal.parse
 			AssertIsValid("select * from x where a like b escape 'aa'");
 
 			// database joins
-			AssertIsValid("select * from x, sql:mydb [\"whetever SQL $x.id google\"]");
-			AssertIsValid("select * from x, sql:mydb ['whetever SQL $x.id google']");
+			AssertIsValid("select * from x, sql:mydb [\"whetever SQL $x.Id google\"]");
+			AssertIsValid("select * from x, sql:mydb ['whetever SQL $x.Id google']");
 			AssertIsValid("select * from x, sql:mydb ['']");
 			AssertIsValid("select * from x, sql:mydb ['   ']");
-			AssertIsValid("select * from x, sql:mydb ['whetever SQL $x.id google' metadatasql 'select 1 as myint']");
+			AssertIsValid("select * from x, sql:mydb ['whetever SQL $x.Id google' metadatasql 'select 1 as myint']");
 
 			// Previous and prior function
-			AssertIsValid("select prev(10, price) from x");
-			AssertIsValid("select prev(0, price) from x");
-			AssertIsValid("select prev(1000, price) from x");
-			AssertIsValid("select prev(index, price) from x");
-			AssertIsValid("select prior(10, price) from x");
-			AssertIsValid("select prior(0, price) from x");
-			AssertIsValid("select prior(1000, price) from x");
-			AssertIsValid("select prior(2, symbol) from x");
+			AssertIsValid("select prev(10, Price) from x");
+			AssertIsValid("select prev(0, Price) from x");
+			AssertIsValid("select prev(1000, Price) from x");
+			AssertIsValid("select prev(index, Price) from x");
+			AssertIsValid("select prior(10, Price) from x");
+			AssertIsValid("select prior(0, Price) from x");
+			AssertIsValid("select prior(1000, Price) from x");
+			AssertIsValid("select prior(2, Symbol) from x");
 
 			// array constants and expressions
 			AssertIsValid("select {'a', 'b'} from x");
@@ -512,7 +522,8 @@ namespace com.espertech.esper.compiler.@internal.parse
 			AssertIsValid("select * from x where id = (select a from B)");
 			AssertIsValid("select * from x where id = -1 * (select a from B)");
 			AssertIsValid("select * from x where id = (5-(select a from B))");
-			AssertIsValid("select * from X where (select a from B where X.f = B.a) or (select a from B where X.f = B.c)");
+			AssertIsValid(
+				"select * from X where (select a from B where X.f = B.a) or (select a from B where X.f = B.c)");
 			AssertIsValid("select * from X where exists (select * from B where X.f = B.a)");
 			AssertIsValid("select * from X where exists (select * from B)");
 			AssertIsValid("select * from X where not exists (select * from B where X.f = B.a)");
@@ -529,8 +540,8 @@ namespace com.espertech.esper.compiler.@internal.parse
 			AssertIsValid("select b.c.d?.e? from E");
 			AssertIsValid("select b? from E");
 			AssertIsValid("select b? as myevent from E");
-			AssertIsValid("select * from pattern [every OrderEvent(item.name?)]");
-			AssertIsValid("select * from pattern [every OrderEvent(item?.parent.name?='foo')]");
+			AssertIsValid("select * from pattern [every OrderEvent(Item.name?)]");
+			AssertIsValid("select * from pattern [every OrderEvent(Item?.parent.name?='foo')]");
 			AssertIsValid("select b.c[0].d? from E");
 			AssertIsValid("select b.c[0]?.mapped('a')? from E");
 			AssertIsValid("select b?.c[0].mapped('a') from E");
@@ -545,11 +556,12 @@ namespace com.espertech.esper.compiler.@internal.parse
 			AssertIsValid(preFill + "(string=?)");
 			AssertIsValid(preFill + "(string in (?, ?))");
 			AssertIsValid(preFill + " where string=? and ?=val");
-			AssertIsValid(preFill + " having avg(volume) > ?");
+			AssertIsValid(preFill + " having avg(Volume) > ?");
 			AssertIsValid(preFill + " having avg(?) > ?");
 			AssertIsValid("select sum(?) from b#length(1)");
-			AssertIsValid("select ?||'a' from B(a=?) where c=? group by ? having d>? output every 10 events order by a, ?");
-			AssertIsValid("select a from B output snapshot every 10 events order by a, ?");
+			AssertIsValid(
+				"select ?||'a' from B(a=?) where c=? group by ? having d>? output every 10 events Order by a, ?");
+			AssertIsValid("select a from B output snapshot every 10 events Order by a, ?");
 
 			// cast, instanceof, isnumeric and exists dynamic property
 			AssertIsValid(preFill + "(boolean = exists(a))");
@@ -560,7 +572,8 @@ namespace com.espertech.esper.compiler.@internal.parse
 			AssertIsValid(preFill + "(boolean = instanceof(b, a))");
 			AssertIsValid(preFill + "(boolean = instanceof('agc', string, String, System.String))");
 			AssertIsValid(preFill + "(boolean = instanceof(b, com.espertech.esper.support.AClass))");
-			AssertIsValid(preFill + "(boolean = instanceof(b, com.espertech.esper.support.AClass, int, long, System.Int64))");
+			AssertIsValid(
+				preFill + "(boolean = instanceof(b, com.espertech.esper.support.AClass, int, long, System.Int64))");
 			AssertIsValid(preFill + "(cast(b as boolean))");
 			AssertIsValid(preFill + "(cast(b? as Boolean))");
 			AssertIsValid(preFill + "(cast(b, boolean))");
@@ -586,7 +599,8 @@ namespace com.espertech.esper.compiler.@internal.parse
 			AssertIsValid("create window AAA#length(10) as select a from MyType");
 			AssertIsValid("create window AAA#length(10) as select a,b from MyType");
 			AssertIsValid("create window AAA#length(10)#time(1 sec) as select a,b from MyType");
-			AssertIsValid("create window AAA as select 0 as val, 2 as noway, '' as stringval, true as boolval from MyType");
+			AssertIsValid(
+				"create window AAA as select 0 as val, 2 as noway, '' as stringval, true as boolval from MyType");
 			AssertIsValid("create window AAA as (a b, c d, e f)");
 			AssertIsValid("create window AAA (a b, c d, e f)");
 			AssertIsValid("create window AAA as select * from MyOtherNamedWindow insert");
@@ -595,8 +609,10 @@ namespace com.espertech.esper.compiler.@internal.parse
 			// on-delete statement
 			AssertIsValid("on MyEvent delete from MyNamedWindow");
 			AssertIsValid("on MyEvent delete from MyNamedWindow where key = myotherkey");
-			AssertIsValid("on MyEvent(myval != 0) as myevent delete from MyNamedWindow as mywin where mywin.key = myevent.otherKey");
-			AssertIsValid("on com.my.MyEvent(a=1, b=2 or c.d>3) as myevent delete from MyNamedWindow as mywin where a=b and c<d");
+			AssertIsValid(
+				"on MyEvent(myval != 0) as myevent delete from MyNamedWindow as mywin where mywin.key = myevent.otherKey");
+			AssertIsValid(
+				"on com.my.MyEvent(a=1, b=2 or c.d>3) as myevent delete from MyNamedWindow as mywin where a=b and c<d");
 			AssertIsValid("on MyEvent yyy delete from MyNamedWindow xxx where mywin.key = myevent.otherKey");
 			AssertIsValid("on pattern [every MyEvent or every MyEvent] delete from MyNamedWindow");
 
@@ -609,14 +625,18 @@ namespace com.espertech.esper.compiler.@internal.parse
 			AssertIsValid("on pattern [every X] select a, b, c from MyNamedWindow");
 			AssertIsValid("on MyEvent insert into YooStream select a, b, c from MyNamedWindow");
 			AssertIsValid("on MyEvent insert into YooStream (p, q) select a, b, c from MyNamedWindow");
-			AssertIsValid("on MyEvent select a, b, c from MyNamedWindow where a=b group by c having d>e order by f");
+			AssertIsValid("on MyEvent select a, b, c from MyNamedWindow where a=b group by c having d>e Order by f");
 			AssertIsValid("on MyEvent insert into A select * where 1=2 insert into B select * where 2=4");
-			AssertIsValid("on MyEvent insert into A select * where 1=2 insert into B select * where 2=4 insert into C select *");
-			AssertIsValid("on MyEvent insert into A select a,c,b insert into G select 1,2,2,2 where 2=4 insert into C select * where a=x");
 			AssertIsValid(
-				"on MyEvent insert into A select a,c,b where a=y group by p having q>r order by x,y insert into G select 1,2,2,2 where 2=4 insert into C select * where a=x");
-			AssertIsValid("on MyEvent insert into A select a,c,b where a=y insert into D select * where 2=4 output first");
-			AssertIsValid("on MyEvent insert into A select a,c,b where a=y insert into D select * where 2=4 output all");
+				"on MyEvent insert into A select * where 1=2 insert into B select * where 2=4 insert into C select *");
+			AssertIsValid(
+				"on MyEvent insert into A select a,c,b insert into G select 1,2,2,2 where 2=4 insert into C select * where a=x");
+			AssertIsValid(
+				"on MyEvent insert into A select a,c,b where a=y group by p having q>r Order by x,y insert into G select 1,2,2,2 where 2=4 insert into C select * where a=x");
+			AssertIsValid(
+				"on MyEvent insert into A select a,c,b where a=y insert into D select * where 2=4 output first");
+			AssertIsValid(
+				"on MyEvent insert into A select a,c,b where a=y insert into D select * where 2=4 output all");
 
 			// on-set statement
 			AssertIsValid("on MyEvent set var=1");
@@ -649,9 +669,9 @@ namespace com.espertech.esper.compiler.@internal.parse
 			AssertIsValid("select a, b from A as y unidirectional, B unidirectional where a.x = b.x");
 
 			// expessions and event properties are view/guard/observer parameters
-			AssertIsValid("select * from A.win:x(myprop.nested, a.c('s'), 'ss', abc, null)");
-			AssertIsValid("select * from pattern[every X where a:b(myprop.nested, a.c('s'), 'ss', *, null)]");
-			AssertIsValid("select * from pattern[every X:b(myprop.nested, a.c('s'), 'ss', *, null)]");
+			AssertIsValid("select * from A.win:x(myprop.Nested, a.c('s'), 'ss', abc, null)");
+			AssertIsValid("select * from pattern[every X where a:b(myprop.Nested, a.c('s'), 'ss', *, null)]");
+			AssertIsValid("select * from pattern[every X:b(myprop.Nested, a.c('s'), 'ss', *, null)]");
 
 			// properties escaped
 			AssertIsValid("select a\\.b, a\\.b\\.c.d.e\\.f, zz\\.\\.\\.aa\\.\\.\\.b\\.\\. from A");
@@ -661,7 +681,8 @@ namespace com.espertech.esper.compiler.@internal.parse
 			AssertIsValid("select count from A limit 1");
 			AssertIsValid("select count from A limit 1,2");
 			AssertIsValid("select count from A limit 1 offset 2");
-			AssertIsValid("select count from A where a=b group by x having c=d output every 5 events order by r limit 1 offset 2");
+			AssertIsValid(
+				"select count from A where a=b group by x having c=d output every 5 events Order by r limit 1 offset 2");
 			AssertIsValid("select count from A limit myvar");
 			AssertIsValid("select count from A limit myvar,myvar2");
 			AssertIsValid("select count from A limit myvar offset myvar2");
@@ -697,8 +718,8 @@ namespace com.espertech.esper.compiler.@internal.parse
 			AssertIsValid(text);
 			text = "@EPL(Name=\"MyStmtName\"," +
 			       "  tags=@Tags(" +
-			       "    {@Tag(Name=\"vehicleId\", type='int', value=100), " +
-			       "     @Tag(Name=\"vehicleId\", type='int', value=100)" +
+			       "    {@Tag(Name=\"vehicleId\", Type='int', Value=100), " +
+			       "     @Tag(Name=\"vehicleId\", Type='int', Value=100)" +
 			       "    } " +
 			       "  )" +
 			       ")\n" +
@@ -712,39 +733,39 @@ namespace com.espertech.esper.compiler.@internal.parse
 
 			// row pattern recog
 			AssertIsValid(
-				"select * from A match_recognize (measures A.symbol as A\n" +
+				"select * from A match_recognize (measures A.Symbol as A\n" +
 				"pattern (A B)\n" +
-				"define B as (B.price > A.price)" +
+				"define B as (B.Price > A.Price)" +
 				")");
 			AssertIsValid(
-				"select * from A match_recognize (measures A.symbol as A\n" +
+				"select * from A match_recognize (measures A.Symbol as A\n" +
 				"pattern (A* B+ C D?)\n" +
-				"define B as (B.price > A.price)" +
+				"define B as (B.Price > A.Price)" +
 				")");
 			AssertIsValid(
-				"select * from A match_recognize (measures A.symbol as A\n" +
+				"select * from A match_recognize (measures A.Symbol as A\n" +
 				"pattern (A | B)\n" +
-				"define B as (B.price > A.price)" +
+				"define B as (B.Price > A.Price)" +
 				")");
 			AssertIsValid(
-				"select * from A match_recognize (measures A.symbol as A\n" +
+				"select * from A match_recognize (measures A.Symbol as A\n" +
 				"pattern ( (A B) | (C D))\n" +
-				"define B as (B.price > A.price)" +
+				"define B as (B.Price > A.Price)" +
 				")");
 			AssertIsValid(
-				"select * from A match_recognize (measures A.symbol as A\n" +
+				"select * from A match_recognize (measures A.Symbol as A\n" +
 				"pattern ( (A | B) (C | D) )\n" +
-				"define B as (B.price > A.price)" +
+				"define B as (B.Price > A.Price)" +
 				")");
 			AssertIsValid(
-				"select * from A match_recognize (measures A.symbol as A\n" +
+				"select * from A match_recognize (measures A.Symbol as A\n" +
 				"pattern ( (A) | (B | (D | E+)) )\n" +
-				"define B as (B.price > A.price)" +
+				"define B as (B.Price > A.Price)" +
 				")");
 			AssertIsValid(
-				"select * from A match_recognize (measures A.symbol as A\n" +
+				"select * from A match_recognize (measures A.Symbol as A\n" +
 				"pattern ( A (C | D)? E )\n" +
-				"define B as (B.price > A.price)" +
+				"define B as (B.Price > A.Price)" +
 				")");
 		}
 
@@ -752,11 +773,11 @@ namespace com.espertech.esper.compiler.@internal.parse
 		public void TestBitWiseCases()
 		{
 			var className = nameof(SupportBean);
-			var eplSmt = "select (intPrimitive & intBoxed) from " + className;
+			var eplSmt = "select (IntPrimitive & IntBoxed) from " + className;
 			AssertIsValid(eplSmt + ".win:lenght()");
-			eplSmt = "select boolPrimitive|boolBoxed from " + className;
+			eplSmt = "select BoolPrimitive|BoolBoxed from " + className;
 			AssertIsValid(eplSmt + "().std:win(20)");
-			eplSmt = "select bytePrimitive^byteBoxed from " + className;
+			eplSmt = "select BytePrimitive^ByteBoxed from " + className;
 			AssertIsValid(eplSmt + "().win:some_view({})");
 		}
 
@@ -784,7 +805,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 		{
 			var className = nameof(SupportBean);
 			AssertIsValid(
-				"select intPrimitive from " +
+				"select IntPrimitive from " +
 				className +
 				"(a=1).win:lenght(10) as win1 " +
 				joinType +
@@ -795,7 +816,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 			);
 
 			AssertIsValid(
-				"select intPrimitive from " +
+				"select IntPrimitive from " +
 				className +
 				"(a=1).win:lenght(10) as win1 " +
 				joinType +
@@ -827,10 +848,11 @@ namespace com.espertech.esper.compiler.@internal.parse
 
 			try {
 				Parse(text);
-				Assert.IsFalse(true);
+				ClassicAssert.IsFalse(true);
 			}
 			catch (Exception ex) {
-				Log.Debug(".assertIsInvalid Expected ParseException exception was thrown and ignored, message=" + ex.Message);
+				Log.Debug(
+					".assertIsInvalid Expected ParseException exception was thrown and ignored, message=" + ex.Message);
 			}
 		}
 

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.context.util;
@@ -17,7 +18,6 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.output.condition;
 using com.espertech.esper.common.@internal.epl.output.core;
 using com.espertech.esper.common.@internal.epl.resultset.core;
-using com.espertech.esper.common.@internal.epl.resultset.simple;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.metrics.audit;
 using com.espertech.esper.common.@internal.util;
@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
         // Using ArrayList as random access is a requirement.
         private readonly IList<UniformPair<EventBean[]>> _viewEventsList = new List<UniformPair<EventBean[]>>();
 
-        private readonly ResultSetProcessorSimpleOutputFirstHelper _witnessedFirstHelper;
+        private readonly ResultSetProcessorStraightOutputFirstHelper _witnessedFirstHelper;
 
         public OutputProcessViewConditionFirst(
             ResultSetProcessor resultSetProcessor,
@@ -54,7 +54,8 @@ namespace com.espertech.esper.common.@internal.epl.output.view
             int? afterConditionNumberOfEvents,
             bool afterConditionSatisfied,
             OutputProcessViewConditionFactory parent,
-            AgentInstanceContext agentInstanceContext)
+            AgentInstanceContext agentInstanceContext,
+            StateMgmtSetting stateMgmtSetting)
             : base(
                 agentInstanceContext,
                 resultSetProcessor,
@@ -68,7 +69,9 @@ namespace com.espertech.esper.common.@internal.epl.output.view
             _outputCondition =
                 parent.OutputConditionFactory.InstantiateOutputCondition(agentInstanceContext, outputCallback);
             _witnessedFirstHelper =
-                agentInstanceContext.ResultSetProcessorHelperFactory.MakeRSSimpleOutputFirst(agentInstanceContext);
+                agentInstanceContext.ResultSetProcessorHelperFactory.MakeRSStraightOutputFirst(
+                    agentInstanceContext,
+                    stateMgmtSetting);
         }
 
         public override int NumChangesetRows => Math.Max(_viewEventsList.Count, _joinEventsSet.Count);
@@ -92,9 +95,9 @@ namespace com.espertech.esper.common.@internal.epl.output.view
                 Log.Debug(
                     ".update Received update, " +
                     "  newData.length==" +
-                    (newData == null ? 0 : newData.Length) +
+                    (newData?.Length ?? 0) +
                     "  oldData.length==" +
-                    (oldData == null ? 0 : oldData.Length));
+                    (oldData?.Length ?? 0));
             }
 
             if (!CheckAfterCondition(newData, _agentInstanceContext.StatementContext)) {
@@ -171,9 +174,9 @@ namespace com.espertech.esper.common.@internal.epl.output.view
                 Log.Debug(
                     ".process Received update, " +
                     "  newData.length==" +
-                    (newEvents == null ? 0 : newEvents.Count) +
+                    (newEvents?.Count ?? 0) +
                     "  oldData.length==" +
-                    (oldEvents == null ? 0 : oldEvents.Count));
+                    (oldEvents?.Count ?? 0));
             }
 
             if (!CheckAfterCondition(newEvents, _agentInstanceContext.StatementContext)) {

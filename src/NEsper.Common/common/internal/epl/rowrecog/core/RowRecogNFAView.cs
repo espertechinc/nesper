@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -8,12 +8,15 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.agg.core;
+using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.rowrecog.nfa;
 using com.espertech.esper.common.@internal.epl.rowrecog.state;
 using com.espertech.esper.common.@internal.@event.arr;
@@ -33,22 +36,20 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
         RowRecogNFAViewService,
         RowRecogNFAViewScheduleCallback
     {
-        private static readonly ILog Log = LogManager.GetLogger(typeof(RowRecogNFAView));
-        private const bool IsDebug = false;
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         private readonly RowRecogNFAViewFactory _factory;
         private readonly AgentInstanceContext _agentInstanceContext;
         private readonly RowRecogNFAViewScheduler _scheduler; // for interval-handling
-
         private readonly RowRecogPreviousStrategyImpl _rowRecogPreviousStrategy;
+
         private readonly ObjectArrayBackedEventBean _compositeEventBean;
 
         // state
         private RowRecogPartitionStateRepo _regexPartitionStateRepo;
 
-        private readonly ISet<EventBean>
-            _windowMatchedEventset; // this is NOT per partition - some optimizations are done for batch-processing (minus is out-of-sequence in partition)
-
+        // this is NOT per partition - some optimizations are done for batch-processing (minus is out-of-sequence in partition)
+        private ISet<EventBean> _windowMatchedEventset;
         private readonly ObjectArrayBackedEventBean _defineMultimatchEventBean;
 
         public RowRecogNFAView(
@@ -60,21 +61,19 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             var desc = factory.Desc;
             _scheduler = scheduler;
             _agentInstanceContext = agentInstanceContext;
-
+            
             var compositeEventType = desc.CompositeEventType;
             _compositeEventBean = new ObjectArrayEventBean(
                 new object[compositeEventType.PropertyNames.Length],
                 compositeEventType);
-
+            
             var multimatchEventType = desc.MultimatchEventType;
             _defineMultimatchEventBean = multimatchEventType == null
                 ? null
                 : agentInstanceContext.EventBeanTypedEventFactory.AdapterForTypedObjectArray(
                     new object[multimatchEventType.PropertyNames.Length],
                     multimatchEventType);
-
             _windowMatchedEventset = new LinkedHashSet<EventBean>();
-
             // handle "previous" function nodes (performance-optimized for direct index access)
             if (desc.PreviousRandomAccessIndexes != null) {
                 // Build an array of indexes
@@ -88,17 +87,18 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
 
             // create state repository
             var repoFactory = agentInstanceContext.RowRecogStateRepoFactory;
-            var terminationStateCompare =
-                new RowRecogPartitionTerminationStateComparator(
-                    desc.MultimatchStreamNumToVariable,
-                    desc.VariableStreams);
+            var terminationStateCompare = new RowRecogPartitionTerminationStateComparator(
+                desc.MultimatchStreamNumToVariable,
+                desc.VariableStreams);
             if (desc.PartitionEvalMayNull == null) {
                 _regexPartitionStateRepo = repoFactory.MakeSingle(
                     _rowRecogPreviousStrategy,
                     agentInstanceContext,
                     this,
                     desc.HasInterval,
-                    terminationStateCompare);
+                    terminationStateCompare,
+                    desc.PartitionMgmtStateMgmtSettings,
+                    desc.ScheduleMgmtStateMgmtSettings);
             }
             else {
                 var stateRepoGroupMeta = new RowRecogPartitionStateRepoGroupMeta(
@@ -111,7 +111,9 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                     agentInstanceContext,
                     this,
                     desc.HasInterval,
-                    terminationStateCompare);
+                    terminationStateCompare,
+                    desc.PartitionMgmtStateMgmtSettings,
+                    desc.ScheduleMgmtStateMgmtSettings);
             }
         }
 
@@ -159,7 +161,6 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
 
             if (oldData != null) {
                 var isOutOfSequenceRemove = false;
-
                 EventBean first = null;
                 if (!_windowMatchedEventset.IsEmpty()) {
                     first = _windowMatchedEventset.First();
@@ -168,12 +169,11 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                 // remove old data, if found in set
                 var found = new bool[oldData.Length];
                 var countX = 0;
-
                 // detect out-of-sequence removes
                 foreach (var oldEvent in oldData) {
                     var removed = _windowMatchedEventset.Remove(oldEvent);
                     if (removed) {
-                        if ((oldEvent != first) && (first != null)) {
+                        if (oldEvent != first && first != null) {
                             isOutOfSequenceRemove = true;
                         }
 
@@ -188,30 +188,21 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                 if (isOutOfSequenceRemove) {
                     if (_factory.IsTrackMaxStates) {
                         var size = _regexPartitionStateRepo.StateCount;
-                        var poolSvc =
-                            _agentInstanceContext.StatementContext.RowRecogStatePoolStmtSvc;
+                        var poolSvc = _agentInstanceContext.StatementContext.RowRecogStatePoolStmtSvc;
                         poolSvc.RuntimeSvc.DecreaseCount(_agentInstanceContext, size);
                         poolSvc.StmtHandler.DecreaseCount(size);
                     }
 
                     _regexPartitionStateRepo = _regexPartitionStateRepo.CopyForIterate(true);
                     var parentEvents = Parent.GetEnumerator();
-                    var iteratorResult = ProcessIterator(
-                        true,
-                        parentEvents,
-                        _regexPartitionStateRepo);
+                    var iteratorResult = ProcessIterator(true, parentEvents, _regexPartitionStateRepo);
                     _regexPartitionStateRepo.EventSequenceNum = iteratorResult.EventSequenceNum;
                 }
                 else {
                     // remove old events from repository - and let the repository know there are no interesting events left
-                    var numRemoved = _regexPartitionStateRepo.RemoveOld(
-                        oldData,
-                        _windowMatchedEventset.IsEmpty(),
-                        found);
-
+                    var numRemoved = _regexPartitionStateRepo.RemoveOld(oldData, _windowMatchedEventset.IsEmpty(), found);
                     if (_factory.IsTrackMaxStates) {
-                        var poolSvc =
-                            _agentInstanceContext.StatementContext.RowRecogStatePoolStmtSvc;
+                        var poolSvc = _agentInstanceContext.StatementContext.RowRecogStatePoolStmtSvc;
                         poolSvc.RuntimeSvc.DecreaseCount(_agentInstanceContext, numRemoved);
                         poolSvc.StmtHandler.DecreaseCount(numRemoved);
                     }
@@ -224,16 +215,14 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
 
             IList<RowRecogNFAStateEntry> endStates = new List<RowRecogNFAStateEntry>();
             IList<RowRecogNFAStateEntry> terminationStatesAll = null;
-
+            
             foreach (var newEvent in newData) {
                 IList<RowRecogNFAStateEntry> nextStates = new List<RowRecogNFAStateEntry>(2);
                 var eventSequenceNumber = _regexPartitionStateRepo.IncrementAndGetEventSequenceNum();
-
                 // get state holder for this event
                 var partitionState = _regexPartitionStateRepo.GetState(newEvent, true);
-                var currentStatesIterator = partitionState.CurrentStatesIterator;
+                var currentStatesIterator = partitionState.CurrentStatesEnumerator;
                 _agentInstanceContext.InstrumentationProvider.QRegEx(newEvent, partitionState);
-
                 partitionState.RandomAccess?.NewEventPrepare(newEvent);
 
                 var terminationStates = Step(
@@ -245,7 +234,6 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                     !desc.IsUnbound,
                     eventSequenceNumber,
                     partitionState.OptionalKeys);
-
                 // add termination states, for use with interval and "or terminated"
                 if (terminationStates != null) {
                     if (terminationStatesAll == null) {
@@ -267,9 +255,6 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             // perform inter-ranking and elimination of duplicate matches
             if (!desc.IsAllMatches) {
                 endStates = RankEndStatesMultiPartition(endStates);
-                if (endStates.IsReadOnly) {
-                    endStates = new List<RowRecogNFAStateEntry>(endStates);
-                }
             }
 
             // handle interval for the set of matches
@@ -281,7 +266,6 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                         _factory.Desc.VariableStreams,
                         _factory.Desc.MultimatchStreamNumToVariable,
                         _agentInstanceContext.StatementContext.SchedulingService.Time);
-
                     var partitionState = _regexPartitionStateRepo.GetState(endState.PartitionKey);
                     if (partitionState == null) {
                         Log.Warn("Null partition state encountered, skipping row");
@@ -311,7 +295,6 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                         var current = _agentInstanceContext.StatementContext.SchedulingService.Time;
                         var deltaFromStart = current - matchBeginTime;
                         var deltaUntil = ComputeScheduleForwardDelta(current, deltaFromStart);
-
                         if (_regexPartitionStateRepo.ScheduleState.ContainsKey(matchBeginTime)) {
                             ScheduleCallback(deltaUntil, endState);
                             _agentInstanceContext.InstrumentationProvider.ARegIntervalState(true);
@@ -336,8 +319,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                 // handle termination states - those that terminated the pattern and remove the callback
                 if (desc.IsOrTerminated && terminationStatesAll != null) {
                     foreach (var terminationState in terminationStatesAll) {
-                        var partitionState =
-                            _regexPartitionStateRepo.GetState(terminationState.PartitionKey);
+                        var partitionState = _regexPartitionStateRepo.GetState(terminationState.PartitionKey);
                         if (partitionState == null) {
                             Log.Warn("Null partition state encountered, skipping row");
                             continue;
@@ -349,9 +331,6 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                     // rank
                     if (!desc.IsAllMatches) {
                         endStates = RankEndStatesMultiPartition(endStates);
-                        if (endStates.IsReadOnly) {
-                            endStates = new List<RowRecogNFAStateEntry>(endStates);
-                        }
                     }
                 }
 
@@ -370,7 +349,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                     }
 
                     var currentStates = partitionState.CurrentStates;
-                    for (int ss = 0; ss < currentStates.Count; ss++) {
+                    for (var ss = 0; ss < currentStates.Count; ss++) {
                         var currentState = currentStates[ss];
                         if (currentState.MatchBeginEventSeqNo <= endState.MatchEndEventSeqNo) {
                             currentStates.RemoveAt(ss--);
@@ -405,12 +384,9 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                     endState,
                     _factory.Desc.VariableStreams,
                     _factory.Desc.MultimatchStreamNumToVariable);
-
                 outBeans[count] = GenerateOutputRow(endState);
-
                 _agentInstanceContext.InstrumentationProvider.ARegMeasure(outBeans[count]);
                 count++;
-
                 // check partition state - if empty delete (no states and no random access)
                 if (endState.PartitionKey != null) {
                     var state = _regexPartitionStateRepo.GetState(endState.PartitionKey);
@@ -440,7 +416,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
         private RowRecogNFAStateEntry RankEndStates(IList<RowRecogNFAStateEntry> endStates)
         {
             // sort by end-event descending (newest first)
-            Collections.SortInPlace(endStates, RowRecogHelper.END_STATE_COMPARATOR);
+            endStates.SortInPlace(RowRecogHelper.END_STATE_COMPARATOR);
 
             // find the earliest begin-event
             RowRecogNFAStateEntry found = null;
@@ -493,7 +469,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                     continue;
                 }
 
-                if (state.IsGreedy.GetValueOrDefault()) {
+                if (state.IsGreedy.Value) {
                     if (current[state.NodeNumFlat] > best[state.NodeNumFlat]) {
                         return true;
                     }
@@ -516,15 +492,13 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             IList<RowRecogNFAStateEntry> endStates = new List<RowRecogNFAStateEntry>();
             IEnumerator<RowRecogNFAStateEntry> currentStates;
             var eventSequenceNumber = 0;
-
             EventBean theEvent;
             for (; events.MoveNext();) {
                 IList<RowRecogNFAStateEntry> nextStates = new List<RowRecogNFAStateEntry>(2);
                 theEvent = events.Current;
                 eventSequenceNumber++;
-
                 var partitionState = regexPartitionStateRepo.GetState(theEvent, false);
-                currentStates = partitionState.CurrentStatesIterator;
+                currentStates = partitionState.CurrentStatesEnumerator;
 
                 partitionState.RandomAccess?.ExistingEventPrepare(theEvent);
 
@@ -537,14 +511,11 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                     false,
                     eventSequenceNumber,
                     partitionState.OptionalKeys);
-
                 partitionState.CurrentStates = nextStates;
             }
 
             return new RowRecogIteratorResult(endStates, eventSequenceNumber);
         }
-
-        public override EventType EventType => _factory.Desc.RowEventType;
 
         public override IEnumerator<EventBean> GetEnumerator()
         {
@@ -552,12 +523,11 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                 return CollectionUtil.NULL_EVENT_ITERATOR;
             }
 
-            var it = Parent.GetEnumerator();
+            var en = Parent.GetEnumerator();
 
             var regexPartitionStateRepoNew = _regexPartitionStateRepo.CopyForIterate(false);
-
-            var iteratorResult = ProcessIterator(false, it, regexPartitionStateRepoNew);
-            var endStates = iteratorResult.GetEndStates();
+            var iteratorResult = ProcessIterator(false, en, regexPartitionStateRepoNew);
+            var endStates = iteratorResult.EndStates;
             if (endStates.IsEmpty()) {
                 return CollectionUtil.NULL_EVENT_ITERATOR;
             }
@@ -601,12 +571,12 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                     perPartition.Put(endState.PartitionKey, endState);
                 }
                 else if (value is IList<RowRecogNFAStateEntry>) {
-                    var entries = (IList<RowRecogNFAStateEntry>) value;
+                    var entries = (IList<RowRecogNFAStateEntry>)value;
                     entries.Add(endState);
                 }
                 else {
                     IList<RowRecogNFAStateEntry> entries = new List<RowRecogNFAStateEntry>();
-                    entries.Add((RowRecogNFAStateEntry) value);
+                    entries.Add((RowRecogNFAStateEntry)value);
                     entries.Add(endState);
                     perPartition.Put(endState.PartitionKey, entries);
                 }
@@ -618,7 +588,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                     finalEndStates.Add((RowRecogNFAStateEntry) entry.Value);
                 }
                 else {
-                    var entries = (IList<RowRecogNFAStateEntry>) entry.Value;
+                    var entries = (IList<RowRecogNFAStateEntry>)entry.Value;
                     finalEndStates.AddAll(RankEndStatesWithinPartitionByStart(entries));
                 }
             }
@@ -644,21 +614,19 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                 if (value == null) {
                     endStatesPerBeginEvent.Put(beginNum, entry);
                 }
-                else if (value is IList<RowRecogNFAStateEntry>) {
-                    var entries = (IList<RowRecogNFAStateEntry>) value;
-                    entries.Add(entry);
+                else if (value is IList<RowRecogNFAStateEntry> entriesList) {
+                    entriesList.Add(entry);
                 }
                 else {
                     IList<RowRecogNFAStateEntry> entries = new List<RowRecogNFAStateEntry>();
-                    entries.Add((RowRecogNFAStateEntry) value);
+                    entries.Add((RowRecogNFAStateEntry)value);
                     entries.Add(entry);
-                    endStatesPerBeginEvent.Put(beginNum, entries);
+                    endStatesPerBeginEvent[beginNum] = entries;
                 }
             }
 
             if (endStatesPerBeginEvent.Count == 1) {
-                var endStatesUnranked =
-                    (IList<RowRecogNFAStateEntry>) endStatesPerBeginEvent.Values.First();
+                var endStatesUnranked = (IList<RowRecogNFAStateEntry>) endStatesPerBeginEvent.Values.First();
                 if (rowRecogDesc.IsAllMatches) {
                     return endStatesUnranked;
                 }
@@ -667,23 +635,21 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                 return Collections.SingletonList(chosen);
             }
 
-            IList<RowRecogNFAStateEntry> endStatesRanked = new List<RowRecogNFAStateEntry>();
+            var endStatesRanked = new List<RowRecogNFAStateEntry>();
             var keys = endStatesPerBeginEvent.Keys.ToArray();
             foreach (var key in keys) {
-                var value = endStatesPerBeginEvent.Delete(key);
-                if (value == null) {
+                if (!endStatesPerBeginEvent.TryRemove(key, out var value) || (value == null)) {
                     continue;
                 }
 
                 RowRecogNFAStateEntry entryTaken;
                 if (value is IList<RowRecogNFAStateEntry>) {
-                    var endStatesUnranked = (IList<RowRecogNFAStateEntry>) value;
+                    var endStatesUnranked = (IList<RowRecogNFAStateEntry>)value;
                     if (endStatesUnranked.IsEmpty()) {
                         continue;
                     }
 
                     entryTaken = RankEndStates(endStatesUnranked);
-
                     if (rowRecogDesc.IsAllMatches) {
                         endStatesRanked.AddAll(
                             endStatesUnranked); // we take all matches and don't rank except to determine skip-past
@@ -693,11 +659,11 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                     }
                 }
                 else {
-                    entryTaken = (RowRecogNFAStateEntry) value;
+                    entryTaken = (RowRecogNFAStateEntry)value;
                     endStatesRanked.Add(entryTaken);
                 }
-                // could be null as removals take place
 
+                // could be null as removals take place
                 if (entryTaken != null) {
                     if (rowRecogDesc.Skip == MatchRecognizeSkipEnum.PAST_LAST_ROW) {
                         var skipPastRow = entryTaken.MatchEndEventSeqNo;
@@ -732,7 +698,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                     }
                 }
                 else {
-                    var endState = (RowRecogNFAStateEntry) value;
+                    var endState = (RowRecogNFAStateEntry)value;
                     if (endState.MatchBeginEventSeqNo <= skipPastRow) {
                         endStatePostActions.Add(() => endStatesPerEndEvent.Put(entry.Key, null));
                     }
@@ -753,8 +719,8 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             object partitionKey)
         {
             var rowRecogDesc = _factory.Desc;
-            IList<RowRecogNFAStateEntry> terminationStates = null; // always null or a list of entries (no singleton list)
-
+            IList<RowRecogNFAStateEntry>
+                terminationStates = null; // always null or a list of entries (no singleton list)
             // handle current state matching
             while (currentStatesEnumerator.MoveNext()) {
                 var currentState = currentStatesEnumerator.Current;
@@ -762,7 +728,6 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                     currentState,
                     _factory.Desc.VariableStreams,
                     _factory.Desc.MultimatchStreamNumToVariable);
-
                 if (_factory.IsTrackMaxStates && !skipTrackMaxState) {
                     var poolSvc = _agentInstanceContext.StatementContext.RowRecogStatePoolStmtSvc;
                     poolSvc.RuntimeSvc.DecreaseCount(_agentInstanceContext);
@@ -782,33 +747,29 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                     }
 
                     var nextStatesFromHere = currentState.State.NextStates;
-
                     // save state for each next state
                     var copy = nextStatesFromHere.Length > 1;
                     foreach (var next in nextStatesFromHere) {
                         var eventsForState = eventsPerStream;
                         var multimatches = currentState.OptionalMultiMatches;
                         var greedyCounts = currentState.GreedycountPerState;
-
                         if (copy) {
                             eventsForState = new EventBean[eventsForState.Length];
                             Array.Copy(eventsPerStream, 0, eventsForState, 0, eventsForState.Length);
-
                             var greedyCountsCopy = new int[greedyCounts.Length];
                             Array.Copy(greedyCounts, 0, greedyCountsCopy, 0, greedyCounts.Length);
                             greedyCounts = greedyCountsCopy;
-
                             if (rowRecogDesc.IsCollectMultimatches) {
                                 multimatches = DeepCopy(multimatches);
                             }
                         }
 
-                        if (rowRecogDesc.IsCollectMultimatches && (currentState.State.IsMultiple)) {
+                        if (rowRecogDesc.IsCollectMultimatches && currentState.State.IsMultiple) {
                             multimatches = AddTag(currentState.State.StreamNum, theEvent, multimatches);
                             eventsForState[currentStateStreamNum] = null; // remove event from evaluation list
                         }
 
-                        if ((currentState.State.IsGreedy != null) && (currentState.State.IsGreedy.Value)) {
+                        if (currentState.State.IsGreedy.GetValueOrDefault()) {
                             greedyCounts[currentState.State.NodeNumFlat]++;
                         }
 
@@ -826,8 +787,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                         }
                         else {
                             if (_factory.IsTrackMaxStates && !skipTrackMaxState) {
-                                var poolSvc =
-                                    _agentInstanceContext.StatementContext.RowRecogStatePoolStmtSvc;
+                                var poolSvc = _agentInstanceContext.StatementContext.RowRecogStatePoolStmtSvc;
                                 var allow = poolSvc.RuntimeSvc.TryIncreaseCount(_agentInstanceContext);
                                 if (allow) {
                                     poolSvc.StmtHandler.IncreaseCount();
@@ -850,15 +810,13 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                 else {
                     // when not-matches
                     _agentInstanceContext.InstrumentationProvider.ARegExState(
-                        Collections.GetEmptyList<RowRecogNFAStateEntry>(),
+                        EmptyList<RowRecogNFAStateEntry>.Instance,
                         _factory.Desc.VariableStreams,
                         _factory.Desc.MultimatchStreamNumToVariable);
-
                     // determine interval and or-terminated
                     if (rowRecogDesc.IsOrTerminated) {
                         eventsPerStream[currentStateStreamNum] = null; // deassign
                         var nextStatesFromHere = currentState.State.NextStates;
-
                         // save state for each next state
                         RowRecogNFAState theEndState = null;
                         foreach (var next in nextStatesFromHere) {
@@ -892,24 +850,20 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                     startState,
                     _factory.Desc.VariableStreams,
                     _factory.Desc.MultimatchStreamNumToVariable);
-
                 var eventsPerStream = new EventBean[rowRecogDesc.NumEventsEventsPerStreamDefine];
                 var currentStateStreamNum = startState.StreamNum;
                 eventsPerStream[currentStateStreamNum] = theEvent;
-
                 if (startState.Matches(eventsPerStream, _agentInstanceContext)) {
                     if (isRetainEventSet) {
                         _windowMatchedEventset.Add(theEvent);
                     }
 
                     var nextStatesFromHere = startState.NextStates;
-
                     // save state for each next state
                     var copy = nextStatesFromHere.Length > 1;
                     foreach (var next in nextStatesFromHere) {
                         if (_factory.IsTrackMaxStates && !skipTrackMaxState) {
-                            var poolSvc =
-                                _agentInstanceContext.StatementContext.RowRecogStatePoolStmtSvc;
+                            var poolSvc = _agentInstanceContext.StatementContext.RowRecogStatePoolStmtSvc;
                             var allow = poolSvc.RuntimeSvc.TryIncreaseCount(_agentInstanceContext);
                             if (!allow) {
                                 continue;
@@ -923,22 +877,20 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                             ? new RowRecogMultimatchState[rowRecogDesc.MultimatchVariablesArray.Length]
                             : null;
                         var greedyCounts = new int[_factory.AllStates.Length];
-
                         if (copy) {
                             eventsForState = new EventBean[eventsForState.Length];
                             Array.Copy(eventsPerStream, 0, eventsForState, 0, eventsForState.Length);
-
                             var greedyCountsCopy = new int[greedyCounts.Length];
                             Array.Copy(greedyCounts, 0, greedyCountsCopy, 0, greedyCounts.Length);
                             greedyCounts = greedyCountsCopy;
                         }
 
-                        if (rowRecogDesc.IsCollectMultimatches && (startState.IsMultiple)) {
+                        if (rowRecogDesc.IsCollectMultimatches && startState.IsMultiple) {
                             multimatches = AddTag(startState.StreamNum, theEvent, multimatches);
                             eventsForState[currentStateStreamNum] = null; // remove event from evaluation list
                         }
 
-                        if ((startState.IsGreedy != null) && (startState.IsGreedy.Value)) {
+                        if (startState.IsGreedy.GetValueOrDefault()) {
                             greedyCounts[startState.NodeNumFlat]++;
                         }
 
@@ -989,7 +941,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                     props[i] = null;
                 }
                 else {
-                    props[i] = state.GetShrinkEventArray();
+                    props[i] = state.ShrinkEventArray;
                 }
             }
 
@@ -1042,12 +994,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                 for (var i = 0; i < aggregationServices.Length; i++) {
                     if (aggregationServiceFactories[i] != null) {
                         aggregationServices[i] = aggregationServiceFactories[i]
-                            .MakeService(
-                                _agentInstanceContext,
-                                _agentInstanceContext.ImportServiceRuntime,
-                                false,
-                                null,
-                                null);
+                            .MakeService(_agentInstanceContext, null, null, null);
                         _factory.Desc.AggregationResultFutureAssignables[i].Assign(aggregationServices[i]);
                     }
                 }
@@ -1065,8 +1012,9 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             RowRecogNFAStateEntry entry,
             AggregationService[] aggregationServices)
         {
+            Debug.Assert(entry != null);
+            
             var rowDataRaw = _compositeEventBean.Properties;
-
             // we first generate a raw row of <String, Object> for each variable name.
             foreach (var variableDef in _factory.Desc.VariableStreams) {
                 if (!variableDef.Value.Second) {
@@ -1085,16 +1033,13 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                         continue;
                     }
 
-                    var multimatchEvents = multimatchState[i].GetShrinkEventArray();
+                    var multimatchEvents = multimatchState[i].ShrinkEventArray;
                     rowDataRaw[streamNum] = multimatchEvents;
-
                     if (aggregationServices != null && aggregationServices[streamNum] != null) {
-                        var entryEventsPerStream = entry.EventsPerStream;
-
+                        var eventsPerStreamX = entry.EventsPerStream;
                         foreach (var multimatchEvent in multimatchEvents) {
-                            entryEventsPerStream[streamNum] = multimatchEvent;
-                            aggregationServices[streamNum]
-                                .ApplyEnter(entryEventsPerStream, null, _agentInstanceContext);
+                            eventsPerStreamX[streamNum] = multimatchEvent;
+                            aggregationServices[streamNum].ApplyEnter(eventsPerStreamX, null, _agentInstanceContext);
                         }
                     }
                 }
@@ -1172,7 +1117,6 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                 }
 
                 _regexPartitionStateRepo.ScheduleState.RemoveAddRemoved(firstKey, indicatables);
-
                 if (_regexPartitionStateRepo.ScheduleState.IsEmpty) {
                     break;
                 }
@@ -1181,8 +1125,8 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             // schedule next
             if (!_regexPartitionStateRepo.ScheduleState.IsEmpty) {
                 var msecAfterCurrentTime = _regexPartitionStateRepo.ScheduleState.FirstKey() +
-                                            intervalMSec -
-                                            _agentInstanceContext.StatementContext.SchedulingService.Time;
+                                           intervalMSec -
+                                           _agentInstanceContext.StatementContext.SchedulingService.Time;
                 _scheduler.AddSchedule(msecAfterCurrentTime);
             }
 
@@ -1215,9 +1159,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             return result;
         }
 
-        public void Transfer(AgentInstanceTransferServices services)
-        {
-        }
+        public override EventType EventType => _factory.Desc.RowEventType;
 
         public RowRecogPreviousStrategy PreviousEvaluationStrategy => _rowRecogPreviousStrategy;
 

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -10,11 +10,13 @@ using System;
 using System.IO;
 using System.Net;
 using System.Reflection;
+using System.Text.Json.Serialization;
 using System.Xml;
 
 using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.client.configuration.compiler;
 using com.espertech.esper.common.client.configuration.runtime;
+using com.espertech.esper.common.@internal.statemgmtsettings;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.logging;
@@ -30,7 +32,6 @@ namespace com.espertech.esper.common.client.configuration
     /// The format of an Esper XML configuration file is defined in
     /// <tt>esper-configuration-(version).xsd</tt>.
     /// </summary>
-    [Serializable]
     public class Configuration
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
@@ -46,6 +47,7 @@ namespace com.espertech.esper.common.client.configuration
         /// <summary>
         /// Gets or sets the container.
         /// </summary>
+        [JsonIgnore]
         public IContainer Container {
             get => _container;
             set => _container = value;
@@ -54,6 +56,7 @@ namespace com.espertech.esper.common.client.configuration
         /// <summary>
         /// Gets the resource manager.
         /// </summary>
+        [JsonIgnore]
         public IResourceManager ResourceManager => Container.ResourceManager();
 
         /// <summary>
@@ -276,6 +279,14 @@ namespace com.espertech.esper.common.client.configuration
             Common = new ConfigurationCommon();
             Compiler = new ConfigurationCompiler();
             Runtime = new ConfigurationRuntime();
+        }
+
+        /// <summary>
+        /// For internal use only: returns statement settings provider
+        /// </summary>
+        public StateMgmtSettingsProvider InternalUseGetStmtMgmtProvider(StateMgmtSettingsProxy proxy)
+        {
+            return StateMgmtSettingsProviderDefault.INSTANCE;
         }
     }
 } // end of namespace

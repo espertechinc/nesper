@@ -61,14 +61,15 @@ namespace com.espertech.esper.common.@internal.context.util
             bool allowDuplicate)
         {
             if (!allowDuplicate && _typeMap.ContainsKey(underlyingClassName)) {
-                throw new IllegalStateException("Attempt to add duplicate class " + underlyingClassName + " to parent class loader");
+                throw new IllegalStateException(
+                    "Attempt to add duplicate class " + underlyingClassName + " to parent class loader");
             }
 
             _typeMap[underlyingClassName] = clazz;
 
             if (optionalDeploymentId != null) {
                 if (!_deploymentToClazzMap.TryGetValue(optionalDeploymentId, out var existing)) {
-                    _deploymentToClazzMap[optionalDeploymentId] = new List<string>() {underlyingClassName};
+                    _deploymentToClazzMap[optionalDeploymentId] = new List<string>() { underlyingClassName };
                 }
                 else {
                     existing.Add(underlyingClassName);
@@ -79,7 +80,7 @@ namespace com.espertech.esper.common.@internal.context.util
         public void Remove(string deploymentId)
         {
             if (_deploymentToClazzMap.TryRemove(deploymentId, out var existing)) {
-                foreach (string className in existing) {
+                foreach (var className in existing) {
                     _typeMap.Remove(className);
                 }
             }

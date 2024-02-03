@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -15,6 +15,7 @@ using com.espertech.esper.common.@internal.supportunit.bean;
 using com.espertech.esper.common.@internal.supportunit.@event;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.@event.bean.getter
 {
@@ -36,21 +37,21 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             IList<EventPropertyGetter> getters = new List<EventPropertyGetter>();
             getters.Add(MakeGetterOne(0));
             getters.Add(MakeGetterTwo("0ma"));
-            getter = new NestedPropertyGetter(getters, null, typeof(IDictionary<string, object>), null, null);
+            getter = new NestedPropertyGetter(getters, null, typeof(IDictionary<string, object>), null);
 
             getters = new List<EventPropertyGetter>();
             getters.Add(MakeGetterOne(2));
             getters.Add(MakeGetterTwo("0ma"));
-            getterNull = new NestedPropertyGetter(getters, null, typeof(IDictionary<string, object>), null, null);
+            getterNull = new NestedPropertyGetter(getters, null, typeof(IDictionary<string, object>), null);
         }
 
         [Test]
         public void TestGet()
         {
-            Assert.AreEqual(bean.GetIndexed(0).GetMapped("0ma"), getter.Get(theEvent));
+            ClassicAssert.AreEqual(bean.GetIndexed(0).GetMapped("0ma"), getter.Get(theEvent));
 
             // test null value returned
-            Assert.IsNull(getterNull.Get(theEvent));
+            ClassicAssert.IsNull(getterNull.Get(theEvent));
         }
 
         private KeyedMethodPropertyGetter MakeGetterOne(int index)

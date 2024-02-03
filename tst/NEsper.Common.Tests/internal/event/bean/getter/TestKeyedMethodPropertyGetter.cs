@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -13,6 +13,7 @@ using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.supportunit.@event;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.@event.bean.getter
 {
@@ -35,8 +36,8 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
         [Test]
         public void TestGet()
         {
-            Assert.AreEqual(bean.GetIndexed(1), getter.Get(theEvent));
-            Assert.AreEqual(bean.GetIndexed(1), getter.Get(theEvent, 1));
+            ClassicAssert.AreEqual(bean.GetIndexed(1), getter.Get(theEvent));
+            ClassicAssert.AreEqual(bean.GetIndexed(1), getter.Get(theEvent, 1));
         }
     }
 } // end of namespace

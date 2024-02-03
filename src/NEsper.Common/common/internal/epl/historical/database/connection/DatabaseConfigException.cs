@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -14,8 +14,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.connectio
     /// <summary>
     /// Exception to indicate that a stream name could not be resolved.
     /// </summary>
-    [Serializable]
-    public class DatabaseConfigException : System.Exception
+    public class DatabaseConfigException : Exception
     {
         /// <summary> Ctor.</summary>
         /// <param name="msg">message
@@ -32,7 +31,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.connectio
         /// </param>
         public DatabaseConfigException(
             string message,
-            System.Exception cause)
+            Exception cause)
             : base(message, cause)
         {
         }

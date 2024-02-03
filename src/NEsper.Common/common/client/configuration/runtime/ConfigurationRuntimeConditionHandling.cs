@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 using com.espertech.esper.common.client.hook.condition;
 using com.espertech.esper.compat.collections;
@@ -17,9 +18,25 @@ namespace com.espertech.esper.common.client.configuration.runtime
     /// <summary>
     ///     Configuration object for defining condition handling behavior.
     /// </summary>
-    [Serializable]
     public class ConfigurationRuntimeConditionHandling
     {
+        /// <summary>
+        /// Default constructor.
+        /// </summary>
+        public ConfigurationRuntimeConditionHandling()
+        {
+        }
+
+        /// <summary>
+        /// Constructor for JSON deserializer.
+        /// </summary>
+        /// <param name="handlerFactories"></param>
+        [JsonConstructor]
+        public ConfigurationRuntimeConditionHandling(IList<string> handlerFactories)
+        {
+            HandlerFactories = handlerFactories;
+        }
+
         /// <summary>
         ///     Returns the list of condition handler factory class names,
         ///     see <seealso cref="ConditionHandlerFactory" />

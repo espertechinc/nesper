@@ -1,12 +1,11 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.IO;
 
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -30,8 +29,6 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
         public override ExprForge Forge => Desc.Forge;
 
         public ExprEvaluator ExprEvaluator => Desc.Forge.ExprEvaluator;
-
-        public Type EvaluationType => Desc.Forge.EvaluationType;
 
         public override ExprPrecedenceEnum Precedence => ExprPrecedenceEnum.UNARY;
 
@@ -70,11 +67,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             ExprNode node,
             bool ignoreStreamPrefix)
         {
-            if (!(node is ExprAppDotMethodImpl)) {
+            if (!(node is ExprAppDotMethodImpl other)) {
                 return false;
             }
 
-            var other = (ExprAppDotMethodImpl) node;
             if (!Desc.LhsName.Equals(other.Desc.LhsName)) {
                 return false;
             }

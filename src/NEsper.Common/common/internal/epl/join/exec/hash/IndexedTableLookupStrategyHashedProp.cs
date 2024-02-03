@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -32,20 +32,18 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.hash
             _index = index;
         }
 
-        public PropertyHashedEventTable Index {
-            get => _index;
-        }
+        public PropertyHashedEventTable Index => _index;
 
         public ICollection<EventBean> Lookup(
             EventBean theEvent,
             Cursor cursor,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            InstrumentationCommon instrumentationCommon = exprEvaluatorContext.InstrumentationProvider;
+            var instrumentationCommon = exprEvaluatorContext.InstrumentationProvider;
             instrumentationCommon.QIndexJoinLookup(this, _index);
 
-            object key = _factory.EventPropertyValueGetter.Get(theEvent);
-            ISet<EventBean> events = _index.Lookup(key);
+            var key = _factory.EventPropertyValueGetter.Get(theEvent);
+            var events = _index.Lookup(key);
 
             instrumentationCommon.AIndexJoinLookup(events, key);
             return events;
@@ -59,8 +57,6 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.hash
                    ')';
         }
 
-        public LookupStrategyType LookupStrategyType {
-            get => LookupStrategyType.MULTIPROP;
-        }
+        public LookupStrategyType LookupStrategyType => LookupStrategyType.MULTIPROP;
     }
 } // end of namespace

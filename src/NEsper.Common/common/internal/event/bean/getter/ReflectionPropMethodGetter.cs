@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -40,8 +40,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             : base(
                 eventBeanTypedEventFactory,
                 beanEventTypeFactory,
-                property.PropertyType,
-                TypeHelper.GetGenericReturnType(property, false))
+                property.PropertyType)
         {
             _property = property;
             _method = property.GetMethod;
@@ -56,8 +55,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             : base(
                 eventBeanTypedEventFactory,
                 beanEventTypeFactory,
-                method.ReturnType,
-                TypeHelper.GetGenericReturnType(method, false))
+                method.ReturnType)
         {
             _property = null;
             _method = method;
@@ -97,7 +95,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             return true; // Property exists as the property is not dynamic (unchecked)
         }
 
-        public override Type BeanPropType => _propertyType;
+        //public override Type BeanPropType => _propertyType;
 
         public override Type TargetType => _targetType;
 
@@ -128,6 +126,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             if (_property != null) {
                 return ExprDotName(underlyingExpression, _property.Name);
             }
+
             return ExprDotMethod(underlyingExpression, _method.Name);
         }
 

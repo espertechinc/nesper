@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -17,6 +17,7 @@ using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.common.@internal.bytecodemodel.util;
 using com.espertech.esper.common.@internal.compile.multikey;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.context.util;
@@ -27,53 +28,58 @@ using com.espertech.esper.common.@internal.metrics.audit;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
 using com.espertech.esper.common.@internal.schedule;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.common.@internal.util.serde;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.container;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.annotation.AnnotationUtil;
 using static com.espertech.esper.common.@internal.epl.expression.codegen.ExprForgeCodegenNames;
-using static com.espertech.esper.common.@internal.epl.resultset.codegen.ResultSetProcessorCodegenNames;
+using static com.espertech.esper.common.@internal.epl.output.core.OutputProcessViewCodegenNames;
 
 namespace com.espertech.esper.common.@internal.context.module
 {
     public class StatementInformationalsCompileTime
     {
-        private readonly bool _allowSubscriber;
+        private readonly string _statementNameCompileTime;
         private readonly bool _alwaysSynthesizeOutputEvents; // set when insert-into/for-clause/select-distinct
-        private readonly Attribute[] _annotations;
+        private readonly string _optionalContextName;
+        private readonly string _optionalContextModuleName;
+        private readonly NameAccessModifier? _optionalContextVisibility;
         private readonly bool _canSelfJoin;
+        private readonly bool _hasSubquery;
+        private readonly bool _needDedup;
+        private readonly Attribute[] _annotations;
+        private readonly bool _stateless;
+        private readonly object _userObjectCompileTime;
+        private readonly int _numFilterCallbacks;
+        private readonly int _numScheduleCallbacks;
+        private readonly int _numNamedWindowCallbacks;
+        private readonly StatementType _statementType;
+        private readonly int _priority;
+        private readonly bool _preemptive;
+        private readonly bool _hasVariables;
+        private readonly bool _writesToTables;
+        private readonly bool _hasTableAccess;
+        private readonly Type[] _selectClauseTypes;
+        private readonly string[] _selectClauseColumnNames;
         private readonly bool _forClauseDelivery;
         private readonly ExprNode[] _groupDelivery;
         private readonly MultiKeyClassRef _groupDeliveryMultiKey;
-        private readonly bool _hasMatchRecognize;
-        private readonly bool _hasSubquery;
-        private readonly bool _hasTableAccess;
-        private readonly bool _hasVariables;
-        private readonly string _insertIntoLatchName;
-        private readonly bool _instrumented;
-        private readonly bool _needDedup;
-        private readonly int _numFilterCallbacks;
-        private readonly int _numNamedWindowCallbacks;
-        private readonly int _numScheduleCallbacks;
-        private readonly string _optionalContextModuleName;
-        private readonly string _optionalContextName;
-        private readonly NameAccessModifier? _optionalContextVisibility;
-        private readonly CodegenNamespaceScope _namespaceScope;
-        private readonly bool _preemptive;
-        private readonly int _priority;
         private readonly IDictionary<StatementProperty, object> _properties;
-        private readonly string[] _selectClauseColumnNames;
-        private readonly Type[] _selectClauseTypes;
-        private readonly bool _stateless;
-        private readonly string _statementNameCompileTime;
-        private readonly StatementType _statementType;
-        private readonly object _userObjectCompileTime;
-        private readonly bool _writesToTables;
+        private readonly bool _hasMatchRecognize;
+        private readonly bool _instrumented;
+        private readonly CodegenNamespaceScope _namespaceScope;
+        private readonly string _insertIntoLatchName;
+        private readonly bool _allowSubscriber;
         private readonly ExpressionScriptProvided[] _onScripts;
 
+        private readonly IContainer _container;
+        
         public StatementInformationalsCompileTime(
+            IContainer container,
             string statementNameCompileTime,
             bool alwaysSynthesizeOutputEvents,
             string optionalContextName,
@@ -107,6 +113,7 @@ namespace com.espertech.esper.common.@internal.context.module
             bool allowSubscriber,
             ExpressionScriptProvided[] onScripts)
         {
+            _container = container;
             _statementNameCompileTime = statementNameCompileTime;
             _alwaysSynthesizeOutputEvents = alwaysSynthesizeOutputEvents;
             _optionalContextName = optionalContextName;
@@ -146,49 +153,54 @@ namespace com.espertech.esper.common.@internal.context.module
             CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(StatementInformationalsRuntime), GetType(), classScope);
-            var info = Ref("info");
+            var builder = new CodegenSetterBuilder(
+                typeof(StatementInformationalsRuntime),
+                typeof(StatementInformationalsCompileTime),
+                "info",
+                classScope,
+                method);
+
             var annotationsExpr = _annotations == null
                 ? ConstantNull()
-                : LocalMethod(MakeAnnotations(typeof(Attribute[]), _annotations, method, classScope));
-            method.Block
-                .DeclareVar<StatementInformationalsRuntime>(
-                    info.Ref,
-                    NewInstance(typeof(StatementInformationalsRuntime)))
-                .SetProperty(info, "StatementNameCompileTime", Constant(_statementNameCompileTime))
-                .SetProperty(info, "IsAlwaysSynthesizeOutputEvents", Constant(_alwaysSynthesizeOutputEvents))
-                .SetProperty(info, "OptionalContextName", Constant(_optionalContextName))
-                .SetProperty(info, "OptionalContextModuleName", Constant(_optionalContextModuleName))
-                .SetProperty(info, "OptionalContextVisibility", Constant(_optionalContextVisibility))
-                .SetProperty(info, "IsCanSelfJoin", Constant(_canSelfJoin))
-                .SetProperty(info, "HasSubquery", Constant(_hasSubquery))
-                .SetProperty(info, "IsNeedDedup", Constant(_needDedup))
-                .SetProperty(info, "IsStateless", Constant(_stateless))
-                .SetProperty(info, "Annotations", annotationsExpr)
-                .SetProperty(info, "UserObjectCompileTime", SerializerUtil.ExpressionForUserObject(_userObjectCompileTime))
-                .SetProperty(info, "NumFilterCallbacks", Constant(_numFilterCallbacks))
-                .SetProperty(info, "NumScheduleCallbacks", Constant(_numScheduleCallbacks))
-                .SetProperty(info, "NumNamedWindowCallbacks", Constant(_numNamedWindowCallbacks))
-                .SetProperty(info, "StatementType", Constant(_statementType))
-                .SetProperty(info, "Priority", Constant(_priority))
-                .SetProperty(info, "IsPreemptive", Constant(_preemptive))
-                .SetProperty(info, "HasVariables", Constant(_hasVariables))
-                .SetProperty(info, "IsWritesToTables", Constant(_writesToTables))
-                .SetProperty(info, "HasTableAccess", Constant(_hasTableAccess))
-                .SetProperty(info, "SelectClauseTypes", Constant(_selectClauseTypes))
-                .SetProperty(info, "SelectClauseColumnNames", Constant(_selectClauseColumnNames))
-                .SetProperty(info, "IsForClauseDelivery", Constant(_forClauseDelivery))
-                .SetProperty(info, "GroupDeliveryEval", MultiKeyCodegen.CodegenExprEvaluatorMayMultikey(_groupDelivery, null, _groupDeliveryMultiKey, method, classScope))
-                .SetProperty(info, "Properties", MakeProperties(_properties, method, classScope))
-                .SetProperty(info, "HasMatchRecognize", Constant(_hasMatchRecognize))
-                .SetProperty(info, "AuditProvider", MakeAuditProvider(method, classScope))
-                .SetProperty(info, "IsInstrumented", Constant(_instrumented))
-                .SetProperty(info, "InstrumentationProvider", MakeInstrumentationProvider(method, classScope))
-                .SetProperty(info, "SubstitutionParamTypes", MakeSubstitutionParamTypes())
-                .SetProperty(info, "SubstitutionParamNames", MakeSubstitutionParamNames(method, classScope))
-                .SetProperty(info, "InsertIntoLatchName", Constant(_insertIntoLatchName))
-                .SetProperty(info, "IsAllowSubscriber", Constant(_allowSubscriber))
-                .SetProperty(info, "OnScripts", MakeOnScripts(_onScripts, method, classScope))
-                .MethodReturn(info);
+                : MakeAnnotations(typeof(Attribute[]), _annotations, method, classScope);
+            
+            builder
+                .ConstantDefaultCheckedObj("StatementNameCompileTime", _statementNameCompileTime)
+                .ConstantDefaultChecked("IsAlwaysSynthesizeOutputEvents", _alwaysSynthesizeOutputEvents)
+                .ConstantDefaultCheckedObj("OptionalContextName", _optionalContextName)
+                .ConstantDefaultCheckedObj("OptionalContextModuleName", _optionalContextModuleName)
+                .ConstantDefaultCheckedObj("OptionalContextVisibility", _optionalContextVisibility)
+                .ConstantDefaultChecked("IsCanSelfJoin", _canSelfJoin)
+                .ConstantDefaultChecked("HasSubquery", _hasSubquery)
+                .ConstantDefaultChecked("IsNeedDedup", _needDedup)
+                .ConstantDefaultChecked("IsStateless", _stateless)
+                .ConstantDefaultChecked("NumFilterCallbacks", _numFilterCallbacks)
+                .ConstantDefaultChecked("NumScheduleCallbacks", _numScheduleCallbacks)
+                .ConstantDefaultChecked("NumNamedWindowCallbacks", _numNamedWindowCallbacks)
+                .ConstantDefaultCheckedObj("StatementType", _statementType)
+                .ConstantDefaultChecked("Priority", _priority)
+                .ConstantDefaultChecked("IsPreemptive", _preemptive)
+                .ConstantDefaultChecked("HasVariables", _hasVariables)
+                .ConstantDefaultChecked("IsWritesToTables", _writesToTables)
+                .ConstantDefaultChecked("HasTableAccess", _hasTableAccess)
+                .ConstantDefaultCheckedObj("SelectClauseTypes", _selectClauseTypes)
+                .ConstantDefaultCheckedObj("SelectClauseColumnNames", _selectClauseColumnNames)
+                .ConstantDefaultChecked("IsForClauseDelivery", _forClauseDelivery)
+                .ConstantDefaultChecked("HasMatchRecognize", _hasMatchRecognize)
+                .ConstantDefaultChecked("IsInstrumented", _instrumented)
+                .ConstantDefaultCheckedObj("InsertIntoLatchName", _insertIntoLatchName)
+                .ConstantDefaultChecked("IsAllowSubscriber", _allowSubscriber)
+                .ExpressionDefaultChecked("Annotations", annotationsExpr)
+                .ExpressionDefaultChecked("UserObjectCompileTime", SerializerUtil.ExpressionForUserObject(_container.SerializerFactory(), _userObjectCompileTime))
+                .ExpressionDefaultChecked("GroupDeliveryEval", MultiKeyCodegen.CodegenExprEvaluatorMayMultikey(_groupDelivery, null, _groupDeliveryMultiKey, method, classScope))
+                .ExpressionDefaultChecked("Properties", MakeProperties(_properties, method, classScope))
+                .ExpressionDefaultChecked("AuditProvider", MakeAuditProvider(method, classScope))
+                .ExpressionDefaultChecked("InstrumentationProvider", MakeInstrumentationProvider(method, classScope))
+                .ExpressionDefaultChecked("SubstitutionParamTypes", MakeSubstitutionParamTypes())
+                .ExpressionDefaultChecked("SubstitutionParamNames", MakeSubstitutionParamNames(method, classScope))
+                .ExpressionDefaultChecked("OnScripts", MakeOnScripts(_onScripts, method, classScope));
+
+            method.Block.MethodReturn(builder.RefName);
             return LocalMethod(method);
         }
 
@@ -210,14 +222,14 @@ namespace com.espertech.esper.common.@internal.context.module
             if (!numbered.IsEmpty()) {
                 types = new Type[numbered.Count];
                 for (var i = 0; i < numbered.Count; i++) {
-                    types[i] = numbered[i].Type;
+                    types[i] = numbered[i].EntryType;
                 }
             }
             else {
                 types = new Type[named.Count];
                 var count = 0;
                 foreach (var entry in named) {
-                    types[count++] = entry.Value.Type;
+                    types[count++] = entry.Value.EntryType;
                 }
             }
 
@@ -236,11 +248,11 @@ namespace com.espertech.esper.common.@internal.context.module
             var method = parent.MakeChild(typeof(IDictionary<string, int>), GetType(), classScope);
             method.Block.DeclareVar<IDictionary<string, int>>(
                 "names",
-                NewInstance(typeof(Dictionary<string, int>)));
-            var count = 1;
-            foreach (var entry in named) {
-                method.Block.ExprDotMethod(Ref("names"), "Put", Constant(entry.Key), Constant(count++));
-            }
+                NewInstance(typeof(Dictionary<string, int>), Constant(CollectionUtil.CapacityHashMap(named.Count))));
+            new CodegenRepetitiveValueBuilder<string>(named.Keys, method, classScope, GetType())
+                .AddParam(typeof(IDictionary<string, int>), "names")
+                .SetConsumer((value, index, leaf) => leaf.Block.ExprDotMethod(Ref("names"), "Put", Constant(value), Constant(index + 1)))
+                .Build();
 
             method.Block.MethodReturn(Ref("names"));
             return LocalMethod(method);
@@ -256,12 +268,13 @@ namespace com.espertech.esper.common.@internal.context.module
 
             var instrumentation = Ref("instrumentation");
             method.Block.AssignRef(instrumentation, NewInstance<ProxyInstrumentationCommon>());
-            
-            //var anonymousClass = NewAnonymousClass(
-            //    method.Block,
-            //    typeof(InstrumentationCommon));
 
-            //var activated = CodegenMethod.MakeMethod(typeof(bool), GetType(), classScope);
+            //CodegenExpressionNewAnonymousClass anonymousClass = NewAnonymousClass(
+            //	method.Block,
+            //	typeof(InstrumentationCommon));
+
+            //var activated = CodegenMethod.MakeParentNode(typeof(bool), GetType(), classScope);
+            //anonymousClass.AddMethod("activated", activated);
             //activated.Block.MethodReturn(ConstantTrue());
 
             method.Block.SetProperty(
@@ -292,8 +305,8 @@ namespace com.espertech.esper.common.@internal.context.module
                     num++;
                 }
 
-                //var m = CodegenMethod.MakeMethod(typeof(void), GetType(), classScope)
-                //    .AddParam(@params);
+                //var m = CodegenMethod.MakeParentNode(typeof(void), GetType(), classScope)
+                //	.AddParam(@params);
 
                 // Now we need a lambda to associate with the instrumentation and tie them together
                 var proc = $"Proc{forwarded.Name}";
@@ -311,7 +324,8 @@ namespace com.espertech.esper.common.@internal.context.module
                                         forwarded.Name,
                                         expressions))));
 
-                //instrumentation.AddMethod(forwarded.Name, m);
+                //anonymousClass.AddMethod(forwarded.Name, m);
+                //m.Block.Apply(InstrumentationCode.Instblock(classScope, forwarded.Name, expressions));
             }
 
             return instrumentation;
@@ -322,17 +336,17 @@ namespace com.espertech.esper.common.@internal.context.module
             CodegenClassScope classScope)
         {
             if (!HasAnnotation<AuditAttribute>(_annotations)) {
-                return PublicConstValue(typeof(AuditProviderDefault), "INSTANCE");
+                return ConstantNull();
             }
 
             var auditProviderVar = method.Block.DeclareVar<ProxyAuditProvider>(
                 "auditProvider",
                 NewInstance<ProxyAuditProvider>());
 
-            //var auditProvider = NewAnonymousClass(method.Block, typeof(ProxyAuditProvider));
+            // var anonymousClass = NewAnonymousClass(method.Block, typeof(AuditProvider));
 
-            //var activated = CodegenMethod.MakeMethod(typeof(bool), GetType(), classScope);
-            //auditProvider.AddMethod("Activated", activated);
+            //var activated = CodegenMethod.MakeParentNode(typeof(bool), GetType(), classScope);
+            //anonymousClass.AddMethod("activated", activated);
             //activated.Block.MethodReturn(ConstantTrue());
 
             method.Block.SetProperty(
@@ -341,350 +355,307 @@ namespace com.espertech.esper.common.@internal.context.module
                 new CodegenExpressionLambda(method.Block)
                     .WithBody(block => block.BlockReturn(ConstantTrue())));
 
-            method.Block.SetProperty(
-                Ref("auditProvider"),
-                "ProcView",
-                new CodegenExpressionLambda(method.Block)
-                    .WithParam<EventBean[]>("newData")
-                    .WithParam<EventBean[]>("oldData")
-                    .WithParam<AgentInstanceContext>(MEMBER_AGENTINSTANCECONTEXT.Ref)
-                    .WithParam<ViewFactory>("viewFactory")
-                    .WithBody(
-                        block => block.StaticMethod(
-                            typeof(AuditPath),
-                            "AuditView",
-                            Ref("newData"),
-                            Ref("oldData"),
-                            MEMBER_AGENTINSTANCECONTEXT,
-                            Ref("viewFactory"))));
+            var lambdaView = new CodegenExpressionLambda(method.Block)
+                .WithParam<EventBean[]>("newData")
+                .WithParam<EventBean[]>("oldData")
+                .WithParam<AgentInstanceContext>(MEMBER_AGENTINSTANCECONTEXT.Ref)
+                .WithParam<ViewFactory>("viewFactory");
 
-            method.Block.SetProperty(
-                Ref("auditProvider"),
-                "ProcStreamSingle",
-                new CodegenExpressionLambda(method.Block)
-                    .WithParam<EventBean>("@event")
-                    .WithParam<ExprEvaluatorContext>(REF_EXPREVALCONTEXT.Ref)
-                    .WithParam<string>("filterText")
-                    .WithBody(
-                        block => {
-                            if (AuditEnum.STREAM.GetAudit(_annotations) != null) {
-                                block.StaticMethod(
-                                    typeof(AuditPath),
-                                    "AuditStream",
-                                    Ref("@event"),
-                                    REF_EXPREVALCONTEXT,
-                                    Ref("filterText"));
-                            }
-                        }));
+            if (AuditEnum.VIEW.GetAudit(_annotations) != null) {
+                lambdaView = lambdaView.WithBody(
+                    block => block.StaticMethod(
+                        typeof(AuditPath),
+                        "AuditView",
+                        Ref("newData"),
+                        Ref("oldData"),
+                        MEMBER_AGENTINSTANCECONTEXT,
+                        Ref("viewFactory")));
+            }
 
-            method.Block.SetProperty(
-                Ref("auditProvider"),
-                "ProcStreamMulti",
-                new CodegenExpressionLambda(method.Block)
-                    .WithParam<EventBean[]>("newData")
-                    .WithParam<EventBean[]>("oldData")
-                    .WithParam<ExprEvaluatorContext>(REF_EXPREVALCONTEXT.Ref)
-                    .WithParam<string>("filterText")
-                    .WithBody(
-                        block => {
-                            if (AuditEnum.STREAM.GetAudit(_annotations) != null) {
-                                block.StaticMethod(
-                                    typeof(AuditPath),
-                                    "AuditStream",
-                                    Ref("newData"),
-                                    Ref("oldData"),
-                                    REF_EXPREVALCONTEXT,
-                                    Ref("filterText"));
-                            }
-                        }
-                    ));
+            method.Block.SetProperty(Ref("auditProvider"), "ProcView", lambdaView);
 
-            method.Block.SetProperty(
-                Ref("auditProvider"),
-                "ProcScheduleAdd",
-                new CodegenExpressionLambda(method.Block)
-                    .WithParam<long>("time")
-                    .WithParam<AgentInstanceContext>(MEMBER_AGENTINSTANCECONTEXT.Ref)
-                    .WithParam<ScheduleHandle>("scheduleHandle")
-                    .WithParam<ScheduleObjectType>("type")
-                    .WithParam<string>("name")
-                    .WithBody(
-                        block => {
-                            if (AuditEnum.SCHEDULE.GetAudit(_annotations) != null) {
-                                block.StaticMethod(
-                                    typeof(AuditPath),
-                                    "AuditScheduleAdd",
-                                    Ref("time"),
-                                    MEMBER_AGENTINSTANCECONTEXT,
-                                    Ref("scheduleHandle"),
-                                    Ref("type"),
-                                    Ref("name"));
-                            }
-                        }));
+            var lambdaStreamSingle = new CodegenExpressionLambda(method.Block)
+                .WithParam<EventBean>("@event")
+                .WithParam<ExprEvaluatorContext>(REF_EXPREVALCONTEXT.Ref)
+                .WithParam<string>("filterText");
 
-            method.Block.SetProperty(
-                Ref("auditProvider"),
-                "ProcScheduleRemove",
-                new CodegenExpressionLambda(method.Block)
-                    .WithParam<AgentInstanceContext>(MEMBER_AGENTINSTANCECONTEXT.Ref)
-                    .WithParam<ScheduleHandle>("scheduleHandle")
-                    .WithParam<ScheduleObjectType>("type")
-                    .WithParam<string>("name")
-                    .WithBody(
-                        block => {
-                            if (AuditEnum.SCHEDULE.GetAudit(_annotations) != null) {
-                                block.StaticMethod(
-                                    typeof(AuditPath),
-                                    "AuditScheduleRemove",
-                                    MEMBER_AGENTINSTANCECONTEXT,
-                                    Ref("scheduleHandle"),
-                                    Ref("type"),
-                                    Ref("name"));
-                            }
-                        }));
+            var lambdaStreamMulti = new CodegenExpressionLambda(method.Block)
+                .WithParam<EventBean[]>("newData")
+                .WithParam<EventBean[]>("oldData")
+                .WithParam<ExprEvaluatorContext>(REF_EXPREVALCONTEXT.Ref)
+                .WithParam<string>("filterText");
+            
+            if (AuditEnum.STREAM.GetAudit(_annotations) != null) {
+                lambdaStreamSingle = lambdaStreamSingle.WithBody(
+                    block => block.StaticMethod(
+                        typeof(AuditPath),
+                        "AuditStream",
+                        Ref("@event"),
+                        REF_EXPREVALCONTEXT,
+                        Ref("filterText")));
 
-            method.Block.SetProperty(
-                Ref("auditProvider"),
-                "ProcScheduleFire",
-                new CodegenExpressionLambda(method.Block)
-                    .WithParam<AgentInstanceContext>(MEMBER_AGENTINSTANCECONTEXT.Ref)
-                    .WithParam<ScheduleObjectType>("type")
-                    .WithParam<string>("name")
-                    .WithBody(
-                        block => {
-                            if (AuditEnum.SCHEDULE.GetAudit(_annotations) != null) {
-                                block.StaticMethod(
-                                    typeof(AuditPath),
-                                    "AuditScheduleFire",
-                                    MEMBER_AGENTINSTANCECONTEXT,
-                                    Ref("type"),
-                                    Ref("name"));
-                            }
-                        }));
+                lambdaStreamMulti = lambdaStreamMulti.WithBody(
+                    block => block.StaticMethod(
+                        typeof(AuditPath),
+                        "AuditStream",
+                        Ref("newData"),
+                        Ref("oldData"),
+                        REF_EXPREVALCONTEXT,
+                        Ref("filterText")));
+            }
 
-            method.Block.SetProperty(
-                Ref("auditProvider"),
-                "ProcProperty",
-                new CodegenExpressionLambda(method.Block)
-                    .WithParam<string>("name")
-                    .WithParam<object>("value")
-                    .WithParam<ExprEvaluatorContext>(REF_EXPREVALCONTEXT.Ref)
-                    .WithBody(
-                        block => {
-                            if (AuditEnum.PROPERTY.GetAudit(_annotations) != null) {
-                                block.StaticMethod(
-                                    typeof(AuditPath),
-                                    "AuditProperty",
-                                    Ref("name"),
-                                    Ref("value"),
-                                    REF_EXPREVALCONTEXT);
-                            }
-                        }));
+            method.Block.SetProperty(Ref("auditProvider"), "ProcStreamSingle", lambdaStreamSingle);
+            method.Block.SetProperty(Ref("auditProvider"), "ProcStreamMulti", lambdaStreamMulti);
 
-            method.Block.SetProperty(
-                Ref("auditProvider"),
-                "ProcInsert",
-                new CodegenExpressionLambda(method.Block)
-                    .WithParam<EventBean>("@event")
-                    .WithParam<ExprEvaluatorContext>(REF_EXPREVALCONTEXT.Ref)
-                    .WithBody(
-                        block => {
-                            if (AuditEnum.INSERT.GetAudit(_annotations) != null) {
-                                block.StaticMethod(
-                                    typeof(AuditPath),
-                                    "AuditInsert",
-                                    Ref("@event"),
-                                    REF_EXPREVALCONTEXT);
-                            }
-                        }));
+            var lambdaScheduleAdd = new CodegenExpressionLambda(method.Block)
+                .WithParam<long>("time")
+                .WithParam<AgentInstanceContext>(MEMBER_AGENTINSTANCECONTEXT.Ref)
+                .WithParam<ScheduleHandle>("scheduleHandle")
+                .WithParam<ScheduleObjectType>("type")
+                .WithParam<string>("name");
 
-            method.Block.SetProperty(
-                Ref("auditProvider"),
-                "ProcExpression",
-                new CodegenExpressionLambda(method.Block)
-                    .WithParam<string>("text")
-                    .WithParam<object>("value")
-                    .WithParam<ExprEvaluatorContext>(REF_EXPREVALCONTEXT.Ref)
-                    .WithBody(
-                        block => {
-                            if (AuditEnum.EXPRESSION.GetAudit(_annotations) != null ||
-                                AuditEnum.EXPRESSION_NESTED.GetAudit(_annotations) != null) {
-                                block.StaticMethod(
-                                    typeof(AuditPath),
-                                    "AuditExpression",
-                                    Ref("text"),
-                                    Ref("value"),
-                                    REF_EXPREVALCONTEXT);
-                            }
-                        }));
+            var lambdaScheduleRemove = new CodegenExpressionLambda(method.Block)
+                .WithParam<AgentInstanceContext>(MEMBER_AGENTINSTANCECONTEXT.Ref)
+                .WithParam<ScheduleHandle>("scheduleHandle")
+                .WithParam<ScheduleObjectType>("type")
+                .WithParam<string>("name");
 
-            method.Block.SetProperty(
-                Ref("auditProvider"),
-                "ProcPatternTrue",
-                new CodegenExpressionLambda(method.Block)
-                    .WithParam<EvalFactoryNode>("factoryNode")
-                    .WithParam<object>("from")
-                    .WithParam<MatchedEventMapMinimal>("matchEvent")
-                    .WithParam<bool>("isQuitted")
-                    .WithParam<AgentInstanceContext>(NAME_AGENTINSTANCECONTEXT)
-                    .WithBody(
-                        block => {
-                            if (AuditEnum.PATTERN.GetAudit(_annotations) != null) {
-                                block.StaticMethod(
-                                    typeof(AuditPath),
-                                    "AuditPatternTrue",
-                                    Ref("factoryNode"),
-                                    Ref("from"),
-                                    Ref("matchEvent"),
-                                    Ref("isQuitted"),
-                                    MEMBER_AGENTINSTANCECONTEXT);
-                            }
-                        }));
+            var lambdaScheduleFire = new CodegenExpressionLambda(method.Block)
+                .WithParam<AgentInstanceContext>(MEMBER_AGENTINSTANCECONTEXT.Ref)
+                .WithParam<ScheduleObjectType>("type")
+                .WithParam<string>("name");
+            
+            if (AuditEnum.SCHEDULE.GetAudit(_annotations) != null) {
+                lambdaScheduleAdd = lambdaScheduleAdd.WithBody(
+                    block => block.StaticMethod(
+                        typeof(AuditPath),
+                        "AuditScheduleAdd",
+                        Ref("time"),
+                        MEMBER_AGENTINSTANCECONTEXT,
+                        Ref("scheduleHandle"),
+                        Ref("type"),
+                        Ref("name")));
 
-            method.Block.SetProperty(
-                Ref("auditProvider"),
-                "ProcPatternFalse",
-                new CodegenExpressionLambda(method.Block)
-                    .WithParam<EvalFactoryNode>("factoryNode")
-                    .WithParam<object>("from")
-                    .WithParam<AgentInstanceContext>(NAME_AGENTINSTANCECONTEXT)
-                    .WithBody(
-                        block => {
-                            if (AuditEnum.PATTERN.GetAudit(_annotations) != null) {
-                                block.StaticMethod(
-                                    typeof(AuditPath),
-                                    "AuditPatternFalse",
-                                    Ref("factoryNode"),
-                                    Ref("from"),
-                                    MEMBER_AGENTINSTANCECONTEXT);
-                            }
-                        }));
+                lambdaScheduleRemove = lambdaScheduleRemove.WithBody(
+                    block => block.StaticMethod(
+                        typeof(AuditPath),
+                        "AuditScheduleRemove",
+                        MEMBER_AGENTINSTANCECONTEXT,
+                        Ref("scheduleHandle"),
+                        Ref("type"),
+                        Ref("name")));
 
-            method.Block.SetProperty(
-                Ref("auditProvider"),
-                "ProcPatternInstance",
-                new CodegenExpressionLambda(method.Block)
-                    .WithParam<bool>("increase")
-                    .WithParam<EvalFactoryNode>("factoryNode")
-                    .WithParam<AgentInstanceContext>(NAME_AGENTINSTANCECONTEXT)
-                    .WithBody(
-                        block => {
-                            if (AuditEnum.PATTERNINSTANCES.GetAudit(_annotations) != null) {
-                                block.StaticMethod(
-                                    typeof(AuditPath),
-                                    "AuditPatternInstance",
-                                    Ref("increase"),
-                                    Ref("factoryNode"),
-                                    MEMBER_AGENTINSTANCECONTEXT);
-                            }
-                        }));
+                lambdaScheduleFire = lambdaScheduleFire.WithBody(
+                    block => block.StaticMethod(
+                        typeof(AuditPath),
+                        "AuditScheduleFire",
+                        MEMBER_AGENTINSTANCECONTEXT,
+                        Ref("type"),
+                        Ref("name")));
+            }
 
-            method.Block.SetProperty(
-                Ref("auditProvider"),
-                "ProcExprdef",
-                new CodegenExpressionLambda(method.Block)
-                    .WithParam<string>("name")
-                    .WithParam<object>("value")
-                    .WithParam<ExprEvaluatorContext>(REF_EXPREVALCONTEXT.Ref)
-                    .WithBody(
-                        block => {
-                            if (AuditEnum.EXPRDEF.GetAudit(_annotations) != null) {
-                                block.StaticMethod(
-                                    typeof(AuditPath),
-                                    "AuditExprDef",
-                                    Ref("name"),
-                                    Ref("value"),
-                                    REF_EXPREVALCONTEXT);
-                            }
-                        }));
+            method.Block.SetProperty(Ref("auditProvider"), "ProcScheduleAdd", lambdaScheduleAdd);
+            method.Block.SetProperty(Ref("auditProvider"), "ProcScheduleRemove", lambdaScheduleRemove);
+            method.Block.SetProperty(Ref("auditProvider"), "ProcScheduleFire", lambdaScheduleFire);
 
-            method.Block.SetProperty(
-                Ref("auditProvider"),
-                "ProcDataflowTransition",
-                new CodegenExpressionLambda(method.Block)
-                    .WithParam<string>("name")
-                    .WithParam<string>("instance")
-                    .WithParam<EPDataFlowState>("state")
-                    .WithParam<EPDataFlowState>("newState")
-                    .WithParam<AgentInstanceContext>(MEMBER_AGENTINSTANCECONTEXT.Ref)
-                    .WithBody(
-                        block => {
-                            if (AuditEnum.DATAFLOW_TRANSITION.GetAudit(_annotations) != null) {
-                                block.StaticMethod(
-                                    typeof(AuditPath),
-                                    "AuditDataflowTransition",
-                                    Ref("name"),
-                                    Ref("instance"),
-                                    Ref("state"),
-                                    Ref("newState"),
-                                    MEMBER_AGENTINSTANCECONTEXT);
-                            }
-                        }));
+            var lambdaProperty = new CodegenExpressionLambda(method.Block)
+                .WithParam<string>("name")
+                .WithParam<object>("value")
+                .WithParam<ExprEvaluatorContext>(REF_EXPREVALCONTEXT.Ref);
 
-            method.Block.SetProperty(
-                Ref("auditProvider"),
-                "ProcDataflowSource",
-                new CodegenExpressionLambda(method.Block)
-                    .WithParam<string>("name")
-                    .WithParam<string>("instance")
-                    .WithParam<string>("operatorName")
-                    .WithParam<int>("operatorNum")
-                    .WithParam<AgentInstanceContext>(MEMBER_AGENTINSTANCECONTEXT.Ref)
-                    .WithBody(
-                        block => {
-                            if (AuditEnum.DATAFLOW_SOURCE.GetAudit(_annotations) != null) {
-                                block.StaticMethod(
-                                    typeof(AuditPath),
-                                    "AuditDataflowSource",
-                                    Ref("name"),
-                                    Ref("instance"),
-                                    Ref("operatorName"),
-                                    Ref("operatorNum"),
-                                    MEMBER_AGENTINSTANCECONTEXT);
-                            }
-                        }));
+            if (AuditEnum.PROPERTY.GetAudit(_annotations) != null) {
+                lambdaProperty = lambdaProperty.WithBody(
+                    block => block.StaticMethod(
+                        typeof(AuditPath),
+                        "AuditProperty",
+                        Ref("name"),
+                        Ref("value"),
+                        REF_EXPREVALCONTEXT));
+            }
+            
+            method.Block.SetProperty(Ref("auditProvider"), "ProcProperty", lambdaProperty);
 
-            method.Block.SetProperty(
-                Ref("auditProvider"),
-                "ProcDataflowOp",
-                new CodegenExpressionLambda(method.Block)
-                    .WithParam<string>("name")
-                    .WithParam<string>("instance")
-                    .WithParam<string>("operatorName")
-                    .WithParam<int>("operatorNum")
-                    .WithParam<object[]>("parameters")
-                    .WithParam<AgentInstanceContext>(MEMBER_AGENTINSTANCECONTEXT.Ref)
-                    .WithBody(
-                        block => {
-                            if (AuditEnum.DATAFLOW_OP.GetAudit(_annotations) != null) {
-                                block.StaticMethod(
-                                    typeof(AuditPath),
-                                    "AuditDataflowOp",
-                                    Ref("name"),
-                                    Ref("instance"),
-                                    Ref("operatorName"),
-                                    Ref("operatorNum"),
-                                    Ref("parameters"),
-                                    MEMBER_AGENTINSTANCECONTEXT);
-                            }
-                        }));
+            var lambdaInsert = new CodegenExpressionLambda(method.Block)
+                .WithParam<EventBean>("@event")
+                .WithParam<ExprEvaluatorContext>(REF_EXPREVALCONTEXT.Ref);
 
-            method.Block.SetProperty(
-                Ref("auditProvider"),
-                "ProcContextPartition",
-                new CodegenExpressionLambda(method.Block)
-                    .WithParam<bool>("allocate")
-                    .WithParam<AgentInstanceContext>(MEMBER_AGENTINSTANCECONTEXT.Ref)
-                    .WithBody(
-                        block => {
-                            if (AuditEnum.CONTEXTPARTITION.GetAudit(_annotations) != null) {
-                                block.StaticMethod(
-                                    typeof(AuditPath),
-                                    "AuditContextPartition",
-                                    Ref("allocate"),
-                                    MEMBER_AGENTINSTANCECONTEXT);
-                            }
-                        }));
+            if (AuditEnum.INSERT.GetAudit(_annotations) != null) {
+                lambdaInsert = lambdaInsert.WithBody(
+                    block => block.StaticMethod(
+                        typeof(AuditPath),
+                        "AuditInsert",
+                        Ref("@event"),
+                        REF_EXPREVALCONTEXT));
+            }
+
+            method.Block.SetProperty(Ref("auditProvider"), "ProcInsert", lambdaInsert);
+
+            var lambdaExpression = new CodegenExpressionLambda(method.Block)
+                .WithParam<string>("text")
+                .WithParam<object>("value")
+                .WithParam<ExprEvaluatorContext>(REF_EXPREVALCONTEXT.Ref);
+
+            if (AuditEnum.EXPRESSION.GetAudit(_annotations) != null ||
+                AuditEnum.EXPRESSION_NESTED.GetAudit(_annotations) != null) {
+                lambdaExpression = lambdaExpression.WithBody(
+                    block => block.StaticMethod(
+                        typeof(AuditPath),
+                        "AuditExpression",
+                        Ref("text"),
+                        Ref("value"),
+                        REF_EXPREVALCONTEXT));
+            }
+
+            method.Block.SetProperty(Ref("auditProvider"), "ProcExpression", lambdaExpression);
+
+            var lambdaPatternTrue = new CodegenExpressionLambda(method.Block)
+                .WithParam<EvalFactoryNode>("factoryNode")
+                .WithParam<object>("from")
+                .WithParam<MatchedEventMapMinimal>("matchEvent")
+                .WithParam<bool>("isQuitted")
+                .WithParam<AgentInstanceContext>(NAME_AGENTINSTANCECONTEXT);
+
+            var lambdaPatternFalse = new CodegenExpressionLambda(method.Block)
+                .WithParam<EvalFactoryNode>("factoryNode")
+                .WithParam<object>("from")
+                .WithParam<AgentInstanceContext>(NAME_AGENTINSTANCECONTEXT);
+            
+            if (AuditEnum.PATTERN.GetAudit(_annotations) != null) {
+                lambdaPatternTrue = lambdaPatternTrue.WithBody(
+                    block => block.StaticMethod(
+                        typeof(AuditPath),
+                        "AuditPatternTrue",
+                        Ref("factoryNode"),
+                        Ref("from"),
+                        Ref("matchEvent"),
+                        Ref("isQuitted"),
+                        MEMBER_AGENTINSTANCECONTEXT));
+
+                lambdaPatternFalse = lambdaPatternFalse.WithBody(
+                    block => block.StaticMethod(
+                        typeof(AuditPath),
+                        "AuditPatternFalse",
+                        Ref("factoryNode"),
+                        Ref("from"),
+                        MEMBER_AGENTINSTANCECONTEXT));
+            }
+
+            method.Block.SetProperty(Ref("auditProvider"), "ProcPatternTrue", lambdaPatternTrue);
+            method.Block.SetProperty(Ref("auditProvider"), "ProcPatternFalse", lambdaPatternFalse);
+
+            var lambdaPatternInstance = new CodegenExpressionLambda(method.Block)
+                .WithParam<bool>("increase")
+                .WithParam<EvalFactoryNode>("factoryNode")
+                .WithParam<AgentInstanceContext>(NAME_AGENTINSTANCECONTEXT);
+            
+            if (AuditEnum.PATTERNINSTANCES.GetAudit(_annotations) != null) {
+                lambdaPatternInstance = lambdaPatternInstance.WithBody(
+                    block => block.StaticMethod(
+                        typeof(AuditPath),
+                        "AuditPatternInstance",
+                        Ref("increase"),
+                        Ref("factoryNode"),
+                        MEMBER_AGENTINSTANCECONTEXT));
+            }
+
+            method.Block.SetProperty(Ref("auditProvider"), "ProcPatternInstance", lambdaPatternInstance);
+
+            var lambdaExprdef = new CodegenExpressionLambda(method.Block)
+                .WithParam<string>("name")
+                .WithParam<object>("value")
+                .WithParam<ExprEvaluatorContext>(REF_EXPREVALCONTEXT.Ref);
+            
+            if (AuditEnum.EXPRDEF.GetAudit(_annotations) != null) {
+                lambdaExprdef = lambdaExprdef.WithBody(
+                    block => block.StaticMethod(
+                        typeof(AuditPath),
+                        "AuditExprDef",
+                        Ref("name"),
+                        Ref("value"),
+                        REF_EXPREVALCONTEXT));
+            }
+            
+            method.Block.SetProperty(Ref("auditProvider"), "ProcExprdef", lambdaExprdef);
+
+            var lambdaDataflowTransition = new CodegenExpressionLambda(method.Block)
+                .WithParam<string>("name")
+                .WithParam<string>("instance")
+                .WithParam<EPDataFlowState>("state")
+                .WithParam<EPDataFlowState>("newState")
+                .WithParam<AgentInstanceContext>(MEMBER_AGENTINSTANCECONTEXT.Ref);
+
+            if (AuditEnum.DATAFLOW_TRANSITION.GetAudit(_annotations) != null) {
+                lambdaDataflowTransition = lambdaDataflowTransition.WithBody(
+                    block => block.StaticMethod(
+                        typeof(AuditPath),
+                        "AuditDataflowTransition",
+                        Ref("name"),
+                        Ref("instance"),
+                        Ref("state"),
+                        Ref("newState"),
+                        MEMBER_AGENTINSTANCECONTEXT));
+            }
+
+            method.Block.SetProperty(Ref("auditProvider"), "ProcDataflowTransition", lambdaDataflowTransition);
+
+            var lambdaDataflowSource = new CodegenExpressionLambda(method.Block)
+                .WithParam<string>("name")
+                .WithParam<string>("instance")
+                .WithParam<string>("operatorName")
+                .WithParam<int>("operatorNum")
+                .WithParam<AgentInstanceContext>(MEMBER_AGENTINSTANCECONTEXT.Ref);
+
+            if (AuditEnum.DATAFLOW_SOURCE.GetAudit(_annotations) != null) {
+                lambdaDataflowSource = lambdaDataflowSource.WithBody(
+                    block => block.StaticMethod(
+                        typeof(AuditPath),
+                        "AuditDataflowSource",
+                        Ref("name"),
+                        Ref("instance"),
+                        Ref("operatorName"),
+                        Ref("operatorNum"),
+                        MEMBER_AGENTINSTANCECONTEXT));
+            }
+            
+            method.Block.SetProperty(Ref("auditProvider"), "ProcDataflowSource", lambdaDataflowSource);
+
+            var lambdaDataflowOp = new CodegenExpressionLambda(method.Block)
+                .WithParam<string>("name")
+                .WithParam<string>("instance")
+                .WithParam<string>("operatorName")
+                .WithParam<int>("operatorNum")
+                .WithParam<object[]>("parameters")
+                .WithParam<AgentInstanceContext>(MEMBER_AGENTINSTANCECONTEXT.Ref);
+            
+            if (AuditEnum.DATAFLOW_OP.GetAudit(_annotations) != null) {
+                lambdaDataflowOp = lambdaDataflowOp.WithBody(
+                    block => block.StaticMethod(
+                        typeof(AuditPath),
+                        "AuditDataflowOp",
+                        Ref("name"),
+                        Ref("instance"),
+                        Ref("operatorName"),
+                        Ref("operatorNum"),
+                        Ref("parameters"),
+                        MEMBER_AGENTINSTANCECONTEXT));
+            }
+            
+            method.Block.SetProperty(Ref("auditProvider"), "ProcDataflowOp", lambdaDataflowOp);
+
+            var lambdaContextPartition = new CodegenExpressionLambda(method.Block)
+                .WithParam<bool>("allocate")
+                .WithParam<AgentInstanceContext>(MEMBER_AGENTINSTANCECONTEXT.Ref);
+
+            if (AuditEnum.CONTEXTPARTITION.GetAudit(_annotations) != null) {
+                lambdaContextPartition = lambdaContextPartition.WithBody(
+                    block => block.StaticMethod(
+                        typeof(AuditPath),
+                        "AuditContextPartition",
+                        Ref("allocate"),
+                        MEMBER_AGENTINSTANCECONTEXT));
+            }
+            
+            method.Block.SetProperty(Ref("auditProvider"), "ProcContextPartition", lambdaContextPartition);
 
             return Ref("auditProvider");
         }
@@ -716,7 +687,7 @@ namespace com.espertech.esper.common.@internal.context.module
             method.Block
                 .DeclareVar<IDictionary<StatementProperty, object>>(
                     "properties",
-                    NewInstance(typeof(Dictionary<StatementProperty, object>)));
+                    NewInstance<Dictionary<StatementProperty, object>>());
             foreach (var entry in properties) {
                 method.Block.ExprDotMethod(
                     Ref("properties"),
@@ -738,8 +709,8 @@ namespace com.espertech.esper.common.@internal.context.module
                 return ConstantNull();
             }
 
-            CodegenExpression[] init = new CodegenExpression[onScripts.Length];
-            for (int i = 0; i < onScripts.Length; i++) {
+            var init = new CodegenExpression[onScripts.Length];
+            for (var i = 0; i < onScripts.Length; i++) {
                 init[i] = onScripts[i].Make(parent, classScope);
             }
 

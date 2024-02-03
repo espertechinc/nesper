@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -35,5 +35,14 @@ namespace com.espertech.esper.common.client.fireandforget
         void SetObject(
             string parameterName,
             object value);
+
+        /// <summary>
+        /// Releases resources.
+        /// <para>
+        ///      Required for use with fire-and-forget queries that use SQL queries i.e. "from SQL:db [query]".
+        ///      Optional for all other EPL queries.
+        /// </para>
+        /// </summary>
+        public void Close();
     }
 } // end of namespace

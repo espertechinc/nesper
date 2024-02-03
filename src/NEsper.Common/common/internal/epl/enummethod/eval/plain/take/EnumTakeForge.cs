@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -11,7 +11,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.enummethod.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 
-namespace com.espertech.esper.common.@internal.epl.enummethod.eval
+namespace com.espertech.esper.common.@internal.epl.enummethod.eval.plain.take
 {
     public class EnumTakeForge : EnumForge
     {
@@ -31,9 +31,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 
         public int StreamNumSize { get; }
 
-        public virtual EnumEval EnumEvaluator {
-            get => new EnumTakeForgeEval(SizeEval.ExprEvaluator);
-        }
+        public virtual EnumEval EnumEvaluator => new EnumTakeForgeEval(SizeEval.ExprEvaluator);
 
         public virtual CodegenExpression Codegen(
             EnumForgeCodegenParams premade,
@@ -41,7 +39,10 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             CodegenClassScope codegenClassScope)
         {
             return EnumTakeForgeEval.Codegen(
-                this, premade, codegenMethodScope, codegenClassScope);
+                this,
+                premade,
+                codegenMethodScope,
+                codegenClassScope);
         }
     }
 } // end of namespace

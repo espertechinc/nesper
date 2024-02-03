@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -25,11 +25,58 @@ using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.logging;
 
+using static com.espertech.esper.common.@internal.epl.expression.core.ExprNodeOrigin;
+
+using TypeExtensions = System.Reflection.TypeExtensions;
+
 namespace com.espertech.esper.common.@internal.epl.util
 {
     public class EPLValidationUtil
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+        public static ExprNode ValidateEventPrecedence(
+            bool insertingIntoTable,
+            ExprNode eventPrecedence,
+            EventType resultEventType,
+            StatementRawInfo statementRawInfo,
+            StatementCompileTimeServices services)
+        {
+            StreamTypeService streamTypeService = new StreamTypeServiceImpl(resultEventType, null, true);
+            var validationContext =
+                new ExprValidationContextBuilder(streamTypeService, statementRawInfo, services).Build();
+            ExprNode validated;
+            try {
+                validated = ExprNodeUtilityValidate.GetValidatedSubtree(
+                    EVENTPRECEDENCE,
+                    eventPrecedence,
+                    validationContext);
+            }
+            catch (ExprValidationException ex) {
+                throw new ExprValidationException(
+                    "Failed to validate event-precedence considering only the output event type '" +
+                    resultEventType.Metadata.Name +
+                    "': " +
+                    ex.Message +
+                    " (NOTE: this validation only considers the result event itself and not incoming streams)",
+                    ex);
+            }
+
+            var returned = validated.Forge.EvaluationType.GetBoxedType();
+            if (typeof(int?) != returned) {
+                throw new ExprValidationException(
+                    "Event-precedence expected an expression returning an integer value but the expression '" +
+                    ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(eventPrecedence) +
+                    "' returns " +
+                    returned.CleanName());
+            }
+
+            if (insertingIntoTable) {
+                throw new ExprValidationException("Event-precedence is not allowed when inserting into a table");
+            }
+
+            return validated;
+        }
 
         public static void ValidateParametersTypePredefined(
             ExprNode[] expressions,
@@ -118,7 +165,7 @@ namespace com.espertech.esper.common.@internal.epl.util
                     .WithIsFilterExpression(true)
                     .Build();
                 var validated = ExprNodeUtilityValidate.GetValidatedSubtree(
-                    ExprNodeOrigin.FILTER,
+                    FILTER,
                     filterExpression,
                     validationContext);
                 FilterExprAnalyzer.Analyze(validated, queryGraph, false);
@@ -152,16 +199,29 @@ namespace com.espertech.esper.common.@internal.epl.util
         }
 
         public static void ValidateParameterType(
-            string invocableName,
-            string invocableCategory,
+            String invocableName,
+            String invocableCategory,
             bool isFunction,
             EPLExpressionParamType expectedTypeEnum,
             Type[] expectedTypeClasses,
-            Type providedType,
+            Type providedTypeCanNull,
             int parameterNum,
             ExprNode parameterExpression)
         {
-            if (expectedTypeEnum == EPLExpressionParamType.BOOLEAN && !providedType.IsBoolean()) {
+            if (expectedTypeEnum == EPLExpressionParamType.ANY) {
+                return;
+            }
+
+            if (providedTypeCanNull == null) {
+                throw new ExprValidationException(
+                    GetInvokablePrefix(invocableName, invocableCategory, isFunction) +
+                    "expected a non-null result for expression parameter " +
+                    parameterNum +
+                    " but received a null-typed expression");
+            }
+
+            var providedType = providedTypeCanNull;
+            if (expectedTypeEnum == EPLExpressionParamType.BOOLEAN && (!providedType.IsTypeBoolean())) {
                 throw new ExprValidationException(
                     GetInvokablePrefix(invocableName, invocableCategory, isFunction) +
                     "expected a boolean-type result for expression parameter " +
@@ -170,7 +230,7 @@ namespace com.espertech.esper.common.@internal.epl.util
                     providedType.CleanName());
             }
 
-            if (expectedTypeEnum == EPLExpressionParamType.NUMERIC && !providedType.IsNumeric()) {
+            if (expectedTypeEnum == EPLExpressionParamType.NUMERIC && (!providedType.IsTypeNumeric())) {
                 throw new ExprValidationException(
                     GetInvokablePrefix(invocableName, invocableCategory, isFunction) +
                     "expected a number-type result for expression parameter " +
@@ -192,7 +252,7 @@ namespace com.espertech.esper.common.@internal.epl.util
                 }
 
                 if (!found) {
-                    string expected;
+                    String expected;
                     if (expectedTypeClasses.Length == 1) {
                         expected = "a " + TypeHelper.GetParameterAsString(expectedTypeClasses);
                     }
@@ -216,7 +276,7 @@ namespace com.espertech.esper.common.@internal.epl.util
                     return;
                 }
 
-                if (!providedType.IsNumeric()) {
+                if (!(providedType.IsTypeNumeric())) {
                     throw new ExprValidationException(
                         GetInvokablePrefix(invocableName, invocableCategory, isFunction) +
                         "expected a time-period expression or a numeric-type result for expression parameter " +
@@ -227,7 +287,7 @@ namespace com.espertech.esper.common.@internal.epl.util
             }
 
             if (expectedTypeEnum == EPLExpressionParamType.DATETIME) {
-                if (!TypeHelper.IsDateTime(providedType)) {
+                if (!(TypeHelper.IsDateTime(providedType))) {
                     throw new ExprValidationException(
                         GetInvokablePrefix(invocableName, invocableCategory, isFunction) +
                         "expected a long-typed, Date-typed or Calendar-typed result for expression parameter " +

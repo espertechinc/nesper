@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -10,16 +10,19 @@ using System;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.serde;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.epl.index.@base;
+
 
 namespace com.espertech.esper.common.@internal.epl.index.sorted
 {
     public class PropertySortedFactoryFactory : EventTableFactoryFactoryBase
     {
-        private readonly string _indexProp;
-        private readonly Type _indexType;
-        private readonly EventPropertyValueGetter _valueGetter;
-        private readonly DataInputOutputSerde _indexSerde;
+        private readonly string indexProp;
+        private readonly Type indexType;
+        private readonly EventPropertyValueGetter valueGetter;
+        private readonly DataInputOutputSerde indexSerde;
+        private readonly StateMgmtSetting stateMgmtSettings;
 
         public PropertySortedFactoryFactory(
             int indexedStreamNum,
@@ -28,13 +31,14 @@ namespace com.espertech.esper.common.@internal.epl.index.sorted
             string indexProp,
             Type indexType,
             EventPropertyValueGetter valueGetter,
-            DataInputOutputSerde indexSerde)
-            : base(indexedStreamNum, subqueryNum, isFireAndForget)
+            DataInputOutputSerde indexSerde,
+            StateMgmtSetting stateMgmtSettings) : base(indexedStreamNum, subqueryNum, isFireAndForget)
         {
-            _indexProp = indexProp;
-            _indexType = indexType;
-            _valueGetter = valueGetter;
-            _indexSerde = indexSerde;
+            this.indexProp = indexProp;
+            this.indexType = indexType;
+            this.valueGetter = valueGetter;
+            this.indexSerde = indexSerde;
+            this.stateMgmtSettings = stateMgmtSettings;
         }
 
         public override EventTableFactory Create(
@@ -44,13 +48,13 @@ namespace com.espertech.esper.common.@internal.epl.index.sorted
             return eventTableFactoryContext.EventTableIndexService.CreateSorted(
                 indexedStreamNum,
                 eventType,
-                _indexProp,
-                _indexType,
-                _valueGetter,
-                _indexSerde,
+                indexProp,
+                indexType,
+                valueGetter,
+                indexSerde,
                 null,
                 isFireAndForget,
-                eventTableFactoryContext);
+                stateMgmtSettings);
         }
     }
 } // end of namespace

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -19,6 +19,8 @@ using com.espertech.esper.common.@internal.compile.multikey;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.compile.stage3;
+using com.espertech.esper.common.@internal.compile.util;
+using com.espertech.esper.common.@internal.context.activator;
 using com.espertech.esper.common.@internal.context.compile;
 using com.espertech.esper.common.@internal.context.controller.category;
 using com.espertech.esper.common.@internal.context.controller.core;
@@ -33,6 +35,8 @@ using com.espertech.esper.common.@internal.epl.pattern.filter;
 using com.espertech.esper.common.@internal.epl.resultset.select.core;
 using com.espertech.esper.common.@internal.epl.streamtype;
 using com.espertech.esper.common.@internal.@event.core;
+using com.espertech.esper.common.@internal.@event.map;
+using com.espertech.esper.common.@internal.fabric;
 using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.common.@internal.schedule;
 using com.espertech.esper.common.@internal.serde.compiletime.eventtype;
@@ -40,15 +44,17 @@ using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
+using static com.espertech.esper.common.@internal.context.util.ContextPropertyEventType;
+
 namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
 {
-    public class StmtForgeMethodCreateContext : StmtForgeMethod
+    public partial class StmtForgeMethodCreateContext : StmtForgeMethod
     {
-        private readonly StatementBaseInfo @base;
+        private readonly StatementBaseInfo _base;
 
         public StmtForgeMethodCreateContext(StatementBaseInfo @base)
         {
-            this.@base = @base;
+            _base = @base;
         }
 
         public StmtForgeMethodResult Make(
@@ -56,16 +62,16 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
             string classPostfix,
             StatementCompileTimeServices services)
         {
-            var statementSpec = @base.StatementSpec;
+            var statementSpec = _base.StatementSpec;
             if (statementSpec.Raw.OptionalContextName != null) {
                 throw new ExprValidationException(
                     "A create-context statement cannot itself be associated to a context, please declare a nested context instead");
             }
 
-            IList<FilterSpecCompiled> filterSpecCompileds = new List<FilterSpecCompiled>();
-            IList<ScheduleHandleCallbackProvider> scheduleHandleCallbackProviders =
-                new List<ScheduleHandleCallbackProvider>();
+            IList<FilterSpecTracked> filterSpecCompileds = new List<FilterSpecTracked>();
+            IList<ScheduleHandleTracked> scheduleHandleCallbackProviders = new List<ScheduleHandleTracked>();
             IList<FilterSpecParamExprNodeForge> filterBooleanExpressions = new List<FilterSpecParamExprNodeForge>();
+            var fabricCharge = services.StateMgmtSettingsProvider.NewCharge();
 
             var context = statementSpec.Raw.CreateContextDesc;
             if (services.ContextCompileTimeResolver.GetContextInfo(context.ContextName) != null) {
@@ -73,17 +79,22 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
             }
 
             // compile filter specs, if any
+            var contextVisibility =
+                services.ModuleVisibilityRules.GetAccessModifierContext(_base, context.ContextName);
             var validationEnv = new CreateContextValidationEnv(
                 context.ContextName,
-                @base.StatementRawInfo,
+                contextVisibility,
+                _base.StatementRawInfo,
                 services,
                 filterSpecCompileds,
                 scheduleHandleCallbackProviders,
                 filterBooleanExpressions);
-            var additionalForgeables = ValidateContextDetail(
+            var validationResult = ValidateContextDetail(
                 context.ContextDetail,
                 0,
                 validationEnv);
+            var additionalForgeables = validationResult.AdditionalForgables;
+            fabricCharge.Add(validationResult.FabricCharge);
 
             // get controller factory forges
             var controllerFactoryForges = GetForges(
@@ -91,9 +102,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
                 context.ContextDetail);
 
             // build context properties type information
-            var contextProps = MakeContextProperties(
+            var contextProps = MakeContextProperies(
                 controllerFactoryForges,
-                @base.StatementRawInfo,
+                _base.StatementRawInfo,
                 services);
 
             // allocate type for context properties
@@ -101,7 +112,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
                 services.EventTypeNameGeneratorStatement.GetContextPropertyTypeName(context.ContextName);
             var metadata = new EventTypeMetadata(
                 contextEventTypeName,
-                @base.ModuleName,
+                _base.ModuleName,
                 EventTypeTypeClass.CONTEXTPROPDERIVED,
                 EventTypeApplicationType.MAP,
                 NameAccessModifier.TRANSIENT,
@@ -120,8 +131,6 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
             services.EventTypeCompileTimeRegistry.NewType(contextPropertiesType);
 
             // register context
-            var visibilityContext =
-                services.ModuleVisibilityRules.GetAccessModifierContext(@base, context.ContextName);
             var validationInfo =
                 new ContextControllerPortableInfo[controllerFactoryForges.Length];
             for (var i = 0; i < validationInfo.Length; i++) {
@@ -130,18 +139,21 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
 
             var detail = new ContextMetaData(
                 context.ContextName,
-                @base.ModuleName,
-                visibilityContext,
+                _base.ModuleName,
+                contextVisibility,
                 contextPropertiesType,
                 validationInfo);
             services.ContextCompileTimeRegistry.NewContext(detail);
+
+            // build context properties type information
+            fabricCharge.Add(PlanStateSettings(detail, controllerFactoryForges, _base.StatementRawInfo, services));
 
             // define output event type
             var statementEventTypeName =
                 services.EventTypeNameGeneratorStatement.GetContextStatementTypeName(context.ContextName);
             var statementTypeMetadata = new EventTypeMetadata(
                 statementEventTypeName,
-                @base.ModuleName,
+                _base.ModuleName,
                 EventTypeTypeClass.STATEMENTOUT,
                 EventTypeApplicationType.MAP,
                 NameAccessModifier.TRANSIENT,
@@ -150,7 +162,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
                 EventTypeIdPair.Unassigned());
             EventType statementEventType = BaseNestableEventUtil.MakeMapTypeCompileTime(
                 statementTypeMetadata,
-                EmptyDictionary<string, object>.Instance,
+                EmptyDictionary<string, object>.Instance, 
                 null,
                 null,
                 null,
@@ -159,14 +171,15 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
                 services.EventTypeCompileTimeResolver);
             services.EventTypeCompileTimeRegistry.NewType(statementEventType);
 
-            var statementFieldsClassName = CodeGenerationIDGenerator
-                .GenerateClassNameSimple(typeof(StatementFields), classPostfix);
+            var statementFieldsClassName =
+                CodeGenerationIDGenerator.GenerateClassNameSimple(typeof(StatementFields), classPostfix);
             var namespaceScope = new CodegenNamespaceScope(
                 @namespace,
                 statementFieldsClassName,
-                services.IsInstrumented);
+                services.IsInstrumented,
+                services.Configuration.Compiler.ByteCode);
 
-            var forgeables = new List<StmtClassForgeable>();
+            IList<StmtClassForgeable> forgeables = new List<StmtClassForgeable>();
             foreach (var additional in additionalForgeables) {
                 forgeables.Add(additional.Make(namespaceScope, classPostfix));
             }
@@ -178,6 +191,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
 
             var forge =
                 new StatementAgentInstanceFactoryCreateContextForge(context.ContextName, statementEventType);
+            var partitionIdSvcStateMgmtSettings = services.StateMgmtSettingsProvider.Context
+                .ContextPartitionId(fabricCharge, _base.StatementRawInfo, detail);
             forgeables.Add(
                 new StmtClassForgeableAIFactoryProviderCreateContext(
                     statementAIFactoryProviderClassName,
@@ -185,14 +200,15 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
                     context.ContextName,
                     controllerFactoryForges,
                     contextPropertiesType,
-                    forge));
+                    forge,
+                    partitionIdSvcStateMgmtSettings));
 
             var selectSubscriberDescriptor = new SelectSubscriberDescriptor();
             var informationals = StatementInformationalsUtil.GetInformationals(
-                @base,
+                _base,
                 filterSpecCompileds,
                 scheduleHandleCallbackProviders,
-                EmptyList<NamedWindowConsumerStreamSpec>.Instance,
+                EmptyList<NamedWindowConsumerStreamSpec>.Instance, 
                 false,
                 selectSubscriberDescriptor,
                 namespaceScope,
@@ -204,34 +220,35 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
                     statementProviderClassName,
                     informationals,
                     namespaceScope));
-            forgeables.Add(
-                new StmtClassForgeableStmtFields(
-                    statementFieldsClassName,
-                    namespaceScope,
-                    0));
+            forgeables.Add(new StmtClassForgeableStmtFields(statementFieldsClassName, namespaceScope));
+
+            services.StateMgmtSettingsProvider.Context.Context(fabricCharge, detail, controllerFactoryForges);
 
             return new StmtForgeMethodResult(
                 forgeables,
                 filterSpecCompileds,
                 scheduleHandleCallbackProviders,
-                EmptyList<NamedWindowConsumerStreamSpec>.Instance,
-                FilterSpecCompiled.MakeExprNodeList(filterSpecCompileds, filterBooleanExpressions));
+                EmptyList<NamedWindowConsumerStreamSpec>.Instance, 
+                FilterSpecCompiled.MakeExprNodeList(filterSpecCompileds, filterBooleanExpressions),
+                namespaceScope,
+                fabricCharge);
         }
 
-        private IDictionary<string, object> MakeContextProperties(
+        private IDictionary<string, object> MakeContextProperies(
             ContextControllerFactoryForge[] controllers,
             StatementRawInfo statementRawInfo,
             StatementCompileTimeServices services)
         {
             var props = new LinkedHashMap<string, object>();
-            props.Put(ContextPropertyEventType.PROP_CTX_NAME, typeof(string));
-            props.Put(ContextPropertyEventType.PROP_CTX_ID, typeof(int));
+            props.Put(PROP_CTX_NAME, typeof(string));
+            props.Put(PROP_CTX_ID, typeof(int?));
 
             if (controllers.Length == 1) {
                 controllers[0]
                     .ValidateGetContextProps(
                         props,
                         controllers[0].FactoryEnv.OutermostContextName,
+                        0,
                         statementRawInfo,
                         services);
                 return props;
@@ -240,60 +257,78 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
             for (var level = 0; level < controllers.Length; level++) {
                 var nestedContextName = controllers[level].FactoryEnv.ContextName;
                 var propsPerLevel = new LinkedHashMap<string, object>();
-                propsPerLevel.Put(ContextPropertyEventType.PROP_CTX_NAME, typeof(string));
+                propsPerLevel.Put(PROP_CTX_NAME, typeof(string));
                 if (level == controllers.Length - 1) {
-                    propsPerLevel.Put(ContextPropertyEventType.PROP_CTX_ID, typeof(int));
+                    propsPerLevel.Put(PROP_CTX_ID, typeof(int?));
                 }
 
                 controllers[level]
-                    .ValidateGetContextProps(
-                        propsPerLevel,
-                        nestedContextName,
-                        statementRawInfo,
-                        services);
+                    .ValidateGetContextProps(propsPerLevel, nestedContextName, level, statementRawInfo, services);
                 props.Put(nestedContextName, propsPerLevel);
             }
 
             return props;
         }
 
-        private IList<StmtClassForgeableFactory> ValidateContextDetail(
+        private FabricCharge PlanStateSettings(
+            ContextMetaData detail,
+            ContextControllerFactoryForge[] controllers,
+            StatementRawInfo statementRawInfo,
+            StatementCompileTimeServices services)
+        {
+            var fabricCharge = services.StateMgmtSettingsProvider.NewCharge();
+            for (var level = 0; level < controllers.Length; level++) {
+                var nestedContextName = controllers[level].FactoryEnv.ContextName;
+                controllers[level]
+                    .PlanStateSettings(detail, fabricCharge, level, nestedContextName, statementRawInfo, services);
+            }
+
+            return fabricCharge;
+        }
+
+        private ValidateContextDetailResult ValidateContextDetail(
             ContextSpec contextSpec,
             int nestingLevel,
             CreateContextValidationEnv validationEnv)
         {
-            ISet<string> eventTypesReferenced = new HashSet<string>();
-            IList<StmtClassForgeableFactory> additionalForgeables = new List<StmtClassForgeableFactory>();
-            
-            if (contextSpec is ContextSpecKeyed) {
-                var segmented = (ContextSpecKeyed) contextSpec;
-                IDictionary<string, EventType> asNames = new Dictionary<string, EventType>();
+            IList<StmtClassForgeableFactory> additionalForgeables = new List<StmtClassForgeableFactory>(2);
+            var fabricCharge = validationEnv.Services.StateMgmtSettingsProvider.NewCharge();
+
+            if (contextSpec is ContextSpecKeyed segmented) {
+                var asNames = new Dictionary<string, EventType>();
                 var partitionHasNameAssignment = false;
                 Type[] getterTypes = null;
                 foreach (var partition in segmented.Items) {
-                    Pair<FilterSpecCompiled, IList<StmtClassForgeableFactory>> pair = CompilePartitionedFilterSpec(
-                        partition.FilterSpecRaw, eventTypesReferenced, validationEnv);
-                    FilterSpecCompiled filterSpecCompiled = pair.First;
+                    var pair = CompilePartitonedFilterSpec(
+                        partition.FilterSpecRaw,
+                        nestingLevel,
+                        validationEnv);
+                    var filterSpecCompiled = pair.First;
                     additionalForgeables.AddAll(pair.Second);
-                   
                     partition.FilterSpecCompiled = filterSpecCompiled;
 
                     var getters = new EventPropertyGetterSPI[partition.PropertyNames.Count];
                     var serdes = new DataInputOutputSerdeForge[partition.PropertyNames.Count];
-                    var eventType = (EventTypeSPI) filterSpecCompiled.FilterForEventType;
+                    var eventType = (EventTypeSPI)filterSpecCompiled.FilterForEventType;
                     getterTypes = new Type[partition.PropertyNames.Count];
-                    
                     for (var i = 0; i < partition.PropertyNames.Count; i++) {
                         var propertyName = partition.PropertyNames[i];
                         var getter = eventType.GetGetterSPI(propertyName);
                         if (getter == null) {
                             throw new ExprValidationException(
-                                "For context '" + validationEnv.ContextName + "' property name '" + propertyName + "' not found on type " + eventType.Name);
+                                "For context '" +
+                                validationEnv.ContextName +
+                                "' property name '" +
+                                propertyName +
+                                "' not found on type " +
+                                eventType.Name);
                         }
+
                         getters[i] = getter;
                         getterTypes[i] = eventType.GetPropertyType(propertyName);
                         serdes[i] = validationEnv.Services.SerdeResolver.SerdeForFilter(
-                            getterTypes[i], validationEnv.StatementRawInfo);
+                            getterTypes[i],
+                            validationEnv.StatementRawInfo);
                     }
 
                     partition.Getters = getters;
@@ -305,27 +340,35 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
                     }
                 }
 
+                validationEnv.Services.StateMgmtSettingsProvider.Context
+                    .FilterContextKeyed(nestingLevel, fabricCharge, segmented.Items);
+
                 // plan multi-key, make sure we use the same multikey for all items
-                MultiKeyPlan multiKeyPlan = MultiKeyPlanner.PlanMultiKey(
-                    getterTypes, false, @base.StatementRawInfo, validationEnv.Services.SerdeResolver);
+                var multiKeyPlan = MultiKeyPlanner.PlanMultiKey(
+                    getterTypes,
+                    false,
+                    _base.StatementRawInfo,
+                    validationEnv.Services.SerdeResolver);
                 additionalForgeables.AddAll(multiKeyPlan.MultiKeyForgeables);
-                foreach (ContextSpecKeyedItem partition in segmented.Items) {
+                foreach (var partition in segmented.Items) {
                     partition.KeyMultiKey = multiKeyPlan.ClassRef;
                 }
+
                 segmented.MultiKeyClassRef = multiKeyPlan.ClassRef;
-                
+
                 if (segmented.OptionalInit != null) {
                     asNames.Clear();
                     foreach (var initCondition in segmented.OptionalInit) {
-                        ContextDetailMatchPair pair = ValidateRewriteContextCondition(
+                        var pair = ValidateRewriteContextCondition(
+                            true,
                             true,
                             nestingLevel,
                             initCondition,
-                            eventTypesReferenced,
                             new MatchEventSpec(),
-                            new EmptySet<string>(),
+                            EmptySet<string>.Instance,
                             validationEnv);
                         additionalForgeables.AddAll(pair.AdditionalForgeables);
+                        fabricCharge.Add(pair.FabricCharge);
 
                         var filterForType = initCondition.FilterSpecCompiled.FilterForEventType;
                         var found = false;
@@ -365,13 +408,15 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
                         if (partition.AliasName != null) {
                             allTags.Add(partition.AliasName);
                             var eventType = partition.FilterSpecCompiled.FilterForEventType;
-                            matchEventSpec.TaggedEventTypes[partition.AliasName] = new Pair<EventType,string>(
-                                eventType, partition.FilterSpecRaw.EventTypeName);
+                            matchEventSpec.TaggedEventTypes.Put(
+                                partition.AliasName,
+                                new Pair<EventType, string>(eventType, partition.FilterSpecRaw.EventTypeName));
                             var serdeForgeables = SerdeEventTypeUtility.Plan(
                                 eventType,
                                 validationEnv.StatementRawInfo,
                                 validationEnv.Services.SerdeEventTypeRegistry,
-                                validationEnv.Services.SerdeResolver);
+                                validationEnv.Services.SerdeResolver,
+                                validationEnv.Services.StateMgmtSettingsProvider);
                             additionalForgeables.AddAll(serdeForgeables);
                         }
                     }
@@ -391,41 +436,37 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
 
                     var endCondition = ValidateRewriteContextCondition(
                         false,
+                        true,
                         nestingLevel,
                         segmented.OptionalTermination,
-                        eventTypesReferenced,
                         matchEventSpec,
                         allTags,
                         validationEnv);
+                    fabricCharge.Add(endCondition.FabricCharge);
                     additionalForgeables.AddAll(endCondition.AdditionalForgeables);
-
                     segmented.OptionalTermination = endCondition.Condition;
                 }
             }
-            else if (contextSpec is ContextSpecCategory) {
+            else if (contextSpec is ContextSpecCategory category) {
                 // compile filter
-                var category = (ContextSpecCategory) contextSpec;
                 ValidateNotTable(category.FilterSpecRaw.EventTypeName, validationEnv.Services);
                 var raw = new FilterStreamSpecRaw(
                     category.FilterSpecRaw,
                     ViewSpec.EMPTY_VIEWSPEC_ARRAY,
                     null,
                     StreamSpecOptions.DEFAULT);
-
                 var compiledDesc = StreamSpecCompiler.CompileFilter(
                     raw,
-                    false,
-                    false,
-                    true,
-                    false,
                     null,
                     validationEnv.StatementRawInfo,
                     validationEnv.Services);
-                var result = (FilterStreamSpecCompiled) compiledDesc.StreamSpecCompiled;
+                var result = (FilterStreamSpecCompiled)compiledDesc.StreamSpecCompiled;
                 additionalForgeables.AddAll(compiledDesc.AdditionalForgeables);
-                
                 category.FilterSpecCompiled = result.FilterSpecCompiled;
-                validationEnv.FilterSpecCompileds.Add(result.FilterSpecCompiled);
+                validationEnv.FilterSpecCompileds.Add(
+                    new FilterSpecTracked(
+                        new CallbackAttributionContextController(nestingLevel),
+                        result.FilterSpecCompiled));
 
                 // compile expressions
                 foreach (var item in category.Items) {
@@ -441,22 +482,21 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
                         StreamSpecOptions.DEFAULT);
                     var compiledDescItems = StreamSpecCompiler.CompileFilter(
                         rawExpr,
-                        false,
-                        false,
-                        true,
-                        false,
                         null,
                         validationEnv.StatementRawInfo,
                         validationEnv.Services);
-                    var compiled = (FilterStreamSpecCompiled) compiledDescItems.StreamSpecCompiled;
+                    var compiled = (FilterStreamSpecCompiled)compiledDescItems.StreamSpecCompiled;
                     additionalForgeables.AddAll(compiledDescItems.AdditionalForgeables);
                     compiled.FilterSpecCompiled.TraverseFilterBooleanExpr(
-                        node => validationEnv.FilterBooleanExpressions.Add(node));
+                        validationEnv.FilterBooleanExpressions.Add);
                     item.FilterPlan = compiled.FilterSpecCompiled.Parameters;
+                    validationEnv.FilterSpecCompileds.Add(
+                        new FilterSpecTracked(
+                            new CallbackAttributionContextController(nestingLevel),
+                            compiled.FilterSpecCompiled));
                 }
             }
-            else if (contextSpec is ContextSpecHash) {
-                var hashed = (ContextSpecHash) contextSpec;
+            else if (contextSpec is ContextSpecHash hashed) {
                 foreach (var hashItem in hashed.Items) {
                     var raw = new FilterStreamSpecRaw(
                         hashItem.FilterSpecRaw,
@@ -464,11 +504,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
                         null,
                         StreamSpecOptions.DEFAULT);
                     ValidateNotTable(hashItem.FilterSpecRaw.EventTypeName, validationEnv.Services);
-
                     var compiledDesc = StreamSpecCompiler.Compile(
                         raw,
-                        eventTypesReferenced,
-                        false,
                         false,
                         true,
                         false,
@@ -477,9 +514,11 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
                         validationEnv.StatementRawInfo,
                         validationEnv.Services);
                     additionalForgeables.AddAll(compiledDesc.AdditionalForgeables);
-                    var result = (FilterStreamSpecCompiled)  compiledDesc.StreamSpecCompiled;
-
-                    validationEnv.FilterSpecCompileds.Add(result.FilterSpecCompiled);
+                    var result = (FilterStreamSpecCompiled)compiledDesc.StreamSpecCompiled;
+                    validationEnv.FilterSpecCompileds.Add(
+                        new FilterSpecTracked(
+                            new CallbackAttributionContextController(nestingLevel),
+                            result.FilterSpecCompiled));
                     hashItem.FilterSpecCompiled = result.FilterSpecCompiled;
 
                     // validate parameters
@@ -491,37 +530,44 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
                         new ExprValidationContextBuilder(
                                 streamTypes,
                                 validationEnv.StatementRawInfo,
-                                validationEnv.Services)
-                            .WithIsFilterExpression(true)
+                                validationEnv.Services).WithIsFilterExpression(true)
                             .Build();
                     ExprNodeUtilityValidate.Validate(
                         ExprNodeOrigin.CONTEXT,
                         Collections.SingletonList(hashItem.Function),
                         validationContext);
                 }
+
+                ContextControllerHashUtil.ValidateContextDesc(
+                    validationEnv.ContextName,
+                    hashed,
+                    validationEnv.StatementRawInfo,
+                    validationEnv.Services);
+                validationEnv.Services.StateMgmtSettingsProvider.Context
+                    .FilterContextHash(nestingLevel, fabricCharge, hashed.Items);
             }
-            else if (contextSpec is ContextSpecInitiatedTerminated) {
-                var def = (ContextSpecInitiatedTerminated) contextSpec;
+            else if (contextSpec is ContextSpecInitiatedTerminated def) {
                 var startCondition = ValidateRewriteContextCondition(
                     true,
+                    false,
                     nestingLevel,
                     def.StartCondition,
-                    eventTypesReferenced,
                     new MatchEventSpec(),
                     new LinkedHashSet<string>(),
                     validationEnv);
                 additionalForgeables.AddAll(startCondition.AdditionalForgeables);
+                fabricCharge.Add(startCondition.FabricCharge);
 
                 var endCondition = ValidateRewriteContextCondition(
                     false,
+                    false,
                     nestingLevel,
                     def.EndCondition,
-                    eventTypesReferenced,
                     startCondition.Matches,
                     startCondition.AllTags,
                     validationEnv);
                 additionalForgeables.AddAll(endCondition.AdditionalForgeables);
-                
+                fabricCharge.Add(endCondition.FabricCharge);
                 def.StartCondition = startCondition.Condition;
                 def.EndCondition = endCondition.Condition;
 
@@ -536,7 +582,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
                         throw new ExprValidationException("Distinct-expressions have not been provided");
                     }
 
-                    var filter = (ContextSpecConditionFilter) startCondition.Condition;
+                    var filter = (ContextSpecConditionFilter)startCondition.Condition;
                     if (filter.OptionalFilterAsName == null) {
                         throw new ExprValidationException(
                             "Distinct-expressions require that a stream name is assigned to the stream using 'as'");
@@ -563,14 +609,13 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
                     var multiKeyPlan = MultiKeyPlanner.PlanMultiKey(
                         distinctExpressions,
                         false,
-                        @base.StatementRawInfo,
+                        _base.StatementRawInfo,
                         validationEnv.Services.SerdeResolver);
                     def.DistinctMultiKey = multiKeyPlan.ClassRef;
                     additionalForgeables.AddAll(multiKeyPlan.MultiKeyForgeables);
                 }
             }
-            else if (contextSpec is ContextNested) {
-                var nested = (ContextNested) contextSpec;
+            else if (contextSpec is ContextNested nested) {
                 var level = 0;
                 ISet<string> namesUsed = new HashSet<string>();
                 namesUsed.Add(validationEnv.ContextName);
@@ -586,8 +631,13 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
 
                     namesUsed.Add(nestedContext.ContextName);
 
-                    var forgeables = ValidateContextDetail(nestedContext.ContextDetail, level, validationEnv);
-                    additionalForgeables.AddAll(forgeables);
+                    var result = ValidateContextDetail(
+                        nestedContext.ContextDetail,
+                        level,
+                        validationEnv);
+                    additionalForgeables.AddAll(result.AdditionalForgables);
+                    fabricCharge.Add(result.FabricCharge);
+
                     level++;
                 }
             }
@@ -595,12 +645,12 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
                 throw new IllegalStateException("Unrecognized context detail " + contextSpec);
             }
 
-            return additionalForgeables;
+            return new ValidateContextDetailResult(additionalForgeables, fabricCharge);
         }
 
-        private Pair<FilterSpecCompiled, IList<StmtClassForgeableFactory>> CompilePartitionedFilterSpec(
+        private Pair<FilterSpecCompiled, IList<StmtClassForgeableFactory>> CompilePartitonedFilterSpec(
             FilterSpecRaw filterSpecRaw,
-            ISet<string> eventTypesReferenced,
+            int nestingLevel,
             CreateContextValidationEnv validationEnv)
         {
             ValidateNotTable(filterSpecRaw.EventTypeName, validationEnv.Services);
@@ -611,8 +661,6 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
                 StreamSpecOptions.DEFAULT);
             var compiledDesc = StreamSpecCompiler.Compile(
                 raw,
-                eventTypesReferenced,
-                false,
                 false,
                 true,
                 false,
@@ -625,10 +673,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
             }
 
             var spec = filters.FilterSpecCompiled;
-            validationEnv.FilterSpecCompileds.Add(spec);
-            return new Pair<FilterSpecCompiled, IList<StmtClassForgeableFactory>>(
-                spec,
-                compiledDesc.AdditionalForgeables);
+            validationEnv.FilterSpecCompileds.Add(
+                new FilterSpecTracked(new CallbackAttributionContextController(nestingLevel), spec));
+            return new Pair<FilterSpecCompiled, IList<StmtClassForgeableFactory>>(spec, compiledDesc.AdditionalForgeables);
         }
 
         private void ValidateNotTable(
@@ -660,16 +707,15 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
             string contextName,
             ContextSpec contextDetail)
         {
-            if (!(contextDetail is ContextNested)) {
+            if (!(contextDetail is ContextNested nested)) {
                 var factoryEnv = new ContextControllerFactoryEnv(
                     contextName,
                     contextName,
                     1,
                     1);
-                return new[] {Make(factoryEnv, contextDetail)};
+                return new ContextControllerFactoryForge[] { Make(factoryEnv, contextDetail) };
             }
 
-            var nested = (ContextNested) contextDetail;
             var forges = new ContextControllerFactoryForge[nested.Contexts.Count];
             var nestingLevel = 1;
             foreach (var desc in nested.Contexts) {
@@ -690,19 +736,19 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
             ContextSpec detail)
         {
             ContextControllerFactoryForge forge;
-            if (detail is ContextSpecInitiatedTerminated) {
+            if (detail is ContextSpecInitiatedTerminated terminated) {
                 forge = new ContextControllerInitTermFactoryForge(
                     factoryContext,
-                    (ContextSpecInitiatedTerminated) detail);
+                    terminated);
             }
-            else if (detail is ContextSpecKeyed) {
-                forge = new ContextControllerKeyedFactoryForge(factoryContext, (ContextSpecKeyed) detail);
+            else if (detail is ContextSpecKeyed keyed) {
+                forge = new ContextControllerKeyedFactoryForge(factoryContext, keyed);
             }
-            else if (detail is ContextSpecCategory) {
-                forge = new ContextControllerCategoryFactoryForge(factoryContext, (ContextSpecCategory) detail);
+            else if (detail is ContextSpecCategory category) {
+                forge = new ContextControllerCategoryFactoryForge(factoryContext, category);
             }
-            else if (detail is ContextSpecHash) {
-                forge = new ContextControllerHashFactoryForge(factoryContext, (ContextSpecHash) detail);
+            else if (detail is ContextSpecHash hash) {
+                forge = new ContextControllerHashFactoryForge(factoryContext, hash);
             }
             else {
                 throw new UnsupportedOperationException(
@@ -713,18 +759,18 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
         }
 
         private ContextDetailMatchPair ValidateRewriteContextCondition(
-            bool isStartCondition,
+            bool startCondition,
+            bool keyed,
             int nestingLevel,
             ContextSpecCondition endpoint,
-            ISet<string> eventTypesReferenced,
             MatchEventSpec priorMatches,
             ISet<string> priorAllTags,
             CreateContextValidationEnv validationEnv)
         {
-            if (endpoint is ContextSpecConditionCrontab) {
-                var crontab = (ContextSpecConditionCrontab) endpoint;
+            var fabricCharge = validationEnv.Services.StateMgmtSettingsProvider.NewCharge();
+            if (endpoint is ContextSpecConditionCrontab crontab) {
                 var forgesPerCrontab = new ExprForge[crontab.Crontabs.Count][];
-                for (int i = 0; i < crontab.Crontabs.Count; i++) {
+                for (var i = 0; i < crontab.Crontabs.Count; i++) {
                     var item = crontab.Crontabs[i];
                     var forges = ScheduleExpressionUtil.CrontabScheduleValidate(
                         ExprNodeOrigin.CONTEXTCONDITION,
@@ -734,17 +780,21 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
                         validationEnv.Services);
                     forgesPerCrontab[i] = forges;
                 }
+
                 crontab.ForgesPerCrontab = forgesPerCrontab;
-                validationEnv.ScheduleHandleCallbackProviders.Add(crontab);
+                var tracked = new ScheduleHandleTracked(
+                    new CallbackAttributionContextCondition(nestingLevel, startCondition),
+                    crontab);
+                validationEnv.ScheduleHandleCallbackProviders.Add(tracked);
                 return new ContextDetailMatchPair(
                     crontab,
                     new MatchEventSpec(),
                     new LinkedHashSet<string>(),
-                    EmptyList<StmtClassForgeableFactory>.Instance);
+                    EmptyList<StmtClassForgeableFactory>.Instance, 
+                    fabricCharge);
             }
 
-            if (endpoint is ContextSpecConditionTimePeriod) {
-                var timePeriod = (ContextSpecConditionTimePeriod) endpoint;
+            if (endpoint is ContextSpecConditionTimePeriod timePeriod) {
                 var validationContext = new ExprValidationContextBuilder(
                     new StreamTypeServiceImpl(false),
                     validationEnv.StatementRawInfo,
@@ -762,47 +812,41 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
                     }
                 }
 
-                validationEnv.ScheduleHandleCallbackProviders.Add(timePeriod);
+                var tracked = new ScheduleHandleTracked(
+                    new CallbackAttributionContextCondition(nestingLevel, startCondition),
+                    timePeriod);
+                validationEnv.ScheduleHandleCallbackProviders.Add(tracked);
                 return new ContextDetailMatchPair(
                     timePeriod,
                     new MatchEventSpec(),
                     new LinkedHashSet<string>(),
-                    EmptyList<StmtClassForgeableFactory>.Instance);
+                    EmptyList<StmtClassForgeableFactory>.Instance, 
+                    fabricCharge);
             }
 
-            if (endpoint is ContextSpecConditionPattern) {
-                var pattern = (ContextSpecConditionPattern) endpoint;
-                var matches = ValidatePatternContextConditionPattern(
-                    isStartCondition,
-                    nestingLevel,
-                    pattern,
-                    eventTypesReferenced,
-                    priorMatches,
-                    priorAllTags,
-                    validationEnv);
-
+            if (endpoint is ContextSpecConditionPattern condition) {
                 var validatedDesc = ValidatePatternContextConditionPattern(
-                    isStartCondition,
+                    startCondition,
+                    keyed,
                     nestingLevel,
-                    pattern,
-                    eventTypesReferenced,
+                    condition,
                     priorMatches,
                     priorAllTags,
                     validationEnv);
                 return new ContextDetailMatchPair(
-                    pattern,
+                    condition,
                     validatedDesc.MatchEventSpec,
                     validatedDesc.AllTags,
-                    validatedDesc.AdditionalForgeables);
+                    validatedDesc.AdditionalForgeables,
+                    validatedDesc.FabricCharge);
             }
 
-            if (endpoint is ContextSpecConditionFilter) {
-                var filter = (ContextSpecConditionFilter) endpoint;
+            if (endpoint is ContextSpecConditionFilter filter) {
                 ValidateNotTable(filter.FilterSpecRaw.EventTypeName, validationEnv.Services);
 
                 // compile as filter if there are no prior match to consider
                 if (priorMatches == null ||
-                    priorMatches.ArrayEventTypes.IsEmpty() && priorMatches.TaggedEventTypes.IsEmpty()) {
+                    (priorMatches.ArrayEventTypes.IsEmpty() && priorMatches.TaggedEventTypes.IsEmpty())) {
                     var rawExpr = new FilterStreamSpecRaw(
                         filter.FilterSpecRaw,
                         ViewSpec.EMPTY_VIEWSPEC_ARRAY,
@@ -810,8 +854,6 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
                         StreamSpecOptions.DEFAULT);
                     var compiledDesc = StreamSpecCompiler.Compile(
                         rawExpr,
-                        eventTypesReferenced,
-                        false,
                         false,
                         true,
                         false,
@@ -819,8 +861,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
                         0,
                         validationEnv.StatementRawInfo,
                         validationEnv.Services);
-                    var compiled = (FilterStreamSpecCompiled) compiledDesc.StreamSpecCompiled;
-
+                    var compiled = (FilterStreamSpecCompiled)compiledDesc.StreamSpecCompiled;
                     filter.FilterSpecCompiled = compiled.FilterSpecCompiled;
                     var matchEventSpec = new MatchEventSpec();
                     var filterForType = compiled.FilterSpecCompiled.FilterForEventType;
@@ -832,48 +873,62 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
                         allTags.Add(filter.OptionalFilterAsName);
                     }
 
-                    validationEnv.FilterSpecCompileds.Add(compiled.FilterSpecCompiled);
+                    validationEnv.FilterSpecCompileds.Add(
+                        new FilterSpecTracked(
+                            new CallbackAttributionContextCondition(nestingLevel, startCondition),
+                            compiled.FilterSpecCompiled));
                     var serdeForgeables = SerdeEventTypeUtility.Plan(
                         filter.FilterSpecCompiled.FilterForEventType,
                         validationEnv.StatementRawInfo,
                         validationEnv.Services.SerdeEventTypeRegistry,
-                        validationEnv.Services.SerdeResolver);
-                    var allForgeables = compiledDesc.AdditionalForgeables
+                        validationEnv.Services.SerdeResolver,
+                        validationEnv.Services.StateMgmtSettingsProvider);
+                    IList<StmtClassForgeableFactory> allForgeables = compiledDesc.AdditionalForgeables
                         .Concat(serdeForgeables)
                         .ToList();
-                    return new ContextDetailMatchPair(filter, matchEventSpec, allTags, allForgeables);
+                    return new ContextDetailMatchPair(filter, matchEventSpec, allTags, allForgeables, fabricCharge);
                 }
 
                 // compile as pattern if there are prior matches to consider, since this is a type of followed-by relationship
-                EvalForgeNode forgeNode = new EvalFilterForgeNode(validationEnv.Services.IsAttachPatternText, filter.FilterSpecRaw, filter.OptionalFilterAsName, 0);
-                var pattern = new ContextSpecConditionPattern(forgeNode, true, false);
+                EvalForgeNode forgeNode = new EvalFilterForgeNode(
+                    validationEnv.Services.IsAttachPatternText,
+                    filter.FilterSpecRaw,
+                    filter.OptionalFilterAsName,
+                    0);
+                var pattern = new ContextSpecConditionPattern(forgeNode, true, false, null);
                 var validated = ValidatePatternContextConditionPattern(
-                    isStartCondition,
+                    startCondition,
+                    keyed,
                     nestingLevel,
                     pattern,
-                    eventTypesReferenced,
                     priorMatches,
                     priorAllTags,
                     validationEnv);
-                return new ContextDetailMatchPair(pattern, validated.MatchEventSpec, validated.AllTags, validated.AdditionalForgeables);
+                return new ContextDetailMatchPair(
+                    pattern,
+                    validated.MatchEventSpec,
+                    validated.AllTags,
+                    validated.AdditionalForgeables,
+                    validated.FabricCharge);
             }
-
-            if (endpoint is ContextSpecConditionImmediate || endpoint is ContextSpecConditionNever) {
+            else if (endpoint is ContextSpecConditionImmediate || endpoint is ContextSpecConditionNever) {
                 return new ContextDetailMatchPair(
                     endpoint,
                     new MatchEventSpec(),
-                    new LinkedHashSet<String>(),
-                    EmptyList<StmtClassForgeableFactory>.Instance);
+                    new LinkedHashSet<string>(),
+                    EmptyList<StmtClassForgeableFactory>.Instance, 
+                    fabricCharge);
             }
-
-            throw new IllegalStateException("Unrecognized endpoint type " + endpoint);
+            else {
+                throw new IllegalStateException("Unrecognized endpoint type " + endpoint);
+            }
         }
 
         private PatternValidatedDesc ValidatePatternContextConditionPattern(
-            bool isStartCondition,
+            bool startCondition,
+            bool keyed,
             int nestingLevel,
             ContextSpecConditionPattern pattern,
-            ISet<string> eventTypesReferenced,
             MatchEventSpec priorMatches,
             ISet<string> priorAllTags,
             CreateContextValidationEnv validationEnv)
@@ -885,77 +940,89 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
                 StreamSpecOptions.DEFAULT,
                 false,
                 false);
+            var streamNumber = GetStreamNumberForNestingLevel(nestingLevel, startCondition);
+            IList<StmtClassForgeableFactory> additionalForgeables = new List<StmtClassForgeableFactory>(2);
             var compiledDesc = StreamSpecCompiler.CompilePatternWTags(
                 raw,
-                eventTypesReferenced,
-                false,
                 priorMatches,
                 priorAllTags,
                 false,
                 true,
                 false,
-                0,
+                streamNumber,
                 validationEnv.StatementRawInfo,
                 validationEnv.Services);
-            var compiled = (PatternStreamSpecCompiled) compiledDesc.StreamSpecCompiled;
-
+            additionalForgeables.AddAll(compiledDesc.AdditionalForgeables);
+            var compiled = (PatternStreamSpecCompiled)compiledDesc.StreamSpecCompiled;
             pattern.PatternCompiled = compiled;
+
             pattern.PatternContext = new PatternContext(
-                0,
+                streamNumber,
                 compiled.MatchedEventMapMeta,
                 true,
                 nestingLevel,
-                isStartCondition);
+                startCondition);
 
             var forges = compiled.Root.CollectFactories();
             foreach (var forge in forges) {
                 forge.CollectSelfFilterAndSchedule(
+                    factoryNodeId => new CallbackAttributionContextConditionPattern(
+                        nestingLevel,
+                        startCondition,
+                        factoryNodeId),
                     validationEnv.FilterSpecCompileds,
                     validationEnv.ScheduleHandleCallbackProviders);
             }
 
-            var spec = new MatchEventSpec(compiled.TaggedEventTypes, compiled.ArrayEventTypes);
-            return new PatternValidatedDesc(spec, compiled.AllTags, compiledDesc.AdditionalForgeables);
-        }
+            MatchEventSpec matchEventSpec;
+            ISet<string> allTags;
+            if (pattern.AsName == null) {
+                matchEventSpec = new MatchEventSpec(compiled.TaggedEventTypes, compiled.ArrayEventTypes);
+                allTags = compiled.AllTags;
+            }
+            else {
+                var patternTags = FilterSpecCompilerTagUtil.GetTagNumbers(pattern.PatternRaw);
+                pattern.PatternTags = patternTags.ToArray();
 
-        internal class ContextDetailMatchPair
-        {
-            internal ContextDetailMatchPair(
-                ContextSpecCondition condition,
-                MatchEventSpec matches,
-                ISet<string> allTags,
-                IList<StmtClassForgeableFactory> additionalForgeables)
-            {
-                Condition = condition;
-                Matches = matches;
-                AllTags = allTags;
-                AdditionalForgeables = additionalForgeables;
+                var streamNameForNaming = GetStreamNumberForNestingLevel(nestingLevel, startCondition);
+                var patternType = ViewableActivatorPatternForge.MakeRegisterPatternType(
+                    validationEnv.StatementRawInfo.ModuleName,
+                    streamNameForNaming,
+                    patternTags,
+                    pattern.PatternCompiled,
+                    validationEnv.Services);
+                var serdeForgeables = SerdeEventTypeUtility.Plan(
+                    patternType,
+                    validationEnv.StatementRawInfo,
+                    validationEnv.Services.SerdeEventTypeRegistry,
+                    validationEnv.Services.SerdeResolver,
+                    validationEnv.Services.StateMgmtSettingsProvider);
+                additionalForgeables.AddAll(serdeForgeables);
+
+                pattern.AsNameEventType = patternType;
+
+                matchEventSpec = new MatchEventSpec();
+                matchEventSpec.TaggedEventTypes.Put(
+                    pattern.AsName,
+                    new Pair<EventType, string>(patternType, patternType.Name));
+                allTags = new LinkedHashSet<string>();
+                allTags.Add(pattern.AsName);
             }
 
-            internal ContextSpecCondition Condition { get; }
-
-            internal MatchEventSpec Matches { get; }
-
-            internal ISet<string> AllTags { get; }
-            
-            internal IList<StmtClassForgeableFactory> AdditionalForgeables { get; }
-        }
-
-        internal class PatternValidatedDesc
-        {
-            internal MatchEventSpec MatchEventSpec { get; }
-            internal ISet<String> AllTags { get; }
-            internal IList<StmtClassForgeableFactory> AdditionalForgeables { get; }
-
-            internal PatternValidatedDesc(
-                MatchEventSpec matchEventSpec,
-                ISet<String> allTags,
-                IList<StmtClassForgeableFactory> additionalForgeables)
-            {
-                this.MatchEventSpec = matchEventSpec;
-                this.AllTags = allTags;
-                this.AdditionalForgeables = additionalForgeables;
-            }
+            var fabricCharge = validationEnv.Services.StateMgmtSettingsProvider.NewCharge();
+            var attributionKey = new PatternAttributionKeyContextCondition(
+                validationEnv.ContextName,
+                validationEnv.ContextVisibility,
+                validationEnv.StatementRawInfo.ModuleName,
+                nestingLevel,
+                startCondition,
+                keyed);
+            validationEnv.Services.StateMgmtSettingsProvider.Pattern(
+                fabricCharge,
+                attributionKey,
+                compiled,
+                validationEnv.StatementRawInfo);
+            return new PatternValidatedDesc(matchEventSpec, allTags, additionalForgeables, fabricCharge);
         }
     }
 } // end of namespace

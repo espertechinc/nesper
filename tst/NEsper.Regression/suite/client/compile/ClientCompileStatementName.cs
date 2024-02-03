@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -8,11 +8,13 @@
 
 using System.Collections.Generic;
 
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compiler.client;
 using com.espertech.esper.compiler.client.option;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.client.compile
 {
@@ -21,7 +23,9 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            Withe(execs);
+#if REGRESSION_EXECUTIONS
+            With(e)(execs);
+#endif
             return execs;
         }
 
@@ -42,16 +46,21 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 var epl = "select * from SupportBean";
                 var compiled = env.Compile(epl, args);
 
-                StatementNameContext ctx = MyStatementNameResolver.Contexts[0];
-                Assert.AreEqual(epl, ctx.EplSupplier.Invoke());
-                Assert.AreEqual(null, ctx.StatementName);
-                Assert.AreEqual(null, ctx.ModuleName);
-                Assert.AreEqual(0, ctx.Annotations.Length);
-                Assert.AreEqual(0, ctx.StatementNumber);
+                var ctx = MyStatementNameResolver.Contexts[0];
+                ClassicAssert.AreEqual(epl, ctx.EplSupplier.Invoke());
+                ClassicAssert.AreEqual(null, ctx.StatementName);
+                ClassicAssert.AreEqual(null, ctx.ModuleName);
+                ClassicAssert.AreEqual(0, ctx.Annotations.Length);
+                ClassicAssert.AreEqual(0, ctx.StatementNumber);
 
                 env.Deploy(compiled);
-                Assert.AreEqual("hello", env.Statement("hello").Name);
+                env.AssertStatement("hello", statement => ClassicAssert.AreEqual("hello", statement.Name));
                 env.UndeployAll();
+            }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.COMPILEROPS);
             }
         }
 

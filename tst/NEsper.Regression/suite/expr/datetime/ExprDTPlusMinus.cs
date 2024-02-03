@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -14,15 +14,14 @@ using com.espertech.esper.compat;
 using com.espertech.esper.compat.datetime;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
-using com.espertech.esper.regressionlib.support.util;
 
 namespace com.espertech.esper.regressionlib.suite.expr.datetime
 {
     public class ExprDTPlusMinus
     {
-        public static IList<RegressionExecution> Executions()
+        public static ICollection<RegressionExecution> Executions()
         {
-            var execs = new List<RegressionExecution>();
+            IList<RegressionExecution> execs = new List<RegressionExecution>();
             WithSimple(execs);
             WithTimePeriod(execs);
             return execs;
@@ -42,12 +41,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             return execs;
         }
 
-        internal class ExprDTPlusMinusSimple : RegressionExecution
+        private class ExprDTPlusMinusSimple : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                env.CompileDeploy("@Name('var') create variable long varmsec", path);
+                env.CompileDeploy("@name('var') @public create variable long varmsec", path);
                 var startTime = "2002-05-30T09:00:00.000";
                 env.AdvanceTime(DateTimeParsingFunctions.ParseDefaultMSec(startTime));
 
@@ -55,7 +54,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     "val1a", "val1b", "val1c", "val1d", "val1e",
                     "val2a", "val2b", "val2c", "val2d", "val2e",
                 };
-                var epl = "@Name('s0') select " +
+                var epl = "@name('s0') select " +
                           "current_timestamp.plus(varmsec) as val1a," +
                           "DateTimeEx.plus(varmsec) as val1b," +
                           "DateTimeOffset.plus(varmsec) as val1c," +
@@ -67,10 +66,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                           "DateTime.minus(varmsec) as val2d," +
                           "LongDate.minus(varmsec) as val2e" +
                           " from SupportDateTime";
-
                 env.CompileDeploy(epl, path).AddListener("s0");
-                LambdaAssertionUtil.AssertTypes(
-                    env.Statement("s0").EventType,
+                env.AssertStmtTypes(
+                    "s0",
                     fields,
                     new[] {
                         typeof(long?), typeof(DateTimeEx), typeof(DateTimeOffset?), typeof(DateTime?), typeof(long?),
@@ -78,30 +76,22 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     });
 
                 env.SendEventBean(SupportDateTime.Make(null));
-
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
+                env.AssertPropsNew(
+                    "s0",
                     fields,
-                    new[] {
+                    new object[] {
                         SupportDateTime.GetValueCoerced(startTime, "long"), null, null, null, null,
-                        SupportDateTime.GetValueCoerced(startTime, "long"), null, null, null, null,
+                        SupportDateTime.GetValueCoerced(startTime, "long"), null, null, null, null
                     });
 
                 var expectedPlus = SupportDateTime.GetArrayCoerced(startTime, "long", "dtx", "dto", "date", "long");
                 var expectedMinus = SupportDateTime.GetArrayCoerced(startTime, "long", "dtx", "dto", "date", "long");
                 env.SendEventBean(SupportDateTime.Make(startTime));
+                env.AssertPropsNew("s0", fields, EPAssertionUtil.ConcatenateArray(expectedPlus, expectedMinus));
 
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    EPAssertionUtil.ConcatenateArray(
-                        expectedPlus,
-                        expectedMinus));
-
-                env.Runtime.VariableService.SetVariableValue(env.DeploymentId("var"), "varmsec", 1000);
+                env.RuntimeSetVariable("var", "varmsec", 1000);
                 env.SendEventBean(SupportDateTime.Make(startTime));
-
-                //System.out.println("==-> " + SupportDateTime.print(env.Listener("s0").assertOneGetNew().Get("val4")));
+                //Console.WriteLine("===> " + SupportDateTime.print(listener.assertOneGetNew().get("val4")));
                 expectedPlus = SupportDateTime.GetArrayCoerced(
                     "2002-05-30T09:00:01.000",
                     "long",
@@ -116,18 +106,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     "dto",
                     "date",
                     "long");
+                env.AssertPropsNew("s0", fields, EPAssertionUtil.ConcatenateArray(expectedPlus, expectedMinus));
 
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    EPAssertionUtil.ConcatenateArray(
-                        expectedPlus,
-                        expectedMinus));
-
-                env.Runtime.VariableService.SetVariableValue(
-                    env.DeploymentId("var"),
-                    "varmsec",
-                    2 * 24 * 60 * 60 * 1000);
+                env.RuntimeSetVariable("var", "varmsec", 2 * 24 * 60 * 60 * 1000);
                 env.SendEventBean(SupportDateTime.Make(startTime));
                 expectedMinus = SupportDateTime.GetArrayCoerced(
                     "2002-05-28T09:00:00.000",
@@ -144,18 +125,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     "date",
                     "long");
 
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    EPAssertionUtil.ConcatenateArray(
-                        expectedPlus,
-                        expectedMinus));
+                env.AssertPropsNew("s0", fields, EPAssertionUtil.ConcatenateArray(expectedPlus, expectedMinus));
 
                 env.UndeployAll();
             }
         }
 
-        internal class ExprDTPlusMinusTimePeriod : RegressionExecution
+        private class ExprDTPlusMinusTimePeriod : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
@@ -175,7 +151,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     "val2d",
                     "val2e"
                 };
-                var eplFragment = "@Name('s0') select " +
+                var eplFragment = "@name('s0') select " +
                                   "current_timestamp.plus(1 hour 10 sec 20 msec) as val1a," +
                                   "DateTimeEx.plus(1 hour 10 sec 20 msec) as val1b," +
                                   "DateTimeOffset.plus(1 hour 10 sec 20 msec) as val1c," +
@@ -187,10 +163,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                                   "DateTime.minus(1 hour 10 sec 20 msec) as val2d," +
                                   "LongDate.minus(1 hour 10 sec 20 msec) as val2e" +
                                   " from SupportDateTime";
-
                 env.CompileDeploy(eplFragment).AddListener("s0");
-                LambdaAssertionUtil.AssertTypes(
-                    env.Statement("s0").EventType,
+                env.AssertStmtTypes(
+                    "s0",
                     fields,
                     new[] {
                         typeof(long?), typeof(DateTimeEx), typeof(DateTimeOffset?), typeof(DateTime?), typeof(long?),
@@ -213,10 +188,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     "date",
                     "long");
 
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    EPAssertionUtil.ConcatenateArray(expectedPlus, expectedMinus));
+                env.AssertPropsNew("s0", fields, EPAssertionUtil.ConcatenateArray(expectedPlus, expectedMinus));
 
                 env.SendEventBean(SupportDateTime.Make(null));
                 expectedPlus = SupportDateTime.GetArrayCoerced(
@@ -233,11 +205,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     "null",
                     "null",
                     "null");
-
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    EPAssertionUtil.ConcatenateArray(expectedPlus, expectedMinus));
+                env.AssertPropsNew("s0", fields, EPAssertionUtil.ConcatenateArray(expectedPlus, expectedMinus));
 
                 env.UndeployAll();
             }

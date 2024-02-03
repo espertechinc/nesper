@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -46,7 +46,10 @@ namespace com.espertech.esper.common.@internal.util
         public Func<CodegenExpression, Type, CodegenMethodScope, CodegenClassScope, CodegenExpression> ProcCodegen;
         public Func<CodegenExpression, CodegenExpression> ProcCodegenInput;
 
-        public object Cast(object @object) => ProcCast?.Invoke(@object);
+        public object Cast(object @object)
+        {
+            return ProcCast?.Invoke(@object);
+        }
 
         public bool IsNumericCast { get; set; }
 

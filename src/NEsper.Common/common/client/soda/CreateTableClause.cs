@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -15,7 +15,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Represents a create-variable syntax for creating a new variable.
     /// </summary>
-    [Serializable]
     public class CreateTableClause
     {
         private string tableName;
@@ -54,20 +53,18 @@ namespace com.espertech.esper.common.client.soda
         /// Returns the table name
         /// </summary>
         /// <returns>table name</returns>
-        public string TableName
-        {
+        public string TableName {
             get => tableName;
-            set { tableName = value; }
+            set => tableName = value;
         }
 
         /// <summary>
         /// Returns the table columns
         /// </summary>
         /// <returns>table columns</returns>
-        public IList<CreateTableColumn> Columns
-        {
+        public IList<CreateTableColumn> Columns {
             get => columns;
-            set { columns = value; }
+            set => columns = value;
         }
 
         /// <summary>
@@ -79,9 +76,8 @@ namespace com.espertech.esper.common.client.soda
             writer.Write("create table ");
             writer.Write(tableName);
             writer.Write(" (");
-            string delimiter = "";
-            foreach (CreateTableColumn col in columns)
-            {
+            var delimiter = "";
+            foreach (var col in columns) {
                 writer.Write(delimiter);
                 col.ToEPL(writer);
                 delimiter = ", ";

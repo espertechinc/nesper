@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 requiredType == typeof(object) ? typeof(object) : underlyingType,
                 typeof(ExprEvaluatorWildcard),
                 codegenClassScope);
-            var refEPS = exprSymbol.GetAddEPS(methodNode);
+            var refEPS = exprSymbol.GetAddEps(methodNode);
             methodNode.Block
                 .DeclareVar<EventBean>("@event", ArrayAtIndex(refEPS, Constant(0)))
                 .IfRefNullReturnNull("@event");

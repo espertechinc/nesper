@@ -2,6 +2,7 @@
 using System.Reflection;
 
 using com.espertech.esper.common.client.configuration;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.regressionrun.runner;
 
 using NUnit.Framework;
@@ -14,6 +15,8 @@ namespace com.espertech.esper.regressionrun.suite.core
         private readonly Action<Configuration> _configure;
 
         internal RegressionSession _session;
+
+        public RegressionSession Session => _session;
 
         public AbstractTestBase(Action<Configuration> configure)
         {

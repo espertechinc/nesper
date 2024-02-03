@@ -1,12 +1,11 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
@@ -17,18 +16,17 @@ using com.espertech.esper.common.client.soda;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.util;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
 using com.espertech.esper.compiler.client;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
+using com.espertech.esper.regressionlib.support.client;
 using com.espertech.esper.runtime.client;
 using com.espertech.esper.runtime.client.option;
 
 using NUnit.Framework;
-
-using static com.espertech.esper.regressionlib.framework.SupportMessageAssertUtil;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.client.compile
 {
@@ -56,11 +54,21 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             WithSubstParamResolverContext(execs);
             WithSubstParamMultiStmt(execs);
             WithSubstParamArray(execs);
-            WithODAInvalidConstantUseSubsParamsInstead(execs);
+            WithSODAInvalidConstantUseSubsParamsInstead(execs);
+            WithSubstParamGenericType(execs);
             return execs;
         }
 
-        public static IList<RegressionExecution> WithODAInvalidConstantUseSubsParamsInstead(IList<RegressionExecution> execs = null)
+        public static IList<RegressionExecution> WithSubstParamGenericType(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientCompileSubstParamGenericType(false));
+            execs.Add(new ClientCompileSubstParamGenericType(true));
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSODAInvalidConstantUseSubsParamsInstead(
+            IList<RegressionExecution> execs = null)
         {
             execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ClientCompileSODAInvalidConstantUseSubsParamsInstead());
@@ -89,28 +97,32 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             return execs;
         }
 
-        public static IList<RegressionExecution> WithSubstParamInvalidParametersTyped(IList<RegressionExecution> execs = null)
+        public static IList<RegressionExecution> WithSubstParamInvalidParametersTyped(
+            IList<RegressionExecution> execs = null)
         {
             execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ClientCompileSubstParamInvalidParametersTyped());
             return execs;
         }
 
-        public static IList<RegressionExecution> WithSubstParamInvalidParametersUntyped(IList<RegressionExecution> execs = null)
+        public static IList<RegressionExecution> WithSubstParamInvalidParametersUntyped(
+            IList<RegressionExecution> execs = null)
         {
             execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ClientCompileSubstParamInvalidParametersUntyped());
             return execs;
         }
 
-        public static IList<RegressionExecution> WithSubstParamInvalidInsufficientValues(IList<RegressionExecution> execs = null)
+        public static IList<RegressionExecution> WithSubstParamInvalidInsufficientValues(
+            IList<RegressionExecution> execs = null)
         {
             execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ClientCompileSubstParamInvalidInsufficientValues());
             return execs;
         }
 
-        public static IList<RegressionExecution> WithSubstParamInvalidNoCallback(IList<RegressionExecution> execs = null)
+        public static IList<RegressionExecution> WithSubstParamInvalidNoCallback(
+            IList<RegressionExecution> execs = null)
         {
             execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ClientCompileSubstParamInvalidNoCallback());
@@ -138,21 +150,24 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             return execs;
         }
 
-        public static IList<RegressionExecution> WithSubstParamSimpleNoParameter(IList<RegressionExecution> execs = null)
+        public static IList<RegressionExecution> WithSubstParamSimpleNoParameter(
+            IList<RegressionExecution> execs = null)
         {
             execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ClientCompileSubstParamSimpleNoParameter());
             return execs;
         }
 
-        public static IList<RegressionExecution> WithSubstParamSimpleTwoParameterWhere(IList<RegressionExecution> execs = null)
+        public static IList<RegressionExecution> WithSubstParamSimpleTwoParameterWhere(
+            IList<RegressionExecution> execs = null)
         {
             execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ClientCompileSubstParamSimpleTwoParameterWhere());
             return execs;
         }
 
-        public static IList<RegressionExecution> WithSubstParamSimpleTwoParameterFilter(IList<RegressionExecution> execs = null)
+        public static IList<RegressionExecution> WithSubstParamSimpleTwoParameterFilter(
+            IList<RegressionExecution> execs = null)
         {
             execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ClientCompileSubstParamSimpleTwoParameterFilter());
@@ -166,7 +181,8 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             return execs;
         }
 
-        public static IList<RegressionExecution> WithSubstParamSimpleOneParameterWCast(IList<RegressionExecution> execs = null)
+        public static IList<RegressionExecution> WithSubstParamSimpleOneParameterWCast(
+            IList<RegressionExecution> execs = null)
         {
             execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ClientCompileSubstParamSimpleOneParameterWCast());
@@ -180,7 +196,8 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             return execs;
         }
 
-        public static IList<RegressionExecution> WithSubstParamUnnamedParameterWType(IList<RegressionExecution> execs = null)
+        public static IList<RegressionExecution> WithSubstParamUnnamedParameterWType(
+            IList<RegressionExecution> execs = null)
         {
             execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ClientCompileSubstParamUnnamedParameterWType(false));
@@ -203,132 +220,59 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             return execs;
         }
 
-        private static void RunSimpleTwoParameter(
-            RegressionEnvironment env,
-            string stmtText,
-            string statementName,
-            bool compareText)
+        private class ClientCompileSubstParamGenericType : RegressionExecution
         {
-            var compiled = env.Compile(stmtText);
+            private readonly bool soda;
 
-            DeployWithResolver(
-                env,
-                compiled,
-                statementName,
-                prepared => {
-                    prepared.SetObject(1, "e1");
-                    prepared.SetObject(2, 1);
-                });
-            env.AddListener(statementName);
-            if (compareText) {
-                Assert.AreEqual(
-                    "select * from SupportBean(TheString=?::string,IntPrimitive=?::int)",
-                    env.Statement(statementName).GetProperty(StatementProperty.EPL));
+            public ClientCompileSubstParamGenericType(bool soda)
+            {
+                this.soda = soda;
             }
 
-            DeployWithResolver(
-                env,
-                compiled,
-                statementName + "__1",
-                prepared => {
-                    prepared.SetObject(1, "e2");
-                    prepared.SetObject(2, 2);
-                });
-            env.AddListener(statementName + "__1");
-            if (compareText) {
-                Assert.AreEqual(
-                    "select * from SupportBean(TheString=?::string,IntPrimitive=?::int)",
-                    env.Statement(statementName + "__1").GetProperty(StatementProperty.EPL));
+            public void Run(RegressionEnvironment env)
+            {
+                var epl = "@name('s0') select " +
+                          "?:a0:System.Collections.Generic.IList<String> as c0, " +
+                          "?:a1:System.Collections.Generic.IDictionary<String,Integer> as c1 " +
+                          "from SupportBean";
+                var compiled = env.Compile(soda, epl, new CompilerArguments(env.Configuration));
+
+                var param = new SupportPortableDeploySubstitutionParams();
+                param.Add("a0", new List<string>(Arrays.AsList("a"))).Add("a1", Collections.SingletonMap("k1", 10));
+                var options =
+                    new DeploymentOptions().WithStatementSubstitutionParameter(param.SetStatementParameters);
+                env.Deploy(compiled, options).AddListener("s0");
+
+                env.AssertStatement(
+                    "s0",
+                    statement => {
+                        var eventType = statement.EventType;
+                        ClassicAssert.AreEqual(typeof(IList<string>), eventType.GetPropertyType("c0"));
+                        ClassicAssert.AreEqual(typeof(IDictionary<string, int>), eventType.GetPropertyType("c1"));
+                    });
+
+                env.SendEventBean(new SupportBean());
+
+                env.AssertEventNew(
+                    "s0",
+                    @event => {
+                        EPAssertionUtil.AssertEqualsExactOrder(
+                            new object[] { "a" },
+                            @event.Get("c0").UnwrapIntoArray<string>());
+                        EPAssertionUtil.AssertPropsMap(@event.Get("c1").UnwrapStringDictionary(), "k1".Split(","), 10);
+                    });
+
+                env.UndeployAll();
             }
 
-            env.SendEventBean(new SupportBean("e2", 2));
-            Assert.IsFalse(env.Listener(statementName).IsInvoked);
-            Assert.IsTrue(env.Listener(statementName + "__1").GetAndClearIsInvoked());
-
-            env.SendEventBean(new SupportBean("e1", 1));
-            Assert.IsFalse(env.Listener(statementName + "__1").IsInvoked);
-            Assert.IsTrue(env.Listener(statementName).GetAndClearIsInvoked());
-
-            env.SendEventBean(new SupportBean("e1", 2));
-            Assert.IsFalse(env.Listener(statementName).IsInvoked);
-            Assert.IsFalse(env.Listener(statementName + "__1").IsInvoked);
-
-            env.UndeployAll();
-        }
-
-        private static void DeployWithResolver(
-            RegressionEnvironment env,
-            EPCompiled compiled,
-            string statementName,
-            StatementSubstitutionParameterOption resolver)
-        {
-            var options = new DeploymentOptions().WithStatementSubstitutionParameter(resolver);
-            options.StatementNameRuntime = context => statementName;
-            try {
-                env.Deployment.Deploy(compiled, options);
+            public string Name()
+            {
+                return GetType().Name +
+                       "{" +
+                       "soda=" +
+                       soda +
+                       '}';
             }
-            catch (EPDeployException e) {
-                throw new EPRuntimeException(e);
-            }
-        }
-
-        private static void TryInvalidDeployNoCallbackProvided(
-            RegressionEnvironment env,
-            string stmt)
-        {
-            var compiled = env.Compile(stmt);
-            try {
-                env.Deployment.Deploy(compiled);
-                Assert.Fail();
-            }
-            catch (EPDeploySubstitutionParameterException ex) {
-                Assert.AreEqual(-1, ex.RolloutItemNumber);
-                Assert.AreEqual("Substitution parameters have not been provided: Statement 's0' has 1 substitution parameters", ex.Message);
-            }
-            catch (EPDeployException ex) {
-                throw new EPRuntimeException(ex);
-            }
-        }
-
-        private static void TryInvalidSetObject(
-            StatementSubstitutionParameterContext prepared,
-            Consumer<StatementSubstitutionParameterContext> consumer,
-            string message)
-        {
-            try {
-                consumer.Invoke(prepared);
-                Assert.Fail();
-            }
-            catch (EPException ex) {
-                AssertMessage(ex, message);
-            }
-        }
-
-        private static void TryInvalidResolver(
-            RegressionEnvironment env,
-            EPCompiled compiled,
-            string expected,
-            StatementSubstitutionParameterOption resolver)
-        {
-            var options = new DeploymentOptions().WithStatementSubstitutionParameter(resolver);
-            try {
-                env.Deployment.Deploy(compiled, options);
-                Assert.Fail();
-            }
-            catch (EPDeploySubstitutionParameterException e) {
-                AssertMessage(e.Message, expected);
-            }
-            catch (EPDeployException e) {
-                throw new EPRuntimeException(e);
-            }
-        }
-
-        private static void DeployWithOptionsWUndeploy(
-            RegressionEnvironment env,
-            EPCompiled compiled,
-            DeploymentOptions options)
-        {
-            env.Deploy(compiled, options).UndeployAll();
         }
 
         private class ClientCompileSODAInvalidConstantUseSubsParamsInstead : RegressionExecution
@@ -341,8 +285,8 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 );
 
                 var model = new EPStatementObjectModel()
-                    .SetSelect(SelectClause.CreateWildcard())
-                    .SetFrom(FromClause.Create(FilterStream.Create("SupportObjectCtor", expression)));
+                    .WithSelectClause(SelectClause.CreateWildcard())
+                    .WithFromClause(FromClause.Create(FilterStream.Create("SupportObjectCtor", expression)));
                 try {
                     var module = new Module();
                     module.Items.Add(new ModuleItem(model));
@@ -350,11 +294,15 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                     Assert.Fail();
                 }
                 catch (EPCompileException ex) {
-                    AssertMessage(
+                    SupportMessageAssertUtil.AssertMessage(
                         ex,
-                        "Exception processing statement: " +
-                        "Invalid constant of type 'System.Object' encountered as the class has no compiler representation, please use substitution parameters instead");
+                        "Exception processing statement: Invalid constant of type 'System.Object' encountered as the class has no compiler representation, please use substitution parameters instead");
                 }
+            }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.INVALIDITY);
             }
         }
 
@@ -369,7 +317,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
 
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select " +
+                var epl = "@name('s0') select " +
                           "?:a0:int[] as c0, " +
                           "?:a1:int[primitive] as c1, " +
                           "?:a2:System.Object[] as c2, " +
@@ -380,48 +328,60 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 EPCompiled compiled;
                 if (soda) {
                     var copy = env.EplToModel(epl);
-                    Assert.AreEqual(epl.Trim(), copy.ToEPL());
+                    ClassicAssert.AreEqual(epl.Trim(), copy.ToEPL());
                     compiled = env.Compile(copy, new CompilerArguments(env.Configuration));
                 }
                 else {
                     compiled = env.Compile(epl);
                 }
 
-                var options = new DeploymentOptions().WithStatementSubstitutionParameter(
-                    _ => {
-                        _.SetObject("a0", new int?[] {1, 2});
-                        _.SetObject("a1", new[] {3, 4});
-                        _.SetObject("a2", new object[] {"a", "b"});
-                        _.SetObject("a3", new[] {new[] {"A"}});
-                        _.SetObject("a4", new[] {new object[] {5, 6}});
+                var @params = new SupportPortableDeploySubstitutionParams();
+                @params.Add("a0", new int?[] { 1, 2 })
+                    .Add("a1", new int[] { 3, 4 })
+                    .Add("a2", new object[] { "a", "b" })
+                    .Add("a3", new string[][] { new string[] { "A" } })
+                    .Add("a4", new object[][] { new object[] { 5, 6 } });
+                var options = new DeploymentOptions()
+                    .WithStatementSubstitutionParameter(@params.SetStatementParameters);
+                env.Deploy(compiled, options).AddListener("s0");
+
+                env.AssertStatement(
+                    "s0",
+                    statement => {
+                        var eventType = statement.EventType;
+                        ClassicAssert.AreEqual(typeof(int?[]), eventType.GetPropertyType("c0"));
+                        ClassicAssert.AreEqual(typeof(int[]), eventType.GetPropertyType("c1"));
+                        ClassicAssert.AreEqual(typeof(object[]), eventType.GetPropertyType("c2"));
+                        ClassicAssert.AreEqual(typeof(string[][]), eventType.GetPropertyType("c3"));
+                        ClassicAssert.AreEqual(typeof(object[][]), eventType.GetPropertyType("c4"));
                     });
-
-                try {
-                    env.Deployment.Deploy(compiled, options);
-                }
-                catch (EPDeployException e) {
-                    throw new EPRuntimeException(e);
-                }
-
-                env.AddListener("s0");
-
-                var eventType = env.Statement("s0").EventType;
-                Assert.AreEqual(typeof(int?[]), eventType.GetPropertyType("c0"));
-                Assert.AreEqual(typeof(int[]), eventType.GetPropertyType("c1"));
-                Assert.AreEqual(typeof(object[]), eventType.GetPropertyType("c2"));
-                Assert.AreEqual(typeof(string[][]), eventType.GetPropertyType("c3"));
-                Assert.AreEqual(typeof(object[][]), eventType.GetPropertyType("c4"));
 
                 env.SendEventBean(new SupportBean());
 
-                var @event = env.Listener("s0").AssertOneGetNewAndReset();
-                EPAssertionUtil.AssertEqualsExactOrder(new int?[] {1, 2}, (int?[]) @event.Get("c0"));
-                EPAssertionUtil.AssertEqualsExactOrder(new[] {3, 4}, (int[]) @event.Get("c1"));
-                EPAssertionUtil.AssertEqualsExactOrder(new object[] {"a", "b"}, (object[]) @event.Get("c2"));
-                EPAssertionUtil.AssertEqualsExactOrder(new[] {new[] {"A"}}, (string[][]) @event.Get("c3"));
-                EPAssertionUtil.AssertEqualsExactOrder(new[] {new object[] {5, 6}}, (object[][]) @event.Get("c4"));
+                env.AssertEventNew(
+                    "s0",
+                    @event => {
+                        EPAssertionUtil.AssertEqualsExactOrder(new int?[] { 1, 2 }, (int?[])@event.Get("c0"));
+                        EPAssertionUtil.AssertEqualsExactOrder(new int[] { 3, 4 }, (int[])@event.Get("c1"));
+                        EPAssertionUtil.AssertEqualsExactOrder(new object[] { "a", "b" }, (object[])@event.Get("c2"));
+                        EPAssertionUtil.AssertEqualsExactOrder(
+                            new string[][] { new string[] { "A" } },
+                            (string[][])@event.Get("c3"));
+                        EPAssertionUtil.AssertEqualsExactOrder(
+                            new object[][] { new object[] { 5, 6 } },
+                            (object[][])@event.Get("c4"));
+                    });
 
                 env.UndeployAll();
+            }
+
+            public string Name()
+            {
+                return GetType().Name +
+                       "{" +
+                       "soda=" +
+                       soda +
+                       '}';
             }
         }
 
@@ -429,8 +389,8 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select * from SupportBean_S0(Id=?:subs_1:int);\n" +
-                          "@Name('s1') select * from SupportBean_S1(P10=?:subs_2:string);\n";
+                var epl = "@name('s0') select * from SupportBean_S0(Id=?:subs_1:int);\n" +
+                               "@name('s1') select * from SupportBean_S1(P10=?:subs_2:string);\n";
                 var compiled = env.Compile(epl);
 
                 var options = new DeploymentOptions().WithStatementSubstitutionParameter(
@@ -442,7 +402,6 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                             _.SetObject("subs_1", 100);
                         }
                     });
-
                 try {
                     env.Deployment.Deploy(compiled, options);
                 }
@@ -453,12 +412,17 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 env.AddListener("s0").AddListener("s1");
 
                 env.SendEventBean(new SupportBean_S1(-1, "abc"));
-                Assert.IsTrue(env.Listener("s1").IsInvoked);
+                env.AssertListenerInvoked("s1");
 
                 env.SendEventBean(new SupportBean_S0(100));
-                Assert.IsTrue(env.Listener("s0").IsInvoked);
+                env.AssertListenerInvoked("s0");
 
                 env.UndeployAll();
+            }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.RUNTIMEOPS);
             }
         }
 
@@ -467,8 +431,9 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             public void Run(RegressionEnvironment env)
             {
                 MySubstitutionOption.Contexts.Clear();
-                var compiled = env.Compile("@Name('s0') select ?:p0:int as c0 from SupportBean");
-                var options = new DeploymentOptions().WithStatementSubstitutionParameter(new MySubstitutionOption().SetStatementParameters);
+                var compiled = env.Compile("@name('s0') select ?:p0:int as c0 from SupportBean");
+                var options = new DeploymentOptions()
+                    .WithStatementSubstitutionParameter(new MySubstitutionOption().SetStatementParameters);
                 options.DeploymentId = "abc";
                 try {
                     env.Deployment.Deploy(compiled, options);
@@ -478,15 +443,20 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                     // expected
                 }
 
-                Assert.AreEqual(1, MySubstitutionOption.Contexts.Count);
+                ClassicAssert.AreEqual(1, MySubstitutionOption.Contexts.Count);
                 var ctx = MySubstitutionOption.Contexts[0];
-                Assert.IsNotNull(ctx.Annotations);
-                Assert.AreEqual("abc", ctx.DeploymentId);
-                Assert.IsNotNull(ctx.Epl);
-                Assert.IsTrue(ctx.StatementId > 0);
-                Assert.AreEqual("s0", ctx.StatementName);
-                Assert.AreEqual(typeof(int?), ctx.SubstitutionParameterTypes[0]);
-                Assert.AreEqual(1, ctx.SubstitutionParameterNames.Get("p0"));
+                ClassicAssert.IsNotNull(ctx.Annotations);
+                ClassicAssert.AreEqual("abc", ctx.DeploymentId);
+                ClassicAssert.IsNotNull(ctx.Epl);
+                ClassicAssert.IsTrue(ctx.StatementId > 0);
+                ClassicAssert.AreEqual("s0", ctx.StatementName);
+                ClassicAssert.AreEqual(typeof(int?), ctx.SubstitutionParameterTypes[0]);
+                ClassicAssert.AreEqual((int?)1, ctx.SubstitutionParameterNames.Get("p0"));
+            }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.STATICHOOK);
             }
         }
 
@@ -499,14 +469,11 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                     env,
                     compiled,
                     "s0",
-                    prepared => {
-                        prepared.SetObject("p0", 10);
-                        prepared.SetObject("p1", 11);
-                    });
+                    new SupportPortableDeploySubstitutionParams().Add("p0", 10).Add("p1", 11));
                 env.AddListener("s0");
 
                 env.SendEventBean(new SupportBean());
-                EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), "c0,c1".SplitCsv(), 10, 11);
+                env.AssertPropsNew("s0", "c0,c1".Split(","), new object[] { 10, 11 });
 
                 env.UndeployAll();
             }
@@ -517,20 +484,17 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             public void Run(RegressionEnvironment env)
             {
                 // invalid mix or named and unnamed
-                TryInvalidCompile(
-                    env,
+                env.TryInvalidCompile(
                     "select ? as c0,?:a as c1 from SupportBean",
                     "Inconsistent use of substitution parameters, expecting all substitutions to either all provide a name or provide no name");
 
                 // keyword used for name
-                TryInvalidCompile(
-                    env,
+                env.TryInvalidCompile(
                     "select ?:select from SupportBean",
                     "Incorrect syntax near 'select' (a reserved keyword) at line 1 column 9");
 
                 // invalid type incompatible
-                TryInvalidCompile(
-                    env,
+                env.TryInvalidCompile(
                     "select ?:p0:int as c0, ?:p0:long from SupportBean",
                     "Substitution parameter 'p0' incompatible type assignment between types 'System.Nullable<System.Int32>' and 'System.Nullable<System.Int64>'");
             }
@@ -548,30 +512,39 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@Name('s0') select ?:pint:int as c0 from SupportBean(TheString=?:pstring:string and IntPrimitive=?:pint:int and LongPrimitive=?:plong:long)";
+                    "@name('s0') select ?:pint:int as c0 from SupportBean(TheString=?:pstring:string and IntPrimitive=?:pint:int and LongPrimitive=?:plong:long)";
                 var compiled = env.Compile(soda, epl, new CompilerArguments(new Configuration()));
                 DeployWithResolver(
                     env,
                     compiled,
                     null,
-                    prepared => {
-                        prepared.SetObject("pstring", "E1");
-                        prepared.SetObject("pint", 10);
-                        prepared.SetObject("plong", 100L);
-                    });
+                    new SupportPortableDeploySubstitutionParams()
+                        .Add("pstring", "E1")
+                        .Add("pint", 10)
+                        .Add("plong", 100L));
                 env.AddListener("s0");
 
                 var @event = new SupportBean("E1", 10);
                 @event.LongPrimitive = 100;
                 env.SendEventBean(@event);
-                EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), "c0".SplitCsv(), 10);
+                env.AssertPropsNew("s0", "c0".Split(","), new object[] { 10 });
 
                 env.Milestone(0);
 
                 env.SendEventBean(@event);
-                EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), "c0".SplitCsv(), 10);
+                env.AssertPropsNew("s0", "c0".Split(","), new object[] { 10 });
 
                 env.UndeployAll();
+            }
+
+            public string Name()
+            {
+                return GetType().Name + "soda_" + soda;
+            }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.COMPILEROPS);
             }
         }
 
@@ -588,20 +561,38 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             {
                 var compiled = env.Compile(
                     soda,
-                    "@Name('s0') select * from SupportBean(TheString=(?::SupportBean.GetTheString()))",
+                    "@name('s0') select * from SupportBean(TheString=(?::SupportBean.GetTheString()))",
                     new CompilerArguments(new Configuration()));
-                DeployWithResolver(env, compiled, null, prepared => prepared.SetObject(1, new SupportBean("E1", 0)));
+                DeployWithResolver(
+                    env,
+                    compiled,
+                    null,
+                    new SupportPortableDeploySubstitutionParams().Add(1, new SupportBean("E1", 0)));
                 env.AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 0));
-                Assert.IsTrue(env.Listener("s0").IsInvoked);
+                env.AssertListenerInvoked("s0");
 
                 env.Milestone(0);
 
                 env.SendEventBean(new SupportBean("E1", 0));
-                Assert.IsTrue(env.Listener("s0").IsInvoked);
+                env.AssertListenerInvoked("s0");
 
                 env.UndeployAll();
+            }
+
+            public string Name()
+            {
+                return GetType().Name +
+                       "{" +
+                       "soda=" +
+                       soda +
+                       '}';
+            }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.COMPILEROPS);
             }
         }
 
@@ -609,12 +600,17 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
         {
             public void Run(RegressionEnvironment env)
             {
-                var compiled = env.Compile("@Name('s0') select * from SupportBean(TheString = ?:psb:SupportBean.GetTheString())");
-                DeployWithResolver(env, compiled, null, prepared => prepared.SetObject("psb", new SupportBean("E1", 0)));
+                var compiled = env.Compile(
+                    "@name('s0') select * from SupportBean(TheString = ?:psb:SupportBean.GetTheString())");
+                DeployWithResolver(
+                    env,
+                    compiled,
+                    null,
+                    new SupportPortableDeploySubstitutionParams("psb", new SupportBean("E1", 0)));
                 env.AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 0));
-                Assert.IsTrue(env.Listener("s0").IsInvoked);
+                env.AssertListenerInvoked("s0");
 
                 env.UndeployAll();
             }
@@ -627,21 +623,25 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 var epl = "select * from pattern[SupportBean(TheString=?::string)]";
                 var compiled = env.Compile(epl);
 
-                DeployWithResolver(env, compiled, "s0", prepared => prepared.SetObject(1, "e1"));
+                DeployWithResolver(env, compiled, "s0", new SupportPortableDeploySubstitutionParams(1, "e1"));
                 env.AddListener("s0");
-                Assert.AreEqual(epl, env.Statement("s0").GetProperty(StatementProperty.EPL));
+                env.AssertStatement(
+                    "s0",
+                    statement => ClassicAssert.AreEqual(epl, statement.GetProperty(StatementProperty.EPL)));
 
-                DeployWithResolver(env, compiled, "s1", prepared => prepared.SetObject(1, "e2"));
+                DeployWithResolver(env, compiled, "s1", new SupportPortableDeploySubstitutionParams(1, "e2"));
                 env.AddListener("s1");
-                Assert.AreEqual(epl, env.Statement("s1").GetProperty(StatementProperty.EPL));
+                env.AssertStatement(
+                    "s1",
+                    statement => ClassicAssert.AreEqual(epl, statement.GetProperty(StatementProperty.EPL)));
 
                 env.SendEventBean(new SupportBean("e2", 10));
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
-                Assert.IsTrue(env.Listener("s1").GetAndClearIsInvoked());
+                env.AssertListenerNotInvoked("s0");
+                env.AssertListenerInvoked("s1");
 
                 env.SendEventBean(new SupportBean("e1", 10));
-                Assert.IsFalse(env.Listener("s1").IsInvoked);
-                Assert.IsTrue(env.Listener("s0").GetAndClearIsInvoked());
+                env.AssertListenerNotInvoked("s1");
+                env.AssertListenerInvoked("s0");
 
                 env.UndeployAll();
             }
@@ -651,37 +651,38 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "select (select Symbol from SupportMarketDataBean(Symbol=?::string)#lastevent) as mysymbol from SupportBean";
+                var stmtText =
+                    "select (select Symbol from SupportMarketDataBean(Symbol=?::string)#lastevent) as mysymbol from SupportBean";
                 var compiled = env.Compile(stmtText);
 
-                DeployWithResolver(env, compiled, "s0", prepared => prepared.SetObject(1, "S1"));
+                DeployWithResolver(env, compiled, "s0", new SupportPortableDeploySubstitutionParams(1, "S1"));
                 env.AddListener("s0");
 
-                DeployWithResolver(env, compiled, "s1", prepared => prepared.SetObject(1, "S2"));
+                DeployWithResolver(env, compiled, "s1", new SupportPortableDeploySubstitutionParams(1, "S2"));
                 env.AddListener("s1");
 
                 // test no event, should return null
                 env.SendEventBean(new SupportBean("e1", -1));
-                Assert.IsNull(env.Listener("s0").AssertOneGetNewAndReset().Get("mysymbol"));
-                Assert.IsNull(env.Listener("s1").AssertOneGetNewAndReset().Get("mysymbol"));
+                env.AssertEqualsNew("s0", "mysymbol", null);
+                env.AssertEqualsNew("s1", "mysymbol", null);
 
                 // test one non-matching event
                 env.SendEventBean(new SupportMarketDataBean("XX", 0, 0L, ""));
                 env.SendEventBean(new SupportBean("e1", -1));
-                Assert.IsNull(env.Listener("s0").AssertOneGetNewAndReset().Get("mysymbol"));
-                Assert.IsNull(env.Listener("s1").AssertOneGetNewAndReset().Get("mysymbol"));
+                env.AssertEqualsNew("s0", "mysymbol", null);
+                env.AssertEqualsNew("s1", "mysymbol", null);
 
                 // test S2 matching event
                 env.SendEventBean(new SupportMarketDataBean("S2", 0, 0L, ""));
                 env.SendEventBean(new SupportBean("e1", -1));
-                Assert.IsNull(env.Listener("s0").AssertOneGetNewAndReset().Get("mysymbol"));
-                Assert.AreEqual("S2", env.Listener("s1").AssertOneGetNewAndReset().Get("mysymbol"));
+                env.AssertEqualsNew("s0", "mysymbol", null);
+                env.AssertEqualsNew("s1", "mysymbol", "S2");
 
                 // test S1 matching event
                 env.SendEventBean(new SupportMarketDataBean("S1", 0, 0L, ""));
                 env.SendEventBean(new SupportBean("e1", -1));
-                Assert.AreEqual("S1", env.Listener("s0").AssertOneGetNewAndReset().Get("mysymbol"));
-                Assert.AreEqual("S2", env.Listener("s1").AssertOneGetNewAndReset().Get("mysymbol"));
+                env.AssertEqualsNew("s0", "mysymbol", "S1");
+                env.AssertEqualsNew("s1", "mysymbol", "S2");
 
                 env.UndeployAll();
             }
@@ -694,19 +695,19 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 var stmt = "select * from SupportBean(TheString=cast(?, string))";
                 var compiled = env.Compile(stmt);
 
-                DeployWithResolver(env, compiled, "s0", prepared => prepared.SetObject(1, "e1"));
+                DeployWithResolver(env, compiled, "s0", new SupportPortableDeploySubstitutionParams(1, "e1"));
                 env.AddListener("s0");
 
-                DeployWithResolver(env, compiled, "s1", prepared => prepared.SetObject(1, "e2"));
+                DeployWithResolver(env, compiled, "s1", new SupportPortableDeploySubstitutionParams(1, "e2"));
                 env.AddListener("s1");
 
                 env.SendEventBean(new SupportBean("e2", 10));
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
-                Assert.IsTrue(env.Listener("s1").GetAndClearIsInvoked());
+                env.AssertListenerNotInvoked("s0");
+                env.AssertListenerInvoked("s1");
 
                 env.SendEventBean(new SupportBean("e1", 10));
-                Assert.IsFalse(env.Listener("s1").IsInvoked);
-                Assert.IsTrue(env.Listener("s0").GetAndClearIsInvoked());
+                env.AssertListenerNotInvoked("s1");
+                env.AssertListenerInvoked("s0");
 
                 env.UndeployAll();
             }
@@ -719,32 +720,32 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 // Test substitution parameter and inheritance in key matching
                 var path = new RegressionPath();
                 var types =
-                    "create schema MyEventOne as " +
+                    "@public @buseventtype create schema MyEventOne as " +
                     typeof(MyEventOne).MaskTypeName() +
                     ";\n" +
-                    "create schema MyEventTwo as " +
+                    "@public @buseventtype create schema MyEventTwo as " +
                     typeof(MyEventTwo).MaskTypeName() +
                     ";\n";
-                env.CompileDeployWBusPublicType(types, path);
+                env.CompileDeploy(types, path);
 
                 var epl = "select * from MyEventOne(Key = ?::IKey)";
                 var compiled = env.Compile(epl, path);
                 var lKey = new MyObjectKeyInterface();
-                DeployWithResolver(env, compiled, "s0", prepared => prepared.SetObject(1, lKey));
+                DeployWithResolver(env, compiled, "s0", new SupportPortableDeploySubstitutionParams(1, lKey));
                 env.AddListener("s0");
 
                 env.SendEventBean(new MyEventOne(lKey));
-                Assert.IsTrue(env.Listener("s0").GetAndClearIsInvoked());
+                env.AssertListenerInvoked("s0");
 
                 // Test substitution parameter and concrete subclass in key matching
                 epl = "select * from MyEventTwo where Key = ?::MyObjectKeyConcrete";
                 compiled = env.Compile(epl, path);
                 var cKey = new MyObjectKeyConcrete();
-                DeployWithResolver(env, compiled, "s1", prepared => prepared.SetObject(1, cKey));
+                DeployWithResolver(env, compiled, "s1", new SupportPortableDeploySubstitutionParams(1, cKey));
                 env.AddListener("s1");
 
                 env.SendEventBean(new MyEventTwo(cKey));
-                Assert.IsTrue(env.Listener("s1").GetAndClearIsInvoked());
+                env.AssertListenerInvoked("s1");
 
                 env.UndeployAll();
             }
@@ -773,14 +774,14 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             public void Run(RegressionEnvironment env)
             {
                 var compiled = env.Compile("select * from SupportBean(TheString=\"e1\")");
-                DeployWithResolver(env, compiled, "s0", prepared => { });
+                DeployWithResolver(env, compiled, "s0", new SupportPortableDeploySubstitutionParams());
                 env.AddListener("s0");
 
                 env.SendEventBean(new SupportBean("e2", 10));
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+                env.AssertListenerNotInvoked("s0");
 
                 env.SendEventBean(new SupportBean("e1", 10));
-                Assert.IsTrue(env.Listener("s0").GetAndClearIsInvoked());
+                env.AssertListenerInvoked("s0");
 
                 env.UndeployAll();
             }
@@ -790,9 +791,18 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
         {
             public void Run(RegressionEnvironment env)
             {
-                TryInvalidDeployNoCallbackProvided(env, "@Name('s0') select * from SupportBean(TheString=?::string)");
-                TryInvalidDeployNoCallbackProvided(env, "@Name('s0') select * from SupportBean(TheString=cast(?,string))");
-                TryInvalidDeployNoCallbackProvided(env, "@Name('s0') select * from SupportBean(TheString=?:myname:string)");
+                TryInvalidDeployNoCallbackProvided(env, "@name('s0') select * from SupportBean(TheString=?::string)");
+                TryInvalidDeployNoCallbackProvided(
+                    env,
+                    "@name('s0') select * from SupportBean(TheString=cast(?,string))");
+                TryInvalidDeployNoCallbackProvided(
+                    env,
+                    "@name('s0') select * from SupportBean(TheString=?:myname:string)");
+            }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.INVALIDITY);
             }
         }
 
@@ -802,7 +812,8 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             {
                 EPCompiled compiled;
 
-                compiled = env.Compile("@Name('s0') select * from SupportBean(TheString=?::string, IntPrimitive=?::int)");
+                compiled = env.Compile(
+                    "@name('s0') select * from SupportBean(TheString=?::string, IntPrimitive=?::int)");
                 TryInvalidResolver(
                     env,
                     compiled,
@@ -814,7 +825,8 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                     "Substitution parameters have not been provided: Missing value for substitution parameter 2 for statement 's0'",
                     prepared => prepared.SetObject(1, "abc"));
 
-                compiled = env.Compile("@Name('s0') select * from SupportBean(TheString=?:p0:string, IntPrimitive=?:p1:int)");
+                compiled = env.Compile(
+                    "@name('s0') select * from SupportBean(TheString=?:p0:string, IntPrimitive=?:p1:int)");
                 TryInvalidResolver(
                     env,
                     compiled,
@@ -825,6 +837,11 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                     compiled,
                     "Substitution parameters have not been provided: Missing value for substitution parameter 'p1' for statement 's0'",
                     prepared => prepared.SetObject("p0", "x"));
+            }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.INVALIDITY);
             }
         }
 
@@ -838,8 +855,14 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 compiled = env.Compile("select * from SupportBean(TheString='ABC')");
                 options = new DeploymentOptions().WithStatementSubstitutionParameter(
                     prepared => {
-                        TryInvalidSetObject(prepared, stmt => stmt.SetObject("x", 10), "The statement has no substitution parameters");
-                        TryInvalidSetObject(prepared, stmt => stmt.SetObject(1, 10), "The statement has no substitution parameters");
+                        TryInvalidSetObject(
+                            prepared,
+                            stmt => stmt.SetObject("x", 10),
+                            "The statement has no substitution parameters");
+                        TryInvalidSetObject(
+                            prepared,
+                            stmt => stmt.SetObject(1, 10),
+                            "The statement has no substitution parameters");
                     });
                 DeployWithOptionsWUndeploy(env, compiled, options);
 
@@ -879,6 +902,11 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                     });
                 DeployWithOptionsWUndeploy(env, compiled, options);
             }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.INVALIDITY);
+            }
         }
 
         private class ClientCompileSubstParamInvalidParametersTyped : RegressionExecution
@@ -895,7 +923,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                         TryInvalidSetObject(
                             prepared,
                             stmt => stmt.SetObject(1, 10),
-                            "Failed to set substitution parameter 1, expected a value of type 'System.String'");
+                            "Failed to set substitution parameter 1, expected a value of type 'System.String': ");
                         prepared.SetObject(1, "abc");
                     });
                 DeployWithOptionsWUndeploy(env, compiled, options);
@@ -907,7 +935,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                         TryInvalidSetObject(
                             prepared,
                             stmt => stmt.SetObject("p0", 10),
-                            "Failed to set substitution parameter 'p0', expected a value of type 'System.String'");
+                            "Failed to set substitution parameter 'p0', expected a value of type 'System.String': ");
                         prepared.SetObject("p0", "abc");
                     });
                 DeployWithOptionsWUndeploy(env, compiled, options);
@@ -917,11 +945,139 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 options = new DeploymentOptions().WithStatementSubstitutionParameter(
                     prepared => {
                         // There is only boxed type consistent with all other column/variable/schema typing:
-                        // tryInvalidSetObject(prepared, stmt => stmt.setObject("p0", null), "Failed to set substitution parameter 'p0', expected a value of type 'int': Received a null-value for a primitive type");
+                        // tryInvalidSetObject(prepared, stmt =>  stmt.setObject("p0", null), "Failed to set substitution parameter 'p0', expected a value of type 'int': Received a null-value for a primitive type");
                         prepared.SetObject("p0", 10);
                     });
                 DeployWithOptionsWUndeploy(env, compiled, options);
             }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.INVALIDITY);
+            }
+        }
+
+        private static void RunSimpleTwoParameter(
+            RegressionEnvironment env,
+            string stmtText,
+            string statementName,
+            bool compareText)
+        {
+            var compiled = env.Compile(stmtText);
+
+            DeployWithResolver(
+                env,
+                compiled,
+                statementName,
+                new SupportPortableDeploySubstitutionParams(1, "e1", 2, 1));
+            env.AddListener(statementName);
+            if (compareText) {
+                env.AssertStatement(
+                    statementName,
+                    statement => ClassicAssert.AreEqual(
+                        "select * from SupportBean(TheString=?::string,IntPrimitive=?::int)",
+                        statement.GetProperty(StatementProperty.EPL)));
+            }
+
+            DeployWithResolver(
+                env,
+                compiled,
+                statementName + "__1",
+                new SupportPortableDeploySubstitutionParams().Add(1, "e2").Add(2, 2));
+            env.AddListener(statementName + "__1");
+            if (compareText) {
+                env.AssertStatement(
+                    statementName + "__1",
+                    statement => ClassicAssert.AreEqual(
+                        "select * from SupportBean(TheString=?::string,IntPrimitive=?::int)",
+                        statement.GetProperty(StatementProperty.EPL)));
+            }
+
+            env.SendEventBean(new SupportBean("e2", 2));
+            env.AssertListenerNotInvoked(statementName);
+            env.AssertListenerInvoked(statementName + "__1");
+
+            env.SendEventBean(new SupportBean("e1", 1));
+            env.AssertListenerInvoked(statementName);
+            env.AssertListenerNotInvoked(statementName + "__1");
+
+            env.SendEventBean(new SupportBean("e1", 2));
+            env.AssertListenerNotInvoked(statementName);
+            env.AssertListenerNotInvoked(statementName + "__1");
+
+            env.UndeployAll();
+        }
+
+        private static void DeployWithResolver(
+            RegressionEnvironment env,
+            EPCompiled compiled,
+            string statementName,
+            SupportPortableDeploySubstitutionParams resolver)
+        {
+            var options = new DeploymentOptions().WithStatementSubstitutionParameter(resolver.SetStatementParameters);
+            options.WithStatementNameRuntime(new SupportPortableDeployStatementName(statementName).GetStatementName);
+            env.Deploy(compiled, options);
+        }
+
+        private static void TryInvalidDeployNoCallbackProvided(
+            RegressionEnvironment env,
+            string stmt)
+        {
+            var compiled = env.Compile(stmt);
+            try {
+                env.Deployment.Deploy(compiled);
+                Assert.Fail();
+            }
+            catch (EPDeploySubstitutionParameterException ex) {
+                ClassicAssert.AreEqual(-1, ex.RolloutItemNumber);
+                ClassicAssert.AreEqual(
+                    "Substitution parameters have not been provided: Statement 's0' has 1 substitution parameters",
+                    ex.Message);
+            }
+            catch (EPDeployException ex) {
+                throw new EPRuntimeException(ex);
+            }
+        }
+
+        private static void TryInvalidSetObject(
+            StatementSubstitutionParameterContext prepared,
+            Consumer<StatementSubstitutionParameterContext> consumer,
+            string message)
+        {
+            try {
+                consumer.Invoke(prepared);
+                Assert.Fail();
+            }
+            catch (EPException ex) {
+                SupportMessageAssertUtil.AssertMessage(ex, message);
+            }
+        }
+
+        private static void TryInvalidResolver(
+            RegressionEnvironment env,
+            EPCompiled compiled,
+            string expected,
+            StatementSubstitutionParameterOption resolver)
+        {
+            var options = new DeploymentOptions().WithStatementSubstitutionParameter(resolver);
+            try {
+                env.Deployment.Deploy(compiled, options);
+                Assert.Fail();
+            }
+            catch (EPDeploySubstitutionParameterException e) {
+                SupportMessageAssertUtil.AssertMessage(e.Message, expected);
+            }
+            catch (EPDeployException e) {
+                throw new EPRuntimeException(e);
+            }
+        }
+
+        private static void DeployWithOptionsWUndeploy(
+            RegressionEnvironment env,
+            EPCompiled compiled,
+            DeploymentOptions options)
+        {
+            env.Deploy(compiled, options).UndeployAll();
         }
 
         public class MySubstitutionOption
@@ -938,43 +1094,59 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
         {
         }
 
+        /// <summary>
+        /// Test event; only serializable because it *may* go over the wire
+        /// when running remote tests and serialization is just convenient.
+        /// Serialization generally not used for HA and HA testing.
+        /// </summary>
         public class MyObjectKeyInterface : IKey
         {
         }
 
+        /// <summary>
+        /// Test event; only serializable because it *may* go over the wire
+        /// when running remote tests and serialization is just convenient.
+        /// Serialization generally not used for HA and HA testing.
+        /// </summary>
         public class MyEventOne
         {
-            private readonly IKey key;
+            private readonly IKey _key;
 
             public MyEventOne(IKey key)
             {
-                this.key = key;
+                _key = key;
             }
 
             public IKey GetKey()
             {
-                return key;
+                return _key;
             }
         }
 
-        [Serializable]
+        /// <summary>
+        /// Test event; only serializable because it *may* go over the wire
+        /// when running remote tests and serialization is just convenient.
+        /// Serialization generally not used for HA and HA testing.
+        /// </summary>
         public class MyObjectKeyConcrete
         {
         }
 
-        [Serializable]
+        /// <summary>
+        /// Test event; only serializable because it *may* go over the wire  when running remote tests and serialization is just convenient. Serialization generally not used for HA and HA testing.
+        /// </summary>
         public class MyEventTwo
         {
-            private MyObjectKeyConcrete key;
+            private MyObjectKeyConcrete _key;
 
             public MyEventTwo(MyObjectKeyConcrete key)
             {
-                this.key = key;
+                _key = key;
             }
 
             public MyObjectKeyConcrete GetKey()
             {
-                return key;
+                return _key;
             }
         }
     }

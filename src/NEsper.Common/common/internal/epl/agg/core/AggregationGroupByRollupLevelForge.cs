@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -51,6 +51,12 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             }
         }
 
+        public MultiKeyClassRef AllKeysMultikey => _allKeysMultikey;
+
+        public int LevelNumber => _levelNumber;
+
+        public MultiKeyClassRef SubKeyMultikey => _subKeyMultikey;
+
         public bool IsAggregationTop => _levelOffset == -1;
 
         public int[] RollupKeys => _rollupKeys;
@@ -78,14 +84,13 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
 
             // var computeSubkey = CodegenMethod
             //     .MakeParentNode(typeof(object), GetType(), classScope)
-            //     .AddParam(typeof(object), "groupKey");
+            //     .AddParam<object>("groupKey");
             // clazz.AddMethod("computeSubkey", computeSubkey);
 
             var computeSubkey = new CodegenExpressionLambda(method.Block)
-                .WithParam(typeof(object), "groupKey")
+                .WithParam<object>("groupKey")
                 .WithBody(
                     block => {
-           
                         if (IsAggregationTop) {
                             block.BlockReturn(ConstantNull());
                         }
@@ -105,8 +110,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                                     "mk",
                                     Cast(_allKeysMultikey.ClassNameMK.Name, Ref("groupKey")));
                             }
-                            
-                            if (RollupKeys.Length == 1 && (_subKeyMultikey == null || _subKeyMultikey.ClassNameMK == null)) {
+
+                            if (RollupKeys.Length == 1 &&
+                                (_subKeyMultikey == null || _subKeyMultikey.ClassNameMK == null)) {
                                 block.BlockReturn(ExprDotMethod(Ref("mk"), "GetKey", Constant(RollupKeys[0])));
                             }
                             else {
@@ -114,13 +120,16 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                                 for (var i = 0; i < RollupKeys.Length; i++) {
                                     var index = RollupKeys[i];
                                     var keyExpr = ExprDotMethod(Ref("mk"), "GetKey", Constant(index));
-                                    expressions[i] = Cast(_allGroupKeyTypes[index], keyExpr);
+                                    var allGroupKeyType = _allGroupKeyTypes[index];
+                                    expressions[i] = allGroupKeyType == null
+                                        ? ConstantNull()
+                                        : Cast(allGroupKeyType, keyExpr);
                                 }
 
                                 var instance = _subKeyMultikey.ClassNameMK.Type != null
                                     ? NewInstance(_subKeyMultikey.ClassNameMK.Type, expressions)
                                     : NewInstanceInner(_subKeyMultikey.ClassNameMK.Name, expressions);
-                                
+
                                 block.BlockReturn(instance);
                             }
                         }
@@ -131,8 +140,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                 Constant(_levelOffset),
                 Constant(RollupKeys),
                 serde,
-                computeSubkey);                
- 
+                computeSubkey);
+
             method.Block.MethodReturn(clazz);
             return LocalMethod(method);
         }

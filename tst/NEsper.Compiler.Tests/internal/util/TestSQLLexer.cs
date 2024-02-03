@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -9,6 +9,8 @@
 using System;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
+
 namespace com.espertech.esper.compiler.@internal.util
 {
     [TestFixture]
@@ -38,17 +40,14 @@ namespace com.espertech.esper.compiler.@internal.util
 				    "select * from A where 1=0 having a>b"
 			    },
 			    new string[] {
-				    "select * from A order by d",
-				    "select * from A where 1=0 order by d"
-			    },
+"select * from A Order by d",
+"select * from A where 1=0 Order by d"			    },
 			    new string[] {
-				    "select * from A group by a having b>c order by d",
-				    "select * from A where 1=0 group by a having b>c order by d"
-			    },
+"select * from A group by a having b>c Order by d",
+"select * from A where 1=0 group by a having b>c Order by d"			    },
 			    new string[] {
-				    "select * from A where (7<4) group by a having b>c order by d",
-				    "select * from A where 1=0 and (7<4) group by a having b>c order by d"
-			    },
+"select * from A where (7<4) group by a having b>c Order by d",
+"select * from A where 1=0 and (7<4) group by a having b>c Order by d"			    },
 			    new string[] {
 				    "select * from A union select * from B",
 				    "select * from A  where 1=0 union  select * from B where 1=0"
@@ -78,7 +77,7 @@ namespace com.espertech.esper.compiler.@internal.util
 	                Assert.Fail("failed case with exception:" + testcases[i][0]);
 	            }
 	            string expected = testcases[i][1].Trim();
-	            Assert.AreEqual(expected, result, "failed case " + i + " :" + testcases[i][0]);
+	            ClassicAssert.AreEqual(expected, result, "failed case " + i + " :" + testcases[i][0]);
 	        }
 	    }
 	}

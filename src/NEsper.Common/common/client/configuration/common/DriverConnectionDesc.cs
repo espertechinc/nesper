@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -16,7 +16,6 @@ namespace com.espertech.esper.common.client.configuration.common
     /// <summary>
     ///     Connection factory settings for using a driver.
     /// </summary>
-    [Serializable]
     public class DriverConnectionFactoryDesc : ConnectionFactoryDesc
     {
         /// <summary>
@@ -51,7 +50,7 @@ namespace com.espertech.esper.common.client.configuration.common
         public DriverConnectionFactoryDesc Merge(Properties propertiesToMerge)
         {
             var newProperties = new Properties();
-            newProperties.PutAll(this.DriverProperties);
+            newProperties.PutAll(DriverProperties);
             newProperties.PutAll(propertiesToMerge);
             return new DriverConnectionFactoryDesc(DriverName, newProperties);
         }

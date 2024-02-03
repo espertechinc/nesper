@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -35,21 +35,21 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             FAFQueryMethodAssignerSetter assignerSetter,
             ContextManagementService contextManagementService)
         {
-            FireAndForgetProcessor processor = select.Processors[0];
+            var processor = select.Processors[0];
 
-            ContextPartitionSelector singleSelector =
+            var singleSelector =
                 contextPartitionSelectors != null && contextPartitionSelectors.Length > 0
                     ? contextPartitionSelectors[0]
                     : null;
-            ICollection<int> agentInstanceIds = AgentInstanceIds(processor, singleSelector, contextManagementService);
+            var agentInstanceIds = AgentInstanceIds(processor, singleSelector, contextManagementService);
 
             ICollection<EventBean> events = new ArrayDeque<EventBean>();
             AgentInstanceContext agentInstanceContext = null;
-            foreach (int agentInstanceId in agentInstanceIds) {
-                FireAndForgetInstance processorInstance = processor.GetProcessorInstanceContextById(agentInstanceId);
+            foreach (var agentInstanceId in agentInstanceIds) {
+                var processorInstance = processor.GetProcessorInstanceContextById(agentInstanceId);
                 if (processorInstance != null) {
                     agentInstanceContext = processorInstance.AgentInstanceContext;
-                    ICollection<EventBean> coll = processorInstance.SnapshotBestEffort(
+                    var coll = processorInstance.SnapshotBestEffort(
                         select.QueryGraph,
                         select.Annotations);
                     events.AddAll(coll);
@@ -57,7 +57,7 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             }
 
             // get RSP
-            ResultSetProcessor resultSetProcessor = ProcessorWithAssign(
+            var resultSetProcessor = ProcessorWithAssign(
                 select.ResultSetProcessorFactoryProvider,
                 agentInstanceContext,
                 assignerSetter,
@@ -69,6 +69,11 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             }
 
             return ProcessedNonJoin(resultSetProcessor, events, select.DistinctKeyGetter);
+        }
+
+        public void ReleaseTableLocks(FireAndForgetProcessor[] processors)
+        {
+            processors[0].StatementContext.TableExprEvaluatorContext.ReleaseAcquiredLocks();
         }
     }
 } // end of namespace

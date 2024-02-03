@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -23,7 +23,7 @@ namespace com.espertech.esper.regressionlib.support.extend.aggmultifunc
             this.eval = eval;
         }
 
-        public EPType ReturnType => EPTypeHelper.SingleValue(typeof(int?));
+        public EPChainableType ReturnType => EPChainableTypeHelper.SingleValue(typeof(int?));
 
         public AggregationMultiFunctionStateKey AggregationStateUniqueKey =>
             throw new UnsupportedOperationException("The lookup function is only for table-column-reads");

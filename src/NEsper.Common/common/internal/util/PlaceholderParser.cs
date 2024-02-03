@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -95,12 +95,11 @@ namespace com.espertech.esper.common.@internal.util
                     continue;
                 }
 
-                if (!(fragments.Last.Value is TextFragment)) {
+                if (!(fragments.Last.Value is TextFragment textFragment)) {
                     fragments.AddLast(fragment);
                     continue;
                 }
 
-                var textFragment = (TextFragment) fragments.Last.Value;
                 fragments.RemoveLast();
                 fragments.AddLast(new TextFragment(textFragment.Value + fragment.Value));
             }
@@ -186,11 +185,10 @@ namespace com.espertech.esper.common.@internal.util
             /// </returns>
             public override bool Equals(object obj)
             {
-                if (!(obj is TextFragment)) {
+                if (!(obj is TextFragment other)) {
                     return false;
                 }
 
-                var other = (TextFragment) obj;
                 return other.Value.Equals(Value);
             }
 
@@ -256,11 +254,10 @@ namespace com.espertech.esper.common.@internal.util
             /// </returns>
             public override bool Equals(object obj)
             {
-                if (!(obj is ParameterFragment)) {
+                if (!(obj is ParameterFragment other)) {
                     return false;
                 }
 
-                var other = (ParameterFragment) obj;
                 return other.Value.Equals(Value);
             }
 

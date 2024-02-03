@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// A single entry in an order-by clause consisting of an expression and order ascending or descending flag.
     /// </summary>
-    [Serializable]
     public class OrderByElement
     {
         private Expression expression;
@@ -44,8 +43,7 @@ namespace com.espertech.esper.common.client.soda
         /// Returns the order-by value expression.
         /// </summary>
         /// <returns>expression</returns>
-        public Expression Expression
-        {
+        public Expression Expression {
             get => expression;
             set => expression = value;
         }
@@ -54,8 +52,7 @@ namespace com.espertech.esper.common.client.soda
         /// Returns true for descending sorts for this column, false for ascending sort.
         /// </summary>
         /// <returns>true for descending sort</returns>
-        public bool IsDescending
-        {
+        public bool IsDescending {
             get => descending;
             set => descending = value;
         }
@@ -67,8 +64,7 @@ namespace com.espertech.esper.common.client.soda
         public void ToEPL(TextWriter writer)
         {
             expression.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
-            if (descending)
-            {
+            if (descending) {
                 writer.Write(" desc");
             }
         }

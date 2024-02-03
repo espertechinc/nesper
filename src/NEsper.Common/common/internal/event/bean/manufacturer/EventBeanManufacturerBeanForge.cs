@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -20,29 +20,25 @@ using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
 {
     /// <summary>
-    ///     Factory for event beans created and populate anew from a set of values.
+    /// Factory for event beans created and populate anew from a set of values.
     /// </summary>
     public class EventBeanManufacturerBeanForge : EventBeanManufacturerForge
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(EventBeanManufacturerBeanForge));
-
-        private readonly ImportService _importService;
-        private readonly BeanEventType _beanEventType;
-
         private readonly BeanInstantiatorForge _beanInstantiator;
-        private readonly bool[] _primitiveType;
+        private readonly BeanEventType _beanEventType;
         private readonly WriteablePropertyDescriptor[] _properties;
+        private readonly ImportService _importService;
         private readonly MemberInfo[] _writeMembersReflection;
+        private readonly bool[] _primitiveType;
 
         /// <summary>
-        ///     Ctor.
+        /// Ctor.
         /// </summary>
         /// <param name="beanEventType">target type</param>
         /// <param name="properties">written properties</param>
@@ -71,11 +67,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
 
         public EventBeanManufacturer GetManufacturer(EventBeanTypedEventFactory eventBeanTypedEventFactory)
         {
-            return new EventBeanManufacturerBean(
-                _beanEventType,
-                eventBeanTypedEventFactory,
-                _properties,
-                _importService);
+            return new EventBeanManufacturerBean(_beanEventType, eventBeanTypedEventFactory, _properties, _importService);
         }
 
         public CodegenExpression Make(
@@ -83,7 +75,8 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            var factory = codegenClassScope.AddOrGetDefaultFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
+            var factory =
+                codegenClassScope.AddOrGetDefaultFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
             var eventType = codegenClassScope.AddDefaultFieldUnshared(
                 true,
                 typeof(EventType),
@@ -95,20 +88,21 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
 
             var manufacturer = NewInstance<ProxyBeanEventBeanManufacturer>(
                 eventType, factory, makeUndLambda);
-
+            
             //var manufacturer = NewAnonymousClass(init.Block, typeof(EventBeanManufacturer));
 
-            //var makeUndMethod = CodegenMethod.MakeMethod(typeof(object), GetType(), codegenClassScope)
-            //    .AddParam(typeof(object[]), "properties");
+            //var makeUndMethod = CodegenMethod
+            //    .MakeParentNode(typeof(object), GetType(), codegenClassScope)
+            //    .AddParam<object[]>("properties");
             //manufacturer.AddMethod("MakeUnderlying", makeUndMethod);
             //MakeUnderlyingCodegen(makeUndMethod, codegenClassScope);
 
-            //var makeMethod = CodegenMethod.MakeMethod(typeof(EventBean), GetType(), codegenClassScope)
-            //    .AddParam(typeof(object[]), "properties");
+            //var makeMethod = CodegenMethod.MakeParentNode(typeof(EventBean), GetType(), codegenClassScope)
+            //    .AddParam<object[]>("properties");
             //manufacturer.AddMethod("Make", makeMethod);
             //makeMethod.Block
             //    .DeclareVar<object>("und", LocalMethod(makeUndMethod, Ref("properties")))
-            //    .MethodReturn(ExprDotMethod(factory, "AdapterForTypedObject", Ref("und"), beanType));
+            //    .MethodReturn(ExprDotMethod(factory, "AdapterForTypedObject", Ref("und"), eventType));
 
             return codegenClassScope.AddDefaultFieldUnshared(true, typeof(EventBeanManufacturer), manufacturer);
         }
@@ -129,7 +123,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
                 block.AssignRef("value", ArrayAtIndex(Ref("properties"), Constant(i)));
 
                 Type targetType;
-
+                
                 var writeMember = _writeMembersReflection[i];
                 if (writeMember is MethodInfo writeMethod) {
                     targetType = writeMethod.GetParameters()[0].ParameterType;
@@ -140,7 +134,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
                 else {
                     throw new IllegalStateException("writeMember of invalid type");
                 }
-
+                
                 CodegenExpression value;
                 //if (targetType.IsValueType) {
                 //    var caster = SimpleTypeCasterFactory.GetCaster(typeof(object), targetType);

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -14,7 +14,8 @@ using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 
-using static com.espertech.esper.common.@internal.@event.eventtyperepo.EventTypeRepositoryMapTypeUtil; //ToTypesReferences;
+using static
+    com.espertech.esper.common.@internal.@event.eventtyperepo.EventTypeRepositoryMapTypeUtil; //ToTypesReferences;
 
 namespace com.espertech.esper.common.@internal.@event.eventtyperepo
 {
@@ -36,7 +37,9 @@ namespace com.espertech.esper.common.@internal.@event.eventtyperepo
                 dependentOrder = GraphUtil.GetTopDownOrder(typesReferences);
             }
             catch (GraphCircularDependencyException e) {
-                throw new ConfigurationException("Error configuring event types, dependency graph between map type names is circular: " + e.Message, e);
+                throw new ConfigurationException(
+                    "Error configuring event types, dependency graph between map type names is circular: " + e.Message,
+                    e);
             }
 
             if (dependentOrder.IsEmpty() || dependentOrder.Count < 2) {

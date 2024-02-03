@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -23,13 +23,13 @@ namespace com.espertech.esper.common.@internal.context.controller.core
     public class ContextControllerForgeUtil
     {
         public static void ValidateStatementKeyAndHash(
-            IEnumerable<Supplier<EventType>> typeProvider,
+            Supplier<EventType>[] typeProvider,
             string contextName,
             StatementSpecCompiled spec,
             StatementCompileTimeServices compileTimeServices)
         {
-            StatementSpecCompiledAnalyzerResult streamAnalysis = StatementSpecCompiledAnalyzer.AnalyzeFilters(spec);
-            IList<FilterSpecCompiled> filters = streamAnalysis.Filters;
+            var streamAnalysis = StatementSpecCompiledAnalyzer.AnalyzeFilters(spec);
+            var filters = streamAnalysis.Filters;
 
             var isCreateWindow = spec.Raw.CreateWindowDesc != null;
 
@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.@internal.context.controller.core
             if (!isCreateWindow) {
                 foreach (var filter in filters) {
                     foreach (var item in typeProvider) {
-                        EventType itemEventType = item.Invoke();
+                        var itemEventType = item.Invoke();
                         var stmtFilterType = filter.FilterForEventType;
                         if (ReferenceEquals(stmtFilterType, itemEventType)) {
                             return;
@@ -47,9 +47,9 @@ namespace com.espertech.esper.common.@internal.context.controller.core
                             return;
                         }
 
-                        NamedWindowMetaData namedWindow =
+                        var namedWindow =
                             compileTimeServices.NamedWindowCompileTimeResolver.Resolve(stmtFilterType.Name);
-                        string namedWindowContextName = namedWindow?.ContextName;
+                        var namedWindowContextName = namedWindow?.ContextName;
                         if (namedWindowContextName != null && namedWindowContextName.Equals(contextName)) {
                             return;
                         }
@@ -77,7 +77,7 @@ namespace com.espertech.esper.common.@internal.context.controller.core
             var declaredAsName = spec.Raw.CreateWindowDesc.AsEventTypeName;
             if (declaredAsName != null) {
                 foreach (var item in typeProvider) {
-                    EventType itemEventType = item.Invoke();
+                    var itemEventType = item.Invoke();
                     if (itemEventType.Name.Equals(declaredAsName)) {
                         return;
                     }

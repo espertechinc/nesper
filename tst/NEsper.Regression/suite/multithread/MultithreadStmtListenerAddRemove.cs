@@ -1,13 +1,16 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Collections.Generic;
+
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.concurrency;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
@@ -23,8 +26,10 @@ namespace com.espertech.esper.regressionlib.suite.multithread
     /// </summary>
     public class MultithreadStmtListenerAddRemove : RegressionExecutionWithConfigure
     {
-        public bool EnableHATest => true;
-        public bool HAWithCOnly => false;
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
+        }
 
         public void Configure(Configuration configuration)
         {
@@ -36,11 +41,11 @@ namespace com.espertech.esper.regressionlib.suite.multithread
         {
             var numThreads = 2;
 
-            env.CompileDeploy("@Name('s0') select * from pattern[every a=SupportMarketDataBean(Symbol='IBM')]");
+            env.CompileDeploy("@name('s0') select * from pattern[every a=SupportMarketDataBean(Symbol='IBM')]");
             TryStatementListenerAddRemove(env, numThreads, env.Statement("s0"), false, 10000);
             env.UndeployModuleContaining("s0");
 
-            env.CompileDeploy("@Name('s0') select * from SupportMarketDataBean(Symbol='IBM', Feed='RT')");
+            env.CompileDeploy("@name('s0') select * from SupportMarketDataBean(Symbol='IBM', Feed='RT')");
             TryStatementListenerAddRemove(env, numThreads, env.Statement("s0"), true, 10000);
             env.UndeployModuleContaining("s0");
         }

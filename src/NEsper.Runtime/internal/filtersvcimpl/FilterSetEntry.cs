@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -39,7 +39,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 
         public FilterValueSetParam[][] ValueSet { get; }
 
-        public void AppendTo(StringWriter writer)
+        public void AppendTo(TextWriter writer)
         {
             writer.Write(EventType.Name);
             writer.Write("(");
@@ -55,7 +55,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
         }
 
         private void AppendTo(
-            StringWriter writer,
+            TextWriter writer,
             FilterValueSetParam[] parameters)
         {
             var delimiter = "";

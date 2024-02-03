@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -7,14 +7,17 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 using System.Threading;
 
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.client;
 using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.multithread
 {
@@ -23,6 +26,11 @@ namespace com.espertech.esper.regressionlib.suite.multithread
     /// </summary>
     public class MultithreadStmtNamedWindowMultiple : RegressionExecution
     {
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
+        }
+
         public void Run(RegressionEnvironment env)
         {
             TryCount(env, 10, 500, 3);
@@ -37,30 +45,16 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             var path = new RegressionPath();
             for (var i = 0; i < numUsers; i++) {
                 env.CompileDeploy(
-                    "@Name('create_" +
-                    i +
-                    "') create window MyWindow_" +
-                    i +
-                    "#unique(OrderId) as select * from OrderEvent",
+                    $"@name('create_{i}') @public create window MyWindow_{i}#unique(OrderId) as select * from OrderEvent",
                     path);
                 env.CompileDeploy(
-                    "@Name('insert_" +
-                    i +
-                    "') insert into MyWindow_" +
-                    i +
-                    " select * from OrderEvent(UserId = 'user" +
-                    i +
-                    "')",
+                    $"@name('insert_{i}') insert into MyWindow_{i} select * from OrderEvent(UserId = 'user{i}')",
                     path);
                 env.CompileDeploy(
-                    "on OrderCancelEvent as d delete from MyWindow_" + i + " w where w.OrderId = d.OrderId",
+                    $"on OrderCancelEvent as d delete from MyWindow_{i} w where w.OrderId = d.OrderId",
                     path);
                 env.CompileDeploy(
-                    "@Name('select_" +
-                    i +
-                    "') on OrderEvent as s select sum(w.Price) from MyWindow_" +
-                    i +
-                    " w where w.Side = s.Side group by w.Side",
+                    $"@name('select_{i}') on OrderEvent as s select sum(w.Price) from MyWindow_{i} w where w.Side = s.Side group by w.Side",
                     path);
             }
 
@@ -79,7 +73,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 
             for (var i = 0; i < threads.Length; i++) {
                 SupportCompileDeployUtil.ThreadJoin(threads[i]);
-                Assert.IsTrue(runnables[i].Status);
+                ClassicAssert.IsTrue(runnables[i].Status);
             }
 
             env.UndeployAll();
@@ -111,21 +105,21 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             {
                 var orderIds = new string[10];
                 for (var i = 0; i < orderIds.Length; i++) {
-                    orderIds[i] = "order_" + i + "_" + threadId;
+                    orderIds[i] = $"order_{i}_{threadId}";
                 }
 
                 for (var i = 0; i < numOrders; i++) {
                     if (random.Next() % 3 == 0) {
                         var orderId = orderIds[random.Next(orderIds.Length)];
                         for (var j = 0; j < numUsers; j++) {
-                            var theEvent = new OrderCancelEvent("user" + j, orderId);
+                            var theEvent = new OrderCancelEvent($"user{j}", orderId);
                             runtime.EventService.SendEventBean(theEvent, theEvent.GetType().Name);
                         }
                     }
                     else {
                         var orderId = orderIds[random.Next(orderIds.Length)];
                         for (var j = 0; j < numUsers; j++) {
-                            var theEvent = new OrderEvent("user" + j, orderId, 1000, "B");
+                            var theEvent = new OrderEvent($"user{j}", orderId, 1000, "B");
                             runtime.EventService.SendEventBean(theEvent, theEvent.GetType().Name);
                         }
                     }

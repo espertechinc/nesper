@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -17,57 +17,58 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
 namespace com.espertech.esper.common.@internal.context.aifactory.update
 {
-	public class InternalEventRouterWriterArrayElementForge : InternalEventRouterWriterForge
-	{
+    public class InternalEventRouterWriterArrayElementForge : InternalEventRouterWriterForge
+    {
+        private readonly ExprNode _indexExpression;
+        private readonly ExprNode _rhsExpression;
+        private readonly TypeWidenerSPI _widener;
+        private readonly string _propertyName;
 
-		private readonly ExprNode _indexExpression;
-		private readonly ExprNode _rhsExpression;
-		private readonly TypeWidenerSPI _widener;
-		private readonly string _propertyName;
+        public InternalEventRouterWriterArrayElementForge(
+            ExprNode indexExpression,
+            ExprNode rhsExpression,
+            TypeWidenerSPI widener,
+            string propertyName)
+        {
+            _indexExpression = indexExpression;
+            _rhsExpression = rhsExpression;
+            _widener = widener;
+            _propertyName = propertyName;
+        }
 
-		public InternalEventRouterWriterArrayElementForge(
-			ExprNode indexExpression,
-			ExprNode rhsExpression,
-			TypeWidenerSPI widener,
-			string propertyName)
-		{
-			_indexExpression = indexExpression;
-			_rhsExpression = rhsExpression;
-			_widener = widener;
-			_propertyName = propertyName;
-		}
+        public override CodegenExpression Codegen(
+            InternalEventRouterWriterForge writer,
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
+        {
+            var method = parent
+                .MakeChild(typeof(InternalEventRouterWriterArrayElement), GetType(), classScope);
 
-		public override CodegenExpression Codegen(
-			InternalEventRouterWriterForge writer,
-			CodegenMethodScope parent,
-			SAIFFInitializeSymbol symbols,
-			CodegenClassScope classScope)
-		{
-			var method = parent
-				.MakeChild(typeof(InternalEventRouterWriterArrayElement), GetType(), classScope);
+            var indexExpr = ExprNodeUtilityCodegen.CodegenEvaluator(
+                _indexExpression.Forge,
+                method,
+                typeof(VariableTriggerWriteArrayElementForge),
+                classScope);
+            var rhsExpr = ExprNodeUtilityCodegen.CodegenEvaluator(
+                _rhsExpression.Forge,
+                method,
+                typeof(VariableTriggerWriteArrayElementForge),
+                classScope);
+            var typeWidenerExpr = _widener == null
+                ? ConstantNull()
+                : TypeWidenerFactory.CodegenWidener(_widener, method, GetType(), classScope);
 
-			var indexExpr = ExprNodeUtilityCodegen.CodegenEvaluator(
-				_indexExpression.Forge,
-				method,
-				typeof(VariableTriggerWriteArrayElementForge),
-				classScope);
-			var rhsExpr = ExprNodeUtilityCodegen.CodegenEvaluator(
-				_rhsExpression.Forge,
-				method,
-				typeof(VariableTriggerWriteArrayElementForge),
-				classScope);
-			var typeWidenerExpr = _widener == null
-				? ConstantNull()
-				: TypeWidenerFactory.CodegenWidener(_widener, method, GetType(), classScope);
-
-			method.Block
-				.DeclareVar<InternalEventRouterWriterArrayElement>("desc", NewInstance(typeof(InternalEventRouterWriterArrayElement)))
-				.SetProperty(Ref("desc"), "IndexExpression", indexExpr)
-				.SetProperty(Ref("desc"), "RhsExpression", rhsExpr)
-				.SetProperty(Ref("desc"), "TypeWidener", typeWidenerExpr)
-				.SetProperty(Ref("desc"), "PropertyName", Constant(_propertyName))
-				.MethodReturn(Ref("desc"));
-			return LocalMethod(method);
-		}
-	}
+            method.Block
+                .DeclareVar<InternalEventRouterWriterArrayElement>(
+                    "desc",
+                    NewInstance(typeof(InternalEventRouterWriterArrayElement)))
+                .SetProperty(Ref("desc"), "IndexExpression", indexExpr)
+                .SetProperty(Ref("desc"), "RhsExpression", rhsExpr)
+                .SetProperty(Ref("desc"), "TypeWidener", typeWidenerExpr)
+                .SetProperty(Ref("desc"), "PropertyName", Constant(_propertyName))
+                .MethodReturn(Ref("desc"));
+            return LocalMethod(method);
+        }
+    }
 } // end of namespace

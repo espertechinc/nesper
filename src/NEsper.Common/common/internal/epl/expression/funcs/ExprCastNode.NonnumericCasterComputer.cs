@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -25,11 +25,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         public class NonnumericCasterComputer : CasterParserComputerForge,
             CasterParserComputer
         {
-            private readonly SimpleTypeCaster caster;
+            private readonly SimpleTypeCaster _caster;
 
             public NonnumericCasterComputer(SimpleTypeCaster numericTypeCaster)
             {
-                caster = numericTypeCaster;
+                _caster = numericTypeCaster;
             }
 
             public object Compute(
@@ -38,7 +38,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 bool newData,
                 ExprEvaluatorContext exprEvaluatorContext)
             {
-                return caster.Cast(input);
+                return _caster.Cast(input);
             }
 
             public bool IsConstantForConstInput => true;
@@ -51,7 +51,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 ExprForgeCodegenSymbol exprSymbol,
                 CodegenClassScope codegenClassScope)
             {
-                return caster.Codegen(input, inputType, codegenMethodScope, codegenClassScope);
+                return _caster.Codegen(input, inputType, codegenMethodScope, codegenClassScope);
             }
 
             public CasterParserComputer EvaluatorComputer => this;

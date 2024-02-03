@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -30,14 +30,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             EventBean @event,
             ExprEvaluatorContext context);
     }
-    
-        public class ProxyExprEnumerationGivenEvent : ExprEnumerationGivenEvent
+
+    public class ProxyExprEnumerationGivenEvent : ExprEnumerationGivenEvent
     {
-        public delegate FlexCollection EvaluateEventGetROCollectionEventsFunc(
+        public delegate ICollection<EventBean> EvaluateEventGetROCollectionEventsFunc(
             EventBean @event,
             ExprEvaluatorContext context);
 
-        public delegate FlexCollection EvaluateEventGetROCollectionScalarFunc(
+        public delegate ICollection<object> EvaluateEventGetROCollectionScalarFunc(
             EventBean @event,
             ExprEvaluatorContext context);
 
@@ -67,14 +67,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             EventBean @event,
             ExprEvaluatorContext context)
         {
-            return ProcEvaluateEventGetROCollectionEvents(@event, context).EventBeanCollection;
+            return ProcEvaluateEventGetROCollectionEvents(@event, context);
         }
 
         public ICollection<object> EvaluateEventGetROCollectionScalar(
             EventBean @event,
             ExprEvaluatorContext context)
         {
-            return ProcEvaluateEventGetRoCollectionScalar(@event, context).ObjectCollection;
+            return ProcEvaluateEventGetRoCollectionScalar(@event, context);
         }
 
         public EventBean EvaluateEventGetEventBean(

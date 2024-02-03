@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -25,8 +25,6 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
 
         /// <summary>Returns a list of all variables assignment by the on-set</summary>
         /// <returns>list of assignments</returns>
-        public IList<OnTriggerSetAssignment> Assignments {
-            get { return assignments; }
-        }
+        public IList<OnTriggerSetAssignment> Assignments => assignments;
     }
 } // End of namespace

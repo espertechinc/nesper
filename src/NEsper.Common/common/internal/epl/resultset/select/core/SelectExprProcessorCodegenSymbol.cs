@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -19,12 +19,13 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
     {
         public const string NAME_ISSYNTHESIZE = "isSynthesize";
         public const string LAMBDA_NAME_ISSYNTHESIZE = "_isSynthesize";
-        
+
         public static readonly CodegenExpressionRef REF_ISSYNTHESIZE =
             new CodegenExpressionRef(NAME_ISSYNTHESIZE);
-        public static readonly CodegenExpressionRef LAMBDA_REF_ISSYNTHESIZE = 
+
+        public static readonly CodegenExpressionRef LAMBDA_REF_ISSYNTHESIZE =
             new CodegenExpressionRef(LAMBDA_NAME_ISSYNTHESIZE);
-        
+
         private CodegenExpressionRef optionalSynthesizeRef;
 
         public CodegenExpressionRef GetAddSynthesize(CodegenMethod processMethod)

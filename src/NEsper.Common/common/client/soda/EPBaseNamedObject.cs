@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -15,13 +15,8 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Base class for named runtime objects such as views, patterns guards and observers.
     /// </summary>
-    [Serializable]
     public abstract class EPBaseNamedObject
     {
-        private string @namespace;
-        private string name;
-        private IList<Expression> parameters;
-
         /// <summary>
         /// Ctor.
         /// </summary>
@@ -40,40 +35,28 @@ namespace com.espertech.esper.common.client.soda
             string name,
             IList<Expression> parameters)
         {
-            this.@namespace = @namespace;
-            this.name = name;
-            this.parameters = parameters;
+            Namespace = @namespace;
+            Name = name;
+            Parameters = parameters;
         }
 
         /// <summary>
         /// Returns the object namespace name.
         /// </summary>
         /// <returns>namespace name</returns>
-        public string Namespace
-        {
-            get => @namespace;
-            set => @namespace = value;
-        }
+        public string Namespace { get; set; }
 
         /// <summary>
         /// Returns the object name.
         /// </summary>
         /// <returns>object name</returns>
-        public string Name
-        {
-            get => name;
-            set => name = value;
-        }
+        public string Name { get; set; }
 
         /// <summary>
         /// Returns the object parameters.
         /// </summary>
         /// <returns>parameters for object, empty list for no parameters</returns>
-        public IList<Expression> Parameters
-        {
-            get => parameters;
-            set => parameters = value;
-        }
+        public IList<Expression> Parameters { get; set; }
 
         /// <summary>
         /// Writes the object in EPL-syntax in the format "namespace:name(parameter, parameter, ..., parameter)"
@@ -81,9 +64,9 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="writer">to output to</param>
         public void ToEPL(TextWriter writer)
         {
-            writer.Write(@namespace);
+            writer.Write(Namespace);
             writer.Write(':');
-            writer.Write(name);
+            writer.Write(Name);
             writer.Write('(');
             ExpressionBase.ToPrecedenceFreeEPL(Parameters, writer);
             writer.Write(')');

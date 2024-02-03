@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -17,7 +17,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Match-recognize clause.
     /// </summary>
-    [Serializable]
     public class MatchRecognizeClause
     {
         /// <summary>
@@ -41,12 +40,10 @@ namespace com.espertech.esper.common.client.soda
 
             writer.Write(" match_recognize (");
 
-            if (PartitionExpressions.Count > 0)
-            {
+            if (PartitionExpressions.Count > 0) {
                 delimiter = "";
                 writer.Write(" partition by ");
-                foreach (Expression part in PartitionExpressions)
-                {
+                foreach (var part in PartitionExpressions) {
                     writer.Write(delimiter);
                     part.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                     delimiter = ", ";
@@ -55,20 +52,17 @@ namespace com.espertech.esper.common.client.soda
 
             delimiter = "";
             writer.Write(" measures ");
-            foreach (SelectClauseExpression part in Measures)
-            {
+            foreach (var part in Measures) {
                 writer.Write(delimiter);
                 part.ToEPLElement(writer);
                 delimiter = ", ";
             }
 
-            if (IsAll)
-            {
+            if (IsAll) {
                 writer.Write(" all matches");
             }
 
-            if (SkipClause != MatchRecognizeSkipClause.PAST_LAST_ROW)
-            {
+            if (SkipClause != MatchRecognizeSkipClause.PAST_LAST_ROW) {
                 writer.Write(" after match skip " + SkipClause.GetText());
             }
 
@@ -76,22 +70,18 @@ namespace com.espertech.esper.common.client.soda
             Pattern.WriteEPL(writer);
             writer.Write(")");
 
-            if ((IntervalClause != null) && (IntervalClause.Expression != null))
-            {
+            if (IntervalClause != null && IntervalClause.Expression != null) {
                 writer.Write(" interval ");
                 IntervalClause.Expression.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
-                if (IntervalClause.IsOrTerminated)
-                {
+                if (IntervalClause.IsOrTerminated) {
                     writer.Write(" or terminated");
                 }
             }
 
             delimiter = "";
-            if (!Defines.IsEmpty())
-            {
+            if (!Defines.IsEmpty()) {
                 writer.Write(" define ");
-                foreach (MatchRecognizeDefine def in Defines)
-                {
+                foreach (var def in Defines) {
                     writer.Write(delimiter);
                     writer.Write(def.Name);
                     writer.Write(" as ");

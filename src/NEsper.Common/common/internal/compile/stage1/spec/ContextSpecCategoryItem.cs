@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -38,22 +38,19 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
             CodegenClassScope classScope,
             CodegenMethodScope parent)
         {
-            CodegenMethod method = parent.MakeChild(typeof(ContextControllerDetailCategoryItem), GetType(), classScope)
-                .AddParam(typeof(EventType), SAIFFInitializeSymbolWEventType.REF_EVENTTYPE.Ref)
-                .AddParam(typeof(EPStatementInitServices), SAIFFInitializeSymbol.REF_STMTINITSVC.Ref);
-
-            CodegenMethod makeFilter = FilterPlan.CodegenWithEventType(method, classScope);
+            var method = parent.MakeChild(typeof(ContextControllerDetailCategoryItem), GetType(), classScope)
+                .AddParam<EventType>(SAIFFInitializeSymbolWEventType.REF_EVENTTYPE.Ref)
+                .AddParam<EPStatementInitServices>(SAIFFInitializeSymbol.REF_STMTINITSVC.Ref);
 
             method.Block
                 .DeclareVar<FilterSpecPlan>(
                     "filterPlan",
-                    LocalMethod(
-                        makeFilter,
+                    FilterPlan.CodegenWithEventType(
+                        method,
                         SAIFFInitializeSymbolWEventType.REF_EVENTTYPE,
-                        SAIFFInitializeSymbol.REF_STMTINITSVC))
-                .DeclareVar<ContextControllerDetailCategoryItem>(
-                    "item",
-                    NewInstance(typeof(ContextControllerDetailCategoryItem)))
+                        SAIFFInitializeSymbol.REF_STMTINITSVC,
+                        classScope))
+                .DeclareVarNewInstance<ContextControllerDetailCategoryItem>("item")
                 .SetProperty(Ref("item"), "FilterPlan", Ref("filterPlan"))
                 .SetProperty(Ref("item"), "Name", Constant(Name))
                 .MethodReturn(Ref("item"));

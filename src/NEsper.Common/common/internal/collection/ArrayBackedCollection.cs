@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -54,8 +54,8 @@ namespace com.espertech.esper.common.@internal.collection
             }
 
             // allocate more by duplicating the current size
-            int newSize = _lastIndex * 2 + 2;
-            T[] newHandles = new T[newSize];
+            var newSize = _lastIndex * 2 + 2;
+            var newHandles = new T[newSize];
             _handles.CopyTo(newHandles, 0);
             _handles = newHandles;
             _lastIndex = newSize - 1;
@@ -79,9 +79,7 @@ namespace com.espertech.esper.common.@internal.collection
         /// </summary>
         /// <value></value>
         /// <returns>The number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"></see>.</returns>
-        public int Count {
-            get { return _currentIndex; }
-        }
+        public int Count => _currentIndex;
 
         /// <summary>
         /// Returns the backing object array, valid until the current size.
@@ -89,17 +87,13 @@ namespace com.espertech.esper.common.@internal.collection
         /// Applications must ensure to not read past current size as old elements can be encountered.
         /// </summary>
         /// <value>backing array</value>
-        public T[] Array {
-            get { return _handles; }
-        }
+        public T[] Array => _handles;
 
         /// <summary>
         /// Gets a value indicating whether this instance is empty.
         /// </summary>
         /// <value><c>true</c> if this instance is empty; otherwise, <c>false</c>.</value>
-        public bool IsEmpty {
-            get { throw new UnsupportedOperationException(); }
-        }
+        public bool IsEmpty => throw new UnsupportedOperationException();
 
         /// <summary>
         /// Determines whether the <see cref="T:System.Collections.Generic.ICollection`1"></see> contains a specific value.
@@ -121,7 +115,7 @@ namespace com.espertech.esper.common.@internal.collection
         /// </returns>
         public IEnumerator<T> GetEnumerator()
         {
-            for (int ii = 0; ii < _currentIndex; ii++) {
+            for (var ii = 0; ii < _currentIndex; ii++) {
                 yield return _handles[ii];
             }
         }
@@ -157,9 +151,7 @@ namespace com.espertech.esper.common.@internal.collection
         /// </summary>
         /// <value></value>
         /// <returns>true if the <see cref="T:System.Collections.Generic.ICollection`1"></see> is read-only; otherwise, false.</returns>
-        public bool IsReadOnly {
-            get { return false; }
-        }
+        public bool IsReadOnly => false;
 
         /// <summary>
         /// Removes the first occurrence of a specific object from the <see cref="T:System.Collections.Generic.ICollection`1"></see>.

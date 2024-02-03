@@ -17,7 +17,7 @@ namespace com.espertech.esper.common.client.collection
         private readonly ICollection<EventBean> _eventBeanCollection;
         private readonly ICollection<object> _objectCollection;
 
-        public static readonly FlexCollection Empty = new FlexCollection(EmptyList<EventBean>.Instance); 
+        public static readonly FlexCollection Empty = new FlexCollection(EmptyList<EventBean>.Instance);
 
         public FlexCollection(ICollection<EventBean> eventBeanCollection)
         {
@@ -29,13 +29,9 @@ namespace com.espertech.esper.common.client.collection
             _objectCollection = objectCollection;
         }
 
-        public bool IsEventBeanCollection {
-            get => _eventBeanCollection != null;
-        }
+        public bool IsEventBeanCollection => _eventBeanCollection != null;
 
-        public bool IsObjectCollection {
-            get => _objectCollection != null;
-        }
+        public bool IsObjectCollection => _objectCollection != null;
 
         public ICollection<EventBean> EventBeanCollection {
             get {
@@ -91,7 +87,6 @@ namespace com.espertech.esper.common.client.collection
             else {
                 return EnumerationHelper.Empty<object>();
             }
-            
         }
 
         public void Add(object item)
@@ -152,7 +147,7 @@ namespace com.espertech.esper.common.client.collection
         }
 
         public bool IsReadOnly => true;
-        
+
         public static FlexCollection OfEvent(EventBean eventBean)
         {
             return new FlexCollection(Collections.SingletonList<EventBean>(eventBean));
@@ -184,8 +179,9 @@ namespace com.espertech.esper.common.client.collection
             throw new ArgumentException($"Unable to convert from unknown type \"{value.GetType().CleanName()}\"");
         }
     }
-    
-    public static class FlexCollectionExtensions {
+
+    public static class FlexCollectionExtensions
+    {
         public static FlexCollection AsFlexCollection(this object value)
         {
             return FlexCollection.Of(value);

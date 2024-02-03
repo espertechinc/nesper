@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -22,14 +22,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
     {
         public class StringToDateTimeExWExprFormatComputerEval : StringToDateLongWExprFormatEval
         {
-            private readonly TimeZoneInfo timeZone;
+            private readonly TimeZoneInfo _timeZone;
 
             public StringToDateTimeExWExprFormatComputerEval(
                 ExprEvaluator dateFormatEval,
                 TimeZoneInfo timeZone)
                 : base(dateFormatEval)
             {
-                this.timeZone = timeZone;
+                _timeZone = timeZone;
             }
 
             public override object Compute(
@@ -52,7 +52,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 return StringToDateTimExWStaticFormatComputer.StringToDtxWStaticFormatParse(
                     dateFormat,
                     input,
-                    timeZone);
+                    _timeZone);
             }
 
             public static CodegenExpression Codegen(
@@ -69,7 +69,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                         typeof(DateTimeEx),
                         typeof(StringToDateTimeExWExprFormatComputerEval),
                         codegenClassScope)
-                    .AddParam(typeof(object), "input");
+                    .AddParam<object>("input");
                 CodegenExpression format;
                 if (dateFormatForge.ForgeConstantType.IsConstant) {
                     format = FormatFieldExpr(typeof(DateFormat), dateFormatForge, codegenClassScope);

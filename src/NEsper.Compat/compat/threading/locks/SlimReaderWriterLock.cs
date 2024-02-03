@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -15,7 +15,6 @@ namespace com.espertech.esper.compat.threading.locks
         : IReaderWriterLock,
             IReaderWriterLockCommon
     {
-        private readonly long _id;
         private readonly int _lockTimeout;
         private readonly bool _useUpgradeableLocks;
 
@@ -26,7 +25,6 @@ namespace com.espertech.esper.compat.threading.locks
         /// </summary>
         public SlimReaderWriterLock(int lockTimeout, bool useUpgradeableLocks = false)
         {
-            _id = DebugId<SlimReaderWriterLock>.NewId();
             _lockTimeout = lockTimeout;
             _useUpgradeableLocks = useUpgradeableLocks;
             _rwLock = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -21,33 +21,22 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 {
     public class ExprEqualsNodeForgeCoercion : ExprEqualsNodeForge
     {
+        private readonly Coercer _coercerLHS;
+        private readonly Coercer _coercerRHS;
+        private readonly Type _typeLHS;
+        private readonly Type _typeRHS;
+
         public ExprEqualsNodeForgeCoercion(
             ExprEqualsNodeImpl parent,
             Coercer coercerLhs,
-            Coercer coercerRhs)
-            : base(parent)
+            Coercer coercerRhs,
+            Type typeLhs,
+            Type typeRhs) : base(parent)
         {
-            CoercerLHS = coercerLhs;
-            CoercerRHS = coercerRhs;
-        }
-
-        public override ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
-
-        public Coercer CoercerLHS { get; }
-
-        public Coercer CoercerRHS { get; }
-
-        public override ExprEvaluator ExprEvaluator {
-            get {
-                var lhs = ForgeRenderable.ChildNodes[0];
-                var rhs = ForgeRenderable.ChildNodes[1];
-                return new ExprEqualsNodeForgeCoercionEval(
-                    ForgeRenderable,
-                    lhs.Forge.ExprEvaluator,
-                    rhs.Forge.ExprEvaluator,
-                    CoercerLHS,
-                    CoercerRHS);
-            }
+            _coercerLHS = coercerLhs;
+            _coercerRHS = coercerRhs;
+            _typeLHS = typeLhs;
+            _typeRHS = typeRhs;
         }
 
         public override CodegenExpression EvaluateCodegenUninstrumented(
@@ -83,5 +72,28 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 exprSymbol,
                 codegenClassScope).Build();
         }
+
+        public override ExprEvaluator ExprEvaluator {
+            get {
+                var lhs = ForgeRenderable.ChildNodes[0];
+                var rhs = ForgeRenderable.ChildNodes[1];
+                return new ExprEqualsNodeForgeCoercionEval(
+                    ForgeRenderable,
+                    lhs.Forge.ExprEvaluator,
+                    rhs.Forge.ExprEvaluator,
+                    _coercerLHS,
+                    _coercerRHS);
+            }
+        }
+
+        public override ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
+
+        public Coercer CoercerLHS => _coercerLHS;
+
+        public Coercer CoercerRHS => _coercerRHS;
+
+        public Type TypeLhs => _typeLHS;
+
+        public Type TypeRhs => _typeRHS;
     }
 } // end of namespace

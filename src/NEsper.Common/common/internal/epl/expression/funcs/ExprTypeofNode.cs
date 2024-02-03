@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -8,6 +8,7 @@
 
 using System;
 using System.IO;
+using System.Text.Json.Serialization;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -21,21 +22,24 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
     /// <summary>
     ///     Represents the TYPEOF(a) function is an expression tree.
     /// </summary>
-    [Serializable]
     public class ExprTypeofNode : ExprNodeBase,
         ExprFilterOptimizableNode
     {
-        [NonSerialized] private ExprTypeofNodeForge forge;
-        [NonSerialized] private ExprValidationContext exprValidationContext;
+        [JsonIgnore]
+        [NonSerialized]
+        private ExprTypeofNodeForge _forge;
+        [JsonIgnore]
+        [NonSerialized]
+        private ExprValidationContext _exprValidationContext;
 
         public ExprEvaluator ExprEvaluator {
             get {
-                CheckValidated(forge);
-                return forge.ExprEvaluator;
+                CheckValidated(_forge);
+                return _forge.ExprEvaluator;
             }
         }
 
-        public override ExprForge Forge => forge;
+        public override ExprForge Forge => _forge;
 
         public bool IsConstantResult => false;
 
@@ -43,7 +47,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 
         public override ExprPrecedenceEnum Precedence => ExprPrecedenceEnum.UNARY;
 
-        public bool FilterLookupEligible => true;
+        public bool IsFilterLookupEligible => true;
 
         public ExprFilterSpecLookupableForge FilterLookupable {
             get {
@@ -52,14 +56,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                         beanExpression,
                         parent,
                         classScope) => {
-                        CodegenMethod method = parent.MakeChild(typeof(string), GetType(), classScope)
-                            .AddParam(typeof(EventBean), "bean");
+                        var method = parent.MakeChild(typeof(string), GetType(), classScope)
+                            .AddParam<EventBean>("bean");
                         method.Block.MethodReturn(ExprDotMethodChain(Ref("bean")).Get("EventType").Get("Name"));
                         return LocalMethod(method, beanExpression);
                     }
                 };
-                
-                var serde = exprValidationContext.SerdeResolver.SerdeForFilter(typeof(string), exprValidationContext.StatementRawInfo);
+
+                var serde = _exprValidationContext.SerdeResolver.SerdeForFilter(
+                    typeof(string),
+                    _exprValidationContext.StatementRawInfo);
                 var eval = new ExprEventEvaluatorForgeFromProp(eventPropertyForge);
                 return new ExprFilterSpecLookupableForge(
                     ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(this),
@@ -73,7 +79,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
-            this.exprValidationContext = validationContext;
+            _exprValidationContext = validationContext;
 
             if (ChildNodes.Length != 1) {
                 throw new ExprValidationException(
@@ -81,24 +87,24 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             }
 
             if (ChildNodes[0] is ExprStreamUnderlyingNode) {
-                var stream = (ExprStreamUnderlyingNode) ChildNodes[0];
-                forge = new ExprTypeofNodeForgeStreamEvent(this, stream.StreamId);
+                var stream = (ExprStreamUnderlyingNode)ChildNodes[0];
+                _forge = new ExprTypeofNodeForgeStreamEvent(this, stream.StreamId);
                 return null;
             }
 
             if (ChildNodes[0] is ExprIdentNode) {
-                var ident = (ExprIdentNode) ChildNodes[0];
+                var ident = (ExprIdentNode)ChildNodes[0];
                 var streamNum = validationContext.StreamTypeService.GetStreamNumForStreamName(ident.FullUnresolvedName);
                 if (streamNum != -1) {
-                    forge = new ExprTypeofNodeForgeStreamEvent(this, streamNum);
+                    _forge = new ExprTypeofNodeForgeStreamEvent(this, streamNum);
                     return null;
                 }
 
                 var eventType = validationContext.StreamTypeService.EventTypes[ident.StreamId];
                 var fragmentEventType = eventType.GetFragmentType(ident.ResolvedPropertyName);
                 if (fragmentEventType != null) {
-                    var getter = ((EventTypeSPI) eventType).GetGetterSPI(ident.ResolvedPropertyName);
-                    forge = new ExprTypeofNodeForgeFragmentType(
+                    var getter = ((EventTypeSPI)eventType).GetGetterSPI(ident.ResolvedPropertyName);
+                    _forge = new ExprTypeofNodeForgeFragmentType(
                         this,
                         ident.StreamId,
                         getter,
@@ -107,11 +113,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 }
             }
 
-            forge = new ExprTypeofNodeForgeInnerEval(this);
+            _forge = new ExprTypeofNodeForgeInnerEval(this);
             return null;
         }
 
-        public override void ToPrecedenceFreeEPL(TextWriter writer,
+        public override void ToPrecedenceFreeEPL(
+            TextWriter writer,
             ExprNodeRenderableFlags flags)
         {
             writer.Write("typeof(");

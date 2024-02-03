@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -100,19 +100,19 @@ namespace com.espertech.esper.common.@internal.supportunit.db
         {
             get
             {
-                var serverHost = Environment.GetEnvironmentVariable("ESPER_MYSQL_HOST");
-                var serverUser = Environment.GetEnvironmentVariable("ESPER_MYSQL_USER");
-                var serverPass = Environment.GetEnvironmentVariable("ESPER_MYSQL_PASSWORD");
-                var serverDbase = Environment.GetEnvironmentVariable("ESPER_MYSQL_DBASE");
+                var serverHost = Environment.GetEnvironmentVariable("ESPER_SQL_HOST");
+                var serverUser = Environment.GetEnvironmentVariable("ESPER_SQL_USER");
+                var serverPass = Environment.GetEnvironmentVariable("ESPER_SQL_PASSWORD");
+                var serverDbase = Environment.GetEnvironmentVariable("ESPER_SQL_DBASE");
 
                 if (serverHost == null)
-                    serverHost = "nesper-mysql-integ.local";
+                    serverHost = "localhost";
                 if (serverUser == null)
                     serverUser = "esper";
                 if (serverPass == null)
                     serverPass = "3sp3rP@ssw0rd";
                 if (serverDbase == null)
-                    serverDbase = "test";
+                    serverDbase = "esper";
 
                 var properties = new Properties();
                 properties["Server"] = serverHost;

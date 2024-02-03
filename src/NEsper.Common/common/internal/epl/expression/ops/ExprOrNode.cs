@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -72,7 +72,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             // Sub-nodes must be returning boolean
             foreach (var child in ChildNodes) {
                 var childType = child.Forge.EvaluationType;
-                if (!childType.IsBoolean()) {
+                if (!childType.IsTypeBoolean()) {
                     throw new ExprValidationException(
                         "Incorrect use of OR clause, sub-expressions do not return boolean");
                 }
@@ -85,7 +85,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             return null;
         }
 
-        public override void ToPrecedenceFreeEPL(TextWriter writer,
+        public override void ToPrecedenceFreeEPL(
+            TextWriter writer,
             ExprNodeRenderableFlags flags)
         {
             var appendStr = "";

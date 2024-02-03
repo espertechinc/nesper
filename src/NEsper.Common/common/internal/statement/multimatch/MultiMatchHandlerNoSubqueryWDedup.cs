@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -17,7 +17,7 @@ namespace com.espertech.esper.common.@internal.statement.multimatch
 {
     public class MultiMatchHandlerNoSubqueryWDedup : MultiMatchHandler
     {
-        private readonly IThreadLocal<LinkedHashSet<FilterHandleCallback>> dedupes = 
+        private readonly IThreadLocal<LinkedHashSet<FilterHandleCallback>> dedupes =
             new FastThreadLocal<LinkedHashSet<FilterHandleCallback>>(
                 () => new LinkedHashSet<FilterHandleCallback>());
 
@@ -61,8 +61,8 @@ namespace com.espertech.esper.common.@internal.statement.multimatch
                 return false;
             }
 
-            int index = 0;
-            foreach (FilterHandleCallback candidate in callbacks) {
+            var index = 0;
+            foreach (var candidate in callbacks) {
                 if (candidate == callback) {
                     return true;
                 }

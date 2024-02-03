@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -12,10 +12,10 @@ using com.espertech.esper.common.client.configuration.compiler;
 
 namespace com.espertech.esper.common.client.hook.singlerowfunc
 {
-	/// <summary>
-	///     Annotation for use in EPL statements with inline classes for providing a plug-in single-row function.
-	/// </summary>
-	public class ExtensionSingleRowFunctionAttribute : Attribute
+    /// <summary>
+    ///     Annotation for use in EPL statements with inline classes for providing a plug-in single-row function.
+    /// </summary>
+    public class ExtensionSingleRowFunctionAttribute : Attribute
     {
         public ExtensionSingleRowFunctionAttribute()
         {

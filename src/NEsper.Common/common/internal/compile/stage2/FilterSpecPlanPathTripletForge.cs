@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -20,7 +20,8 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 {
     public class FilterSpecPlanPathTripletForge
     {
-        public FilterSpecPlanPathTripletForge(FilterSpecParamForge param,
+        public FilterSpecPlanPathTripletForge(
+            FilterSpecParamForge param,
             ExprNode tripletConfirm)
         {
             Param = param;
@@ -48,7 +49,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             var method = parent.MakeChild(typeof(FilterSpecPlanPathTriplet), typeof(FilterSpecParamForge), classScope);
             method.Block
                 .DeclareVar<FilterSpecPlanPathTriplet>("triplet", NewInstance(typeof(FilterSpecPlanPathTriplet)))
-                .SetProperty(Ref("triplet"), "Param", LocalMethod(Param.MakeCodegen(classScope, method, symbols)))
+                .SetProperty(Ref("triplet"), "Param", Param.MakeCodegen(classScope, method, symbols))
                 .SetProperty(Ref("triplet"), "TripletConfirm", OptionalEvaluator(TripletConfirm, method, classScope))
                 .MethodReturn(Ref("triplet"));
             return method;

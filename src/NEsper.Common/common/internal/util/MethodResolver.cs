@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -20,6 +20,8 @@ using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 
+using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
+
 namespace com.espertech.esper.common.@internal.util
 {
     /// <summary>
@@ -33,7 +35,7 @@ namespace com.espertech.esper.common.@internal.util
     public class MethodResolver
     {
         private static readonly ILog Log =
-            LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         private static readonly IDictionary<Type, ICollection<Type>> WrappingConversions =
             new Dictionary<Type, ICollection<Type>>();
@@ -342,25 +344,25 @@ namespace com.espertech.esper.common.@internal.util
             var bigIntWrappers = InitWrappingConversions<BigInteger, BigInteger?>();
 
 #if false
-// Initialize the map of widening conversions
+	// Initialize the map of widening conversions
             var wideningConversions = new HashSet<Type>(byteWrappers);
             WIDENING_CONVERSIONS.Put(typeof(short), new HashSet<Type>(wideningConversions));
             WIDENING_CONVERSIONS.Put(typeof(short?), new HashSet<Type>(wideningConversions));
 
-            wideningConversions.AddAll(shortWrappers);
-            wideningConversions.AddAll(charWrappers);
+	wideningConversions.AddAll (shortWrappers);
+	wideningConversions.AddAll (charWrappers);
             WIDENING_CONVERSIONS.Put(typeof(int), new HashSet<Type>(wideningConversions));
             WIDENING_CONVERSIONS.Put(typeof(int?), new HashSet<Type>(wideningConversions));
 
-            wideningConversions.AddAll(intWrappers);
+	wideningConversions.AddAll (intWrappers);
             WIDENING_CONVERSIONS.Put(typeof(long), new HashSet<Type>(wideningConversions));
             WIDENING_CONVERSIONS.Put(typeof(long?), new HashSet<Type>(wideningConversions));
 
-            wideningConversions.AddAll(longWrappers);
+wideningConversions.AddAll (longWrappers);
             WIDENING_CONVERSIONS.Put(typeof(float), new HashSet<Type>(wideningConversions));
             WIDENING_CONVERSIONS.Put(typeof(float?), new HashSet<Type>(wideningConversions));
 
-            wideningConversions.AddAll(floatWrappers);
+wideningConversions.AddAll (floatWrappers);
             WIDENING_CONVERSIONS.Put(typeof(double), new HashSet<Type>(wideningConversions));
             WIDENING_CONVERSIONS.Put(typeof(double?), new HashSet<Type>(wideningConversions));
 
@@ -384,16 +386,17 @@ namespace com.espertech.esper.common.@internal.util
         public static IDictionary<Type, ICollection<Type>> WIDENING_CONVERSIONS { get; private set; }
 
         /// <summary>
-        /// Attempts to find the static or instance method described by the parameters, or a method of the same name that will accept the same type of parameters.
+        /// Attempts to find the static or instance method described by the parameters, or a method of the same name that
+        /// will accept the same type of parameters.
         /// </summary>
         /// <param name="declaringClass">the class to search for the method</param>
         /// <param name="methodName">the name of the method</param>
         /// <param name="paramTypes">the parameter types for the method</param>
         /// <param name="allowInstance">true to allow instance methods as well, false to allow only static method</param>
-        /// <param name="allowEventBeanType">Type of the allow event bean.</param>
-        /// <param name="allowEventBeanCollType">Type of the allow event bean coll.</param>
+        /// <param name="allowEventBeanCollType">whether event-bean-collection parameter type is allowed</param>
+        /// <param name="allowEventBeanType">whether event-bean parameter type is allowed</param>
         /// <returns>- the Method object for this method</returns>
-        /// <throws>EngineNoSuchMethodException if the method could not be found</throws>
+        /// <throws>MethodResolverNoSuchMethodException if the method could not be found</throws>
         public static MethodInfo ResolveMethod(
             Type declaringClass,
             string methodName,
@@ -403,17 +406,17 @@ namespace com.espertech.esper.common.@internal.util
             bool[] allowEventBeanCollType)
         {
             // Get all the methods for this class
-            MethodInfo[] methods = declaringClass.GetMethods()
+            var methods = declaringClass.GetMethods()
                 .OrderBy(m => m.IsVarArgs() ? 1 : 0)
                 .ToArray();
 
             MethodInfo bestMatch = null;
-            var bestConversionCount = -1;
+            MethodExecutableRank rank = null;
 
             // Examine each method, checking if the signature is compatible
             MethodInfo conversionFailedMethod = null;
 
-            for (int mm = 0; mm < methods.Length; mm++) {
+            for (var mm = 0; mm < methods.Length; mm++) {
                 var method = methods[mm];
 
                 // Check the modifiers: we only want public and static, if required
@@ -424,7 +427,7 @@ namespace com.espertech.esper.common.@internal.util
                 if (!method.IsPublic) {
                     continue;
                 }
-                
+
                 // Check the name
                 if (method.Name != methodName) {
                     continue;
@@ -454,7 +457,7 @@ namespace com.espertech.esper.common.@internal.util
                 }
 
                 // Check the parameter list
-                int conversionCount = CompareParameterTypesAllowContext(
+                var conversionCount = CompareParameterTypesAllowContext(
                     parameterTypes,
                     paramTypes,
                     allowEventBeanType,
@@ -470,7 +473,7 @@ namespace com.espertech.esper.common.@internal.util
                 }
 
                 // Parameters match exactly
-                if (conversionCount == 0) {
+                if (conversionCount == 0 && !method.IsVarArgs()) {
                     bestMatch = method;
                     break;
                 }
@@ -478,13 +481,13 @@ namespace com.espertech.esper.common.@internal.util
                 // No previous match
                 if (bestMatch == null) {
                     bestMatch = method;
-                    bestConversionCount = conversionCount;
+                    rank = new MethodExecutableRank(conversionCount, method.IsVarArgs());
                 }
                 else {
                     // Current match is better
-                    if (conversionCount < bestConversionCount) {
+                    if (rank.CompareTo(conversionCount, method.IsVarArgs()) == 1) {
                         bestMatch = method;
-                        bestConversionCount = conversionCount;
+                        rank = new MethodExecutableRank(conversionCount, method.IsVarArgs());
                     }
                 }
             }
@@ -494,24 +497,9 @@ namespace com.espertech.esper.common.@internal.util
                 return bestMatch;
             }
 
-            var paramList = new StringBuilder();
-            if (paramTypes != null && paramTypes.Length != 0) {
-                var appendString = "";
-                foreach (var param in paramTypes) {
-                    paramList.Append(appendString);
-                    if (param == null) {
-                        paramList.Append("(null)");
-                    }
-                    else {
-                        paramList.Append(param.ToString());
-                    }
-
-                    appendString = ", ";
-                }
-            }
-
+            var parametersPretty = GetParametersPretty(paramTypes);
             throw new MethodResolverNoSuchMethodException(
-                "Unknown method " + declaringClass.Name + '.' + methodName + '(' + paramList + ')',
+                "Unknown method " + declaringClass.Name + '.' + methodName + '(' + parametersPretty + ')',
                 conversionFailedMethod);
         }
 
@@ -528,7 +516,7 @@ namespace com.espertech.esper.common.@internal.util
                 var parameterTypes = method.GetParameters().Select(p => p.ParameterType).Skip(1).ToArray();
 
                 // Check the parameter list
-                int conversionCount = CompareParameterTypesAllowContext(
+                var conversionCount = CompareParameterTypesAllowContext(
                     parameterTypes,
                     paramTypes,
                     allowEventBeanType,
@@ -546,35 +534,25 @@ namespace com.espertech.esper.common.@internal.util
             return null;
         }
 
-        public static CodegenExpression ResolveMethodCodegenExactNonStatic(MethodInfo method)
+        private static string GetParametersPretty(Type[] paramTypes)
         {
-            return CodegenExpressionBuilder.StaticMethod(
-                typeof(MethodResolver),
-                "ResolveMethodExactNonStatic",
-                CodegenExpressionBuilder.Constant(method.DeclaringType),
-                CodegenExpressionBuilder.Constant(method.Name),
-                CodegenExpressionBuilder.Constant(method.GetParameterTypes()));
-        }
+            var parameters = new StringBuilder();
+            if (paramTypes != null && paramTypes.Length != 0) {
+                var appendString = "";
+                foreach (object param in paramTypes) {
+                    parameters.Append(appendString);
+                    if (param == null) {
+                        parameters.Append("(null)");
+                    }
+                    else {
+                        parameters.Append(param);
+                    }
 
-        public static MethodInfo ResolveMethodExactNonStatic(
-            Type declaringClass,
-            String methodName,
-            Type[] parameters)
-        {
-            try {
-                var method = declaringClass.GetMethod(methodName, parameters);
-                if (method.IsStatic) {
-                    throw new EPException("Not an instance method");
+                    appendString = ", ";
                 }
+            }
 
-                return method;
-            }
-            catch (Exception ex) {
-                string parametersPretty = GetParametersPretty(parameters);
-                throw new EPException(
-                    $"Failed to resolve static method {declaringClass.Name}.{methodName}({parametersPretty}): {ex.Message}",
-                    ex);
-            }
+            return parameters.ToString();
         }
 
         private static void LogWarnBoxedToPrimitiveType(
@@ -583,36 +561,44 @@ namespace com.espertech.esper.common.@internal.util
             MethodInfo bestMatch,
             Type[] paramTypes)
         {
-            var parametersMethod = bestMatch.GetParameters().Select(p => p.ParameterType).ToArray();
-            for (int i = 0; i < parametersMethod.Length; i++) {
-                if (parametersMethod[i].CanBeNull()) {
+            var parametersMethod = bestMatch.GetParameterTypes();
+            for (var i = 0; i < parametersMethod.Length; i++) {
+                var paramMethod = parametersMethod[i];
+                if (!paramMethod.IsPrimitive) {
                     continue;
                 }
 
+                var paramType = paramTypes[i];
+                var paramNull = paramType == null;
                 // if null-type parameter, or non-CLR class and boxed type matches
-                if (paramTypes[i] == null ||
-                    (!declaringClass.GetType().FullName.StartsWith("System.") &&
-                     (parametersMethod[i].GetBoxedType()) == paramTypes[i])) {
-                    string paramTypeStr = paramTypes[i] == null ? "null" : paramTypes[i].Name;
+                if (paramNull ||
+                    (!declaringClass.GetType().Name.StartsWith("System") &&
+                     paramMethod.GetBoxedType() == paramType)) {
+                    var paramTypeStr = paramNull ? "null" : paramType.Name;
                     Log.Info(
-                        "Method '{0}' in class '{1}' expects primitive type '{2}' as parameter {3}, but receives a nullable (boxed) type {4}. This may cause null pointer exception at runtime if the actual value is null, please consider using boxed types for method parameters.",
-                        methodName,
-                        declaringClass.CleanName(),
-                        parametersMethod[i],
-                        i,
-                        paramTypeStr);
+                        "Method '" +
+                        methodName +
+                        "' in class '" +
+                        declaringClass.CleanName() +
+                        "' expects primitive type '" +
+                        parametersMethod[i] +
+                        "' as parameter " +
+                        i +
+                        ", but receives a nullable (boxed) type " +
+                        paramTypeStr +
+                        ". This may cause null pointer exception at runtime if the actual value is null, please consider using boxed types for method parameters.");
                     return;
                 }
             }
         }
 
-        private static Type GetCommonCoersion(IList<Type> typeList)
+                private static Type GetCommonCoersion(IList<Type> typeList)
         {
             var typeHash = new HashSet<Type>();
 
             typeList[0].Visit(t => typeHash.Add(t));
 
-            for (int ii = 1; ii < typeList.Count; ii++) {
+            for (var ii = 1; ii < typeList.Count; ii++) {
                 var moreTypes = new HashSet<Type>();
                 typeList[ii].Visit(t => moreTypes.Add(t));
                 typeHash.IntersectWith(moreTypes);
@@ -659,14 +645,17 @@ namespace com.espertech.esper.common.@internal.util
 
             return concretes.First();
         }
-
+        
         private static bool IsWideningConversion(
             Type declarationType,
             Type invocationType)
         {
-            return
-                WIDENING_CONVERSIONS.ContainsKey(declarationType) &&
-                WIDENING_CONVERSIONS.Get(declarationType).Contains(invocationType);
+            if (WIDENING_CONVERSIONS.ContainsKey(declarationType)) {
+                return WIDENING_CONVERSIONS.Get(declarationType).Contains(invocationType);
+            }
+            else {
+                return false;
+            }
         }
 
         private static bool IsPublicAndStatic(
@@ -686,23 +675,23 @@ namespace com.espertech.esper.common.@internal.util
             bool[] optionalAllowEventBeanType,
             bool[] optionalAllowEventBeanCollType,
             Type[] genericParameterTypes,
-            bool isVarArgs)
+            bool isVarargs)
         {
             // determine if the last parameter is EPLMethodInvocationContext (no varargs)
             var declaredNoContext = declarationParameters;
-            if (!isVarArgs &&
+            if (!isVarargs &&
                 declarationParameters.Length > 0 &&
-                declarationParameters[declarationParameters.Length - 1] == typeof(EPLMethodInvocationContext)) {
+                declarationParameters[^1] == typeof(EPLMethodInvocationContext)) {
                 declaredNoContext = declarationParameters.Take(declarationParameters.Length - 1).ToArray();
             }
 
             // determine if the previous-to-last parameter is EPLMethodInvocationContext (varargs-only)
-            if (isVarArgs &&
+            if (isVarargs &&
                 declarationParameters.Length > 1 &&
-                declarationParameters[declarationParameters.Length - 2] == typeof(EPLMethodInvocationContext)) {
+                declarationParameters[^2] == typeof(EPLMethodInvocationContext)) {
                 var rewritten = new Type[declarationParameters.Length - 1];
                 Array.Copy(declarationParameters, 0, rewritten, 0, declarationParameters.Length - 2);
-                rewritten[rewritten.Length - 1] = declarationParameters[declarationParameters.Length - 1];
+                rewritten[^1] = declarationParameters[^1];
                 declaredNoContext = rewritten;
             }
 
@@ -712,7 +701,7 @@ namespace com.espertech.esper.common.@internal.util
                 optionalAllowEventBeanType,
                 optionalAllowEventBeanCollType,
                 genericParameterTypes,
-                isVarArgs);
+                isVarargs);
         }
 
         // Returns -1 if the invocation parameters aren't applicable
@@ -724,16 +713,14 @@ namespace com.espertech.esper.common.@internal.util
             bool[] optionalAllowEventBeanType,
             bool[] optionalAllowEventBeanCollType,
             Type[] genericParameterTypes,
-            bool isVarArgs)
+            bool isVarargs)
         {
             if (invocationParameters == null) {
                 return declarationParameters.Length == 0 ? 0 : -1;
             }
 
-            AtomicLong conversionCount;
-
             // handle varargs
-            if (isVarArgs) {
+            if (isVarargs) {
                 if (invocationParameters.Length < declarationParameters.Length - 1) {
                     return -1;
                 }
@@ -742,47 +729,44 @@ namespace com.espertech.esper.common.@internal.util
                     return 0;
                 }
 
-                conversionCount = new AtomicLong();
+                var conversionCount = new AtomicLong();
 
                 // check declared types (non-vararg)
-                for (int i = 0; i < declarationParameters.Length - 1; i++) {
+                for (var i = 0; i < declarationParameters.Length - 1; i++) {
                     var compatible = CompareParameterTypeCompatible(
                         invocationParameters[i],
                         declarationParameters[i],
-                        optionalAllowEventBeanType == null ? (bool?) null : optionalAllowEventBeanType[i],
-                        optionalAllowEventBeanCollType == null ? (bool?) null : optionalAllowEventBeanCollType[i],
+                        optionalAllowEventBeanType?[i],
+                        optionalAllowEventBeanCollType?[i],
                         genericParameterTypes[i],
-                        conversionCount
-                    );
-
+                        conversionCount);
                     if (!compatible) {
                         return -1;
                     }
                 }
 
-                var varargDeclarationParameter =
-                    declarationParameters[declarationParameters.Length - 1].GetElementType();
+                var varargDeclarationParameter = declarationParameters[^1].GetElementType();
 
                 // handle array of compatible type passed into vararg
                 if (invocationParameters.Length == declarationParameters.Length) {
-                    var providedType = invocationParameters[invocationParameters.Length - 1];
-                    if (providedType != null && providedType.IsArray()) {
-                        if (providedType.GetElementType() == varargDeclarationParameter) {
-                            return (int) conversionCount.Get();
+                    var lastType = invocationParameters[^1];
+                    if (lastType != null && lastType.IsArray()) {
+                        if (lastType.GetElementType() == varargDeclarationParameter) {
+                            return (int)conversionCount.Get();
                         }
 
                         if (TypeHelper.IsSubclassOrImplementsInterface(
-                            providedType.GetElementType(),
-                            varargDeclarationParameter)) {
+                                lastType.GetElementType(),
+                                varargDeclarationParameter)) {
                             conversionCount.IncrementAndGet();
-                            return (int) conversionCount.Get();
+                            return (int)conversionCount.Get();
                         }
                     }
                 }
 
                 // handle compatible types passed into vararg
-                Type varargGenericParameterTypes = genericParameterTypes[genericParameterTypes.Length - 1];
-                for (int i = declarationParameters.Length - 1; i < invocationParameters.Length; i++) {
+                var varargGenericParameterTypes = genericParameterTypes[^1];
+                for (var i = declarationParameters.Length - 1; i < invocationParameters.Length; i++) {
                     var compatible = CompareParameterTypeCompatible(
                         invocationParameters[i],
                         varargDeclarationParameter,
@@ -795,7 +779,7 @@ namespace com.espertech.esper.common.@internal.util
                     }
                 }
 
-                return (int) conversionCount.Get();
+                return (int)conversionCount.Get();
             }
 
             // handle non-varargs
@@ -803,21 +787,21 @@ namespace com.espertech.esper.common.@internal.util
                 return -1;
             }
 
-            conversionCount = new AtomicLong();
-            for (int i = 0; i < declarationParameters.Length; i++) {
+            var conversionCountX = new AtomicLong();
+            for (var i = 0; i < declarationParameters.Length; i++) {
                 var compatible = CompareParameterTypeCompatible(
                     invocationParameters[i],
                     declarationParameters[i],
                     optionalAllowEventBeanType?[i],
                     optionalAllowEventBeanCollType?[i],
                     genericParameterTypes[i],
-                    conversionCount);
+                    conversionCountX);
                 if (!compatible) {
                     return -1;
                 }
             }
 
-            return (int) conversionCount.Get();
+            return (int)conversionCountX.Get();
         }
 
         private static bool CompareParameterTypeCompatible(
@@ -828,8 +812,8 @@ namespace com.espertech.esper.common.@internal.util
             Type genericParameterType,
             AtomicLong conversionCount)
         {
-            if ((invocationParameter == null) && declarationParameter.CanBeNull()) {
-                return true;
+            if (invocationParameter == null) {
+                return declarationParameter.CanBeNull();
             }
 
             if (optionalAllowEventBeanType != null &&
@@ -847,7 +831,8 @@ namespace com.espertech.esper.common.@internal.util
 
             if (!IsIdentityConversion(declarationParameter, invocationParameter)) {
                 conversionCount.IncrementAndGet();
-                if (!IsWideningConversion(declarationParameter, invocationParameter)) {
+                if (!IsWideningConversion(declarationParameter, invocationParameter) &&
+                    declarationParameter != typeof(object)) {
                     return false;
                 }
             }
@@ -869,6 +854,10 @@ namespace com.espertech.esper.common.@internal.util
                 return declarationType.CanBeNull();
             }
 
+            if (invocationType.IsPrimitive) {
+                invocationType = invocationType.GetBoxedType();
+            }
+
             return declarationType.IsAssignableFrom(invocationType);
         }
 
@@ -877,28 +866,30 @@ namespace com.espertech.esper.common.@internal.util
             Type[] paramTypes)
         {
             // Get all the methods for this class
-            ConstructorInfo[] ctors = declaringClass.GetConstructors();
+            var ctors = declaringClass.GetConstructors();
 
             ConstructorInfo bestMatch = null;
-            int bestConversionCount = -1;
+            MethodExecutableRank rank = null;
 
             // Examine each method, checking if the signature is compatible
             ConstructorInfo conversionFailedCtor = null;
-            foreach (ConstructorInfo ctor in ctors) {
+            foreach (var ctor in ctors) {
                 // Check the modifiers: we only want public
                 if (!ctor.IsPublic) {
                     continue;
                 }
 
+                var isVarArgs = ctor.IsVarArgs();
+
                 // Check the parameter list
                 var constructorParameters = ctor.GetParameters().Select(p => p.ParameterType).ToArray();
-                int conversionCount = CompareParameterTypesNoContext(
+                var conversionCount = CompareParameterTypesNoContext(
                     constructorParameters,
                     paramTypes,
                     null,
                     null,
-                    constructorParameters, // ctor.GetGenericArguments());
-                    ctor.IsVarArgs());
+                    constructorParameters,
+                    isVarArgs);
 
                 // MSDN
                 //
@@ -913,7 +904,7 @@ namespace com.espertech.esper.common.@internal.util
                 }
 
                 // Parameters match exactly
-                if (conversionCount == 0) {
+                if (conversionCount == 0 && !isVarArgs) {
                     bestMatch = ctor;
                     break;
                 }
@@ -921,13 +912,13 @@ namespace com.espertech.esper.common.@internal.util
                 // No previous match
                 if (bestMatch == null) {
                     bestMatch = ctor;
-                    bestConversionCount = conversionCount;
+                    rank = new MethodExecutableRank(conversionCount, isVarArgs);
                 }
                 else {
                     // Current match is better
-                    if (conversionCount < bestConversionCount) {
+                    if (rank.CompareTo(conversionCount, isVarArgs) == 1) {
                         bestMatch = ctor;
-                        bestConversionCount = conversionCount;
+                        rank = new MethodExecutableRank(conversionCount, isVarArgs);
                     }
                 }
             }
@@ -961,25 +952,49 @@ namespace com.espertech.esper.common.@internal.util
             throw new MethodResolverNoSuchCtorException(message, conversionFailedCtor);
         }
 
-        private static String GetParametersPretty(Type[] paramTypes)
+        public static CodegenExpression ResolveMethodCodegenExactNonStatic(MethodInfo method)
         {
-            var parameters = new StringBuilder();
-            if (paramTypes != null && paramTypes.Length != 0) {
-                var appendString = "";
-                foreach (var param in paramTypes) {
-                    parameters.Append(appendString);
-                    if (param == null) {
-                        parameters.Append("(null)");
-                    }
-                    else {
-                        parameters.Append(param.ToString());
-                    }
+            return StaticMethod(
+                typeof(MethodResolver),
+                "ResolveMethodExactNonStatic",
+                Constant(method.DeclaringType),
+                Constant(method.Name),
+                Constant(method.GetParameterTypes()));
+        }
 
-                    appendString = ", ";
+        /// <summary>
+        /// NOTE: Code-generation-invoked method, method name and parameter order matters
+        /// </summary>
+        /// <param name="declaringClass">declaring class</param>
+        /// <param name="methodName">method name</param>
+        /// <param name="parameters">parameters</param>
+        /// <returns>method</returns>
+        public static MethodInfo ResolveMethodExactNonStatic(
+            Type declaringClass,
+            string methodName,
+            Type[] parameters)
+        {
+            try {
+                var method = declaringClass.GetMethod(methodName, parameters);
+                if (method.IsStatic) {
+                    throw new EPException("Not an instance method");
                 }
-            }
 
-            return parameters.ToString();
+                return method;
+            }
+            catch (Exception ex) {
+                var parametersPretty = GetParametersPretty(parameters);
+                throw new EPException(
+                    "Failed to resolve static method " +
+                    declaringClass.Name +
+                    '.' +
+                    methodName +
+                    '(' +
+                    parametersPretty +
+                    ": " +
+                    ex.Message,
+                    ex);
+            }
         }
     }
-}
+} // end of namespace

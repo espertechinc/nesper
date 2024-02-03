@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 
 namespace com.espertech.esper.regressionlib.suite.@event.bean
@@ -15,10 +16,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
     {
         public void Run(RegressionEnvironment env)
         {
-            SupportMessageAssertUtil.TryInvalidCompile(
-                env,
+            env.TryInvalidCompile(
                 "create schema MyPrivateEvent as " + typeof(MyPrivateEvent).MaskTypeName(),
-                "Event class '" + typeof(MyPrivateEvent).FullName + "' does not have public visibility");
+                "Event class '" + typeof(MyPrivateEvent).CleanName() + "' does not have public visibility");
         }
 
         internal class MyPrivateEvent

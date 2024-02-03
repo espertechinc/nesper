@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -26,16 +26,16 @@ namespace com.espertech.esper.common.@internal.epl.agg.rollup
         {
             var result = new int[expressions.Count];
             for (var i = 0; i < expressions.Count; i++) {
-                int index = context.GetIndex(expressions[i]);
+                var index = context.GetIndex(expressions[i]);
                 result[i] = index;
             }
 
-            Collections.SortInPlace(result);
+            result.SortInPlace();
 
             // find dups
             for (var i = 0; i < result.Length - 1; i++) {
                 if (result[i] == result[i + 1]) {
-                    throw new GroupByRollupDuplicateException(new[] {result[i]});
+                    throw new GroupByRollupDuplicateException(new[] { result[i] });
                 }
             }
 

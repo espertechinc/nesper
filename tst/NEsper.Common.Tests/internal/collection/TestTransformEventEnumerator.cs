@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -14,6 +14,7 @@ using com.espertech.esper.common.@internal.supportunit.@event;
 using com.espertech.esper.compat;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.collection
 {
@@ -26,27 +27,27 @@ namespace com.espertech.esper.common.@internal.collection
         public void TestEmpty()
         {
             enumerator = MakeIterator(new int[0]);
-            Assert.IsFalse(enumerator.MoveNext());
+            ClassicAssert.IsFalse(enumerator.MoveNext());
         }
 
         [Test]
         public void TestOne()
         {
             enumerator = MakeIterator(new int[] { 10 });
-            Assert.IsTrue(enumerator.MoveNext());
-            Assert.AreEqual(10, enumerator.Current.Get("Id"));
-            Assert.IsFalse(enumerator.MoveNext());
+            ClassicAssert.IsTrue(enumerator.MoveNext());
+            ClassicAssert.AreEqual(10, enumerator.Current.Get("Id"));
+            ClassicAssert.IsFalse(enumerator.MoveNext());
         }
 
         [Test]
         public void TestTwo()
         {
             enumerator = MakeIterator(new int[] { 10, 20 });
-            Assert.IsTrue(enumerator.MoveNext());
-            Assert.AreEqual(10, enumerator.Current.Get("Id"));
-            Assert.IsTrue(enumerator.MoveNext());
-            Assert.AreEqual(20, enumerator.Current.Get("Id"));
-            Assert.IsFalse(enumerator.MoveNext());
+            ClassicAssert.IsTrue(enumerator.MoveNext());
+            ClassicAssert.AreEqual(10, enumerator.Current.Get("Id"));
+            ClassicAssert.IsTrue(enumerator.MoveNext());
+            ClassicAssert.AreEqual(20, enumerator.Current.Get("Id"));
+            ClassicAssert.IsFalse(enumerator.MoveNext());
         }
 
         private TransformEventEnumerator MakeIterator(int[] values)

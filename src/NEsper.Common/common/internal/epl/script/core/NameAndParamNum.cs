@@ -1,11 +1,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -15,7 +16,7 @@ namespace com.espertech.esper.common.@internal.epl.script.core
 {
     public class NameAndParamNum
     {
-        private static readonly NameAndParamNum[] EMPTY_ARRAY = new NameAndParamNum[0];
+        private static readonly NameAndParamNum[] EMPTY_ARRAY = Array.Empty<NameAndParamNum>();
 
         public NameAndParamNum(
             string name,
@@ -39,7 +40,7 @@ namespace com.espertech.esper.common.@internal.epl.script.core
                 return false;
             }
 
-            var that = (NameAndParamNum) o;
+            var that = (NameAndParamNum)o;
 
             if (ParamNum != that.ParamNum) {
                 return false;

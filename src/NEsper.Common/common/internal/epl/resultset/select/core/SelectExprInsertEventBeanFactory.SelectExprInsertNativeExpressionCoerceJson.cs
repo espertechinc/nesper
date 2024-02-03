@@ -1,5 +1,5 @@
 ﻿///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -36,13 +36,17 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                 ExprForgeCodegenSymbol exprSymbol,
                 CodegenClassScope codegenClassScope)
             {
-                CodegenMethod methodNode = codegenMethodScope
+                var methodNode = codegenMethodScope
                     .MakeChild(typeof(EventBean), GetType(), codegenClassScope);
                 methodNode
                     .Block
-                    .DeclareVar<string>("result", exprForge.EvaluateCodegen(typeof(string), methodNode, exprSymbol, codegenClassScope))
+                    .DeclareVar<string>(
+                        "result",
+                        exprForge.EvaluateCodegen(typeof(string), methodNode, exprSymbol, codegenClassScope))
                     .IfRefNullReturnNull("result")
-                    .DeclareVar<object>("und", ExprDotMethod(Cast(typeof(JsonEventType), resultEventType), "Parse", Ref("result")))
+                    .DeclareVar<object>(
+                        "und",
+                        ExprDotMethod(Cast(typeof(JsonEventType), resultEventType), "Parse", Ref("result")))
                     .MethodReturn(ExprDotMethod(eventBeanFactory, "AdapterForTypedJson", Ref("und"), resultEventType));
                 return methodNode;
             }

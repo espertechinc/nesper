@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -85,7 +85,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
                     "TableColumnAggValue",
                     Constant(_streamNum),
                     Constant(_columnNum),
-                    symbols.GetAddEPS(method),
+                    symbols.GetAddEps(method),
                     symbols.GetAddIsNewData(method),
                     symbols.GetAddExprEvalCtx(method)));
             if (requiredType == typeof(object)) {
@@ -126,7 +126,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
                         isNewData,
                         context) => {
                         throw new UnsupportedOperationException("Cannot evaluate at compile time");
-                    },
+                    }
                 };
             }
         }
@@ -168,7 +168,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
             int streamNum,
             EventBean[] eventsPerStream)
         {
-            var oa = (ObjectArrayBackedEventBean) eventsPerStream[streamNum];
+            var oa = (ObjectArrayBackedEventBean)eventsPerStream[streamNum];
             return ExprTableEvalStrategyUtil.GetRow(oa);
         }
 
@@ -188,7 +188,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
             bool isNewData,
             ExprEvaluatorContext ctx)
         {
-            var oa = (ObjectArrayBackedEventBean) eventsPerStream[streamNum];
+            var oa = (ObjectArrayBackedEventBean)eventsPerStream[streamNum];
             var row = ExprTableEvalStrategyUtil.GetRow(oa);
             return row.GetValue(column, eventsPerStream, isNewData, ctx);
         }

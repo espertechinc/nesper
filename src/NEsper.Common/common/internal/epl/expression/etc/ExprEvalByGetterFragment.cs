@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -35,7 +35,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             StreamNum = streamNum;
             Getter = getter;
             EvaluationType = returnType;
-            this._fragmentType = fragmentType;
+            _fragmentType = fragmentType;
         }
 
         public EventPropertyGetterSPI Getter { get; }
@@ -51,12 +51,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             var result = _fragmentType.IsIndexed ? typeof(EventBean[]) : typeof(EventBean);
             var methodNode = codegenMethodScope.MakeChild(result, typeof(ExprEvalByGetterFragment), codegenClassScope);
 
-            var refEPS = exprSymbol.GetAddEPS(methodNode);
+            var refEPS = exprSymbol.GetAddEps(methodNode);
             methodNode.Block
                 .DeclareVar<EventBean>("@event", ArrayAtIndex(refEPS, Constant(StreamNum)))
                 .IfRefNullReturnNull("@event")
                 .MethodReturn(
-                    FlexCast(result, Getter.EventBeanFragmentCodegen(Ref("@event"), methodNode, codegenClassScope)));
+                    Cast(result, Getter.EventBeanFragmentCodegen(Ref("@event"), methodNode, codegenClassScope)));
             return LocalMethod(methodNode);
         }
 
@@ -68,7 +68,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
 
         public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
 
-        public void ToEPL(TextWriter writer,
+        public void ToEPL(
+            TextWriter writer,
             ExprPrecedenceEnum parentPrecedence,
             ExprNodeRenderableFlags flags)
         {

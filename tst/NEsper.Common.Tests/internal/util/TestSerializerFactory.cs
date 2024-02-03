@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -7,25 +7,30 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Text.Json.Serialization;
 
 using com.espertech.esper.common.client.scopetest;
+using com.espertech.esper.common.@internal.util.serde;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.util
 {
     [TestFixture]
     public class TestSerializerFactory : AbstractCommonTest
     {
-        [Serializable]
         public class MyBean
         {
             private readonly string id;
 
+            [JsonConstructor]
             public MyBean(string id)
             {
                 this.id = id;
             }
+
+            public string Id => id;
 
             public override bool Equals(object o)
             {
@@ -65,7 +70,7 @@ namespace com.espertech.esper.common.@internal.util
                 classes[i] = expected.GetType();
             }
 
-            var serializerFactory = SerializerFactory.Instance;
+            var serializerFactory = new SerializerFactory(container);
             var serializers = serializerFactory.GetSerializers(classes);
             var bytes = serializerFactory.Serialize(serializers, expected);
 
@@ -74,7 +79,7 @@ namespace com.espertech.esper.common.@internal.util
 
             // null values are simply not serialized
             bytes = serializerFactory.Serialize(new[] { serializerFactory.GetSerializer(typeof(int?)) }, new object[] { null });
-            Assert.AreEqual(0, bytes.Length);
+            ClassicAssert.AreEqual(0, bytes[0].Length);
         }
     }
 } // end of namespace

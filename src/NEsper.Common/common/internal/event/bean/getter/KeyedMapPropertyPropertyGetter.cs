@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -42,14 +42,13 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             : base(
                 eventBeanTypedEventFactory,
                 beanEventTypeFactory,
-                TypeHelper.GetGenericPropertyTypeMap(property, false),
-                null)
+                TypeHelper.GetGenericPropertyTypeMap(property, false))
         {
             _key = key;
             _property = property;
         }
 
-        public override Type BeanPropType => TypeHelper.GetGenericPropertyTypeMap(_property, false);
+        // public override Type BeanPropType => TypeHelper.GetGenericPropertyTypeMap(_property, false);
 
         public override Type TargetType => _property.DeclaringType;
 
@@ -119,7 +118,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
         {
             return $"KeyedMapPropertyPropertyGetter: property={_property} key={_key}";
         }
-        
+
         internal static CodegenMethod GetBeanPropInternalCodegen(
             CodegenMethodScope codegenMethodScope,
             Type beanPropType,
@@ -130,45 +129,39 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             return codegenMethodScope
                 .MakeChild(beanPropType, typeof(KeyedMapPropertyPropertyGetter), codegenClassScope)
                 .AddParam(targetType, "@object")
-                .AddParam(typeof(object), "key")
+                .AddParam<object>("key")
                 .Block
-                
                 .IfRefNull("@object")
                 .BlockReturn(DefaultValue())
-                
                 .DeclareVar(property.PropertyType, "result", ExprDotName(Ref("@object"), property.Name))
                 .DeclareVar<IDictionary<object, object>>(
-                    "resultMap", 
+                    "resultMap",
                     StaticMethod(typeof(CompatExtensions), "AsObjectDictionary", Ref("result")))
-
                 .IfRefNull("resultMap")
                 .BlockReturn(DefaultValue())
-
                 .MethodReturn(Cast(beanPropType, ExprDotMethod(Ref("resultMap"), "Get", Ref("key"))));
         }
 
-        static CodegenMethod GetBeanPropExistsInternalCodegen(
+        private static CodegenMethod GetBeanPropExistsInternalCodegen(
             CodegenMethodScope codegenMethodScope,
             Type beanPropType,
             Type targetType,
             PropertyInfo property,
-            CodegenClassScope codegenClassScope) 
+            CodegenClassScope codegenClassScope)
         {
             return codegenMethodScope
                 .MakeChild(typeof(bool), typeof(KeyedMapPropertyPropertyGetter), codegenClassScope)
                 .AddParam(targetType, "@object")
-                .AddParam(typeof(object), "key")
+                .AddParam<object>("key")
                 .Block
-                
                 .IfRefNull("@object")
                 .BlockReturn(ConstantFalse())
-
                 .DeclareVar(property.PropertyType, "result", ExprDotName(Ref("@object"), property.Name))
-                .DeclareVar<IDictionary<object, object>>("resultMap", 
+                .DeclareVar<IDictionary<object, object>>(
+                    "resultMap",
                     StaticMethod(typeof(CompatExtensions), "AsObjectDictionary", Ref("result")))
                 .IfRefNull("resultMap")
                 .BlockReturn(ConstantFalse())
-
                 .MethodReturn(ExprDotMethod(Ref("resultMap"), "ContainsKey", Ref("key")));
         }
 
@@ -183,8 +176,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             return GetBeanProp(underlying);
         }
 
-        public override bool IsExistsProperty(EventBean eventBean) {
-            object underlying = eventBean.Underlying;
+        public override bool IsExistsProperty(EventBean eventBean)
+        {
+            var underlying = eventBean.Underlying;
             return GetBeanPropExistsInternal(underlying, _key);
         }
 
@@ -193,7 +187,10 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return UnderlyingGetCodegen(CastUnderlying(TargetType, beanExpression), codegenMethodScope, codegenClassScope);
+            return UnderlyingGetCodegen(
+                CastUnderlying(TargetType, beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
         public override CodegenExpression EventBeanExistsCodegen(
@@ -201,7 +198,10 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return UnderlyingExistsCodegen(CastUnderlying(TargetType, beanExpression), codegenMethodScope, codegenClassScope);
+            return UnderlyingExistsCodegen(
+                CastUnderlying(TargetType, beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
         public override CodegenExpression UnderlyingGetCodegen(
@@ -221,7 +221,12 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             CodegenClassScope codegenClassScope)
         {
             return LocalMethod(
-                GetBeanPropExistsInternalCodegen(codegenMethodScope, BeanPropType, TargetType, _property, codegenClassScope),
+                GetBeanPropExistsInternalCodegen(
+                    codegenMethodScope,
+                    BeanPropType,
+                    TargetType,
+                    _property,
+                    codegenClassScope),
                 underlyingExpression,
                 Constant(_key));
         }
@@ -237,7 +242,5 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
                 CastUnderlying(TargetType, beanExpression),
                 key);
         }
-
-
     }
 } // end of namespace

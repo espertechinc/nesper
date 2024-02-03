@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -25,16 +25,13 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.plain.excepti
     {
         private readonly EnumUnionForge _forge;
         private readonly ExprEnumerationEval _evaluator;
-        internal readonly bool scalar;
 
         public EnumUnionForgeEval(
             EnumUnionForge forge,
-            ExprEnumerationEval evaluator,
-            bool scalar)
+            ExprEnumerationEval evaluator)
         {
             _forge = forge;
             _evaluator = evaluator;
-            this.scalar = scalar;
         }
 
         private object EvaluateEnumMethodInternal<T>(
@@ -75,42 +72,52 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.plain.excepti
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            var namedParams = EnumForgeCodegenNames.PARAMS;
-            var returnType = typeof(FlexCollection);
-            var listType = forge.scalar
-                ? typeof(List<object>)
-                : typeof(List<EventBean>);
-            var subProperty = forge.scalar
-                ? "ObjectCollection"
-                : "EventBeanCollection";
-            
+            var elementType = args.EnumcollType.GetComponentType();
+
+            // PREVIOUSLY: FlexCollection
+            var returnType = typeof(ICollection<>).MakeGenericType(elementType);
+            var listType = typeof(List<>).MakeGenericType(elementType);
+            // var subProperty = forge.scalar
+            //     ? "ObjectCollection"
+            //     : "EventBeanCollection";
+
             var scope = new ExprForgeCodegenSymbol(false, null);
             var methodNode = codegenMethodScope
                 .MakeChildWithScope(returnType, typeof(EnumUnionForgeEval), scope, codegenClassScope)
-                .AddParam(namedParams);
+                .AddParam(ExprForgeCodegenNames.FP_EPS)
+                .AddParam(args.EnumcollType, EnumForgeCodegenNames.REF_ENUMCOLL.Ref)
+                .AddParam(ExprForgeCodegenNames.FP_ISNEWDATA)
+                .AddParam(ExprForgeCodegenNames.FP_EXPREVALCONTEXT);
 
             var block = methodNode.Block;
             if (forge.scalar) {
-                block.DeclareVar<FlexCollection>(
+                block.DeclareVar(
+                    typeof(ICollection<>).MakeGenericType(elementType),
                     "other",
                     forge.evaluatorForge.EvaluateGetROCollectionScalarCodegen(methodNode, scope, codegenClassScope));
             }
             else {
-                block.DeclareVar<FlexCollection>(
+                block.DeclareVar<ICollection<EventBean>>(
                     "other",
                     forge.evaluatorForge.EvaluateGetROCollectionEventsCodegen(methodNode, scope, codegenClassScope));
             }
 
-            block.IfCondition(Or(EqualsNull(Ref("other")), ExprDotMethod(Ref("other"), "IsEmpty")))
+            block
+                .IfCondition(Or(EqualsNull(Ref("other")), ExprDotMethod(Ref("other"), "IsEmpty")))
                 .BlockReturn(EnumForgeCodegenNames.REF_ENUMCOLL);
             block
-                .DebugStack()
                 .DeclareVar(listType, "result", NewInstance(listType))
-                .Expression(ExprDotMethod(Ref("result"), "AddAll", 
-                    ExprDotName(EnumForgeCodegenNames.REF_ENUMCOLL, subProperty)))
-                .Expression(ExprDotMethod(Ref("result"), "AddAll",
-                    ExprDotName(Ref("other"), subProperty)))
-                .MethodReturn(FlexWrap(Ref("result")));
+                .Expression(
+                    ExprDotMethod(
+                        Ref("result"),
+                        "AddAll",
+                        EnumForgeCodegenNames.REF_ENUMCOLL))
+                .Expression(
+                    ExprDotMethod(
+                        Ref("result"),
+                        "AddAll",
+                        Ref("other")))
+                .MethodReturn(Ref("result"));
             return LocalMethod(methodNode, args.Eps, args.Enumcoll, args.IsNewData, args.ExprCtx);
         }
     }

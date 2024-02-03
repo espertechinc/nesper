@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -41,13 +41,5 @@ namespace com.espertech.esper.runtime.client.util
                 throw new LockStrategyException("Failed to obtain write lock of runtime-wide processing read-write lock");
             }
         }
-
-#if false
-        public void Release(IReaderWriterLock runtimeWideLock)
-        {
-            _lockDisposable?.Dispose();
-            //runtimeWideLock.Lock.WriteLock.Release();
-        }
-#endif
     }
 } // end of namespace

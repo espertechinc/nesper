@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            var longValue = (long?) target;
+            var longValue = (long?)target;
             var dtx = DateTimeEx.GetInstance(timeZone);
             var remainder = timeAbacus.DateTimeSet(longValue.Value, dtx);
 
@@ -67,7 +67,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
                 codegenClassScope.AddOrGetDefaultFieldSharable(RuntimeSettingsTimeZoneField.INSTANCE);
             var methodNode = codegenMethodScope
                 .MakeChild(typeof(long), typeof(DTLocalDtxOpsLongEval), codegenClassScope)
-                .AddParam(typeof(long), "target");
+                .AddParam<long>("target");
 
             var block = methodNode.Block
                 .DeclareVar<DateTimeEx>("dtx", StaticMethod(typeof(DateTimeEx), "GetInstance", timeZoneField))

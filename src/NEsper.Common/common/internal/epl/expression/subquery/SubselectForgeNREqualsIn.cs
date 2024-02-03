@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -35,8 +35,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             bool resultWhenNoMatchingEvents,
             bool isNotIn,
             Coercer coercer,
-            ExprForge filterEval)
-            : base(subselect, valueEval, selectEval, resultWhenNoMatchingEvents, isNotIn, coercer)
+            ExprForge filterEval) : base(subselect, valueEval, selectEval, resultWhenNoMatchingEvents, isNotIn, coercer)
         {
             this.filterEval = filterEval;
         }
@@ -46,47 +45,58 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             SubselectForgeNRSymbol symbols,
             CodegenClassScope classScope)
         {
-            var method = parent.MakeChild(typeof(bool?), this.GetType(), classScope);
+            if (subselect.EvaluationType == null) {
+                return ConstantNull();
+            }
+
+            var method = parent.MakeChild(typeof(bool?), GetType(), classScope);
             var left = symbols.GetAddLeftResult(method);
             method.Block.DeclareVar<bool>("hasNullRow", ConstantFalse());
-            var @foreach = method.Block.ForEach(typeof(EventBean), "theEvent", symbols.GetAddMatchingEvents(method));
+            var foreachX = method.Block.ForEach(
+                typeof(EventBean),
+                "theEvent",
+                symbols.GetAddMatchingEvents(method));
             {
-                @foreach.AssignArrayElement(NAME_EPS, Constant(0), Ref("theEvent"));
+                foreachX.AssignArrayElement(NAME_EPS, Constant(0), Ref("theEvent"));
                 if (filterEval != null) {
                     CodegenLegoBooleanExpression.CodegenContinueIfNotNullAndNotPass(
-                        @foreach,
+                        foreachX,
                         filterEval.EvaluationType,
-                        filterEval.EvaluateCodegen(typeof(bool?), method, symbols, classScope));
+                        filterEval.EvaluateCodegen(typeof(bool), method, symbols, classScope));
                 }
 
-                @foreach.IfNullReturnNull(left);
+                foreachX.IfNullReturnNull(left);
 
                 Type valueRightType;
                 if (selectEval != null) {
-                    valueRightType = Boxing.GetBoxedType(selectEval.EvaluationType);
-                    @foreach.DeclareVar(
+                    valueRightType = selectEval.EvaluationType.GetBoxedType();
+                    foreachX.DeclareVar(
                         valueRightType,
                         "valueRight",
                         selectEval.EvaluateCodegen(valueRightType, method, symbols, classScope));
                 }
                 else {
-                    valueRightType = subselect.RawEventType.UnderlyingType;
-                    @foreach.DeclareVar(
+                    valueRightType = subselect.rawEventType.UnderlyingType;
+                    foreachX.DeclareVar(
                         valueRightType,
                         "valueRight",
-                        Cast(valueRightType, ExprDotUnderlying(ArrayAtIndex(symbols.GetAddEPS(method), Constant(0)))));
+                        Cast(valueRightType, ExprDotUnderlying(ArrayAtIndex(symbols.GetAddEps(method), Constant(0)))));
                 }
 
-                var ifRight = @foreach.IfCondition(NotEqualsNull(Ref("valueRight")));
+                var ifRight = foreachX.IfCondition(NotEqualsNull(Ref("valueRight")));
                 {
                     if (coercer == null) {
                         ifRight.IfCondition(ExprDotMethod(left, "Equals", Ref("valueRight")))
                             .BlockReturn(Constant(!isNotIn));
                     }
                     else {
-                        ifRight.DeclareVar<object>("left", coercer.CoerceCodegen(left, symbols.LeftResultType))
-                            .DeclareVar<object>("right", coercer.CoerceCodegen(Ref("valueRight"), valueRightType))
-                            .DeclareVar<bool>("eq", StaticMethod<object>("Equals", Ref("left"), Ref("right")))
+                        ifRight.DeclareVar<object>(
+                                "left",
+                                coercer.CoerceCodegen(left, symbols.LeftResultType, method, classScope))
+                            .DeclareVar<object>(
+                                "right",
+                                coercer.CoerceCodegen(Ref("valueRight"), valueRightType, method, classScope))
+                            .DeclareVar<bool>("eq", ExprDotMethod(Ref("left"), "Equals", Ref("right")))
                             .IfCondition(Ref("eq"))
                             .BlockReturn(Constant(!isNotIn));
                     }

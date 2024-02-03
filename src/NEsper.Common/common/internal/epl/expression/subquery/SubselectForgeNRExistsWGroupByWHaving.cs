@@ -1,10 +1,11 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
+
 
 using System.Collections.Generic;
 
@@ -22,16 +23,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
 {
     public class SubselectForgeNRExistsWGroupByWHaving : SubselectForgeNR
     {
-        private readonly ExprForge havingEval;
-
-        private readonly ExprSubselectNode subselect;
+        private readonly ExprSubselectNode _subselect;
+        private readonly ExprForge _havingEval;
 
         public SubselectForgeNRExistsWGroupByWHaving(
             ExprSubselectNode subselect,
             ExprForge havingEval)
         {
-            this.subselect = subselect;
-            this.havingEval = havingEval;
+            _subselect = subselect;
+            _havingEval = havingEval;
         }
 
         public CodegenExpression EvaluateMatchesCodegen(
@@ -39,8 +39,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             ExprSubselectEvalMatchSymbol symbols,
             CodegenClassScope classScope)
         {
-            CodegenExpression aggService = classScope.NamespaceScope.AddOrGetDefaultFieldWellKnown(
-                new CodegenFieldNameSubqueryAgg(subselect.SubselectNumber),
+            var aggService = classScope.NamespaceScope.AddOrGetDefaultFieldWellKnown(
+                new CodegenFieldNameSubqueryAgg(_subselect.SubselectNumber),
                 typeof(AggregationResultFuture));
 
             var method = parent.MakeChild(typeof(bool), GetType(), classScope);
@@ -49,15 +49,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             method.Block
                 .ApplyTri(new ReturnIfNoMatch(ConstantFalse(), ConstantFalse()), method, symbols)
                 .DeclareVar<int>("cpid", ExprDotName(evalCtx, "AgentInstanceId"))
-                .DeclareVar<AggregationService>(
-                    "aggregationService",
-                    ExprDotMethod(aggService, "GetContextPartitionAggregationService", Ref("cpid")))
-                .DeclareVar<ICollection<object>>(
-                    "groupKeys",
-                    ExprDotMethod(Ref("aggregationService"), "GetGroupKeys", evalCtx));
+                .DeclareVar<AggregationService>("aggregationService", ExprDotMethod(aggService, "GetContextPartitionAggregationService", Ref("cpid")))
+                .DeclareVar<ICollection<object>>("groupKeys", ExprDotMethod(Ref("aggregationService"), "GetGroupKeys", evalCtx));
             method.Block.ApplyTri(DECLARE_EVENTS_SHIFTED, method, symbols);
 
-            var forEach = method.Block.ForEach(typeof(object), "groupKey", Ref("groupKeys"));
+            var forEach = method.Block.ForEach<object>("groupKey", Ref("groupKeys"));
             {
                 forEach.ExprDotMethod(
                     Ref("aggregationService"),
@@ -67,8 +63,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                     ConstantNull());
                 CodegenLegoBooleanExpression.CodegenContinueIfNullOrNotPass(
                     forEach,
-                    havingEval.EvaluationType,
-                    havingEval.EvaluateCodegen(havingEval.EvaluationType, method, symbols, classScope));
+                    _havingEval.EvaluationType,
+                    _havingEval.EvaluateCodegen(_havingEval.EvaluationType, method, symbols, classScope));
                 forEach.BlockReturn(ConstantTrue());
             }
             method.Block.MethodReturn(ConstantFalse());

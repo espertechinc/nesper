@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -16,7 +16,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     ///     Parameter expression such as last/lastweek/weekday/wildcard for use in crontab expressions.
     /// </summary>
-    [Serializable]
     public class CrontabParameterExpression : ExpressionBase
     {
         private ScheduleItemType type;
@@ -43,16 +42,14 @@ namespace com.espertech.esper.common.client.soda
         ///     Returns crontab parameter type.
         /// </summary>
         /// <returns>crontab parameter type</returns>
-        public ScheduleItemType Type
-        {
+        public ScheduleItemType Type {
             get => type;
             set => type = value;
         }
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
-            if (!Children.IsEmpty())
-            {
+            if (!Children.IsEmpty()) {
                 Children[0].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                 writer.Write(' ');
             }

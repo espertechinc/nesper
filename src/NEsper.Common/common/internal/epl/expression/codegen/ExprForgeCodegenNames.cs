@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -38,15 +38,19 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
 
         public static readonly CodegenNamedParam FP_EPS =
             new CodegenNamedParam(typeof(EventBean[]), NAME_EPS);
+
         public static readonly CodegenNamedParam FP_ISNEWDATA =
             new CodegenNamedParam(typeof(bool), NAME_ISNEWDATA);
+
         public static readonly CodegenNamedParam FP_EXPREVALCONTEXT =
             new CodegenNamedParam(typeof(ExprEvaluatorContext), NAME_EXPREVALCONTEXT);
 
         public static readonly CodegenNamedParam LAMBDA_FP_EPS =
             new CodegenNamedParam(typeof(EventBean[]), LAMBDA_NAME_EPS);
+
         public static readonly CodegenNamedParam LAMBDA_FP_ISNEWDATA =
             new CodegenNamedParam(typeof(bool), LAMBDA_NAME_ISNEWDATA);
+
         public static readonly CodegenNamedParam LAMBDA_FP_EXPREVALCONTEXT =
             new CodegenNamedParam(typeof(ExprEvaluatorContext), LAMBDA_NAME_EXPREVALCONTEXT);
 
@@ -59,6 +63,5 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
             LAMBDA_FP_EPS,
             LAMBDA_FP_ISNEWDATA,
             LAMBDA_FP_EXPREVALCONTEXT);
-
     }
 } // end of namespace

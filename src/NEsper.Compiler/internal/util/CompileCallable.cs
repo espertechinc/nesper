@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -8,58 +8,53 @@
 
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Threading;
 
-using com.espertech.esper.common.client.artifact;
+using com.espertech.esper.common.client;
+using com.espertech.esper.common.@internal.compile.compiler;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.compiler.@internal.util
 {
 	public class CompileCallable : ICallable<CompilableItemResult>
 	{
-		private readonly CompilableItem _compilableItem;
-		private readonly ModuleCompileTimeServices _compileTimeServices;
-		private readonly Semaphore _semaphore;
-		private readonly ICollection<IArtifact> _statementArtifacts;
+		private readonly CompilableItem compilableItem;
+		private readonly ModuleCompileTimeServices compileTimeServices;
+		private readonly IList<EPCompiled> path;
+		private readonly SemaphoreSlim semaphore;
+		private readonly CompilerAbstraction compilerAbstraction;
+		private readonly CompilerAbstractionArtifactCollection compilationState;
 
-		CompileCallable(
+		public CompileCallable(
 			CompilableItem compilableItem,
 			ModuleCompileTimeServices compileTimeServices,
-			Semaphore semaphore,
-			ICollection<IArtifact> statementArtifacts)
+			IList<EPCompiled> path,
+			SemaphoreSlim semaphore,
+			CompilerAbstraction compilerAbstraction,
+			CompilerAbstractionArtifactCollection compilationState)
 		{
-			_compilableItem = compilableItem;
-			_compileTimeServices = compileTimeServices;
-			_semaphore = semaphore;
-			_statementArtifacts = statementArtifacts;
+			this.compilableItem = compilableItem;
+			this.compileTimeServices = compileTimeServices;
+			this.path = path;
+			this.semaphore = semaphore;
+			this.compilerAbstraction = compilerAbstraction;
+			this.compilationState = compilationState;
 		}
 
 		public CompilableItemResult Call()
 		{
 			try {
-				var container = _compileTimeServices.Container;
-				var repository = container.ArtifactRepositoryManager().DefaultRepository;
-				var compiler = container
-					.RoslynCompiler()
-					.WithMetaDataReferences(repository.AllMetadataReferences)
-					.WithMetaDataReferences(container.MetadataReferenceProvider()?.Invoke())
-					.WithDebugOptimization(_compileTimeServices.Configuration.Compiler.IsDebugOptimization)
-					.WithCodeLogging(_compileTimeServices.Configuration.Compiler.Logging.IsEnableCode)
-					.WithCodeAuditDirectory(_compileTimeServices.Configuration.Compiler.Logging.AuditDirectory)
-					.WithCodegenClasses(_compilableItem.Classes);
-				var artifact = repository.Register(compiler.Compile());
-				
-				_statementArtifacts.Add(artifact);
+				CompilerAbstractionCompilationContext context =
+					new CompilerAbstractionCompilationContext(compileTimeServices, path);
+				compilerAbstraction.CompileClasses(compilableItem.Classes, context, compilationState);
 			}
-			catch (Exception t) {
-				return new CompilableItemResult(t);
+			catch (Exception e) {
+				return new CompilableItemResult(e);
 			}
 			finally {
-				_semaphore.Release();
-				_compilableItem.PostCompileLatch.Completed(_statementArtifacts);
+				semaphore.Release();
+				compilableItem.PostCompileLatch.Completed(compilationState.Artifacts);
 			}
 
 			return new CompilableItemResult();

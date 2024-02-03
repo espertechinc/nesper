@@ -1,11 +1,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,12 +21,17 @@ using com.espertech.esper.common.@internal.epl.pattern.core;
 using com.espertech.esper.common.@internal.filterspec;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
+using static com.espertech.esper.common.@internal.compile.stage2.FilterSpecCompiler;
 
 namespace com.espertech.esper.common.@internal.compile.stage2
 {
     public class FilterSpecPlanForge
     {
-        public static readonly FilterSpecPlanForge EMPTY = new FilterSpecPlanForge(new FilterSpecPlanPathForge[0], null, null, null);
+        public static readonly FilterSpecPlanForge EMPTY = new FilterSpecPlanForge(
+            Array.Empty<FilterSpecPlanPathForge>(),
+            null,
+            null,
+            null);
 
         public FilterSpecPlanForge(
             FilterSpecPlanPathForge[] paths,
@@ -68,30 +74,53 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             return ExprNodeUtilityCompare.DeepEqualsNullChecked(FilterNegate, other.FilterNegate, true);
         }
 
-        public CodegenMethod CodegenWithEventType(
+        public CodegenExpression CodegenWithEventType(
+            CodegenMethodScope parent,
+            CodegenExpression eventType,
+            CodegenExpression stmtInitSvc,
+            CodegenClassScope classScope)
+        {
+            if (Paths.Length == 0) {
+                return PublicConstValue(typeof(FilterSpecPlan), "EMPTY_PLAN");
+            }
+
+            var method = CodegenWithEventType(parent, classScope);
+            return LocalMethod(method, eventType, stmtInitSvc);
+        }
+
+        private CodegenMethod CodegenWithEventType(
             CodegenMethodScope parent,
             CodegenClassScope classScope)
         {
             var symbolsWithType = new SAIFFInitializeSymbolWEventType();
-            var method = parent.MakeChildWithScope(typeof(FilterSpecPlan), typeof(FilterSpecParamForge), symbolsWithType, classScope)
-                .AddParam(typeof(EventType), SAIFFInitializeSymbolWEventType.REF_EVENTTYPE.Ref)
-                .AddParam(typeof(EPStatementInitServices), SAIFFInitializeSymbol.REF_STMTINITSVC.Ref);
+            var method = parent
+                .MakeChildWithScope(typeof(FilterSpecPlan), typeof(FilterSpecParamForge), symbolsWithType, classScope)
+                .AddParam<EventType>(SAIFFInitializeSymbolWEventType.REF_EVENTTYPE.Ref)
+                .AddParam<EPStatementInitServices>(SAIFFInitializeSymbol.REF_STMTINITSVC.Ref);
             if (Paths.Length == 0) {
                 method.Block.MethodReturn(PublicConstValue(typeof(FilterSpecPlan), "EMPTY_PLAN"));
                 return method;
             }
 
-            method.Block.DeclareVar<FilterSpecPlanPath[]>("paths", NewArrayByLength(typeof(FilterSpecPlanPath), Constant(Paths.Length)));
+            method.Block.DeclareVar<FilterSpecPlanPath[]>(
+                "paths",
+                NewArrayByLength(typeof(FilterSpecPlanPath), Constant(Paths.Length)));
             for (var i = 0; i < Paths.Length; i++) {
-                method.Block.AssignArrayElement("paths", Constant(i), LocalMethod(Paths[i].Codegen(method, symbolsWithType, classScope)));
+                method.Block.AssignArrayElement(
+                    "paths",
+                    Constant(i),
+                    LocalMethod(Paths[i].Codegen(method, symbolsWithType, classScope)));
             }
 
             method.Block
-                .DeclareVar<FilterSpecPlan>("plan", NewInstance(typeof(FilterSpecPlan)))
+                .DeclareVarNewInstance(typeof(FilterSpecPlan), "plan")
                 .SetProperty(Ref("plan"), "Paths", Ref("paths"))
                 .SetProperty(Ref("plan"), "FilterConfirm", OptionalEvaluator(FilterConfirm, method, classScope))
                 .SetProperty(Ref("plan"), "FilterNegate", OptionalEvaluator(FilterNegate, method, classScope))
-                .SetProperty(Ref("plan"), "Convertor", ConvertorForge == null ? ConstantNull() : ConvertorForge.MakeAnonymous(method, classScope))
+                .SetProperty(
+                    Ref("plan"),
+                    "Convertor",
+                    ConvertorForge == null ? ConstantNull() : ConvertorForge.MakeAnonymous(method, classScope))
                 .ExprDotMethod(Ref("plan"), "Initialize")
                 .MethodReturn(Ref("plan"));
             return method;
@@ -102,7 +131,9 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            return node == null ? ConstantNull() : ExprNodeUtilityCodegen.CodegenEvaluator(node.Forge, method, typeof(FilterSpecPlanForge), classScope);
+            return node == null
+                ? ConstantNull()
+                : ExprNodeUtilityCodegen.CodegenEvaluator(node.Forge, method, typeof(FilterSpecPlanForge), classScope);
         }
 
         public static FilterSpecPlanPathForge MakePathFromTriplets(
@@ -125,7 +156,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 args.allTagNamesOrdered,
                 null,
                 true);
-            return new FilterSpecPlanForge(new[] {path}, null, topLevelNegation, convertor);
+            return new FilterSpecPlanForge(new[] { path }, null, topLevelNegation, convertor);
         }
 
         public void AppendPlan(StringBuilder buf)
@@ -152,7 +183,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 .Append(name)
                 .Append(": ")
                 .Append(ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(exprNode))
-                .Append(FilterSpecCompiler.NEWLINE);
+                .Append(NEWLINE);
         }
     }
 } // end of namespace

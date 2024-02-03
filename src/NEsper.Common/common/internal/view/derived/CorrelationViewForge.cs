@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.compile.stage3;
@@ -27,12 +28,11 @@ namespace com.espertech.esper.common.@internal.view.derived
     /// <summary>
     ///     Factory for <seealso cref="CorrelationView" /> instances.
     /// </summary>
-    public class CorrelationViewForge : ViewFactoryForgeBase
+    public class CorrelationViewForge : ViewFactoryForgeBaseDerived
     {
         internal StatViewAdditionalPropsForge additionalProps;
         internal ExprNode expressionX;
         internal ExprNode expressionY;
-        private IList<ExprNode> viewParameters;
 
         public override string ViewName => "Correlation";
 
@@ -44,34 +44,33 @@ namespace com.espertech.esper.common.@internal.view.derived
             ViewForgeEnv viewForgeEnv,
             int streamNumber)
         {
-            viewParameters = parameters;
+            ViewParameters = parameters;
         }
 
-        public override void Attach(
+        public override void AttachValidate(
             EventType parentEventType,
-            int streamNumber,
             ViewForgeEnv viewForgeEnv)
         {
             var validated = ViewForgeSupport.Validate(
                 ViewName,
                 parentEventType,
-                viewParameters,
+                ViewParameters,
                 true,
-                viewForgeEnv,
-                streamNumber);
+                viewForgeEnv);
             if (validated.Length < 2) {
                 throw new ViewParameterException(ViewParamMessage);
             }
 
-            if (!validated[0].Forge.EvaluationType.IsNumeric() || !validated[1].Forge.EvaluationType.IsNumeric()) {
+            if (!validated[0].Forge.EvaluationType.IsTypeNumeric() ||
+                !validated[1].Forge.EvaluationType.IsTypeNumeric()) {
                 throw new ViewParameterException(ViewParamMessage);
             }
 
             expressionX = validated[0];
             expressionY = validated[1];
 
-            additionalProps = StatViewAdditionalPropsForge.Make(validated, 2, parentEventType, streamNumber, viewForgeEnv);
-            eventType = CorrelationView.CreateEventType(additionalProps, viewForgeEnv, streamNumber);
+            additionalProps = StatViewAdditionalPropsForge.Make(validated, 2, parentEventType, viewForgeEnv);
+            eventType = CorrelationView.CreateEventType(additionalProps, viewForgeEnv);
         }
 
         public override IList<StmtClassForgeableFactory> InitAdditionalForgeables(ViewForgeEnv viewForgeEnv)
@@ -80,18 +79,13 @@ namespace com.espertech.esper.common.@internal.view.derived
                 eventType,
                 viewForgeEnv.StatementRawInfo,
                 viewForgeEnv.SerdeEventTypeRegistry,
-                viewForgeEnv.SerdeResolver);
+                viewForgeEnv.SerdeResolver,
+                viewForgeEnv.StateMgmtSettingsProvider);
         }
 
-        internal override Type TypeOfFactory()
-        {
-            return typeof(CorrelationViewFactory);
-        }
+        internal override Type TypeOfFactory => typeof(CorrelationViewFactory);
 
-        internal override string FactoryMethod()
-        {
-            return "Correlation";
-        }
+        internal override string FactoryMethod => "Correlation";
 
         internal override void Assign(
             CodegenMethod method,
@@ -112,6 +106,16 @@ namespace com.espertech.esper.common.@internal.view.derived
                     factory,
                     "ExpressionYEval",
                     CodegenEvaluator(expressionY.Forge, method, GetType(), classScope));
+        }
+
+        public override AppliesTo AppliesTo()
+        {
+            return client.annotation.AppliesTo.WINDOW_CORRELATION;
+        }
+
+        public override T Accept<T>(ViewFactoryForgeVisitor<T> visitor)
+        {
+            return visitor.Visit(this);
         }
     }
 } // end of namespace

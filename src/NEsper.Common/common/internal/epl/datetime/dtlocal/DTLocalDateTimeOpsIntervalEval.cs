@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -38,7 +38,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            var dt = (DateTime) target;
+            var dt = (DateTime)target;
             dt = EvaluateCalOpsDateTime(calendarOps, dt, eventsPerStream, isNewData, exprEvaluatorContext);
             var time = DatetimeLongCoercerDateTime.CoerceToMillis(dt);
             return intervalOp.Evaluate(time, time, eventsPerStream, isNewData, exprEvaluatorContext);
@@ -53,10 +53,16 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
         {
             var methodNode = codegenMethodScope
                 .MakeChild(typeof(bool?), typeof(DTLocalDateTimeOpsIntervalEval), codegenClassScope)
-                .AddParam(typeof(DateTime), "target");
+                .AddParam<DateTime>("target");
 
             var block = methodNode.Block;
-            EvaluateCalOpsDateTimeCodegen(block, "target", forge.calendarForges, methodNode, exprSymbol, codegenClassScope);
+            EvaluateCalOpsDateTimeCodegen(
+                block,
+                "target",
+                forge.calendarForges,
+                methodNode,
+                exprSymbol,
+                codegenClassScope);
             block.DeclareVar<long>(
                 "time",
                 StaticMethod(
@@ -75,8 +81,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            var start = (DateTime) startTimestamp;
-            var end = (DateTime) endTimestamp;
+            var start = (DateTime)startTimestamp;
+            var end = (DateTime)endTimestamp;
             var deltaMSec = DatetimeLongCoercerDateTime.CoerceToMillis(end) -
                             DatetimeLongCoercerDateTime.CoerceToMillis(start);
             var result = EvaluateCalOpsDateTime(calendarOps, start, eventsPerStream, isNewData, exprEvaluatorContext);
@@ -95,8 +101,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
         {
             var methodNode = codegenMethodScope
                 .MakeChild(typeof(bool?), typeof(DTLocalDateTimeOpsIntervalEval), codegenClassScope)
-                .AddParam(typeof(DateTime), "start")
-                .AddParam(typeof(DateTime), "end");
+                .AddParam<DateTime>("start")
+                .AddParam<DateTime>("end");
 
             var block = methodNode
                 .Block
@@ -120,7 +126,13 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
                     "result",
                     Ref("start"));
 
-            EvaluateCalOpsDateTimeCodegen(block, "result", forge.calendarForges, methodNode, exprSymbol, codegenClassScope);
+            EvaluateCalOpsDateTimeCodegen(
+                block,
+                "result",
+                forge.calendarForges,
+                methodNode,
+                exprSymbol,
+                codegenClassScope);
 
             block.DeclareVar<long>(
                 "startLong",
@@ -129,7 +141,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
                     "CoerceToMillis",
                     Ref("result")));
             block.DeclareVar<long>(
-                "endTime", Op(Ref("startLong"), "+", Ref("deltaMSec")));
+                "endTime",
+                Op(Ref("startLong"), "+", Ref("deltaMSec")));
             block.MethodReturn(
                 forge.intervalForge.Codegen(
                     Ref("startLong"),

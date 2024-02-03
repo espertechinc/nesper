@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -24,20 +24,20 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.cache
 
         public ExpressionResultCacheEntryLongArrayAndObj GetEnumerationMethodLastValue(object node)
         {
-            SoftReference<ExpressionResultCacheEntryLongArrayAndObj> cacheRef = enumMethodCache.Get(node);
+            var cacheRef = enumMethodCache.Get(node);
 
-            ExpressionResultCacheEntryLongArrayAndObj entry = cacheRef?.Get();
+            var entry = cacheRef?.Get();
             if (entry == null) {
                 return null;
             }
 
-            long[] required = entry.Reference;
+            var required = entry.Reference;
             if (required.Length != lastValueCacheStack.Count) {
                 return null;
             }
 
-            IEnumerator<long> prov = lastValueCacheStack.GetEnumerator();
-            for (int i = 0; i < lastValueCacheStack.Count; i++) {
+            var prov = lastValueCacheStack.GetEnumerator();
+            for (var i = 0; i < lastValueCacheStack.Count; i++) {
                 prov.MoveNext();
                 if (!Equals(required[i], prov.Current)) {
                     return null;

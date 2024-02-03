@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -11,7 +11,7 @@ using System.Collections.Generic;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esper.regressionlib.support.util.SupportXML;
 
 namespace com.espertech.esper.regressionlib.suite.@event.xml
@@ -21,8 +21,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
+#if REGRESSION_EXECUTIONS
             WithPreconfig(execs);
-            WithCreateSchema(execs);
+            With(CreateSchema)(execs);
+#endif
             return execs;
         }
 
@@ -44,7 +46,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select event.type as type, event.uid as uid from MyEventWTypeAndUID";
+                var epl = "@name('s0') select event.type as type, event.uid as uid from MyEventWTypeAndUID";
                 RunAssertion(env, epl, "MyEventWTypeAndUID");
             }
         }
@@ -58,7 +60,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
                           "@XMLSchemaField(Name='event.type', XPath='/event/@type', Type='string')" +
                           "@XMLSchemaField(Name='event.uid', XPath='/event/@uid', Type='string')" +
                           "create xml schema MyEventCreateSchema();\n" +
-                          "@Name('s0') select event.type as type, event.uid as uid from MyEventCreateSchema;\n";
+                          "@name('s0') select event.type as type, event.uid as uid from MyEventCreateSchema;\n";
                 RunAssertion(env, epl, "MyEventCreateSchema");
             }
         }
@@ -70,11 +72,17 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
         {
             env.CompileDeploy(epl).AddListener("s0");
 
-            SendXMLEvent(env, "<event type=\"a-f-G\" uid=\"terminal.55\" time=\"2007-04-19T13:05:20.22Z\" version=\"2.0\"></event>", eventTypeName);
+            SendXMLEvent(
+                env,
+                "<event type=\"a-f-G\" uid=\"terminal.55\" time=\"2007-04-19T13:05:20.22Z\" version=\"2.0\"></event>",
+                eventTypeName);
 
-            var theEvent = env.Listener("s0").AssertOneGetNewAndReset();
-            Assert.AreEqual("a-f-G", theEvent.Get("type"));
-            Assert.AreEqual("terminal.55", theEvent.Get("uid"));
+            env.AssertEventNew(
+                "s0",
+                theEvent => {
+                    ClassicAssert.AreEqual("a-f-G", theEvent.Get("type"));
+                    ClassicAssert.AreEqual("terminal.55", theEvent.Get("uid"));
+                });
 
             env.UndeployAll();
         }

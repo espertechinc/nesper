@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -53,20 +53,20 @@ namespace com.espertech.esper.common.@internal.view.prior
         {
             // Remove last old data posted in previous post
             if (lastOldData != null) {
-                for (int i = 0; i < lastOldData.Length; i++) {
+                for (var i = 0; i < lastOldData.Length; i++) {
                     priorEventMap.Remove(lastOldData[i]);
                 }
             }
 
             // Post new data to rolling buffer starting with the oldest
             if (newData != null) {
-                for (int i = 0; i < newData.Length; i++) {
-                    EventBean newEvent = newData[i];
+                for (var i = 0; i < newData.Length; i++) {
+                    var newEvent = newData[i];
 
                     // Add new event
                     newEvents.Add(newEvent);
 
-                    EventBean priorEvent = newEvents.Get(priorEventIndex);
+                    var priorEvent = newEvents.Get(priorEventIndex);
                     priorEventMap.Put(newEvent, priorEvent);
                 }
             }
@@ -82,8 +82,8 @@ namespace com.espertech.esper.common.@internal.view.prior
         {
             // Remove last old data posted in previous post
             if (lastOldData != null) {
-                for (int i = 0; i < lastOldData.Length; i++) {
-                    EventBean oldDataItem = lastOldData[i];
+                for (var i = 0; i < lastOldData.Length; i++) {
+                    var oldDataItem = lastOldData[i];
                     priorEventMap.Remove(oldDataItem);
                     captureSingle.Removed(oldDataItem);
                 }
@@ -91,13 +91,13 @@ namespace com.espertech.esper.common.@internal.view.prior
 
             // Post new data to rolling buffer starting with the oldest
             if (newData != null) {
-                for (int i = 0; i < newData.Length; i++) {
-                    EventBean newEvent = newData[i];
+                for (var i = 0; i < newData.Length; i++) {
+                    var newEvent = newData[i];
 
                     // Add new event
                     newEvents.Add(newEvent);
 
-                    EventBean priorEvent = newEvents.Get(priorEventIndex);
+                    var priorEvent = newEvents.Get(priorEventIndex);
                     priorEventMap.Put(newEvent, priorEvent);
                     captureSingle.Added(newEvent, priorEvent);
                 }
@@ -121,39 +121,25 @@ namespace com.espertech.esper.common.@internal.view.prior
             return null;
         }
 
-        public IEnumerator<EventBean> WindowToEvent {
-            get {
-                // no requirement for window iterator support
-                return null;
-            }
-        }
+        public IEnumerator<EventBean> WindowToEvent =>
+            // no requirement for window iterator support
+            null;
 
-        public int WindowToEventCount {
-            get {
-                // no requirement for count support
-                return 0;
-            }
-        }
+        public int WindowToEventCount =>
+            // no requirement for count support
+            0;
 
-        public ICollection<EventBean> WindowToEventCollReadOnly {
-            get => null;
-        }
+        public ICollection<EventBean> WindowToEventCollReadOnly => null;
 
-        public IDictionary<EventBean, EventBean> PriorEventMap {
-            get { return priorEventMap; }
-        }
+        public IDictionary<EventBean, EventBean> PriorEventMap => priorEventMap;
 
-        public RollingEventBuffer NewEvents {
-            get => newEvents;
-        }
+        public RollingEventBuffer NewEvents => newEvents;
 
         public void Destroy()
         {
             // No action required
         }
 
-        public int NumEventsInsertBuf {
-            get => newEvents.Count;
-        }
+        public int NumEventsInsertBuf => newEvents.Count;
     }
 } // end of namespace

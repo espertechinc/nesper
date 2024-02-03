@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -55,7 +55,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                     typeof(object),
                     typeof(ExprForgeStreamWithGetter),
                     codegenClassScope);
-                var refEPS = exprSymbol.GetAddEPS(methodNode);
+                var refEPS = exprSymbol.GetAddEps(methodNode);
                 methodNode.Block
                     .DeclareVar<EventBean>(
                         "theEvent",
@@ -78,7 +78,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
 
             public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
 
-            public void ToEPL(TextWriter writer,
+            public void ToEPL(
+                TextWriter writer,
                 ExprPrecedenceEnum parentPrecedence,
                 ExprNodeRenderableFlags flags)
             {

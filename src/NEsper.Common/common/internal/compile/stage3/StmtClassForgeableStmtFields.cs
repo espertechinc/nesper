@@ -1,11 +1,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -15,6 +16,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.name;
 using com.espertech.esper.common.@internal.bytecodemodel.util;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.fafquery.querymethod;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
@@ -22,93 +24,184 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
 namespace com.espertech.esper.common.@internal.compile.stage3
 {
-    public class StmtClassForgeableStmtFields : StmtClassForgeable
+    public partial class StmtClassForgeableStmtFields : StmtClassForgeable
     {
         private readonly string _className;
-        private readonly int _numStreams;
         private readonly CodegenNamespaceScope _namespaceScope;
+        private readonly bool _dataflowOperatorFields;
+
+        public StmtClassForgeableStmtFields(
+            string className,
+            CodegenNamespaceScope namespaceScope)
+            : this(className, namespaceScope, false)
+        {
+        }
 
         public StmtClassForgeableStmtFields(
             string className,
             CodegenNamespaceScope namespaceScope,
-            int numStreams)
+            bool dataflowOperatorFields)
         {
             _className = className;
             _namespaceScope = namespaceScope;
-            _numStreams = numStreams;
+            _dataflowOperatorFields = dataflowOperatorFields;
         }
 
         public CodegenClass Forge(
             bool includeDebugSymbols,
             bool fireAndForget)
         {
-            // members
-            IList<CodegenTypedParam> members = new List<CodegenTypedParam>();
+            // This code can cause the statementFields to not be generated and this
+            // causes problems elsewhere.  Instead, let the class get generated because
+            // we must pass the instance to other classes. - AJ
+#if DISABLED
+            if (!_dataflowOperatorFields && !_namespaceScope.HasAnyFields) {
+                return null;
+            }
+#endif
+
+            var memberFields = Members;
+            var maxMembersPerClass = Math.Max(1, _namespaceScope.Config.InternalUseOnlyMaxMembersPerClass);
+
+            IList<CodegenInnerClass> innerClasses = EmptyList<CodegenInnerClass>.Instance;
+            IList<CodegenTypedParam> members;
+            if (memberFields.Count <= maxMembersPerClass) {
+                members = ToMembers(memberFields);
+            }
+            else {
+                var assignments = CollectionUtil.Subdivide(memberFields, maxMembersPerClass);
+                innerClasses = new List<CodegenInnerClass>(assignments.Count);
+                members = MakeInnerClasses(assignments, innerClasses);
+            }
 
             // Add a reference to "self"
             members.Add(new CodegenTypedParam(_className, null, "statementFields", false, false));
-
-            GenerateNamedMembers(members);
-
-            // numbered members
-            foreach (var entry in _namespaceScope.FieldsUnshared) {
-                var field = entry.Key;
-                members.Add(
-                    new CodegenTypedParam(field.Type, field.Name)
-                        .WithStatic(false)
-                        .WithFinal(false));
-            }
-
-            // substitution-parameter members
-            GenerateSubstitutionParamMembers(members);
-
-            var classScope = new CodegenClassScope(includeDebugSymbols, _namespaceScope, ClassName);
-
-            // ctor
-            var ctor = new CodegenCtor(GetType(), ClassName, includeDebugSymbols, Collections.GetEmptyList<CodegenTypedParam>());
-            ctor.Block.AssignRef(Ref("statementFields"), Ref("this"));
             
+            // ctor
+            var ctor = new CodegenCtor(GetType(), includeDebugSymbols, EmptyList<CodegenTypedParam>.Instance);
+            ctor.Block.AssignRef(Ref("statementFields"), Ref("this"));
+            var classScope = new CodegenClassScope(includeDebugSymbols, _namespaceScope, _className);
+
             // init method
             var initMethod = _namespaceScope.InitMethod;
-            foreach (var entry in _namespaceScope.FieldsUnshared) {
-                initMethod.Block.AssignRef(entry.Key.Name, entry.Value);
-            }
-
-            // assignment methods
-            var assignMethod = CodegenMethod
-                .MakeMethod(typeof(void), GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
-                .AddParam(typeof(StatementAIFactoryAssignments), "assignments")
-                .WithStatic(false);
-            var unassignMethod = CodegenMethod
-                .MakeMethod(typeof(void), GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
-                .WithStatic(false);
-            GenerateAssignAndUnassign(_numStreams, assignMethod, unassignMethod, _namespaceScope.FieldsNamed);
+            new CodegenRepetitiveValueBuilder<KeyValuePair<CodegenField, CodegenExpression>>(
+                    _namespaceScope.FieldsUnshared,
+                    initMethod,
+                    classScope,
+                    GetType())
+                .AddParam<EPStatementInitServices>(EPStatementInitServicesConstants.REF.Ref)
+                .SetConsumer(
+                    (
+                        entry,
+                        index,
+                        leaf) => leaf.Block.AssignRef(entry.Key.NameWithMember, entry.Value))
+                .Build();
 
             // build methods
             var methods = new CodegenClassMethods();
             var properties = new CodegenClassProperties();
-
             CodegenStackGenerator.RecursiveBuildStack(initMethod, "Init", methods, properties);
-            CodegenStackGenerator.RecursiveBuildStack(assignMethod, "Assign", methods, properties);
-            CodegenStackGenerator.RecursiveBuildStack(unassignMethod, "Unassign", methods, properties);
+
+            // assignment methods
+            if (_namespaceScope.HasAssignableStatementFields) {
+                var assignMethod =
+                    CodegenMethod
+                        .MakeParentNode(typeof(void), GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+                        .AddParam<StatementAIFactoryAssignments>("assignments")
+                        .WithStatic(false);
+                var unassignMethod = CodegenMethod
+                    .MakeParentNode(typeof(void), GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+                    .WithStatic(false);
+                GenerateAssignAndUnassign(assignMethod, unassignMethod, _namespaceScope.FieldsNamed);
+                CodegenStackGenerator.RecursiveBuildStack(assignMethod, "Assign", methods, properties);
+                CodegenStackGenerator.RecursiveBuildStack(unassignMethod, "Unassign", methods, properties);
+            }
 
             return new CodegenClass(
                 CodegenClassType.STATEMENTFIELDS,
                 typeof(StatementFields),
-                ClassName,
+                _className,
                 classScope,
                 members,
                 ctor,
                 methods,
                 properties,
-                Collections.GetEmptyList<CodegenInnerClass>());
+                innerClasses);
         }
 
-        public string ClassName => _className;
+        private IList<CodegenTypedParam> MakeInnerClasses(
+            IList<IList<MemberFieldPair>> assignments,
+            IList<CodegenInnerClass> innerClasses)
+        {
+            var indexAssignment = 0;
+            IList<CodegenTypedParam> members = new List<CodegenTypedParam>(assignments.Count);
 
-        public StmtClassForgeableType ForgeableType => StmtClassForgeableType.FIELDS;
+            foreach (var assignment in assignments) {
+                var classNameAssignment = "A" + indexAssignment;
+                var memberNameAssignment = "a" + indexAssignment;
 
-        private void GenerateSubstitutionParamMembers(IList<CodegenTypedParam> members)
+                // set assigned member name
+                IList<CodegenTypedParam> assignmentMembers = new List<CodegenTypedParam>(assignment.Count);
+                foreach (var memberField in assignment) {
+                    assignmentMembers.Add(memberField.Member);
+                    memberField.Field.AssignmentMemberName = memberNameAssignment;
+                }
+
+                // add inner class
+                var innerClass = new CodegenInnerClass(
+                    classNameAssignment,
+                    null,
+                    assignmentMembers,
+                    new CodegenClassMethods(),
+                    new CodegenClassProperties());
+                innerClasses.Add(innerClass);
+
+                // initialize member
+                var member = new CodegenTypedParam(innerClass.ClassName, memberNameAssignment)
+                    .WithStatic(false)
+                    .WithInitializer(NewInstanceInner(innerClass.ClassName));
+                members.Add(member);
+
+                indexAssignment++;
+            }
+
+            return members;
+        }
+
+        private IList<CodegenTypedParam> ToMembers(IList<MemberFieldPair> memberFields)
+        {
+            IList<CodegenTypedParam> members = new List<CodegenTypedParam>(memberFields.Count);
+            foreach (var memberField in memberFields) {
+                members.Add(memberField.Member);
+            }
+
+            return members;
+        }
+
+        private IList<MemberFieldPair> Members {
+            get {
+                // members
+                IList<MemberFieldPair> members = new List<MemberFieldPair>();
+
+                GenerateNamedMembers(members);
+
+                // numbered members
+                foreach (var entry in _namespaceScope.FieldsUnshared) {
+                    var field = entry.Key;
+                    var member = new CodegenTypedParam(field.Type, field.Name)
+                        .WithStatic(false)
+                        .WithFinal(false);
+                    members.Add(new MemberFieldPair(member, field));
+                }
+
+                // substitution-parameter members
+                GenerateSubstitutionParamMembers(members);
+
+                return members;
+            }
+        }
+
+        private void GenerateSubstitutionParamMembers(IList<MemberFieldPair> members)
         {
             var numbered = _namespaceScope.SubstitutionParamsByNumber;
             var named = _namespaceScope.SubstitutionParamsByName;
@@ -130,59 +223,61 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             }
 
             for (var i = 0; i < fields.Count; i++) {
-                string name = fields[i].Field.Name;
-                members.Add(new CodegenTypedParam(fields[i].Type, name)
+                var field = fields[i].Field;
+                var name = field.Name;
+                var member = new CodegenTypedParam(fields[i].EntryType, name)
                     .WithStatic(false)
-                    .WithFinal(true));
+                    .WithFinal(false);
+                members.Add(new MemberFieldPair(member, field));
             }
         }
 
-        private void GenerateNamedMembers(IList<CodegenTypedParam> fields)
+        private void GenerateNamedMembers(IList<MemberFieldPair> fields)
         {
             foreach (var entry in _namespaceScope.FieldsNamed) {
-                fields.Add(new CodegenTypedParam(entry.Value.Type, entry.Key.Name)
+                var member = new CodegenTypedParam(entry.Value.Type, entry.Key.Name)
                     .WithFinal(false)
-                    .WithStatic(false));
+                    .WithStatic(false);
+                fields.Add(new MemberFieldPair(member, entry.Value));
             }
         }
 
-        private static void GenerateAssignAndUnassign(int numStreams,
+        private static void GenerateAssignAndUnassign(
             CodegenMethod assign,
             CodegenMethod unassign,
             IDictionary<CodegenFieldName, CodegenField> names)
         {
             foreach (var entry in names) {
                 var name = entry.Key;
+                var field = entry.Value;
                 if (name is CodegenFieldNameAgg) {
                     Generate(
                         ExprDotName(Ref("assignments"), "AggregationResultFuture"),
-                        name,
+                        field,
                         assign,
                         unassign,
                         true);
                     continue;
                 }
 
-                if (name is CodegenFieldNamePrevious) {
-                    var previous = (CodegenFieldNamePrevious) name;
+                if (name is CodegenFieldNamePrevious previous) {
                     Generate(
                         ArrayAtIndex(
                             ExprDotName(Ref("assignments"), "PreviousStrategies"),
                             Constant(previous.StreamNumber)),
-                        name,
+                        field,
                         assign,
                         unassign,
                         true);
                     continue;
                 }
 
-                if (name is CodegenFieldNamePrior) {
-                    var prior = (CodegenFieldNamePrior) name;
+                if (name is CodegenFieldNamePrior namePrior) {
                     Generate(
                         ArrayAtIndex(
                             ExprDotName(Ref("assignments"), "PriorStrategies"),
-                            Constant(prior.StreamNumber)),
-                        name,
+                            Constant(namePrior.StreamNumber)),
+                        field,
                         assign,
                         unassign,
                         true);
@@ -192,68 +287,63 @@ namespace com.espertech.esper.common.@internal.compile.stage3
                 if (name is CodegenFieldNameViewAgg) {
                     Generate(
                         ConstantNull(),
-                        name,
+                        field,
                         assign,
                         unassign,
                         true); // we assign null as the view can assign a value
                     continue;
                 }
 
-                if (name is CodegenFieldNameSubqueryResult) {
-                    var subq = (CodegenFieldNameSubqueryResult) name;
+                if (name is CodegenFieldNameSubqueryResult result) {
                     var subqueryLookupStrategy = ExprDotMethod(
                         Ref("assignments"),
                         "GetSubqueryLookup",
-                        Constant(subq.SubqueryNumber));
-                    Generate(subqueryLookupStrategy, name, assign, unassign, true);
+                        Constant(result.SubqueryNumber));
+                    Generate(subqueryLookupStrategy, field, assign, unassign, true);
                     continue;
                 }
 
-                if (name is CodegenFieldNameSubqueryPrior) {
-                    var subq = (CodegenFieldNameSubqueryPrior) name;
+                if (name is CodegenFieldNameSubqueryPrior subqueryPrior) {
                     var prior = ExprDotMethod(
                         Ref("assignments"),
                         "GetSubqueryPrior",
-                        Constant(subq.SubqueryNumber));
-                    Generate(prior, name, assign, unassign, true);
+                        Constant(subqueryPrior.SubqueryNumber));
+                    Generate(prior, field, assign, unassign, true);
                     continue;
                 }
 
-                if (name is CodegenFieldNameSubqueryPrevious) {
-                    var subq = (CodegenFieldNameSubqueryPrevious) name;
-                    CodegenExpression prev = ExprDotMethod(
+                if (name is CodegenFieldNameSubqueryPrevious subqueryPrevious) {
+                    var prev = ExprDotMethod(
                         Ref("assignments"),
                         "GetSubqueryPrevious",
-                        Constant(subq.SubqueryNumber));
-                    Generate(prev, name, assign, unassign, true);
+                        Constant(subqueryPrevious.SubqueryNumber));
+                    Generate(prev, field, assign, unassign, true);
                     continue;
                 }
 
-                if (name is CodegenFieldNameSubqueryAgg) {
-                    var subq = (CodegenFieldNameSubqueryAgg) name;
+                if (name is CodegenFieldNameSubqueryAgg subq) {
                     var agg = ExprDotMethod(
                         Ref("assignments"),
                         "GetSubqueryAggregation",
                         Constant(subq.SubqueryNumber));
-                    Generate(agg, name, assign, unassign, true);
+                    Generate(agg, field, assign, unassign, true);
                     continue;
                 }
 
-                if (name is CodegenFieldNameTableAccess) {
-                    var tableAccess = (CodegenFieldNameTableAccess) name;
+                if (name is CodegenFieldNameTableAccess tableAccess) {
                     var tableAccessLookupStrategy = ExprDotMethod(
                         Ref("assignments"),
                         "GetTableAccess",
                         Constant(tableAccess.TableAccessNumber));
                     // Table strategies don't get unassigned as they don't hold on to table instance
-                    Generate(tableAccessLookupStrategy, name, assign, unassign, false);
+                    Generate(tableAccessLookupStrategy, field, assign, unassign, false);
                     continue;
                 }
 
                 if (name is CodegenFieldNameMatchRecognizePrevious) {
                     Generate(
                         ExprDotName(Ref("assignments"), "RowRecogPreviousStrategy"),
-                        name,
+                        field,
                         assign,
                         unassign,
                         true);
@@ -262,13 +352,21 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 
                 if (name is CodegenFieldNameMatchRecognizeAgg) {
                     Generate(
-                        ConstantNull(), name, assign, unassign, true); // we assign null as the view can assign a value
+                        ConstantNull(),
+                        field,
+                        assign,
+                        unassign,
+                        true); // we assign null as the view can assign a value
                     continue;
                 }
 
                 throw new IllegalStateException("Unrecognized field " + entry.Key);
             }
         }
+
+        public string ClassName => _className;
+
+        public StmtClassForgeableType ForgeableType => StmtClassForgeableType.FIELDS;
 
         public static void MakeSubstitutionSetter(
             CodegenNamespaceScope namespaceScope,
@@ -277,52 +375,59 @@ namespace com.espertech.esper.common.@internal.compile.stage3
         {
             MakeSubstitutionSetter(
                 namespaceScope,
+                method,
                 method.Block,
                 classScope);
         }
 
         public static void MakeSubstitutionSetter(
             CodegenNamespaceScope namespaceScope,
+            CodegenMethodScope methodScope,
             CodegenBlock enclosingBlock,
             CodegenClassScope classScope)
         {
-            var assignLambda = new CodegenExpressionLambda(enclosingBlock)
-                .WithParam<StatementAIFactoryAssignments>("assignments");
-            
             // var assignMethod = CodegenMethod
             //     .MakeParentNode(typeof(void), typeof(StmtClassForgeableStmtFields), classScope)
-            //     .AddParam(typeof(StatementAIFactoryAssignments), "assignments");
+            //     .AddParam<StatementAIFactoryAssignments>("assignments");
             // assignerSetterClass.AddMethod("assign", assignMethod);
+            var assignLambda = new CodegenExpressionLambda(enclosingBlock)
+                .WithParam<StatementAIFactoryAssignments>("assignments");
+            if (!namespaceScope.FieldsNamed.IsEmpty()) {
+                assignLambda.Block.ExprDotMethod(Ref("statementFields"), "Assign", Ref("assignments"));
+            }
 
-            assignLambda.Block.ExprDotMethod(Ref("statementFields"), "Assign", Ref("assignments"));
-            // assignMethod.Block.StaticMethod(namespaceScope.FieldsClassNameOptional, "assign", Ref("assignments"));
-
-            var setValueMethod = new CodegenExpressionLambda(enclosingBlock)
+            // var setValueMethod = CodegenMethod
+            //     .MakeParentNode(typeof(void), typeof(StmtClassForgeableStmtFields), classScope)
+            //     .AddParam<int>("index")
+            //     .AddParam<object>("value");
+            // assignerSetterClass.AddMethod("setValue", setValueMethod);
+            var setValueLambda = new CodegenExpressionLambda(enclosingBlock)
                 .WithParam(typeof(int), "index")
                 .WithParam(typeof(object), "value");
-            //assignerSetterClass.AddMethod("SetValue", setValueMethod);
-
-            //var assignerSetterClass = NewAnonymousClass(enclosingBlock, typeof(FAFQueryMethodAssignerSetter));
+            
+            // var assignerSetterClass = NewAnonymousClass(method.Block, typeof(FAFQueryMethodAssignerSetter));
+            // method.Block.MethodReturn(assignerSetterClass);
             var assignerSetterClass = NewInstance<ProxyFAFQueryMethodAssignerSetter>(
-                assignLambda, setValueMethod);
+                assignLambda, setValueLambda);
             enclosingBlock.ReturnMethodOrBlock(assignerSetterClass);
-
+            
+            // CodegenSubstitutionParamEntry.CodegenSetterMethod(classScope, setValueLambda);
             CodegenSubstitutionParamEntry.CodegenSetterBody(
-                classScope, setValueMethod.Block, Ref("statementFields"));
+                classScope, methodScope, setValueLambda.Block, Ref("statementFields"));
         }
 
         private static void Generate(
             CodegenExpression init,
-            CodegenFieldName name,
+            CodegenField field,
             CodegenMethod assign,
             CodegenMethod unassign,
             bool generateUnassign)
         {
-            assign.Block.AssignRef(name.Name, init);
+            assign.Block.AssignRef(field.NameWithMember, init);
 
             // Table strategies are not unassigned since they do not hold on to the table instance
             if (generateUnassign) {
-                unassign.Block.AssignRef(name.Name, ConstantNull());
+                unassign.Block.AssignRef(field.NameWithMember, ConstantNull());
             }
         }
     }

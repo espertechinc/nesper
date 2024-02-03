@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -14,8 +14,7 @@ using com.espertech.esper.runtime.client;
 using com.espertech.esper.runtime.client.util;
 
 using NUnit.Framework;
-
-using static com.espertech.esper.common.client.scopetest.EPAssertionUtil;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.support.client
 {
@@ -25,11 +24,13 @@ namespace com.espertech.esper.regressionlib.support.client
 			RegressionEnvironment env,
 			string deployedStatementName)
 		{
-			var deploymentId = env.DeploymentId(deployedStatementName);
-			var consumed = env.Runtime.DeploymentService.GetDeploymentDependenciesConsumed(deploymentId);
-			Assert.IsTrue(consumed.Dependencies.IsEmpty());
-			var provided = env.Runtime.DeploymentService.GetDeploymentDependenciesProvided(deploymentId);
-			Assert.IsTrue(provided.Dependencies.IsEmpty());
+			env.AssertThat(() => {
+				var deploymentId = env.DeploymentId(deployedStatementName);
+				var consumed = env.Runtime.DeploymentService.GetDeploymentDependenciesConsumed(deploymentId);
+				ClassicAssert.IsTrue(consumed.Dependencies.IsEmpty());
+				var provided = env.Runtime.DeploymentService.GetDeploymentDependenciesProvided(deploymentId);
+				ClassicAssert.IsTrue(provided.Dependencies.IsEmpty());
+			});
 		}
 
 		public static void AssertSingle(
@@ -39,20 +40,26 @@ namespace com.espertech.esper.regressionlib.support.client
 			EPObjectType objectType,
 			string objectName)
 		{
-			var deploymentIdConsume = env.DeploymentId(deployedStmtNameConsume);
-			var deploymentIdProvide = env.DeploymentId(deployedStmtNameProvide);
-			var consumed = env.Runtime.DeploymentService.GetDeploymentDependenciesConsumed(deploymentIdConsume);
-			AssertEqualsAnyOrder(
-				new[] {
-					new EPDeploymentDependencyConsumed.Item(deploymentIdProvide, objectType, objectName)
-				},
-				consumed.Dependencies.ToArray());
-			var provided = env.Runtime.DeploymentService.GetDeploymentDependenciesProvided(deploymentIdProvide);
-			AssertEqualsAnyOrder(
-				new[] {
-					new EPDeploymentDependencyProvided.Item(objectType, objectName, Collections.SingletonSet(deploymentIdConsume))
-				},
-				provided.Dependencies.ToArray());
+			env.AssertThat(
+				() => {
+					var deploymentIdConsume = env.DeploymentId(deployedStmtNameConsume);
+					var deploymentIdProvide = env.DeploymentId(deployedStmtNameProvide);
+					var consumed = env.Runtime.DeploymentService.GetDeploymentDependenciesConsumed(deploymentIdConsume);
+					CollectionAssert.AreEquivalent(
+						new[] {
+							new EPDeploymentDependencyConsumed.Item(deploymentIdProvide, objectType, objectName)
+						},
+						consumed.Dependencies.ToArray());
+					var provided = env.Runtime.DeploymentService.GetDeploymentDependenciesProvided(deploymentIdProvide);
+					CollectionAssert.AreEquivalent(
+						new[] {
+							new EPDeploymentDependencyProvided.Item(
+								objectType,
+								objectName,
+								Collections.SingletonSet(deploymentIdConsume))
+						},
+						provided.Dependencies.ToArray());
+				});
 		}
 	}
 } // end of namespace

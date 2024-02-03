@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -28,11 +28,10 @@ namespace com.espertech.esper.common.@internal.@event.wrap
             EventBean @event,
             int index)
         {
-            if (!(@event is DecoratingEventBean)) {
+            if (!(@event is DecoratingEventBean wrapper)) {
                 throw new PropertyAccessException("Mismatched property getter to EventBean type");
             }
 
-            var wrapper = (DecoratingEventBean) @event;
             var wrapped = wrapper.UnderlyingEvent;
             if (wrapped == null) {
                 return null;
@@ -48,8 +47,8 @@ namespace com.espertech.esper.common.@internal.@event.wrap
             CodegenExpression key)
         {
             var method = codegenMethodScope.MakeChild(typeof(object), typeof(WrapperGetterIndexed), codegenClassScope)
-                .AddParam(typeof(EventBean), "@event")
-                .AddParam(typeof(int), "index")
+                .AddParam<EventBean>("@event")
+                .AddParam<int>("index")
                 .Block
                 .DeclareVar<DecoratingEventBean>("wrapper", Cast(typeof(DecoratingEventBean), Ref("@event")))
                 .DeclareVar<EventBean>("wrapped", ExprDotName(Ref("wrapper"), "UnderlyingEvent"))

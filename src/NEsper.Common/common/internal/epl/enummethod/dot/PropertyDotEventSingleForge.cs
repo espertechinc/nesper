@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -54,7 +54,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                 return null;
             }
 
-            return (EventBean) getter.GetFragment(@event);
+            return (EventBean)getter.GetFragment(@event);
         }
 
         public ICollection<EventBean> EvaluateGetROCollectionEvents(
@@ -85,7 +85,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                 typeof(PropertyDotEventSingleForge),
                 codegenClassScope);
 
-            var refEPS = exprSymbol.GetAddEPS(methodNode);
+            var refEPS = exprSymbol.GetAddEps(methodNode);
             methodNode.Block
                 .DeclareVar<EventBean>("@event", ArrayAtIndex(refEPS, Constant(streamId)))
                 .IfRefNullReturnNull("@event")
@@ -138,7 +138,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                 return null;
             }
 
-            return (EventBean) getter.GetFragment(@event);
+            return (EventBean)getter.GetFragment(@event);
         }
 
         public ICollection<EventBean> EvaluateEventGetROCollectionEvents(
@@ -192,7 +192,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             return ConstantNull();
         }
 
-        public void ToEPL(TextWriter writer,
+        public void ToEPL(
+            TextWriter writer,
             ExprPrecedenceEnum parentPrecedence,
             ExprNodeRenderableFlags flags)
         {

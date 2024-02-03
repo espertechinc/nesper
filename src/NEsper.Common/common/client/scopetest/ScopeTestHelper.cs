@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -115,7 +115,8 @@ namespace com.espertech.esper.common.client.scopetest
                     if (AreCollectionsEqual(expected, actual)) {
                         return;
                     }
-                } else if (expected is Array expectedArray && actual is Array actualArray) {
+                }
+                else if (expected is Array expectedArray && actual is Array actualArray) {
                     if (expectedArray.GetType().GetElementType() == actualArray.GetType().GetElementType()) {
                         if (Arrays.AreEqual(expectedArray, actualArray)) {
                             return;

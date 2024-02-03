@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -24,13 +24,9 @@ namespace com.espertech.esper.common.@internal.epl.join.analyze
         {
             var rangeOp = QueryGraphRangeEnumExtensions.GetRangeOp(includeStart, includeEnd, isNot);
 
-            if (target is ExprIdentNode &&
-                start is ExprIdentNode &&
-                end is ExprIdentNode) {
-                var identNodeValue = (ExprIdentNode) target;
-                var identNodeStart = (ExprIdentNode) start;
-                var identNodeEnd = (ExprIdentNode) end;
-
+            if (target is ExprIdentNode identNodeValue &&
+                start is ExprIdentNode identNodeStart &&
+                end is ExprIdentNode identNodeEnd) {
                 var keyStreamStart = identNodeStart.StreamId;
                 var keyStreamEnd = identNodeEnd.StreamId;
                 var valueStream = identNodeValue.StreamId;
@@ -46,8 +42,7 @@ namespace com.espertech.esper.common.@internal.epl.join.analyze
             }
 
             // handle constant-compare or transformation case
-            if (target is ExprIdentNode) {
-                var identNode = (ExprIdentNode) target;
+            if (target is ExprIdentNode identNode) {
                 var indexedStream = identNode.StreamId;
 
                 var eligibilityStart = EligibilityUtil.VerifyInputStream(start, indexedStream);

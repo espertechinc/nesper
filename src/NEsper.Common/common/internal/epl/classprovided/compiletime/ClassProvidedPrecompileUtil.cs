@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -10,13 +10,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.artifact;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
-using com.espertech.esper.common.@internal.compile;
+using com.espertech.esper.common.@internal.compile.compiler;
 using com.espertech.esper.common.@internal.compile.stage1;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.function;
 
 namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
 {
@@ -24,10 +26,16 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
     {
         public static ClassProvidedPrecompileResult CompileClassProvided(
             IList<string> classTexts,
+            Consumer<IArtifact> compileResultConsumer,
             StatementCompileTimeServices compileTimeServices,
             ClassProvidedPrecompileResult optionalPrior)
         {
             if (classTexts == null || classTexts.IsEmpty()) {
+                return ClassProvidedPrecompileResult.EMPTY;
+            }
+
+            classTexts = classTexts.Where(_ => !string.IsNullOrWhiteSpace(_)).ToList();
+            if (classTexts.IsEmpty()) {
                 return ClassProvidedPrecompileResult.EMPTY;
             }
 
@@ -45,8 +53,10 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
             // can be compiled into its own .class file.  Technically, we can create netmodules, but even then
             // its a container for classes.
 
-            var compilables = new List<CompilableClass>();
+            var allTypes = compileTimeServices.CompilerAbstraction.NewArtifactCollection();
 
+#if DEPRECATED
+            var compilables = new List<CompilableClass>();
             foreach (var classText in classTexts.Where(_ => !string.IsNullOrWhiteSpace(_))) {
                 index++;
 
@@ -54,29 +64,39 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
                 var className = $"provided_{index}_{classNameId}";
                 compilables.Add(new CompilableClass(classText, className));
             }
+#endif
 
+            var ctx = new CompilerAbstractionCompilationContext(
+                compileTimeServices.Services, compileResultConsumer, EmptyList<EPCompiled>.Instance);
+            var result = compileTimeServices.CompilerAbstraction.CompileSources(
+                classTexts, ctx, allTypes);
+
+#if DEPRECATED
             ICompileArtifact artifact;
             try {
                 artifact = compileTimeServices.CompilerServices.Compile(
                     new CompileRequest(compilables, compileTimeServices.Services));
-            } 
-            catch(CompilerServicesCompileException ex) {
+            }
+            catch (CompilerServicesCompileException ex) {
                 throw HandleException(ex, "Failed to compile class");
             }
+#endif
 
+            var artifact = result.Artifact;
+            
             foreach (var exportedTypeName in artifact.TypeNames) {
                 if (existingTypes.ContainsKey(exportedTypeName)) {
                     throw new ExprValidationException("Duplicate class by name '" + exportedTypeName + "'");
                 }
             }
-            
+
             // it's not entirely clear to me why we are loading the classes into the
             // current context as this is a compile time context.  These classes will
             // be materialized in the default load context
 
             IRuntimeArtifact runtimeArtifact = artifact.Runtime;
             foreach (var exportedType in runtimeArtifact.Assembly.ExportedTypes) {
-                existingTypes.Add(exportedType.FullName, exportedType);
+                existingTypes.Add(exportedType.FullName!, exportedType);
             }
 
             return new ClassProvidedPrecompileResult(runtimeArtifact, existingTypes.Values.ToList());

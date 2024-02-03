@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -41,16 +41,18 @@ namespace com.espertech.esper.common.client.dataflow.annotations
             Type = typeof(OutputTypeAttribute);
         }
 
-        public override object TypeId {
-            get { return this; }
-        }
+        public override object TypeId => this;
 
         public bool Equals(OutputTypeAttribute other)
         {
-            if (ReferenceEquals(null, other))
+            if (ReferenceEquals(null, other)) {
                 return false;
-            if (ReferenceEquals(this, other))
+            }
+
+            if (ReferenceEquals(this, other)) {
                 return true;
+            }
+
             return base.Equals(other) &&
                    Equals(other.Name, Name) &&
                    Equals(other.Type, Type) &&
@@ -66,10 +68,14 @@ namespace com.espertech.esper.common.client.dataflow.annotations
         /// <param name="obj">An <see cref="T:System.Object"/> to compare with this instance or null. </param><filterpriority>2</filterpriority>
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj))
+            if (ReferenceEquals(null, obj)) {
                 return false;
-            if (ReferenceEquals(this, obj))
+            }
+
+            if (ReferenceEquals(this, obj)) {
                 return true;
+            }
+
             return Equals(obj as OutputTypeAttribute);
         }
 
@@ -83,7 +89,7 @@ namespace com.espertech.esper.common.client.dataflow.annotations
         public override int GetHashCode()
         {
             unchecked {
-                int result = base.GetHashCode();
+                var result = base.GetHashCode();
                 result = (result * 397) ^ (Name != null ? Name.GetHashCode() : 0);
                 result = (result * 397) ^ (Type != null ? Type.GetHashCode() : 0);
                 result = (result * 397) ^ (TypeName != null ? TypeName.GetHashCode() : 0);

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -53,11 +53,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenExpressionInstanceField eventToPublic =
-                TableDeployTimeResolver.MakeTableEventToPublicField(tableMetadata, codegenClassScope, this.GetType());
-            CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(codegenMethodScope);
-            CodegenExpression refIsNewData = exprSymbol.GetAddIsNewData(codegenMethodScope);
-            CodegenExpressionRef refExprEvalCtx = exprSymbol.GetAddExprEvalCtx(codegenMethodScope);
+            var eventToPublic =
+                TableDeployTimeResolver.MakeTableEventToPublicField(tableMetadata, codegenClassScope, GetType());
+            var refEPS = exprSymbol.GetAddEps(codegenMethodScope);
+            var refIsNewData = exprSymbol.GetAddIsNewData(codegenMethodScope);
+            var refExprEvalCtx = exprSymbol.GetAddExprEvalCtx(codegenMethodScope);
             return StaticMethod(
                 typeof(BindProcessorStreamTable),
                 "EvaluateConvertTableEventToUnd",
@@ -68,9 +68,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                 refExprEvalCtx);
         }
 
-        public ExprForgeConstantType ForgeConstantType {
-            get => ExprForgeConstantType.NONCONST;
-        }
+        public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
 
         /// <summary>
         /// NOTE: Code-generation-invoked method, method name and parameter order matters
@@ -88,7 +86,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            EventBean @event = eventsPerStream[streamNum];
+            var @event = eventsPerStream[streamNum];
             if (@event == null) {
                 return null;
             }
@@ -96,23 +94,18 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
             return eventToPublic.ConvertToUnd(@event, eventsPerStream, isNewData, context);
         }
 
-        public ExprEvaluator ExprEvaluator {
-            get => this;
-        }
+        public ExprEvaluator ExprEvaluator => this;
 
-        public Type EvaluationType {
-            get => returnType;
-        }
+        public Type EvaluationType => returnType;
 
-        public ExprNodeRenderable ExprForgeRenderable {
-            get => this;
-        }
+        public ExprNodeRenderable ExprForgeRenderable => this;
 
-        public void ToEPL(TextWriter writer,
+        public void ToEPL(
+            TextWriter writer,
             ExprPrecedenceEnum parentPrecedence,
             ExprNodeRenderableFlags flags)
         {
-            writer.Write(this.GetType().Name);
+            writer.Write(GetType().Name);
         }
     }
 } // end of namespace

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -39,9 +39,7 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
             }
 
             method.Block
-                .DeclareVar<QueryGraphValueEntryCustomOperation>(
-                    "op",
-                    NewInstance(typeof(QueryGraphValueEntryCustomOperation)))
+                .DeclareVarNewInstance<QueryGraphValueEntryCustomOperation>("op")
                 .SetProperty(Ref("op"), "PositionalExpressions", Ref("map"))
                 .MethodReturn(Ref("op"));
             return LocalMethod(method);

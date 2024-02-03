@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -25,16 +25,16 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.cache
         }
 
         public ExpressionResultCacheForPropUnwrap AllocateUnwrapProp =>
-            _threadCache.GetOrCreate().GetAllocateUnwrapProp();
+            _threadCache.GetOrCreate().AllocateUnwrapProp;
 
         public ExpressionResultCacheForDeclaredExprLastValue AllocateDeclaredExprLastValue =>
-            _threadCache.GetOrCreate().GetAllocateDeclaredExprLastValue();
+            _threadCache.GetOrCreate().AllocateDeclaredExprLastValue;
 
         public ExpressionResultCacheForDeclaredExprLastColl AllocateDeclaredExprLastColl =>
-            _threadCache.GetOrCreate().GetAllocateDeclaredExprLastColl();
+            _threadCache.GetOrCreate().AllocateDeclaredExprLastColl;
 
         public ExpressionResultCacheForEnumerationMethod AllocateEnumerationMethod =>
-            _threadCache.GetOrCreate().GetAllocateEnumerationMethod();
+            _threadCache.GetOrCreate().AllocateEnumerationMethod;
 
         public bool IsDeclaredExprCacheEnabled => _declareExprCacheSize > 0;
     }

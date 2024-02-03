@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -30,13 +30,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
             _block = block;
         }
 
-        public CodegenExpression Condition {
-            get => _condition;
-        }
+        public CodegenExpression Condition => _condition;
 
-        public CodegenBlock Block {
-            get => _block;
-        }
+        public CodegenBlock Block => _block;
 
         public void MergeClasses(ISet<Type> classes)
         {

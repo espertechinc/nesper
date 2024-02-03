@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     ///     Cast expression casts the return value of an expression to a specified type.
     /// </summary>
-    [Serializable]
     public class CastExpression : ExpressionBase
     {
         /// <summary>
@@ -60,8 +59,7 @@ namespace com.espertech.esper.common.client.soda
             Children[0].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
             writer.Write(",");
             writer.Write(TypeName);
-            for (var i = 1; i < Children.Count; i++)
-            {
+            for (var i = 1; i < Children.Count; i++) {
                 writer.Write(",");
                 Children[i].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
             }

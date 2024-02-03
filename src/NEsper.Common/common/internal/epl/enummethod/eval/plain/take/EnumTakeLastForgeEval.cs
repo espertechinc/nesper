@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -21,7 +21,7 @@ using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
-namespace com.espertech.esper.common.@internal.epl.enummethod.eval
+namespace com.espertech.esper.common.@internal.epl.enummethod.eval.plain.take
 {
     public class EnumTakeLastForgeEval : EnumEval
     {
@@ -54,15 +54,18 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
         {
             var sizeType = forge.sizeEval.EvaluationType;
 
-            var returnType = args.EnumcollType ?? typeof(FlexCollection);
-            var paramArgs = EnumForgeCodegenNames.PARAMS;
+            var returnType = args.EnumcollType;
             var scope = new ExprForgeCodegenSymbol(false, null);
-            var methodNode = codegenMethodScope.MakeChildWithScope(
+            var methodNode = codegenMethodScope
+                .MakeChildWithScope(
                     returnType,
                     typeof(EnumTakeLastForgeEval),
                     scope,
                     codegenClassScope)
-                .AddParam(paramArgs);
+                .AddParam(ExprForgeCodegenNames.FP_EPS)
+                .AddParam(args.EnumcollType, EnumForgeCodegenNames.REF_ENUMCOLL.Ref)
+                .AddParam(ExprForgeCodegenNames.FP_ISNEWDATA)
+                .AddParam(ExprForgeCodegenNames.FP_EXPREVALCONTEXT);
 
             var block = methodNode.Block.DeclareVar(
                 sizeType,
@@ -115,19 +118,6 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             }
 
             return result;
-        }
-
-        public static FlexCollection EvaluateEnumMethodTakeLast(
-            FlexCollection enumcoll,
-            int size)
-        {
-            if (enumcoll.IsEventBeanCollection) {
-                return FlexCollection.Of(
-                    EvaluateEnumMethodTakeLast(enumcoll.EventBeanCollection, size));
-            }
-
-            return FlexCollection.Of(
-                EvaluateEnumMethodTakeLast(enumcoll.ObjectCollection, size));
         }
     }
 } // end of namespace

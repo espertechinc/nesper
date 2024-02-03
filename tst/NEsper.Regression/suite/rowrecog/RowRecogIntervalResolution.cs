@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -8,8 +8,6 @@
 
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.regressionlib.framework;
-
-using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.rowrecog
 {
@@ -26,7 +24,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
         {
             env.AdvanceTime(0);
 
-            var text = "@Name('s0') select * from SupportBean " +
+            var text = "@name('s0') select * from SupportBean " +
                        "match_recognize (" +
                        " measures A as a" +
                        " pattern (A*)" +
@@ -37,14 +35,22 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             env.SendEventBean(new SupportBean("E1", 1));
 
             env.AdvanceTime(flipTime - 1);
-            Assert.IsFalse(env.Listener("s0").IsInvokedAndReset());
+            env.AssertListenerNotInvoked("s0");
 
             env.Milestone(0);
 
             env.AdvanceTime(flipTime);
-            Assert.IsTrue(env.Listener("s0").IsInvokedAndReset());
+            env.AssertListenerInvoked("s0");
 
             env.UndeployAll();
+        }
+
+        public string Name()
+        {
+            return "RowRecogIntervalResolution{" +
+                   "flipTime=" +
+                   flipTime +
+                   '}';
         }
     }
 } // end of namespace

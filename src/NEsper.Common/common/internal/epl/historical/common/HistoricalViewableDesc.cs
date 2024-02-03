@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -23,13 +23,13 @@ namespace com.espertech.esper.common.@internal.epl.historical.common
 
         public bool IsHistorical { get; private set; }
 
-        public SortedSet<int>[] DependenciesPerHistorical { get; }
+        public ISet<int>[] DependenciesPerHistorical { get; }
 
         public bool[] Historical { get; }
 
         public void SetHistorical(
             int streamNum,
-            SortedSet<int> dependencies)
+            ISet<int> dependencies)
         {
             IsHistorical = true;
             Historical[streamNum] = true;

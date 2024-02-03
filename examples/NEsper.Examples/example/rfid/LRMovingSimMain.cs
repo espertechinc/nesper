@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -223,7 +223,7 @@ namespace net.esper.example.rfid
 
 	        // Create threadpool
 	        log.Info(".tryPerf Running for " + numSeconds + " seconds");
-	        long startTime = System.CurrentTimeMillis();
+	        long startTime = PerformanceObserver.MilliTime;
 	        long currTime;
 	        double deltaSeconds;
 	        int lastTotalEvents = 0;
@@ -231,7 +231,7 @@ namespace net.esper.example.rfid
 	        {
 	            // sleep
 	            Thread.Sleep(1000);
-	            currTime = System.CurrentTimeMillis();
+	            currTime = PerformanceObserver.MilliTime;
 	            deltaSeconds = (currTime - startTime) / 1000.0;
 
 	            // report statistics

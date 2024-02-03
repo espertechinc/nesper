@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -67,7 +67,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             var texts = new string[expressions.Length];
             for (var i = 0; i < expressions.Length; i++) {
                 var writer = new StringWriter();
-                expressions[i].ExprForgeRenderable.ToEPL(writer, ExprPrecedenceEnum.MINIMUM, ExprNodeRenderableFlags.DEFAULTFLAGS);
+                expressions[i]
+                    .ExprForgeRenderable.ToEPL(
+                        writer,
+                        ExprPrecedenceEnum.MINIMUM,
+                        ExprNodeRenderableFlags.DEFAULTFLAGS);
                 texts[i] = writer.ToString();
             }
 
@@ -77,11 +81,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         public static string ToExpressionStringMinPrecedence(ExprForge expression)
         {
             var writer = new StringWriter();
-            expression.ExprForgeRenderable.ToEPL(writer, ExprPrecedenceEnum.MINIMUM, ExprNodeRenderableFlags.DEFAULTFLAGS);
+            expression.ExprForgeRenderable.ToEPL(
+                writer,
+                ExprPrecedenceEnum.MINIMUM,
+                ExprNodeRenderableFlags.DEFAULTFLAGS);
             return writer.ToString();
         }
 
-        public static String ToExpressionStringMinPrecedence(ExprNode expression, ExprNodeRenderableFlags flags) {
+        public static string ToExpressionStringMinPrecedence(
+            ExprNode expression,
+            ExprNodeRenderableFlags flags)
+        {
             var writer = new StringWriter();
             expression.ToEPL(writer, ExprPrecedenceEnum.MINIMUM, flags);
             return writer.ToString();
@@ -180,7 +190,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 delimiterOuter = ".";
             }
 
-            foreach (Chainable element in chainSpec) {
+            foreach (var element in chainSpec) {
                 if (element.IsDistinct) {
                     buffer.Write("distinct ");
                 }
@@ -196,7 +206,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                         buffer.Write(functionName);
                     }
                     else {
-                        String name = element.GetRootNameOrEmptyString();
+                        string name = element.RootNameOrEmptyString;
                         buffer.Write(name);
                     }
 

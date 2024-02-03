@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -10,11 +10,13 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.Json.Serialization;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.core;
+using com.espertech.esper.common.@internal.@event.map;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -22,59 +24,37 @@ using com.espertech.esper.compat.collections;
 namespace com.espertech.esper.common.@internal.epl.expression.funcs
 {
     /// <summary>
-    ///     Represents the case-when-then-else control flow function is an expression tree.
+    /// Represents the case-when-then-else control flow function is an expression tree.
     /// </summary>
-    public class ExprCaseNode : ExprNodeBase
+    public partial class ExprCaseNode : ExprNodeBase
     {
-        [NonSerialized] private ExprCaseNodeForge forge;
+        private readonly bool _isCase2;
+        [JsonIgnore]
+        private ExprCaseNodeForge _forge;
 
         /// <summary>
-        ///     Ctor.
+        /// Ctor.
         /// </summary>
-        /// <param name="isCase2">
-        ///     is an indicator of which Case statement we are working on.
-        ///     <para />
-        ///     True indicates a 'Case2' statement with syntax "case a when a1 then b1 else b2".
-        ///     <para />
-        ///     False indicates a 'Case1' statement with syntax "case when a=a1 then b1 else b2".
+        /// <param name = "isCase2">is an indicator of which Case statement we are working on.<para/> True indicates a 'Case2' statement with syntax "case a when a1 then b1 else b2".
+        /// <para/> False indicates a 'Case1' statement with syntax "case when a=a1 then b1 else b2".
         /// </param>
         public ExprCaseNode(bool isCase2)
         {
-            IsCase2 = isCase2;
-        }
-
-        public ExprEvaluator ExprEvaluator {
-            get {
-                CheckValidated(forge);
-                return forge.ExprEvaluator;
-            }
-        }
-
-        public override ExprForge Forge {
-            get {
-                CheckValidated(forge);
-                return forge;
-            }
+            _isCase2 = isCase2;
         }
 
         /// <summary>
-        ///     Returns true if this is a switch-type case.
+        /// Returns true if this is a switch-type case.
         /// </summary>
         /// <returns>true for switch-type case, or false for when-then type</returns>
-        public bool IsCase2 { get; }
-
-        public bool IsConstantResult => false;
-
-        public override ExprPrecedenceEnum Precedence => ExprPrecedenceEnum.CASE;
+        public bool IsCase2 => _isCase2;
 
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
             var analysis = AnalyzeCase();
-
             foreach (var pair in analysis.WhenThenNodeList) {
-                if (!IsCase2) {
-                    var returnType = pair.First.Forge.EvaluationType;
-                    if (returnType != typeof(bool) && returnType != typeof(bool?)) {
+                if (!_isCase2) {
+                    if (!pair.First.Forge.EvaluationType.IsTypeBoolean()) {
                         throw new ExprValidationException("Case node 'when' expressions must return a boolean value");
                     }
                 }
@@ -82,7 +62,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 
             var mustCoerce = false;
             Coercer coercer = null;
-            if (IsCase2) {
+            if (_isCase2) {
                 // validate we can compare result types
                 var comparedTypes = new List<Type>();
                 comparedTypes.Add(analysis.OptionalCompareExprNode.Forge.EvaluationType);
@@ -93,18 +73,19 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 // Determine common denominator type
                 try {
                     var coercionType = TypeHelper.GetCommonCoercionType(comparedTypes.ToArray());
-
                     // Determine if we need to coerce numbers when one type doesn't match any other type
-                    if (coercionType.IsNumeric()) {
-                        mustCoerce = false;
-                        foreach (var comparedType in comparedTypes) {
-                            if (comparedType != coercionType) {
-                                mustCoerce = true;
+                    if (coercionType != null) {
+                        if (coercionType.IsTypeNumeric()) {
+                            foreach (var comparedType in comparedTypes) {
+                                if (comparedType != coercionType) {
+                                    mustCoerce = true;
+                                    break;
+                                }
                             }
-                        }
 
-                        if (mustCoerce) {
-                            coercer = SimpleNumberCoercerFactory.GetCoercer(null, coercionType);
+                            if (mustCoerce) {
+                                coercer = SimpleNumberCoercerFactory.GetCoercer(null, coercionType);
+                            }
                         }
                     }
                 }
@@ -117,8 +98,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             IList<Type> childTypes = new List<Type>();
             IList<IDictionary<string, object>> childMapTypes = new List<IDictionary<string, object>>();
             foreach (var pair in analysis.WhenThenNodeList) {
-                if (pair.Second.Forge is ExprTypableReturnForge) {
-                    var typableReturn = (ExprTypableReturnForge) pair.Second.Forge;
+                if (pair.Second.Forge is ExprTypableReturnForge typableReturn) {
                     var rowProps = typableReturn.RowProperties;
                     if (rowProps != null) {
                         childMapTypes.Add(rowProps);
@@ -131,7 +111,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 
             if (analysis.OptionalElseExprNode != null) {
                 if (analysis.OptionalElseExprNode.Forge is ExprTypableReturnForge) {
-                    var typableReturn = (ExprTypableReturnForge) analysis.OptionalElseExprNode.Forge;
+                    var typableReturn = (ExprTypableReturnForge)analysis.OptionalElseExprNode.Forge;
                     var rowProps = typableReturn.RowProperties;
                     if (rowProps != null) {
                         childMapTypes.Add(rowProps);
@@ -171,7 +151,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             }
 
             IDictionary<string, object> mapResultType = null;
-            Type resultType = null;
+            Type resultType;
             var isNumericResult = false;
             if (childMapTypes.IsEmpty()) {
                 // Determine common denominator type
@@ -179,7 +159,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                     resultType = TypeHelper
                         .GetCommonCoercionType(childTypes.ToArray())
                         .GetBoxedType();
-                    if (resultType.IsNumeric()) {
+                    if (resultType == null) {
+                        throw new ExprValidationException("Null-type return value is not allowed");
+                    }
+                    if (resultType.IsTypeNumeric()) {
                         isNumericResult = true;
                     }
                 }
@@ -195,7 +178,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                     var messageEquals = BaseNestableEventType.IsDeepEqualsProperties(
                         "Case-when number " + i,
                         mapResultType,
-                        other);
+                        other,
+                        false);
                     if (messageEquals != null) {
                         throw new ExprValidationException(
                             "Incompatible case-when return types by new-operator in case-when number " +
@@ -207,7 +191,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 }
             }
 
-            forge = new ExprCaseNodeForge(
+            _forge = new ExprCaseNodeForge(
                 this,
                 resultType,
                 mapResultType,
@@ -220,16 +204,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             return null;
         }
 
+        public bool IsConstantResult => false;
+
         public override bool EqualsNode(
             ExprNode node,
             bool ignoreStreamPrefix)
         {
-            if (!(node is ExprCaseNode)) {
+            if (!(node is ExprCaseNode otherExprCaseNode)) {
                 return false;
             }
 
-            var otherExprCaseNode = (ExprCaseNode) node;
-            return IsCase2 == otherExprCaseNode.IsCase2;
+            return _isCase2 == otherExprCaseNode._isCase2;
         }
 
         public override void ToPrecedenceFreeEPL(
@@ -245,7 +230,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             }
 
             writer.Write("case");
-            if (IsCase2) {
+            if (_isCase2) {
                 writer.Write(' ');
                 analysis.OptionalCompareExprNode.ToEPL(writer, Precedence, flags);
             }
@@ -264,6 +249,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 
             writer.Write(" end");
         }
+
+        public override ExprPrecedenceEnum Precedence => ExprPrecedenceEnum.CASE;
 
         private CaseAnalysis AnalyzeCaseOne()
         {
@@ -285,7 +272,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 
             ExprNode optionalElseExprNode = null;
             if (children.Length % 2 != 0) {
-                optionalElseExprNode = children[children.Length - 1];
+                optionalElseExprNode = children[^1];
             }
 
             return new CaseAnalysis(whenThenNodeList, null, optionalElseExprNode);
@@ -302,7 +289,6 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             }
 
             var optionalCompareExprNode = children[0];
-
             IList<UniformPair<ExprNode>> whenThenNodeList = new List<UniformPair<ExprNode>>();
             var numWhenThen = (children.Length - 1) / 2;
             for (var i = 0; i < numWhenThen; i++) {
@@ -311,7 +297,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 
             ExprNode optionalElseExprNode = null;
             if (numWhenThen * 2 + 1 < children.Length) {
-                optionalElseExprNode = children[children.Length - 1];
+                optionalElseExprNode = children[^1];
             }
 
             return new CaseAnalysis(whenThenNodeList, optionalCompareExprNode, optionalElseExprNode);
@@ -319,30 +305,26 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 
         private CaseAnalysis AnalyzeCase()
         {
-            if (IsCase2) {
+            if (_isCase2) {
                 return AnalyzeCaseTwo();
             }
-
-            return AnalyzeCaseOne();
+            else {
+                return AnalyzeCaseOne();
+            }
         }
 
-        public class CaseAnalysis
-        {
-            public CaseAnalysis(
-                IList<UniformPair<ExprNode>> whenThenNodeList,
-                ExprNode optionalCompareExprNode,
-                ExprNode optionalElseExprNode)
-            {
-                WhenThenNodeList = whenThenNodeList;
-                OptionalCompareExprNode = optionalCompareExprNode;
-                OptionalElseExprNode = optionalElseExprNode;
+        public ExprEvaluator ExprEvaluator {
+            get {
+                CheckValidated(_forge);
+                return _forge.ExprEvaluator;
             }
+        }
 
-            public IList<UniformPair<ExprNode>> WhenThenNodeList { get; }
-
-            public ExprNode OptionalCompareExprNode { get; }
-
-            public ExprNode OptionalElseExprNode { get; }
+        public override ExprForge Forge {
+            get {
+                CheckValidated(_forge);
+                return _forge;
+            }
         }
     }
 } // end of namespace

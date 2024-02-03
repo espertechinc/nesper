@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -43,14 +43,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             SubselectForgeNRSymbol symbols,
             CodegenClassScope classScope)
         {
+            if (subselect.EvaluationType == null) {
+                return ConstantNull();
+            }
+
             var method = parent.MakeChild(typeof(bool?), GetType(), classScope);
-            CodegenExpression eps = symbols.GetAddEPS(method);
+            CodegenExpression eps = symbols.GetAddEps(method);
             CodegenExpression evalCtx = symbols.GetAddExprEvalCtx(method);
             var left = symbols.GetAddLeftResult(method);
 
             if (havingEval != null) {
                 CodegenExpression having = LocalMethod(
-                    CodegenLegoMethodExpression.CodegenExpression(havingEval, method, classScope, true),
+                    CodegenLegoMethodExpression.CodegenExpression(havingEval, method, classScope),
                     eps,
                     ConstantTrue(),
                     evalCtx);
@@ -62,7 +66,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             }
 
             CodegenExpression rhsSide = LocalMethod(
-                CodegenLegoMethodExpression.CodegenExpression(selectEval, method, classScope, true),
+                CodegenLegoMethodExpression.CodegenExpression(selectEval, method, classScope),
                 eps,
                 ConstantTrue(),
                 evalCtx);
@@ -70,7 +74,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             method.Block
                 .DeclareVar(rhsType, "rhs", rhsSide)
                 .IfRefNullReturnNull("rhs")
-                .MethodReturn(computer.Codegen(left, symbols.LeftResultType, Ref("rhs"), rhsType));
+                .MethodReturn(computer.Codegen(left, symbols.LeftResultType, Ref("rhs"), rhsType, parent, classScope));
 
             return LocalMethod(method);
         }

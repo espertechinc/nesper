@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            AggregationRow aggs = GetAggregationRow(eventsPerStream, isNewData, exprEvaluatorContext);
+            var aggs = GetAggregationRow(eventsPerStream, isNewData, exprEvaluatorContext);
             return aggs?.GetValue(Factory.AggColumnNum, eventsPerStream, isNewData, exprEvaluatorContext);
         }
 
@@ -38,7 +38,7 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            AggregationRow aggs = GetAggregationRow(eventsPerStream, isNewData, context);
+            var aggs = GetAggregationRow(eventsPerStream, isNewData, context);
             return aggs?.GetCollectionOfEvents(Factory.AggColumnNum, eventsPerStream, isNewData, context);
         }
 

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -107,7 +107,7 @@ namespace com.espertech.esper.common.@internal.view.derived
             // If we have child views, keep a reference to the old values, so we can fireStatementStopped them as old data event.
             EventBean oldValues = null;
             if (lastNewEvent == null) {
-                if (child != null) {
+                if (Child != null) {
                     oldValues = PopulateMap(
                         _statisticsBean,
                         agentInstanceContext.EventBeanTypedEventFactory,
@@ -124,8 +124,8 @@ namespace com.espertech.esper.common.@internal.view.derived
                     var xnum = ExpressionXEval.Evaluate(eventsPerStream, true, agentInstanceContext);
                     var ynum = ExpressionYEval.Evaluate(eventsPerStream, true, agentInstanceContext);
                     if (xnum != null && ynum != null) {
-                        double x = xnum.AsDouble();
-                        double y = ynum.AsDouble();
+                        var x = xnum.AsDouble();
+                        var y = ynum.AsDouble();
                         _statisticsBean.AddPoint(x, y);
                     }
                 }
@@ -153,32 +153,32 @@ namespace com.espertech.esper.common.@internal.view.derived
                     var xnum = ExpressionXEval.Evaluate(eventsPerStream, true, agentInstanceContext);
                     var ynum = ExpressionYEval.Evaluate(eventsPerStream, true, agentInstanceContext);
                     if (xnum != null && ynum != null) {
-                        double x = xnum.AsDouble();
-                        double y = ynum.AsDouble();
+                        var x = xnum.AsDouble();
+                        var y = ynum.AsDouble();
                         _statisticsBean.RemovePoint(x, y);
                     }
                 }
             }
 
             // If there are child view, fireStatementStopped update method
-            if (child != null) {
+            if (Child != null) {
                 var newDataMap = PopulateMap(
                     _statisticsBean,
                     agentInstanceContext.EventBeanTypedEventFactory,
                     eventType,
                     additionalProps,
                     _lastValuesEventNew);
-                EventBean[] newEvents = {newDataMap};
+                EventBean[] newEvents = { newDataMap };
                 EventBean[] oldEvents;
                 if (lastNewEvent == null) {
-                    oldEvents = new[] {oldValues};
+                    oldEvents = new[] { oldValues };
                 }
                 else {
-                    oldEvents = new[] {lastNewEvent};
+                    oldEvents = new[] { lastNewEvent };
                 }
 
                 agentInstanceContext.InstrumentationProvider.QViewIndicate(viewFactory, newEvents, oldEvents);
-                child.Update(newEvents, oldEvents);
+                Child.Update(newEvents, oldEvents);
                 agentInstanceContext.InstrumentationProvider.AViewIndicate();
 
                 lastNewEvent = newDataMap;
@@ -189,7 +189,7 @@ namespace com.espertech.esper.common.@internal.view.derived
 
         public override IEnumerator<EventBean> GetEnumerator()
         {
-            EventBean value = PopulateMap(
+            var value = PopulateMap(
                 _statisticsBean,
                 agentInstanceContext.EventBeanTypedEventFactory,
                 eventType,

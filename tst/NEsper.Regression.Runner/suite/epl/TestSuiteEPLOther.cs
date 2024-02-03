@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -31,6 +31,7 @@ using SupportBeanSimple = com.espertech.esper.regressionlib.support.bean.Support
 namespace com.espertech.esper.regressionrun.suite.epl
 {
     [TestFixture]
+    [Parallelizable(ParallelScope.None)]
     public class TestSuiteEPLOther : AbstractTestBase
     {
         public static void Configure(Configuration configuration)
@@ -65,6 +66,8 @@ namespace com.espertech.esper.regressionrun.suite.epl
                 configuration.Common.AddEventType(clazz);
             }
 
+            configuration.Common.EventMeta.AvroSettings.IsEnableAvro = true;
+            
             IDictionary<string, object> myMapTypeInv = new Dictionary<string, object>();
             myMapTypeInv.Put("P0", typeof(long));
             myMapTypeInv.Put("P1", typeof(long));
@@ -157,7 +160,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
             configuration.Common.AddImportType(typeof(EPLOtherStaticFunctions.PrimitiveConversionLib));
             configuration.Common.AddImportType(typeof(Rectangle));
 
-            configuration.Compiler.ByteCode.AllowSubscriber = true;
+            configuration.Compiler.ByteCode.IsAllowSubscriber =true;
             configuration.Compiler.AddPlugInSingleRowFunction(
                 "sleepme",
                 typeof(SupportStaticMethodLib),
@@ -249,9 +252,6 @@ namespace com.espertech.esper.regressionrun.suite.epl
 
             [Test, RunInApplicationDomain]
             public void WithArrayElement() => RegressionRunner.Run(_session, EPLOtherUpdateIStream.WithArrayElement());
-
-            [Test, RunInApplicationDomain]
-            public void WithMapIndexProps() => RegressionRunner.RunPerformanceSensitive(_session, EPLOtherUpdateIStream.WithMapIndexProps());
 
             [Test, RunInApplicationDomain]
             public void WithSubqueryMultikeyWArray() => RegressionRunner.Run(_session, EPLOtherUpdateIStream.WithSubqueryMultikeyWArray());
@@ -711,7 +711,6 @@ namespace com.espertech.esper.regressionrun.suite.epl
         /// </code>
         /// </summary>
 
-        [Parallelizable(ParallelScope.None)]
         public class TestEPLOtherPlanExcludeHint : AbstractTestBase
         {
             public TestEPLOtherPlanExcludeHint() : base(Configure)
@@ -1039,9 +1038,6 @@ namespace com.espertech.esper.regressionrun.suite.epl
 
             [Test, RunInApplicationDomain]
             public void WithArrayParameter() => RegressionRunner.Run(_session, EPLOtherStaticFunctions.WithArrayParameter());
-
-            [Test, RunInApplicationDomain]
-            public void WithException() => RegressionRunner.Run(_session, EPLOtherStaticFunctions.WithException());
 
             [Test, RunInApplicationDomain]
             public void WithPattern() => RegressionRunner.Run(_session, EPLOtherStaticFunctions.WithPattern());

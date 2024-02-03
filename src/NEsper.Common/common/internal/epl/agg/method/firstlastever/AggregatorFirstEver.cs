@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -11,10 +11,10 @@ using System;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
-using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.agg.method.core;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.fabric;
 using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 using com.espertech.esper.common.@internal.serde.compiletime.sharable;
 using com.espertech.esper.compat;
@@ -22,6 +22,8 @@ using com.espertech.esper.compat.function;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.agg.method.core.AggregatorCodegenUtil;
+using static com.espertech.esper.common.@internal.serde.compiletime.sharable.CodegenSharableSerdeClassTyped.
+    CodegenSharableSerdeName;
 
 namespace com.espertech.esper.common.@internal.epl.agg.method.firstlastever
 {
@@ -30,37 +32,42 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.firstlastever
     /// </summary>
     public class AggregatorFirstEver : AggregatorMethodWDistinctWFilterWValueBase
     {
-        private readonly CodegenExpressionMember _isSet;
-        private readonly CodegenExpressionMember _firstValue;
-        private readonly CodegenExpressionInstanceField _serde;
-        private Type _childType;
+        private CodegenExpressionMember _isSet;
+        private CodegenExpressionMember _firstValue;
+        private CodegenExpressionInstanceField _serdeField;
+
+        private readonly Type _childType;
+        private readonly DataInputOutputSerdeForge _serde;
 
         public AggregatorFirstEver(
-            AggregationForgeFactory factory,
-            int col,
-            CodegenCtor rowCtor,
-            CodegenMemberCol membersColumnized,
-            CodegenClassScope classScope,
             Type optionalDistinctValueType,
             DataInputOutputSerdeForge optionalDistinctSerde,
             bool hasFilter,
             ExprNode optionalFilter,
             Type childType,
-            DataInputOutputSerdeForge serde)
-            : base(factory, col, rowCtor, membersColumnized, classScope, optionalDistinctValueType, optionalDistinctSerde, hasFilter, optionalFilter)
+            DataInputOutputSerdeForge serde) : base(
+            optionalDistinctValueType,
+            optionalDistinctSerde,
+            hasFilter,
+            optionalFilter)
         {
             _childType = childType.GetBoxedType();
+            _serde = serde;
+        }
+
+        public override void InitForgeFiltered(
+            int col,
+            CodegenCtor rowCtor,
+            CodegenMemberCol membersColumnized,
+            CodegenClassScope classScope)
+        {
             _isSet = membersColumnized.AddMember(col, typeof(bool), "isSet");
-            // NOTE: we had originally set the value of the member to childType which seems correct an
-            //   appropriate.  However, the code is not doing proper type checking and cast conversion
-            //   elsewhere which makes assignment problematic.  Revisit this problem when we have more
-            //   time.
             _firstValue = membersColumnized.AddMember(col, typeof(object), "firstValue");
-            _serde = classScope.AddOrGetDefaultFieldSharable(
+            _serdeField = classScope.AddOrGetDefaultFieldSharable(
                 new CodegenSharableSerdeClassTyped(
-                    CodegenSharableSerdeClassTyped.CodegenSharableSerdeName.VALUE_NULLABLE,
-                    childType,
-                    serde,
+                    VALUE_NULLABLE,
+                    _childType,
+                    _serde,
                     classScope));
         }
 
@@ -131,7 +138,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.firstlastever
         {
             method.Block
                 .Apply(WriteBoolean(output, row, _isSet))
-                .Expression(WriteNullable(RowDotMember(row, _firstValue), _serde, output, unitKey, writer, classScope));
+                .Expression(WriteNullable(RowDotMember(row, _firstValue), _serdeField, output, unitKey, writer, classScope));
         }
 
         protected override void ReadWODistinct(
@@ -144,8 +151,13 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.firstlastever
         {
             method.Block
                 .Apply(ReadBoolean(row, _isSet, input))
-                .AssignRef(RowDotMember(row, _firstValue),
-                    Cast(_childType, ReadNullable(_serde, input, unitKey, classScope)));
+                .AssignRef(RowDotMember(row, _firstValue), ReadNullable(_serdeField, input, unitKey, classScope));
+        }
+
+        protected override void AppendFormatWODistinct(FabricTypeCollector collector)
+        {
+            collector.Builtin(typeof(bool));
+            collector.Serde(_serde);
         }
 
         private Consumer<CodegenBlock> EnterConsumer(CodegenExpression value)

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -16,7 +16,6 @@ namespace com.espertech.esper.common.client.soda
     /// Dot-expression item representing an array operation.
     /// </summary>
     /// 
-    [Serializable]
     public class DotExpressionItemArray : DotExpressionItem
     {
         private IList<Expression> _indexes;
@@ -44,15 +43,17 @@ namespace com.espertech.esper.common.client.soda
         {
             _indexes = indexes;
         }
-        
-        public override void RenderItem(TextWriter writer) {
+
+        public override void RenderItem(TextWriter writer)
+        {
             writer.Write('[');
-            string delimiter = "";
-            foreach (Expression index in _indexes) {
+            var delimiter = "";
+            foreach (var index in _indexes) {
                 writer.Write(delimiter);
                 delimiter = ",";
                 index.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
             }
+
             writer.Write(']');
         }
     }

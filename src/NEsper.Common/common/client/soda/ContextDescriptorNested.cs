@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -13,7 +13,6 @@ using System.IO;
 namespace com.espertech.esper.common.client.soda
 {
     /// <summary>Nested context. </summary>
-    [Serializable]
     public class ContextDescriptorNested : ContextDescriptor
     {
         /// <summary>Ctor. </summary>
@@ -37,9 +36,8 @@ namespace com.espertech.esper.common.client.soda
             TextWriter writer,
             EPStatementFormatter formatter)
         {
-            string delimiter = "";
-            foreach (CreateContextClause context in Contexts)
-            {
+            var delimiter = "";
+            foreach (var context in Contexts) {
                 writer.Write(delimiter);
                 writer.Write("context ");
                 writer.Write(context.ContextName);

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -15,7 +15,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     ///     Represents a create-variable syntax for creating a new variable.
     /// </summary>
-    [Serializable]
     public class CreateDataFlowClause
     {
         private string dataFlowName;
@@ -49,8 +48,7 @@ namespace com.espertech.esper.common.client.soda
         ///     Returns the data flow name.
         /// </summary>
         /// <returns>name</returns>
-        public string DataFlowName
-        {
+        public string DataFlowName {
             get => dataFlowName;
             set => dataFlowName = value;
         }
@@ -59,8 +57,7 @@ namespace com.espertech.esper.common.client.soda
         ///     Returns schemas.
         /// </summary>
         /// <returns>schemas</returns>
-        public IList<CreateSchemaClause> Schemas
-        {
+        public IList<CreateSchemaClause> Schemas {
             get => schemas;
             set => schemas = value;
         }
@@ -69,8 +66,7 @@ namespace com.espertech.esper.common.client.soda
         ///     Returns operators.
         /// </summary>
         /// <returns>operator definitions</returns>
-        public IList<DataFlowOperator> Operators
-        {
+        public IList<DataFlowOperator> Operators {
             get => operators;
             set => operators = value;
         }
@@ -86,21 +82,17 @@ namespace com.espertech.esper.common.client.soda
         {
             writer.Write("create dataflow ");
             writer.Write(dataFlowName);
-            if (schemas != null)
-            {
-                foreach (var clause in schemas)
-                {
+            if (schemas != null) {
+                foreach (var clause in schemas) {
                     formatter.BeginDataFlowSchema(writer);
                     clause.ToEPL(writer);
                     writer.Write(",");
                 }
             }
 
-            if (operators != null)
-            {
+            if (operators != null) {
                 formatter.BeginDataFlowOperator(writer);
-                foreach (var clause in operators)
-                {
+                foreach (var clause in operators) {
                     clause.ToEPL(writer, formatter);
                 }
             }

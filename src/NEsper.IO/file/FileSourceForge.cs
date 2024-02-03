@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -50,7 +50,7 @@ namespace com.espertech.esperio.file
 
 		public DataFlowOpForgeInitializeResult InitializeForge(DataFlowOpForgeInitializeContext context)
 		{
-			_outputEventType = context.OutputPorts.Get(0).OptionalDeclaredType != null ? context.OutputPorts.Get(0).OptionalDeclaredType.EventType : null;
+			_outputEventType = context.OutputPorts[0].OptionalDeclaredType != null ? context.OutputPorts[0].OptionalDeclaredType.EventType : null;
 			if (_outputEventType == null) {
 				throw new ExprValidationException("No event type provided for output, please provide an event type name");
 			}

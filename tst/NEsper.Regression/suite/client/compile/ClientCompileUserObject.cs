@@ -1,12 +1,11 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.compat.collections;
@@ -15,6 +14,7 @@ using com.espertech.esper.compiler.client.option;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.client.compile
 {
@@ -23,8 +23,10 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
+#if REGRESSION_EXECUTIONS
             WithDifferentTypes(execs);
-            WithResolveContextInfo(execs);
+            With(ResolveContextInfo)(execs);
+#endif
             return execs;
         }
 
@@ -44,29 +46,39 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
 
         private class ClientCompileUserObjectResolveContextInfo : RegressionExecution
         {
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.COMPILEROPS);
+            }
+
             public void Run(RegressionEnvironment env)
             {
                 MyUserObjectResolver.Contexts.Clear();
                 var args = new CompilerArguments(env.Configuration);
                 args.Options.StatementUserObject = (new MyUserObjectResolver()).GetValue;
-                var epl = "@Name('s0') select * from SupportBean";
+                var epl = "@name('s0') select * from SupportBean";
                 env.Compile(epl, args);
 
                 var ctx = MyUserObjectResolver.Contexts[0];
-                Assert.AreEqual(epl, ctx.EplSupplier.Invoke());
-                Assert.AreEqual("s0", ctx.StatementName);
-                Assert.AreEqual(null, ctx.ModuleName);
-                Assert.AreEqual(1, ctx.Annotations.Length);
-                Assert.AreEqual(0, ctx.StatementNumber);
+                ClassicAssert.AreEqual(epl, ctx.EplSupplier.Invoke());
+                ClassicAssert.AreEqual("s0", ctx.StatementName);
+                ClassicAssert.AreEqual(null, ctx.ModuleName);
+                ClassicAssert.AreEqual(1, ctx.Annotations.Length);
+                ClassicAssert.AreEqual(0, ctx.StatementNumber);
             }
         }
 
         private class ClientCompileUserObjectDifferentTypes : RegressionExecution
         {
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.COMPILEROPS);
+            }
+
             public void Run(RegressionEnvironment env)
             {
                 AssertUserObject(env, "ABC");
-                AssertUserObject(env, new int[] {1, 2, 3});
+                AssertUserObject(env, new int[] { 1, 2, 3 });
                 AssertUserObject(env, null);
                 AssertUserObject(env, new MyUserObject("hello"));
             }
@@ -78,24 +90,27 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
         {
             var args = new CompilerArguments(env.Configuration);
             args.Options.SetStatementUserObject(_ => userObject);
-            var compiled = env.Compile("@Name('s0') select * from SupportBean", args);
+            var compiled = env.Compile("@name('s0') select * from SupportBean", args);
             env.Deploy(compiled);
-            var received = env.Statement("s0").UserObjectCompileTime;
-            if (received == null) {
-                Assert.IsNull(userObject);
-            }
-            else if (received.GetType() == typeof(int[])) {
-                Assert.IsTrue(Arrays.AreEqual((int[]) received, (int[]) userObject));
-            }
-            else {
-                Assert.AreEqual(userObject, env.Statement("s0").UserObjectCompileTime);
-            }
+            env.AssertStatement(
+                "s0",
+                statement => {
+                    var received = statement.UserObjectCompileTime;
+                    if (received == null) {
+                        ClassicAssert.IsNull(userObject);
+                    }
+                    else if (received.GetType() == typeof(int[])) {
+                        ClassicAssert.IsTrue(Arrays.AreEqual((int[])received, (int[])userObject));
+                    }
+                    else {
+                        ClassicAssert.AreEqual(userObject, env.Statement("s0").UserObjectCompileTime);
+                    }
+                });
 
             env.UndeployAll();
         }
 
-        [Serializable]
-        private class MyUserObject
+        public class MyUserObject
         {
             private string id;
 
@@ -132,7 +147,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                     return false;
                 }
 
-                return Equals((MyUserObject) obj);
+                return Equals((MyUserObject)obj);
             }
 
             public override int GetHashCode()

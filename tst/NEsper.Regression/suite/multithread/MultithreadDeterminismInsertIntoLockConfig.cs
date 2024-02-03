@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -22,7 +22,7 @@ using com.espertech.esper.runtime.client;
 using com.espertech.esper.runtime.client.scopetest;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esper.regressionlib.support.client.SupportCompileDeployUtil;
 
 namespace com.espertech.esper.regressionlib.suite.multithread
@@ -30,16 +30,22 @@ namespace com.espertech.esper.regressionlib.suite.multithread
     /// <summary>
     ///     Test for multithread-safety and deterministic behavior when using insert-into.
     /// </summary>
-    public class MultithreadDeterminismInsertIntoLockConfig
+    public class MultithreadDeterminismInsertIntoLockConfig : RegressionExecutionPreConfigured
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         private readonly EPRuntimeProvider _runtimeProvider = new EPRuntimeProvider();
+        private readonly Configuration _configuration;
 
-        public void Run(Configuration configuration)
+        public MultithreadDeterminismInsertIntoLockConfig(Configuration configuration)
         {
-            TrySendCountFollowedBy(4, 100, Locking.SUSPEND, configuration);
-            TrySendCountFollowedBy(4, 100, Locking.SPIN, configuration);
+            _configuration = configuration;
+        }
+
+        public void Run()
+        {
+            TrySendCountFollowedBy(4, 100, Locking.SUSPEND, _configuration);
+            TrySendCountFollowedBy(4, 100, Locking.SPIN, _configuration);
         }
 
         private void TrySendCountFollowedBy(
@@ -61,7 +67,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 
             // setup statements
             var path = new RegressionPath();
-            var eplInsert = "insert into MyStream select count(*) as cnt from SupportBean";
+            var eplInsert = "@public insert into MyStream select count(*) as cnt from SupportBean";
             var compiledInsert = Compile(eplInsert, configuration, path);
             path.Add(compiledInsert);
             var deployedInsert = Deploy(compiledInsert, runtime);
@@ -101,7 +107,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 
             // assert result
             for (var i = 0; i < numEvents - 1; i++) {
-                Assert.AreEqual(1, listeners[i].NewDataList.Count, "Listener not invoked: #" + i);
+                ClassicAssert.AreEqual(1, listeners[i].NewDataList.Count, "Listener not invoked: #" + i);
             }
 
             runtime.Destroy();

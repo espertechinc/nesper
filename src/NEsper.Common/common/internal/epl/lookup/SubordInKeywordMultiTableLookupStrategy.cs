@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -29,8 +29,8 @@ namespace com.espertech.esper.common.@internal.epl.lookup
             SubordInKeywordMultiTableLookupStrategyFactory factory,
             PropertyHashedEventTable[] indexes)
         {
-            this._factory = factory;
-            this._indexes = indexes;
+            _factory = factory;
+            _indexes = indexes;
             _events = new EventBean[factory.streamCountOuter + 1];
         }
 
@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.@internal.epl.lookup
             if (context.InstrumentationProvider.Activated()) {
                 context.InstrumentationProvider.QIndexSubordLookup(this, null, null);
                 Array.Copy(eventsPerStream, 0, _events, 1, eventsPerStream.Length);
-                ISet<EventBean> result = InKeywordTableLookupUtil.MultiIndexLookup(
+                var result = InKeywordTableLookupUtil.MultiIndexLookup(
                     _factory.evaluator,
                     _events,
                     context,

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -26,8 +26,8 @@ namespace com.espertech.esper.common.@internal.epl.lookup
             SubordSortedTableLookupStrategyFactory factory,
             PropertySortedEventTable index)
         {
-            this._factory = factory;
-            this._index = index;
+            _factory = factory;
+            _index = index;
         }
 
         public LookupStrategyDesc StrategyDesc => _factory.LookupStrategyDesc;
@@ -39,7 +39,7 @@ namespace com.espertech.esper.common.@internal.epl.lookup
             if (context.InstrumentationProvider.Activated()) {
                 context.InstrumentationProvider.QIndexSubordLookup(this, _index, null);
                 var keys = new List<object>(2);
-                ICollection<EventBean> result = _factory.strategy.LookupCollectKeys(
+                var result = _factory.strategy.LookupCollectKeys(
                     eventsPerStream,
                     _index,
                     context,

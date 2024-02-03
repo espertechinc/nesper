@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -13,18 +13,16 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.compat.collections;
 
+
 namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
 {
-    using DictionaryEventBean = IDictionary<object, EventBean>;
-    using DictionaryEventBeanArray = IDictionary<object, EventBean[]>;
-    using LinkedEventBean = LinkedHashMap<object, EventBean>;
-    using LinkedEventBeanArray = LinkedHashMap<object, EventBean[]>;
-
     public class ResultSetProcessorRowPerGroupOutputLastHelperImpl : ResultSetProcessorRowPerGroupOutputLastHelper
     {
-        private readonly DictionaryEventBeanArray groupReps = new LinkedEventBeanArray();
-        private readonly DictionaryEventBean groupRepsOutputLastUnordRStream = new LinkedEventBean();
-        protected internal readonly ResultSetProcessorRowPerGroup processor;
+        private readonly ResultSetProcessorRowPerGroup processor;
+        private readonly IDictionary<object, EventBean[]> groupReps = new LinkedHashMap<object, EventBean[]>();
+
+        private readonly IDictionary<object, EventBean> groupRepsOutputLastUnordRStream =
+            new LinkedHashMap<object, EventBean>();
 
         public ResultSetProcessorRowPerGroupOutputLastHelperImpl(ResultSetProcessorRowPerGroup processor)
         {
@@ -38,11 +36,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
         {
             if (newData != null) {
                 foreach (var aNewData in newData) {
-                    EventBean[] eventsPerStream = {aNewData};
+                    var eventsPerStream = new EventBean[] { aNewData };
                     var mk = processor.GenerateGroupKeySingle(eventsPerStream, true);
 
                     // if this is a newly encountered group, generate the remove stream event
-                    if (groupReps.Push(mk, eventsPerStream) == null) {
+                    if (!groupReps.TryPush(mk, eventsPerStream)) {
                         if (processor.IsSelectRStream) {
                             var @event = processor.GenerateOutputBatchedNoSortWMap(
                                 false,
@@ -56,16 +54,16 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                         }
                     }
 
-                    processor.AggregationService.ApplyEnter(eventsPerStream, mk, processor.GetAgentInstanceContext());
+                    processor.AggregationService.ApplyEnter(eventsPerStream, mk, processor.ExprEvaluatorContext);
                 }
             }
 
             if (oldData != null) {
                 foreach (var anOldData in oldData) {
-                    EventBean[] eventsPerStream = {anOldData};
+                    var eventsPerStream = new EventBean[] { anOldData };
                     var mk = processor.GenerateGroupKeySingle(eventsPerStream, true);
 
-                    if (groupReps.Push(mk, eventsPerStream) == null) {
+                    if (!groupReps.TryPush(mk, eventsPerStream)) {
                         if (processor.IsSelectRStream) {
                             var @event = processor.GenerateOutputBatchedNoSortWMap(
                                 false,
@@ -79,7 +77,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                         }
                     }
 
-                    processor.AggregationService.ApplyLeave(eventsPerStream, mk, processor.GetAgentInstanceContext());
+                    processor.AggregationService.ApplyLeave(eventsPerStream, mk, processor.ExprEvaluatorContext);
                 }
             }
         }
@@ -92,7 +90,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
             if (newData != null) {
                 foreach (var aNewData in newData) {
                     var mk = processor.GenerateGroupKeySingle(aNewData.Array, true);
-                    if (groupReps.Push(mk, aNewData.Array) == null) {
+                    if (!groupReps.TryPush(mk, aNewData.Array)) {
                         if (processor.IsSelectRStream) {
                             var @event = processor.GenerateOutputBatchedNoSortWMap(
                                 true,
@@ -106,14 +104,14 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                         }
                     }
 
-                    processor.AggregationService.ApplyEnter(aNewData.Array, mk, processor.GetAgentInstanceContext());
+                    processor.AggregationService.ApplyEnter(aNewData.Array, mk, processor.ExprEvaluatorContext);
                 }
             }
 
             if (oldData != null) {
                 foreach (var anOldData in oldData) {
                     var mk = processor.GenerateGroupKeySingle(anOldData.Array, false);
-                    if (groupReps.Push(mk, anOldData.Array) == null) {
+                    if (!groupReps.TryPush(mk, anOldData.Array)) {
                         if (processor.IsSelectRStream) {
                             var @event = processor.GenerateOutputBatchedNoSortWMap(
                                 true,
@@ -127,7 +125,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                         }
                     }
 
-                    processor.AggregationService.ApplyLeave(anOldData.Array, mk, processor.GetAgentInstanceContext());
+                    processor.AggregationService.ApplyLeave(anOldData.Array, mk, processor.ExprEvaluatorContext);
                 }
             }
         }

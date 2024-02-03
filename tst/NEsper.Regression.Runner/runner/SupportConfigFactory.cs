@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -48,8 +48,7 @@ namespace com.espertech.esper.regressionrun.runner
             else
             {
                 config = new Configuration(container);
-
-                //config.Compiler.Logging.AuditDirectory = @"E:\Logs\NEsper\NEsper.Regression.Review\generated";
+                //config.Compiler.Logging.AuditDirectory = @"F:\Logs\NEsper\NEsper.Regression.Review\generated";
 
 #if NETFRAMEWORK
                 config.Common.Scripting.AddEngine(typeof(ScriptingEngineJScript));
@@ -62,7 +61,7 @@ namespace com.espertech.esper.regressionrun.runner
                 config.Runtime.ExceptionHandling.UndeployRethrowPolicy = UndeployRethrowPolicy.RETHROW_FIRST;
                 
                 // Compiler
-                config.Compiler.ByteCode.AttachEPL = true;
+                config.Compiler.ByteCode.IsAttachEPL = true;
 
                 if (Environment.GetEnvironmentVariable(SYSTEM_PROPERTY_LOG_CODE) != null)
                 {
@@ -70,6 +69,7 @@ namespace com.espertech.esper.regressionrun.runner
                 }
             }
 
+            config.Common.EventMeta.IsEnableXmlXsd = true;
             return config;
         }
     }

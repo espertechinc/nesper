@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -9,12 +9,9 @@
 using System;
 using System.Collections.Generic;
 
-using com.espertech.esper.common.client.scopetest;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.datetime;
 using com.espertech.esper.regressionlib.framework;
-using com.espertech.esper.runtime.client.scopetest;
-
-using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.client.runtime
 {
@@ -50,6 +47,63 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             return execs;
         }
 
+        private class ClientRuntimePortScanPrimarySuccess : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                env.AdvanceTime(0);
+                SetCurrentTime(env, "8:00:00");
+                DeployPortScan(env);
+                SendEventMultiple(env, 20, "A", "B");
+                env.AssertPropsNew("output", "type,cnt".SplitCsv(), new object[] { "DETECTED", 20L });
+                env.UndeployAll();
+            }
+        }
+
+        private class ClientRuntimePortScanKeepAlerting : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                env.AdvanceTime(0);
+                SetCurrentTime(env, "8:00:00");
+                DeployPortScan(env);
+                SendEventMultiple(env, 20, "A", "B");
+                env.AssertPropsNew("output", "type,cnt".SplitCsv(), new object[] { "DETECTED", 20L });
+
+                SetCurrentTime(env, "8:00:29");
+                SendEventMultiple(env, 20, "A", "B");
+
+                SetCurrentTime(env, "8:00:59");
+                SendEventMultiple(env, 20, "A", "B");
+                env.AssertListenerNotInvoked("output");
+
+                SetCurrentTime(env, "8:01:00");
+                env.AssertPropsNew("output", "type,cnt".SplitCsv(), new object[] { "UPDATE", 20L });
+
+                env.UndeployAll();
+            }
+        }
+
+        private class ClientRuntimePortScanFallsUnderThreshold : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                env.AdvanceTime(0);
+                SetCurrentTime(env, "8:00:00");
+                DeployPortScan(env);
+                SendEventMultiple(env, 20, "A", "B");
+                env.AssertPropsNew("output", "type,cnt".SplitCsv(), new object[] { "DETECTED", 20L });
+
+                SetCurrentTime(env, "8:01:00");
+                env.AssertPropsPerRowLastNew(
+                    "output",
+                    "type,cnt".SplitCsv(),
+                    new object[][] { new object[] { "DONE", 0L } });
+
+                env.UndeployAll();
+            }
+        }
+
         private static void SendEventMultiple(
             RegressionEnvironment env,
             int count,
@@ -68,7 +122,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             int port,
             string marker)
         {
-            env.SendEventObjectArray(new object[] {src, dst, port, marker}, "PortScanEvent");
+            env.SendEventObjectArray(new object[] { src, dst, port, marker }, "PortScanEvent");
         }
 
         private static void SetCurrentTime(
@@ -77,14 +131,14 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
         {
             var timestamp = "2002-05-30T" + time + ".000";
             var current = DateTimeParsingFunctions.ParseDefaultMSec(timestamp);
-            Console.Out.WriteLine("Advancing time to " + timestamp + " msec " + current);
+            Console.WriteLine("Advancing time to " + timestamp + " msec " + current);
             env.AdvanceTimeSpan(current);
         }
 
-        private static SupportUpdateListener DeployPortScan(RegressionEnvironment env)
+        private static void DeployPortScan(RegressionEnvironment env)
         {
             var epl =
-                "create objectarray schema PortScanEvent(src string, dst string, port int, marker string);\n" +
+                "@public @buseventtype create objectarray schema PortScanEvent(src string, dst string, port int, marker string);\n" +
                 "\n" +
                 "create table ScanCountTable(src string primary key, dst string primary key, cnt count(*), win window(*) @type(PortScanEvent));\n" +
                 "\n" +
@@ -116,82 +170,10 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 "  then delete\n" +
                 "  then insert into OutputAlerts select 'EXPIRED' as type, -1L as cnt, null as contributors;\n" +
                 "\n" +
-                // For more output: "@Audit() select * from CountStream;\n" +
-                "@Name('output') select * from OutputAlerts;\n";
-            var compiled = env.CompileWBusPublicType(epl);
-            env.Deploy(compiled);
-            var listener = new SupportUpdateListener();
-            env.Statement("output").AddListener(listener);
-            return listener;
-        }
-
-        internal class ClientRuntimePortScanPrimarySuccess : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                env.AdvanceTime(0);
-                SetCurrentTime(env, "8:00:00");
-                var listener = DeployPortScan(env);
-                SendEventMultiple(env, 20, "A", "B");
-                EPAssertionUtil.AssertProps(
-                    listener.AssertOneGetNewAndReset(),
-                    new[] {"type", "cnt"},
-                    new object[] {"DETECTED", 20L});
-                env.UndeployAll();
-            }
-        }
-
-        internal class ClientRuntimePortScanKeepAlerting : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                env.AdvanceTime(0);
-                SetCurrentTime(env, "8:00:00");
-                var listener = DeployPortScan(env);
-                SendEventMultiple(env, 20, "A", "B");
-                EPAssertionUtil.AssertProps(
-                    listener.AssertOneGetNewAndReset(),
-                    new[] {"type", "cnt"},
-                    new object[] {"DETECTED", 20L});
-
-                SetCurrentTime(env, "8:00:29");
-                SendEventMultiple(env, 20, "A", "B");
-
-                SetCurrentTime(env, "8:00:59");
-                SendEventMultiple(env, 20, "A", "B");
-                Assert.IsFalse(listener.IsInvoked);
-
-                SetCurrentTime(env, "8:01:00");
-                EPAssertionUtil.AssertProps(
-                    listener.AssertOneGetNewAndReset(),
-                    new[] {"type", "cnt"},
-                    new object[] {"UPDATE", 20L});
-
-                env.UndeployAll();
-            }
-        }
-
-        internal class ClientRuntimePortScanFallsUnderThreshold : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                env.AdvanceTime(0);
-                SetCurrentTime(env, "8:00:00");
-                var listener = DeployPortScan(env);
-                SendEventMultiple(env, 20, "A", "B");
-                EPAssertionUtil.AssertProps(
-                    listener.AssertOneGetNewAndReset(),
-                    new[] {"type", "cnt"},
-                    new object[] {"DETECTED", 20L});
-
-                SetCurrentTime(env, "8:01:00");
-                EPAssertionUtil.AssertProps(
-                    listener.GetAndResetLastNewData()[0],
-                    new[] {"type", "cnt"},
-                    new object[] {"DONE", 0L});
-
-                env.UndeployAll();
-            }
+                // For more output: "@audit() select * from CountStream;\n" +
+                "@name('output') select * from OutputAlerts;\n";
+            var compiled = env.Compile(epl);
+            env.Deploy(compiled).AddListener("output");
         }
     }
 } // end of namespace

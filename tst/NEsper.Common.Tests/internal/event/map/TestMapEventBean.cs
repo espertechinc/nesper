@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -17,6 +17,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.@event.map
 {
@@ -53,24 +54,24 @@ namespace com.espertech.esper.common.@internal.@event.map
         [Test]
         public void TestGet()
         {
-            Assert.AreEqual(eventType, eventBean.EventType);
-            Assert.AreEqual(testValuesMap, eventBean.Underlying);
+            ClassicAssert.AreEqual(eventType, eventBean.EventType);
+            ClassicAssert.AreEqual(testValuesMap, eventBean.Underlying);
 
-            Assert.AreEqual("test", eventBean.Get("aString"));
-            Assert.AreEqual(10, eventBean.Get("anInt"));
+            ClassicAssert.AreEqual("test", eventBean.Get("aString"));
+            ClassicAssert.AreEqual(10, eventBean.Get("anInt"));
 
-            Assert.AreEqual("NestedValue", eventBean.Get("MyComplexBean.Nested.NestedValue"));
+            ClassicAssert.AreEqual("NestedValue", eventBean.Get("MyComplexBean.Nested.NestedValue"));
 
             // test wrong property name
             try
             {
                 eventBean.Get("dummy");
-                Assert.IsTrue(false);
+                ClassicAssert.IsTrue(false);
             }
             catch (PropertyAccessException ex)
             {
                 // Expected
-                log.Debug(".testGetter Expected exception, msg=" + ex.Message);
+                Log.Debug(".testGetter Expected exception, msg=" + ex.Message);
             }
         }
 
@@ -93,10 +94,10 @@ namespace com.espertech.esper.common.@internal.@event.map
             events.Put("b", beanTwo);
 
             MapEventBean theEvent = new MapEventBean(events, eventType);
-            Assert.AreSame(theEvent.Get("a"), beanOne);
-            Assert.AreSame(theEvent.Get("b"), beanTwo);
+            ClassicAssert.AreSame(theEvent.Get("a"), beanOne);
+            ClassicAssert.AreSame(theEvent.Get("b"), beanTwo);
         }
 
-        private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 } // end of namespace

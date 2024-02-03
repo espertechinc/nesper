@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -59,7 +59,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
 
         public FilterValueSetParam[][] GetFilterAddendumForContextPath(FilterSpecActivatable filterSpec)
         {
-            return contextAddendumFunction == null ? null : contextAddendumFunction.Invoke(filterSpec);
+            return contextAddendumFunction?.Invoke(filterSpec);
         }
 
         public AgentInstanceContext GetAgentInstanceContext()

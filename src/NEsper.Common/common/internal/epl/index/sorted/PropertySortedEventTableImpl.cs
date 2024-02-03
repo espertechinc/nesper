@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -19,41 +19,27 @@ using com.espertech.esper.compat.collections;
 
 using Range = com.espertech.esper.common.@internal.filterspec.Range;
 
+
 namespace com.espertech.esper.common.@internal.epl.index.sorted
 {
     /// <summary>
-    ///     Index that organizes events by the event property values into a single TreeMap sortable non-nested index
-    ///     with Object keys that store the property values.
+    /// Index that organizes events by the event property values into a single TreeMap sortable non-nested index
+    /// with Object keys that store the property values.
     /// </summary>
     public class PropertySortedEventTableImpl : PropertySortedEventTable
     {
-        internal readonly ISet<EventBean> nullKeyedValues;
-
         /// <summary>
-        ///     Index table.
+        /// Index table.
         /// </summary>
-        internal readonly IOrderedDictionary<object, ISet<EventBean>> propertyIndex;
+        protected readonly IOrderedDictionary<object, ISet<EventBean>> propertyIndex;
 
-        public PropertySortedEventTableImpl(PropertySortedEventTableFactory factory)
-            : base(factory)
-        {
-            propertyIndex = new OrderedListDictionary<object, ISet<EventBean>>();
-            nullKeyedValues = new LinkedHashSet<EventBean>();
-        }
-
-        public override int? NumberOfEvents => null;
-
-        public override int NumKeys => propertyIndex.Count;
-
-        public override object Index => propertyIndex;
-
-        public override bool IsEmpty => propertyIndex.IsEmpty();
-
-        public override Type ProviderClass => typeof(PropertySortedEventTable);
+        protected readonly ISet<EventBean> nullKeyedValues;
 
         protected object Coerce(object value)
         {
-            if (value != null && value.GetType() != factory.valueType) {
+            if (value != null &&
+                factory.valueType != null && 
+                factory.valueType != value.GetType()) {
                 if (value.IsNumber()) {
                     return TypeHelper.CoerceBoxed(value, factory.valueType);
                 }
@@ -62,17 +48,18 @@ namespace com.espertech.esper.common.@internal.epl.index.sorted
             return value;
         }
 
+        public PropertySortedEventTableImpl(PropertySortedEventTableFactory factory) : base(factory)
+        {
+            propertyIndex = new OrderedListDictionary<object, ISet<EventBean>>();
+            nullKeyedValues = new LinkedHashSet<EventBean>();
+        }
+
         /// <summary>
-        ///     Returns the set of events that have the same property value as the given event.
+        /// Returns the set of events that have the same property value as the given event.
         /// </summary>
         /// <param name="keyStart">to compare against</param>
-        /// <param name="includeStart">indicates if we should include the start point</param>
         /// <param name="keyEnd">to compare against</param>
-        /// <param name="includeEnd">indicates if we should include the end point</param>
-        /// <param name="allowRangeReversal">
-        ///     indicate whether "a between 60 and 50" should return no results (equivalent to a&amp;
-        ///     gt;= X and a &amp;lt;=Y) or should return results (equivalent to 'between' and 'in'
-        /// </param>
+        /// <param name="allowRangeReversal">indicate whether "a between 60 and 50" should return no results (equivalent to a&amp;gt;= X and a &amp;lt;=Y) or should return results (equivalent to 'between' and 'in'</param>
         /// <returns>set of events with property value, or null if none found (never returns zero-sized set)</returns>
         public override ISet<EventBean> LookupRange(
             object keyStart,
@@ -82,20 +69,22 @@ namespace com.espertech.esper.common.@internal.epl.index.sorted
             bool allowRangeReversal)
         {
             if (keyStart == null || keyEnd == null) {
-                return Collections.GetEmptySet<EventBean>();
+                return EmptySet<EventBean>.Instance;
             }
 
             keyStart = Coerce(keyStart);
             keyEnd = Coerce(keyEnd);
-            IDictionary<object, ISet<EventBean>> submap;
-
-            if (propertyIndex.KeyComparer.Compare(keyStart, keyEnd) <= 0) {
+            IOrderedDictionary<object, ISet<EventBean>> submap;
+            try {
                 submap = propertyIndex.Between(keyStart, includeStart, keyEnd, includeEnd);
-            } else if (allowRangeReversal) {
-                submap = propertyIndex.Between(keyEnd, includeStart, keyStart, includeEnd);
             }
-            else {
-                return Collections.GetEmptySet<EventBean>();
+            catch (ArgumentException) {
+                if (allowRangeReversal) {
+                    submap = propertyIndex.Between(keyEnd, includeStart, keyStart, includeEnd);
+                }
+                else {
+                    return EmptySet<EventBean>.Instance;
+                }
             }
 
             return Normalize(submap);
@@ -109,23 +98,20 @@ namespace com.espertech.esper.common.@internal.epl.index.sorted
             bool allowRangeReversal)
         {
             if (keyStart == null || keyEnd == null) {
-                return Collections.GetEmptyList<EventBean>();
+                return EmptySet<EventBean>.Instance;
             }
 
             keyStart = Coerce(keyStart);
             keyEnd = Coerce(keyEnd);
 
-            IDictionary<object, ISet<EventBean>> submap;
-            if (propertyIndex.KeyComparer.Compare(keyStart, keyEnd) <= 0) {
-                submap = propertyIndex.Between(keyStart, includeStart, keyEnd, includeEnd);
-            }
-            else if (allowRangeReversal) {
-                submap = propertyIndex.Between(keyEnd, includeStart, keyStart, includeEnd);
-            }
-            else {
-                return Collections.GetEmptyList<EventBean>();
+            if (allowRangeReversal) {
+                if (propertyIndex.KeyComparer.Compare(keyStart, keyEnd) > 0) {
+                    // swap via deconstruction (very cool)
+                    (keyEnd, keyStart) = (keyStart, keyEnd);
+                }
             }
 
+            var submap = propertyIndex.Between(keyStart, includeStart, keyEnd, includeEnd);
             return NormalizeCollection(submap);
         }
 
@@ -136,7 +122,7 @@ namespace com.espertech.esper.common.@internal.epl.index.sorted
             bool includeEnd)
         {
             if (keyStart == null || keyEnd == null) {
-                return Collections.GetEmptySet<EventBean>();
+                return EmptySet<EventBean>.Instance;
             }
 
             keyStart = Coerce(keyStart);
@@ -153,7 +139,7 @@ namespace com.espertech.esper.common.@internal.epl.index.sorted
             bool includeEnd)
         {
             if (keyStart == null || keyEnd == null) {
-                return Collections.GetEmptySet<EventBean>();
+                return EmptySet<EventBean>.Instance;
             }
 
             keyStart = Coerce(keyStart);
@@ -166,7 +152,7 @@ namespace com.espertech.esper.common.@internal.epl.index.sorted
         public override ISet<EventBean> LookupLess(object keyStart)
         {
             if (keyStart == null) {
-                return Collections.GetEmptySet<EventBean>();
+                return EmptySet<EventBean>.Instance;
             }
 
             keyStart = Coerce(keyStart);
@@ -176,7 +162,7 @@ namespace com.espertech.esper.common.@internal.epl.index.sorted
         public override ICollection<EventBean> LookupLessThenColl(object keyStart)
         {
             if (keyStart == null) {
-                return Collections.GetEmptyList<EventBean>();
+                return EmptySet<EventBean>.Instance;
             }
 
             keyStart = Coerce(keyStart);
@@ -186,7 +172,7 @@ namespace com.espertech.esper.common.@internal.epl.index.sorted
         public override ISet<EventBean> LookupLessEqual(object keyStart)
         {
             if (keyStart == null) {
-                return Collections.GetEmptySet<EventBean>();
+                return EmptySet<EventBean>.Instance;
             }
 
             keyStart = Coerce(keyStart);
@@ -196,7 +182,7 @@ namespace com.espertech.esper.common.@internal.epl.index.sorted
         public override ICollection<EventBean> LookupLessEqualColl(object keyStart)
         {
             if (keyStart == null) {
-                return Collections.GetEmptyList<EventBean>();
+                return EmptyList<EventBean>.Instance;
             }
 
             keyStart = Coerce(keyStart);
@@ -206,7 +192,7 @@ namespace com.espertech.esper.common.@internal.epl.index.sorted
         public override ISet<EventBean> LookupGreaterEqual(object keyStart)
         {
             if (keyStart == null) {
-                return Collections.GetEmptySet<EventBean>();
+                return EmptySet<EventBean>.Instance;
             }
 
             keyStart = Coerce(keyStart);
@@ -216,7 +202,7 @@ namespace com.espertech.esper.common.@internal.epl.index.sorted
         public override ICollection<EventBean> LookupGreaterEqualColl(object keyStart)
         {
             if (keyStart == null) {
-                return Collections.GetEmptyList<EventBean>();
+                return EmptyList<EventBean>.Instance;
             }
 
             keyStart = Coerce(keyStart);
@@ -226,7 +212,7 @@ namespace com.espertech.esper.common.@internal.epl.index.sorted
         public override ISet<EventBean> LookupGreater(object keyStart)
         {
             if (keyStart == null) {
-                return Collections.GetEmptySet<EventBean>();
+                return EmptySet<EventBean>.Instance;
             }
 
             keyStart = Coerce(keyStart);
@@ -236,12 +222,18 @@ namespace com.espertech.esper.common.@internal.epl.index.sorted
         public override ICollection<EventBean> LookupGreaterColl(object keyStart)
         {
             if (keyStart == null) {
-                return Collections.GetEmptyList<EventBean>();
+                return EmptyList<EventBean>.Instance;
             }
 
             keyStart = Coerce(keyStart);
             return NormalizeCollection(propertyIndex.Tail(keyStart, false));
         }
+
+        public override int? NumberOfEvents => null;
+
+        public override int NumKeys => propertyIndex.Count;
+
+        public override object Index => propertyIndex;
 
         public override void Add(
             EventBean theEvent,
@@ -294,6 +286,8 @@ namespace com.espertech.esper.common.@internal.epl.index.sorted
             }
         }
 
+        public override bool IsEmpty => propertyIndex.IsEmpty();
+
         public override IEnumerator<EventBean> GetEnumerator()
         {
             if (nullKeyedValues.IsEmpty()) {
@@ -315,76 +309,97 @@ namespace com.espertech.esper.common.@internal.epl.index.sorted
             Clear();
         }
 
-        public override ISet<EventBean> LookupConstants(RangeIndexLookupValue lookupValueBase)
+        public override ISet<EventBean> LookupConstantsFAF(RangeIndexLookupValue lookupValueBase)
         {
-            if (lookupValueBase is RangeIndexLookupValueEquals) {
-                var equals = (RangeIndexLookupValueEquals) lookupValueBase;
+            var result = LookupConstants(lookupValueBase);
+            return result == null ? null : new LinkedHashSet<EventBean>(result);
+        }
+
+        private ISet<EventBean> LookupConstants(RangeIndexLookupValue lookupValueBase)
+        {
+            if (lookupValueBase is RangeIndexLookupValueEquals equals) {
                 return propertyIndex.Get(equals.Value);
             }
 
-            var lookupValue = (RangeIndexLookupValueRange) lookupValueBase;
-            if (lookupValue.Operator == QueryGraphRangeEnum.RANGE_CLOSED) {
-                var range = (Range) lookupValue.Value;
-                return LookupRange(range.LowEndpoint, true, range.HighEndpoint, true, lookupValue.IsAllowRangeReverse);
-            }
+            var lookupValue = (RangeIndexLookupValueRange)lookupValueBase;
+            switch (lookupValue.Operator) {
+                case QueryGraphRangeEnum.RANGE_CLOSED: {
+                    var range = (Range)lookupValue.Value;
+                    return LookupRange(
+                        range.LowEndpoint,
+                        true,
+                        range.HighEndpoint,
+                        true,
+                        lookupValue.IsAllowRangeReverse);
+                }
 
-            if (lookupValue.Operator == QueryGraphRangeEnum.RANGE_HALF_OPEN) {
-                var range = (Range) lookupValue.Value;
-                return LookupRange(range.LowEndpoint, true, range.HighEndpoint, false, lookupValue.IsAllowRangeReverse);
-            }
+                case QueryGraphRangeEnum.RANGE_HALF_OPEN: {
+                    var range = (Range)lookupValue.Value;
+                    return LookupRange(
+                        range.LowEndpoint,
+                        true,
+                        range.HighEndpoint,
+                        false,
+                        lookupValue.IsAllowRangeReverse);
+                }
 
-            if (lookupValue.Operator == QueryGraphRangeEnum.RANGE_HALF_CLOSED) {
-                var range = (Range) lookupValue.Value;
-                return LookupRange(range.LowEndpoint, false, range.HighEndpoint, true, lookupValue.IsAllowRangeReverse);
-            }
+                case QueryGraphRangeEnum.RANGE_HALF_CLOSED: {
+                    var range = (Range)lookupValue.Value;
+                    return LookupRange(
+                        range.LowEndpoint,
+                        false,
+                        range.HighEndpoint,
+                        true,
+                        lookupValue.IsAllowRangeReverse);
+                }
 
-            if (lookupValue.Operator == QueryGraphRangeEnum.RANGE_OPEN) {
-                var range = (Range) lookupValue.Value;
-                return LookupRange(
-                    range.LowEndpoint,
-                    false,
-                    range.HighEndpoint,
-                    false,
-                    lookupValue.IsAllowRangeReverse);
-            }
+                case QueryGraphRangeEnum.RANGE_OPEN: {
+                    var range = (Range)lookupValue.Value;
+                    return LookupRange(
+                        range.LowEndpoint,
+                        false,
+                        range.HighEndpoint,
+                        false,
+                        lookupValue.IsAllowRangeReverse);
+                }
 
-            if (lookupValue.Operator == QueryGraphRangeEnum.NOT_RANGE_CLOSED) {
-                var range = (Range) lookupValue.Value;
-                return LookupRangeInverted(range.LowEndpoint, true, range.HighEndpoint, true);
-            }
+                case QueryGraphRangeEnum.NOT_RANGE_CLOSED: {
+                    var range = (Range)lookupValue.Value;
+                    return LookupRangeInverted(range.LowEndpoint, true, range.HighEndpoint, true);
+                }
 
-            if (lookupValue.Operator == QueryGraphRangeEnum.NOT_RANGE_HALF_OPEN) {
-                var range = (Range) lookupValue.Value;
-                return LookupRangeInverted(range.LowEndpoint, true, range.HighEndpoint, false);
-            }
+                case QueryGraphRangeEnum.NOT_RANGE_HALF_OPEN: {
+                    var range = (Range)lookupValue.Value;
+                    return LookupRangeInverted(range.LowEndpoint, true, range.HighEndpoint, false);
+                }
 
-            if (lookupValue.Operator == QueryGraphRangeEnum.NOT_RANGE_HALF_CLOSED) {
-                var range = (Range) lookupValue.Value;
-                return LookupRangeInverted(range.LowEndpoint, false, range.HighEndpoint, true);
-            }
+                case QueryGraphRangeEnum.NOT_RANGE_HALF_CLOSED: {
+                    var range = (Range)lookupValue.Value;
+                    return LookupRangeInverted(range.LowEndpoint, false, range.HighEndpoint, true);
+                }
 
-            if (lookupValue.Operator == QueryGraphRangeEnum.NOT_RANGE_OPEN) {
-                var range = (Range) lookupValue.Value;
-                return LookupRangeInverted(range.LowEndpoint, false, range.HighEndpoint, false);
-            }
+                case QueryGraphRangeEnum.NOT_RANGE_OPEN: {
+                    var range = (Range)lookupValue.Value;
+                    return LookupRangeInverted(range.LowEndpoint, false, range.HighEndpoint, false);
+                }
 
-            if (lookupValue.Operator == QueryGraphRangeEnum.GREATER) {
-                return LookupGreater(lookupValue.Value);
-            }
+                case QueryGraphRangeEnum.GREATER:
+                    return LookupGreater(lookupValue.Value);
 
-            if (lookupValue.Operator == QueryGraphRangeEnum.GREATER_OR_EQUAL) {
-                return LookupGreaterEqual(lookupValue.Value);
-            }
+                case QueryGraphRangeEnum.GREATER_OR_EQUAL:
+                    return LookupGreaterEqual(lookupValue.Value);
 
-            if (lookupValue.Operator == QueryGraphRangeEnum.LESS) {
-                return LookupLess(lookupValue.Value);
-            }
+                case QueryGraphRangeEnum.LESS:
+                    return LookupLess(lookupValue.Value);
 
-            if (lookupValue.Operator == QueryGraphRangeEnum.LESS_OR_EQUAL) {
-                return LookupLessEqual(lookupValue.Value);
-            }
+                case QueryGraphRangeEnum.LESS_OR_EQUAL:
+                    return LookupLessEqual(lookupValue.Value);
 
-            throw new ArgumentException("Unrecognized operator '" + lookupValue.Operator + "'");
+                default:
+                    throw new ArgumentException("Unrecognized operator '" + lookupValue.Operator + "'");
+            }
         }
+
+        public override Type ProviderClass => typeof(PropertySortedEventTable);
     }
 } // end of namespace

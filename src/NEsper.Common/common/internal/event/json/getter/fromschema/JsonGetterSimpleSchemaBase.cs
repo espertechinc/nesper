@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -18,10 +18,10 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
 namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
 {
-	/// <summary>
-	///     Property getter for Json underlying fields.
-	/// </summary>
-	public abstract class JsonGetterSimpleSchemaBase : JsonEventPropertyGetter
+    /// <summary>
+    ///     Property getter for Json underlying fields.
+    /// </summary>
+    public abstract class JsonGetterSimpleSchemaBase : JsonEventPropertyGetter
     {
         public EventBeanTypedEventFactory EventBeanTypedEventFactory { get; }
         public JsonUnderlyingField Field { get; }
@@ -34,10 +34,10 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
             EventType fragmentType,
             EventBeanTypedEventFactory eventBeanTypedEventFactory)
         {
-            this.Field = field;
-            this.UnderlyingClassName = underlyingClassName;
-            this.FragmentType = fragmentType;
-            this.EventBeanTypedEventFactory = eventBeanTypedEventFactory;
+            Field = field;
+            UnderlyingClassName = underlyingClassName;
+            FragmentType = fragmentType;
+            EventBeanTypedEventFactory = eventBeanTypedEventFactory;
         }
 
         public abstract CodegenExpression EventBeanFragmentCodegen(
@@ -59,8 +59,8 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
 
         public object GetJsonProp(object @object)
         {
-            var und = (JsonEventObjectBase) @object;
-            return und.GetNativeValue(Field.PropertyName);
+            var und = (JsonEventObjectBase)@object;
+            return und.GetNativeValue(Field.PropertyNumber);
         }
 
         public CodegenExpression EventBeanGetCodegen(
@@ -68,7 +68,10 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return UnderlyingGetCodegen(CastUnderlying(UnderlyingClassName, beanExpression), codegenMethodScope, codegenClassScope);
+            return UnderlyingGetCodegen(
+                CastUnderlying(UnderlyingClassName, beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
         public CodegenExpression UnderlyingGetCodegen(

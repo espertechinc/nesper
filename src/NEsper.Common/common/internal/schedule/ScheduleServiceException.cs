@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.@internal.schedule
     /// <summary>
     /// This exception is thrown to indicate a problem with scheduling.
     /// </summary>
-    [Serializable]
     public class ScheduleServiceException : Exception
     {
         /// <summary> Constructor.</summary>
@@ -32,7 +31,7 @@ namespace com.espertech.esper.common.@internal.schedule
         /// </param>
         public ScheduleServiceException(
             string message,
-            System.Exception cause)
+            Exception cause)
             : base(message, cause)
         {
         }
@@ -40,7 +39,7 @@ namespace com.espertech.esper.common.@internal.schedule
         /// <summary> Constructor.</summary>
         /// <param name="cause">is the inner exception
         /// </param>
-        public ScheduleServiceException(System.Exception cause)
+        public ScheduleServiceException(Exception cause)
             : base(string.Empty, cause)
         {
         }

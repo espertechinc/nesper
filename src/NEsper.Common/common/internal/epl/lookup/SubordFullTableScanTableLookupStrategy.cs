@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -28,8 +28,8 @@ namespace com.espertech.esper.common.@internal.epl.lookup
             ILockable tableLevelLock,
             IEnumerable<EventBean> contents)
         {
-            this._tableLevelLock = tableLevelLock;
-            this._contents = contents;
+            _tableLevelLock = tableLevelLock;
+            _contents = contents;
         }
 
         public ICollection<EventBean> Lookup(
@@ -57,14 +57,14 @@ namespace com.espertech.esper.common.@internal.epl.lookup
         {
             TableEvalLockUtil.ObtainLockUnless(_tableLevelLock, context);
 
-            IEnumerator<EventBean> enumerator = _contents.GetEnumerator();
+            var enumerator = _contents.GetEnumerator();
             if (!enumerator.MoveNext()) {
                 return null;
             }
 
             var result = new ArrayDeque<EventBean>();
             do {
-                EventBean eventBean = enumerator.Current;
+                var eventBean = enumerator.Current;
                 result.Add(eventBean);
             } while (enumerator.MoveNext());
 

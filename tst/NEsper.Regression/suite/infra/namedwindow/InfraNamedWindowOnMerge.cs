@@ -1,12 +1,11 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using Avro.Generic;
@@ -14,27 +13,27 @@ using Avro.Generic;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NEsper.Avro.Extensions;
-using NEsper.Avro.Util.Support;
 
 using Newtonsoft.Json.Linq;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A;
 
 namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 {
     /// <summary>
-    ///     NOTE: More namedwindow-related tests in "nwtable"
+    /// NOTE: More namedwindow-related tests in "nwtable"
     /// </summary>
     public class InfraNamedWindowOnMerge
     {
-        public static IList<RegressionExecution> Executions()
+        public static ICollection<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
             WithUpdateNonPropertySet(execs);
@@ -56,21 +55,24 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             return execs;
         }
 
-        public static IList<RegressionExecution> WithOnMergeNoWhereClauseInsertTranspose(IList<RegressionExecution> execs = null)
+        public static IList<RegressionExecution> WithOnMergeNoWhereClauseInsertTranspose(
+            IList<RegressionExecution> execs = null)
         {
             execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraOnMergeNoWhereClauseInsertTranspose());
             return execs;
         }
 
-        public static IList<RegressionExecution> WithOnMergeNoWhereClauseInsertSelectStar(IList<RegressionExecution> execs = null)
+        public static IList<RegressionExecution> WithOnMergeNoWhereClauseInsertSelectStar(
+            IList<RegressionExecution> execs = null)
         {
             execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraOnMergeNoWhereClauseInsertSelectStar());
             return execs;
         }
 
-        public static IList<RegressionExecution> WithOnMergeWhere1Eq2InsertSelectStar(IList<RegressionExecution> execs = null)
+        public static IList<RegressionExecution> WithOnMergeWhere1Eq2InsertSelectStar(
+            IList<RegressionExecution> execs = null)
         {
             execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraOnMergeWhere1Eq2InsertSelectStar());
@@ -98,17 +100,19 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             return execs;
         }
 
-        public static IList<RegressionExecution> WithMergeTriggeredByAnotherWindow(IList<RegressionExecution> execs = null)
+        public static IList<RegressionExecution> WithMergeTriggeredByAnotherWindow(
+            IList<RegressionExecution> execs = null)
         {
             execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraMergeTriggeredByAnotherWindow());
             return execs;
         }
 
-        public static IList<RegressionExecution> WithUpdateNonPropertySet(IList<RegressionExecution> execs = null)
+        public static IList<RegressionExecution> WithUpdateNonPropertySet(
+            IList<RegressionExecution> execs = null)
         {
             execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new InfraUpdateNonPropertySet());
+            execs.Add(new InfraNamedWindowOnMergeUpdateNonPropertySet());
             return execs;
         }
 
@@ -116,12 +120,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             RegressionEnvironment env,
             EventRepresentationChoice eventRepresentationEnum)
         {
-            var fields = new[] {"col1", "col2"};
+            var fields = "col1,col2".SplitCsv();
             var epl = eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedMyEvent>() +
-                      " create schema MyEvent as (in1 string, in2 int);\n";
+                      " @public @buseventtype create schema MyEvent as (in1 string, in2 int);\n";
             epl += eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedMySchema>() +
-                   " create schema MySchema as (col1 string, col2 int);\n";
-            epl += "@Name('create') create window MyWindowSS#lastevent as MySchema;\n";
+                   " @public @buseventtype create schema MySchema as (col1 string, col2 int);\n";
+            epl += "@name('create') @public create window MyWindowSS#lastevent as MySchema;\n";
             epl += "on SupportBean_A delete from MyWindowSS;\n";
             epl += "on MyEvent me " +
                    "merge MyWindowSS mw " +
@@ -131,64 +135,46 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                    "update set col1=(select TheString from SupportBean(TheString like 'B%')#lastevent), col2=(select IntPrimitive from SupportBean(TheString like 'B%')#lastevent) " +
                    "when matched and (select IntPrimitive>0 from SupportBean(TheString like 'C%')#lastevent) then " +
                    "delete;\n";
-            env.CompileDeployWBusPublicType(epl, new RegressionPath());
+            env.CompileDeploy(epl, new RegressionPath());
 
             // no action tests
             SendMyEvent(env, eventRepresentationEnum, "X1", 1);
             env.SendEventBean(new SupportBean("A1", 0)); // ignored
             SendMyEvent(env, eventRepresentationEnum, "X2", 2);
             env.SendEventBean(new SupportBean("A2", 20));
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(env.GetEnumerator("create"), fields, null);
+            env.AssertPropsPerRowIteratorAnyOrder("create", fields, null);
 
             SendMyEvent(env, eventRepresentationEnum, "X3", 3);
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(
-                env.GetEnumerator("create"),
-                fields,
-                new[] {new object[] {"A2", 20}});
+            env.AssertPropsPerRowIteratorAnyOrder("create", fields, new object[][] { new object[] { "A2", 20 } });
 
             env.SendEventBean(new SupportBean_A("Y1"));
             env.SendEventBean(new SupportBean("A3", 30));
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(env.GetEnumerator("create"), fields, null);
+            env.AssertPropsPerRowIteratorAnyOrder("create", fields, null);
 
             SendMyEvent(env, eventRepresentationEnum, "X4", 4);
             env.SendEventBean(new SupportBean("A4", 40));
             SendMyEvent(env, eventRepresentationEnum, "X5", 5); // ignored as matched (no where clause, no B event)
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(
-                env.GetEnumerator("create"),
-                fields,
-                new[] {new object[] {"A3", 30}});
+            env.AssertPropsPerRowIteratorAnyOrder("create", fields, new object[][] { new object[] { "A3", 30 } });
 
             env.SendEventBean(new SupportBean("B1", 50));
             SendMyEvent(env, eventRepresentationEnum, "X6", 6);
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(
-                env.GetEnumerator("create"),
-                fields,
-                new[] {new object[] {"B1", 50}});
+            env.AssertPropsPerRowIteratorAnyOrder("create", fields, new object[][] { new object[] { "B1", 50 } });
 
             env.SendEventBean(new SupportBean("B2", 60));
             SendMyEvent(env, eventRepresentationEnum, "X7", 7);
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(
-                env.GetEnumerator("create"),
-                fields,
-                new[] {new object[] {"B2", 60}});
+            env.AssertPropsPerRowIteratorAnyOrder("create", fields, new object[][] { new object[] { "B2", 60 } });
 
             env.SendEventBean(new SupportBean("B2", 0));
             SendMyEvent(env, eventRepresentationEnum, "X8", 8);
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(
-                env.GetEnumerator("create"),
-                fields,
-                new[] {new object[] {"B2", 60}});
+            env.AssertPropsPerRowIteratorAnyOrder("create", fields, new object[][] { new object[] { "B2", 60 } });
 
             env.SendEventBean(new SupportBean("C1", 1));
             SendMyEvent(env, eventRepresentationEnum, "X9", 9);
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(env.GetEnumerator("create"), fields, null);
+            env.AssertPropsPerRowIteratorAnyOrder("create", fields, null);
 
             env.SendEventBean(new SupportBean("C1", 0));
             SendMyEvent(env, eventRepresentationEnum, "X10", 10);
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(
-                env.GetEnumerator("create"),
-                fields,
-                new[] {new object[] {"A4", 40}});
+            env.AssertPropsPerRowIteratorAnyOrder("create", fields, new object[][] { new object[] { "A4", 40 } });
 
             env.UndeployAll();
         }
@@ -210,24 +196,22 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             int in2)
         {
             if (eventRepresentationEnum.IsObjectArrayEvent()) {
-                env.SendEventObjectArray(new object[] {in1, in2}, "MyEvent");
+                env.SendEventObjectArray(new object[] { in1, in2 }, "MyEvent");
             }
             else if (eventRepresentationEnum.IsMapEvent()) {
-                IDictionary<string, object> theEvent = new Dictionary<string, object>();
+                IDictionary<string, object> theEvent = new LinkedHashMap<string, object>();
                 theEvent.Put("in1", in1);
                 theEvent.Put("in2", in2);
                 env.SendEventMap(theEvent, "MyEvent");
             }
             else if (eventRepresentationEnum.IsAvroEvent()) {
-                var theEvent = new GenericRecord(
-                    SupportAvroUtil.GetAvroSchema(env.Runtime.EventTypeService.GetEventTypePreconfigured("MyEvent"))
-                        .AsRecordSchema());
+                var theEvent = new GenericRecord(env.RuntimeAvroSchemaPreconfigured("MyEvent").AsRecordSchema());
                 theEvent.Put("in1", in1);
                 theEvent.Put("in2", in2);
-                env.EventService.SendEventAvro(theEvent, "MyEvent");
+                env.SendEventAvro(theEvent, "MyEvent");
             }
             else if (eventRepresentationEnum.IsJsonEvent() || eventRepresentationEnum.IsJsonProvidedClassEvent()) {
-                env.EventService.SendEventJson("{\"in1\": \"" + in1 + "\", \"in2\": " + in2 + "}", "MyEvent");
+                env.SendEventJson("{\"in1\": \"" + in1 + "\", \"in2\": " + in2 + "}", "MyEvent");
             }
             else {
                 Assert.Fail();
@@ -239,56 +223,57 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             EventRepresentationChoice eventRepresentationEnum)
         {
             var path = new RegressionPath();
-            var baseModuleEPL = eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedOrderEvent>() +
-                                " create schema OrderEvent as (OrderId string, ProductId string, Price double, Quantity int, DeletedFlag boolean)";
-            env.CompileDeployWBusPublicType(baseModuleEPL, path);
+            var baseModuleEPL =
+                eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedOrderEvent>() +
+                " @public @buseventtype create schema OrderEvent as (OrderId string, ProductId string, Price double, Quantity int, DeletedFlag boolean)";
+            env.CompileDeploy(baseModuleEPL, path);
 
-            var appModuleOne = eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedProductTotalRec>() +
-                               " create schema ProductTotalRec as (ProductId string, TotalPrice double);" +
-                               "" +
-                               "@Name('nwProd') create window ProductWindow#unique(ProductId) as ProductTotalRec;" +
-                               "" +
-                               "on OrderEvent oe\n" +
-                               "merge ProductWindow pw\n" +
-                               "where pw.ProductId = oe.ProductId\n" +
-                               "when matched\n" +
-                               "then update set TotalPrice = TotalPrice + oe.Price\n" +
-                               "when not matched\n" +
-                               "then insert select ProductId, Price as TotalPrice;";
-            env.CompileDeploy(appModuleOne, path);
-
-            var appModuleTwo =
-                " @Name('nwOrd') create window OrderWindow#keepall as OrderEvent;" +
+            var appModuleOne =
+                eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedProductTotalRec>() +
+                " create schema ProductTotalRec as (ProductId string, TotalPrice double);" +
+                "" +
+                "@name('nwProd') @public create window ProductWindow#unique(ProductId) as ProductTotalRec;" +
                 "" +
                 "on OrderEvent oe\n" +
-                "  merge OrderWindow pw\n" +
-                "  where pw.OrderId = oe.OrderId\n" +
-                "  when not matched \n" +
-                "    then insert select *\n" +
-                "  when matched and oe.DeletedFlag=true\n" +
-                "    then delete\n" +
-                "  when matched\n" +
-                "    then update set pw.Quantity = oe.Quantity, pw.Price = oe.Price";
+                "merge ProductWindow pw\n" +
+                "where pw.ProductId = oe.ProductId\n" +
+                "when matched\n" +
+                "then update set TotalPrice = TotalPrice + oe.Price\n" +
+                "when not matched\n" +
+                "then insert select ProductId, Price as TotalPrice;";
+            env.CompileDeploy(appModuleOne, path);
+
+            var appModuleTwo = "@name('nwOrd') create window OrderWindow#keepall as OrderEvent;" +
+                               "" +
+                               "on OrderEvent oe\n" +
+                               "  merge OrderWindow pw\n" +
+                               "  where pw.OrderId = oe.OrderId\n" +
+                               "  when not matched \n" +
+                               "    then insert select *\n" +
+                               "  when matched and oe.DeletedFlag=true\n" +
+                               "    then delete\n" +
+                               "  when matched\n" +
+                               "    then update set pw.Quantity = oe.Quantity, pw.Price = oe.Price";
 
             env.CompileDeploy(appModuleTwo, path);
 
             SendOrderEvent(env, eventRepresentationEnum, "O1", "P1", 10, 100, false);
             SendOrderEvent(env, eventRepresentationEnum, "O1", "P1", 11, 200, false);
             SendOrderEvent(env, eventRepresentationEnum, "O2", "P2", 3, 300, false);
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(
-                env.Statement("nwProd").GetEnumerator(),
-                new[] {"ProductId", "TotalPrice"},
-                new[] {new object[] {"P1", 21d}, new object[] {"P2", 3d}});
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(
-                env.Statement("nwOrd").GetEnumerator(),
-                new[] {"OrderId", "Quantity"},
-                new[] {new object[] {"O1", 200}, new object[] {"O2", 300}});
+            env.AssertPropsPerRowIteratorAnyOrder(
+                "nwProd",
+                "ProductId,TotalPrice".SplitCsv(),
+                new object[][] { new object[] { "P1", 21d }, new object[] { "P2", 3d } });
+            env.AssertPropsPerRowIteratorAnyOrder(
+                "nwOrd",
+                "OrderId,Quantity".SplitCsv(),
+                new object[][] { new object[] { "O1", 200 }, new object[] { "O2", 300 } });
 
-            var module = "create schema StreetCarCountSchema (streetId string, carcount int);" +
-                         "    create schema StreetChangeEvent (streetId string, action string);" +
-                         "    create window StreetCarCountWindow#unique(streetId) as StreetCarCountSchema;" +
-                         "    on StreetChangeEvent ce merge StreetCarCountWindow w where ce.streetId = w.streetId\n" +
-                         "    when not matched and ce.action = 'ENTER' then insert select streetId, 1 as carcount\n" +
+            var module = "create schema StreetCarCountSchema (streetid string, carcount int);" +
+                         "    create schema StreetChangeEvent (streetid string, action string);" +
+                         "    create window StreetCarCountWindow#unique(streetid) as StreetCarCountSchema;" +
+                         "    on StreetChangeEvent ce merge StreetCarCountWindow w where ce.streetid = w.streetid\n" +
+                         "    when not matched and ce.action = 'ENTER' then insert select streetid, 1 as carcount\n" +
                          "    when matched and ce.action = 'ENTER' then update set StreetCarCountWindow.carcount = carcount + 1\n" +
                          "    when matched and ce.action = 'LEAVE' then update set StreetCarCountWindow.carcount = carcount - 1;" +
                          "    select * from StreetCarCountWindow;";
@@ -307,7 +292,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             bool deletedFlag)
         {
             if (eventRepresentationEnum.IsObjectArrayEvent()) {
-                env.SendEventObjectArray(new object[] {orderId, productId, price, quantity, deletedFlag}, "OrderEvent");
+                env.SendEventObjectArray(
+                    new object[] { orderId, productId, price, quantity, deletedFlag },
+                    "OrderEvent");
             }
             else if (eventRepresentationEnum.IsMapEvent()) {
                 IDictionary<string, object> theEvent = new LinkedHashMap<string, object>();
@@ -319,27 +306,22 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 env.SendEventMap(theEvent, "OrderEvent");
             }
             else if (eventRepresentationEnum.IsAvroEvent()) {
-                var theEvent = new GenericRecord(
-                    SupportAvroUtil.GetAvroSchema(env.Runtime.EventTypeService.GetEventTypePreconfigured("OrderEvent"))
-                        .AsRecordSchema());
+                var theEvent = new GenericRecord(env.RuntimeAvroSchemaPreconfigured("OrderEvent").AsRecordSchema());
                 theEvent.Put("OrderId", orderId);
                 theEvent.Put("ProductId", productId);
                 theEvent.Put("Price", price);
                 theEvent.Put("Quantity", quantity);
                 theEvent.Put("DeletedFlag", deletedFlag);
-                env.EventService.SendEventAvro(theEvent, "OrderEvent");
+                env.SendEventAvro(theEvent, "OrderEvent");
             }
-            else if (eventRepresentationEnum.IsJsonEvent() || eventRepresentationEnum.IsJsonProvidedClassEvent()) {
+            else {
                 var @object = new JObject();
                 @object.Add("OrderId", orderId);
                 @object.Add("ProductId", productId);
                 @object.Add("Price", price);
                 @object.Add("Quantity", quantity);
                 @object.Add("DeletedFlag", deletedFlag);
-                env.EventService.SendEventJson(@object.ToString(), "OrderEvent");
-            }
-            else {
-                Assert.Fail();
+                env.SendEventJson(@object.ToString(), "OrderEvent");
             }
         }
 
@@ -348,17 +330,17 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             string onInsert)
         {
             var epl = "insert into SBStream select * from SupportBean_Container[Beans];\n" +
-                      "@Name('window') create window MyWindow#keepall as SupportBean;\n" +
+                      "@name('window') create window MyWindow#keepall as SupportBean;\n" +
                       onInsert;
             env.CompileDeploy(epl);
 
             env.SendEventBean(
                 new SupportBean_Container(Arrays.AsList(new SupportBean("E1", 10), new SupportBean("E2", 20))));
 
-            EPAssertionUtil.AssertPropsPerRow(
-                env.GetEnumerator("window"),
-                new[] {"TheString", "IntPrimitive"},
-                new[] {new object[] {"E1", 10}, new object[] {"E2", 20}});
+            env.AssertPropsPerRowIterator(
+                "window",
+                "TheString,IntPrimitive".SplitCsv(),
+                new object[][] { new object[] { "E1", 10 }, new object[] { "E2", 20 } });
 
             env.UndeployAll();
         }
@@ -371,27 +353,27 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             updatedBean.DoubleBoxed = updatedBean.DoublePrimitive;
         }
 
-        internal class InfraOnMergeSetRHSEvent : RegressionExecution
+        private class InfraOnMergeSetRHSEvent : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
-                string epl =
-                    "@Name('window') create window RecentWindow#time(30 seconds) (id string, currentSewid SimpleEventWithId, prevSewid SimpleEventWithId);\n" +
+                var epl =
+                    "@name('window') create window RecentWindow#time(30 seconds) (id string, currentSewid SimpleEventWithId, prevSewid SimpleEventWithId);\n" +
                     "on SimpleEventWithId as sewid\n" +
                     "  merge RecentWindow as recent where recent.id = sewid.id\n" +
                     "  when not matched then insert select sewid.id as id, sewid as currentSewid, sewid as prevSewid\n" +
                     "  when matched then update set prevSewid = currentSewid, currentSewid = sewid;\n";
                 env.CompileDeploy(epl);
 
-                object[] sewidOne = new object[] {"id", "A"};
+                var sewidOne = new object[] { "id", "A" };
                 env.SendEventObjectArray(sewidOne, "SimpleEventWithId");
                 AssertWindow(env, "id", sewidOne, sewidOne);
 
-                object[] sewidTwo = new object[] {"id", "B"};
+                var sewidTwo = new object[] { "id", "B" };
                 env.SendEventObjectArray(sewidTwo, "SimpleEventWithId");
                 AssertWindow(env, "id", sewidTwo, sewidOne);
 
-                object[] sewidThree = new object[] {"id", "B"};
+                var sewidThree = new object[] { "id", "B" };
                 env.SendEventObjectArray(sewidThree, "SimpleEventWithId");
                 AssertWindow(env, "id", sewidThree, sewidTwo);
 
@@ -404,14 +386,18 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 object[] currentSewid,
                 object[] prevSewid)
             {
-                EventBean @event = env.GetEnumerator("window").Advance();
-                Assert.AreEqual(id, @event.Get("id"));
-                Assert.AreSame(currentSewid, ((EventBean) @event.Get("currentSewid")).Underlying);
-                Assert.AreSame(prevSewid, ((EventBean) @event.Get("prevSewid")).Underlying);
+                env.AssertIterator(
+                    "window",
+                    iterator => {
+                        var @event = iterator.Advance();
+                        ClassicAssert.AreEqual(id, @event.Get("id"));
+                        ClassicAssert.AreSame(currentSewid, ((EventBean)@event.Get("currentSewid")).Underlying);
+                        ClassicAssert.AreSame(prevSewid, ((EventBean)@event.Get("prevSewid")).Underlying);
+                    });
             }
         }
 
-        internal class InfraOnMergeWhere1Eq2InsertSelectStar : RegressionExecution
+        private class InfraOnMergeWhere1Eq2InsertSelectStar : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
@@ -421,7 +407,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             }
         }
 
-        internal class InfraOnMergeNoWhereClauseInsertSelectStar : RegressionExecution
+        private class InfraOnMergeNoWhereClauseInsertSelectStar : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
@@ -429,7 +415,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             }
         }
 
-        internal class InfraOnMergeNoWhereClauseInsertTranspose : RegressionExecution
+        private class InfraOnMergeNoWhereClauseInsertTranspose : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
@@ -437,27 +423,24 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             }
         }
 
-        internal class InfraUpdateNonPropertySet : RegressionExecution
+        private class InfraNamedWindowOnMergeUpdateNonPropertySet : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                env.CompileDeploy("create window MyWindowUNP#keepall as SupportBean", path);
+                env.CompileDeploy("@public create window MyWindowUNP#keepall as SupportBean", path);
                 env.CompileDeploy("insert into MyWindowUNP select * from SupportBean", path);
                 env.CompileDeploy(
-                    "@Name('merge') on SupportBean_S0 as sb " +
+                    "@name('merge') on SupportBean_S0 as sb " +
                     "merge MyWindowUNP as mywin when matched then " +
                     "update set mywin.SetDoublePrimitive(Id), increaseIntCopyDouble(initial, mywin)",
                     path);
                 env.AddListener("merge");
-                var fields = new[] {"IntPrimitive", "DoublePrimitive", "DoubleBoxed"};
+                var fields = "IntPrimitive,DoublePrimitive,DoubleBoxed".SplitCsv();
 
                 env.SendEventBean(MakeSupportBean("E1", 10, 2));
                 env.SendEventBean(new SupportBean_S0(5, "E1"));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("merge").GetAndResetLastNewData()[0],
-                    fields,
-                    new object[] {11, 5d, 5d});
+                env.AssertPropsPerRowLastNew("merge", fields, new object[][] { new object[] { 11, 5d, 5d } });
 
                 // try a case-statement
                 var eplCase = "on SupportBean_S0 merge MyWindowUNP " +
@@ -469,52 +452,46 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             }
         }
 
-        internal class InfraMergeTriggeredByAnotherWindow : RegressionExecution
+        private class InfraMergeTriggeredByAnotherWindow : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
 
                 // test dispatch between named windows
-                env.CompileDeploy("@Name('A') create window A#unique(Id) as (Id int)", path);
-                env.CompileDeploy("@Name('B') create window B#unique(Id) as (Id int)", path);
+                env.CompileDeploy("@name('A') @public create window A#unique(Id) as (Id int)", path);
+                env.CompileDeploy("@name('B') @public create window B#unique(Id) as (Id int)", path);
                 env.CompileDeploy(
-                    "@Name('C') on A merge B when not matched then insert select 1 as Id when matched then insert select 1 as Id",
+                    "@name('C') on A merge B when not matched then insert select 1 as Id when matched then insert select 1 as Id",
                     path);
 
-                env.CompileDeploy("@Name('D') select * from B", path).AddListener("D");
-                env.CompileDeploy("@Name('E') insert into A select IntPrimitive as Id from SupportBean", path);
+                env.CompileDeploy("@name('D') select * from B", path).AddListener("D");
+                env.CompileDeploy("@name('E') insert into A select IntPrimitive as Id from SupportBean", path);
 
                 env.SendEventBean(new SupportBean("E1", 1));
-                Assert.IsTrue(env.Listener("D").IsInvoked);
+                env.AssertListenerInvoked("D");
                 env.UndeployAll();
 
                 // test insert-stream only, no remove stream
-                var fields = new[] {"c0", "c1"};
+                var fields = "c0,c1".SplitCsv();
                 var epl = "create window W1#lastevent as SupportBean;\n" +
                           "insert into W1 select * from SupportBean;\n" +
                           "create window W2#lastevent as SupportBean;\n" +
                           "on W1 as a merge W2 as b when not matched then insert into OutStream select a.TheString as c0, istream() as c1;\n" +
-                          "@Name('s0') select * from OutStream;\n";
+                          "@name('s0') select * from OutStream;\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 1));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {"E1", true});
+                env.AssertPropsNew("s0", fields, new object[] { "E1", true });
 
                 env.SendEventBean(new SupportBean("E2", 2));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {"E2", true});
+                env.AssertPropsNew("s0", fields, new object[] { "E2", true });
 
                 env.UndeployAll();
             }
         }
 
-        internal class InfraDocExample : RegressionExecution
+        private class InfraDocExample : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
@@ -524,23 +501,29 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             }
         }
 
-        internal class InfraPropertyInsertBean : RegressionExecution
+        private class InfraPropertyInsertBean : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                env.CompileDeploy("@Name('window') create window MergeWindow#unique(TheString) as SupportBean", path);
+                env.CompileDeploy(
+                    "@name('window') @public create window MergeWindow#unique(TheString) as SupportBean",
+                    path);
 
                 var epl =
-                    "@Name('merge') on SupportBean as up merge MergeWindow as mv where mv.TheString=up.TheString when not matched then insert select IntPrimitive";
+                    "@name('merge') on SupportBean as up merge MergeWindow as mv where mv.TheString=up.TheString when not matched then insert select IntPrimitive";
                 env.CompileDeploy(epl, path);
                 env.SendEventBean(new SupportBean("E1", 10));
 
-                var theEvent = env.GetEnumerator("window").Advance();
-                EPAssertionUtil.AssertProps(
-                    theEvent,
-                    new[] {"TheString", "IntPrimitive"},
-                    new object[] {null, 10});
+                env.AssertIterator(
+                    "window",
+                    iterator => {
+                        var theEvent = iterator.Advance();
+                        EPAssertionUtil.AssertProps(
+                            theEvent,
+                            "TheString,IntPrimitive".SplitCsv(),
+                            new object[] { null, 10 });
+                    });
                 env.UndeployModuleContaining("merge");
 
                 epl =
@@ -548,42 +531,37 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 env.CompileDeploy(epl, path);
                 env.SendEventBean(new SupportBean("E2", 20));
 
-                EPAssertionUtil.AssertPropsPerRow(
-                    env.GetEnumerator("window"),
-                    new[] {"TheString", "IntPrimitive"},
-                    new[] {new object[] {null, 10}, new object[] {"E2", 20}});
+                env.AssertPropsPerRowIterator(
+                    "window",
+                    "TheString,IntPrimitive".SplitCsv(),
+                    new object[][] { new object[] { null, 10 }, new object[] { "E2", 20 } });
 
                 env.UndeployAll();
             }
         }
 
-        internal class InfraSubselect : RegressionExecution
+        private class InfraSubselect : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
-                // TBD: remove this case
-                TryAssertionSubselect(env, EventRepresentationChoice.JSON);
                 foreach (var rep in EventRepresentationChoiceExtensions.Values()) {
                     TryAssertionSubselect(env, rep);
                 }
             }
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedMyEvent
         {
             public string in1;
             public int in2;
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedMySchema
         {
             public string col1;
             public int col2;
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedOrderEvent
         {
             public string OrderId;
@@ -593,7 +571,6 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             public bool DeletedFlag;
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedProductTotalRec
         {
             public string ProductId;

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -7,16 +7,19 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.infra.tbl
 {
@@ -25,7 +28,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
     /// </summary>
     public class InfraTableMTUngroupedIntoTableWriteMultiWriterAgg : RegressionExecution
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
+        }
 
         /// <summary>
         ///     For a given number of seconds:
@@ -48,7 +56,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             int numEvents)
         {
             var path = new RegressionPath();
-            var eplCreateVariable = "create table varagg (theEvents window(*) @type(SupportBean))";
+            var eplCreateVariable = "@public create table varagg (theEvents window(*) @type(SupportBean))";
             env.CompileDeploy(eplCreateVariable, path);
 
             var threads = new Thread[numThreads];
@@ -62,18 +70,18 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             }
 
             // join
-            log.Info("Waiting for completion");
+            Log.Info("Waiting for completion");
             for (var i = 0; i < threads.Length; i++) {
                 threads[i].Join();
-                Assert.IsNull(runnables[i].Exception);
+                ClassicAssert.IsNull(runnables[i].Exception);
             }
 
             // verify
-            env.CompileDeploy("@Name('s0') select varagg.theEvents as c0 from SupportBean_S0", path).AddListener("s0");
+            env.CompileDeploy("@name('s0') select varagg.theEvents as c0 from SupportBean_S0", path).AddListener("s0");
             env.SendEventBean(new SupportBean_S0(0));
             var @event = env.Listener("s0").AssertOneGetNewAndReset();
-            var window = (SupportBean[]) @event.Get("c0");
-            Assert.AreEqual(numThreads * 3, window.Length);
+            var window = (SupportBean[])@event.Get("c0");
+            ClassicAssert.AreEqual(numThreads * 3, window.Length);
 
             env.UndeployAll();
         }
@@ -101,7 +109,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
             public void Run()
             {
-                log.Info("Started event send for write");
+                Log.Info("Started event send for write");
 
                 try {
                     var eplInto = "into table varagg select window(*) as theEvents from SupportBean(TheString='E" +
@@ -114,11 +122,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     }
                 }
                 catch (Exception ex) {
-                    log.Error("Exception encountered: " + ex.Message, ex);
+                    Log.Error("Exception encountered: " + ex.Message, ex);
                     Exception = ex;
                 }
 
-                log.Info("Completed event send for write");
+                Log.Info("Completed event send for write");
             }
         }
     }

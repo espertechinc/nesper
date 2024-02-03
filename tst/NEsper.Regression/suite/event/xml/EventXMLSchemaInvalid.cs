@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -8,16 +8,13 @@
 
 using com.espertech.esper.regressionlib.framework;
 
-using static com.espertech.esper.regressionlib.framework.SupportMessageAssertUtil;
-
 namespace com.espertech.esper.regressionlib.suite.@event.xml
 {
     public class EventXMLSchemaInvalid : RegressionExecution
     {
         public void Run(RegressionEnvironment env)
         {
-            TryInvalidCompile(
-                env,
+            env.TryInvalidCompile(
                 "select element1 from XMLSchemaConfigTwo#length(100)",
                 "Failed to validate select-clause expression 'element1': Property named 'element1' is not valid in any stream [");
         }

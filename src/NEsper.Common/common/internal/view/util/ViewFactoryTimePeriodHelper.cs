@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -23,19 +23,17 @@ namespace com.espertech.esper.common.@internal.view.util
             ExprNode expression,
             string expectedMessage,
             int expressionNumber,
-            ViewForgeEnv viewForgeEnv,
-            int streamNumber)
+            ViewForgeEnv viewForgeEnv)
         {
             StreamTypeService streamTypeService = new StreamTypeServiceImpl(false);
             TimePeriodComputeForge forge;
             if (expression is ExprTimePeriod) {
-                var validated = (ExprTimePeriod) ViewForgeSupport.ValidateExpr(
+                var validated = (ExprTimePeriod)ViewForgeSupport.ValidateExpr(
                     viewName,
                     expression,
                     streamTypeService,
                     viewForgeEnv,
-                    expressionNumber,
-                    streamNumber);
+                    expressionNumber);
                 forge = validated.TimePeriodComputeForge;
             }
             else {
@@ -44,10 +42,9 @@ namespace com.espertech.esper.common.@internal.view.util
                     expression,
                     streamTypeService,
                     viewForgeEnv,
-                    expressionNumber,
-                    streamNumber);
+                    expressionNumber);
                 var returnType = validated.Forge.EvaluationType.GetBoxedType();
-                if (!returnType.IsNumeric()) {
+                if (!returnType.IsTypeNumeric()) {
                     throw new ViewParameterException(expectedMessage);
                 }
 

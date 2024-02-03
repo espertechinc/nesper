@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -9,7 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Numerics;
-
+using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
@@ -117,36 +117,23 @@ namespace com.espertech.esper.common.@internal.type
         /// <returns>relational op string</returns>
         public static string GetExpressionText(this RelationalOpEnum value)
         {
-            switch (value) {
-                case RelationalOpEnum.GT:
-                    return ">";
-
-                case RelationalOpEnum.GE:
-                    return ">=";
-
-                case RelationalOpEnum.LT:
-                    return "<";
-
-                case RelationalOpEnum.LE:
-                    return "<=";
-            }
-
-            throw new ArgumentException("invalid value", nameof(value));
+            return value switch {
+                RelationalOpEnum.GT => ">",
+                RelationalOpEnum.GE => ">=",
+                RelationalOpEnum.LT => "<",
+                RelationalOpEnum.LE => "<=",
+                _ => throw new ArgumentException("invalid value", nameof(value))
+            };
         }
 
         public static RelationalOpEnum Reversed(this RelationalOpEnum value)
         {
-            if (RelationalOpEnum.GT == value) {
-                return RelationalOpEnum.LT;
-            }
-            else if (RelationalOpEnum.GE == value) {
-                return RelationalOpEnum.LE;
-            }
-            else if (RelationalOpEnum.LE == value) {
-                return RelationalOpEnum.GE;
-            }
-
-            return RelationalOpEnum.GT;
+            return value switch {
+                RelationalOpEnum.GT => RelationalOpEnum.LT,
+                RelationalOpEnum.GE => RelationalOpEnum.LE,
+                RelationalOpEnum.LE => RelationalOpEnum.GE,
+                _ => RelationalOpEnum.GT
+            };
         }
 
         /// <summary>
@@ -156,24 +143,15 @@ namespace com.espertech.esper.common.@internal.type
         /// <returns>enum representing relational operation</returns>
         public static RelationalOpEnum Parse(string op)
         {
-            switch (op) {
-                case "<":
-                    return RelationalOpEnum.LT;
-
-                case ">":
-                    return RelationalOpEnum.GT;
-
-                case ">=":
-                case "=>":
-                    return RelationalOpEnum.GE;
-
-                case "<=":
-                case "=<":
-                    return RelationalOpEnum.LE;
-
-                default:
-                    throw new ArgumentException("Invalid relational operator '" + op + "'");
-            }
+            return op switch {
+                "<" => RelationalOpEnum.LT,
+                ">" => RelationalOpEnum.GT,
+                ">=" => RelationalOpEnum.GE,
+                "=>" => RelationalOpEnum.GE,
+                "<=" => RelationalOpEnum.LE,
+                "=<" => RelationalOpEnum.LE,
+                _ => throw new ArgumentException($"Invalid relational operator '{op}'")
+            };
         }
 
         /// <summary>
@@ -198,10 +176,10 @@ namespace com.espertech.esper.common.@internal.type
                 coercedType != typeof(string) &&
                 coercedType != typeof(decimal?) &&
                 coercedType != typeof(BigInteger?)) {
-                throw new ArgumentException("Unsupported type for relational op compare, type " + coercedType);
+                throw new ArgumentException($"Unsupported type for relational op compare, Type {coercedType}");
             }
 
-            if (coercedType.IsBigInteger()) {
+            if (coercedType.IsTypeBigInteger()) {
                 return MakeBigIntegerComputer(value, typeOne, typeTwo);
             }
 
@@ -214,25 +192,18 @@ namespace com.espertech.esper.common.@internal.type
             Type typeOne,
             Type typeTwo)
         {
-            if (typeOne.IsBigInteger() && typeTwo.IsBigInteger()) {
+            if (typeOne.IsTypeBigInteger() && typeTwo.IsTypeBigInteger()) {
                 return computers.Get(new RelationalOpDesc(typeof(BigInteger), value));
             }
 
             var convertorOne = SimpleNumberCoercerFactory.GetCoercerBigInteger(typeOne);
             var convertorTwo = SimpleNumberCoercerFactory.GetCoercerBigInteger(typeTwo);
-            if (value == RelationalOpEnum.GT) {
-                return new RelationalOpEnumGT.BigIntConvComputer(convertorOne, convertorTwo);
-            }
-
-            if (value == RelationalOpEnum.LT) {
-                return new RelationalOpEnumLT.BigIntConvComputer(convertorOne, convertorTwo);
-            }
-
-            if (value == RelationalOpEnum.GE) {
-                return new RelationalOpEnumGE.BigIntConvComputer(convertorOne, convertorTwo);
-            }
-
-            return new RelationalOpEnumLE.BigIntConvComputer(convertorOne, convertorTwo);
+            return value switch {
+                RelationalOpEnum.GT => new RelationalOpEnumGT.BigIntConvComputer(convertorOne, convertorTwo),
+                RelationalOpEnum.LT => new RelationalOpEnumLT.BigIntConvComputer(convertorOne, convertorTwo),
+                RelationalOpEnum.GE => new RelationalOpEnumGE.BigIntConvComputer(convertorOne, convertorTwo),
+                _ => new RelationalOpEnumLE.BigIntConvComputer(convertorOne, convertorTwo)
+            };
         }
 
         public static CodegenExpression CodegenLong(
@@ -308,7 +279,10 @@ namespace com.espertech.esper.common.@internal.type
             CodegenExpressionRelational.CodegenRelational rel)
         {
             return CodegenExpressionBuilder.Relational(
-                CodegenExpressionBuilder.ExprDotMethod(CodegenAsString(lhs, lhsType),"CompareTo",CodegenAsString(rhs, rhsType)),
+                CodegenExpressionBuilder.ExprDotMethod(
+                    CodegenAsString(lhs, lhsType),
+                    "CompareTo",
+                    CodegenAsString(rhs, rhsType)),
                 rel,
                 CodegenExpressionBuilder.Constant(0));
         }
@@ -342,10 +316,12 @@ namespace com.espertech.esper.common.@internal.type
             Type rhsType,
             BigIntegerCoercer convLeft,
             BigIntegerCoercer convRight,
-            CodegenExpressionRelational.CodegenRelational rel)
+            CodegenExpressionRelational.CodegenRelational rel,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
         {
-            var leftConv = convLeft.CoerceBoxedBigIntCodegen(lhs, lhsType);
-            var rightConv = convRight.CoerceBoxedBigIntCodegen(rhs, rhsType);
+            var leftConv = convLeft.CoerceBoxedBigIntCodegen(lhs, lhsType, codegenMethodScope, codegenClassScope);
+            var rightConv = convRight.CoerceBoxedBigIntCodegen(rhs, rhsType, codegenMethodScope, codegenClassScope);
             return CodegenExpressionBuilder.Relational(
                 CodegenExpressionBuilder.ExprDotMethod(leftConv, "CompareTo", rightConv),
                 rel,

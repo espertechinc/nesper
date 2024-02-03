@@ -16,7 +16,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
         public static TypeSyntax GetNameForType(Type type)
         {
             if (type.IsGenericType) {
-                throw new NotImplementedException();
+                throw new NotSupportedException();
             }
             else {
                 return ParseName(type.FullName);

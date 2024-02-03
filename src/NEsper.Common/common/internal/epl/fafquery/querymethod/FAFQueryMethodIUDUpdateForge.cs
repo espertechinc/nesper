@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -52,27 +52,30 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             StatementRawInfo statementRawInfo,
             StatementCompileTimeServices services)
         {
-            StreamTypeServiceImpl assignmentTypeService = new StreamTypeServiceImpl(
+            var assignmentTypeService = new StreamTypeServiceImpl(
                 new EventType[] {
-                    processor.EventTypeRspInputEvents, null,
-                    processor.EventTypeRspInputEvents
+                    processor.EventTypeRSPInputEvents, null,
+                    processor.EventTypeRSPInputEvents
                 },
-                new string[] {aliasName, "", INITIAL_VALUE_STREAM_NAME},
-                new bool[] {true, true, true},
+                new string[] { aliasName, "", INITIAL_VALUE_STREAM_NAME },
+                new bool[] { true, true, true },
                 true,
                 false);
             assignmentTypeService.IsStreamZeroUnambigous = true;
-            ExprValidationContext validationContext =
+            var validationContext =
                 new ExprValidationContextBuilder(assignmentTypeService, statementRawInfo, services)
                     .WithAllowBindingConsumption(true)
                     .Build();
 
             // validate update expressions
-            FireAndForgetSpecUpdate updateSpec = (FireAndForgetSpecUpdate) spec.Raw.FireAndForgetSpec;
+            var updateSpec = (FireAndForgetSpecUpdate)spec.Raw.FireAndForgetSpec;
             try {
-                foreach (OnTriggerSetAssignment assignment in updateSpec.Assignments) {
+                foreach (var assignment in updateSpec.Assignments) {
                     ExprNodeUtilityValidate.ValidateAssignment(
-                        false, ExprNodeOrigin.UPDATEASSIGN, assignment, validationContext);
+                        false,
+                        ExprNodeOrigin.UPDATEASSIGN,
+                        assignment,
+                        validationContext);
                 }
             }
             catch (ExprValidationException e) {
@@ -81,10 +84,10 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
 
             // make updater
             try {
-                bool copyOnWrite = processor is FireAndForgetProcessorNamedWindowForge;
+                var copyOnWrite = processor is FireAndForgetProcessorNamedWindowForge;
                 updateHelper = EventBeanUpdateHelperForgeFactory.Make(
-                    processor.NamedWindowOrTableName,
-                    (EventTypeSPI) processor.EventTypeRspInputEvents,
+                    processor.ProcessorName,
+                    (EventTypeSPI)processor.EventTypeRSPInputEvents,
                     updateSpec.Assignments,
                     aliasName,
                     null,
@@ -113,7 +116,7 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
                 "OptionalWhereClause",
                 whereClause == null
                     ? ConstantNull()
-                    : ExprNodeUtilityCodegen.CodegenEvaluator(whereClause.Forge, method, this.GetType(), classScope));
+                    : ExprNodeUtilityCodegen.CodegenEvaluator(whereClause.Forge, method, GetType(), classScope));
             if (processor is FireAndForgetProcessorNamedWindowForge) {
                 method.Block.SetProperty(
                     queryMethod,
@@ -121,7 +124,7 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
                     updateHelper.MakeWCopy(method, classScope));
             }
             else {
-                FireAndForgetProcessorTableForge table = (FireAndForgetProcessorTableForge) processor;
+                var table = (FireAndForgetProcessorTableForge)processor;
                 method.Block
                     .SetProperty(queryMethod, "UpdateHelperTable", updateHelper.MakeNoCopy(method, classScope))
                     .SetProperty(

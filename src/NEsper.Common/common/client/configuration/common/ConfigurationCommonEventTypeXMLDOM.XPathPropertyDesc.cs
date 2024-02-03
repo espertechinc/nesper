@@ -1,5 +1,5 @@
 ﻿///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -20,7 +20,6 @@ namespace com.espertech.esper.common.client.configuration.common
         /// <summary>
         ///     Descriptor class for event properties that are resolved via XPath-expression.
         /// </summary>
-        [Serializable]
         public class XPathPropertyDesc
         {
             /// <summary>
@@ -110,19 +109,24 @@ namespace com.espertech.esper.common.client.configuration.common
             /// </summary>
             /// <returns>type name</returns>
             public string OptionalEventTypeName { get; set; }
-            
+
             public CodegenExpression ToCodegenExpression(
                 CodegenMethodScope parent,
                 CodegenClassScope scope)
             {
                 var typeExpr = CodegenExpressionBuilder.EnumValue(typeof(XPathResultType), Type.GetName());
-                
-                return new CodegenSetterBuilder(typeof(XPathPropertyDesc), typeof(XPathPropertyDesc), "desc", parent, scope)
-                    .Constant("Name", Name)
+
+                return new CodegenSetterBuilder(
+                        typeof(XPathPropertyDesc),
+                        typeof(XPathPropertyDesc),
+                        "desc",
+                        parent,
+                        scope)
+                    .ConstantExplicit("Name", Name)
                     .Expression("Type", typeExpr)
-                    .Constant("XPath", XPath)
-                    .Constant("OptionalEventTypeName", OptionalEventTypeName)
-                    .Constant("OptionalCastToType", OptionalCastToType)
+                    .ConstantExplicit("XPath", XPath)
+                    .ConstantExplicit("OptionalEventTypeName", OptionalEventTypeName)
+                    .ConstantExplicit("OptionalCastToType", OptionalCastToType)
                     .Build();
             }
         }

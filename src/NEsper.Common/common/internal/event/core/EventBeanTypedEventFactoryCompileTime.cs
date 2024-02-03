@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -78,9 +78,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             return new WrapperEventBean(decoratedUnderlying, map, wrapperEventType);
         }
 
-        private IllegalStateException GetUnsupported()
-        {
-            return new IllegalStateException("Event bean generation not supported at compile time");
-        }
+        public IllegalStateException Unsupported =>
+            new IllegalStateException("Event bean generation not supported at compile time");
     }
 } // end of namespace

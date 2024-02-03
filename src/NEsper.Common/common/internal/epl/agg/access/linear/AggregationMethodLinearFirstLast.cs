@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -28,7 +28,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            var events = (IList<EventBean>) row.GetCollectionOfEvents(aggColNum, eventsPerStream, isNewData, exprEvaluatorContext);
+            var events = (IList<EventBean>)row.GetCollectionOfEvents(
+                aggColNum,
+                eventsPerStream,
+                isNewData,
+                exprEvaluatorContext);
             if (events == null) {
                 return null;
             }
@@ -38,14 +42,14 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                 target = events[0];
             }
             else {
-                target = events[events.Count - 1];
+                target = events[^1];
             }
 
             if (OptionalEvaluator == null) {
                 return target.Underlying;
             }
 
-            EventBean[] eventsPerStreamBuf = {target};
+            EventBean[] eventsPerStreamBuf = { target };
             return OptionalEvaluator.Evaluate(eventsPerStreamBuf, isNewData, exprEvaluatorContext);
         }
 
@@ -76,7 +80,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            var events = (IList<EventBean>) row.GetCollectionOfEvents(aggColNum, eventsPerStream, isNewData, exprEvaluatorContext);
+            var events = (IList<EventBean>)row.GetCollectionOfEvents(
+                aggColNum,
+                eventsPerStream,
+                isNewData,
+                exprEvaluatorContext);
             if (events == null) {
                 return null;
             }
@@ -85,7 +93,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                 return events[0];
             }
 
-            return events[events.Count - 1];
+            return events[^1];
         }
     }
 } // end of namespace

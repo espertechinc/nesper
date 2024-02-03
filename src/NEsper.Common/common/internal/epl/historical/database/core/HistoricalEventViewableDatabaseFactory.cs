@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -11,6 +11,7 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.annotation;
+using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.client.hook.type;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.context.util;
@@ -19,15 +20,16 @@ using com.espertech.esper.common.@internal.epl.historical.common;
 using com.espertech.esper.common.@internal.epl.historical.database.connection;
 using com.espertech.esper.common.@internal.settings;
 
+
 namespace com.espertech.esper.common.@internal.epl.historical.database.core
 {
     /// <summary>
-    ///     Implements a poller viewable that uses a polling strategy, a cache and
-    ///     some input parameters extracted from event streams to perform the polling.
+    /// Implements a poller viewable that uses a polling strategy, a cache and
+    /// some input parameters extracted from event streams to perform the polling.
     /// </summary>
     public class HistoricalEventViewableDatabaseFactory : HistoricalEventViewableFactoryBase
     {
-        public bool IsEnableLogging { get; set; }
+        public bool IsEnableLogging { get; private set; }
 
         public string DatabaseName { get; set; }
 
@@ -42,23 +44,47 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
         public SQLOutputRowConversion OutputRowConversionHook { get; set; }
 
         public ICollection<Attribute> ContextAttributes { get; set; }
-
+   
         public override HistoricalEventViewable Activate(AgentInstanceContext agentInstanceContext)
         {
-            ConnectionCache connectionCache = null;
-            try {
-                connectionCache =
-                    agentInstanceContext.DatabaseConfigService.GetConnectionCache(
-                        DatabaseName,
-                        PreparedStatementText,
-                        ContextAttributes);
-            }
-            catch (DatabaseConfigException e) {
-                throw new EPException("Failed to obtain connection cache: " + e.Message, e);
-            }
-
-            var pollExecStrategy = new PollExecStrategyDBQuery(this, agentInstanceContext, connectionCache);
+            var connectionCache = Init(
+                agentInstanceContext.DatabaseConfigService,
+                agentInstanceContext.ConfigSnapshot);
+            var pollExecStrategy = new PollExecStrategyDBQuery(
+                this,
+                agentInstanceContext,
+                connectionCache);
             return new HistoricalEventViewableDatabase(this, pollExecStrategy, agentInstanceContext);
+        }
+
+        public PollExecStrategyDBQuery ActivateFireAndForget(
+            ExprEvaluatorContext exprEvaluatorContext,
+            StatementContextRuntimeServices services)
+        {
+            SetupHooks(exprEvaluatorContext.Annotations, services.ImportServiceRuntime);
+            var connectionCache = Init(services.DatabaseConfigService, services.ConfigSnapshot);
+            return new PollExecStrategyDBQuery(this, exprEvaluatorContext, connectionCache);
+        }
+
+        private void SetupHooks(
+            Attribute[] annotations,
+            ImportServiceRuntime importService)
+        {
+            try {
+                ColumnTypeConversionHook = (SQLColumnTypeConversion)ImportUtil.GetAnnotationHook(
+                    annotations,
+                    HookType.SQLCOL,
+                    typeof(SQLColumnTypeConversion),
+                    importService);
+                OutputRowConversionHook = (SQLOutputRowConversion)ImportUtil.GetAnnotationHook(
+                    annotations,
+                    HookType.SQLROW,
+                    typeof(SQLOutputRowConversion),
+                    importService);
+            }
+            catch (ExprValidationException e) {
+                throw new EPException("Failed to obtain annotation-defined sql-related hook: " + e.Message, e);
+            }
         }
 
         public override void Ready(
@@ -66,22 +92,19 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
             ModuleIncidentals moduleIncidentals,
             bool recovery)
         {
+            SetupHooks(statementContext.Annotations, statementContext.ImportServiceRuntime);
+        }
+
+        private ConnectionCache Init(
+            DatabaseConfigServiceRuntime databaseConfigService,
+            Configuration configSnapshot)
+        {
+            IsEnableLogging = configSnapshot.Common.Logging.IsEnableADO;
             try {
-                ColumnTypeConversionHook = (SQLColumnTypeConversion) ImportUtil
-                    .GetAnnotationHook(
-                        statementContext.Annotations,
-                        HookType.SQLCOL,
-                        typeof(SQLColumnTypeConversion),
-                        statementContext.ImportServiceRuntime);
-                OutputRowConversionHook = (SQLOutputRowConversion) ImportUtil
-                    .GetAnnotationHook(
-                        statementContext.Annotations,
-                        HookType.SQLROW,
-                        typeof(SQLOutputRowConversion),
-                        statementContext.ImportServiceRuntime);
+                return databaseConfigService.GetConnectionCache(DatabaseName, PreparedStatementText, ContextAttributes);
             }
-            catch (ExprValidationException e) {
-                throw new EPException("Failed to obtain annotation-defined sql-related hook: " + e.Message, e);
+            catch (DatabaseConfigException e) {
+                throw new EPException("Failed to obtain connection cache: " + e.Message, e);
             }
         }
     }

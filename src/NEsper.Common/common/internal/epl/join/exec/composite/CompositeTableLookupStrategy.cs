@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -38,37 +38,42 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
             QueryGraphValueEntryRange[] rangeKeyPairs,
             PropertyCompositeEventTable index)
         {
-            this._eventType = eventType;
-            this._index = index;
-            _chain = CompositeIndexQueryFactory.MakeJoinSingleLookupStream(false, lookupStream, hashKeys, rangeKeyPairs);
+            _eventType = eventType;
+            _index = index;
+            _chain = CompositeIndexQueryFactory.MakeJoinSingleLookupStream(
+                false,
+                lookupStream,
+                hashKeys,
+                rangeKeyPairs);
         }
 
         /// <summary>
         /// Returns event type of the lookup event.
         /// </summary>
         /// <returns>event type of the lookup event</returns>
-        public EventType EventType {
-            get => _eventType;
-        }
+        public EventType EventType => _eventType;
 
         /// <summary>
         /// Returns index to look up in.
         /// </summary>
         /// <returns>index to use</returns>
-        public PropertyCompositeEventTable Index {
-            get => _index;
-        }
+        public PropertyCompositeEventTable Index => _index;
 
         public ICollection<EventBean> Lookup(
             EventBean theEvent,
             Cursor cursor,
             ExprEvaluatorContext context)
         {
-            InstrumentationCommon instrumentationCommon = context.InstrumentationProvider;
+            var instrumentationCommon = context.InstrumentationProvider;
             if (instrumentationCommon.Activated()) {
                 instrumentationCommon.QIndexJoinLookup(this, _index);
-                List<object> keys = new List<object>(2);
-                var resultCollectKeys = _chain.GetCollectKeys(theEvent, _index.Index, context, keys, _index.PostProcessor);
+                var keys = new List<object>(2);
+                var resultCollectKeys = _chain.GetCollectKeys(
+                    theEvent,
+                    _index.Index,
+                    context,
+                    keys,
+                    _index.PostProcessor);
                 instrumentationCommon.AIndexJoinLookup(resultCollectKeys, keys.Count > 1 ? keys.ToArray() : keys[0]);
                 return resultCollectKeys;
             }
@@ -81,8 +86,6 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
             return result;
         }
 
-        public LookupStrategyType LookupStrategyType {
-            get => LookupStrategyType.COMPOSITE;
-        }
+        public LookupStrategyType LookupStrategyType => LookupStrategyType.COMPOSITE;
     }
 } // end of namespace

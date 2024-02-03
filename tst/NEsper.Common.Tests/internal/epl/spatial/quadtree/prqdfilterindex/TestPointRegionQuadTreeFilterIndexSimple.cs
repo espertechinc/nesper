@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -9,7 +9,7 @@
 using com.espertech.esper.common.@internal.epl.spatial.quadtree.pointregion;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilterindex.SupportPointRegionQuadTreeFilterIndexUtil;
 
 namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilterindex
@@ -45,26 +45,26 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilterin
             AssertCollect(tree, beginX, beginY, endX - beginX, endY - beginY, "P1");
             AssertCollectAll(tree, "P0,P1,P2,P3,P4");
 
-            Assert.AreEqual("P0", PointRegionQuadTreeFilterIndexGet<object>.Get(73.32704983331149, 23.46990952575032, tree));
-            Assert.AreEqual("P1", PointRegionQuadTreeFilterIndexGet<object>.Get(53.09747562396894, 17.100976152185034, tree));
-            Assert.AreEqual("P2", PointRegionQuadTreeFilterIndexGet<object>.Get(56.75757294858788, 25.508506696809608, tree));
-            Assert.AreEqual("P3", PointRegionQuadTreeFilterIndexGet<object>.Get(83.66639067675291, 76.53772974832937, tree));
-            Assert.AreEqual("P4", PointRegionQuadTreeFilterIndexGet<object>.Get(51.01654641861326, 43.49009281983866, tree));
+            ClassicAssert.AreEqual("P0", PointRegionQuadTreeFilterIndexGet<object>.Get(73.32704983331149, 23.46990952575032, tree));
+            ClassicAssert.AreEqual("P1", PointRegionQuadTreeFilterIndexGet<object>.Get(53.09747562396894, 17.100976152185034, tree));
+            ClassicAssert.AreEqual("P2", PointRegionQuadTreeFilterIndexGet<object>.Get(56.75757294858788, 25.508506696809608, tree));
+            ClassicAssert.AreEqual("P3", PointRegionQuadTreeFilterIndexGet<object>.Get(83.66639067675291, 76.53772974832937, tree));
+            ClassicAssert.AreEqual("P4", PointRegionQuadTreeFilterIndexGet<object>.Get(51.01654641861326, 43.49009281983866, tree));
         }
 
         [Test]
         public void TestGetSetRemove()
         {
             tree = PointRegionQuadTreeFactory<object>.Make(0, 0, 100, 100);
-            Assert.IsNull(PointRegionQuadTreeFilterIndexGet<object>.Get(10, 20, tree));
+            ClassicAssert.IsNull(PointRegionQuadTreeFilterIndexGet<object>.Get(10, 20, tree));
             AssertCollectAll(tree, "");
 
             PointRegionQuadTreeFilterIndexSet<object>.Set(10, 20, "P0", tree);
-            Assert.AreEqual("P0", PointRegionQuadTreeFilterIndexGet<object>.Get(10, 20, tree));
+            ClassicAssert.AreEqual("P0", PointRegionQuadTreeFilterIndexGet<object>.Get(10, 20, tree));
             AssertCollectAll(tree, "P0");
 
             PointRegionQuadTreeFilterIndexDelete<object>.Delete(10, 20, tree);
-            Assert.IsNull(PointRegionQuadTreeFilterIndexGet<object>.Get(10, 20, tree));
+            ClassicAssert.IsNull(PointRegionQuadTreeFilterIndexGet<object>.Get(10, 20, tree));
             AssertCollectAll(tree, "");
         }
 

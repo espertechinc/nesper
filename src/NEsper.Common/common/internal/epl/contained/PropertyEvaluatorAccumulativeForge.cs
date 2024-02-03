@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -53,7 +53,7 @@ namespace com.espertech.esper.common.@internal.epl.contained
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            CodegenMethod method = parent.MakeChild(typeof(PropertyEvaluatorAccumulative), this.GetType(), classScope);
+            var method = parent.MakeChild(typeof(PropertyEvaluatorAccumulative), GetType(), classScope);
             method.Block
                 .DeclareVar<PropertyEvaluatorAccumulative>("pe", NewInstance(typeof(PropertyEvaluatorAccumulative)))
                 .SetProperty(
@@ -73,8 +73,8 @@ namespace com.espertech.esper.common.@internal.epl.contained
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            CodegenExpression[] expressions = new CodegenExpression[whereClauses.Length];
-            for (int i = 0; i < whereClauses.Length; i++) {
+            var expressions = new CodegenExpression[whereClauses.Length];
+            for (var i = 0; i < whereClauses.Length; i++) {
                 expressions[i] = whereClauses[i] == null
                     ? ConstantNull()
                     : ExprNodeUtilityCodegen.CodegenEvaluator(
@@ -93,8 +93,8 @@ namespace com.espertech.esper.common.@internal.epl.contained
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            CodegenExpression[] expressions = new CodegenExpression[evals.Length];
-            for (int i = 0; i < evals.Length; i++) {
+            var expressions = new CodegenExpression[evals.Length];
+            for (var i = 0; i < evals.Length; i++) {
                 expressions[i] = evals[i].Make(parent, symbols, classScope);
             }
 

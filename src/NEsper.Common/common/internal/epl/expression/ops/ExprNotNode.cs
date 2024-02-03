@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -8,6 +8,7 @@
 
 using System;
 using System.IO;
+using System.Text.Json.Serialization;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -24,12 +25,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
     /// <summary>
     /// Represents a NOT expression in an expression tree.
     /// </summary>
-    [Serializable]
     public class ExprNotNode : ExprNodeBase,
         ExprEvaluator,
         ExprForgeInstrumentable
     {
-        [NonSerialized] private ExprEvaluator _evaluator;
+        [JsonIgnore]
+        [NonSerialized]
+        private ExprEvaluator _evaluator;
 
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
@@ -38,9 +40,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 throw new ExprValidationException("The NOT node requires exactly 1 child node");
             }
 
-            ExprForge forge = ChildNodes[0].Forge;
-            Type childType = forge.EvaluationType;
-            if (!TypeHelper.IsBoolean(childType)) {
+            var forge = ChildNodes[0].Forge;
+            var childType = forge.EvaluationType;
+            if (!childType.IsTypeBoolean()) {
                 throw new ExprValidationException("Incorrect use of NOT clause, sub-expressions do not return boolean");
             }
 
@@ -55,15 +57,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             }
         }
 
-        public override ExprForge Forge {
-            get => this;
-        }
+        public override ExprForge Forge => this;
 
         ExprNodeRenderable ExprForge.ExprForgeRenderable => ForgeRenderable;
 
-        public ExprNode ForgeRenderable {
-            get => this;
-        }
+        public ExprNode ForgeRenderable => this;
 
         public CodegenExpression EvaluateCodegenUninstrumented(
             Type requiredType,
@@ -71,12 +69,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            ExprForge child = ChildNodes[0].Forge;
+            var child = ChildNodes[0].Forge;
             if (child.EvaluationType == typeof(bool)) {
                 Not(child.EvaluateCodegen(requiredType, codegenMethodScope, exprSymbol, codegenClassScope));
             }
 
-            CodegenMethod methodNode = codegenMethodScope.MakeChild(
+            var methodNode = codegenMethodScope.MakeChild(
                 typeof(bool?),
                 typeof(ExprNotNode),
                 codegenClassScope);
@@ -104,13 +102,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 .Build();
         }
 
-        public Type EvaluationType {
-            get => typeof(bool?);
-        }
+        public Type EvaluationType => typeof(bool?);
 
-        public bool IsConstantResult {
-            get => false;
-        }
+        public bool IsConstantResult => false;
 
         public object Evaluate(
             EventBean[] eventsPerStream,
@@ -133,9 +127,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             ChildNodes[0].ToEPL(writer, Precedence, flags);
         }
 
-        public override ExprPrecedenceEnum Precedence {
-            get => ExprPrecedenceEnum.NEGATED;
-        }
+        public override ExprPrecedenceEnum Precedence => ExprPrecedenceEnum.NEGATED;
 
         public override bool EqualsNode(
             ExprNode node,
@@ -148,11 +140,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             return true;
         }
 
-        public ExprForgeConstantType ForgeConstantType {
-            get => ExprForgeConstantType.NONCONST;
-        }
-        
-        private void InitEvaluator() {
+        public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
+
+        private void InitEvaluator()
+        {
             if (_evaluator == null) {
                 _evaluator = ChildNodes[0].Forge.ExprEvaluator;
             }

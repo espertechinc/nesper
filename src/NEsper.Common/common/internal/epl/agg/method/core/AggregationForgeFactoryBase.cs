@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -28,12 +28,6 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.core
         public abstract ExprAggregateNodeBase AggregationExpression { get; }
         public abstract AggregationPortableValidation AggregationPortableValidation { get; }
 
-        public abstract void InitMethodForge(
-            int col,
-            CodegenCtor rowCtor,
-            CodegenMemberCol membersColumnized,
-            CodegenClassScope classScope);
-
         public abstract ExprForge[] GetMethodAggregationForge(
             bool join,
             EventType[] typesPerStream);
@@ -45,7 +39,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.core
             throw new IllegalStateException("Not an access aggregation function");
         }
 
-        public AggregationStateFactoryForge GetAggregationStateFactory(bool isMatchRecognize)
+        public AggregationStateFactoryForge GetAggregationStateFactory(
+            bool isMatchRecognize,
+            bool isJoin)
         {
             throw new IllegalStateException("Not an access aggregation function");
         }
@@ -54,7 +50,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.core
             throw new IllegalStateException("Not an access aggregation function");
 
         public AggregationAgentForge GetAggregationStateAgent(
-            ImportService classpathImportService,
+            ImportService importService,
             string statementName)
         {
             throw new IllegalStateException("Not an access aggregation function");

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -8,12 +8,14 @@
 
 using System.Collections.Generic;
 
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.runtime.client;
 using com.espertech.esper.runtime.client.scopetest;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.@event.bean
 {
@@ -22,8 +24,22 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new EventBeanInheritAndInterfaceOverridingSubclass());
+            WithOverridingSubclass(execs);
+            WithImplementationClass(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithImplementationClass(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EventBeanInheritAndInterfaceImplementationClass());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithOverridingSubclass(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EventBeanInheritAndInterfaceOverridingSubclass());
             return execs;
         }
 
@@ -31,23 +47,20 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select Val as value from SupportOverrideOne#length(10)";
+                var epl = "@name('s0') select Val as value from SupportOverrideOne#length(10)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 env.SendEventBean(new SupportOverrideOneA("valA", "valOne", "valBase"));
-                var theEvent = env.Listener("s0").GetAndResetLastNewData()[0];
-                Assert.AreEqual("valA", theEvent.Get("value"));
+                env.AssertEqualsNew("s0", "value", "valA");
 
                 env.SendEventBean(new SupportOverrideBase("x"));
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+                env.AssertListenerNotInvoked("s0");
 
                 env.SendEventBean(new SupportOverrideOneB("valB", "valTwo", "valBase2"));
-                theEvent = env.Listener("s0").GetAndResetLastNewData()[0];
-                Assert.AreEqual("valB", theEvent.Get("value"));
+                env.AssertEqualsNew("s0", "value", "valB");
 
                 env.SendEventBean(new SupportOverrideOne("valThree", "valBase3"));
-                theEvent = env.Listener("s0").GetAndResetLastNewData()[0];
-                Assert.AreEqual("valThree", theEvent.Get("value"));
+                env.AssertEqualsNew("s0", "value", "valThree");
 
                 env.UndeployAll();
             }
@@ -67,18 +80,18 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
                 };
 
                 string[][] expected = {
-                    new[] {"BaseAB"},
-                    new[] {"BaseAB", "A"},
-                    new[] {"BaseAB", "B"},
-                    new[] {"C"},
-                    new[] {"BaseAB", "A", "G"},
-                    new[] {"BaseAB", "A", "B", "G", "C"}
+                    new[] { "BaseAB" },
+                    new[] { "BaseAB", "A" },
+                    new[] { "BaseAB", "B" },
+                    new[] { "C" },
+                    new[] { "BaseAB", "A", "G" },
+                    new[] { "BaseAB", "A", "B", "G", "C" }
                 };
 
                 var stmts = new EPStatement[epls.Length];
                 var listeners = new SupportUpdateListener[epls.Length];
                 for (var i = 0; i < epls.Length; i++) {
-                    var name = $"@Name('stmt_{i}')";
+                    var name = $"@name('stmt_{i}')";
                     env.CompileDeploy(name + epls[i]);
                     stmts[i] = env.Statement("stmt_" + i);
                     listeners[i] = new SupportUpdateListener();
@@ -87,14 +100,14 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
 
                 env.SendEventBean(new ISupportAImplSuperGImplPlus("G", "A", "BaseAB", "B", "C"));
                 for (var i = 0; i < listeners.Length; i++) {
-                    Assert.IsTrue(listeners[i].IsInvoked);
+                    ClassicAssert.IsTrue(listeners[i].IsInvoked);
                     var theEvent = listeners[i].GetAndResetLastNewData()[0];
 
                     for (var j = 0; j < expected[i].Length; j++) {
-                        Assert.IsTrue(
+                        ClassicAssert.IsTrue(
                             theEvent.EventType.IsProperty(expected[i][j]),
                             "failed property valid check for stmt=" + epls[i]);
-                        Assert.AreEqual(
+                        ClassicAssert.AreEqual(
                             expected[i][j],
                             theEvent.Get(expected[i][j]),
                             "failed property check for stmt=" + epls[i]);
@@ -102,6 +115,11 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
                 }
 
                 env.UndeployAll();
+            }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.OBSERVEROPS);
             }
         }
     }

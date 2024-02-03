@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -14,6 +14,7 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.filterspec;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.support.filter
 {
@@ -41,10 +42,10 @@ namespace com.espertech.esper.regressionlib.support.filter
 
 		public FilterSpecParamForge GetAssertSingle(string typeName)
 		{
-			Assert.AreEqual(typeName, _eventType.Name);
-			Assert.AreEqual(1, _plan.Paths.Length);
+			ClassicAssert.AreEqual(typeName, _eventType.Name);
+			ClassicAssert.AreEqual(1, _plan.Paths.Length);
 			var path = _plan.Paths[0];
-			Assert.AreEqual(1, path.Triplets.Length);
+			ClassicAssert.AreEqual(1, path.Triplets.Length);
 			return path.Triplets[0].Param;
 		}
 	}

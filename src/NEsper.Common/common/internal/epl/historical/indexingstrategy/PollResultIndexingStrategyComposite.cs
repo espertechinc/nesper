@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -11,42 +11,38 @@ using System.Collections.Generic;
 using System.Linq;
 
 using com.espertech.esper.common.client;
-using com.espertech.esper.common.@internal.context.util;
+using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.index.@base;
 using com.espertech.esper.common.@internal.epl.index.composite;
+
 
 namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
 {
     public class PollResultIndexingStrategyComposite : PollResultIndexingStrategy
     {
-        public int StreamNum { get; set; }
-
-        public string[] OptionalKeyedProps { get; set; }
-
-        public Type[] OptKeyCoercedTypes { get; set; }
-
-        public EventPropertyValueGetter HashGetter { get; set; }
-
-        public string[] RangeProps { get; set; }
-
-        public Type[] OptRangeCoercedTypes { get; set; }
-
-        public EventPropertyValueGetter[] RangeGetters { get; set; }
-
-        public PropertyCompositeEventTableFactory Factory { get; set; }
+        private int streamNum;
+        private string[] optionalKeyedProps;
+        private Type[] optKeyCoercedTypes;
+        private EventPropertyValueGetter hashGetter;
+        private string[] rangeProps;
+        private Type[] optRangeCoercedTypes;
+        private EventPropertyValueGetter[] rangeGetters;
+        private PropertyCompositeEventTableFactory factory;
 
         public EventTable[] Index(
             IList<EventBean> pollResult,
             bool isActiveCache,
-            AgentInstanceContext agentInstanceContext)
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             if (!isActiveCache) {
-                return new EventTable[] {new UnindexedEventTableList(pollResult, StreamNum)};
+                return new EventTable[] {
+                    new UnindexedEventTableList(pollResult, streamNum)
+                };
             }
 
-            var tables = Factory.MakeEventTables(agentInstanceContext, null);
+            var tables = factory.MakeEventTables(exprEvaluatorContext, null);
             foreach (var table in tables) {
-                table.Add(pollResult.ToArray(), agentInstanceContext);
+                table.Add(pollResult.ToArray(), exprEvaluatorContext);
             }
 
             return tables;
@@ -54,15 +50,47 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
 
         public void Init()
         {
-            Factory = new PropertyCompositeEventTableFactory(
-                StreamNum,
-                OptionalKeyedProps,
-                OptKeyCoercedTypes,
-                HashGetter,
+            factory = new PropertyCompositeEventTableFactory(
+                streamNum,
+                optionalKeyedProps,
+                optKeyCoercedTypes,
+                hashGetter,
                 null,
-                RangeProps,
-                OptRangeCoercedTypes,
-                RangeGetters);
+                rangeProps,
+                optRangeCoercedTypes,
+                rangeGetters);
+        }
+
+        public int StreamNum {
+            set => streamNum = value;
+        }
+
+        public string[] OptionalKeyedProps {
+            set => optionalKeyedProps = value;
+        }
+
+        public Type[] OptKeyCoercedTypes {
+            set => optKeyCoercedTypes = value;
+        }
+
+        public EventPropertyValueGetter HashGetter {
+            set => hashGetter = value;
+        }
+
+        public string[] RangeProps {
+            set => rangeProps = value;
+        }
+
+        public Type[] OptRangeCoercedTypes {
+            set => optRangeCoercedTypes = value;
+        }
+
+        public EventPropertyValueGetter[] RangeGetters {
+            set => rangeGetters = value;
+        }
+
+        public PropertyCompositeEventTableFactory Factory {
+            set => factory = value;
         }
     }
 } // end of namespace

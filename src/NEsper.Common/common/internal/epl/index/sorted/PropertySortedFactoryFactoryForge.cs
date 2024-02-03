@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
@@ -24,10 +25,11 @@ namespace com.espertech.esper.common.@internal.epl.index.sorted
 {
     public class PropertySortedFactoryFactoryForge : EventTableFactoryFactoryForgeBase
     {
-        private readonly CoercionDesc coercionDesc;
-        private readonly EventType eventType;
         private readonly string indexedProp;
+        private readonly EventType eventType;
+        private readonly CoercionDesc coercionDesc;
         private readonly DataInputOutputSerdeForge serde;
+        private readonly StateMgmtSetting stateMgmtSettings;
 
         public PropertySortedFactoryFactoryForge(
             int indexedStreamNum,
@@ -36,16 +38,15 @@ namespace com.espertech.esper.common.@internal.epl.index.sorted
             string indexedProp,
             EventType eventType,
             CoercionDesc coercionDesc,
-            DataInputOutputSerdeForge serde)
-            : base(indexedStreamNum, subqueryNum, isFireAndForget)
+            DataInputOutputSerdeForge serde,
+            StateMgmtSetting stateMgmtSettings) : base(indexedStreamNum, subqueryNum, isFireAndForget)
         {
             this.indexedProp = indexedProp;
             this.eventType = eventType;
             this.coercionDesc = coercionDesc;
             this.serde = serde;
+            this.stateMgmtSettings = stateMgmtSettings;
         }
-
-        public override Type EventTableClass => typeof(PropertySortedEventTable);
 
         protected override Type TypeOf()
         {
@@ -57,12 +58,11 @@ namespace com.espertech.esper.common.@internal.epl.index.sorted
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            var @params = new List<CodegenExpression>();
+            IList<CodegenExpression> @params = new List<CodegenExpression>();
             @params.Add(Constant(indexedProp));
             @params.Add(Constant(coercionDesc.CoercionTypes[0]));
-            
             var propertyType = eventType.GetPropertyType(indexedProp);
-            var getterSPI = ((EventTypeSPI) eventType).GetGetterSPI(indexedProp);
+            var getterSPI = ((EventTypeSPI)eventType).GetGetterSPI(indexedProp);
             var getter = EventTypeUtility.CodegenGetterWCoerce(
                 getterSPI,
                 propertyType,
@@ -72,17 +72,15 @@ namespace com.espertech.esper.common.@internal.epl.index.sorted
                 classScope);
             @params.Add(getter);
             @params.Add(serde.Codegen(method, classScope, null));
-
+            @params.Add(stateMgmtSettings.ToExpression());
             return @params;
         }
 
         public override string ToQueryPlan()
         {
-            return GetType().Name +
-                   " streamNum=" +
-                   indexedStreamNum +
-                   " propertyName=" +
-                   indexedProp;
+            return GetType().Name + " streamNum=" + indexedStreamNum + " propertyName=" + indexedProp;
         }
+
+        public override Type EventTableClass => typeof(PropertySortedEventTable);
     }
 } // end of namespace

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -29,11 +29,11 @@ namespace com.espertech.esper.common.@internal.@event.json.deserializers.array
         {
             var genericList = DeserializeToList(element);
             var typedListType = typeof(List<>).MakeGenericType(EnumType);
-            var typedListAdd = typedListType.GetMethod("Add", new Type[] {EnumType});
+            var typedListAdd = typedListType.GetMethod("Add", new Type[] { EnumType });
             var typedList = typedListType.GetDefaultConstructor().Invoke(null);
 
             foreach (var enumValue in genericList) {
-                typedListAdd.Invoke(typedList, new object[] {enumValue});
+                typedListAdd.Invoke(typedList, new object[] { enumValue });
             }
 
             _typedResult = typedList;

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -8,11 +8,9 @@
 
 using System.Collections.Generic;
 
-using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
-
-using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.epl.join
 {
@@ -72,190 +70,163 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             return execs;
         }
 
+        private class EPLJoinFullJoinVariantThree : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var joinStatement = "@name('s0') select * from " +
+                                    "SupportBean_S1#keepall as s1 inner join " +
+                                    "SupportBean_S2#length(1000) as s2 on s1.P10 = s2.P20 " +
+                                    "full outer join " +
+                                    "SupportBean_S0#length(1000) as s0 on s0.P00 = s1.P10";
+
+                TryAssertionFull(env, joinStatement);
+            }
+        }
+
+        private class EPLJoinFullJoinVariantTwo : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var joinStatement = "@name('s0') select * from " +
+                                    "SupportBean_S2#length(1000) as s2 " +
+                                    "inner join " +
+                                    "SupportBean_S1#keepall as s1 on s1.P10 = s2.P20" +
+                                    " full outer join " +
+                                    "SupportBean_S0#length(1000) as s0 on s0.P00 = s1.P10";
+
+                TryAssertionFull(env, joinStatement);
+            }
+        }
+
+        private class EPLJoinFullJoinVariantOne : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var joinStatement = "@name('s0') select * from " +
+                                    "SupportBean_S0#length(1000) as s0 " +
+                                    "full outer join " +
+                                    "SupportBean_S1#length(1000) as s1 on s0.P00 = s1.P10" +
+                                    " inner join " +
+                                    "SupportBean_S2#length(1000) as s2 on s1.P10 = s2.P20";
+
+                TryAssertionFull(env, joinStatement);
+            }
+        }
+
+        private class EPLJoinLeftJoinVariantThree : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var joinStatement = "@name('s0') select * from " +
+                                    "SupportBean_S1#keepall as s1 left outer join " +
+                                    "SupportBean_S0#length(1000) as s0 on s0.P00 = s1.P10 " +
+                                    "inner join " +
+                                    "SupportBean_S2#length(1000) as s2 on s1.P10 = s2.P20";
+
+                TryAssertionFull(env, joinStatement);
+            }
+        }
+
+        private class EPLJoinLeftJoinVariantTwo : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var joinStatement = "@name('s0') select * from " +
+                                    "SupportBean_S2#length(1000) as s2 " +
+                                    "inner join " +
+                                    "SupportBean_S1#keepall as s1 on s1.P10 = s2.P20" +
+                                    " left outer join " +
+                                    "SupportBean_S0#length(1000) as s0 on s0.P00 = s1.P10";
+
+                TryAssertionFull(env, joinStatement);
+            }
+        }
+
+        private class EPLJoinRightJoinVariantOne : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var joinStatement = "@name('s0') select * from " +
+                                    "SupportBean_S0#length(1000) as s0 " +
+                                    "right outer join " +
+                                    "SupportBean_S1#length(1000) as s1 on s0.P00 = s1.P10" +
+                                    " inner join " +
+                                    "SupportBean_S2#length(1000) as s2 on s1.P10 = s2.P20";
+
+                TryAssertionFull(env, joinStatement);
+            }
+        }
+
         private static void TryAssertionFull(
             RegressionEnvironment env,
             string expression)
         {
-            var fields = new[] {"S0.Id", " S0.P00", " S1.Id", " S1.P10", " S2.Id", " S2.P20"};
+            var fields = "s0.Id, s0.P00, s1.Id, s1.P10, s2.Id, s2.P20".SplitCsv();
 
             env.EplToModelCompileDeploy(expression).AddListener("s0");
 
             // s1, s2, s0
             env.SendEventBean(new SupportBean_S1(100, "A_1"));
-            Assert.IsFalse(env.Listener("s0").IsInvoked);
+            env.AssertListenerNotInvoked("s0");
 
             env.SendEventBean(new SupportBean_S2(200, "A_1"));
-            EPAssertionUtil.AssertProps(
-                env.Listener("s0").AssertOneGetNewAndReset(),
-                fields,
-                new object[] {null, null, 100, "A_1", 200, "A_1"});
+            env.AssertPropsNew("s0", fields, new object[] { null, null, 100, "A_1", 200, "A_1" });
 
             env.SendEventBean(new SupportBean_S0(0, "A_1"));
-            EPAssertionUtil.AssertProps(
-                env.Listener("s0").AssertOneGetNewAndReset(),
-                fields,
-                new object[] {0, "A_1", 100, "A_1", 200, "A_1"});
+            env.AssertPropsNew("s0", fields, new object[] { 0, "A_1", 100, "A_1", 200, "A_1" });
 
             // s1, s0, s2
             env.SendEventBean(new SupportBean_S1(103, "D_1"));
-            Assert.IsFalse(env.Listener("s0").IsInvoked);
+            env.AssertListenerNotInvoked("s0");
 
             env.SendEventBean(new SupportBean_S2(203, "D_1"));
-            EPAssertionUtil.AssertProps(
-                env.Listener("s0").AssertOneGetNewAndReset(),
-                fields,
-                new object[] {null, null, 103, "D_1", 203, "D_1"});
+            env.AssertPropsNew("s0", fields, new object[] { null, null, 103, "D_1", 203, "D_1" });
 
             env.SendEventBean(new SupportBean_S0(3, "D_1"));
-            EPAssertionUtil.AssertProps(
-                env.Listener("s0").AssertOneGetNewAndReset(),
-                fields,
-                new object[] {3, "D_1", 103, "D_1", 203, "D_1"});
+            env.AssertPropsNew("s0", fields, new object[] { 3, "D_1", 103, "D_1", 203, "D_1" });
 
             // s2, s1, s0
             env.SendEventBean(new SupportBean_S2(201, "B_1"));
-            Assert.IsFalse(env.Listener("s0").IsInvoked);
+            env.AssertListenerNotInvoked("s0");
 
             env.SendEventBean(new SupportBean_S1(101, "B_1"));
-            EPAssertionUtil.AssertProps(
-                env.Listener("s0").AssertOneGetNewAndReset(),
-                fields,
-                new object[] {null, null, 101, "B_1", 201, "B_1"});
+            env.AssertPropsNew("s0", fields, new object[] { null, null, 101, "B_1", 201, "B_1" });
 
             env.SendEventBean(new SupportBean_S0(1, "B_1"));
-            EPAssertionUtil.AssertProps(
-                env.Listener("s0").AssertOneGetNewAndReset(),
-                fields,
-                new object[] {1, "B_1", 101, "B_1", 201, "B_1"});
+            env.AssertPropsNew("s0", fields, new object[] { 1, "B_1", 101, "B_1", 201, "B_1" });
 
             // s2, s0, s1
             env.SendEventBean(new SupportBean_S2(202, "C_1"));
-            Assert.IsFalse(env.Listener("s0").IsInvoked);
+            env.AssertListenerNotInvoked("s0");
 
             env.SendEventBean(new SupportBean_S0(2, "C_1"));
-            Assert.IsFalse(env.Listener("s0").IsInvoked);
+            env.AssertListenerNotInvoked("s0");
 
             env.SendEventBean(new SupportBean_S1(102, "C_1"));
-            EPAssertionUtil.AssertProps(
-                env.Listener("s0").AssertOneGetNewAndReset(),
-                fields,
-                new object[] {2, "C_1", 102, "C_1", 202, "C_1"});
+            env.AssertPropsNew("s0", fields, new object[] { 2, "C_1", 102, "C_1", 202, "C_1" });
 
             // s0, s1, s2
             env.SendEventBean(new SupportBean_S0(4, "E_1"));
-            Assert.IsFalse(env.Listener("s0").IsInvoked);
+            env.AssertListenerNotInvoked("s0");
 
             env.SendEventBean(new SupportBean_S1(104, "E_1"));
-            Assert.IsFalse(env.Listener("s0").IsInvoked);
+            env.AssertListenerNotInvoked("s0");
 
             env.SendEventBean(new SupportBean_S2(204, "E_1"));
-            EPAssertionUtil.AssertProps(
-                env.Listener("s0").AssertOneGetNewAndReset(),
-                fields,
-                new object[] {4, "E_1", 104, "E_1", 204, "E_1"});
+            env.AssertPropsNew("s0", fields, new object[] { 4, "E_1", 104, "E_1", 204, "E_1" });
 
             // s0, s2, s1
             env.SendEventBean(new SupportBean_S0(5, "F_1"));
-            Assert.IsFalse(env.Listener("s0").IsInvoked);
+            env.AssertListenerNotInvoked("s0");
 
             env.SendEventBean(new SupportBean_S2(205, "F_1"));
-            Assert.IsFalse(env.Listener("s0").IsInvoked);
+            env.AssertListenerNotInvoked("s0");
 
             env.SendEventBean(new SupportBean_S1(105, "F_1"));
-            EPAssertionUtil.AssertProps(
-                env.Listener("s0").AssertOneGetNewAndReset(),
-                fields,
-                new object[] {5, "F_1", 105, "F_1", 205, "F_1"});
+            env.AssertPropsNew("s0", fields, new object[] { 5, "F_1", 105, "F_1", 205, "F_1" });
 
             env.UndeployAll();
-        }
-
-        internal class EPLJoinFullJoinVariantThree : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var joinStatement = "@Name('s0') select * from " +
-                                    "SupportBean_S1#keepall as S1 inner join " +
-                                    "SupportBean_S2#length(1000) as S2 on S1.P10 = S2.P20 " +
-                                    "full outer join " +
-                                    "SupportBean_S0#length(1000) as S0 on S0.P00 = S1.P10";
-
-                TryAssertionFull(env, joinStatement);
-            }
-        }
-
-        internal class EPLJoinFullJoinVariantTwo : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var joinStatement = "@Name('s0') select * from " +
-                                    "SupportBean_S2#length(1000) as S2 " +
-                                    "inner join " +
-                                    "SupportBean_S1#keepall as S1 on S1.P10 = S2.P20" +
-                                    " full outer join " +
-                                    "SupportBean_S0#length(1000) as S0 on S0.P00 = S1.P10";
-
-                TryAssertionFull(env, joinStatement);
-            }
-        }
-
-        internal class EPLJoinFullJoinVariantOne : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var joinStatement = "@Name('s0') select * from " +
-                                    "SupportBean_S0#length(1000) as S0 " +
-                                    "full outer join " +
-                                    "SupportBean_S1#length(1000) as S1 on S0.P00 = S1.P10" +
-                                    " inner join " +
-                                    "SupportBean_S2#length(1000) as S2 on S1.P10 = S2.P20";
-
-                TryAssertionFull(env, joinStatement);
-            }
-        }
-
-        internal class EPLJoinLeftJoinVariantThree : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var joinStatement = "@Name('s0') select * from " +
-                                    "SupportBean_S1#keepall as S1 left outer join " +
-                                    "SupportBean_S0#length(1000) as S0 on S0.P00 = S1.P10 " +
-                                    "inner join " +
-                                    "SupportBean_S2#length(1000) as S2 on S1.P10 = S2.P20";
-
-                TryAssertionFull(env, joinStatement);
-            }
-        }
-
-        internal class EPLJoinLeftJoinVariantTwo : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var joinStatement = "@Name('s0') select * from " +
-                                    "SupportBean_S2#length(1000) as S2 " +
-                                    "inner join " +
-                                    "SupportBean_S1#keepall as S1 on S1.P10 = S2.P20" +
-                                    " left outer join " +
-                                    "SupportBean_S0#length(1000) as S0 on S0.P00 = S1.P10";
-
-                TryAssertionFull(env, joinStatement);
-            }
-        }
-
-        internal class EPLJoinRightJoinVariantOne : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var joinStatement = "@Name('s0') select * from " +
-                                    "SupportBean_S0#length(1000) as S0 " +
-                                    "right outer join " +
-                                    "SupportBean_S1#length(1000) as S1 on S0.P00 = S1.P10" +
-                                    " inner join " +
-                                    "SupportBean_S2#length(1000) as S2 on S1.P10 = S2.P20";
-
-                TryAssertionFull(env, joinStatement);
-            }
         }
     }
 } // end of namespace

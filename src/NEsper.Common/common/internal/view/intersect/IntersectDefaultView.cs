@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -54,6 +54,8 @@ namespace com.espertech.esper.common.@internal.view.intersect
         public View[] ViewContained => views;
 
         public IntersectViewFactory ViewFactory => factory;
+
+        public View[] RelatedViews => views;
 
         public void Stop(AgentInstanceStopServices services)
         {
@@ -129,7 +131,7 @@ namespace com.espertech.esper.common.@internal.view.intersect
 
                 // indicate new and, possibly, old data
                 agentInstanceContext.InstrumentationProvider.QViewIndicate(factory, newData, oldData);
-                child.Update(newData, oldData);
+                Child.Update(newData, oldData);
                 agentInstanceContext.InstrumentationProvider.AViewIndicate();
             }
             else if (oldData != null) {
@@ -147,7 +149,7 @@ namespace com.espertech.esper.common.@internal.view.intersect
                 }
 
                 agentInstanceContext.InstrumentationProvider.QViewIndicate(factory, null, oldData);
-                child.Update(null, oldData);
+                Child.Update(null, oldData);
                 agentInstanceContext.InstrumentationProvider.AViewIndicate();
             }
 
@@ -199,7 +201,7 @@ namespace com.espertech.esper.common.@internal.view.intersect
             }
 
             agentInstanceContext.InstrumentationProvider.QViewIndicate(factory, null, oldEvents);
-            child.Update(null, oldEvents);
+            Child.Update(null, oldEvents);
             agentInstanceContext.InstrumentationProvider.AViewIndicate();
         }
 
@@ -218,7 +220,7 @@ namespace com.espertech.esper.common.@internal.view.intersect
                 viewDataVisitor.VisitContained(i, views[i]);
             }
         }
-        
+
         public void Transfer(AgentInstanceTransferServices services)
         {
         }

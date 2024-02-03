@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -26,7 +26,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
         public string TypeName { get; }
 
         public string Name { get; }
-        
+
         public bool HasOutputModifier { get; set; }
 
         public CodegenNamedParam(
@@ -62,7 +62,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
             if (HasOutputModifier) {
                 builder.Append("out ");
             }
-            
+
             if (Type != null) {
                 AppendClassName(builder, Type);
             }
@@ -243,7 +243,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
 
         public void MergeClasses(ISet<Type> classes)
         {
-            classes.AddToSet(Type);
+            if (Type != null) {
+                classes.AddToSet(Type);
+            }
         }
 
         public static void Render(
@@ -269,7 +271,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
                 return false;
             }
 
-            var param = (CodegenNamedParam) o;
+            var param = (CodegenNamedParam)o;
 
             if (!Type.Equals(param.Type)) {
                 return false;
@@ -287,7 +289,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
 
         public ParameterSyntax CodegenSyntaxAsParameter()
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         public CodegenNamedParam WithOutputModifier()

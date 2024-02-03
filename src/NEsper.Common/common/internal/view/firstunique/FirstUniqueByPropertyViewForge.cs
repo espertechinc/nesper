@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.compile.multikey;
@@ -36,9 +37,8 @@ namespace com.espertech.esper.common.@internal.view.firstunique
 
         public override string ViewName => NAME;
 
-        public ISet<string> UniquenessCandidatePropertyNames {
-            get { return ExprNodeUtilityQuery.GetPropertyNamesIfAllProps(criteriaExpressions); }
-        }
+        public ISet<string> UniquenessCandidatePropertyNames =>
+            ExprNodeUtilityQuery.GetPropertyNamesIfAllProps(criteriaExpressions);
 
         public override void SetViewParameters(
             IList<ExprNode> parameters,
@@ -48,9 +48,8 @@ namespace com.espertech.esper.common.@internal.view.firstunique
             viewParameters = parameters;
         }
 
-        public override void Attach(
+        public override void AttachValidate(
             EventType parentEventType,
-            int streamNumber,
             ViewForgeEnv viewForgeEnv)
         {
             criteriaExpressions = ViewForgeSupport.Validate(
@@ -58,8 +57,7 @@ namespace com.espertech.esper.common.@internal.view.firstunique
                 parentEventType,
                 viewParameters,
                 false,
-                viewForgeEnv,
-                streamNumber);
+                viewForgeEnv);
 
             if (criteriaExpressions.Length == 0) {
                 var errorMessage =
@@ -72,20 +70,18 @@ namespace com.espertech.esper.common.@internal.view.firstunique
 
         public override IList<StmtClassForgeableFactory> InitAdditionalForgeables(ViewForgeEnv viewForgeEnv)
         {
-            MultiKeyPlan desc = MultiKeyPlanner.PlanMultiKey(criteriaExpressions, false, viewForgeEnv.StatementRawInfo, viewForgeEnv.SerdeResolver);
+            var desc = MultiKeyPlanner.PlanMultiKey(
+                criteriaExpressions,
+                false,
+                viewForgeEnv.StatementRawInfo,
+                viewForgeEnv.SerdeResolver);
             multiKeyClassNames = desc.ClassRef;
             return desc.MultiKeyForgeables;
         }
 
-        internal override Type TypeOfFactory()
-        {
-            return typeof(FirstUniqueByPropertyViewFactory);
-        }
+        internal override Type TypeOfFactory => typeof(FirstUniqueByPropertyViewFactory);
 
-        internal override string FactoryMethod()
-        {
-            return "Firstunique";
-        }
+        internal override string FactoryMethod => "Firstunique";
 
         internal override void Assign(
             CodegenMethod method,
@@ -94,6 +90,18 @@ namespace com.espertech.esper.common.@internal.view.firstunique
             CodegenClassScope classScope)
         {
             ViewMultiKeyHelper.Assign(criteriaExpressions, multiKeyClassNames, method, factory, symbols, classScope);
+        }
+
+        public MultiKeyClassRef MultiKeyClassNames => multiKeyClassNames;
+
+        public override AppliesTo AppliesTo()
+        {
+            return client.annotation.AppliesTo.WINDOW_FIRSTUNIQUE;
+        }
+
+        public override T Accept<T>(ViewFactoryForgeVisitor<T> visitor)
+        {
+            return visitor.Visit(this);
         }
     }
 } // end of namespace

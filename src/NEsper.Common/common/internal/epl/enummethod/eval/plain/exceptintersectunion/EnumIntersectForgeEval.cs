@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -58,36 +58,38 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.plain.excepti
             CodegenClassScope codegenClassScope)
         {
             var scope = new ExprForgeCodegenSymbol(false, null);
-            var namedParams = EnumForgeCodegenNames.PARAMS;
-            var returnType = typeof(FlexCollection);
 
             var methodNode = codegenMethodScope
                 .MakeChildWithScope(
-                    returnType,
+                    args.EnumcollType,
                     typeof(EnumIntersectForgeEval),
                     scope,
                     codegenClassScope)
-                .AddParam(namedParams);
+                .AddParam(ExprForgeCodegenNames.FP_EPS)
+                .AddParam(args.EnumcollType, EnumForgeCodegenNames.REF_ENUMCOLL.Ref)
+                .AddParam(ExprForgeCodegenNames.FP_ISNEWDATA)
+                .AddParam(ExprForgeCodegenNames.FP_EXPREVALCONTEXT);
 
             var block = methodNode.Block;
             if (forge.scalar) {
-                block.DeclareVar<FlexCollection>(
+                block.DeclareVar(
+                    args.EnumcollType,
                     "other",
                     forge.evaluatorForge.EvaluateGetROCollectionScalarCodegen(methodNode, scope, codegenClassScope));
             }
             else {
-                block.DeclareVar<FlexCollection>(
+                block.DeclareVar(
+                    args.EnumcollType,
                     "other",
                     forge.evaluatorForge.EvaluateGetROCollectionEventsCodegen(methodNode, scope, codegenClassScope));
             }
 
             block.MethodReturn(
-                FlexWrap(
-                    StaticMethod(
-                        typeof(EnumIntersectForgeEval),
-                        "EnumIntersectForgeEvalSet",
-                        Ref("other"),
-                        EnumForgeCodegenNames.REF_ENUMCOLL)));
+                StaticMethod(
+                    typeof(EnumIntersectForgeEval),
+                    "EnumIntersectForgeEvalSet",
+                    Ref("other"),
+                    EnumForgeCodegenNames.REF_ENUMCOLL));
 
             return LocalMethod(methodNode, args.Eps, args.Enumcoll, args.IsNewData, args.ExprCtx);
         }
@@ -98,16 +100,16 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.plain.excepti
         /// <param name="other">other</param>
         /// <param name="enumcoll">coll</param>
         /// <returns>intersection</returns>
-        public static ICollection<object> EnumIntersectForgeEvalSet(
-            ICollection<object> other,
-            ICollection<object> enumcoll)
+        public static ICollection<T> EnumIntersectForgeEvalSet<T>(
+            ICollection<T> other,
+            ICollection<T> enumcoll)
         {
             if (other == null || other.IsEmpty() || enumcoll.IsEmpty()) {
-                return enumcoll.Unwrap<object>();
+                return enumcoll.Unwrap<T>();
             }
 
-            var resultX = new List<object>(enumcoll);
-            resultX.RetainAll(other.Unwrap<object>());
+            var resultX = new List<T>(enumcoll);
+            resultX.RetainAll(other.Unwrap<T>());
             return resultX;
         }
 
@@ -159,27 +161,6 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.plain.excepti
             }
 
             return result;
-        }
-
-        public static FlexCollection EnumIntersectForgeEvalSet(
-            FlexCollection other,
-            FlexCollection enumcoll)
-        {
-            if (other.IsEventBeanCollection) {
-                if (enumcoll.IsEventBeanCollection) {
-                    return FlexCollection.Of(
-                        EnumIntersectForgeEvalSet(
-                            other.EventBeanCollection, 
-                            enumcoll.EventBeanCollection));
-                }
-            } else if (enumcoll.IsObjectCollection) {
-                return FlexCollection.Of(
-                    EnumIntersectForgeEvalSet(
-                        other.ObjectCollection, 
-                        enumcoll.ObjectCollection));
-            }
-            
-            throw new ArgumentException("mismatch in FlexCollection types");
         }
     }
 } // end of namespace

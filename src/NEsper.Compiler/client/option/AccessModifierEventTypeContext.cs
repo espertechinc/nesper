@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -23,7 +23,7 @@ namespace com.espertech.esper.compiler.client.option
         public AccessModifierEventTypeContext(
             StatementRawInfo raw,
             string eventTypeName)
-            : base(() => raw.Compilable.ToEPL(), raw.StatementName, raw.ModuleName, raw.Annotations, raw.StatementNumber)
+            : base(raw)
         {
             EventTypeName = eventTypeName;
         }

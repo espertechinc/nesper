@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -17,7 +17,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// The group-by clause consists of a list of expressions that provide the grouped-by values.
     /// </summary>
-    [Serializable]
     public class GroupByClause
     {
         private readonly IList<GroupByClauseExpression> _groupByExpressions;
@@ -69,8 +68,7 @@ namespace com.espertech.esper.common.client.soda
         public GroupByClause(params string[] properties)
             : this()
         {
-            foreach (string property in properties)
-            {
+            foreach (var property in properties) {
                 _groupByExpressions.Add(new GroupByClauseExpressionSingle(Expressions.Property(property)));
             }
         }
@@ -80,19 +78,15 @@ namespace com.espertech.esper.common.client.soda
         public GroupByClause(params Expression[] expressions)
             : this()
         {
-            foreach (Expression expression in expressions)
-            {
+            foreach (var expression in expressions) {
                 _groupByExpressions.Add(new GroupByClauseExpressionSingle(expression));
             }
         }
 
         /// <summary>Gets or sets the expressions providing the grouped-by values.</summary>
         /// <returns>expressions</returns>
-        public IList<GroupByClauseExpression> GroupByExpressions
-        {
-            get {
-                return _groupByExpressions;
-            }
+        public IList<GroupByClauseExpression> GroupByExpressions {
+            get => _groupByExpressions;
             set {
                 _groupByExpressions.Clear();
                 _groupByExpressions.AddAll(value);
@@ -103,9 +97,8 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="writer">to output to</param>
         public void ToEPL(TextWriter writer)
         {
-            string delimiter = "";
-            foreach (GroupByClauseExpression child in _groupByExpressions)
-            {
+            var delimiter = "";
+            foreach (var child in _groupByExpressions) {
                 writer.Write(delimiter);
                 child.ToEPL(writer);
                 delimiter = ", ";

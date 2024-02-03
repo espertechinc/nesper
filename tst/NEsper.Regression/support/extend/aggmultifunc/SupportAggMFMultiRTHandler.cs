@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -12,209 +12,129 @@ using com.espertech.esper.common.client.hook.aggmultifunc;
 using com.espertech.esper.common.client.hook.forgeinject;
 using com.espertech.esper.common.@internal.rettype;
 using com.espertech.esper.compat;
-
 namespace com.espertech.esper.regressionlib.support.extend.aggmultifunc
 {
-    public class SupportAggMFMultiRTHandler : AggregationMultiFunctionHandler
-    {
-        public static IList<AggregationMultiFunctionStateKey> providerKeys =
-            new List<AggregationMultiFunctionStateKey>();
+	public partial class SupportAggMFMultiRTHandler : AggregationMultiFunctionHandler {
+	    private readonly AggregationMultiFunctionValidationContext validationContext;
 
-        public static IList<AggregationMultiFunctionStateMode> stateFactoryModes =
-            new List<AggregationMultiFunctionStateMode>();
+	    public static IList<AggregationMultiFunctionStateKey> providerKeys = new List<AggregationMultiFunctionStateKey>();
+	    public static IList<AggregationMultiFunctionStateMode> stateFactoryModes = new List<AggregationMultiFunctionStateMode>();
+	    public static IList<AggregationMultiFunctionAccessorMode> accessorModes = new List<AggregationMultiFunctionAccessorMode>();
 
-        public static IList<AggregationMultiFunctionAccessorMode> accessorModes =
-            new List<AggregationMultiFunctionAccessorMode>();
+	    public static void Reset() {
+	        providerKeys.Clear();
+	        stateFactoryModes.Clear();
+	        accessorModes.Clear();
+	    }
 
-        private readonly AggregationMultiFunctionValidationContext validationContext;
+	    public static IList<AggregationMultiFunctionStateKey> ProviderKeys => providerKeys;
 
-        public SupportAggMFMultiRTHandler(AggregationMultiFunctionValidationContext validationContext)
-        {
-            this.validationContext = validationContext;
-        }
+	    public static IList<AggregationMultiFunctionStateMode> StateFactoryModes => stateFactoryModes;
 
-        public static IList<AggregationMultiFunctionStateKey> ProviderKeys => providerKeys;
+	    public static IList<AggregationMultiFunctionAccessorMode> AccessorModes => accessorModes;
 
-        public static IList<AggregationMultiFunctionStateMode> StateFactoryModes => stateFactoryModes;
+	    public SupportAggMFMultiRTHandler(AggregationMultiFunctionValidationContext validationContext) {
+	        this.validationContext = validationContext;
+	    }
 
-        public static IList<AggregationMultiFunctionAccessorMode> AccessorModes => accessorModes;
+	    public AggregationMultiFunctionStateKey AggregationStateUniqueKey {
+		    get {
+			    // we share single-event stuff
+			    var functionName = validationContext.FunctionName;
+			    if (functionName.Equals("se1") || functionName.Equals("se2")) {
+				    AggregationMultiFunctionStateKey key = new SupportAggregationStateKey("A1");
+				    providerKeys.Add(key);
+				    return key;
+			    }
 
-        public AggregationMultiFunctionStateKey AggregationStateUniqueKey {
-            get {
-                // we share single-event stuff
-                var functionName = validationContext.FunctionName;
-                if (functionName == "se1" || functionName == "se2") {
-                    AggregationMultiFunctionStateKey key = new SupportAggregationStateKey("A1");
-                    providerKeys.Add(key);
-                    return key;
-                }
+			    // never share anything else
+			    return new InertAggregationMultiFunctionStateKey();
+		    }
+	    }
 
-                // never share anything else
-                return new InertAggregationMultiFunctionStateKey();
-            }
-        }
+	    public AggregationMultiFunctionStateMode StateMode {
+		    get {
+			    InjectionStrategy injectionStrategy;
+			    var functionName = validationContext.FunctionName;
+			    injectionStrategy = functionName switch {
+				    "ss" => new InjectionStrategyClassNewInstance(typeof(SupportAggMFMultiRTPlainScalarStateFactory))
+					    .AddExpression("param", validationContext.AllParameterExpressions[0]),
+				    "sa" => new InjectionStrategyClassNewInstance(
+						    typeof(SupportAggMFMultiRTArrayCollScalarStateFactory))
+					    .AddExpression("evaluator", validationContext.AllParameterExpressions[0])
+					    .AddConstant(
+						    "evaluationType",
+						    validationContext.AllParameterExpressions[0].Forge.EvaluationType),
+				    "sc" => new InjectionStrategyClassNewInstance(
+						    typeof(SupportAggMFMultiRTArrayCollScalarStateFactory))
+					    .AddExpression("evaluator", validationContext.AllParameterExpressions[0])
+					    .AddConstant(
+						    "evaluationType",
+						    validationContext.AllParameterExpressions[0].Forge.EvaluationType),
+				    "se1" => new InjectionStrategyClassNewInstance(typeof(SupportAggMFMultiRTSingleEventStateFactory)),
+				    "ee" => new InjectionStrategyClassNewInstance(
+					    typeof(SupportAggMFMultiRTEnumerableEventsStateFactory)),
+				    _ => throw new UnsupportedOperationException("Unknown function '" + functionName + "'")
+			    };
 
-        public AggregationMultiFunctionStateMode StateMode {
-            get {
-                InjectionStrategy injectionStrategy;
-                var functionName = validationContext.FunctionName;
-                switch (functionName) {
-                    case "ss":
-                        injectionStrategy =
-                            new InjectionStrategyClassNewInstance(typeof(SupportAggMFMultiRTPlainScalarStateFactory))
-                                .AddExpression("param", validationContext.AllParameterExpressions[0]);
-                        break;
+			    var mode = new AggregationMultiFunctionStateModeManaged()
+				    .WithInjectionStrategyAggregationStateFactory(injectionStrategy);
+			    stateFactoryModes.Add(mode);
+			    return mode;
+		    }
+	    }
 
-                    case "sa":
-                    case "sc":
-                        injectionStrategy =
-                            new InjectionStrategyClassNewInstance(typeof(SupportAggMFMultiRTArrayCollScalarStateFactory))
-                                .AddExpression("evaluator", validationContext.AllParameterExpressions[0])
-                                .AddConstant(
-                                    "evaluationType",
-                                    validationContext.AllParameterExpressions[0].Forge.EvaluationType);
-                        break;
+	    public AggregationMultiFunctionAccessorMode AccessorMode {
+		    get {
+			    var functionName = validationContext.FunctionName;
+			    InjectionStrategy injectionStrategy = functionName switch {
+				    "ss" => new InjectionStrategyClassNewInstance(
+					    typeof(SupportAggMFMultiRTPlainScalarAccessorFactory)),
+				    "sa" => new InjectionStrategyClassNewInstance(
+					    typeof(SupportAggMFMultiRTArrayScalarAccessorFactory)),
+				    "sc" => new InjectionStrategyClassNewInstance(
+					    typeof(SupportAggMFMultiRTCollScalarAccessorFactory)),
+				    "se1" => new InjectionStrategyClassNewInstance(
+					    typeof(SupportAggMFMultiRTSingleEventAccessorFactory)),
+				    "se2" => new InjectionStrategyClassNewInstance(
+					    typeof(SupportAggMFMultiRTSingleEventAccessorFactory)),
+				    "ee" => new InjectionStrategyClassNewInstance(
+					    typeof(SupportAggMFMultiRTEnumerableEventsAccessorFactory)),
+				    _ => throw new IllegalStateException("Unrecognized function name '" + functionName + "'")
+			    };
 
-                    case "se1":
-                        injectionStrategy =
-                            new InjectionStrategyClassNewInstance(typeof(SupportAggMFMultiRTSingleEventStateFactory));
-                        break;
+			    var mode = new AggregationMultiFunctionAccessorModeManaged()
+				    .WithInjectionStrategyAggregationAccessorFactory(injectionStrategy);
+			    accessorModes.Add(mode);
+			    return mode;
+		    }
+	    }
 
-                    case "ee":
-                        injectionStrategy =
-                            new InjectionStrategyClassNewInstance(typeof(SupportAggMFMultiRTEnumerableEventsStateFactory));
-                        break;
+	    public EPChainableType ReturnType {
+		    get {
+			    var functionName = validationContext.FunctionName;
+			    return functionName switch {
+				    "ss" => EPChainableTypeHelper.SingleValue(
+					    validationContext.AllParameterExpressions[0].Forge.EvaluationType),
+				    "sa" => EPChainableTypeHelper.Array(
+					    validationContext.AllParameterExpressions[0].Forge.EvaluationType),
+				    "sc" => EPChainableTypeHelper.CollectionOfSingleValue(
+					    validationContext.AllParameterExpressions[0].Forge.EvaluationType),
+				    "se1" => EPChainableTypeHelper.SingleEvent(
+					    validationContext.EventTypes[0]),
+				    "se2" => EPChainableTypeHelper.SingleEvent(
+					    validationContext.EventTypes[0]),
+				    "ee" => EPChainableTypeHelper.CollectionOfEvents(
+					    validationContext.EventTypes[0]),
+				    _ => throw new IllegalStateException("Unrecognized function name '" + functionName + "'")
+			    };
+		    }
+	    }
 
-                    default:
-                        throw new UnsupportedOperationException("Unknown function '" + functionName + "'");
-                }
+	    public AggregationMultiFunctionAgentMode AgentMode => throw new UnsupportedOperationException("This implementation does not support tables");
 
-                var mode =
-                    new AggregationMultiFunctionStateModeManaged().SetInjectionStrategyAggregationStateFactory(
-                        injectionStrategy);
-                stateFactoryModes.Add(mode);
-                return mode;
-            }
-        }
-
-        public AggregationMultiFunctionAccessorMode AccessorMode {
-            get {
-                var functionName = validationContext.FunctionName;
-                InjectionStrategy injectionStrategy;
-                switch (functionName) {
-                    case "ss":
-                        injectionStrategy =
-                            new InjectionStrategyClassNewInstance(typeof(SupportAggMFMultiRTPlainScalarAccessorFactory));
-                        break;
-
-                    case "sa":
-                        injectionStrategy =
-                            new InjectionStrategyClassNewInstance(typeof(SupportAggMFMultiRTArrayScalarAccessorFactory));
-                        break;
-
-                    case "sc":
-                        injectionStrategy =
-                            new InjectionStrategyClassNewInstance(typeof(SupportAggMFMultiRTCollScalarAccessorFactory));
-                        break;
-
-                    case "se1":
-                    case "se2":
-                        injectionStrategy =
-                            new InjectionStrategyClassNewInstance(typeof(SupportAggMFMultiRTSingleEventAccessorFactory));
-                        break;
-
-                    case "ee":
-                        injectionStrategy =
-                            new InjectionStrategyClassNewInstance(
-                                typeof(SupportAggMFMultiRTEnumerableEventsAccessorFactory));
-                        break;
-
-                    default:
-                        throw new IllegalStateException("Unrecognized function name '" + functionName + "'");
-                }
-
-                var mode =
-                    new AggregationMultiFunctionAccessorModeManaged().SetInjectionStrategyAggregationAccessorFactory(
-                        injectionStrategy);
-                accessorModes.Add(mode);
-                return mode;
-            }
-        }
-
-        public EPType ReturnType {
-            get {
-                var functionName = validationContext.FunctionName;
-                switch (functionName) {
-                    case "ss":
-                        return EPTypeHelper.SingleValue(validationContext.AllParameterExpressions[0].Forge.EvaluationType);
-
-                    case "sa":
-                        return EPTypeHelper.Array(validationContext.AllParameterExpressions[0].Forge.EvaluationType);
-
-                    case "sc":
-                        return EPTypeHelper.CollectionOfSingleValue(
-                            validationContext.AllParameterExpressions[0].Forge.EvaluationType, null);
-
-                    case "se1":
-                    case "se2":
-                        return EPTypeHelper.SingleEvent(validationContext.EventTypes[0]);
-
-                    case "ee":
-                        return EPTypeHelper.CollectionOfEvents(validationContext.EventTypes[0]);
-
-                    default:
-                        throw new IllegalStateException("Unrecognized function name '" + functionName + "'");
-                }
-            }
-        }
-
-        public AggregationMultiFunctionAgentMode AgentMode =>
-            throw new UnsupportedOperationException("This implementation does not support tables");
-
-        public AggregationMultiFunctionAggregationMethodMode GetAggregationMethodMode(AggregationMultiFunctionAggregationMethodContext ctx)
-        {
-            return null; // not implemented
-        }
-
-        public static void Reset()
-        {
-            providerKeys.Clear();
-            stateFactoryModes.Clear();
-            accessorModes.Clear();
-        }
-
-        internal class SupportAggregationStateKey : AggregationMultiFunctionStateKey
-        {
-            private readonly string id;
-
-            internal SupportAggregationStateKey(string id)
-            {
-                this.id = id;
-            }
-
-            public override bool Equals(object o)
-            {
-                if (this == o) {
-                    return true;
-                }
-
-                if (o == null || GetType() != o.GetType()) {
-                    return false;
-                }
-
-                var that = (SupportAggregationStateKey) o;
-
-                if (!id?.Equals(that.id) ?? that.id != null) {
-                    return false;
-                }
-
-                return true;
-            }
-
-            public override int GetHashCode()
-            {
-                return id != null ? id.GetHashCode() : 0;
-            }
-        }
-    }
+	    public AggregationMultiFunctionAggregationMethodMode GetAggregationMethodMode(AggregationMultiFunctionAggregationMethodContext ctx) {
+	        return null; // not implemented
+	    }
+	}
 } // end of namespace

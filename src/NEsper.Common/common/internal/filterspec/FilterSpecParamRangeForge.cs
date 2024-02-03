@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -73,20 +73,20 @@ namespace com.espertech.esper.common.@internal.filterspec
                 return true;
             }
 
-            return obj is FilterSpecParamRangeForge && Equals((FilterSpecParamRangeForge) obj);
+            return obj is FilterSpecParamRangeForge forge && Equals(forge);
         }
 
         public override int GetHashCode()
         {
             unchecked {
-                int result = base.GetHashCode();
+                var result = base.GetHashCode();
                 result = result * 31 + (_min != null ? _min.GetHashCode() : 0);
                 result = result * 31 + (_max != null ? _max.GetHashCode() : 0);
                 return result;
             }
         }
 
-        public override CodegenMethod MakeCodegen(
+        public override CodegenExpression MakeCodegen(
             CodegenClassScope classScope,
             CodegenMethodScope parent,
             SAIFFInitializeSymbolWEventType symbols)
@@ -123,11 +123,13 @@ namespace com.espertech.esper.common.@internal.filterspec
             getFilterValue.Block
                 .DeclareVar<object>("min", _min.MakeCodegen(classScope, method))
                 .DeclareVar<object>("max", _max.MakeCodegen(classScope, method))
-                .DeclareVar<object>("value", NewInstance(returnType, Cast(castType, Ref("min")), Cast(castType, Ref("max"))))
+                .DeclareVar<object>(
+                    "value",
+                    NewInstance(returnType, Cast(castType, Ref("min")), Cast(castType, Ref("max"))))
                 .BlockReturn(FilterValueSetParamImpl.CodegenNew(Ref("value")));
 
             method.Block.MethodReturn(param);
-            return method;
+            return LocalMethod(method);
         }
 
         public override void ValueExprToString(

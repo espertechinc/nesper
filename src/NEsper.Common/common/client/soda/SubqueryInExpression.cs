@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// In-expression for a set of values returned by a lookup.
     /// </summary>
-    [Serializable]
     public class SubqueryInExpression : ExpressionBase
     {
         private bool notIn;
@@ -75,20 +74,15 @@ namespace com.espertech.esper.common.client.soda
             return this;
         }
 
-        public override ExpressionPrecedenceEnum Precedence
-        {
-            get => ExpressionPrecedenceEnum.UNARY;
-        }
+        public override ExpressionPrecedenceEnum Precedence => ExpressionPrecedenceEnum.UNARY;
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             Children[0].ToEPL(writer, Precedence);
-            if (notIn)
-            {
+            if (notIn) {
                 writer.Write(" not in (");
             }
-            else
-            {
+            else {
                 writer.Write(" in (");
             }
 

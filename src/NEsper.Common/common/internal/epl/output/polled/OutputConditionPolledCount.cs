@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -33,15 +33,13 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
 
         OutputConditionPolledState OutputConditionPolled.State => State;
 
-        public OutputConditionPolledCountState State {
-            get => state;
-        }
+        public OutputConditionPolledCountState State => state;
 
         public bool UpdateOutputCondition(
             int newDataCount,
             int oldDataCount)
         {
-            object value = optionalVariableReader?.Value;
+            var value = optionalVariableReader?.Value;
             if (value != null) {
                 state.EventRate = value.AsInt64();
             }
@@ -50,8 +48,8 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
             state.OldEventsCount = state.OldEventsCount + oldDataCount;
 
             if (IsSatisfied() || state.IsFirst) {
-                if ((ExecutionPathDebugLog.IsDebugEnabled) && (log.IsDebugEnabled)) {
-                    log.Debug(".updateOutputCondition() condition satisfied");
+                if (ExecutionPathDebugLog.IsDebugEnabled && Log.IsDebugEnabled) {
+                    Log.Debug(".updateOutputCondition() condition satisfied");
                 }
 
                 state.IsFirst = false;
@@ -65,9 +63,9 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
 
         private bool IsSatisfied()
         {
-            return (state.NewEventsCount >= state.EventRate) || (state.OldEventsCount >= state.EventRate);
+            return state.NewEventsCount >= state.EventRate || state.OldEventsCount >= state.EventRate;
         }
 
-        private static readonly ILog log = LogManager.GetLogger(typeof(OutputConditionPolledCount));
+        private static readonly ILog Log = LogManager.GetLogger(typeof(OutputConditionPolledCount));
     }
 } // end of namespace

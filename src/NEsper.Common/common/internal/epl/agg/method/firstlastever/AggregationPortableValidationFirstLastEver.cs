@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.firstlastever
             : base(distinct, hasFilter, inputValueType)
 
         {
-            this.IsFirst = isFirst;
+            IsFirst = isFirst;
         }
 
         public bool IsFirst { get; set; }
@@ -57,7 +57,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.firstlastever
             string intoExpression,
             AggregationForgeFactory factory)
         {
-            var that = (AggregationPortableValidationFirstLastEver) intoTableAgg;
+            var that = (AggregationPortableValidationFirstLastEver)intoTableAgg;
             if (IsFirst != that.IsFirst) {
                 throw new ExprValidationException(
                     "The aggregation declares " +

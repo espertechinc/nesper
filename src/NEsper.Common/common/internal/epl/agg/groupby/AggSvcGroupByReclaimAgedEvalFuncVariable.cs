@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -19,25 +19,25 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
     /// </summary>
     public class AggSvcGroupByReclaimAgedEvalFuncVariable : AggSvcGroupByReclaimAgedEvalFunc
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(AggSvcGroupByReclaimAgedEvalFuncVariable));
+        private static readonly ILog Log = LogManager.GetLogger(typeof(AggSvcGroupByReclaimAgedEvalFuncVariable));
 
-        private readonly VariableReader variableReader;
+        private readonly VariableReader _variableReader;
 
         public AggSvcGroupByReclaimAgedEvalFuncVariable(VariableReader variableReader)
         {
-            this.variableReader = variableReader;
+            _variableReader = variableReader;
         }
 
         public double? LongValue {
             get {
-                var val = variableReader.Value;
+                var val = _variableReader.Value;
                 if (val != null && val.IsNumber()) {
                     return val.AsDouble();
                 }
 
-                log.Warn(
+                Log.Warn(
                     "Variable '" +
-                    variableReader.MetaData.VariableName +
+                    _variableReader.MetaData.VariableName +
                     " returned a null value, using last valid value");
                 return null;
             }

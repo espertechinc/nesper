@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -12,7 +12,6 @@ using System.IO;
 namespace com.espertech.esper.common.client.soda
 {
     /// <summary>Context condition that start/initiated or ends/terminates context partitions based on a time period. </summary>
-    [Serializable]
     public class ContextDescriptorConditionTimePeriod : ContextDescriptorCondition
     {
         /// <summary>Ctor. </summary>
@@ -43,8 +42,7 @@ namespace com.espertech.esper.common.client.soda
             TextWriter writer,
             EPStatementFormatter formatter)
         {
-            if (IsNow)
-            {
+            if (IsNow) {
                 writer.Write("@now and");
             }
 

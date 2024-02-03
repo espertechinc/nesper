@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -37,7 +37,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 			StatementNameRuntimeOption statementNameResolverRuntime,
 			StatementUserObjectRuntimeOption userObjectResolverRuntime,
 			StatementSubstitutionParameterOption substitutionParameterResolver,
-			DeploymentClassLoaderOption deploymentClassLoaderOption,
+			DeploymentTypeResolverOption deploymentTypeResolverOption,
 			EPRuntimeSPI epRuntime)
 		{
 			return Deploy(
@@ -48,7 +48,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 				statementNameResolverRuntime,
 				userObjectResolverRuntime,
 				substitutionParameterResolver,
-				deploymentClassLoaderOption,
+				deploymentTypeResolverOption,
 				epRuntime);
 		}
 
@@ -59,7 +59,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 			StatementNameRuntimeOption statementNameResolverRuntime,
 			StatementUserObjectRuntimeOption userObjectResolverRuntime,
 			StatementSubstitutionParameterOption substitutionParameterResolver,
-			DeploymentClassLoaderOption deploymentClassLoaderOption,
+			DeploymentTypeResolverOption deploymentTypeResolverOption,
 			EPRuntimeSPI epRuntime)
 		{
 			return Deploy(
@@ -70,7 +70,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 				statementNameResolverRuntime,
 				userObjectResolverRuntime,
 				substitutionParameterResolver,
-				deploymentClassLoaderOption,
+				deploymentTypeResolverOption,
 				epRuntime);
 		}
 
@@ -82,7 +82,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 			StatementNameRuntimeOption statementNameResolverRuntime,
 			StatementUserObjectRuntimeOption userObjectResolverRuntime,
 			StatementSubstitutionParameterOption substitutionParameterResolver,
-			DeploymentClassLoaderOption deploymentClassLoaderOption,
+			DeploymentTypeResolverOption deploymentTypeResolverOption,
 			EPRuntimeSPI epRuntime)
 		{
 			// set variable local version
@@ -97,7 +97,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 					statementNameResolverRuntime,
 					userObjectResolverRuntime,
 					substitutionParameterResolver,
-					deploymentClassLoaderOption,
+					deploymentTypeResolverOption,
 					epRuntime);
 			}
 			catch (EPDeployException) {
@@ -116,14 +116,14 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 			StatementNameRuntimeOption statementNameResolverRuntime,
 			StatementUserObjectRuntimeOption userObjectResolverRuntime,
 			StatementSubstitutionParameterOption substitutionParameterResolver,
-			DeploymentClassLoaderOption deploymentClassLoaderOption,
+			DeploymentTypeResolverOption deploymentTypeResolverOption,
 			EPRuntimeSPI epRuntime)
 		{
 			var services = epRuntime.ServicesContext;
-			var deploymentClassLoader = DeployerHelperResolver.GetClassLoader(-1, deploymentClassLoaderOption, services);
+			var deploymentTypeResolver = DeployerHelperResolver.GetTypeResolver(-1, deploymentTypeResolverOption, services);
 			var moduleProvider = ModuleProviderUtil.Analyze(
 				compiled,
-				deploymentClassLoader,
+				deploymentTypeResolver,
 				services.ClassProvidedPathRegistry);
 			if (moduleProvider.TypeResolver is ClassProvidedImportTypeResolver classProvidedImportClassLoader) {
 				classProvidedImportClassLoader.Imported = moduleProvider.ModuleProvider.ModuleDependencies.PathClasses;
@@ -185,7 +185,8 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 					compiled,
 					recoveryInformation.StatementUserObjectsRuntime,
 					recoveryInformation.StatementNamesWhenProvidedByAPI,
-					stmtLightweights.SubstitutionParameters);
+					stmtLightweights.SubstitutionParameters,
+					deployed.DeploymentIdDependencies);
 			}
 
 			return deployed;

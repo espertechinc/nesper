@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -26,35 +26,35 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
     public class ExprTypeofNodeForgeStreamEvent : ExprTypeofNodeForge,
         ExprEvaluator
     {
-        private readonly ExprTypeofNode parent;
-        private readonly int streamNum;
+        private readonly ExprTypeofNode _parent;
+        private readonly int _streamNum;
 
         public ExprTypeofNodeForgeStreamEvent(
             ExprTypeofNode parent,
             int streamNum)
         {
-            this.parent = parent;
-            this.streamNum = streamNum;
+            _parent = parent;
+            _streamNum = streamNum;
         }
 
         public override ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
 
         public override ExprEvaluator ExprEvaluator => this;
 
-        public override ExprNodeRenderable ExprForgeRenderable => parent;
+        public override ExprNodeRenderable ExprForgeRenderable => _parent;
 
         public object Evaluate(
             EventBean[] eventsPerStream,
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            var @event = eventsPerStream[streamNum];
+            var @event = eventsPerStream[_streamNum];
             if (@event == null) {
                 return null;
             }
 
             if (@event is VariantEvent variantEvent) {
-                return (variantEvent).UnderlyingEventBean.EventType.Name;
+                return variantEvent.UnderlyingEventBean.EventType.Name;
             }
 
             return @event.EventType.Name;
@@ -71,9 +71,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 typeof(ExprTypeofNodeForgeStreamEvent),
                 codegenClassScope);
 
-            var refEPS = exprSymbol.GetAddEPS(methodNode);
+            var refEPS = exprSymbol.GetAddEps(methodNode);
             methodNode.Block
-                .DeclareVar<EventBean>("@event", ArrayAtIndex(refEPS, Constant(streamNum)))
+                .DeclareVar<EventBean>("@event", ArrayAtIndex(refEPS, Constant(_streamNum)))
                 .IfRefNullReturnNull("@event")
                 .IfCondition(InstanceOf(Ref("@event"), typeof(VariantEvent)))
                 .BlockReturn(

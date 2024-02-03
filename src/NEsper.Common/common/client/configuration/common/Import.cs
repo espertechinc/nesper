@@ -1,5 +1,5 @@
 ﻿///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -7,8 +7,8 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Text.Json.Serialization;
 
-using com.espertech.esper.common.client.util;
 using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.client.configuration.common
@@ -18,11 +18,7 @@ namespace com.espertech.esper.common.client.configuration.common
     {
         public abstract Type Resolve(
             string providedTypeName,
-#if DEPRECATED
-            ClassForNameProvider classForNameProvider
-#else
             TypeResolver typeResolver
-#endif
         );
     }
 }

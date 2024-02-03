@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -13,7 +13,6 @@ using System.IO;
 namespace com.espertech.esper.common.client.soda
 {
     /// <summary>Hash-segmented context. </summary>
-    [Serializable]
     public class ContextDescriptorHashSegmented : ContextDescriptor
     {
         /// <summary>Ctor. </summary>
@@ -53,9 +52,8 @@ namespace com.espertech.esper.common.client.soda
             EPStatementFormatter formatter)
         {
             writer.Write("coalesce ");
-            string delimiter = "";
-            foreach (ContextDescriptorHashSegmentedItem item in Items)
-            {
+            var delimiter = "";
+            foreach (var item in Items) {
                 writer.Write(delimiter);
                 item.ToEPL(writer, formatter);
                 delimiter = ", ";
@@ -63,8 +61,7 @@ namespace com.espertech.esper.common.client.soda
 
             writer.Write(" granularity ");
             writer.Write(Convert.ToString(Granularity));
-            if (IsPreallocate)
-            {
+            if (IsPreallocate) {
                 writer.Write(" preallocate");
             }
         }

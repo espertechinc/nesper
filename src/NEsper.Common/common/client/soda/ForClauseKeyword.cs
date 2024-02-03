@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -21,7 +21,7 @@ namespace com.espertech.esper.common.client.soda
         /// <summary>
         /// Discrete delivery - listener receives invocation per event.
         /// </summary>
-        DISCRETE_DELIVERY,
+        DISCRETE_DELIVERY
     }
 
     public static class ForClauseKeywordExtensions
@@ -33,8 +33,7 @@ namespace com.espertech.esper.common.client.soda
         /// <returns>keyword</returns>
         public static string GetName(this ForClauseKeyword keyword)
         {
-            switch (keyword)
-            {
+            switch (keyword) {
                 case ForClauseKeyword.GROUPED_DELIVERY:
                     return "grouped_delivery";
 

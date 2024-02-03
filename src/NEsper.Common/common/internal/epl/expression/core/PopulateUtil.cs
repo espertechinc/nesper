@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -24,12 +25,14 @@ using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 
+
 namespace com.espertech.esper.common.@internal.epl.expression.core
 {
     public class PopulateUtil
     {
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         private const string CLASS_PROPERTY_NAME = "class";
-        private static readonly ILog Log = LogManager.GetLogger(typeof(PopulateUtil));
 
         public static void PopulateSpecCheckParameters(
             PopulateFieldWValueDescriptor[] descriptors,
@@ -48,7 +51,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
             // apply values
             foreach (var desc in descriptors) {
-                object value = jsonRaw.Delete(desc.PropertyName.ToLowerInvariant());
+                var value = jsonRaw.Delete(desc.PropertyName.ToLowerInvariant());
                 var coerced = CoerceProperty(
                     desc.PropertyName,
                     desc.ContainerType,
@@ -78,9 +81,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             bool includeClassNameInEx)
         {
             // handle system-property exception
-            if (value is ExprNode) {
-                if (value is ExprIdentNode) {
-                    var identNode = (ExprIdentNode) value;
+            if (value is ExprNode exprNode) {
+                if (exprNode is ExprIdentNode identNode) {
                     Property prop;
                     try {
                         prop = PropertyParser.ParseAndWalkLaxToSimple(identNode.FullUnresolvedName);
@@ -95,11 +97,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                             "Unrecognized property '" + identNode.FullUnresolvedName + "'");
                     }
 
-                    var mappedProperty = (MappedProperty) prop;
+                    var mappedProperty = (MappedProperty)prop;
                     if (string.Equals(
-                        mappedProperty.PropertyNameAtomic,
-                        ExprEvalSystemProperty.SYSTEM_PROPETIES_NAME,
-                        StringComparison.InvariantCultureIgnoreCase)) {
+                            mappedProperty.PropertyNameAtomic,
+                            ExprEvalSystemProperty.SYSTEM_PROPETIES_NAME,
+                            StringComparison.InvariantCultureIgnoreCase)) {
                         if (type == typeof(ExprNode)) {
                             return new ExprEvalSystemProperty(mappedProperty.Key);
                         }
@@ -108,7 +110,6 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                     }
                 }
                 else {
-                    var exprNode = (ExprNode) value;
                     if (type == typeof(ExprNode)) {
                         return exprNode;
                     }
@@ -120,7 +121,36 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                             "' as the parameter is not a compile-time constant expression");
                     }
 
-                    value = exprNode.Forge.ExprEvaluator.Evaluate(null, true, null);
+                    // handle inner-objects which have a "class" property name
+                    var innerObject = false;
+                    if (exprNode is ExprConstantNode constantNode) {
+                        if (constantNode.ConstantValue is IDictionary<string, object> constants) {
+                            if (constants.ContainsKey(CLASS_PROPERTY_NAME)) {
+                                innerObject = true;
+                                ICollection<string> names = constants.Keys;
+                                IDictionary<string, object> values = new LinkedHashMap<string, object>();
+                                var count = 0;
+                                foreach (var key in names) {
+                                    if (key.Equals(CLASS_PROPERTY_NAME)) {
+                                        // class property becomes string
+                                        values.Put(key, constants.Get(CLASS_PROPERTY_NAME));
+                                    }
+                                    else {
+                                        // non-class properties become expressions
+                                        values.Put(key, constantNode.ChildNodes[count]);
+                                    }
+
+                                    count++;
+                                }
+
+                                value = values;
+                            }
+                        }
+                    }
+
+                    if (!innerObject) {
+                        value = exprNode.Forge.ExprEvaluator.Evaluate(null, true, null);
+                    }
                 }
             }
 
@@ -133,26 +163,25 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 return value;
             }
 
-            
             var typeUnboxed = type.GetUnboxedType();
-            if (valueType.GetUnboxedType().IsAssignmentCompatible(typeUnboxed)) {
+            if (valueType.IsAssignmentCompatible(type)) {
                 if (forceNumeric &&
-                    value.GetType().GetBoxedType() != type.GetBoxedType() &&
-                    type.IsNumeric() &&
-                    value.GetType().IsNumeric()) {
+                    valueType.GetBoxedType() != type.GetBoxedType() &&
+                    type.IsTypeNumeric() &&
+                    valueType.IsTypeNumeric()) {
                     value = TypeHelper.CoerceBoxed(value, type.GetBoxedType());
                 }
 
                 return value;
             }
 
-            if (TypeHelper.IsSubclassOrImplementsInterface(value.GetType(), type)) {
+            if (TypeHelper.IsSubclassOrImplementsInterface(valueType, type)) {
                 return value;
             }
 
             if (type.IsArray) {
-                if (!value.GetType().IsGenericCollection()) {
-                    var detail = "expects an array but receives a value of type " + value.GetType().Name;
+                if (!valueType.IsGenericCollection()) {
+                    var detail = "expects an array but receives a value of type " + valueType.Name;
                     throw new ExprValidationException(
                         GetExceptionText(propertyName, containingType, includeClassNameInEx, detail));
                 }
@@ -175,7 +204,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 return coercedArray;
             }
 
-            if (!(value is IDictionary<string, object>)) {
+            if (!(value is IDictionary<string, object> props)) {
                 var detail = "expects an " +
                              type.CleanName() +
                              " but receives a value of type " +
@@ -184,7 +213,6 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                     GetExceptionText(propertyName, containingType, includeClassNameInEx, detail));
             }
 
-            var props = (IDictionary<string, object>) value;
             return InstantiatePopulateObject(props, type, exprNodeOrigin, exprValidationContext);
         }
 
@@ -205,6 +233,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             object top;
             try {
                 top = TypeHelper.Instantiate(applicableClass);
+            }
+            catch (MemberAccessException e) {
+                throw new ExprValidationException(
+                    "Illegal access to construct class " + applicableClass.Name + ": " + e.Message,
+                    e);
             }
             catch (EPException) {
                 throw;
@@ -237,15 +270,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             }
 
             Type clazz = null;
-            var className = (string) properties.Get(CLASS_PROPERTY_NAME);
+            var className = (string)properties.Get(CLASS_PROPERTY_NAME);
             try {
-                clazz = TypeHelper.GetClassForName(className, importService.TypeResolver);
+                clazz = TypeHelper.GetTypeForName(className, importService.TypeResolver);
             }
             catch (TypeLoadException) {
                 if (!className.Contains(".")) {
                     className = topClass.Namespace + "." + className;
                     try {
-                        clazz = TypeHelper.GetClassForName(className, importService.TypeResolver);
+                        clazz = TypeHelper.GetTypeForName(className, importService.TypeResolver);
                     }
                     catch (TypeLoadException) {
                     }
@@ -302,7 +335,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                             continue;
                         }
 
-                        throw new ExprValidationException("Invalid annotation for catch-call");
+                        throw new ExprValidationException(
+                            "Invalid annotation for catch-call method '" +
+                            method.Name +
+                            "', method must take (String, ExprNode) as parameters");
                     }
                 }
             }
@@ -350,6 +386,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 // use the writeable property descriptor (appropriate setter method) from writing the property
                 var descriptor = FindDescriptor(applicableClass, propertyName, writables);
                 if (descriptor != null) {
+                    if (descriptor.PropertyType == null) {
+                        throw new ArgumentException("Null-type value cannot be assigned to");
+                    }
+
                     var coerceProperty = CoerceProperty(
                         propertyName,
                         applicableClass,
@@ -413,7 +453,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 // find the field annotated with {@link @GraphOpProperty}
                 foreach (var annotatedField in annotatedFields) {
                     var anno = (DataFlowOpParameterAttribute) TypeHelper.GetAnnotations<DataFlowOpParameterAttribute>(
-                        annotatedField.UnwrapAttributes())[0];
+                            annotatedField.UnwrapAttributes())[0];
                     if (anno.Name.Equals(propertyName) || annotatedField.Name.Equals(propertyName)) {
                         var coerceProperty = CoerceProperty(
                             propertyName,
@@ -606,6 +646,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 // use the writeable property descriptor (appropriate setter method) from writing the property
                 var descriptor = FindDescriptor(applicableClass, propertyName, writables);
                 if (descriptor != null) {
+                    if (descriptor.PropertyType == null) {
+                        throw new ArgumentException("Null-type value cannot be assigned to");
+                    }
+
                     var coerceProperty = CoerceProperty(
                         propertyName,
                         applicableClass,
@@ -725,7 +769,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             ISet<WriteablePropertyDescriptor> writables)
         {
             foreach (var desc in writables) {
-                if (desc.PropertyName.Equals(propertyName, StringComparison.InvariantCultureIgnoreCase)) {
+                if (desc.PropertyName.ToLowerInvariant().Equals(propertyName.ToLowerInvariant())) {
                     return desc;
                 }
             }

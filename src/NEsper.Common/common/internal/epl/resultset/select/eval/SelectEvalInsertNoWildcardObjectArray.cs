@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -19,12 +19,13 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
     public class SelectEvalInsertNoWildcardObjectArray : SelectEvalBase,
         SelectExprProcessorForge
     {
+        private readonly int arraySize;
+
         public SelectEvalInsertNoWildcardObjectArray(
             SelectExprForgeContext selectExprForgeContext,
-            EventType resultEventType)
-            : base(selectExprForgeContext, resultEventType)
-
+            EventType resultEventType) : base(selectExprForgeContext, resultEventType)
         {
+            arraySize = resultEventType.PropertyDescriptors.Count;
         }
 
         public CodegenMethod ProcessCodegen(
@@ -35,18 +36,13 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenMethod methodNode = codegenMethodScope.MakeChild(
-                typeof(EventBean),
-                this.GetType(),
-                codegenClassScope);
-            CodegenBlock block = methodNode.Block
-                .DeclareVar<object[]>(
-                    "result",
-                    NewArrayByLength(typeof(object), Constant(this.context.ExprForges.Length)));
-            for (int i = 0; i < this.context.ExprForges.Length; i++) {
-                CodegenExpression expression = CodegenLegoMayVoid.ExpressionMayVoid(
+            var methodNode = codegenMethodScope.MakeChild(typeof(EventBean), GetType(), codegenClassScope);
+            var block = methodNode.Block
+                .DeclareVar<object[]>("result", NewArrayByLength(typeof(object), Constant(arraySize)));
+            for (var i = 0; i < context.ExprForges.Length; i++) {
+                var expression = CodegenLegoMayVoid.ExpressionMayVoid(
                     typeof(object),
-                    this.context.ExprForges[i],
+                    context.ExprForges[i],
                     methodNode,
                     exprSymbol,
                     codegenClassScope);

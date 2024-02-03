@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -16,7 +16,6 @@ namespace com.espertech.esper.common.client.soda
     /// <para/>
     /// Both expressions and scripts can be created using this clause.
     /// </summary>
-    [Serializable]
     public class CreateExpressionClause
     {
         /// <summary>Ctor. </summary>
@@ -51,12 +50,10 @@ namespace com.espertech.esper.common.client.soda
         public void ToEPL(TextWriter writer)
         {
             writer.Write("create ");
-            if (ExpressionDeclaration != null)
-            {
+            if (ExpressionDeclaration != null) {
                 ExpressionDeclaration.ToEPL(writer);
             }
-            else
-            {
+            else {
                 ScriptExpression.ToEPL(writer);
             }
         }

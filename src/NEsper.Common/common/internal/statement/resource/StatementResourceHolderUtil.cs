@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -32,25 +32,21 @@ namespace com.espertech.esper.common.@internal.statement.resource
             holder.SubselectStrategies = startResult.SubselectStrategies;
             holder.TableAccessStrategies = startResult.TableAccessStrategies;
 
-            if (startResult is StatementAgentInstanceFactorySelectResult) {
-                var selectResult = (StatementAgentInstanceFactorySelectResult) startResult;
+            if (startResult is StatementAgentInstanceFactorySelectResult selectResult) {
                 holder.TopViewables = selectResult.TopViews;
                 holder.EventStreamViewables = selectResult.EventStreamViewables;
                 holder.PatternRoots = selectResult.PatternRoots;
                 holder.AggregationService = selectResult.OptionalAggegationService;
             }
-            else if (startResult is StatementAgentInstanceFactoryCreateContextResult) {
-                var createResult = (StatementAgentInstanceFactoryCreateContextResult) startResult;
-                holder.ContextManagerRealization = createResult.ContextManagerRealization;
+            else if (startResult is StatementAgentInstanceFactoryCreateContextResult result) {
+                holder.ContextManagerRealization = result.ContextManagerRealization;
             }
-            else if (startResult is StatementAgentInstanceFactoryCreateNwResult) {
-                var createResult = (StatementAgentInstanceFactoryCreateNwResult) startResult;
-                holder.TopViewables = new[] {createResult.TopView};
-                holder.NamedWindowInstance = createResult.NamedWindowInstance;
+            else if (startResult is StatementAgentInstanceFactoryCreateNwResult nwResult) {
+                holder.TopViewables = new[] { nwResult.TopView };
+                holder.NamedWindowInstance = nwResult.NamedWindowInstance;
             }
-            else if (startResult is StatementAgentInstanceFactoryCreateTableResult) {
-                var createResult = (StatementAgentInstanceFactoryCreateTableResult) startResult;
-                holder.TopViewables = new[] {createResult.FinalView};
+            else if (startResult is StatementAgentInstanceFactoryCreateTableResult createResult) {
+                holder.TopViewables = new[] { createResult.FinalView };
                 holder.TableInstance = createResult.TableInstance;
             }
 

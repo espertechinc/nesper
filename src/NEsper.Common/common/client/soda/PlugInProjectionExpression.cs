@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Represents a plug-in aggregation function.
     /// </summary>
-    [Serializable]
     public class PlugInProjectionExpression : ExpressionBase
     {
         private string functionName;
@@ -53,16 +52,12 @@ namespace com.espertech.esper.common.client.soda
         {
             this.functionName = functionName;
             this.isDistinct = isDistinct;
-            for (int i = 0; i < moreExpressions.Length; i++)
-            {
+            for (var i = 0; i < moreExpressions.Length; i++) {
                 Children.Add(moreExpressions[i]);
             }
         }
 
-        public override ExpressionPrecedenceEnum Precedence
-        {
-            get => ExpressionPrecedenceEnum.UNARY;
-        }
+        public override ExpressionPrecedenceEnum Precedence => ExpressionPrecedenceEnum.UNARY;
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {

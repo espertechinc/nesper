@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -43,7 +43,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.table
             object compositeGroupByKey,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            var groupKeyPerLevel = (object[]) compositeGroupByKey;
+            var groupKeyPerLevel = (object[])compositeGroupByKey;
             for (var i = 0; i < groupKeyPerLevel.Length; i++) {
                 var level = groupByRollupDesc.Levels[i];
                 var groupByKey = level.ComputeMultiKey(groupKeyPerLevel[i], numKeys);
@@ -57,7 +57,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.table
             object compositeGroupByKey,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            var groupKeyPerLevel = (object[]) compositeGroupByKey;
+            var groupKeyPerLevel = (object[])compositeGroupByKey;
             for (var i = 0; i < groupKeyPerLevel.Length; i++) {
                 var level = groupByRollupDesc.Levels[i];
                 var groupByKey = level.ComputeMultiKey(groupKeyPerLevel[i], numKeys);
@@ -76,7 +76,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.table
             var bean = tableInstance.GetRowForGroupKey(tableKey);
 
             if (bean != null) {
-                currentAggregationRow = (AggregationRow) bean.Properties[0];
+                currentAggregationRow = (AggregationRow)bean.Properties[0];
             }
             else {
                 currentAggregationRow = null;

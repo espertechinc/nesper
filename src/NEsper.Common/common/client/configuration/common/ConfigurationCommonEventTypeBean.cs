@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -17,7 +17,6 @@ namespace com.espertech.esper.common.client.configuration.common
     /// <summary>
     ///     Configuration information for legacy event types.
     /// </summary>
-    [Serializable]
     public class ConfigurationCommonEventTypeBean
     {
         /// <summary>
@@ -114,7 +113,6 @@ namespace com.espertech.esper.common.client.configuration.common
         /// <summary>
         ///     Encapsulates information about an accessor field backing a named event property.
         /// </summary>
-        [Serializable]
         public class LegacyFieldPropDesc
         {
             /// <summary>
@@ -146,7 +144,6 @@ namespace com.espertech.esper.common.client.configuration.common
         /// <summary>
         ///     Encapsulates information about an accessor method backing a named event property.
         /// </summary>
-        [Serializable]
         public class LegacyMethodPropDesc
         {
             /// <summary>

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// For use with on-merge clauses, deletes from a named window if matching rows are found.
     /// </summary>
-    [Serializable]
     public class OnMergeMatchedDeleteAction : OnMergeMatchedAction
     {
         /// <summary>Ctor. </summary>
@@ -37,9 +36,8 @@ namespace com.espertech.esper.common.client.soda
 
         public void ToEPL(TextWriter writer)
         {
-            writer.Write("then delete");
-            if (WhereClause != null)
-            {
+            writer.Write("delete");
+            if (WhereClause != null) {
                 writer.Write(" where ");
                 WhereClause.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
             }

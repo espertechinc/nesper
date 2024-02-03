@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -52,8 +52,14 @@ namespace com.espertech.esper.common.@internal.context.activator
             if (_filterHandle != null) {
                 var filterValues = ComputeFilterValues(services.AgentInstanceContext);
                 if (filterValues != null) {
-                    services.AgentInstanceContext.FilterService.Remove(_filterHandle, _filterSpecActivatable.FilterForEventType, filterValues);
-                    services.TargetFilterService.Add(_filterSpecActivatable.FilterForEventType, filterValues, _filterHandle);
+                    services.AgentInstanceContext.FilterService.Remove(
+                        _filterHandle,
+                        _filterSpecActivatable.FilterForEventType,
+                        filterValues);
+                    services.TargetFilterService.Add(
+                        _filterSpecActivatable.FilterForEventType,
+                        filterValues,
+                        _filterHandle);
                 }
             }
         }
@@ -62,10 +68,16 @@ namespace com.espertech.esper.common.@internal.context.activator
         {
             FilterValueSetParam[][] addendum = null;
             if (agentInstanceContext.AgentInstanceFilterProxy != null) {
-                addendum = agentInstanceContext.AgentInstanceFilterProxy.GetAddendumFilters(_filterSpecActivatable, agentInstanceContext);
+                addendum = agentInstanceContext.AgentInstanceFilterProxy.GetAddendumFilters(
+                    _filterSpecActivatable,
+                    agentInstanceContext);
             }
 
-            return _filterSpecActivatable.GetValueSet(null, addendum, agentInstanceContext, agentInstanceContext.StatementContextFilterEvalEnv);
+            return _filterSpecActivatable.GetValueSet(
+                null,
+                addendum,
+                agentInstanceContext,
+                agentInstanceContext.StatementContextFilterEvalEnv);
         }
     }
 } // end of namespace

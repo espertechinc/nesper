@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.epl.join.indexlookupplan
             Type[] optRangeCoercionTypes,
             QueryPlanIndexForge indexSpecs,
             MultiKeyClassRef optionalEPLTableLookupMultiKey)
-            : base(lookupStream, indexedStream, indexedStreamIsVDW, typesPerStream, new[] {indexNum})
+            : base(lookupStream, indexedStream, indexedStreamIsVDW, typesPerStream, new[] { indexNum })
         {
             _hashKeys = hashKeys;
             _hashCoercionTypes = hashCoercionTypes;
@@ -80,7 +80,8 @@ namespace com.espertech.esper.common.@internal.epl.join.indexlookupplan
                         indexForge.HashMultiKeyClasses,
                         method,
                         classScope);
-                } else {
+                }
+                else {
                     hashGetter = MultiKeyCodegen.CodegenExprEvaluatorMayMultikey(
                         forges,
                         _hashCoercionTypes,
@@ -95,7 +96,7 @@ namespace com.espertech.esper.common.@internal.epl.join.indexlookupplan
                 "rangeGetters",
                 NewArrayByLength(typeof(QueryGraphValueEntryRange), Constant(_rangeKeyPairs.Count)));
             for (var i = 0; i < _rangeKeyPairs.Count; i++) {
-                var optCoercionType = _optRangeCoercionTypes == null ? null : _optRangeCoercionTypes[i];
+                var optCoercionType = _optRangeCoercionTypes?[i];
                 rangeGetters.Block.AssignArrayElement(
                     Ref("rangeGetters"),
                     Constant(i),

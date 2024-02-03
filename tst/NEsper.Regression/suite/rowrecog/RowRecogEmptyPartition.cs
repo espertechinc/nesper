@@ -1,12 +1,15 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using com.espertech.esper.common.client.scopetest;
+using System.Collections.Generic;
+
+using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.rowrecog;
 
@@ -14,13 +17,18 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
 {
     public class RowRecogEmptyPartition : RegressionExecution
     {
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED);
+        }
+
         public void Run(RegressionEnvironment env)
         {
-            var fields = new [] { "value" };
-            var text = "@Name('s0') select * from SupportRecogBean#length(10) " +
+            var fields = "Value".SplitCsv();
+            var text = "@name('s0') select * from SupportRecogBean#length(10) " +
                        "match_recognize (" +
                        "  partition by Value" +
-                       "  measures E1.Value as value" +
+                       "  measures E1.Value as Value" +
                        "  pattern (E1 E2 | E2 E1 ) " +
                        "  define " +
                        "    E1 as E1.TheString = 'A', " +
@@ -34,10 +42,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             env.Milestone(0);
 
             env.SendEventBean(new SupportRecogBean("B", 1));
-            EPAssertionUtil.AssertProps(
-                env.Listener("s0").AssertOneGetNewAndReset(),
-                fields,
-                new object[] {1});
+            env.AssertPropsNew("s0", fields, new object[] { 1 });
 
             env.Milestone(1);
 
@@ -46,28 +51,19 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             env.Milestone(2);
 
             env.SendEventBean(new SupportRecogBean("A", 2));
-            EPAssertionUtil.AssertProps(
-                env.Listener("s0").AssertOneGetNewAndReset(),
-                fields,
-                new object[] {2});
+            env.AssertPropsNew("s0", fields, new object[] { 2 });
 
             env.Milestone(3);
 
             env.SendEventBean(new SupportRecogBean("B", 3));
             env.SendEventBean(new SupportRecogBean("A", 4));
             env.SendEventBean(new SupportRecogBean("A", 3));
-            EPAssertionUtil.AssertProps(
-                env.Listener("s0").AssertOneGetNewAndReset(),
-                fields,
-                new object[] {3});
+            env.AssertPropsNew("s0", fields, new object[] { 3 });
 
             env.Milestone(4);
 
             env.SendEventBean(new SupportRecogBean("B", 4));
-            EPAssertionUtil.AssertProps(
-                env.Listener("s0").AssertOneGetNewAndReset(),
-                fields,
-                new object[] {4});
+            env.AssertPropsNew("s0", fields, new object[] { 4 });
 
             env.Milestone(5);
 
@@ -75,17 +71,16 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             env.SendEventBean(new SupportRecogBean("B", 7));
             env.SendEventBean(new SupportRecogBean("B", 8));
             env.SendEventBean(new SupportRecogBean("A", 7));
-            EPAssertionUtil.AssertProps(
-                env.Listener("s0").AssertOneGetNewAndReset(),
-                fields,
-                new object[] {7});
+            env.AssertPropsNew("s0", fields, new object[] { 7 });
 
-            // Comment-in for testing partition removal.
+            /// <summary>
+            /// Comment-in for testing partition removal.
+            /// </summary>
             for (var i = 0; i < 10000; i++) {
                 env.SendEventBean(new SupportRecogBean("A", i));
-                //System.out.println(i);
-                //env.SendEventBean(new SupportRecogBean("B", i));
-                //EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, new Object[] {i});
+                //Console.WriteLine(i);
+                //env.sendEventBean(new SupportRecogBean("B", i));
+                //env.assertPropsListenerNew("s0", fields, new Object[] {i});
             }
 
             env.UndeployAll();

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -10,29 +10,41 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.epl.resultset.select.core;
+using com.espertech.esper.common.@internal.fabric;
+
 
 namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onset
 {
     public class OnTriggerSetPlan
     {
+        private readonly StmtClassForgeableAIFactoryProviderBase forgeable;
+        private readonly IList<StmtClassForgeable> forgeables;
+        private readonly SelectSubscriberDescriptor selectSubscriberDescriptor;
+        private readonly IList<StmtClassForgeableFactory> additionalForgeables;
+        private readonly FabricCharge fabricCharge;
+
         public OnTriggerSetPlan(
             StmtClassForgeableAIFactoryProviderBase forgeable,
             IList<StmtClassForgeable> forgeables,
             SelectSubscriberDescriptor selectSubscriberDescriptor,
-            IList<StmtClassForgeableFactory> additionalForgeables)
+            IList<StmtClassForgeableFactory> additionalForgeables,
+            FabricCharge fabricCharge)
         {
-            Forgeable = forgeable;
-            Forgeables = forgeables;
-            SelectSubscriberDescriptor = selectSubscriberDescriptor;
-            AdditionalForgeables = additionalForgeables;
+            this.forgeable = forgeable;
+            this.forgeables = forgeables;
+            this.selectSubscriberDescriptor = selectSubscriberDescriptor;
+            this.additionalForgeables = additionalForgeables;
+            this.fabricCharge = fabricCharge;
         }
 
-        public StmtClassForgeableAIFactoryProviderBase Forgeable { get; }
+        public StmtClassForgeableAIFactoryProviderBase Forgeable => forgeable;
 
-        public IList<StmtClassForgeable> Forgeables { get; }
+        public IList<StmtClassForgeable> Forgeables => forgeables;
 
-        public SelectSubscriberDescriptor SelectSubscriberDescriptor { get; }
+        public SelectSubscriberDescriptor SelectSubscriberDescriptor => selectSubscriberDescriptor;
 
-        public IList<StmtClassForgeableFactory> AdditionalForgeables { get; }
+        public IList<StmtClassForgeableFactory> AdditionalForgeables => additionalForgeables;
+
+        public FabricCharge FabricCharge => fabricCharge;
     }
 } // end of namespace

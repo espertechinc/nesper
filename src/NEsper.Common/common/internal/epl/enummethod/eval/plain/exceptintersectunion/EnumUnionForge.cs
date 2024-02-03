@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -29,13 +29,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.plain.excepti
             this.scalar = scalar;
         }
 
-        public int StreamNumSize {
-            get => _numStreams;
-        }
+        public int StreamNumSize => _numStreams;
 
-        public virtual EnumEval EnumEvaluator {
-            get => new EnumUnionForgeEval(this, evaluatorForge.ExprEvaluatorEnumeration, scalar);
-        }
+        public virtual EnumEval EnumEvaluator => new EnumUnionForgeEval(
+            this,
+            evaluatorForge.ExprEvaluatorEnumeration);
 
         public virtual CodegenExpression Codegen(
             EnumForgeCodegenParams premade,

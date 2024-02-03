@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -65,13 +65,13 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             int numExpected)
         {
             object[] keys;
-            
+
             if (subkey is MultiKey mk) {
                 if (mk.NumKeys == numExpected) {
                     return mk.ToObjectArray();
                 }
 
-                keys = new object[] {numExpected};
+                keys = new object[] { numExpected };
                 for (var i = 0; i < RollupKeys.Length; i++) {
                     keys[RollupKeys[i]] = mk.GetKey(i);
                 }
@@ -92,6 +92,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
     public class ProxyAggregationGroupByRollupLevel : AggregationGroupByRollupLevel
     {
         private Func<object, object> ProcComputeSubkey { get; set; }
+
         public ProxyAggregationGroupByRollupLevel(
             int levelNumber,
             int levelOffset,

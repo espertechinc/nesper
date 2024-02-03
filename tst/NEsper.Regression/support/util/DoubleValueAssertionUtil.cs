@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -18,7 +18,7 @@ namespace com.espertech.esper.regressionlib.support.util
     /// </summary>
     public class DoubleValueAssertionUtil
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public static bool Equals(
             double valueActual,
@@ -37,7 +37,7 @@ namespace com.espertech.esper.regressionlib.support.util
             }
 
             if (actualIsNaN != expectedIsNaN) {
-                log.Debug(
+                Log.Debug(
                     ".equals Compare failed, " +
                     "  valueActual=" +
                     valueActual +
@@ -55,7 +55,7 @@ namespace com.espertech.esper.regressionlib.support.util
             var d2 = Math.Round(val2, MidpointRounding.ToEven);
 
             if (d1 != d2) {
-                log.Debug(
+                Log.Debug(
                     ".equals Compare failed, " +
                     "  valueActual=" +
                     valueActual +

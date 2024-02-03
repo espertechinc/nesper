@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -62,7 +62,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
 
             var events = new EventBean[_eventEnumerationForges.Length];
             for (var i = 0; i < _eventEnumerationForges.Length; i++) {
-                events[i] = _eventEnumerationForges[i].ExprEvaluatorEnumeration.EvaluateGetEventBean(eps, isNewData, context);
+                events[i] = _eventEnumerationForges[i]
+                    .ExprEvaluatorEnumeration.EvaluateGetEventBean(eps, isNewData, context);
             }
 
             return events;
@@ -73,16 +74,26 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            var method = codegenMethodScope.MakeChild(typeof(EventBean[]), typeof(ExprDeclaredForgeRewriteWValue), codegenClassScope);
+            var method = codegenMethodScope.MakeChild(
+                typeof(EventBean[]),
+                typeof(ExprDeclaredForgeRewriteWValue),
+                codegenClassScope);
             var valueType = codegenClassScope.AddDefaultFieldUnshared(
                 true,
                 typeof(ObjectArrayEventType),
-                Cast(typeof(ObjectArrayEventType), EventTypeUtility.ResolveTypeCodegen(_valueEventType, EPStatementInitServicesConstants.REF)));
+                Cast(
+                    typeof(ObjectArrayEventType),
+                    EventTypeUtility.ResolveTypeCodegen(_valueEventType, EPStatementInitServicesConstants.REF)));
 
             method.Block
                 .DeclareVar<object[]>("props", NewArrayByLength(typeof(object), Constant(_valueExpressions.Count)))
-                .DeclareVar<EventBean[]>("events", NewArrayByLength(typeof(EventBean), Constant(_eventEnumerationForges.Length)))
-                .AssignArrayElement("events", Constant(0), NewInstance(typeof(ObjectArrayEventBean), Ref("props"), valueType));
+                .DeclareVar<EventBean[]>(
+                    "events",
+                    NewArrayByLength(typeof(EventBean), Constant(_eventEnumerationForges.Length)))
+                .AssignArrayElement(
+                    "events",
+                    Constant(0),
+                    NewInstance(typeof(ObjectArrayEventBean), Ref("props"), valueType));
             for (var i = 0; i < _valueExpressions.Count; i++) {
                 method.Block.AssignArrayElement(
                     "props",

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -29,262 +29,267 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
 namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
 {
-	/// <summary>
-	/// Represents the Count-min sketch aggregate function.
-	/// </summary>
-	public class ExprAggMultiFunctionCountMinSketchNode : ExprAggregateNodeBase,
-		ExprAggMultiFunctionNode,
-		ExprEnumerationEval
-	{
-		private static readonly CountMinSketchAgentStringUTF16Forge DEFAULT_AGENT = new CountMinSketchAgentStringUTF16Forge();
-		
-		private const double DEFAULT_EPS_OF_TOTAL_COUNT = 0.0001;
-		private const double DEFAULT_CONFIDENCE = 0.99;
-		private const int DEFAULT_SEED = 1234567;
+    /// <summary>
+    /// Represents the Count-min sketch aggregate function.
+    /// </summary>
+    public class ExprAggMultiFunctionCountMinSketchNode : ExprAggregateNodeBase,
+        ExprAggMultiFunctionNode,
+        ExprEnumerationEval
+    {
+        private const double DEFAULT_EPS_OF_TOTAL_COUNT = 0.0001;
+        private const double DEFAULT_CONFIDENCE = 0.99;
+        private const int DEFAULT_SEED = 1234567;
 
-		public const string MSG_NAME = "Count-min-sketch";
-		private const string NAME_EPS_OF_TOTAL_COUNT = "epsOfTotalCount";
-		private const string NAME_CONFIDENCE = "confidence";
-		private const string NAME_SEED = "seed";
-		private const string NAME_TOPK = "topk";
-		private const string NAME_AGENT = "agent";
+        private static readonly CountMinSketchAgentStringUTF16Forge DEFAULT_AGENT =
+            new CountMinSketchAgentStringUTF16Forge();
 
-		private readonly CountMinSketchAggType aggType;
-		private AggregationForgeFactory forgeFactory;
+        public const string MSG_NAME = "Count-min-sketch";
+        private const string NAME_EPS_OF_TOTAL_COUNT = "epsOfTotalCount";
+        private const string NAME_CONFIDENCE = "confidence";
+        private const string NAME_SEED = "seed";
+        private const string NAME_TOPK = "topk";
+        private const string NAME_AGENT = "agent";
+        private readonly CountMinSketchAggType aggType;
+        private AggregationForgeFactory forgeFactory;
 
-		public ExprAggMultiFunctionCountMinSketchNode(
-			bool distinct,
-			CountMinSketchAggType aggType)
-			: base(distinct)
-		{
-			this.aggType = aggType;
-		}
+        public ExprAggMultiFunctionCountMinSketchNode(
+            bool distinct,
+            CountMinSketchAggType aggType) : base(distinct)
+        {
+            this.aggType = aggType;
+        }
 
-		public override AggregationForgeFactory ValidateAggregationChild(ExprValidationContext validationContext)
-		{
-			if (IsDistinct) {
-				throw new ExprValidationException(MessagePrefix + "is not supported with distinct");
-			}
+        public override AggregationForgeFactory ValidateAggregationChild(ExprValidationContext validationContext)
+        {
+            if (IsDistinct) {
+                throw new ExprValidationException(MessagePrefix + "is not supported with distinct");
+            }
 
-			// for declaration, validate the specification and return the state factory
-			if (aggType == CountMinSketchAggType.STATE) {
-				if (validationContext.StatementRawInfo.StatementType != StatementType.CREATE_TABLE) {
-					throw new ExprValidationException(MessagePrefix + "can only be used in create-table statements");
-				}
+            // for declaration, validate the specification and return the state factory
+            if (aggType == CountMinSketchAggType.STATE) {
+                if (validationContext.StatementRawInfo.StatementType != StatementType.CREATE_TABLE) {
+                    throw new ExprValidationException(MessagePrefix + "can only be used in create-table statements");
+                }
 
-				CountMinSketchSpecForge specification = ValidateSpecification(validationContext);
-				AggregationStateCountMinSketchForge stateFactory = new AggregationStateCountMinSketchForge(this, specification);
-				forgeFactory = new AggregationForgeFactoryAccessCountMinSketchState(this, stateFactory);
-				return forgeFactory;
-			}
+                var specification = ValidateSpecification(validationContext);
+                var stateFactory = new AggregationStateCountMinSketchForge(this, specification);
+                forgeFactory = new AggregationForgeFactoryAccessCountMinSketchState(this, stateFactory);
+                return forgeFactory;
+            }
 
-			if (aggType != CountMinSketchAggType.ADD) {
-				// other methods are only used with table-access expressions
-				throw new ExprValidationException(MessagePrefix + "requires the use of a table-access expression");
-			}
+            if (aggType != CountMinSketchAggType.ADD) {
+                // other methods are only used with table-access expressions
+                throw new ExprValidationException(MessagePrefix + "requires the use of a table-access expression");
+            }
 
-			if (validationContext.StatementRawInfo.IntoTableName == null) {
-				throw new ExprValidationException(MessagePrefix + "can only be used with into-table");
-			}
+            if (validationContext.StatementRawInfo.IntoTableName == null) {
+                throw new ExprValidationException(MessagePrefix + "can only be used with into-table");
+            }
 
-			if (positionalParams.Length == 0 || positionalParams.Length > 1) {
-				throw new ExprValidationException(MessagePrefix + "requires a single parameter expression");
-			}
+            if (positionalParams.Length == 0 || positionalParams.Length > 1) {
+                throw new ExprValidationException(MessagePrefix + "requires a single parameter expression");
+            }
 
-			ExprNodeUtilityValidate.GetValidatedSubtree(ExprNodeOrigin.AGGPARAM, this.ChildNodes, validationContext);
+            ExprNodeUtilityValidate.GetValidatedSubtree(ExprNodeOrigin.AGGPARAM, ChildNodes, validationContext);
+            // obtain evaluator
+            ExprForge addOrFrequencyEvaluator = null;
+            Type addOrFrequencyEvaluatorReturnType = null;
+            if (aggType == CountMinSketchAggType.ADD) {
+                addOrFrequencyEvaluator = ChildNodes[0].Forge;
+                addOrFrequencyEvaluatorReturnType = addOrFrequencyEvaluator.EvaluationType;
+                if (addOrFrequencyEvaluatorReturnType == null) {
+                    throw new ExprValidationException("Invalid null-type parameter");
+                }
+            }
 
-			// obtain evaluator
-			ExprForge addOrFrequencyEvaluator = null;
-			Type addOrFrequencyEvaluatorReturnType = null;
-			if (aggType == CountMinSketchAggType.ADD) {
-				addOrFrequencyEvaluator = ChildNodes[0].Forge;
-				addOrFrequencyEvaluatorReturnType = addOrFrequencyEvaluator.EvaluationType;
-			}
+            forgeFactory = new AggregationForgeFactoryAccessCountMinSketchAdd(
+                this,
+                addOrFrequencyEvaluator,
+                addOrFrequencyEvaluatorReturnType);
+            return forgeFactory;
+        }
 
-			forgeFactory = new AggregationForgeFactoryAccessCountMinSketchAdd(this, addOrFrequencyEvaluator, addOrFrequencyEvaluatorReturnType);
-			return forgeFactory;
-		}
+        public ExprEnumerationEval ExprEvaluatorEnumeration => this;
+        public override string AggregationFunctionName => aggType.GetFuncName();
 
-		public ExprEnumerationEval ExprEvaluatorEnumeration => this;
+        public override bool EqualsNodeAggregateMethodOnly(ExprAggregateNode node)
+        {
+            return false;
+        }
 
-		public override string AggregationFunctionName => aggType.GetFuncName();
+        public CountMinSketchAggType AggType => aggType;
 
-		public override bool EqualsNodeAggregateMethodOnly(ExprAggregateNode node)
-		{
-			return false;
-		}
+        public EventType GetEventTypeCollection(
+            StatementRawInfo statementRawInfo,
+            StatementCompileTimeServices compileTimeServices)
+        {
+            return null;
+        }
 
-		public CountMinSketchAggType AggType => aggType;
+        public ICollection<EventBean> EvaluateGetROCollectionEvents(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
+        {
+            return null;
+        }
 
-		public EventType GetEventTypeCollection(
-			StatementRawInfo statementRawInfo,
-			StatementCompileTimeServices compileTimeServices)
-		{
-			return null;
-		}
+        public Type ComponentTypeCollection => null;
 
-		public ICollection<EventBean> EvaluateGetROCollectionEvents(
-			EventBean[] eventsPerStream,
-			bool isNewData,
-			ExprEvaluatorContext context)
-		{
-			return null;
-		}
+        public ICollection<object> EvaluateGetROCollectionScalar(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
+        {
+            return null;
+        }
 
-		public Type ComponentTypeCollection => null;
+        public CodegenExpression EvaluateGetROCollectionScalarCodegen(
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
+        {
+            return null;
+        }
 
-		public ICollection<object> EvaluateGetROCollectionScalar(
-			EventBean[] eventsPerStream,
-			bool isNewData,
-			ExprEvaluatorContext context)
-		{
-			return null;
-		}
+        public CodegenExpression EvaluateGetROCollectionEventsCodegen(
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
+        {
+            return ConstantNull();
+        }
 
-		public CodegenExpression EvaluateGetROCollectionScalarCodegen(
-			CodegenMethodScope codegenMethodScope,
-			ExprForgeCodegenSymbol exprSymbol,
-			CodegenClassScope codegenClassScope)
-		{
-			return null;
-		}
+        public EventType GetEventTypeSingle(
+            StatementRawInfo statementRawInfo,
+            StatementCompileTimeServices compileTimeServices)
+        {
+            return null;
+        }
 
-		public CodegenExpression EvaluateGetROCollectionEventsCodegen(
-			CodegenMethodScope codegenMethodScope,
-			ExprForgeCodegenSymbol exprSymbol,
-			CodegenClassScope codegenClassScope)
-		{
-			return ConstantNull();
-		}
+        public EventBean EvaluateGetEventBean(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
+        {
+            return null;
+        }
 
-		public EventType GetEventTypeSingle(
-			StatementRawInfo statementRawInfo,
-			StatementCompileTimeServices compileTimeServices)
-		{
-			return null;
-		}
+        public CodegenExpression EvaluateGetEventBeanCodegen(
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
+        {
+            return ConstantNull();
+        }
 
-		public EventBean EvaluateGetEventBean(
-			EventBean[] eventsPerStream,
-			bool isNewData,
-			ExprEvaluatorContext context)
-		{
-			return null;
-		}
+        protected override bool IsExprTextWildcardWhenNoParams => false;
 
-		public CodegenExpression EvaluateGetEventBeanCodegen(
-			CodegenMethodScope codegenMethodScope,
-			ExprForgeCodegenSymbol exprSymbol,
-			CodegenClassScope codegenClassScope)
-		{
-			return ConstantNull();
-		}
+        private CountMinSketchSpecForge ValidateSpecification(ExprValidationContext exprValidationContext)
+        {
+            // default specification
+            var hashes = new CountMinSketchSpecHashes(DEFAULT_EPS_OF_TOTAL_COUNT, DEFAULT_CONFIDENCE, DEFAULT_SEED);
+            var spec = new CountMinSketchSpecForge(hashes, null, DEFAULT_AGENT);
+            // no parameters
+            if (ChildNodes.Length == 0) {
+                return spec;
+            }
 
-		public override bool IsExprTextWildcardWhenNoParams => false;
+            // check expected parameter type: a json object
+            if (ChildNodes.Length > 1 || !(ChildNodes[0] is ExprConstantNode)) {
+                throw DeclaredWrongParameterExpr;
+            }
 
-		private CountMinSketchSpecForge ValidateSpecification(ExprValidationContext exprValidationContext)
-		{
-			// default specification
-			CountMinSketchSpecHashes hashes = new CountMinSketchSpecHashes(DEFAULT_EPS_OF_TOTAL_COUNT, DEFAULT_CONFIDENCE, DEFAULT_SEED);
-			CountMinSketchSpecForge spec = new CountMinSketchSpecForge(hashes, null, DEFAULT_AGENT);
+            var constantNode = (ExprConstantNode)ChildNodes[0];
+            var value = constantNode.ConstantValue;
+            if (!(value is IDictionary<string, object>)) {
+                throw DeclaredWrongParameterExpr;
+            }
 
-			// no parameters
-			if (this.ChildNodes.Length == 0) {
-				return spec;
-			}
+            // define what to populate
+            var descriptors = new PopulateFieldWValueDescriptor[] {
+                new PopulateFieldWValueDescriptor(
+                    NAME_EPS_OF_TOTAL_COUNT,
+                    typeof(double?),
+                    typeof(CountMinSketchSpecHashes),
+                    value => {
+                        if (value != null) {
+                            spec.HashesSpec.EpsOfTotalCount = value.AsDouble();
+                        }
+                    },
+                    true),
+                new PopulateFieldWValueDescriptor(
+                    NAME_CONFIDENCE,
+                    typeof(double?),
+                    typeof(CountMinSketchSpecHashes),
+                    value => {
+                        if (value != null) {
+                            spec.HashesSpec.Confidence = value.AsDouble();
+                        }
+                    },
+                    true),
+                new PopulateFieldWValueDescriptor(
+                    NAME_SEED,
+                    typeof(int?),
+                    typeof(CountMinSketchSpecHashes),
+                    value => {
+                        if (value != null) {
+                            spec.HashesSpec.Seed = value.AsInt32();
+                        }
+                    },
+                    true),
+                new PopulateFieldWValueDescriptor(
+                    NAME_TOPK,
+                    typeof(int?),
+                    typeof(CountMinSketchSpecForge),
+                    value => {
+                        if (value != null) {
+                            spec.TopkSpec = value.AsInt32();
+                        }
+                    },
+                    true),
+                new PopulateFieldWValueDescriptor(
+                    NAME_AGENT,
+                    typeof(string),
+                    typeof(CountMinSketchSpecForge),
+                    value => {
+                        if (value != null) {
+                            CountMinSketchAgentForge transform;
+                            try {
+                                var transformClass = exprValidationContext.ImportService.ResolveType(
+                                    (string)value,
+                                    false,
+                                    ExtensionClassEmpty.INSTANCE);
+                                transform = TypeHelper.Instantiate<CountMinSketchAgentForge>(transformClass);
+                            }
+                            catch (Exception e) {
+                                throw new ExprValidationException(
+                                    "Failed to instantiate agent provider: " + e.Message,
+                                    e);
+                            }
 
-			// check expected parameter type: a json object
-			if (this.ChildNodes.Length > 1 || !(this.ChildNodes[0] is ExprConstantNode)) {
-				throw GetDeclaredWrongParameterExpr();
-			}
+                            spec.Agent = transform;
+                        }
+                    },
+                    true)
+            };
+            // populate from json, validates incorrect names, coerces types, instantiates transform
+            PopulateUtil.PopulateSpecCheckParameters(
+                descriptors,
+                (IDictionary<string, object>)value,
+                spec,
+                ExprNodeOrigin.AGGPARAM,
+                exprValidationContext);
+            return spec;
+        }
 
-			ExprConstantNode constantNode = (ExprConstantNode) this.ChildNodes[0];
-			object value = constantNode.ConstantValue;
-			if (!(value is IDictionary<string, object>)) {
-				throw GetDeclaredWrongParameterExpr();
-			}
+        public override bool IsFilterExpressionAsLastParameter => false;
 
-			// define what to populate
-			PopulateFieldWValueDescriptor[] descriptors = new PopulateFieldWValueDescriptor[] {
-				new PopulateFieldWValueDescriptor(
-					NAME_EPS_OF_TOTAL_COUNT,
-					typeof(double?),
-					spec.HashesSpec.GetType(),
-					value => {
-						if (value != null) {
-							spec.HashesSpec.EpsOfTotalCount = value.AsDouble();
-						}
-					},
-					true),
-				new PopulateFieldWValueDescriptor(
-					NAME_CONFIDENCE,
-					typeof(double?),
-					spec.HashesSpec.GetType(),
-					value => {
-						if (value != null) {
-							spec.HashesSpec.Confidence = value.AsDouble();
-						}
-					},
-					true),
-				new PopulateFieldWValueDescriptor(
-					NAME_SEED,
-					typeof(int?),
-					spec.HashesSpec.GetType(),
-					value => {
-						if (value != null) {
-							spec.HashesSpec.Seed = value.AsInt32();
-						}
-					},
-					true),
-				new PopulateFieldWValueDescriptor(
-					NAME_TOPK,
-					typeof(int?),
-					spec.GetType(),
-					value => {
-						if (value != null) {
-							spec.TopkSpec = (int?) value;
-						}
-					},
-					true),
-				new PopulateFieldWValueDescriptor(
-					NAME_AGENT,
-					typeof(string),
-					spec.GetType(),
-					value => {
-						if (value != null) {
-							CountMinSketchAgentForge transform;
-							try {
-								var transformClass = exprValidationContext.ImportService.ResolveType(
-									(string) value,
-									false,
-									ExtensionClassEmpty.INSTANCE);
-								transform = TypeHelper.Instantiate<CountMinSketchAgentForge>(transformClass);
-							}
-							catch (Exception e) {
-								throw new ExprValidationException("Failed to instantiate agent provider: " + e.Message, e);
-							}
+        public ExprValidationException DeclaredWrongParameterExpr => new ExprValidationException(
+            MessagePrefix + " expects either no parameter or a single json parameter object");
 
-							spec.Agent = transform;
-						}
-					},
-					true),
-			};
+        public AggregationForgeFactory AggregationForgeFactory => forgeFactory;
 
-			// populate from json, validates incorrect names, coerces types, instantiates transform
-			PopulateUtil.PopulateSpecCheckParameters(descriptors, (IDictionary<string, object>) value, spec, ExprNodeOrigin.AGGPARAM, exprValidationContext);
-
-			return spec;
-		}
-
-		public ExprValidationException GetDeclaredWrongParameterExpr()
-		{
-			return new ExprValidationException(MessagePrefix + " expects either no parameter or a single json parameter object");
-		}
-
-		public override bool IsFilterExpressionAsLastParameter => false;
-
-		public AggregationForgeFactory AggregationForgeFactory => forgeFactory;
-
-		private string MessagePrefix => MSG_NAME + " aggregation function '" + aggType.GetFuncName() + "' ";
-	}
+        public string MessagePrefix => MSG_NAME + " aggregation function '" + aggType.GetFuncName() + "' ";
+    }
 } // end of namespace

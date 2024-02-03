@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -13,7 +13,6 @@ using System.IO;
 namespace com.espertech.esper.common.client.soda
 {
     /// <summary>As part of on-merge, this represents a single "matched" or "not matched" entry. </summary>
-    [Serializable]
     public class OnMergeMatchItem : OnClause
     {
         /// <summary>Ctor. </summary>
@@ -44,24 +43,21 @@ namespace com.espertech.esper.common.client.soda
             EPStatementFormatter formatter)
         {
             formatter.BeginMergeWhenMatched(writer);
-            if (IsMatched)
-            {
+            if (IsMatched) {
                 writer.Write("when matched");
             }
-            else
-            {
+            else {
                 writer.Write("when not matched");
             }
 
-            if (OptionalCondition != null)
-            {
+            if (OptionalCondition != null) {
                 writer.Write(" and ");
                 OptionalCondition.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
             }
 
-            foreach (OnMergeMatchedAction action in Actions)
-            {
+            foreach (var action in Actions) {
                 formatter.BeginMergeAction(writer);
+                writer.Write("then ");
                 action.ToEPL(writer);
             }
         }

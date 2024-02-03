@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -20,6 +20,7 @@ using com.espertech.esper.regressionlib.support.util;
 using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.support.multithread
 {
@@ -29,7 +30,7 @@ namespace com.espertech.esper.regressionlib.support.multithread
             "A", "B", "C", "D", "E", "F", "G", "H", "I", "J"
         };
 
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private readonly int numRepeats;
         private readonly EPRuntime runtime;
         private readonly EPStatement stmt;
@@ -60,7 +61,7 @@ namespace com.espertech.esper.regressionlib.support.multithread
 
                     // Should have received one that's mine, possible multiple since the statement is used by other threads
                     var found = false;
-                    var events = assertListener.GetNewDataListFlattened();
+                    var events = assertListener.NewDataListFlattened;
                     foreach (var theEvent in events) {
                         var s0Received = theEvent.Get("S0");
                         var s1Received = (IDictionary<string, object>) theEvent.Get("S1");
@@ -73,16 +74,16 @@ namespace com.espertech.esper.regressionlib.support.multithread
                     if (!found) {
                     }
 
-                    Assert.IsTrue(found);
+                    ClassicAssert.IsTrue(found);
                     assertListener.Reset();
                 }
             }
             catch (AssertionException ex) {
-                log.Error("Assertion error in thread " + Thread.CurrentThread.ManagedThreadId, ex);
+                Log.Error("Assertion error in thread " + Thread.CurrentThread.ManagedThreadId, ex);
                 return false;
             }
             catch (Exception ex) {
-                log.Error("Error in thread " + Thread.CurrentThread.ManagedThreadId, ex);
+                Log.Error("Error in thread " + Thread.CurrentThread.ManagedThreadId, ex);
                 return false;
             }
 

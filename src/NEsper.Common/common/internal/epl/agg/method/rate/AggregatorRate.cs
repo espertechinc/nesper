@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -14,6 +14,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.agg.method.core;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.fabric;
 using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
@@ -24,33 +25,36 @@ using static com.espertech.esper.common.@internal.epl.agg.method.core.Aggregator
 namespace com.espertech.esper.common.@internal.epl.agg.method.rate
 {
     /// <summary>
-    ///     Aggregation computing an event arrival rate for data windowed-events.
+    /// Aggregation computing an event arrival rate for data windowed-events.
     /// </summary>
     public class AggregatorRate : AggregatorMethodWDistinctWFilterBase
     {
-        private AggregationForgeFactoryRate _factory;
-        private CodegenExpressionMember _accumulator;
-        private CodegenExpressionMember _isSet;
-        private CodegenExpressionMember _latest;
-        private CodegenExpressionMember _oldest;
+        protected AggregationForgeFactoryRate factory;
+        protected CodegenExpressionMember accumulator;
+        protected CodegenExpressionMember latest;
+        protected CodegenExpressionMember oldest;
+        protected CodegenExpressionMember isSet;
 
         public AggregatorRate(
             AggregationForgeFactoryRate factory,
-            int col,
-            CodegenCtor rowCtor,
-            CodegenMemberCol membersColumnized,
-            CodegenClassScope classScope,
             Type optionalDistinctValueType,
             DataInputOutputSerdeForge optionalDistinctSerde,
             bool hasFilter,
-            ExprNode optionalFilter)
-            : base(factory, col, rowCtor, membersColumnized, classScope, optionalDistinctValueType, optionalDistinctSerde, hasFilter, optionalFilter)
+            ExprNode optionalFilter) : base(optionalDistinctValueType, optionalDistinctSerde, hasFilter, optionalFilter)
         {
-            _factory = factory;
-            _accumulator = membersColumnized.AddMember(col, typeof(double), "accumulator");
-            _latest = membersColumnized.AddMember(col, typeof(long), "latest");
-            _oldest = membersColumnized.AddMember(col, typeof(long), "oldest");
-            _isSet = membersColumnized.AddMember(col, typeof(bool), "isSet");
+            this.factory = factory;
+        }
+
+        public override void InitForgeFiltered(
+            int col,
+            CodegenCtor rowCtor,
+            CodegenMemberCol membersColumnized,
+            CodegenClassScope classScope)
+        {
+            accumulator = membersColumnized.AddMember(col, typeof(double), "accumulator");
+            latest = membersColumnized.AddMember(col, typeof(long), "latest");
+            oldest = membersColumnized.AddMember(col, typeof(long), "oldest");
+            isSet = membersColumnized.AddMember(col, typeof(bool), "isSet");
         }
 
         protected override void ApplyEvalEnterFiltered(
@@ -61,21 +65,19 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.rate
         {
             var firstType = forges[0].EvaluationType;
             var firstExpr = forges[0].EvaluateCodegen(typeof(long), method, symbols, classScope);
-            method.Block.AssignRef(_latest, SimpleNumberCoercerFactory.CoercerLong.CodegenLong(firstExpr, firstType));
+            method.Block.AssignRef(latest, SimpleNumberCoercerFactory.CoercerLong.CodegenLong(firstExpr, firstType));
 
-            var numFilters = _factory.Parent.OptionalFilter != null ? 1 : 0;
+            var numFilters = factory.Parent.OptionalFilter != null ? 1 : 0;
             if (forges.Length == numFilters + 1) {
-                method.Block.Increment(_accumulator);
+                method.Block.Increment(accumulator);
             }
             else {
                 var secondType = forges[1].EvaluationType;
                 var secondExpr = forges[1].EvaluateCodegen(typeof(double), method, symbols, classScope);
-                var secondValue = SimpleNumberCoercerFactory.CoercerDouble.CodegenDouble(
-                    secondExpr, secondType);
                 method.Block.AssignCompound(
-                    _accumulator,
+                    accumulator,
                     "+",
-                    secondValue);
+                    SimpleNumberCoercerFactory.CoercerDouble.CodegenDouble(secondExpr, secondType));
             }
         }
 
@@ -85,24 +87,24 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.rate
             ExprForge[] forges,
             CodegenClassScope classScope)
         {
-            var numFilters = _factory.Parent.OptionalFilter != null ? 1 : 0;
+            var numFilters = factory.Parent.OptionalFilter != null ? 1 : 0;
 
             var firstType = forges[0].EvaluationType;
             var firstExpr = forges[0].EvaluateCodegen(typeof(long), method, symbols, classScope);
-            var firstValue = SimpleNumberCoercerFactory.CoercerLong.CodegenLong(firstExpr, firstType);
 
-            method.Block
-                .AssignRef(_oldest, firstValue)
-                .IfCondition(Not(_isSet))
-                .AssignRef(_isSet, ConstantTrue());
+            method.Block.AssignRef(oldest, SimpleNumberCoercerFactory.CoercerLong.CodegenLong(firstExpr, firstType))
+                .IfCondition(Not(isSet))
+                .AssignRef(isSet, ConstantTrue());
             if (forges.Length == numFilters + 1) {
-                method.Block.Decrement(_accumulator);
+                method.Block.Decrement(accumulator);
             }
             else {
                 var secondType = forges[1].EvaluationType;
                 var secondExpr = forges[1].EvaluateCodegen(typeof(double), method, symbols, classScope);
-                var secondValue = SimpleNumberCoercerFactory.CoercerDouble.CodegenDouble(secondExpr, secondType);
-                method.Block.AssignCompound(_accumulator, "-", secondValue);
+                method.Block.AssignCompound(
+                    accumulator,
+                    "-",
+                    SimpleNumberCoercerFactory.CoercerDouble.CodegenDouble(secondExpr, secondType));
             }
         }
 
@@ -128,22 +130,19 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.rate
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            method.Block.AssignRef(_accumulator, Constant(0))
-                .AssignRef(_latest, Constant(0))
-                .AssignRef(_oldest, Constant(0));
+            method.Block.AssignRef(accumulator, Constant(0))
+                .AssignRef(latest, Constant(0))
+                .AssignRef(oldest, Constant(0));
         }
 
         public override void GetValueCodegen(
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            method.Block.IfCondition(Not(_isSet))
+            method.Block.IfCondition(Not(isSet))
                 .BlockReturn(ConstantNull())
                 .MethodReturn(
-                    Op(
-                        Op(_accumulator, "*", Constant(_factory.TimeAbacus.OneSecond)),
-                        "/",
-                        Op(_latest, "-", _oldest)));
+                    Op(Op(accumulator, "*", Constant(factory.TimeAbacus.OneSecond)), "/", Op(latest, "-", oldest)));
         }
 
         protected override void WriteWODistinct(
@@ -156,10 +155,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.rate
             CodegenClassScope classScope)
         {
             method.Block
-                .Apply(WriteDouble(output, row, _accumulator))
-                .Apply(WriteLong(output, row, _latest))
-                .Apply(WriteLong(output, row, _oldest))
-                .Apply(WriteBoolean(output, row, _isSet));
+                .Apply(WriteDouble(output, row, accumulator))
+                .Apply(WriteLong(output, row, latest))
+                .Apply(WriteLong(output, row, oldest))
+                .Apply(WriteBoolean(output, row, isSet));
         }
 
         protected override void ReadWODistinct(
@@ -171,10 +170,15 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.rate
             CodegenClassScope classScope)
         {
             method.Block
-                .Apply(ReadDouble(row, _accumulator, input))
-                .Apply(ReadLong(row, _latest, input))
-                .Apply(ReadLong(row, _oldest, input))
-                .Apply(ReadBoolean(row, _isSet, input));
+                .Apply(ReadDouble(row, accumulator, input))
+                .Apply(ReadLong(row, latest, input))
+                .Apply(ReadLong(row, oldest, input))
+                .Apply(ReadBoolean(row, isSet, input));
+        }
+
+        protected override void AppendFormatWODistinct(FabricTypeCollector collector)
+        {
+            collector.Builtin(typeof(double), typeof(long), typeof(long), typeof(bool));
         }
     }
 } // end of namespace

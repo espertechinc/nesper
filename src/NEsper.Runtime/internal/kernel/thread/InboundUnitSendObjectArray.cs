@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -20,12 +20,12 @@ namespace com.espertech.esper.runtime.@internal.kernel.thread
 	/// </summary>
 	public class InboundUnitSendObjectArray : InboundUnitRunnable
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-        private readonly string eventTypeName;
-
-        private readonly object[] properties;
-        private readonly EPRuntimeEventProcessWrapped runtime;
-        private readonly EPServicesEvaluation services;
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        
+        private readonly string _eventTypeName;
+        private readonly object[] _properties;
+        private readonly EPRuntimeEventProcessWrapped _runtime;
+        private readonly EPServicesEvaluation _services;
 
         public InboundUnitSendObjectArray(
             object[] properties,
@@ -33,21 +33,21 @@ namespace com.espertech.esper.runtime.@internal.kernel.thread
             EPRuntimeEventProcessWrapped runtime,
             EPServicesEvaluation services)
         {
-            this.properties = properties;
-            this.eventTypeName = eventTypeName;
-            this.runtime = runtime;
-            this.services = services;
+            this._properties = properties;
+            this._eventTypeName = eventTypeName;
+            this._runtime = runtime;
+            this._services = services;
         }
 
         public void Run()
         {
             try {
-                var eventBean = services.EventTypeResolvingBeanFactory.AdapterForObjectArray(properties, eventTypeName);
-                runtime.ProcessWrappedEvent(eventBean);
+                var eventBean = _services.EventTypeResolvingBeanFactory.AdapterForObjectArray(_properties, _eventTypeName);
+                _runtime.ProcessWrappedEvent(eventBean);
             }
             catch (Exception e) {
-                services.ExceptionHandlingService.HandleInboundPoolException(runtime.URI, e, properties);
-                log.Error("Unexpected error processing Object-array event: " + e.Message, e);
+                _services.ExceptionHandlingService.HandleInboundPoolException(_runtime.URI, e, _properties);
+                Log.Error("Unexpected error processing Object-array event: " + e.Message, e);
             }
         }
     }

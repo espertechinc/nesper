@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -37,7 +37,7 @@ namespace com.espertech.esper.compiler.@internal.util
         public static string LexSampleSQL(string querySQL)
         {
             querySQL = querySQL.RegexReplaceAll("\\s\\s+|\\n|\\r", " ");
-            var input = new CaseInsensitiveInputStream(querySQL);
+            var input = CaseChangingCharStreamFactory.Make(querySQL);
             var whereIndex = -1;
             var groupbyIndex = -1;
             var havingIndex = -1;
@@ -56,24 +56,26 @@ namespace com.espertech.esper.compiler.@internal.util
                 }
 
                 var text = token.Text.ToLowerInvariant().Trim();
-                if (text.Equals("where")) {
-                    whereIndex = token.Column + 1;
-                }
+                switch (text) {
+                    case "where":
+                        whereIndex = token.Column + 1;
+                        break;
 
-                if (text.Equals("group")) {
-                    groupbyIndex = token.Column + 1;
-                }
+                    case "group":
+                        groupbyIndex = token.Column + 1;
+                        break;
 
-                if (text.Equals("having")) {
-                    havingIndex = token.Column + 1;
-                }
+                    case "having":
+                        havingIndex = token.Column + 1;
+                        break;
 
-                if (text.Equals("order")) {
-                    orderByIndex = token.Column + 1;
-                }
+                    case "order":
+                        orderByIndex = token.Column + 1;
+                        break;
 
-                if (text.Equals("union")) {
-                    unionIndexes.Add(token.Column + 1);
+                    case "union":
+                        unionIndexes.Add(token.Column + 1);
+                        break;
                 }
             }
 

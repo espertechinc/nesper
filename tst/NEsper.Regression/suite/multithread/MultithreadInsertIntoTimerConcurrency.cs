@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -22,42 +22,46 @@ using com.espertech.esper.runtime.client;
 
 namespace com.espertech.esper.regressionlib.suite.multithread
 {
-    public class MultithreadInsertIntoTimerConcurrency
+    public class MultithreadInsertIntoTimerConcurrency : RegressionExecutionPreConfigured
     {
-        private static readonly ILog log =
-            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         private EPRuntimeProvider _runtimeProvider;
         private EPEventService _runtime;
         private IExecutorService _executorService;
-
         private AtomicLong _idCounter;
         private NoActionUpdateListener _noActionUpdateListener;
+        private readonly Configuration _configuration;
 
-        public void Run(Configuration configuration)
+        public MultithreadInsertIntoTimerConcurrency(Configuration configuration)
+        {
+            _configuration = configuration;
+        }
+
+        public void Run()
         {
             _idCounter = new AtomicLong(0);
             _executorService = Executors.NewCachedThreadPool();
             _noActionUpdateListener = new NoActionUpdateListener();
 
-            configuration.Runtime.Threading.IsInternalTimerEnabled = true;
-            configuration.Common.AddEventType(typeof(SupportBean));
-            configuration.Runtime.Threading.InsertIntoDispatchLocking = Locking.SUSPEND;
+            _configuration.Runtime.Threading.IsInternalTimerEnabled = true;
+            _configuration.Common.AddEventType(typeof(SupportBean));
+            _configuration.Runtime.Threading.InsertIntoDispatchLocking = Locking.SUSPEND;
 
             _runtimeProvider = new EPRuntimeProvider();
-            
-            var runtime = _runtimeProvider.GetRuntimeInstance(GetType().Name, configuration);
+
+            var runtime = _runtimeProvider.GetRuntimeInstance(GetType().Name, _configuration);
             runtime.Initialize();
             _runtime = runtime.EventService;
 
             var path = new RegressionPath();
             var epl = "insert into Stream1 select count(*) as cnt from SupportBean#time(7 sec)";
-            var compiled = SupportCompileDeployUtil.Compile(epl, configuration, path);
+            var compiled = SupportCompileDeployUtil.Compile(epl, _configuration, path);
             path.Add(compiled);
             SupportCompileDeployUtil.Deploy(compiled, runtime);
 
             epl += " output every 10 seconds";
-            compiled = SupportCompileDeployUtil.Compile(epl, configuration, path);
+            compiled = SupportCompileDeployUtil.Compile(epl, _configuration, path);
             SupportCompileDeployUtil.DeployAddListener(compiled, "insert", _noActionUpdateListener, runtime);
 
             var sendTickEventRunnable = new SendEventRunnable(this, 10000);
@@ -122,7 +126,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                     count++;
 
                     if (count % 1000 == 0) {
-                        log.Info("Thread " + Thread.CurrentThread.ManagedThreadId + " send " + count + " events");
+                        Log.Info("Thread " + Thread.CurrentThread.ManagedThreadId + " send " + count + " events");
                     }
 
                     if (count > maxSent) {

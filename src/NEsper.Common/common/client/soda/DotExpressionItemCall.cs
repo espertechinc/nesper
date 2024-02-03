@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -15,7 +15,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Dot-expression item representing a call that has an name and parameters.
     /// </summary>
-    [Serializable]
     public class DotExpressionItemCall : DotExpressionItem
     {
         private string _name;
@@ -35,7 +34,8 @@ namespace com.espertech.esper.common.client.soda
         {
         }
 
-        public DotExpressionItemCall(string name,
+        public DotExpressionItemCall(
+            string name,
             IList<Expression> parameters)
         {
             _name = name;
@@ -46,8 +46,8 @@ namespace com.espertech.esper.common.client.soda
         {
             writer.Write(_name);
             writer.Write("(");
-            String delimiter = "";
-            foreach (Expression param in _parameters) {
+            var delimiter = "";
+            foreach (var param in _parameters) {
                 writer.Write(delimiter);
                 delimiter = ",";
                 param.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);

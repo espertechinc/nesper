@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -8,6 +8,7 @@
 
 using System;
 using System.IO;
+using System.Text.Json.Serialization;
 
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.type;
@@ -20,13 +21,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
     /// <summary>
     ///     Represents a simple Math (+/-/divide/*) in a filter expression tree.
     /// </summary>
-    [Serializable]
     public class ExprMathNode : ExprNodeBase
     {
         private readonly bool _isDivisionByZeroReturnsNull;
         private readonly bool _isIntegerDivision;
 
-        [NonSerialized] private ExprMathNodeForge _forge;
+        [JsonIgnore]
+        [NonSerialized]
+        private ExprMathNodeForge _forge;
 
         /// <summary>
         ///     Ctor.
@@ -40,8 +42,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             bool isDivisionByZeroReturnsNull)
         {
             MathArithTypeEnum = mathArithTypeEnum;
-            this._isIntegerDivision = isIntegerDivision;
-            this._isDivisionByZeroReturnsNull = isDivisionByZeroReturnsNull;
+            _isIntegerDivision = isIntegerDivision;
+            _isDivisionByZeroReturnsNull = isDivisionByZeroReturnsNull;
         }
 
         public ExprEvaluator ExprEvaluator {
@@ -86,7 +88,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
             foreach (var child in ChildNodes) {
                 var childType = child.Forge.EvaluationType;
-                if (!childType.IsNumeric()) {
+                if (!childType.IsTypeNumeric()) {
                     throw new ExprValidationException(
                         "Implicit conversion from datatype '" +
                         childType.CleanName() +
@@ -104,11 +106,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
             // If both sides are unboxed, then the result is also unboxed
             if (!lhsType.IsNullable() && !rhsType.IsNullable()) {
-                if ((lhsType == typeof(short)) && (rhsType == typeof(short))) {
+                if (lhsType == typeof(short) && rhsType == typeof(short)) {
                     resultType = typeof(int);
-                } else if (lhsType == typeof(byte) && (rhsType == typeof(byte))) {
+                }
+                else if (lhsType == typeof(byte) && rhsType == typeof(byte)) {
                     resultType = typeof(int);
-                } else if (lhsType == rhsType) {
+                }
+                else if (lhsType == rhsType) {
                     resultType = rhsType;
                 }
                 else {
@@ -133,7 +137,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             }
 
             if (MathArithTypeEnum == MathArithTypeEnum.DIVIDE && !_isIntegerDivision) {
-                if (!resultType.IsDecimal()) {
+                if (!resultType.IsTypeDecimal()) {
                     resultType = typeof(double?);
                 }
             }
@@ -143,7 +147,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             if (_isDivisionByZeroReturnsNull) {
                 resultType = resultType.GetBoxedType();
             }
-            
+
             var arithTypeEnumComputer = MathArithType.GetComputer(
                 MathArithTypeEnum,
                 resultType,
@@ -156,7 +160,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             return null;
         }
 
-        public override void ToPrecedenceFreeEPL(TextWriter writer,
+        public override void ToPrecedenceFreeEPL(
+            TextWriter writer,
             ExprNodeRenderableFlags flags)
         {
             ChildNodes[0].ToEPL(writer, Precedence, flags);
@@ -168,11 +173,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             ExprNode node,
             bool ignoreStreamPrefix)
         {
-            if (!(node is ExprMathNode)) {
+            if (!(node is ExprMathNode other)) {
                 return false;
             }
-
-            var other = (ExprMathNode) node;
 
             if (other.MathArithTypeEnum != MathArithTypeEnum) {
                 return false;

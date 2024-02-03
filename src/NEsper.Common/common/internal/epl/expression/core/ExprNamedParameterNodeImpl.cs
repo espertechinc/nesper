@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -18,7 +18,6 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
 namespace com.espertech.esper.common.@internal.epl.expression.core
 {
-    [Serializable]
     public class ExprNamedParameterNodeImpl : ExprNodeBase,
         ExprNamedParameterNode,
         ExprForge,
@@ -84,11 +83,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             ExprNode other,
             bool ignoreStreamPrefix)
         {
-            if (!(other is ExprNamedParameterNode)) {
+            if (!(other is ExprNamedParameterNode otherNamed)) {
                 return false;
             }
 
-            var otherNamed = (ExprNamedParameterNode) other;
             return otherNamed.ParameterName.Equals(ParameterName);
         }
 

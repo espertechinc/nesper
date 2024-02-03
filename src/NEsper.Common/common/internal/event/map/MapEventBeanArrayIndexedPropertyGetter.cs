@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -42,7 +42,7 @@ namespace com.espertech.esper.common.@internal.@event.map
         public object GetMap(IDictionary<string, object> map)
         {
             // If the map does not contain the key, this is allowed and represented as null
-            var wrapper = (EventBean[]) map.Get(propertyName);
+            var wrapper = (EventBean[])map.Get(propertyName);
             return BaseNestableEventUtil.GetBNArrayPropertyUnderlying(wrapper, index);
         }
 
@@ -64,7 +64,7 @@ namespace com.espertech.esper.common.@internal.@event.map
         public object GetFragment(EventBean obj)
         {
             var map = BaseNestableEventUtil.CheckedCastUnderlyingMap(obj);
-            var wrapper = (EventBean[]) map.Get(propertyName);
+            var wrapper = (EventBean[])map.Get(propertyName);
             return BaseNestableEventUtil.GetBNArrayPropertyBean(wrapper, index);
         }
 

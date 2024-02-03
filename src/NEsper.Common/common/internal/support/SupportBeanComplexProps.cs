@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -14,7 +14,6 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.support
 {
-    [Serializable]
     public class SupportBeanComplexProps : SupportMarkerInterface
     {
         public static readonly string[] PROPERTIES = {
@@ -53,14 +52,14 @@ namespace com.espertech.esper.common.@internal.support
             IDictionary<string, string> mapProperty,
             int[] arrayProperty,
             string nestedValue,
-            string nestedNestedValue)
+            string NestedNestedValue)
         {
             _simpleProperty = simpleProperty;
             _mappedProps = mappedProps;
             _indexedProps = indexedProps;
             _mapProperty = mapProperty;
             _arrayProperty = arrayProperty;
-            _nested = new SupportBeanSpecialGetterNested(nestedValue, nestedNestedValue);
+            _nested = new SupportBeanSpecialGetterNested(nestedValue, NestedNestedValue);
         }
 
         public string SimpleProperty {
@@ -108,12 +107,12 @@ namespace com.espertech.esper.common.@internal.support
             mapProp.Put("xOne", "yOne");
             mapProp.Put("xTwo", "yTwo");
 
-            int[] arrayProp = {10, 20, 30};
+            int[] arrayProp = { 10, 20, 30 };
 
             return new SupportBeanComplexProps(
                 "simple",
                 properties,
-                new[] {1, 2},
+                new[] { 1, 2 },
                 mapProp,
                 arrayProp,
                 "NestedValue",
@@ -147,17 +146,16 @@ namespace com.espertech.esper.common.@internal.support
             return Nested;
         }
 
-        [Serializable]
         public class SupportBeanSpecialGetterNested
         {
             private string _nestedValue;
 
             public SupportBeanSpecialGetterNested(
                 string nestedValue,
-                string nestedNestedValue)
+                string NestedNestedValue)
             {
                 _nestedValue = nestedValue;
-                NestedNested = new SupportBeanSpecialGetterNestedNested(nestedNestedValue);
+                NestedNested = new SupportBeanSpecialGetterNestedNested(NestedNestedValue);
             }
 
             public string NestedValue {
@@ -171,7 +169,7 @@ namespace com.espertech.esper.common.@internal.support
             {
                 return NestedNested;
             }
-            
+
             public override bool Equals(object o)
             {
                 if (this == o) {
@@ -182,7 +180,7 @@ namespace com.espertech.esper.common.@internal.support
                     return false;
                 }
 
-                var that = (SupportBeanSpecialGetterNested) o;
+                var that = (SupportBeanSpecialGetterNested)o;
 
                 if (!_nestedValue.Equals(that._nestedValue)) {
                     return false;
@@ -197,14 +195,13 @@ namespace com.espertech.esper.common.@internal.support
             }
         }
 
-        [Serializable]
         public class SupportBeanSpecialGetterNestedNested
         {
             private string _nestedNestedValue;
 
-            public SupportBeanSpecialGetterNestedNested(string nestedNestedValue)
+            public SupportBeanSpecialGetterNestedNested(string NestedNestedValue)
             {
-                _nestedNestedValue = nestedNestedValue;
+                _nestedNestedValue = NestedNestedValue;
             }
 
             public string NestedNestedValue {

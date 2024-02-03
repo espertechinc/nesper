@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -16,6 +16,7 @@ using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowindex
 {
@@ -43,7 +44,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
             double height)
         {
             var values = MXCIFQuadTreeRowIndexQuery.QueryRange(quadTree, x, y, width, height);
-            // Comment-me-in: System.out.println("// query(tree, " + x + ", " + y + ", " + width + ", " + height + "); -=> " + values);
+            // Comment-me-in: Console.WriteLine("// query(tree, " + x + ", " + y + ", " + width + ", " + height + "); -=> " + values);
             return values;
         }
 
@@ -55,7 +56,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
             double height,
             string value)
         {
-            // Comment-me-in: System.out.println("remove(tree, " + x + ", " + y + ", " + width + ", " + height + ", \"" + value + "\");");
+            // Comment-me-in: Console.WriteLine("remove(tree, " + x + ", " + y + ", " + width + ", " + height + ", \"" + value + "\");");
             MXCIFQuadTreeRowIndexRemove.Remove(x, y, width, height, value, quadTree);
         }
 
@@ -67,7 +68,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
             double height,
             string value)
         {
-            // Comment-me-in: System.out.println("addNonUnique(tree, " + x + ", " + y + ", " + width + ", " + height + ", \"" + value + "\");");
+            // Comment-me-in: Console.WriteLine("addNonUnique(tree, " + x + ", " + y + ", " + width + ", " + height + ", \"" + value + "\");");
             return MXCIFQuadTreeRowIndexAdd.Add(x, y, width, height, value, quadTree, false, "indexNameDummy");
         }
 
@@ -79,7 +80,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
             double height,
             string value)
         {
-            // Comment-me-in: System.out.println("addUnique(tree, " + x + ", " + y + ", " + width + ", " + height + ", \"" + value + "\");");
+            // Comment-me-in: Console.WriteLine("addUnique(tree, " + x + ", " + y + ", " + width + ", " + height + ", \"" + value + "\");");
             MXCIFQuadTreeRowIndexAdd.Add(x, y, width, height, value, tree, true, "indexNameHere");
         }
 
@@ -106,7 +107,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
             var values = MXCIFQuadTreeRowIndexQuery.QueryRange(quadTree, x, y, width, height);
             if (ids == null || ids.Length == 0)
             {
-                Assert.IsTrue(values == null);
+                ClassicAssert.IsTrue(values == null);
             }
             else
             {
@@ -127,11 +128,11 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
             string expected,
             XYWHRectangleMultiType rectangle)
         {
-            Assert.AreEqual(x, rectangle.X);
-            Assert.AreEqual(y, rectangle.Y);
-            Assert.AreEqual(width, rectangle.W);
-            Assert.AreEqual(height, rectangle.H);
-            Assert.AreEqual(expected, rectangle.Multityped.RenderAny());
+            ClassicAssert.AreEqual(x, rectangle.X);
+            ClassicAssert.AreEqual(y, rectangle.Y);
+            ClassicAssert.AreEqual(width, rectangle.W);
+            ClassicAssert.AreEqual(height, rectangle.H);
+            ClassicAssert.AreEqual(expected, rectangle.Multityped.RenderAny());
         }
     }
 } // end of namespace

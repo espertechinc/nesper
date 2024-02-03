@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -108,8 +108,8 @@ namespace com.espertech.esper.common.@internal.view.firsttime
 
             // If there are child views, call update method
             if (Child != null && (newDataToPost != null || oldDataToPost != null)) {
-                EventBean[] nd = newDataToPost != null ? newDataToPost.ToArray() : null;
-                EventBean[] od = oldDataToPost != null ? oldDataToPost.ToArray() : null;
+                var nd = newDataToPost?.ToArray();
+                var od = oldDataToPost?.ToArray();
                 agentInstanceContext.InstrumentationProvider.QViewIndicate(factory, nd, od);
                 Child.Update(nd, od);
                 agentInstanceContext.InstrumentationProvider.AViewIndicate();
@@ -135,7 +135,7 @@ namespace com.espertech.esper.common.@internal.view.firsttime
 
         private void ScheduleCallback()
         {
-            long afterTime = timePeriodProvide.DeltaAdd(
+            var afterTime = timePeriodProvide.DeltaAdd(
                 agentInstanceContext.StatementContext.SchedulingService.Time,
                 null,
                 true,

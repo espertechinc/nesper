@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -7,8 +7,10 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+using System.Diagnostics;
 
 using com.espertech.esper.common.@internal.epl.approx.countminsketch;
+using com.espertech.esper.common.@internal.fabric;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.io;
 
@@ -16,6 +18,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
 {
     public class AggregationStateSerdeCountMinSketch
     {
+        private const short SERDE_VERSION = 1;
+
         /// <summary>
         ///     NOTE: Code-generation-invoked method, method name and parameter order matters
         /// </summary>
@@ -49,6 +53,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
             DataOutput output,
             CountMinSketchState state)
         {
+            output.WriteShort(SERDE_VERSION);
+
             var hashes = state.Hashes;
             output.WriteInt(hashes.Depth);
             output.WriteInt(hashes.Width);
@@ -83,7 +89,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
                         WriteBytes(output, byteBuffer);
                     }
                     else {
-                        var q = (Deque<ByteBuffer>) entry.Value;
+                        var q = (Deque<ByteBuffer>)entry.Value;
                         output.WriteInt(q.Count);
                         foreach (var buf in q) {
                             WriteBytes(output, buf);
@@ -97,6 +103,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
             DataInput input,
             CountMinSketchState state)
         {
+            var version = input.ReadShort();
+            Debug.Assert(version == SERDE_VERSION);
+
             var depth = input.ReadInt();
             var width = input.ReadInt();
 
@@ -150,6 +159,13 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
 
                 state.Topk = new CountMinSketchStateTopk(topkMax, topMap, refMap);
             }
+        }
+
+        public static void AppendFormat(
+            FabricTypeCollector collector,
+            CountMinSketchSpecForge spec)
+        {
+            collector.CountMinSketch(spec);
         }
 
         private static void WriteBytes(

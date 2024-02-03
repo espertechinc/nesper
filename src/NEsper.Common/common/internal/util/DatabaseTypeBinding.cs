@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -46,21 +46,23 @@ namespace com.espertech.esper.common.@internal.util
     ///     Implementation of the DataTypeBinding that uses delegates
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    [Serializable]
     public class ProxyDatabaseTypeBinding<T> : DatabaseTypeBinding
     {
-        private readonly DataRetriever dataRetriever;
+        private readonly DataRetriever _dataRetriever;
+        
+        public Func<CodegenExpression> ProcMake { get; set; } 
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="ProxyDatabaseTypeBinding&lt;T&gt;" /> class.
         /// </summary>
         /// <param name="retriever">The retriever.</param>
-        /// <param name="codeGenerator">the code generator</param>
+        /// <param name="procMake">the code generator</param>
         public ProxyDatabaseTypeBinding(
             DataRetriever retriever,
-            Func<CodegenExpression> codeGenerator)
+            Func<CodegenExpression> procMake)
         {
-            dataRetriever = retriever;
+            _dataRetriever = retriever;
+            ProcMake = procMake;
         }
 
         /// <summary>
@@ -74,7 +76,7 @@ namespace com.espertech.esper.common.@internal.util
             object rawObject,
             string columnName)
         {
-            return dataRetriever.Invoke(rawObject, columnName);
+            return _dataRetriever.Invoke(rawObject, columnName);
         }
 
         /// <summary>Returns the target data type.</summary>
@@ -83,7 +85,11 @@ namespace com.espertech.esper.common.@internal.util
 
         public CodegenExpression Make()
         {
-            throw new NotImplementedException();
+            if (ProcMake == null) {
+                throw new NotImplementedException();
+            }
+
+            return ProcMake.Invoke();
         }
     }
 } // End of namespace

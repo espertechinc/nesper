@@ -1,11 +1,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Linq;
 
 using com.espertech.esper.common.client;
@@ -28,19 +29,15 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
             this.items = items;
         }
 
-        public ContextControllerHashValidationItem[] GetItems()
-        {
-            return items;
-        }
-
         public CodegenExpression Make(CodegenExpressionRef addInitSvc)
         {
-            CodegenExpression[] init = new CodegenExpression[items.Length];
-            for (int i = 0; i < init.Length; i++) {
+            var init = new CodegenExpression[items.Length];
+            for (var i = 0; i < init.Length; i++) {
                 init[i] = items[i].Make(addInitSvc);
             }
 
-            return NewInstance<ContextControllerHashValidation>(
+            return NewInstance(
+                typeof(ContextControllerHashValidation),
                 NewArrayWithInit(typeof(ContextControllerHashValidationItem), init));
         }
 
@@ -49,11 +46,24 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
             StatementSpecCompiled spec,
             StatementCompileTimeServices compileTimeServices)
         {
+            var typeProvider = items
+                .Select(_ => (Supplier<EventType>) _.Get)
+                .ToArray();
+
             ContextControllerForgeUtil.ValidateStatementKeyAndHash(
-                items.Select(i => (Supplier<EventType>) i.Get),
+                typeProvider,
                 contextName,
                 spec,
                 compileTimeServices);
         }
+
+        public void VisitFilterAddendumEventTypes(Consumer<EventType> consumer)
+        {
+            foreach (var item in items) {
+                item.VisitFilterAddendumEventTypes(consumer);
+            }
+        }
+
+        public ContextControllerHashValidationItem[] Items => items;
     }
 } // end of namespace

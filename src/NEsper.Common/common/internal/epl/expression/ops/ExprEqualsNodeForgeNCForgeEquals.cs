@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -14,7 +14,9 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
-using static com.espertech.esper.common.@internal.epl.expression.codegen.CodegenLegoCompareEquals; //codegenEqualsNonNullNoCoerce;
+using static
+    com.espertech.esper.common.@internal.epl.expression.codegen.
+    CodegenLegoCompareEquals; //codegenEqualsNonNullNoCoerce;
 
 namespace com.espertech.esper.common.@internal.epl.expression.ops
 {
@@ -31,7 +33,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             var lhsType = lhs.EvaluationType;
             var rhsType = rhs.EvaluationType;
 
-            var methodNode = codegenMethodScope.MakeChild(typeof(bool?), typeof(ExprEqualsNodeForgeNCForgeEquals), codegenClassScope);
+            var methodNode = codegenMethodScope.MakeChild(
+                typeof(bool?),
+                typeof(ExprEqualsNodeForgeNCForgeEquals),
+                codegenClassScope);
             var block = methodNode.Block
                 .DeclareVar(lhsType, "left", lhs.EvaluateCodegen(lhsType, methodNode, exprSymbol, codegenClassScope))
                 .DeclareVar(rhsType, "right", rhs.EvaluateCodegen(rhsType, methodNode, exprSymbol, codegenClassScope));

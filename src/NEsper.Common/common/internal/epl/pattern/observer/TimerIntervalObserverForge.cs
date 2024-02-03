@@ -1,15 +1,17 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.common.@internal.compile.util;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -50,7 +52,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
 
             if (!(parameters[0] is ExprTimePeriod)) {
                 var returnType = parameters[0].Forge.EvaluationType;
-                if (!returnType.IsNumeric()) {
+                if (!returnType.IsTypeNumeric()) {
                     throw new ObserverParameterException(errorMessage);
                 }
             }
@@ -60,9 +62,12 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
             timeAbacus = validationContext.ImportService.TimeAbacus;
         }
 
-        public void CollectSchedule(IList<ScheduleHandleCallbackProvider> schedules)
+        public void CollectSchedule(
+            short factoryNodeId,
+            Func<short, CallbackAttribution> scheduleAttribution,
+            IList<ScheduleHandleTracked> schedules)
         {
-            schedules.Add(this);
+            schedules.Add(new ScheduleHandleTracked(scheduleAttribution.Invoke(factoryNodeId), this));
         }
 
         public CodegenExpression MakeCodegen(
@@ -98,6 +103,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
         }
 
         public int ScheduleCallbackId {
+            get => scheduleCallbackId;
             set => scheduleCallbackId = value;
         }
     }

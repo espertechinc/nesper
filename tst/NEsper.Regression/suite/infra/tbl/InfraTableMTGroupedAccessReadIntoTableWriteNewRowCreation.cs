@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 
@@ -18,6 +19,7 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.infra.tbl
 {
@@ -26,7 +28,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
     /// </summary>
     public class InfraTableMTGroupedAccessReadIntoTableWriteNewRowCreation : RegressionExecution
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
+        }
 
         /// <summary>
         ///     Table:
@@ -51,9 +58,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             int numEvents)
         {
             var epl =
-                "create table varTotal (key string primary key, total sum(int));\n" +
-                "into table varTotal select TheString, sum(IntPrimitive) as total from SupportBean group by TheString;\n" +
-                "@Name('s0') select varTotal[P00].total as c0 from SupportBean_S0;\n";
+                "@public create table varTotal (key string primary key, Total sum(int));\n" +
+                "into table varTotal select TheString, sum(IntPrimitive) as Total from SupportBean group by TheString;\n" +
+                "@name('s0') select varTotal[P00].Total as c0 from SupportBean_S0;\n";
             env.CompileDeploy(epl).AddListener("s0");
             env.SendEventBean(new SupportBean("A", 10));
 
@@ -70,13 +77,13 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             t2.Start();
 
             // join
-            log.Info("Waiting for completion");
+            Log.Info("Waiting for completion");
             t1.Join();
             t2.Join();
 
             env.UndeployAll();
-            Assert.IsNull(writeRunnable.Exception);
-            Assert.IsNull(readRunnable.Exception);
+            ClassicAssert.IsNull(writeRunnable.Exception);
+            ClassicAssert.IsNull(readRunnable.Exception);
         }
 
         public class WriteRunnable : IRunnable
@@ -99,7 +106,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
             public void Run()
             {
-                log.Info("Started event send for write");
+                Log.Info("Started event send for write");
 
                 try {
                     for (var i = 0; i < numEvents; i++) {
@@ -109,11 +116,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     }
                 }
                 catch (Exception ex) {
-                    log.Error("Exception encountered: " + ex.Message, ex);
+                    Log.Error("Exception encountered: " + ex.Message, ex);
                     Exception = ex;
                 }
 
-                log.Info("Completed event send for write");
+                Log.Info("Completed event send for write");
             }
         }
 
@@ -137,7 +144,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
             public void Run()
             {
-                log.Info("Started event send for read");
+                Log.Info("Started event send for read");
                 try {
                     var listener = env.Listener("s0");
                     var currentEventId = "A";
@@ -149,15 +156,15 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
                         env.SendEventBean(new SupportBean_S0(0, currentEventId));
                         var value = listener.AssertOneGetNewAndReset().Get("c0").AsInt32();
-                        Assert.AreEqual(10, value);
+                        ClassicAssert.AreEqual(10, value);
                     }
                 }
                 catch (Exception ex) {
-                    log.Error("Exception encountered: " + ex.Message, ex);
+                    Log.Error("Exception encountered: " + ex.Message, ex);
                     Exception = ex;
                 }
 
-                log.Info("Completed event send for read");
+                Log.Info("Completed event send for read");
             }
         }
     }

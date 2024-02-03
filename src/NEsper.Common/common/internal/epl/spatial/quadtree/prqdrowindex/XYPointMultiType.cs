@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -32,6 +32,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex
             if (Multityped is ICollection<object> objectCollection) {
                 return objectCollection.Count;
             }
+
             return 1;
         }
 
@@ -77,17 +78,20 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex
 
         public void CollectInto(ICollection<object> result)
         {
-            if (!(Multityped is ICollection<object>)) {
+            if (!(Multityped is ICollection<object> objects)) {
                 result.Add(Multityped);
                 return;
             }
 
-            result.AddAll((ICollection<object>) Multityped);
+            result.AddAll(objects);
         }
 
         public bool Remove(object value)
         {
-            if (Multityped == null) return false;
+            if (Multityped == null) {
+                return false;
+            }
+
             if (Multityped.Equals(value)) {
                 Multityped = null;
                 return true;
@@ -96,6 +100,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex
             if (Multityped is ICollection<object> objectCollection) {
                 return objectCollection.Remove(value);
             }
+
             return false;
         }
 

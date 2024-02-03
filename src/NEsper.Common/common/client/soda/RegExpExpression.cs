@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Regular expression evaluates a "regexp" regular expression.
     /// </summary>
-    [Serializable]
     public class RegExpExpression : ExpressionBase
     {
         private readonly bool not;
@@ -57,8 +56,7 @@ namespace com.espertech.esper.common.client.soda
         {
             Children.Add(left);
             Children.Add(right);
-            if (escape != null)
-            {
+            if (escape != null) {
                 Children.Add(escape);
             }
 
@@ -98,32 +96,26 @@ namespace com.espertech.esper.common.client.soda
         {
             Children.Add(left);
             Children.Add(right);
-            if (escape != null)
-            {
+            if (escape != null) {
                 Children.Add(escape);
             }
 
             not = false;
         }
 
-        public override ExpressionPrecedenceEnum Precedence
-        {
-            get => ExpressionPrecedenceEnum.RELATIONAL_BETWEEN_IN;
-        }
+        public override ExpressionPrecedenceEnum Precedence => ExpressionPrecedenceEnum.RELATIONAL_BETWEEN_IN;
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             Children[0].ToEPL(writer, Precedence);
-            if (not)
-            {
+            if (not) {
                 writer.Write(" not");
             }
 
             writer.Write(" regexp ");
             Children[1].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
 
-            if (Children.Count > 2)
-            {
+            if (Children.Count > 2) {
                 writer.Write(" escape ");
                 Children[2].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
             }
@@ -133,9 +125,6 @@ namespace com.espertech.esper.common.client.soda
         /// Returns true if negated.
         /// </summary>
         /// <returns>indicator whether negated</returns>
-        public bool IsNot
-        {
-            get => not;
-        }
+        public bool IsNot => not;
     }
 } // end of namespace

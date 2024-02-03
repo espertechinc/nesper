@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -80,7 +80,7 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
                 return;
             }
 
-            var info = (ContextControllerKeyedPartitionKeyWInit) partitionKey;
+            var info = (ContextControllerKeyedPartitionKeyWInit)partitionKey;
             PopulateContextPropertiesAddKeyInfo(props, info.GetterKey);
             if (info.OptionalInitAsName != null) {
                 props.Put(info.OptionalInitAsName, info.OptionalInitBean);
@@ -100,17 +100,17 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
         public override ContextPartitionIdentifier GetContextPartitionIdentifier(object partitionKey)
         {
             var getterKey = GetGetterKey(partitionKey);
-            if (getterKey is object[]) {
-                return new ContextPartitionIdentifierPartitioned((object[]) getterKey);
+            if (getterKey is object[] key) {
+                return new ContextPartitionIdentifierPartitioned(key);
             }
 
-            return new ContextPartitionIdentifierPartitioned(new[] {getterKey});
+            return new ContextPartitionIdentifierPartitioned(new[] { getterKey });
         }
 
         public object GetGetterKey(object partitionKey)
         {
             if (keyedSpec.HasAsName) {
-                var info = (ContextControllerKeyedPartitionKeyWInit) partitionKey;
+                var info = (ContextControllerKeyedPartitionKeyWInit)partitionKey;
                 return info.GetterKey;
             }
 
@@ -122,8 +122,8 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
             object getterKey)
         {
             if (getterKey is MultiKey values) {
-                for (int i = 0; i < values.NumKeys; i++) {
-                    string propertyName = ContextPropertyEventType.PROP_CTX_KEY_PREFIX + (i + 1);
+                for (var i = 0; i < values.NumKeys; i++) {
+                    var propertyName = ContextPropertyEventType.PROP_CTX_KEY_PREFIX + (i + 1);
                     props[propertyName] = values.GetKey(i);
                 }
             }

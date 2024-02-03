@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -59,7 +59,7 @@ namespace com.espertech.esper.common.@internal.view.lengthbatch
 
         public ViewFactory ViewFactory => lengthBatchViewFactory;
 
-        public override EventType EventType => parent.EventType;
+        public override EventType EventType => Parent.EventType;
 
         public override void Update(
             EventBean[] newData,
@@ -121,7 +121,7 @@ namespace com.espertech.esper.common.@internal.view.lengthbatch
         protected void SendBatch()
         {
             // If there are child views and the batch was filled, fireStatementStopped update method
-            if (child != null) {
+            if (Child != null) {
                 // Convert to object arrays
                 EventBean[] newData = null;
                 EventBean[] oldData = null;
@@ -139,7 +139,7 @@ namespace com.espertech.esper.common.@internal.view.lengthbatch
                         lengthBatchViewFactory,
                         newData,
                         oldData);
-                    child.Update(newData, oldData);
+                    Child.Update(newData, oldData);
                     agentInstanceContext.InstrumentationProvider.AViewIndicate();
                 }
             }

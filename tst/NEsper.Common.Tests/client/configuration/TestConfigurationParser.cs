@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -28,6 +28,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.container;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.client.configuration
 {
@@ -52,113 +53,117 @@ namespace com.espertech.esper.common.client.configuration
             var config = new Configuration(container);
 
             var common = config.Common;
-            Assert.AreEqual(PropertyResolutionStyle.CASE_SENSITIVE, common.EventMeta.ClassPropertyResolutionStyle);
-            Assert.AreEqual(AccessorStyle.NATIVE, common.EventMeta.DefaultAccessorStyle);
-            Assert.AreEqual(EventUnderlyingType.MAP, common.EventMeta.DefaultEventRepresentation);
-            Assert.IsTrue(common.EventMeta.AvroSettings.IsEnableAvro);
-            Assert.IsTrue(common.EventMeta.AvroSettings.IsEnableNativeString);
-            Assert.IsTrue(common.EventMeta.AvroSettings.IsEnableSchemaDefaultNonNull);
-            Assert.IsNull(common.EventMeta.AvroSettings.ObjectValueTypeWidenerFactoryClass);
-            Assert.IsNull(common.EventMeta.AvroSettings.TypeRepresentationMapperClass);
-            Assert.IsFalse(common.Logging.IsEnableQueryPlan);
-            Assert.IsFalse(common.Logging.IsEnableADO);
-            Assert.AreEqual(TimeUnit.MILLISECONDS, common.TimeSource.TimeUnit);
-            Assert.AreEqual(ThreadingProfile.NORMAL, common.Execution.ThreadingProfile);
+            ClassicAssert.AreEqual(PropertyResolutionStyle.CASE_SENSITIVE, common.EventMeta.ClassPropertyResolutionStyle);
+            ClassicAssert.AreEqual(AccessorStyle.NATIVE, common.EventMeta.DefaultAccessorStyle);
+            ClassicAssert.AreEqual(EventUnderlyingType.MAP, common.EventMeta.DefaultEventRepresentation);
+            ClassicAssert.IsFalse(common.EventMeta.IsEnableXmlXsd);
+            ClassicAssert.IsFalse(common.EventMeta.AvroSettings.IsEnableAvro);
+            ClassicAssert.IsTrue(common.EventMeta.AvroSettings.IsEnableNativeString);
+            ClassicAssert.IsTrue(common.EventMeta.AvroSettings.IsEnableSchemaDefaultNonNull);
+            ClassicAssert.IsNull(common.EventMeta.AvroSettings.ObjectValueTypeWidenerFactoryClass);
+            ClassicAssert.IsNull(common.EventMeta.AvroSettings.TypeRepresentationMapperClass);
+            ClassicAssert.IsFalse(common.Logging.IsEnableQueryPlan);
+            ClassicAssert.IsFalse(common.Logging.IsEnableADO);
+            ClassicAssert.AreEqual(TimeUnit.MILLISECONDS, common.TimeSource.TimeUnit);
+            ClassicAssert.AreEqual(ThreadingProfile.NORMAL, common.Execution.ThreadingProfile);
 
             var compiler = config.Compiler;
-            Assert.IsFalse(compiler.ViewResources.IsIterableUnbound);
-            Assert.IsTrue(compiler.ViewResources.IsOutputLimitOpt);
-            Assert.IsFalse(compiler.Logging.IsEnableCode);
-            Assert.IsFalse(compiler.Logging.IsEnableFilterPlan);
-            Assert.AreEqual(16, compiler.Execution.FilterServiceMaxFilterWidth);
-            Assert.AreEqual(ConfigurationCompilerExecution.FilterIndexPlanningEnum.ADVANCED, compiler.Execution.FilterIndexPlanning);
-            Assert.IsTrue(compiler.Execution.IsEnabledDeclaredExprValueCache);
+            ClassicAssert.IsFalse(compiler.ViewResources.IsIterableUnbound);
+            ClassicAssert.IsTrue(compiler.ViewResources.IsOutputLimitOpt);
+            ClassicAssert.IsFalse(compiler.Logging.IsEnableCode);
+            ClassicAssert.IsFalse(compiler.Logging.IsEnableFilterPlan);
+            ClassicAssert.AreEqual(16, compiler.Execution.FilterServiceMaxFilterWidth);
+            ClassicAssert.AreEqual(ConfigurationCompilerExecution.FilterIndexPlanningEnum.ADVANCED, compiler.Execution.FilterIndexPlanning);
+            ClassicAssert.IsTrue(compiler.Execution.IsEnabledDeclaredExprValueCache);
             var byteCode = compiler.ByteCode;
-            Assert.IsFalse(byteCode.IsIncludeComments);
-            Assert.IsFalse(byteCode.IsIncludeDebugSymbols);
-            Assert.IsTrue(byteCode.IsAttachEPL);
-            Assert.IsFalse(byteCode.IsAttachModuleEPL);
-            Assert.IsFalse(byteCode.IsAttachPatternEPL);
-            Assert.IsFalse(byteCode.IsInstrumented);
-            Assert.IsFalse(byteCode.IsAllowSubscriber);
-            Assert.AreEqual(NameAccessModifier.PRIVATE, byteCode.AccessModifierContext);
-            Assert.AreEqual(NameAccessModifier.PRIVATE, byteCode.AccessModifierEventType);
-            Assert.AreEqual(NameAccessModifier.PRIVATE, byteCode.AccessModifierExpression);
-            Assert.AreEqual(NameAccessModifier.PRIVATE, byteCode.AccessModifierNamedWindow);
-            Assert.AreEqual(NameAccessModifier.PRIVATE, byteCode.AccessModifierScript);
-            Assert.AreEqual(NameAccessModifier.PRIVATE, byteCode.AccessModifierTable);
-            Assert.AreEqual(NameAccessModifier.PRIVATE, byteCode.AccessModifierVariable);
-            Assert.AreEqual(EventTypeBusModifier.NONBUS, byteCode.BusModifierEventType);
-            Assert.AreEqual(8, byteCode.ThreadPoolCompilerNumThreads);
-            Assert.IsNull(byteCode.ThreadPoolCompilerCapacity);
-            Assert.AreEqual(16*1024, byteCode.MaxMethodsPerClass);
-            Assert.IsTrue(byteCode.IsAllowInlinedClass);
-            Assert.AreEqual(StreamSelector.ISTREAM_ONLY, compiler.StreamSelection.DefaultStreamSelector);
-            Assert.IsFalse(compiler.Language.IsSortUsingCollator);
-            Assert.IsFalse(compiler.Expression.IsIntegerDivision);
-            Assert.IsFalse(compiler.Expression.IsDivisionByZeroReturnsNull);
-            Assert.IsTrue(compiler.Expression.IsUdfCache);
-            Assert.IsTrue(compiler.Expression.IsExtendedAggregation);
-            Assert.IsFalse(compiler.Expression.IsDuckTyping);
-            Assert.IsNull(compiler.Expression.MathContext);
-            Assert.AreEqual("js", compiler.Scripts.DefaultDialect);
-            Assert.IsTrue(compiler.Scripts.IsEnabled);
-            Assert.IsTrue(compiler.Serde.IsEnableExtendedBuiltin);
-            Assert.IsFalse(compiler.Serde.IsEnableExternalizable);
-            Assert.IsFalse(compiler.Serde.IsEnableSerializable);
-            Assert.IsFalse(compiler.Serde.IsEnableSerializationFallback);
-            Assert.IsTrue(compiler.Serde.SerdeProviderFactories.IsEmpty());
+            ClassicAssert.IsFalse(byteCode.IsIncludeComments);
+            ClassicAssert.IsFalse(byteCode.IsIncludeDebugSymbols);
+            ClassicAssert.IsTrue(byteCode.IsAttachEPL);
+            ClassicAssert.IsFalse(byteCode.IsAttachModuleEPL);
+            ClassicAssert.IsFalse(byteCode.IsAttachPatternEPL);
+            ClassicAssert.IsFalse(byteCode.IsInstrumented);
+            ClassicAssert.IsFalse(byteCode.IsAllowSubscriber);
+            ClassicAssert.AreEqual(NameAccessModifier.PRIVATE, byteCode.AccessModifierContext);
+            ClassicAssert.AreEqual(NameAccessModifier.PRIVATE, byteCode.AccessModifierEventType);
+            ClassicAssert.AreEqual(NameAccessModifier.PRIVATE, byteCode.AccessModifierExpression);
+            ClassicAssert.AreEqual(NameAccessModifier.PRIVATE, byteCode.AccessModifierNamedWindow);
+            ClassicAssert.AreEqual(NameAccessModifier.PRIVATE, byteCode.AccessModifierScript);
+            ClassicAssert.AreEqual(NameAccessModifier.PRIVATE, byteCode.AccessModifierTable);
+            ClassicAssert.AreEqual(NameAccessModifier.PRIVATE, byteCode.AccessModifierVariable);
+            ClassicAssert.AreEqual(NameAccessModifier.PRIVATE, byteCode.AccessModifierInlinedClass);
+            ClassicAssert.AreEqual(EventTypeBusModifier.NONBUS, byteCode.BusModifierEventType);
+            ClassicAssert.AreEqual(8, byteCode.ThreadPoolCompilerNumThreads);
+            ClassicAssert.IsNull(byteCode.ThreadPoolCompilerCapacity);
+            ClassicAssert.AreEqual(1024, byteCode.MaxMethodsPerClass);
+            ClassicAssert.IsTrue(byteCode.IsAllowInlinedClass);
+            ClassicAssert.AreEqual(StreamSelector.ISTREAM_ONLY, compiler.StreamSelection.DefaultStreamSelector);
+            ClassicAssert.IsFalse(compiler.Language.IsSortUsingCollator);
+            ClassicAssert.IsFalse(compiler.Expression.IsIntegerDivision);
+            ClassicAssert.IsFalse(compiler.Expression.IsDivisionByZeroReturnsNull);
+            ClassicAssert.IsTrue(compiler.Expression.IsUdfCache);
+            ClassicAssert.IsTrue(compiler.Expression.IsExtendedAggregation);
+            ClassicAssert.IsFalse(compiler.Expression.IsDuckTyping);
+            ClassicAssert.IsNull(compiler.Expression.MathContext);
+            ClassicAssert.AreEqual("js", compiler.Scripts.DefaultDialect);
+            ClassicAssert.IsTrue(compiler.Scripts.IsEnabled);
+            ClassicAssert.IsTrue(compiler.Serde.IsEnableExtendedBuiltin);
+            ClassicAssert.IsFalse(compiler.Serde.IsEnableExternalizable);
+            ClassicAssert.IsFalse(compiler.Serde.IsEnableSerializable);
+            ClassicAssert.IsFalse(compiler.Serde.IsEnableSerializationFallback);
+            ClassicAssert.IsTrue(compiler.Serde.SerdeProviderFactories.IsEmpty());
             
             var runtime = config.Runtime;
-            Assert.IsTrue(runtime.Threading.IsInsertIntoDispatchPreserveOrder);
-            Assert.AreEqual(100, runtime.Threading.InsertIntoDispatchTimeout);
-            Assert.IsTrue(runtime.Threading.IsListenerDispatchPreserveOrder);
-            Assert.AreEqual(1000, runtime.Threading.ListenerDispatchTimeout);
-            Assert.IsTrue(runtime.Threading.IsInternalTimerEnabled);
-            Assert.AreEqual(100, runtime.Threading.InternalTimerMsecResolution);
-            Assert.AreEqual(Locking.SPIN, runtime.Threading.InsertIntoDispatchLocking);
-            Assert.AreEqual(Locking.SPIN, runtime.Threading.ListenerDispatchLocking);
-            Assert.IsFalse(runtime.Threading.IsThreadPoolInbound);
-            Assert.IsFalse(runtime.Threading.IsThreadPoolOutbound);
-            Assert.IsFalse(runtime.Threading.IsThreadPoolRouteExec);
-            Assert.IsFalse(runtime.Threading.IsThreadPoolTimerExec);
-            Assert.AreEqual(2, runtime.Threading.ThreadPoolInboundNumThreads);
-            Assert.AreEqual(2, runtime.Threading.ThreadPoolOutboundNumThreads);
-            Assert.AreEqual(2, runtime.Threading.ThreadPoolRouteExecNumThreads);
-            Assert.AreEqual(2, runtime.Threading.ThreadPoolTimerExecNumThreads);
-            Assert.IsNull(runtime.Threading.ThreadPoolInboundCapacity);
-            Assert.IsNull(runtime.Threading.ThreadPoolOutboundCapacity);
-            Assert.IsNull(runtime.Threading.ThreadPoolRouteExecCapacity);
-            Assert.IsNull(runtime.Threading.ThreadPoolTimerExecCapacity);
-            Assert.IsFalse(runtime.Threading.IsRuntimeFairlock);
-            Assert.IsFalse(runtime.MetricsReporting.IsRuntimeMetrics);
-            Assert.IsTrue(runtime.Threading.IsNamedWindowConsumerDispatchPreserveOrder);
-            Assert.AreEqual(Int32.MaxValue, runtime.Threading.NamedWindowConsumerDispatchTimeout);
-            Assert.AreEqual(Locking.SPIN, runtime.Threading.NamedWindowConsumerDispatchLocking);
-            Assert.IsFalse(runtime.Logging.IsEnableExecutionDebug);
-            Assert.IsTrue(runtime.Logging.IsEnableTimerDebug);
-            Assert.IsNull(runtime.Logging.AuditPattern);
-            Assert.AreEqual(15000, runtime.Variables.MsecVersionRelease);
-            Assert.IsNull(runtime.Patterns.MaxSubexpressions);
-            Assert.IsTrue(runtime.Patterns.IsMaxSubexpressionPreventStart);
-            Assert.IsNull(runtime.MatchRecognize.MaxStates);
-            Assert.IsTrue(runtime.MatchRecognize.IsMaxStatesPreventStart);
-            Assert.AreEqual(TimeSourceType.MILLI, runtime.TimeSource.TimeSourceType);
-            Assert.IsFalse(runtime.Execution.IsPrioritized);
-            Assert.IsFalse(runtime.Execution.IsDisableLocking);
-            Assert.AreEqual(FilterServiceProfile.READMOSTLY, runtime.Execution.FilterServiceProfile);
-            Assert.AreEqual(1, runtime.Execution.DeclaredExprValueCacheSize);
-            Assert.IsTrue(runtime.Expression.IsSelfSubselectPreeval);
-            Assert.AreEqual(TimeZoneInfo.Utc, runtime.Expression.TimeZone);
-            Assert.IsNull(runtime.ExceptionHandling.HandlerFactories);
-            Assert.AreEqual(UndeployRethrowPolicy.WARN, runtime.ExceptionHandling.UndeployRethrowPolicy);
-            Assert.IsNull(runtime.ConditionHandling.HandlerFactories);
+            ClassicAssert.IsTrue(runtime.Threading.IsInsertIntoDispatchPreserveOrder);
+            ClassicAssert.AreEqual(100, runtime.Threading.InsertIntoDispatchTimeout);
+            ClassicAssert.IsTrue(runtime.Threading.IsListenerDispatchPreserveOrder);
+            ClassicAssert.AreEqual(1000, runtime.Threading.ListenerDispatchTimeout);
+            ClassicAssert.IsTrue(runtime.Threading.IsInternalTimerEnabled);
+            ClassicAssert.AreEqual(100, runtime.Threading.InternalTimerMsecResolution);
+            ClassicAssert.AreEqual(Locking.SPIN, runtime.Threading.InsertIntoDispatchLocking);
+            ClassicAssert.AreEqual(Locking.SPIN, runtime.Threading.ListenerDispatchLocking);
+            ClassicAssert.IsFalse(runtime.Threading.IsThreadPoolInbound);
+            ClassicAssert.IsFalse(runtime.Threading.IsThreadPoolOutbound);
+            ClassicAssert.IsFalse(runtime.Threading.IsThreadPoolRouteExec);
+            ClassicAssert.IsFalse(runtime.Threading.IsThreadPoolTimerExec);
+            ClassicAssert.AreEqual(2, runtime.Threading.ThreadPoolInboundNumThreads);
+            ClassicAssert.AreEqual(2, runtime.Threading.ThreadPoolOutboundNumThreads);
+            ClassicAssert.AreEqual(2, runtime.Threading.ThreadPoolRouteExecNumThreads);
+            ClassicAssert.AreEqual(2, runtime.Threading.ThreadPoolTimerExecNumThreads);
+            ClassicAssert.IsNull(runtime.Threading.ThreadPoolInboundCapacity);
+            ClassicAssert.IsNull(runtime.Threading.ThreadPoolOutboundCapacity);
+            ClassicAssert.IsNull(runtime.Threading.ThreadPoolRouteExecCapacity);
+            ClassicAssert.IsNull(runtime.Threading.ThreadPoolTimerExecCapacity);
+            ClassicAssert.IsFalse(runtime.Threading.IsRuntimeFairlock);
+            ClassicAssert.IsFalse(runtime.MetricsReporting.IsRuntimeMetrics);
+            ClassicAssert.IsTrue(runtime.Threading.IsNamedWindowConsumerDispatchPreserveOrder);
+            ClassicAssert.AreEqual(Int32.MaxValue, runtime.Threading.NamedWindowConsumerDispatchTimeout);
+            ClassicAssert.AreEqual(Locking.SPIN, runtime.Threading.NamedWindowConsumerDispatchLocking);
+            ClassicAssert.IsFalse(runtime.Logging.IsEnableExecutionDebug);
+            ClassicAssert.IsTrue(runtime.Logging.IsEnableTimerDebug);
+            ClassicAssert.IsNull(runtime.Logging.AuditPattern);
+            ClassicAssert.IsFalse(runtime.Logging.IsEnableLockActivity);
+            ClassicAssert.AreEqual(15000, runtime.Variables.MsecVersionRelease);
+            ClassicAssert.IsNull(runtime.Patterns.MaxSubexpressions);
+            ClassicAssert.IsTrue(runtime.Patterns.IsMaxSubexpressionPreventStart);
+            ClassicAssert.IsNull(runtime.MatchRecognize.MaxStates);
+            ClassicAssert.IsTrue(runtime.MatchRecognize.IsMaxStatesPreventStart);
+            ClassicAssert.AreEqual(TimeSourceType.MILLI, runtime.TimeSource.TimeSourceType);
+            ClassicAssert.IsFalse(runtime.Execution.IsPrioritized);
+            ClassicAssert.IsFalse(runtime.Execution.IsPrecedenceEnabled);
+            ClassicAssert.IsFalse(runtime.Execution.IsDisableLocking);
+            ClassicAssert.AreEqual(FilterServiceProfile.READMOSTLY, runtime.Execution.FilterServiceProfile);
+            ClassicAssert.AreEqual(1, runtime.Execution.DeclaredExprValueCacheSize);
+            ClassicAssert.IsTrue(runtime.Expression.IsSelfSubselectPreeval);
+            ClassicAssert.AreEqual(TimeZoneInfo.Utc, runtime.Expression.TimeZone);
+            ClassicAssert.IsNull(runtime.ExceptionHandling.HandlerFactories);
+            ClassicAssert.AreEqual(UndeployRethrowPolicy.WARN, runtime.ExceptionHandling.UndeployRethrowPolicy);
+            ClassicAssert.IsNull(runtime.ConditionHandling.HandlerFactories);
 
             var domType = new ConfigurationCommonEventTypeXMLDOM();
-            Assert.IsFalse(domType.IsXPathPropertyExpr);
-            Assert.IsTrue(domType.IsXPathResolvePropertiesAbsolute);
-            Assert.IsTrue(domType.IsEventSenderValidatesRoot);
-            Assert.IsTrue(domType.IsAutoFragment);
+            ClassicAssert.IsFalse(domType.IsXPathPropertyExpr);
+            ClassicAssert.IsTrue(domType.IsXPathResolvePropertiesAbsolute);
+            ClassicAssert.IsTrue(domType.IsEventSenderValidatesRoot);
+            ClassicAssert.IsTrue(domType.IsAutoFragment);
         }
 
         internal static void AssertFileConfig(Configuration config)
@@ -174,17 +179,17 @@ namespace com.espertech.esper.common.client.configuration
              */
 
             // assert name for class
-            Assert.AreEqual(3, common.EventTypeNames.Count);
-            Assert.AreEqual("com.mycompany.myapp.MySampleEventOne", common.EventTypeNames.Get("MySampleEventOne"));
-            Assert.AreEqual("com.mycompany.myapp.MySampleEventTwo", common.EventTypeNames.Get("MySampleEventTwo"));
-            Assert.AreEqual("com.mycompany.package.MyLegacyTypeEvent", common.EventTypeNames.Get("MyLegacyTypeEvent"));
+            ClassicAssert.AreEqual(3, common.EventTypeNames.Count);
+            ClassicAssert.AreEqual("com.mycompany.myapp.MySampleEventOne", common.EventTypeNames.Get("MySampleEventOne"));
+            ClassicAssert.AreEqual("com.mycompany.myapp.MySampleEventTwo", common.EventTypeNames.Get("MySampleEventTwo"));
+            ClassicAssert.AreEqual("com.mycompany.package.MyLegacyTypeEvent", common.EventTypeNames.Get("MyLegacyTypeEvent"));
 
             // need the assembly for commons - to be certain, we are using a class that is not in any of the
             // namespaces listed below, but is in the NEsper.Commons assembly.
             var commonsAssembly = typeof(BeanEventBean).Assembly;
             
             // assert auto imports
-            Assert.AreEqual(9, common.Imports.Count);
+            ClassicAssert.AreEqual(9, common.Imports.Count);
             CollectionAssert.AreEquivalent(
                 new Import[] {
                     new ImportNamespace("System"),
@@ -200,195 +205,198 @@ namespace com.espertech.esper.common.client.configuration
                 common.Imports);
 
             // assert XML DOM - no schema
-            Assert.AreEqual(2, common.EventTypesXMLDOM.Count);
+            ClassicAssert.AreEqual(2, common.EventTypesXMLDOM.Count);
             var noSchemaDesc = common.EventTypesXMLDOM.Get("MyNoSchemaXMLEventName");
-            Assert.AreEqual("MyNoSchemaEvent", noSchemaDesc.RootElementName);
-            Assert.AreEqual("/myevent/element1", noSchemaDesc.XPathProperties.Get("element1").XPath);
-            Assert.AreEqual(XPathResultType.Number, noSchemaDesc.XPathProperties.Get("element1").Type);
-            Assert.IsNull(noSchemaDesc.XPathProperties.Get("element1").OptionalCastToType);
-            Assert.IsNull(noSchemaDesc.XPathFunctionResolver);
-            Assert.IsNull(noSchemaDesc.XPathVariableResolver);
-            Assert.IsFalse(noSchemaDesc.IsXPathPropertyExpr);
+            ClassicAssert.AreEqual("MyNoSchemaEvent", noSchemaDesc.RootElementName);
+            ClassicAssert.AreEqual("/myevent/element1", noSchemaDesc.XPathProperties.Get("element1").XPath);
+            ClassicAssert.AreEqual(XPathResultType.Number, noSchemaDesc.XPathProperties.Get("element1").Type);
+            ClassicAssert.IsNull(noSchemaDesc.XPathProperties.Get("element1").OptionalCastToType);
+            ClassicAssert.IsNull(noSchemaDesc.XPathFunctionResolver);
+            ClassicAssert.IsNull(noSchemaDesc.XPathVariableResolver);
+            ClassicAssert.IsFalse(noSchemaDesc.IsXPathPropertyExpr);
 
             // assert XML DOM - with schema
             var schemaDesc = common.EventTypesXMLDOM.Get("MySchemaXMLEventName");
-            Assert.AreEqual("MySchemaEvent", schemaDesc.RootElementName);
-            Assert.AreEqual("MySchemaXMLEvent.xsd", schemaDesc.SchemaResource);
-            Assert.AreEqual("actual-xsd-text-here", schemaDesc.SchemaText);
-            Assert.AreEqual("samples:schemas:simpleSchema", schemaDesc.RootElementNamespace);
-            Assert.AreEqual("default-name-space", schemaDesc.DefaultNamespace);
-            Assert.AreEqual("/myevent/element2", schemaDesc.XPathProperties.Get("element2").XPath);
-            Assert.AreEqual(XPathResultType.String, schemaDesc.XPathProperties.Get("element2").Type);
-            Assert.AreEqual(typeof(long), schemaDesc.XPathProperties.Get("element2").OptionalCastToType);
-            Assert.AreEqual("/bookstore/book", schemaDesc.XPathProperties.Get("element3").XPath);
-            Assert.AreEqual(XPathResultType.NodeSet, schemaDesc.XPathProperties.Get("element3").Type);
-            Assert.IsNull(schemaDesc.XPathProperties.Get("element3").OptionalCastToType);
-            Assert.AreEqual("MyOtherXMLNodeEvent", schemaDesc.XPathProperties.Get("element3").OptionalEventTypeName);
-            Assert.AreEqual(1, schemaDesc.NamespacePrefixes.Count);
-            Assert.AreEqual("samples:schemas:simpleSchema", schemaDesc.NamespacePrefixes.Get("ss"));
-            Assert.IsFalse(schemaDesc.IsXPathResolvePropertiesAbsolute);
-            Assert.AreEqual("com.mycompany.OptionalFunctionResolver", schemaDesc.XPathFunctionResolver);
-            Assert.AreEqual("com.mycompany.OptionalVariableResolver", schemaDesc.XPathVariableResolver);
-            Assert.IsTrue(schemaDesc.IsXPathPropertyExpr);
-            Assert.IsFalse(schemaDesc.IsEventSenderValidatesRoot);
-            Assert.IsFalse(schemaDesc.IsAutoFragment);
-            Assert.AreEqual("startts", schemaDesc.StartTimestampPropertyName);
-            Assert.AreEqual("endts", schemaDesc.EndTimestampPropertyName);
+            ClassicAssert.AreEqual("MySchemaEvent", schemaDesc.RootElementName);
+            ClassicAssert.AreEqual("MySchemaXMLEvent.xsd", schemaDesc.SchemaResource);
+            ClassicAssert.AreEqual("actual-xsd-text-here", schemaDesc.SchemaText);
+            ClassicAssert.AreEqual("samples:schemas:simpleSchema", schemaDesc.RootElementNamespace);
+            ClassicAssert.AreEqual("default-name-space", schemaDesc.DefaultNamespace);
+            ClassicAssert.AreEqual("/myevent/element2", schemaDesc.XPathProperties.Get("element2").XPath);
+            ClassicAssert.AreEqual(XPathResultType.String, schemaDesc.XPathProperties.Get("element2").Type);
+            ClassicAssert.AreEqual(typeof(long), schemaDesc.XPathProperties.Get("element2").OptionalCastToType);
+            ClassicAssert.AreEqual("/bookstore/book", schemaDesc.XPathProperties.Get("element3").XPath);
+            ClassicAssert.AreEqual(XPathResultType.NodeSet, schemaDesc.XPathProperties.Get("element3").Type);
+            ClassicAssert.IsNull(schemaDesc.XPathProperties.Get("element3").OptionalCastToType);
+            ClassicAssert.AreEqual("MyOtherXMLNodeEvent", schemaDesc.XPathProperties.Get("element3").OptionalEventTypeName);
+            ClassicAssert.AreEqual(1, schemaDesc.NamespacePrefixes.Count);
+            ClassicAssert.AreEqual("samples:schemas:simpleSchema", schemaDesc.NamespacePrefixes.Get("ss"));
+            ClassicAssert.IsFalse(schemaDesc.IsXPathResolvePropertiesAbsolute);
+            ClassicAssert.AreEqual("com.mycompany.OptionalFunctionResolver", schemaDesc.XPathFunctionResolver);
+            ClassicAssert.AreEqual("com.mycompany.OptionalVariableResolver", schemaDesc.XPathVariableResolver);
+            ClassicAssert.IsTrue(schemaDesc.IsXPathPropertyExpr);
+            ClassicAssert.IsFalse(schemaDesc.IsEventSenderValidatesRoot);
+            ClassicAssert.IsFalse(schemaDesc.IsAutoFragment);
+            ClassicAssert.AreEqual("startts", schemaDesc.StartTimestampPropertyName);
+            ClassicAssert.AreEqual("endts", schemaDesc.EndTimestampPropertyName);
 
             // assert mapped events
-            Assert.AreEqual(1, common.EventTypesMapEvents.Count);
-            Assert.IsTrue(common.EventTypesMapEvents.Keys.Contains("MyMapEvent"));
+            ClassicAssert.AreEqual(1, common.EventTypesMapEvents.Count);
+            ClassicAssert.IsTrue(common.EventTypesMapEvents.Keys.Contains("MyMapEvent"));
             var expectedProps = new HashMap<string, string>();
             expectedProps.Put("myInt", "int");
             expectedProps.Put("myString", "string");
-            Assert.AreEqual(expectedProps, common.EventTypesMapEvents.Get("MyMapEvent"));
-            Assert.AreEqual(1, common.MapTypeConfigurations.Count);
+            ClassicAssert.AreEqual(expectedProps, common.EventTypesMapEvents.Get("MyMapEvent"));
+            ClassicAssert.AreEqual(1, common.MapTypeConfigurations.Count);
             var superTypes = common.MapTypeConfigurations.Get("MyMapEvent").SuperTypes;
             EPAssertionUtil.AssertEqualsExactOrder(new object[] { "MyMapSuperType1", "MyMapSuperType2" }, superTypes.ToArray());
-            Assert.AreEqual("startts", common.MapTypeConfigurations.Get("MyMapEvent").StartTimestampPropertyName);
-            Assert.AreEqual("endts", common.MapTypeConfigurations.Get("MyMapEvent").EndTimestampPropertyName);
+            ClassicAssert.AreEqual("startts", common.MapTypeConfigurations.Get("MyMapEvent").StartTimestampPropertyName);
+            ClassicAssert.AreEqual("endts", common.MapTypeConfigurations.Get("MyMapEvent").EndTimestampPropertyName);
 
             // assert objectarray events
-            Assert.AreEqual(1, common.EventTypesNestableObjectArrayEvents.Count);
-            Assert.IsTrue(common.EventTypesNestableObjectArrayEvents.ContainsKey("MyObjectArrayEvent"));
+            ClassicAssert.AreEqual(1, common.EventTypesNestableObjectArrayEvents.Count);
+            ClassicAssert.IsTrue(common.EventTypesNestableObjectArrayEvents.ContainsKey("MyObjectArrayEvent"));
             var expectedPropsObjectArray = new HashMap<string, string>();
             expectedPropsObjectArray.Put("myInt", "int");
             expectedPropsObjectArray.Put("myString", "string");
-            Assert.AreEqual(expectedPropsObjectArray, common.EventTypesNestableObjectArrayEvents.Get("MyObjectArrayEvent"));
-            Assert.AreEqual(1, common.ObjectArrayTypeConfigurations.Count);
+            ClassicAssert.AreEqual(expectedPropsObjectArray, common.EventTypesNestableObjectArrayEvents.Get("MyObjectArrayEvent"));
+            ClassicAssert.AreEqual(1, common.ObjectArrayTypeConfigurations.Count);
             var superTypesOA = common.ObjectArrayTypeConfigurations.Get("MyObjectArrayEvent").SuperTypes;
             EPAssertionUtil.AssertEqualsExactOrder(new object[] { "MyObjectArraySuperType1", "MyObjectArraySuperType2" }, superTypesOA.ToArray());
-            Assert.AreEqual("startts", common.ObjectArrayTypeConfigurations.Get("MyObjectArrayEvent").StartTimestampPropertyName);
-            Assert.AreEqual("endts", common.ObjectArrayTypeConfigurations.Get("MyObjectArrayEvent").EndTimestampPropertyName);
+            ClassicAssert.AreEqual("startts", common.ObjectArrayTypeConfigurations.Get("MyObjectArrayEvent").StartTimestampPropertyName);
+            ClassicAssert.AreEqual("endts", common.ObjectArrayTypeConfigurations.Get("MyObjectArrayEvent").EndTimestampPropertyName);
 
             // assert avro events
-            Assert.AreEqual(2, common.EventTypesAvro.Count);
+            ClassicAssert.AreEqual(2, common.EventTypesAvro.Count);
             var avroOne = common.EventTypesAvro.Get("MyAvroEvent");
-            Assert.AreEqual(
+            ClassicAssert.AreEqual(
                 "{\"type\":\"record\",\"name\":\"typename\",\"fields\":[{\"name\":\"num\",\"type\":\"int\"}]}", avroOne.AvroSchemaText);
-            Assert.IsNull(avroOne.AvroSchema);
-            Assert.IsNull(avroOne.StartTimestampPropertyName);
-            Assert.IsNull(avroOne.EndTimestampPropertyName);
-            Assert.IsTrue(avroOne.SuperTypes.IsEmpty());
+            ClassicAssert.IsNull(avroOne.AvroSchema);
+            ClassicAssert.IsNull(avroOne.StartTimestampPropertyName);
+            ClassicAssert.IsNull(avroOne.EndTimestampPropertyName);
+            ClassicAssert.IsTrue(avroOne.SuperTypes.IsEmpty());
             var avroTwo = common.EventTypesAvro.Get("MyAvroEventTwo");
-            Assert.AreEqual(
+            ClassicAssert.AreEqual(
                 "{\"type\":\"record\",\"name\":\"MyAvroEvent\",\"fields\":[{\"name\":\"carId\",\"type\":\"int\"},{\"name\":\"carType\",\"type\":{\"type\":\"string\",\"avro.string\":\"string\"}}]}",
                 avroTwo.AvroSchemaText);
-            Assert.AreEqual("startts", avroTwo.StartTimestampPropertyName);
-            Assert.AreEqual("endts", avroTwo.EndTimestampPropertyName);
-            Assert.AreEqual("[\"SomeSuperAvro\", \"SomeSuperAvroTwo\"]", avroTwo.SuperTypes.RenderAny());
+            ClassicAssert.AreEqual("startts", avroTwo.StartTimestampPropertyName);
+            ClassicAssert.AreEqual("endts", avroTwo.EndTimestampPropertyName);
+            ClassicAssert.AreEqual("[\"SomeSuperAvro\", \"SomeSuperAvroTwo\"]", avroTwo.SuperTypes.RenderAny());
 
             // assert legacy type declaration
-            Assert.AreEqual(1, common.EventTypesBean.Count);
+            ClassicAssert.AreEqual(1, common.EventTypesBean.Count);
             var legacy = common.EventTypesBean.Get("MyLegacyTypeEvent");
-            Assert.AreEqual(AccessorStyle.PUBLIC, legacy.AccessorStyle);
-            Assert.AreEqual(1, legacy.FieldProperties.Count);
-            Assert.AreEqual("myFieldName", legacy.FieldProperties[0].AccessorFieldName);
-            Assert.AreEqual("myfieldprop", legacy.FieldProperties[0].Name);
-            Assert.AreEqual(1, legacy.MethodProperties.Count);
-            Assert.AreEqual("myAccessorMethod", legacy.MethodProperties[0].AccessorMethodName);
-            Assert.AreEqual("mymethodprop", legacy.MethodProperties[0].Name);
-            Assert.AreEqual(PropertyResolutionStyle.CASE_INSENSITIVE, legacy.PropertyResolutionStyle);
-            Assert.AreEqual("com.mycompany.myapp.MySampleEventFactory.createMyLegacyTypeEvent", legacy.FactoryMethod);
-            Assert.AreEqual("myCopyMethod", legacy.CopyMethod);
-            Assert.AreEqual("startts", legacy.StartTimestampPropertyName);
-            Assert.AreEqual("endts", legacy.EndTimestampPropertyName);
+            ClassicAssert.AreEqual(AccessorStyle.PUBLIC, legacy.AccessorStyle);
+            ClassicAssert.AreEqual(1, legacy.FieldProperties.Count);
+            ClassicAssert.AreEqual("myFieldName", legacy.FieldProperties[0].AccessorFieldName);
+            ClassicAssert.AreEqual("myfieldprop", legacy.FieldProperties[0].Name);
+            ClassicAssert.AreEqual(1, legacy.MethodProperties.Count);
+            ClassicAssert.AreEqual("myAccessorMethod", legacy.MethodProperties[0].AccessorMethodName);
+            ClassicAssert.AreEqual("mymethodprop", legacy.MethodProperties[0].Name);
+            ClassicAssert.AreEqual(PropertyResolutionStyle.CASE_INSENSITIVE, legacy.PropertyResolutionStyle);
+            ClassicAssert.AreEqual("com.mycompany.myapp.MySampleEventFactory.createMyLegacyTypeEvent", legacy.FactoryMethod);
+            ClassicAssert.AreEqual("myCopyMethod", legacy.CopyMethod);
+            ClassicAssert.AreEqual("startts", legacy.StartTimestampPropertyName);
+            ClassicAssert.AreEqual("endts", legacy.EndTimestampPropertyName);
 
             // assert database reference - data source config
-            Assert.AreEqual(2, common.DatabaseReferences.Count);
+            ClassicAssert.AreEqual(2, common.DatabaseReferences.Count);
             var configDBRef = common.DatabaseReferences.Get("mydb1");
             var dbDef = (DriverConnectionFactoryDesc) configDBRef.ConnectionFactoryDesc;
             var dbDriver = DbDriverConnectionHelper.ResolveDriver(container, dbDef);
 
-            Assert.AreEqual("com.espertech.esper.epl.db.drivers.DbDriverPgSQL", dbDriver.GetType().FullName);
-            Assert.AreEqual("Host=nesper-pgsql-integ.local;Database=test;Username=esper;Password=3sp3rP@ssw0rd;", dbDriver.ConnectionString);
-            Assert.AreEqual(ConnectionLifecycleEnum.POOLED, configDBRef.ConnectionLifecycleEnum);
-            Assert.IsNull(configDBRef.ConnectionSettings.AutoCommit);
-            Assert.IsNull(configDBRef.ConnectionSettings.Catalog);
-            Assert.IsNull(configDBRef.ConnectionSettings.TransactionIsolation);
+            ClassicAssert.AreEqual("com.espertech.esper.epl.db.drivers.DbDriverPgSQL", dbDriver.GetType().FullName);
+            ClassicAssert.AreEqual("Host=localhost;Database=esper;Username=esper;Password=3sp3rP@ssw0rd;", dbDriver.ConnectionString);
+            ClassicAssert.AreEqual(ConnectionLifecycleEnum.POOLED, configDBRef.ConnectionLifecycleEnum);
+            ClassicAssert.IsNull(configDBRef.ConnectionSettings.AutoCommit);
+            ClassicAssert.IsNull(configDBRef.ConnectionSettings.Catalog);
+            ClassicAssert.IsNull(configDBRef.ConnectionSettings.TransactionIsolation);
 
             var lruCache = (ConfigurationCommonCacheLRU) configDBRef.DataCacheDesc;
-            Assert.AreEqual(10, lruCache.Size);
-            Assert.AreEqual(ColumnChangeCaseEnum.LOWERCASE, configDBRef.ColumnChangeCase);
-            Assert.AreEqual(MetadataOriginEnum.SAMPLE, configDBRef.MetadataRetrievalEnum);
-            //Assert.AreEqual(2, configDBRef.DataTypesMapping.Count);
-            //Assert.AreEqual("int", configDBRef.DataTypesMapping[2]);
-            //Assert.AreEqual("float", configDBRef.DataTypesMapping[6]);
+            ClassicAssert.AreEqual(10, lruCache.Size);
+            ClassicAssert.AreEqual(ColumnChangeCaseEnum.LOWERCASE, configDBRef.ColumnChangeCase);
+            ClassicAssert.AreEqual(MetadataOriginEnum.SAMPLE, configDBRef.MetadataRetrievalEnum);
+            //ClassicAssert.AreEqual(2, configDBRef.DataTypesMapping.Count);
+            //ClassicAssert.AreEqual("int", configDBRef.DataTypesMapping[2]);
+            //ClassicAssert.AreEqual("float", configDBRef.DataTypesMapping[6]);
 
             // assert database reference - driver manager config
             configDBRef = common.DatabaseReferences.Get("mydb2");
 
             var dmDef = (DriverConnectionFactoryDesc) configDBRef.ConnectionFactoryDesc;
             var dmDriver = DbDriverConnectionHelper.ResolveDriver(container, dmDef);
-            Assert.AreEqual("com.espertech.esper.epl.db.drivers.DbDriverPgSQL", dmDriver.GetType().FullName);
-            Assert.AreEqual("Host=nesper-pgsql-integ.local;Database=test;Username=esper;Password=3sp3rP@ssw0rd;", dmDriver.ConnectionString);
+            ClassicAssert.AreEqual("com.espertech.esper.epl.db.drivers.DbDriverPgSQL", dmDriver.GetType().FullName);
+            ClassicAssert.AreEqual("Host=localhost;Database=esper;Username=esper;Password=3sp3rP@ssw0rd;", dmDriver.ConnectionString);
 
-            Assert.AreEqual(ConnectionLifecycleEnum.RETAIN, configDBRef.ConnectionLifecycleEnum);
-            Assert.AreEqual(false, configDBRef.ConnectionSettings.AutoCommit);
-            Assert.AreEqual("test", configDBRef.ConnectionSettings.Catalog);
-            Assert.AreEqual(IsolationLevel.ReadCommitted, configDBRef.ConnectionSettings.TransactionIsolation);
+            ClassicAssert.AreEqual(ConnectionLifecycleEnum.RETAIN, configDBRef.ConnectionLifecycleEnum);
+            ClassicAssert.AreEqual(false, configDBRef.ConnectionSettings.AutoCommit);
+            ClassicAssert.AreEqual("esper", configDBRef.ConnectionSettings.Catalog);
+            ClassicAssert.AreEqual(IsolationLevel.ReadCommitted, configDBRef.ConnectionSettings.TransactionIsolation);
             var expCache = (ConfigurationCommonCacheExpiryTime) configDBRef.DataCacheDesc;
 
-            Assert.AreEqual(60.5, expCache.MaxAgeSeconds);
-            Assert.AreEqual(120.1, expCache.PurgeIntervalSeconds);
-            Assert.AreEqual(CacheReferenceType.HARD, expCache.CacheReferenceType);
-            Assert.AreEqual(ColumnChangeCaseEnum.UPPERCASE, configDBRef.ColumnChangeCase);
-            Assert.AreEqual(MetadataOriginEnum.METADATA, configDBRef.MetadataRetrievalEnum);
-            //Assert.AreEqual(1, configDBRef.DataTypesMapping.Count);
-            //Assert.AreEqual("System.String", configDBRef.DataTypesMapping[99]);
+            ClassicAssert.AreEqual(60.5, expCache.MaxAgeSeconds);
+            ClassicAssert.AreEqual(120.1, expCache.PurgeIntervalSeconds);
+            ClassicAssert.AreEqual(CacheReferenceType.HARD, expCache.CacheReferenceType);
+            ClassicAssert.AreEqual(ColumnChangeCaseEnum.UPPERCASE, configDBRef.ColumnChangeCase);
+            ClassicAssert.AreEqual(MetadataOriginEnum.METADATA, configDBRef.MetadataRetrievalEnum);
+            //ClassicAssert.AreEqual(1, configDBRef.DataTypesMapping.Count);
+            //ClassicAssert.AreEqual("System.String", configDBRef.DataTypesMapping[99]);
 
-            Assert.AreEqual(PropertyResolutionStyle.DISTINCT_CASE_INSENSITIVE, common.EventMeta.ClassPropertyResolutionStyle);
-            Assert.AreEqual(AccessorStyle.PUBLIC, common.EventMeta.DefaultAccessorStyle);
-            Assert.AreEqual(EventUnderlyingType.MAP, common.EventMeta.DefaultEventRepresentation);
-            Assert.IsFalse(common.EventMeta.AvroSettings.IsEnableAvro);
-            Assert.IsFalse(common.EventMeta.AvroSettings.IsEnableNativeString);
-            Assert.IsFalse(common.EventMeta.AvroSettings.IsEnableSchemaDefaultNonNull);
-            Assert.AreEqual("myObjectValueTypeWidenerFactoryClass", common.EventMeta.AvroSettings.ObjectValueTypeWidenerFactoryClass);
-            Assert.AreEqual("myTypeToRepresentationMapperClass", common.EventMeta.AvroSettings.TypeRepresentationMapperClass);
+            ClassicAssert.AreEqual(PropertyResolutionStyle.DISTINCT_CASE_INSENSITIVE, common.EventMeta.ClassPropertyResolutionStyle);
+            ClassicAssert.AreEqual(AccessorStyle.PUBLIC, common.EventMeta.DefaultAccessorStyle);
+            ClassicAssert.AreEqual(EventUnderlyingType.MAP, common.EventMeta.DefaultEventRepresentation);
+            ClassicAssert.IsTrue(common.EventMeta.IsEnableXmlXsd);
+            ClassicAssert.IsTrue(common.EventMeta.AvroSettings.IsEnableAvro);
+            ClassicAssert.IsFalse(common.EventMeta.AvroSettings.IsEnableNativeString);
+            ClassicAssert.IsFalse(common.EventMeta.AvroSettings.IsEnableSchemaDefaultNonNull);
+            ClassicAssert.AreEqual("myObjectValueTypeWidenerFactoryClass", common.EventMeta.AvroSettings.ObjectValueTypeWidenerFactoryClass);
+            ClassicAssert.AreEqual("myTypeToRepresentationMapperClass", common.EventMeta.AvroSettings.TypeRepresentationMapperClass);
 
-            Assert.IsTrue(common.Logging.IsEnableQueryPlan);
-            Assert.IsTrue(common.Logging.IsEnableADO);
+            ClassicAssert.IsTrue(common.Logging.IsEnableQueryPlan);
+            ClassicAssert.IsTrue(common.Logging.IsEnableADO);
 
-            Assert.AreEqual(TimeUnit.MICROSECONDS, common.TimeSource.TimeUnit);
+            ClassicAssert.AreEqual(TimeUnit.MICROSECONDS, common.TimeSource.TimeUnit);
 
             // variables
-            Assert.AreEqual(3, common.Variables.Count);
+            ClassicAssert.AreEqual(3, common.Variables.Count);
             var variable = common.Variables.Get("var1");
-            Assert.AreEqual(typeof(int).FullName, variable.VariableType);
-            Assert.AreEqual("1", variable.InitializationValue);
-            Assert.IsFalse(variable.IsConstant);
+            ClassicAssert.AreEqual(typeof(int?).FullName, variable.VariableType);
+            ClassicAssert.AreEqual("1", variable.InitializationValue);
+            ClassicAssert.IsFalse(variable.IsConstant);
             variable = common.Variables.Get("var2");
-            Assert.AreEqual(typeof(string).FullName, variable.VariableType);
-            Assert.IsNull(variable.InitializationValue);
-            Assert.IsFalse(variable.IsConstant);
+            ClassicAssert.AreEqual(typeof(string).FullName, variable.VariableType);
+            ClassicAssert.IsNull(variable.InitializationValue);
+            ClassicAssert.IsFalse(variable.IsConstant);
             variable = common.Variables.Get("var3");
-            Assert.IsTrue(variable.IsConstant);
+            ClassicAssert.IsTrue(variable.IsConstant);
 
             // method references
-            Assert.AreEqual(2, common.MethodInvocationReferences.Count);
+            ClassicAssert.AreEqual(2, common.MethodInvocationReferences.Count);
             var methodRef = common.MethodInvocationReferences.Get("abc");
             expCache = (ConfigurationCommonCacheExpiryTime) methodRef.DataCacheDesc;
-            Assert.AreEqual(91.0, expCache.MaxAgeSeconds);
-            Assert.AreEqual(92.2, expCache.PurgeIntervalSeconds);
-            Assert.AreEqual(CacheReferenceType.WEAK, expCache.CacheReferenceType);
+            ClassicAssert.AreEqual(91.0, expCache.MaxAgeSeconds);
+            ClassicAssert.AreEqual(92.2, expCache.PurgeIntervalSeconds);
+            ClassicAssert.AreEqual(CacheReferenceType.WEAK, expCache.CacheReferenceType);
 
             methodRef = common.MethodInvocationReferences.Get("def");
             lruCache = (ConfigurationCommonCacheLRU) methodRef.DataCacheDesc;
-            Assert.AreEqual(20, lruCache.Size);
+            ClassicAssert.AreEqual(20, lruCache.Size);
 
             // variance types
-            Assert.AreEqual(1, common.VariantStreams.Count);
+            ClassicAssert.AreEqual(1, common.VariantStreams.Count);
             var configVStream = common.VariantStreams.Get("MyVariantStream");
-            Assert.AreEqual(2, configVStream.VariantTypeNames.Count);
-            Assert.IsTrue(configVStream.VariantTypeNames.Contains("MyEvenTypetNameOne"));
-            Assert.IsTrue(configVStream.VariantTypeNames.Contains("MyEvenTypetNameTwo"));
-            Assert.AreEqual(TypeVariance.ANY, configVStream.TypeVariance);
+            ClassicAssert.AreEqual(2, configVStream.VariantTypeNames.Count);
+            ClassicAssert.IsTrue(configVStream.VariantTypeNames.Contains("MyEvenTypetNameOne"));
+            ClassicAssert.IsTrue(configVStream.VariantTypeNames.Contains("MyEvenTypetNameTwo"));
+            ClassicAssert.AreEqual(TypeVariance.ANY, configVStream.TypeVariance);
 
-            Assert.AreEqual(ThreadingProfile.LARGE, common.Execution.ThreadingProfile);
+            ClassicAssert.AreEqual(ThreadingProfile.LARGE, common.Execution.ThreadingProfile);
 
-            Assert.AreEqual(2, common.EventTypeAutoNameNamespaces.Count);
-            Assert.AreEqual("com.mycompany.eventsone", common.EventTypeAutoNameNamespaces.ToArray()[0]);
-            Assert.AreEqual("com.mycompany.eventstwo", common.EventTypeAutoNameNamespaces.ToArray()[1]);
+            ClassicAssert.AreEqual(2, common.EventTypeAutoNameNamespaces.Count);
+            ClassicAssert.IsTrue(common.EventTypeAutoNameNamespaces.Contains("com.mycompany.eventsone"));
+            ClassicAssert.IsTrue(common.EventTypeAutoNameNamespaces.Contains("com.mycompany.eventstwo"));
+            ClassicAssert.AreEqual("com.mycompany.eventsone", common.EventTypeAutoNameNamespaces.ToArray()[0]);
+            ClassicAssert.AreEqual("com.mycompany.eventstwo", common.EventTypeAutoNameNamespaces.ToArray()[1]);
 
             /*
              * COMPILER
@@ -397,155 +405,156 @@ namespace com.espertech.esper.common.client.configuration
 
             // assert custom view implementations
             var configViews = compiler.PlugInViews;
-            Assert.AreEqual(2, configViews.Count);
+            ClassicAssert.AreEqual(2, configViews.Count);
             for (var i = 0; i < configViews.Count; i++)
             {
                 var entry = configViews[i];
-                Assert.AreEqual("ext" + i, entry.Namespace);
-                Assert.AreEqual("myview" + i, entry.Name);
-                Assert.AreEqual("com.mycompany.MyViewForge" + i, entry.ForgeClassName);
+                ClassicAssert.AreEqual("ext" + i, entry.Namespace);
+                ClassicAssert.AreEqual("myview" + i, entry.Name);
+                ClassicAssert.AreEqual("com.mycompany.MyViewForge" + i, entry.ForgeClassName);
             }
 
             // assert custom virtual data window implementations
             var configVDW = compiler.PlugInVirtualDataWindows;
-            Assert.AreEqual(2, configVDW.Count);
+            ClassicAssert.AreEqual(2, configVDW.Count);
             for (var i = 0; i < configVDW.Count; i++)
             {
                 var entry = configVDW[i];
-                Assert.AreEqual("vdw" + i, entry.Namespace);
-                Assert.AreEqual("myvdw" + i, entry.Name);
-                Assert.AreEqual("com.mycompany.MyVdwForge" + i, entry.ForgeClassName);
+                ClassicAssert.AreEqual("vdw" + i, entry.Namespace);
+                ClassicAssert.AreEqual("myvdw" + i, entry.Name);
+                ClassicAssert.AreEqual("com.mycompany.MyVdwForge" + i, entry.ForgeClassName);
                 if (i == 1)
                 {
-                    Assert.AreEqual("abc", entry.Config);
+                    ClassicAssert.AreEqual("abc", entry.Config);
                 }
             }
 
             // assert plug-in aggregation function loaded
-            Assert.AreEqual(2, compiler.PlugInAggregationFunctions.Count);
+            ClassicAssert.AreEqual(2, compiler.PlugInAggregationFunctions.Count);
             var pluginAgg = compiler.PlugInAggregationFunctions[0];
-            Assert.AreEqual("func1a", pluginAgg.Name);
-            Assert.AreEqual("com.mycompany.MyMatrixAggregationMethod0Forge", pluginAgg.ForgeClassName);
+            ClassicAssert.AreEqual("func1a", pluginAgg.Name);
+            ClassicAssert.AreEqual("com.mycompany.MyMatrixAggregationMethod0Forge", pluginAgg.ForgeClassName);
             pluginAgg = compiler.PlugInAggregationFunctions[1];
-            Assert.AreEqual("func2a", pluginAgg.Name);
-            Assert.AreEqual("com.mycompany.MyMatrixAggregationMethod1Forge", pluginAgg.ForgeClassName);
+            ClassicAssert.AreEqual("func2a", pluginAgg.Name);
+            ClassicAssert.AreEqual("com.mycompany.MyMatrixAggregationMethod1Forge", pluginAgg.ForgeClassName);
 
             // assert plug-in aggregation multi-function loaded
-            Assert.AreEqual(1, compiler.PlugInAggregationMultiFunctions.Count);
+            ClassicAssert.AreEqual(1, compiler.PlugInAggregationMultiFunctions.Count);
             var pluginMultiAgg = compiler.PlugInAggregationMultiFunctions[0];
             EPAssertionUtil.AssertEqualsExactOrder(new[] { "func1", "func2" }, pluginMultiAgg.FunctionNames);
-            Assert.AreEqual("com.mycompany.MyAggregationMultiFunctionForge", pluginMultiAgg.MultiFunctionForgeClassName);
-            Assert.AreEqual(1, pluginMultiAgg.AdditionalConfiguredProperties.Count);
-            Assert.AreEqual("value1", pluginMultiAgg.AdditionalConfiguredProperties.Get("prop1"));
+            ClassicAssert.AreEqual("com.mycompany.MyAggregationMultiFunctionForge", pluginMultiAgg.MultiFunctionForgeClassName);
+            ClassicAssert.AreEqual(1, pluginMultiAgg.AdditionalConfiguredProperties.Count);
+            ClassicAssert.AreEqual("value1", pluginMultiAgg.AdditionalConfiguredProperties.Get("prop1"));
 
             // assert plug-in single-row function loaded
-            Assert.AreEqual(2, compiler.PlugInSingleRowFunctions.Count);
+            ClassicAssert.AreEqual(2, compiler.PlugInSingleRowFunctions.Count);
             var pluginSingleRow = compiler.PlugInSingleRowFunctions[0];
-            Assert.AreEqual("com.mycompany.MyMatrixSingleRowMethod0", pluginSingleRow.FunctionClassName);
-            Assert.AreEqual("method1", pluginSingleRow.FunctionMethodName);
-            Assert.AreEqual("func3", pluginSingleRow.Name);
-            Assert.AreEqual(ConfigurationCompilerPlugInSingleRowFunction.ValueCacheEnum.DISABLED, pluginSingleRow.ValueCache);
-            Assert.AreEqual(ConfigurationCompilerPlugInSingleRowFunction.FilterOptimizableEnum.ENABLED, pluginSingleRow.FilterOptimizable);
-            Assert.IsFalse(pluginSingleRow.RethrowExceptions);
+            ClassicAssert.AreEqual("com.mycompany.MyMatrixSingleRowMethod0", pluginSingleRow.FunctionClassName);
+            ClassicAssert.AreEqual("method1", pluginSingleRow.FunctionMethodName);
+            ClassicAssert.AreEqual("func3", pluginSingleRow.Name);
+            ClassicAssert.AreEqual(ConfigurationCompilerPlugInSingleRowFunction.ValueCacheEnum.DISABLED, pluginSingleRow.ValueCache);
+            ClassicAssert.AreEqual(ConfigurationCompilerPlugInSingleRowFunction.FilterOptimizableEnum.ENABLED, pluginSingleRow.FilterOptimizable);
+            ClassicAssert.IsFalse(pluginSingleRow.RethrowExceptions);
             pluginSingleRow = compiler.PlugInSingleRowFunctions[1];
-            Assert.AreEqual("com.mycompany.MyMatrixSingleRowMethod1", pluginSingleRow.FunctionClassName);
-            Assert.AreEqual("func4", pluginSingleRow.Name);
-            Assert.AreEqual("method2", pluginSingleRow.FunctionMethodName);
-            Assert.AreEqual(ConfigurationCompilerPlugInSingleRowFunction.ValueCacheEnum.ENABLED, pluginSingleRow.ValueCache);
-            Assert.AreEqual(ConfigurationCompilerPlugInSingleRowFunction.FilterOptimizableEnum.DISABLED, pluginSingleRow.FilterOptimizable);
-            Assert.IsTrue(pluginSingleRow.RethrowExceptions);
-            Assert.AreEqual("XYZEventTypeName", pluginSingleRow.EventTypeName);
+            ClassicAssert.AreEqual("com.mycompany.MyMatrixSingleRowMethod1", pluginSingleRow.FunctionClassName);
+            ClassicAssert.AreEqual("func4", pluginSingleRow.Name);
+            ClassicAssert.AreEqual("method2", pluginSingleRow.FunctionMethodName);
+            ClassicAssert.AreEqual(ConfigurationCompilerPlugInSingleRowFunction.ValueCacheEnum.ENABLED, pluginSingleRow.ValueCache);
+            ClassicAssert.AreEqual(ConfigurationCompilerPlugInSingleRowFunction.FilterOptimizableEnum.DISABLED, pluginSingleRow.FilterOptimizable);
+            ClassicAssert.IsTrue(pluginSingleRow.RethrowExceptions);
+            ClassicAssert.AreEqual("XYZEventTypeName", pluginSingleRow.EventTypeName);
 
             // assert plug-in guard objects loaded
-            Assert.AreEqual(4, compiler.PlugInPatternObjects.Count);
+            ClassicAssert.AreEqual(4, compiler.PlugInPatternObjects.Count);
             var pluginPattern = compiler.PlugInPatternObjects[0];
-            Assert.AreEqual("com.mycompany.MyGuardForge0", pluginPattern.ForgeClassName);
-            Assert.AreEqual("ext0", pluginPattern.Namespace);
-            Assert.AreEqual("guard1", pluginPattern.Name);
-            Assert.AreEqual(PatternObjectType.GUARD, pluginPattern.PatternObjectType);
+            ClassicAssert.AreEqual("com.mycompany.MyGuardForge0", pluginPattern.ForgeClassName);
+            ClassicAssert.AreEqual("ext0", pluginPattern.Namespace);
+            ClassicAssert.AreEqual("guard1", pluginPattern.Name);
+            ClassicAssert.AreEqual(PatternObjectType.GUARD, pluginPattern.PatternObjectType);
             pluginPattern = compiler.PlugInPatternObjects[1];
-            Assert.AreEqual("com.mycompany.MyGuardForge1", pluginPattern.ForgeClassName);
-            Assert.AreEqual("ext1", pluginPattern.Namespace);
-            Assert.AreEqual("guard2", pluginPattern.Name);
-            Assert.AreEqual(PatternObjectType.GUARD, pluginPattern.PatternObjectType);
+            ClassicAssert.AreEqual("com.mycompany.MyGuardForge1", pluginPattern.ForgeClassName);
+            ClassicAssert.AreEqual("ext1", pluginPattern.Namespace);
+            ClassicAssert.AreEqual("guard2", pluginPattern.Name);
+            ClassicAssert.AreEqual(PatternObjectType.GUARD, pluginPattern.PatternObjectType);
             pluginPattern = compiler.PlugInPatternObjects[2];
-            Assert.AreEqual("com.mycompany.MyObserverForge0", pluginPattern.ForgeClassName);
-            Assert.AreEqual("ext0", pluginPattern.Namespace);
-            Assert.AreEqual("observer1", pluginPattern.Name);
-            Assert.AreEqual(PatternObjectType.OBSERVER, pluginPattern.PatternObjectType);
+            ClassicAssert.AreEqual("com.mycompany.MyObserverForge0", pluginPattern.ForgeClassName);
+            ClassicAssert.AreEqual("ext0", pluginPattern.Namespace);
+            ClassicAssert.AreEqual("observer1", pluginPattern.Name);
+            ClassicAssert.AreEqual(PatternObjectType.OBSERVER, pluginPattern.PatternObjectType);
             pluginPattern = compiler.PlugInPatternObjects[3];
-            Assert.AreEqual("com.mycompany.MyObserverForge1", pluginPattern.ForgeClassName);
-            Assert.AreEqual("ext1", pluginPattern.Namespace);
-            Assert.AreEqual("observer2", pluginPattern.Name);
-            Assert.AreEqual(PatternObjectType.OBSERVER, pluginPattern.PatternObjectType);
+            ClassicAssert.AreEqual("com.mycompany.MyObserverForge1", pluginPattern.ForgeClassName);
+            ClassicAssert.AreEqual("ext1", pluginPattern.Namespace);
+            ClassicAssert.AreEqual("observer2", pluginPattern.Name);
+            ClassicAssert.AreEqual(PatternObjectType.OBSERVER, pluginPattern.PatternObjectType);
 
             // assert plug-in date-time method and enum-method
             IList<ConfigurationCompilerPlugInDateTimeMethod> configDTM = compiler.PlugInDateTimeMethods;
-            Assert.AreEqual(1, configDTM.Count);
+            ClassicAssert.AreEqual(1, configDTM.Count);
             ConfigurationCompilerPlugInDateTimeMethod dtmOne = configDTM[0];
-            Assert.AreEqual("methodname1", dtmOne.Name);
-            Assert.AreEqual("com.mycompany.MyDateTimeMethodForge", dtmOne.ForgeClassName);
+            ClassicAssert.AreEqual("methodname1", dtmOne.Name);
+            ClassicAssert.AreEqual("com.mycompany.MyDateTimeMethodForge", dtmOne.ForgeClassName);
             IList<ConfigurationCompilerPlugInEnumMethod> configENM = compiler.PlugInEnumMethods;
-            Assert.AreEqual(1, configENM.Count);
+            ClassicAssert.AreEqual(1, configENM.Count);
             ConfigurationCompilerPlugInEnumMethod enmOne = configENM[0];
-            Assert.AreEqual("methodname2", enmOne.Name);
-            Assert.AreEqual("com.mycompany.MyEnumMethodForge", enmOne.ForgeClassName);
+            ClassicAssert.AreEqual("methodname2", enmOne.Name);
+            ClassicAssert.AreEqual("com.mycompany.MyEnumMethodForge", enmOne.ForgeClassName);
 
-            Assert.IsTrue(compiler.ViewResources.IsIterableUnbound);
-            Assert.IsFalse(compiler.ViewResources.IsOutputLimitOpt);
+            ClassicAssert.IsTrue(compiler.ViewResources.IsIterableUnbound);
+            ClassicAssert.IsFalse(compiler.ViewResources.IsOutputLimitOpt);
 
-            Assert.IsTrue(compiler.Logging.IsEnableCode);
-            Assert.IsTrue(compiler.Logging.IsEnableFilterPlan);
+            ClassicAssert.IsTrue(compiler.Logging.IsEnableCode);
+            ClassicAssert.IsTrue(compiler.Logging.IsEnableFilterPlan);
 
-            Assert.AreEqual(StreamSelector.RSTREAM_ISTREAM_BOTH, compiler.StreamSelection.DefaultStreamSelector);
+            ClassicAssert.AreEqual(StreamSelector.RSTREAM_ISTREAM_BOTH, compiler.StreamSelection.DefaultStreamSelector);
 
             var byteCode = compiler.ByteCode;
-            Assert.IsTrue(byteCode.IsIncludeComments);
-            Assert.IsTrue(byteCode.IsIncludeDebugSymbols);
-            Assert.IsFalse(byteCode.IsAttachEPL);
-            Assert.IsTrue(byteCode.IsAttachModuleEPL);
-            Assert.IsTrue(byteCode.IsAttachPatternEPL);
-            Assert.IsTrue(byteCode.IsInstrumented);
-            Assert.IsTrue(byteCode.IsAllowSubscriber);
-            Assert.AreEqual(NameAccessModifier.INTERNAL, byteCode.AccessModifierContext);
-            Assert.AreEqual(NameAccessModifier.PUBLIC, byteCode.AccessModifierEventType);
-            Assert.AreEqual(NameAccessModifier.INTERNAL, byteCode.AccessModifierExpression);
-            Assert.AreEqual(NameAccessModifier.PUBLIC, byteCode.AccessModifierNamedWindow);
-            Assert.AreEqual(NameAccessModifier.INTERNAL, byteCode.AccessModifierScript);
-            Assert.AreEqual(NameAccessModifier.PUBLIC, byteCode.AccessModifierTable);
-            Assert.AreEqual(NameAccessModifier.INTERNAL, byteCode.AccessModifierVariable);
-            Assert.AreEqual(EventTypeBusModifier.BUS, byteCode.BusModifierEventType);
-            Assert.AreEqual(1234, byteCode.ThreadPoolCompilerNumThreads);
-            Assert.AreEqual(4321, (int) byteCode.ThreadPoolCompilerCapacity);
-            Assert.AreEqual(5555, byteCode.MaxMethodsPerClass);
-            Assert.IsFalse(byteCode.IsAllowInlinedClass);
-            Assert.AreEqual(StreamSelector.RSTREAM_ISTREAM_BOTH, compiler.StreamSelection.DefaultStreamSelector);
+            ClassicAssert.IsTrue(byteCode.IsIncludeComments);
+            ClassicAssert.IsTrue(byteCode.IsIncludeDebugSymbols);
+            ClassicAssert.IsFalse(byteCode.IsAttachEPL);
+            ClassicAssert.IsTrue(byteCode.IsAttachModuleEPL);
+            ClassicAssert.IsTrue(byteCode.IsAttachPatternEPL);
+            ClassicAssert.IsTrue(byteCode.IsInstrumented);
+            ClassicAssert.IsTrue(byteCode.IsAllowSubscriber);
+            ClassicAssert.AreEqual(NameAccessModifier.INTERNAL, byteCode.AccessModifierContext);
+            ClassicAssert.AreEqual(NameAccessModifier.PUBLIC, byteCode.AccessModifierEventType);
+            ClassicAssert.AreEqual(NameAccessModifier.INTERNAL, byteCode.AccessModifierExpression);
+            ClassicAssert.AreEqual(NameAccessModifier.PUBLIC, byteCode.AccessModifierNamedWindow);
+            ClassicAssert.AreEqual(NameAccessModifier.INTERNAL, byteCode.AccessModifierScript);
+            ClassicAssert.AreEqual(NameAccessModifier.PUBLIC, byteCode.AccessModifierTable);
+            ClassicAssert.AreEqual(NameAccessModifier.INTERNAL, byteCode.AccessModifierVariable);
+            ClassicAssert.AreEqual(NameAccessModifier.PUBLIC, byteCode.AccessModifierInlinedClass);
+            ClassicAssert.AreEqual(EventTypeBusModifier.BUS, byteCode.BusModifierEventType);
+            ClassicAssert.AreEqual(1234, byteCode.ThreadPoolCompilerNumThreads);
+            ClassicAssert.AreEqual(4321, (int) byteCode.ThreadPoolCompilerCapacity);
+            ClassicAssert.AreEqual(5555, byteCode.MaxMethodsPerClass);
+            ClassicAssert.IsFalse(byteCode.IsAllowInlinedClass);
+            ClassicAssert.AreEqual(StreamSelector.RSTREAM_ISTREAM_BOTH, compiler.StreamSelection.DefaultStreamSelector);
 
-            Assert.AreEqual(100, compiler.Execution.FilterServiceMaxFilterWidth);
-            Assert.AreEqual(ConfigurationCompilerExecution.FilterIndexPlanningEnum.NONE, compiler.Execution.FilterIndexPlanning);
-            Assert.IsFalse(compiler.Execution.IsEnabledDeclaredExprValueCache);
+            ClassicAssert.AreEqual(100, compiler.Execution.FilterServiceMaxFilterWidth);
+            ClassicAssert.AreEqual(ConfigurationCompilerExecution.FilterIndexPlanningEnum.NONE, compiler.Execution.FilterIndexPlanning);
+            ClassicAssert.IsFalse(compiler.Execution.IsEnabledDeclaredExprValueCache);
 
-            Assert.IsTrue(compiler.Language.IsSortUsingCollator);
+            ClassicAssert.IsTrue(compiler.Language.IsSortUsingCollator);
 
-            Assert.IsTrue(compiler.Expression.IsIntegerDivision);
-            Assert.IsTrue(compiler.Expression.IsDivisionByZeroReturnsNull);
-            Assert.IsFalse(compiler.Expression.IsUdfCache);
-            Assert.IsFalse(compiler.Expression.IsExtendedAggregation);
-            Assert.IsTrue(compiler.Expression.IsDuckTyping);
-            Assert.AreEqual(2, compiler.Expression.MathContext.Precision);
-            Assert.AreEqual(MidpointRounding.ToEven, compiler.Expression.MathContext.RoundingMode);
+            ClassicAssert.IsTrue(compiler.Expression.IsIntegerDivision);
+            ClassicAssert.IsTrue(compiler.Expression.IsDivisionByZeroReturnsNull);
+            ClassicAssert.IsFalse(compiler.Expression.IsUdfCache);
+            ClassicAssert.IsFalse(compiler.Expression.IsExtendedAggregation);
+            ClassicAssert.IsTrue(compiler.Expression.IsDuckTyping);
+            ClassicAssert.AreEqual(2, compiler.Expression.MathContext.Precision);
+            ClassicAssert.AreEqual(MidpointRounding.ToEven, compiler.Expression.MathContext.RoundingMode);
 
-            Assert.AreEqual("abc", compiler.Scripts.DefaultDialect);
-            Assert.IsFalse(compiler.Scripts.IsEnabled);
+            ClassicAssert.AreEqual("abc", compiler.Scripts.DefaultDialect);
+            ClassicAssert.IsFalse(compiler.Scripts.IsEnabled);
 
-            Assert.IsFalse(compiler.Serde.IsEnableExtendedBuiltin);
-            Assert.IsTrue(compiler.Serde.IsEnableExternalizable);
-            Assert.IsTrue(compiler.Serde.IsEnableSerializable);
-            Assert.IsTrue(compiler.Serde.IsEnableSerializationFallback);
+            ClassicAssert.IsFalse(compiler.Serde.IsEnableExtendedBuiltin);
+            ClassicAssert.IsTrue(compiler.Serde.IsEnableExternalizable);
+            ClassicAssert.IsTrue(compiler.Serde.IsEnableSerializable);
+            ClassicAssert.IsTrue(compiler.Serde.IsEnableSerializationFallback);
             IList<String> serdeProviderFactories = compiler.Serde.SerdeProviderFactories;
-            Assert.AreEqual(2, serdeProviderFactories.Count);
-            Assert.AreEqual("a.b.c.MySerdeProviderFactoryOne", serdeProviderFactories[0]);
-            Assert.AreEqual("a.b.c.MySerdeProviderFactoryTwo", serdeProviderFactories[1]);
+            ClassicAssert.AreEqual(2, serdeProviderFactories.Count);
+            ClassicAssert.AreEqual("a.b.c.MySerdeProviderFactoryOne", serdeProviderFactories[0]);
+            ClassicAssert.AreEqual("a.b.c.MySerdeProviderFactoryTwo", serdeProviderFactories[1]);
             
             /*
              * RUNTIME
@@ -553,100 +562,102 @@ namespace com.espertech.esper.common.client.configuration
              */
 
             // assert runtime defaults
-            Assert.IsFalse(runtime.Threading.IsInsertIntoDispatchPreserveOrder);
-            Assert.AreEqual(3000, runtime.Threading.InsertIntoDispatchTimeout);
-            Assert.AreEqual(Locking.SUSPEND, runtime.Threading.InsertIntoDispatchLocking);
-            Assert.IsFalse(runtime.Threading.IsNamedWindowConsumerDispatchPreserveOrder);
-            Assert.AreEqual(4000, runtime.Threading.NamedWindowConsumerDispatchTimeout);
-            Assert.AreEqual(Locking.SUSPEND, runtime.Threading.NamedWindowConsumerDispatchLocking);
+            ClassicAssert.IsFalse(runtime.Threading.IsInsertIntoDispatchPreserveOrder);
+            ClassicAssert.AreEqual(3000, runtime.Threading.InsertIntoDispatchTimeout);
+            ClassicAssert.AreEqual(Locking.SUSPEND, runtime.Threading.InsertIntoDispatchLocking);
+            ClassicAssert.IsFalse(runtime.Threading.IsNamedWindowConsumerDispatchPreserveOrder);
+            ClassicAssert.AreEqual(4000, runtime.Threading.NamedWindowConsumerDispatchTimeout);
+            ClassicAssert.AreEqual(Locking.SUSPEND, runtime.Threading.NamedWindowConsumerDispatchLocking);
 
-            Assert.IsFalse(runtime.Threading.IsListenerDispatchPreserveOrder);
-            Assert.AreEqual(2000, runtime.Threading.ListenerDispatchTimeout);
-            Assert.AreEqual(Locking.SUSPEND, runtime.Threading.ListenerDispatchLocking);
-            Assert.IsTrue(runtime.Threading.IsThreadPoolInbound);
-            Assert.IsTrue(runtime.Threading.IsThreadPoolOutbound);
-            Assert.IsTrue(runtime.Threading.IsThreadPoolRouteExec);
-            Assert.IsTrue(runtime.Threading.IsThreadPoolTimerExec);
-            Assert.AreEqual(1, runtime.Threading.ThreadPoolInboundNumThreads);
-            Assert.AreEqual(2, runtime.Threading.ThreadPoolOutboundNumThreads);
-            Assert.AreEqual(3, runtime.Threading.ThreadPoolTimerExecNumThreads);
-            Assert.AreEqual(4, runtime.Threading.ThreadPoolRouteExecNumThreads);
-            Assert.AreEqual(1000, (int) runtime.Threading.ThreadPoolInboundCapacity);
-            Assert.AreEqual(1500, (int) runtime.Threading.ThreadPoolOutboundCapacity);
-            Assert.IsNull(runtime.Threading.ThreadPoolTimerExecCapacity);
-            Assert.AreEqual(2000, (int) runtime.Threading.ThreadPoolRouteExecCapacity);
-            Assert.IsTrue(runtime.Threading.IsRuntimeFairlock);
+            ClassicAssert.IsFalse(runtime.Threading.IsListenerDispatchPreserveOrder);
+            ClassicAssert.AreEqual(2000, runtime.Threading.ListenerDispatchTimeout);
+            ClassicAssert.AreEqual(Locking.SUSPEND, runtime.Threading.ListenerDispatchLocking);
+            ClassicAssert.IsTrue(runtime.Threading.IsThreadPoolInbound);
+            ClassicAssert.IsTrue(runtime.Threading.IsThreadPoolOutbound);
+            ClassicAssert.IsTrue(runtime.Threading.IsThreadPoolRouteExec);
+            ClassicAssert.IsTrue(runtime.Threading.IsThreadPoolTimerExec);
+            ClassicAssert.AreEqual(1, runtime.Threading.ThreadPoolInboundNumThreads);
+            ClassicAssert.AreEqual(2, runtime.Threading.ThreadPoolOutboundNumThreads);
+            ClassicAssert.AreEqual(3, runtime.Threading.ThreadPoolTimerExecNumThreads);
+            ClassicAssert.AreEqual(4, runtime.Threading.ThreadPoolRouteExecNumThreads);
+            ClassicAssert.AreEqual(1000, (int) runtime.Threading.ThreadPoolInboundCapacity);
+            ClassicAssert.AreEqual(1500, (int) runtime.Threading.ThreadPoolOutboundCapacity);
+            ClassicAssert.IsNull(runtime.Threading.ThreadPoolTimerExecCapacity);
+            ClassicAssert.AreEqual(2000, (int) runtime.Threading.ThreadPoolRouteExecCapacity);
+            ClassicAssert.IsTrue(runtime.Threading.IsRuntimeFairlock);
 
-            Assert.IsFalse(runtime.Threading.IsInternalTimerEnabled);
-            Assert.AreEqual(1234567, runtime.Threading.InternalTimerMsecResolution);
-            Assert.IsTrue(runtime.Logging.IsEnableExecutionDebug);
-            Assert.IsFalse(runtime.Logging.IsEnableTimerDebug);
-            Assert.AreEqual("[%u] %m", runtime.Logging.AuditPattern);
-            Assert.AreEqual(30000, runtime.Variables.MsecVersionRelease);
-            Assert.AreEqual(3L, (long) runtime.Patterns.MaxSubexpressions);
-            Assert.IsFalse(runtime.Patterns.IsMaxSubexpressionPreventStart);
-            Assert.AreEqual(3L, (long) runtime.MatchRecognize.MaxStates);
-            Assert.IsFalse(runtime.MatchRecognize.IsMaxStatesPreventStart);
+            ClassicAssert.IsFalse(runtime.Threading.IsInternalTimerEnabled);
+            ClassicAssert.AreEqual(1234567, runtime.Threading.InternalTimerMsecResolution);
+            ClassicAssert.IsTrue(runtime.Logging.IsEnableExecutionDebug);
+            ClassicAssert.IsFalse(runtime.Logging.IsEnableTimerDebug);
+            ClassicAssert.IsTrue(runtime.Logging.IsEnableLockActivity);
+            ClassicAssert.AreEqual("[%u] %m", runtime.Logging.AuditPattern);
+            ClassicAssert.AreEqual(30000, runtime.Variables.MsecVersionRelease);
+            ClassicAssert.AreEqual(3L, (long) runtime.Patterns.MaxSubexpressions);
+            ClassicAssert.IsFalse(runtime.Patterns.IsMaxSubexpressionPreventStart);
+            ClassicAssert.AreEqual(3L, (long) runtime.MatchRecognize.MaxStates);
+            ClassicAssert.IsFalse(runtime.MatchRecognize.IsMaxStatesPreventStart);
 
             // assert adapter loaders parsed
             IList<ConfigurationRuntimePluginLoader> plugins = runtime.PluginLoaders;
-            Assert.AreEqual(2, plugins.Count);
+            ClassicAssert.AreEqual(2, plugins.Count);
             var pluginOne = plugins[0];
-            Assert.AreEqual("Loader1", pluginOne.LoaderName);
-            Assert.AreEqual("com.espertech.esper.support.plugin.SupportLoaderOne", pluginOne.ClassName);
-            Assert.AreEqual(2, pluginOne.ConfigProperties.Count);
-            Assert.AreEqual("val1", pluginOne.ConfigProperties.Get("name1"));
-            Assert.AreEqual("val2", pluginOne.ConfigProperties.Get("name2"));
-            Assert.AreEqual(
+            ClassicAssert.AreEqual("Loader1", pluginOne.LoaderName);
+            ClassicAssert.AreEqual("com.espertech.esper.support.plugin.SupportLoaderOne", pluginOne.ClassName);
+            ClassicAssert.AreEqual(2, pluginOne.ConfigProperties.Count);
+            ClassicAssert.AreEqual("val1", pluginOne.ConfigProperties.Get("name1"));
+            ClassicAssert.AreEqual("val2", pluginOne.ConfigProperties.Get("name2"));
+            ClassicAssert.AreEqual(
                 "<sample-initializer xmlns=\"http://www.espertech.com/schema/esper\"><some-any-xml-can-be-here>This section for use by a plugin loader.</some-any-xml-can-be-here></sample-initializer>",
                 pluginOne.ConfigurationXML);
 
             var pluginTwo = plugins[1];
-            Assert.AreEqual("Loader2", pluginTwo.LoaderName);
-            Assert.AreEqual("com.espertech.esper.support.plugin.SupportLoaderTwo", pluginTwo.ClassName);
-            Assert.AreEqual(0, pluginTwo.ConfigProperties.Count);
+            ClassicAssert.AreEqual("Loader2", pluginTwo.LoaderName);
+            ClassicAssert.AreEqual("com.espertech.esper.support.plugin.SupportLoaderTwo", pluginTwo.ClassName);
+            ClassicAssert.AreEqual(0, pluginTwo.ConfigProperties.Count);
 
-            Assert.AreEqual(TimeSourceType.NANO, runtime.TimeSource.TimeSourceType);
-            Assert.IsTrue(runtime.Execution.IsPrioritized);
-            Assert.IsTrue(runtime.Execution.IsFairlock);
-            Assert.IsTrue(runtime.Execution.IsDisableLocking);
-            Assert.AreEqual(FilterServiceProfile.READWRITE, runtime.Execution.FilterServiceProfile);
-            Assert.AreEqual(101, runtime.Execution.DeclaredExprValueCacheSize);
+            ClassicAssert.AreEqual(TimeSourceType.NANO, runtime.TimeSource.TimeSourceType);
+            ClassicAssert.IsTrue(runtime.Execution.IsPrioritized);
+            ClassicAssert.IsTrue(runtime.Execution.IsPrecedenceEnabled);
+            ClassicAssert.IsTrue(runtime.Execution.IsFairlock);
+            ClassicAssert.IsTrue(runtime.Execution.IsDisableLocking);
+            ClassicAssert.AreEqual(FilterServiceProfile.READWRITE, runtime.Execution.FilterServiceProfile);
+            ClassicAssert.AreEqual(101, runtime.Execution.DeclaredExprValueCacheSize);
 
             var metrics = runtime.MetricsReporting;
-            Assert.IsTrue(metrics.IsEnableMetricsReporting);
-            Assert.AreEqual(4000L, metrics.RuntimeInterval);
-            Assert.AreEqual(500L, metrics.StatementInterval);
-            Assert.IsFalse(metrics.IsThreading);
-            Assert.AreEqual(2, metrics.StatementGroups.Count);
-            Assert.IsTrue(metrics.IsRuntimeMetrics);
+            ClassicAssert.IsTrue(metrics.IsEnableMetricsReporting);
+            ClassicAssert.AreEqual(4000L, metrics.RuntimeInterval);
+            ClassicAssert.AreEqual(500L, metrics.StatementInterval);
+            ClassicAssert.IsFalse(metrics.IsThreading);
+            ClassicAssert.AreEqual(2, metrics.StatementGroups.Count);
+            ClassicAssert.IsTrue(metrics.IsRuntimeMetrics);
             var def = metrics.StatementGroups.Get("MyStmtGroup");
-            Assert.AreEqual(5000, def.Interval);
-            Assert.IsTrue(def.IsDefaultInclude);
-            Assert.AreEqual(50, def.NumStatements);
-            Assert.IsTrue(def.IsReportInactive);
-            Assert.AreEqual(5, def.Patterns.Count);
-            Assert.AreEqual(def.Patterns[0], new Pair<StringPatternSet, bool>(new StringPatternSetRegex(".*"), true));
-            Assert.AreEqual(def.Patterns[1], new Pair<StringPatternSet, bool>(new StringPatternSetRegex(".*test.*"), false));
-            Assert.AreEqual(def.Patterns[2], new Pair<StringPatternSet, bool>(new StringPatternSetLike("%MyMetricsStatement%"), false));
-            Assert.AreEqual(
+            ClassicAssert.AreEqual(5000, def.Interval);
+            ClassicAssert.IsTrue(def.IsDefaultInclude);
+            ClassicAssert.AreEqual(50, def.NumStatements);
+            ClassicAssert.IsTrue(def.IsReportInactive);
+            ClassicAssert.AreEqual(5, def.Patterns.Count);
+            ClassicAssert.AreEqual(def.Patterns[0], new Pair<StringPatternSet, bool>(new StringPatternSetRegex(".*"), true));
+            ClassicAssert.AreEqual(def.Patterns[1], new Pair<StringPatternSet, bool>(new StringPatternSetRegex(".*test.*"), false));
+            ClassicAssert.AreEqual(def.Patterns[2], new Pair<StringPatternSet, bool>(new StringPatternSetLike("%MyMetricsStatement%"), false));
+            ClassicAssert.AreEqual(
                 def.Patterns[3], new Pair<StringPatternSet, bool>(new StringPatternSetLike("%MyFraudAnalysisStatement%"), true));
-            Assert.AreEqual(def.Patterns[4], new Pair<StringPatternSet, bool>(new StringPatternSetLike("%SomerOtherStatement%"), true));
+            ClassicAssert.AreEqual(def.Patterns[4], new Pair<StringPatternSet, bool>(new StringPatternSetLike("%SomerOtherStatement%"), true));
             def = metrics.StatementGroups.Get("MyStmtGroupTwo");
-            Assert.AreEqual(200, def.Interval);
-            Assert.IsFalse(def.IsDefaultInclude);
-            Assert.AreEqual(100, def.NumStatements);
-            Assert.IsFalse(def.IsReportInactive);
-            Assert.AreEqual(0, def.Patterns.Count);
-            Assert.IsFalse(runtime.Expression.IsSelfSubselectPreeval);
-            Assert.AreEqual(TimeZoneHelper.GetTimeZoneInfo("GMT-4:00"), runtime.Expression.TimeZone);
-            Assert.AreEqual(2, runtime.ExceptionHandling.HandlerFactories.Count);
-            Assert.AreEqual("my.company.cep.LoggingExceptionHandlerFactory", runtime.ExceptionHandling.HandlerFactories[0]);
-            Assert.AreEqual("my.company.cep.AlertExceptionHandlerFactory", runtime.ExceptionHandling.HandlerFactories[1]);
-            Assert.AreEqual(UndeployRethrowPolicy.RETHROW_FIRST, runtime.ExceptionHandling.UndeployRethrowPolicy);
-            Assert.AreEqual(2, runtime.ConditionHandling.HandlerFactories.Count);
-            Assert.AreEqual("my.company.cep.LoggingConditionHandlerFactory", runtime.ConditionHandling.HandlerFactories[0]);
-            Assert.AreEqual("my.company.cep.AlertConditionHandlerFactory", runtime.ConditionHandling.HandlerFactories[1]);
+            ClassicAssert.AreEqual(200, def.Interval);
+            ClassicAssert.IsFalse(def.IsDefaultInclude);
+            ClassicAssert.AreEqual(100, def.NumStatements);
+            ClassicAssert.IsFalse(def.IsReportInactive);
+            ClassicAssert.AreEqual(0, def.Patterns.Count);
+            ClassicAssert.IsFalse(runtime.Expression.IsSelfSubselectPreeval);
+            ClassicAssert.AreEqual(TimeZoneHelper.GetTimeZoneInfo("GMT-4:00"), runtime.Expression.TimeZone);
+            ClassicAssert.AreEqual(2, runtime.ExceptionHandling.HandlerFactories.Count);
+            ClassicAssert.AreEqual("my.company.cep.LoggingExceptionHandlerFactory", runtime.ExceptionHandling.HandlerFactories[0]);
+            ClassicAssert.AreEqual("my.company.cep.AlertExceptionHandlerFactory", runtime.ExceptionHandling.HandlerFactories[1]);
+            ClassicAssert.AreEqual(UndeployRethrowPolicy.RETHROW_FIRST, runtime.ExceptionHandling.UndeployRethrowPolicy);
+            ClassicAssert.AreEqual(2, runtime.ConditionHandling.HandlerFactories.Count);
+            ClassicAssert.AreEqual("my.company.cep.LoggingConditionHandlerFactory", runtime.ConditionHandling.HandlerFactories[0]);
+            ClassicAssert.AreEqual("my.company.cep.AlertConditionHandlerFactory", runtime.ConditionHandling.HandlerFactories[1]);
         }
     }
 } // end of namespace

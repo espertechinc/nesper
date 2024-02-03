@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -38,7 +38,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             IList<FilterParamIndexBase> indizes)
         {
             foreach (var parameter in parameters) {
-                var lookupable = parameter.Lookupable;
+               var lookupable = parameter.Lookupable;
                 var @operator = parameter.FilterOperator;
 
                 foreach (var index in indizes) {

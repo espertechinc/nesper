@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -10,13 +10,16 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
+using com.espertech.esper.common.@internal.compile.stage2;
+using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.resultset.core;
-using com.espertech.esper.common.@internal.epl.resultset.select.core;
+using com.espertech.esper.common.@internal.fabric;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.resultset.codegen.ResultSetProcessorCodegenNames;
@@ -27,34 +30,25 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
     ///     Result set processor prototype for the case: aggregation functions used in the select clause, and no group-by,
     ///     and all properties in the select clause are under an aggregation function.
     /// </summary>
-    public class ResultSetProcessorRowForAllForge : ResultSetProcessorFactoryForge
+    public class ResultSetProcessorRowForAllForge : ResultSetProcessorFactoryForgeBase
     {
-        private readonly ResultSetProcessorOutputConditionType? outputConditionType;
-        private readonly SelectExprProcessorForge selectExprProcessorForge;
-
         public ResultSetProcessorRowForAllForge(
             EventType resultEventType,
-            SelectExprProcessorForge selectExprProcessorForge,
+            EventType[] typesPerStream,
             ExprForge optionalHavingNode,
             bool isSelectRStream,
             bool isUnidirectional,
             bool isHistoricalOnly,
             OutputLimitSpec outputLimitSpec,
-            bool hasOrderBy,
-            ResultSetProcessorOutputConditionType? outputConditionType)
+            bool hasOrderBy) : base(resultEventType, typesPerStream)
         {
-            ResultEventType = resultEventType;
-            this.selectExprProcessorForge = selectExprProcessorForge;
             OptionalHavingNode = optionalHavingNode;
             IsSelectRStream = isSelectRStream;
             IsUnidirectional = isUnidirectional;
             IsHistoricalOnly = isHistoricalOnly;
             OutputLimitSpec = outputLimitSpec;
             IsSorting = hasOrderBy;
-            this.outputConditionType = outputConditionType;
         }
-
-        public EventType ResultEventType { get; }
 
         public bool IsSelectRStream { get; }
 
@@ -68,9 +62,23 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
 
         public OutputLimitSpec OutputLimitSpec { get; }
 
-        public Type InterfaceClass => typeof(ResultSetProcessorRowForAll);
+        public override Type InterfaceClass => typeof(ResultSetProcessorRowForAll);
 
-        public void InstanceCodegen(
+        public override string InstrumentedQName => "ResultSetProcessUngroupedFullyAgg";
+
+        public StateMgmtSetting OutputAllHelperSettings { get; private set; }
+
+        public StateMgmtSetting OutputLastHelperSettings { get; private set; }
+
+        public bool IsOutputAll =>
+            OutputLimitSpec != null &&
+            OutputLimitSpec.DisplayLimit == OutputLimitLimitType.ALL;
+
+        public bool IsOutputLast =>
+            OutputLimitSpec != null &&
+            OutputLimitSpec.DisplayLimit == OutputLimitLimitType.LAST;
+
+        public override void InstanceCodegen(
             CodegenInstanceAux instance,
             CodegenClassScope classScope,
             CodegenCtor factoryCtor,
@@ -82,12 +90,16 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
                 typeof(ResultSetProcessorRowForAll),
                 classScope,
                 node => node.GetterBlock.BlockReturn(MEMBER_AGGREGATIONSVC));
+            
+#if DEFINED_IN_BASECLASS
             instance.Properties.AddProperty(
                 typeof(ExprEvaluatorContext),
                 "ExprEvaluatorContext",
                 typeof(ResultSetProcessorRowForAll),
                 classScope,
-                node => node.GetterBlock.BlockReturn(MEMBER_AGENTINSTANCECONTEXT));
+                node => node.GetterBlock.BlockReturn(MEMBER_EXPREVALCONTEXT));
+#endif
+            
             instance.Properties.AddProperty(
                 typeof(bool),
                 "IsSelectRStream",
@@ -98,7 +110,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
             ResultSetProcessorRowForAllImpl.GetSelectListEventsAsArrayCodegen(this, classScope, instance);
         }
 
-        public void ProcessViewResultCodegen(
+        public override void ProcessViewResultCodegen(
             CodegenClassScope classScope,
             CodegenMethod method,
             CodegenInstanceAux instance)
@@ -106,7 +118,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
             ResultSetProcessorRowForAllImpl.ProcessViewResultCodegen(this, classScope, method, instance);
         }
 
-        public void ProcessJoinResultCodegen(
+        public override void ProcessJoinResultCodegen(
             CodegenClassScope classScope,
             CodegenMethod method,
             CodegenInstanceAux instance)
@@ -114,7 +126,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
             ResultSetProcessorRowForAllImpl.ProcessJoinResultCodegen(this, classScope, method, instance);
         }
 
-        public void GetEnumeratorViewCodegen(
+        public override void GetEnumeratorViewCodegen(
             CodegenClassScope classScope,
             CodegenMethod method,
             CodegenInstanceAux instance)
@@ -122,7 +134,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
             ResultSetProcessorRowForAllImpl.GetEnumeratorViewCodegen(this, classScope, method, instance);
         }
 
-        public void GetEnumeratorJoinCodegen(
+        public override void GetEnumeratorJoinCodegen(
             CodegenClassScope classScope,
             CodegenMethod method,
             CodegenInstanceAux instance)
@@ -130,7 +142,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
             ResultSetProcessorRowForAllImpl.GetEnumeratorJoinCodegen(this, classScope, method, instance);
         }
 
-        public void ProcessOutputLimitedViewCodegen(
+        public override void ProcessOutputLimitedViewCodegen(
             CodegenClassScope classScope,
             CodegenMethod method,
             CodegenInstanceAux instance)
@@ -138,7 +150,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
             ResultSetProcessorRowForAllImpl.ProcessOutputLimitedViewCodegen(this, classScope, method, instance);
         }
 
-        public void ProcessOutputLimitedJoinCodegen(
+        public override void ProcessOutputLimitedJoinCodegen(
             CodegenClassScope classScope,
             CodegenMethod method,
             CodegenInstanceAux instance)
@@ -146,7 +158,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
             ResultSetProcessorRowForAllImpl.ProcessOutputLimitedJoinCodegen(this, classScope, method, instance);
         }
 
-        public void ApplyViewResultCodegen(
+        public override void ApplyViewResultCodegen(
             CodegenClassScope classScope,
             CodegenMethod method,
             CodegenInstanceAux instance)
@@ -154,7 +166,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
             ResultSetProcessorRowForAllImpl.ApplyViewResultCodegen(method);
         }
 
-        public void ApplyJoinResultCodegen(
+        public override void ApplyJoinResultCodegen(
             CodegenClassScope classScope,
             CodegenMethod method,
             CodegenInstanceAux instance)
@@ -162,7 +174,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
             ResultSetProcessorRowForAllImpl.ApplyJoinResultCodegen(method);
         }
 
-        public void ProcessOutputLimitedLastAllNonBufferedViewCodegen(
+        public override void ProcessOutputLimitedLastAllNonBufferedViewCodegen(
             CodegenClassScope classScope,
             CodegenMethod method,
             CodegenInstanceAux instance)
@@ -174,7 +186,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
                 instance);
         }
 
-        public void ProcessOutputLimitedLastAllNonBufferedJoinCodegen(
+        public override void ProcessOutputLimitedLastAllNonBufferedJoinCodegen(
             CodegenClassScope classScope,
             CodegenMethod method,
             CodegenInstanceAux instance)
@@ -186,7 +198,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
                 instance);
         }
 
-        public void ContinueOutputLimitedLastAllNonBufferedViewCodegen(
+        public override void ContinueOutputLimitedLastAllNonBufferedViewCodegen(
             CodegenClassScope classScope,
             CodegenMethod method,
             CodegenInstanceAux instance)
@@ -194,7 +206,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
             ResultSetProcessorRowForAllImpl.ContinueOutputLimitedLastAllNonBufferedViewCodegen(this, method);
         }
 
-        public void ContinueOutputLimitedLastAllNonBufferedJoinCodegen(
+        public override void ContinueOutputLimitedLastAllNonBufferedJoinCodegen(
             CodegenClassScope classScope,
             CodegenMethod method,
             CodegenInstanceAux instance)
@@ -202,7 +214,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
             ResultSetProcessorRowForAllImpl.ContinueOutputLimitedLastAllNonBufferedJoinCodegen(this, method);
         }
 
-        public void AcceptHelperVisitorCodegen(
+        public override void AcceptHelperVisitorCodegen(
             CodegenClassScope classScope,
             CodegenMethod method,
             CodegenInstanceAux instance)
@@ -210,7 +222,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
             ResultSetProcessorRowForAllImpl.AcceptHelperVisitorCodegen(method, instance);
         }
 
-        public void StopMethodCodegen(
+        public override void StopMethodCodegen(
             CodegenClassScope classScope,
             CodegenMethod method,
             CodegenInstanceAux instance)
@@ -218,13 +230,26 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
             ResultSetProcessorRowForAllImpl.StopCodegen(method, instance);
         }
 
-        public void ClearMethodCodegen(
+        public override void ClearMethodCodegen(
             CodegenClassScope classScope,
             CodegenMethod method)
         {
             ResultSetProcessorRowForAllImpl.ClearCodegen(method);
         }
 
-        public string InstrumentedQName => "ResultSetProcessUngroupedFullyAgg";
+        public void PlanStateSettings(
+            FabricCharge fabricCharge,
+            StatementRawInfo statementRawInfo,
+            StatementCompileTimeServices services)
+        {
+            if (IsOutputAll) {
+                OutputAllHelperSettings = services.StateMgmtSettingsProvider.ResultSet
+                    .RowForAllOutputAll(fabricCharge, statementRawInfo, this);
+            }
+            else if (IsOutputLast) {
+                OutputLastHelperSettings = services.StateMgmtSettingsProvider.ResultSet
+                    .RowForAllOutputLast(fabricCharge, statementRawInfo, this);
+            }
+        }
     }
 } // end of namespace

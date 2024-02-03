@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -9,15 +9,16 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.Json.Serialization;
 
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.magic;
 
 namespace com.espertech.esper.common.client.soda
 {
     /// <summary>
     ///     Represents a single annotation.
     /// </summary>
-    [Serializable]
     public class AnnotationPart
     {
         // Map of identifier name and value can be any of the following:
@@ -49,6 +50,17 @@ namespace com.espertech.esper.common.client.soda
             IList<AnnotationAttribute> attributes)
         {
             Name = name;
+            Attributes = attributes;
+        }
+
+        [JsonConstructor]
+        public AnnotationPart(
+            string name,
+            string treeObjectName,
+            IList<AnnotationAttribute> attributes)
+        {
+            Name = name;
+            TreeObjectName = treeObjectName;
             Attributes = attributes;
         }
 
@@ -112,15 +124,12 @@ namespace com.espertech.esper.common.client.soda
             IList<AnnotationPart> annotations,
             EPStatementFormatter formatter)
         {
-            if (annotations == null || annotations.IsEmpty())
-            {
+            if (annotations == null || annotations.IsEmpty()) {
                 return;
             }
 
-            foreach (var part in annotations)
-            {
-                if (part.Name == null)
-                {
+            foreach (var part in annotations) {
+                if (part.Name == null) {
                     continue;
                 }
 
@@ -138,15 +147,12 @@ namespace com.espertech.esper.common.client.soda
             writer.Write("@");
             writer.Write(Name);
 
-            if (Attributes.IsEmpty())
-            {
+            if (Attributes.IsEmpty()) {
                 return;
             }
 
-            if (Attributes.Count == 1)
-            {
-                if ((Attributes[0].Name == null) || (Attributes[0].Name == "Value"))
-                {
+            if (Attributes.Count == 1) {
+                if (Attributes[0].Name == null || Attributes[0].Name == "Value") {
                     writer.Write("(");
                     ToEPL(writer, Attributes[0].Value);
                     writer.Write(")");
@@ -156,10 +162,8 @@ namespace com.espertech.esper.common.client.soda
 
             var delimiter = "";
             writer.Write("(");
-            foreach (var attribute in Attributes)
-            {
-                if (attribute.Value == null)
-                {
+            foreach (var attribute in Attributes) {
+                if (attribute.Value == null) {
                     return;
                 }
 
@@ -177,29 +181,24 @@ namespace com.espertech.esper.common.client.soda
             TextWriter writer,
             object second)
         {
-            if (second is string)
-            {
+            if (second is string) {
                 writer.Write("'");
                 writer.Write(second.ToString());
                 writer.Write("'");
             }
-            else if (second is AnnotationPart)
-            {
-                ((AnnotationPart) second).ToEPL(writer);
+            else if (second is AnnotationPart part) {
+                part.ToEPL(writer);
             }
-            else if (second.GetType().IsEnum)
-            {
+            else if (second.GetType().IsEnum) {
                 writer.Write(second.GetType().FullName);
                 writer.Write(".");
                 writer.Write(second.ToString());
             }
-            else if (second.GetType().IsArray)
-            {
-                var array = (Array) second;
+            else if (second.GetType().IsArray) {
+                var array = (Array)second;
                 var delimiter = "";
                 writer.Write("{");
-                for (var i = 0; i < array.Length; i++)
-                {
+                for (var i = 0; i < array.Length; i++) {
                     writer.Write(delimiter);
                     ToEPL(writer, array.GetValue(i));
                     delimiter = ",";
@@ -207,9 +206,21 @@ namespace com.espertech.esper.common.client.soda
 
                 writer.Write("}");
             }
-            else
+            else if (second.GetType().IsGenericList())
             {
-                writer.Write(second.ToString());
+                var asList = second.AsObjectList(MagicMarker.SingletonInstance);
+                var delimiter = "";
+                writer.Write("{");
+                foreach (var value in asList) {
+                    writer.Write(delimiter);
+                    ToEPL(writer, value);
+                    delimiter = ",";
+                }
+
+                writer.Write("}");
+            }
+            else {
+                writer.Write(second.RenderValue());
             }
         }
 

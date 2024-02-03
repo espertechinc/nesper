@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -29,14 +29,10 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
 
         /// <summary>Returns the current version.</summary>
         /// <returns>current version</returns>
-        public VersionedValue<T> CurrentVersion {
-            get { return currentVersion; }
-        }
+        public VersionedValue<T> CurrentVersion => currentVersion;
 
         /// <summary>Returns the prior version.</summary>
         /// <returns>prior version</returns>
-        public VersionedValue<T> PriorVersion {
-            get { return priorVersion; }
-        }
+        public VersionedValue<T> PriorVersion => priorVersion;
     }
 } // End of namespace

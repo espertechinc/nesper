@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -228,19 +228,19 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
                     return null;
                 }
 
-                var x = TypeExtensions.AsDouble(meX);
-                var y = TypeExtensions.AsDouble(meY);
-                var width = TypeExtensions.AsDouble(meWidth);
-                var height = TypeExtensions.AsDouble(meHeight);
+                var x = meX.AsDouble();
+                var y = meY.AsDouble();
+                var width = meWidth.AsDouble();
+                var height = meHeight.AsDouble();
                 return BoundingBox.IntersectsBoxIncludingEnd(
                     x,
                     y,
                     x + width,
                     y + height,
-                    TypeExtensions.AsDouble(otherX),
-                    TypeExtensions.AsDouble(otherY),
-                    TypeExtensions.AsDouble(otherWidth),
-                    TypeExtensions.AsDouble(otherHeight));
+                    otherX.AsDouble(),
+                    otherY.AsDouble(),
+                    otherWidth.AsDouble(),
+                    otherHeight.AsDouble());
             }
 
             public static CodegenExpression Codegen(

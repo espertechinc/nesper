@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -52,7 +52,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex
                 return leaf;
             }
 
-            var branch = (PointRegionQuadTreeNodeBranch) node;
+            var branch = (PointRegionQuadTreeNodeBranch)node;
             var quadrant = node.Bb.GetQuadrant(x, y);
             switch (quadrant) {
                 case QuadrantEnum.NW:
@@ -72,17 +72,13 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex
                     break;
             }
 
-            if (!(branch.Nw is PointRegionQuadTreeNodeLeaf<object>) ||
-                !(branch.Ne is PointRegionQuadTreeNodeLeaf<object>) ||
-                !(branch.Sw is PointRegionQuadTreeNodeLeaf<object>) ||
-                !(branch.Se is PointRegionQuadTreeNodeLeaf<object>)) {
+            if (!(branch.Nw is PointRegionQuadTreeNodeLeaf<object> nwLeaf) ||
+                !(branch.Ne is PointRegionQuadTreeNodeLeaf<object> neLeaf) ||
+                !(branch.Sw is PointRegionQuadTreeNodeLeaf<object> swLeaf) ||
+                !(branch.Se is PointRegionQuadTreeNodeLeaf<object> seLeaf)) {
                 return branch;
             }
 
-            var nwLeaf = (PointRegionQuadTreeNodeLeaf<object>) branch.Nw;
-            var neLeaf = (PointRegionQuadTreeNodeLeaf<object>) branch.Ne;
-            var swLeaf = (PointRegionQuadTreeNodeLeaf<object>) branch.Sw;
-            var seLeaf = (PointRegionQuadTreeNodeLeaf<object>) branch.Se;
             var total = nwLeaf.Count + neLeaf.Count + swLeaf.Count + seLeaf.Count;
             if (total >= tree.LeafCapacity) {
                 return branch;
@@ -106,8 +102,8 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex
                 return false;
             }
 
-            if (!(points is ICollection<XYPointMultiType>)) {
-                var point = (XYPointMultiType) points;
+            if (!(points is ICollection<XYPointMultiType> collection)) {
+                var point = (XYPointMultiType)points;
                 if (point.X == x && point.Y == y) {
                     var removed = point.Remove(value);
                     if (removed) {
@@ -118,7 +114,6 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex
                 return false;
             }
 
-            var collection = (ICollection<XYPointMultiType>) points;
             var enumerator = collection.GetEnumerator();
             while (enumerator.MoveNext()) {
                 var point = enumerator.Current;
@@ -150,7 +145,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex
                 return p1.Count();
             }
 
-            var coll = (ICollection<XYPointMultiType>) points;
+            var coll = (ICollection<XYPointMultiType>)points;
             var total = 0;
             foreach (var p in coll) {
                 target.Add(p);

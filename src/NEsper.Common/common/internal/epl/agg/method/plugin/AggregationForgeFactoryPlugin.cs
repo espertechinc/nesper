@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -10,8 +10,6 @@ using System;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.hook.aggfunc;
-using com.espertech.esper.common.@internal.bytecodemodel.@base;
-using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.agg.method.core;
 using com.espertech.esper.common.@internal.epl.expression.agg.@base;
@@ -20,85 +18,80 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 using com.espertech.esper.compat;
 
+
 namespace com.espertech.esper.common.@internal.epl.agg.method.plugin
 {
-	public class AggregationForgeFactoryPlugin : AggregationForgeFactoryBase
-	{
-		private readonly ExprPlugInAggNode parent;
-		private readonly AggregationFunctionForge aggregationFunctionForge;
-		private readonly AggregationFunctionMode mode;
-		private readonly Type aggregatedValueType;
-		private readonly DataInputOutputSerdeForge distinctSerde;
-		private AggregatorMethod aggregator;
+    public class AggregationForgeFactoryPlugin : AggregationForgeFactoryBase
+    {
+        protected readonly ExprPlugInAggNode parent;
+        protected readonly AggregationFunctionForge aggregationFunctionForge;
+        private readonly AggregationFunctionMode mode;
+        private readonly Type aggregatedValueType;
+        private readonly DataInputOutputSerdeForge distinctSerde;
+        private readonly AggregatorMethod aggregator;
 
-		public AggregationForgeFactoryPlugin(
-			ExprPlugInAggNode parent,
-			AggregationFunctionForge aggregationFunctionForge,
-			AggregationFunctionMode mode,
-			Type aggregatedValueType,
-			DataInputOutputSerdeForge distinctSerde)
-		{
-			this.parent = parent;
-			this.aggregationFunctionForge = aggregationFunctionForge;
-			this.mode = mode;
-			this.aggregatedValueType = aggregatedValueType;
-			this.distinctSerde = distinctSerde;
-		}
+        public AggregationForgeFactoryPlugin(
+            ExprPlugInAggNode parent,
+            AggregationFunctionForge aggregationFunctionForge,
+            AggregationFunctionMode mode,
+            Type aggregatedValueType,
+            DataInputOutputSerdeForge distinctSerde)
+        {
+            this.parent = parent;
+            this.aggregationFunctionForge = aggregationFunctionForge;
+            this.mode = mode;
+            this.aggregatedValueType = aggregatedValueType;
+            this.distinctSerde = distinctSerde;
+            if (mode is AggregationFunctionModeManaged singleValue) {
+                if (parent.PositionalParams.Length == 0) {
+                    throw new ArgumentException(
+                        nameof(AggregationFunctionModeManaged) + " requires at least one positional parameter");
+                }
 
-		public override Type ResultType => aggregationFunctionForge.ValueType;
+                var distinctType = !parent.IsDistinct ? null : aggregatedValueType;
+                aggregator = new AggregatorPlugInManaged(
+                    distinctType,
+                    distinctSerde,
+                    parent.ChildNodes.Length > 1,
+                    parent.OptionalFilter,
+                    singleValue);
+            }
+            else if (mode is AggregationFunctionModeMultiParam multiParam) {
+                aggregator = new AggregatorPlugInMultiParam(multiParam);
+            }
+            else if (mode is AggregationFunctionModeCodeGenerated codeGenerated) {
+                aggregator =
+                    codeGenerated.AggregatorMethodFactory.GetAggregatorMethod(new AggregatorMethodFactoryContext(this));
+            }
+            else {
+                throw new IllegalStateException("Received an unrecognized value for mode, the value is " + mode);
+            }
+        }
 
-		public override ExprForge[] GetMethodAggregationForge(
-			bool join,
-			EventType[] typesPerStream)
-		{
-			return ExprMethodAggUtil.GetDefaultForges(parent.PositionalParams, join, typesPerStream);
-		}
+        public override ExprForge[] GetMethodAggregationForge(
+            bool join,
+            EventType[] typesPerStream)
+        {
+            return ExprMethodAggUtil.GetDefaultForges(parent.PositionalParams, join, typesPerStream);
+        }
 
-		public override void InitMethodForge(
-			int col,
-			CodegenCtor rowCtor,
-			CodegenMemberCol membersColumnized,
-			CodegenClassScope classScope)
-		{
-			if (mode is AggregationFunctionModeManaged) {
-				AggregationFunctionModeManaged singleValue = (AggregationFunctionModeManaged) mode;
-				if (parent.PositionalParams.Length == 0) {
-					throw new ArgumentException(nameof(AggregationFunctionModeManaged) + " requires at least one positional parameter");
-				}
+        public override Type ResultType => aggregationFunctionForge.ValueType;
 
-				Type distinctType = !parent.IsDistinct ? null : aggregatedValueType;
-				aggregator = new AggregatorPlugInManaged(
-					this,
-					col,
-					rowCtor,
-					membersColumnized,
-					classScope,
-					distinctType,
-					distinctSerde,
-					parent.ChildNodes.Length > 1,
-					parent.OptionalFilter,
-					singleValue);
-			}
-			else if (mode is AggregationFunctionModeMultiParam) {
-				AggregationFunctionModeMultiParam multiParam = (AggregationFunctionModeMultiParam) mode;
-				aggregator = new AggregatorPlugInMultiParam(this, col, rowCtor, membersColumnized, classScope, multiParam);
-			}
-			else if (mode is AggregationFunctionModeCodeGenerated) {
-				AggregationFunctionModeCodeGenerated codeGenerated = (AggregationFunctionModeCodeGenerated) mode;
-				aggregator = codeGenerated.AggregatorMethodFactory.GetAggregatorMethod(
-					new AggregatorMethodFactoryContext(col, rowCtor, membersColumnized, classScope));
-			}
-			else {
-				throw new IllegalStateException("Received an unrecognized value for mode, the value is " + mode);
-			}
-		}
+        public override AggregatorMethod Aggregator => aggregator;
 
-		public override AggregatorMethod Aggregator => aggregator;
+        public override AggregationPortableValidation AggregationPortableValidation =>
+            new AggregationPortableValidationPlugin(parent.IsDistinct, parent.AggregationFunctionName);
 
-		public override AggregationPortableValidation AggregationPortableValidation => new AggregationPortableValidationPlugin(parent.IsDistinct, parent.AggregationFunctionName);
+        public override ExprAggregateNodeBase AggregationExpression => parent;
 
-		public override ExprAggregateNodeBase AggregationExpression => parent;
+        public AggregationFunctionForge AggregationFunctionForge => aggregationFunctionForge;
 
-		public AggregationFunctionForge AggregationFunctionForge => aggregationFunctionForge;
-	}
+        public ExprPlugInAggNode Parent => parent;
+
+        public AggregationFunctionMode Mode => mode;
+
+        public Type AggregatedValueType => aggregatedValueType;
+
+        public DataInputOutputSerdeForge DistinctSerde => distinctSerde;
+    }
 } // end of namespace

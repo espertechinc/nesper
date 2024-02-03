@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -11,10 +11,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Text;
+using System.Text.Json.Serialization;
 
+using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.compile.stage2;
+using com.espertech.esper.common.@internal.compile.util;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.pattern.core;
@@ -32,7 +35,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.filter
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        [NonSerialized] private FilterSpecCompiled filterSpec;
+        [JsonIgnore]
+        [NonSerialized]
+        private FilterSpecCompiled filterSpec;
 
         /// <summary>
         ///     Constructor.
@@ -88,8 +93,8 @@ namespace com.espertech.esper.common.@internal.epl.pattern.filter
         /// </summary>
         /// <value>is the optimized filter</value>
         public FilterSpecCompiled FilterSpec {
-            get => this.filterSpec;
-            set => this.filterSpec = value;
+            get => filterSpec;
+            set => filterSpec = value;
         }
 
         public override string ToString()
@@ -125,15 +130,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.filter
             }
         }
 
-        protected override Type TypeOfFactory()
-        {
-            return typeof(EvalFilterFactoryNode);
-        }
+        protected override Type TypeOfFactory => typeof(EvalFilterFactoryNode);
 
-        protected override string NameOfFactory()
-        {
-            return "Filter";
-        }
+        protected override string NameOfFactory => "Filter";
 
         protected override void InlineCodegen(
             CodegenMethod method,
@@ -151,10 +150,16 @@ namespace com.espertech.esper.common.@internal.epl.pattern.filter
         }
 
         public override void CollectSelfFilterAndSchedule(
-            IList<FilterSpecCompiled> filters,
-            IList<ScheduleHandleCallbackProvider> schedules)
+            Func<short, CallbackAttribution> callbackAttribution,
+            IList<FilterSpecTracked> filters,
+            IList<ScheduleHandleTracked> schedules)
         {
-            filters.Add(filterSpec);
+            filters.Add(new FilterSpecTracked(callbackAttribution.Invoke(FactoryNodeId), filterSpec));
+        }
+
+        public override AppliesTo AppliesTo()
+        {
+            return client.annotation.AppliesTo.PATTERN_FILTER;
         }
     }
 } // end of namespace

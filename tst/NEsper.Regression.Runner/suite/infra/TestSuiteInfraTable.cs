@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -52,6 +52,7 @@ namespace com.espertech.esper.regressionrun.suite.infra
                 configuration.Common.AddEventType(clazz);
             }
 
+            configuration.Common.EventMeta.AvroSettings.IsEnableAvro = true;
             configuration.Compiler.AddPlugInSingleRowFunction(
                 "singlerow",
                 typeof(InfraTableInvalid),
@@ -81,8 +82,9 @@ namespace com.espertech.esper.regressionrun.suite.infra
 
             configuration.Common.Logging.IsEnableQueryPlan = true;
             configuration.Common.AddImportType(typeof(SupportStaticMethodLib));
+            //configuration.Common.AddImportType(typeof(SupportBean));
 
-            configuration.Compiler.ByteCode.AllowSubscriber = true;
+            configuration.Compiler.ByteCode.IsAllowSubscriber =true;
         }
 
         [Test, RunInApplicationDomain]

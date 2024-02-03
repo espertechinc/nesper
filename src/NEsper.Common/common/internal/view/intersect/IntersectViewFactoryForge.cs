@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Text;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
@@ -42,9 +43,9 @@ namespace com.espertech.esper.common.@internal.view.intersect
                 throw new IllegalStateException("Empty intersected forges");
             }
 
-            int batchCount = 0;
-            for (int i = 0; i < intersected.Count; i++) {
-                ViewFactoryForge forge = intersected[i];
+            var batchCount = 0;
+            for (var i = 0; i < intersected.Count; i++) {
+                var forge = intersected[i];
                 hasAsymetric |= forge is AsymetricDataWindowViewForge;
                 if (forge is DataWindowBatchingViewForge) {
                     batchCount++;
@@ -64,23 +65,16 @@ namespace com.espertech.esper.common.@internal.view.intersect
         {
         }
 
-        public override void Attach(
+        public override void AttachValidate(
             EventType parentEventType,
-            int streamNumber,
             ViewForgeEnv viewForgeEnv)
         {
-            this.eventType = parentEventType;
+            eventType = parentEventType;
         }
 
-        internal override Type TypeOfFactory()
-        {
-            return typeof(IntersectViewFactory);
-        }
+        internal override Type TypeOfFactory => typeof(IntersectViewFactory);
 
-        internal override string FactoryMethod()
-        {
-            return "Intersect";
-        }
+        internal override string FactoryMethod => "Intersect";
 
         internal override void Assign(
             CodegenMethod method,
@@ -95,17 +89,15 @@ namespace com.espertech.esper.common.@internal.view.intersect
                     factory,
                     "Intersecteds",
                     LocalMethod(
-                        MakeViewFactories(intersected, this.GetType(), method, classScope, symbols)));
+                        MakeViewFactories(intersected, GetType(), method, classScope, symbols)));
         }
 
-        public override string ViewName {
-            get => GetViewNameUnionIntersect(true, intersected);
-        }
+        public override string ViewName => GetViewNameUnionIntersect(true, intersected);
 
         public override void Accept(ViewForgeVisitor visitor)
         {
             visitor.Visit(this);
-            foreach (ViewFactoryForge forge in intersected) {
+            foreach (var forge in intersected) {
                 forge.Accept(visitor);
             }
         }
@@ -114,7 +106,7 @@ namespace com.espertech.esper.common.@internal.view.intersect
             bool intersect,
             ICollection<ViewFactoryForge> forges)
         {
-            StringBuilder buf = new StringBuilder();
+            var buf = new StringBuilder();
             buf.Append(intersect ? "Intersection" : "Union");
 
             if (forges == null) {
@@ -122,8 +114,8 @@ namespace com.espertech.esper.common.@internal.view.intersect
             }
 
             buf.Append(" of ");
-            string delimiter = "";
-            foreach (ViewFactoryForge forge in forges) {
+            var delimiter = "";
+            foreach (var forge in forges) {
                 buf.Append(delimiter);
                 buf.Append(forge.ViewName);
                 delimiter = ",";
@@ -134,10 +126,9 @@ namespace com.espertech.esper.common.@internal.view.intersect
 
         public ISet<string> UniquenessCandidatePropertyNames {
             get {
-                foreach (ViewFactoryForge forge in intersected) {
-                    if (forge is DataWindowViewForgeUniqueCandidate) {
-                        DataWindowViewForgeUniqueCandidate unique = (DataWindowViewForgeUniqueCandidate) forge;
-                        ISet<string> props = unique.UniquenessCandidatePropertyNames;
+                foreach (var forge in intersected) {
+                    if (forge is DataWindowViewForgeUniqueCandidate unique) {
+                        var props = unique.UniquenessCandidatePropertyNames;
                         if (props != null) {
                             return props;
                         }
@@ -149,5 +140,15 @@ namespace com.espertech.esper.common.@internal.view.intersect
         }
 
         public override IList<ViewFactoryForge> InnerForges => intersected;
+
+        public override AppliesTo AppliesTo()
+        {
+            return client.annotation.AppliesTo.WINDOW_INTERSECT;
+        }
+
+        public override T Accept<T>(ViewFactoryForgeVisitor<T> visitor)
+        {
+            return visitor.Visit(this);
+        }
     }
 } // end of namespace

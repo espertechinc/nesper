@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -29,6 +29,7 @@ using com.espertech.esper.common.@internal.epl.streamtype;
 using com.espertech.esper.common.@internal.epl.variable.compiletime;
 using com.espertech.esper.common.@internal.epl.variable.core;
 using com.espertech.esper.common.@internal.@event.core;
+using com.espertech.esper.common.@internal.fabric;
 using com.espertech.esper.common.@internal.schedule;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.common.@internal.view.core;
@@ -42,45 +43,46 @@ using static com.espertech.esper.common.@internal.epl.expression.codegen.ExprFor
 namespace com.espertech.esper.common.@internal.view.expression
 {
     /// <summary>
-    ///     Base factory for expression-based window and batch view.
+    /// Base factory for expression-based window and batch view.
     /// </summary>
     public abstract class ExpressionViewForgeBase : ViewFactoryForgeBase,
         DataWindowViewForge,
         DataWindowViewForgeWithPrevious,
         ScheduleHandleCallbackProvider
     {
-        private AggregationServiceForgeDesc aggregationServiceForgeDesc;
-        private EventType builtinType;
-        private ExprNode expiryExpression;
-        private int scheduleCallbackId = -1;
-        private int streamNumber;
-        private IDictionary<string, VariableMetaData> variableNames;
+        public ExprNode ExpiryExpression { get; internal set; }
 
-        public int ScheduleCallbackId {
-            set => scheduleCallbackId = value;
+        public IDictionary<string, VariableMetaData> VariableNames { get; internal set; }
+
+        public EventType BuiltinType { get; internal set; }
+
+        public int? SubqueryNumber { get; internal set; }
+
+        public int StreamNumber { get; internal set; }
+
+        public bool IsTargetHa { get; internal set; }
+
+        public EventType EventType1 {
+            get => eventType;
+            internal set => eventType = value;
         }
 
-        public ExprNode ExpiryExpression {
-            get => expiryExpression;
-            set => expiryExpression = value;
-        }
-
-        internal abstract void MakeSetters(
+        protected abstract void MakeSetters(
             CodegenExpressionRef factory,
             CodegenBlock block);
 
-        public override void Attach(
+        public override void AttachValidate(
             EventType parentEventType,
-            int streamNumber,
             ViewForgeEnv viewForgeEnv)
         {
             eventType = parentEventType;
-            this.streamNumber = streamNumber;
-
+            //streamNumber = streamNumber;
+            SubqueryNumber = viewForgeEnv.SubqueryNumber;
+            IsTargetHa = viewForgeEnv.SerdeResolver.IsTargetHA;
             // define built-in fields
             var builtinTypeDef = ExpressionViewOAFieldEnumExtensions.AsMapOfTypes(eventType);
             var outputEventTypeName =
-                viewForgeEnv.StatementCompileTimeServices.EventTypeNameGeneratorStatement.GetViewExpr(streamNumber);
+                viewForgeEnv.StatementCompileTimeServices.EventTypeNameGeneratorStatement.GetViewExpr(StreamNumber);
             var metadata = new EventTypeMetadata(
                 outputEventTypeName,
                 viewForgeEnv.ModuleName,
@@ -91,7 +93,7 @@ namespace com.espertech.esper.common.@internal.view.expression
                 false,
                 EventTypeIdPair.Unassigned());
             var propertyTypes = EventTypeUtility.GetPropertyTypesNonPrimitive(builtinTypeDef);
-            builtinType = BaseNestableEventUtil.MakeOATypeCompileTime(
+            BuiltinType = BaseNestableEventUtil.MakeOATypeCompileTime(
                 metadata,
                 propertyTypes,
                 null,
@@ -100,67 +102,111 @@ namespace com.espertech.esper.common.@internal.view.expression
                 null,
                 viewForgeEnv.BeanEventTypeFactoryProtected,
                 viewForgeEnv.EventTypeCompileTimeResolver);
-            viewForgeEnv.EventTypeModuleCompileTimeRegistry.NewType(builtinType);
-
+            viewForgeEnv.EventTypeModuleCompileTimeRegistry.NewType(BuiltinType);
             StreamTypeService streamTypeService = new StreamTypeServiceImpl(
-                new[] {eventType, builtinType},
+                new EventType[] { eventType, BuiltinType },
                 new string[2],
                 new bool[2],
                 false,
                 false);
-
             // validate expression
-            expiryExpression = ViewForgeSupport.ValidateExpr(
+            ExpiryExpression = ViewForgeSupport.ValidateExpr(
                 ViewName,
-                expiryExpression,
+                ExpiryExpression,
                 streamTypeService,
                 viewForgeEnv,
-                0,
-                streamNumber);
-
+                0);
             var summaryVisitor = new ExprNodeSummaryVisitor();
-            expiryExpression.Accept(summaryVisitor);
-            if (summaryVisitor.HasSubselect ||
-                summaryVisitor.HasStreamSelect ||
-                summaryVisitor.HasPreviousPrior) {
+            ExpiryExpression.Accept(summaryVisitor);
+            if (summaryVisitor.HasSubselect || summaryVisitor.HasStreamSelect || summaryVisitor.HasPreviousPrior) {
                 throw new ViewParameterException(
                     "Invalid expiry expression: Sub-select, previous or prior functions are not supported in this context");
             }
 
-            var returnType = expiryExpression.Forge.EvaluationType;
-            if (returnType.GetBoxedType() != typeof(bool?)) {
+            var returnType = ExpiryExpression.Forge.EvaluationType;
+            if (!returnType.IsTypeBoolean()) {
                 throw new ViewParameterException(
                     "Invalid return value for expiry expression, expected a boolean return value but received " +
-                    returnType.GetParameterAsString());
+                    returnType.CleanName());
             }
 
             // determine variables used, if any
             var visitor =
                 new ExprNodeVariableVisitor(viewForgeEnv.StatementCompileTimeServices.VariableCompileTimeResolver);
-            expiryExpression.Accept(visitor);
-            variableNames = visitor.VariableNames;
+            ExpiryExpression.Accept(visitor);
+            VariableNames = visitor.VariableNames;
+        }
 
+        internal override void Assign(
+            CodegenMethod method,
+            CodegenExpressionRef factory,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
+        {
+            if (ScheduleCallbackId == -1) {
+                throw new IllegalStateException("Schedule callback id not provided");
+            }
+
+            var evalClass = MakeExpiryEval(classScope);
+            classScope.AddInnerClass(evalClass);
+            method.Block
+                .DeclareVar(evalClass.ClassName, "eval", NewInstanceInner(evalClass.ClassName, Ref("statementFields")))
+                .SetProperty(
+                    factory,
+                    "BuiltinMapType",
+                    EventTypeUtility.ResolveTypeCodegen(BuiltinType, EPStatementInitServicesConstants.REF))
+                .SetProperty(factory, "ScheduleCallbackId", Constant(ScheduleCallbackId))
+                .SetProperty(
+                    factory,
+                    "AggregationServiceFactory",
+                    MakeAggregationService(classScope, method, symbols, IsTargetHa))
+                .SetProperty(factory, "AggregationResultFutureAssignable", Ref("eval"))
+                .SetProperty(factory, "ExpiryEval", Ref("eval"))
+                .SetProperty(factory, "SubqueryNumber", Constant(SubqueryNumber))
+                .SetProperty(factory, "StreamNumber", Constant(StreamNumber));
+            if (VariableNames != null && !VariableNames.IsEmpty()) {
+                method.Block.SetProperty(
+                    factory,
+                    "Variables",
+                    VariableDeployTimeResolver.MakeResolveVariables(
+                        VariableNames.Values,
+                        symbols.GetAddInitSvc(method)));
+            }
+
+            MakeSetters(factory, method.Block);
+        }
+
+        public override void AssignStateMgmtSettings(
+            FabricCharge fabricCharge,
+            ViewForgeEnv viewForgeEnv,
+            int[] grouping)
+        {
             // determine aggregation nodes, if any
             IList<ExprAggregateNode> aggregateNodes = new List<ExprAggregateNode>();
-            ExprAggregateNodeUtil.GetAggregatesBottomUp(expiryExpression, aggregateNodes);
+            ExprAggregateNodeUtil.GetAggregatesBottomUp(ExpiryExpression, aggregateNodes);
             if (!aggregateNodes.IsEmpty()) {
                 try {
-                    aggregationServiceForgeDesc = AggregationServiceFactoryFactory.GetService(
-                        Collections.GetEmptyList<ExprAggregateNode>(),
-                        Collections.GetEmptyMap<ExprNode, string>(),
-                        Collections.GetEmptyList<ExprDeclaredNode>(),
+                    var attributionKey = new AggregationAttributionKeyView(
+                        viewForgeEnv.StreamNumber,
+                        viewForgeEnv.SubqueryNumber,
+                        grouping);
+                    AggregationServiceForgeDesc = AggregationServiceFactoryFactory.GetService(
+                        attributionKey,
+                        EmptyList<ExprAggregateNode>.Instance,
+                        EmptyDictionary<ExprNode, string>.Instance,
+                        EmptyList<ExprDeclaredNode>.Instance, 
                         null,
                         null,
                         aggregateNodes,
-                        Collections.GetEmptyList<ExprAggregateNode>(),
-                        Collections.GetEmptyList<ExprAggregateNodeGroupKey>(),
+                        EmptyList<ExprAggregateNode>.Instance, 
+                        EmptyList<ExprAggregateNodeGroupKey>.Instance, 
                         false,
                         viewForgeEnv.Annotations,
                         viewForgeEnv.VariableCompileTimeResolver,
                         false,
                         null,
                         null,
-                        streamTypeService.EventTypes,
+                        new EventType[] { eventType, BuiltinType },
                         null,
                         viewForgeEnv.ContextName,
                         null,
@@ -170,104 +216,64 @@ namespace com.espertech.esper.common.@internal.view.expression
                         false,
                         viewForgeEnv.ImportServiceCompileTime,
                         viewForgeEnv.StatementRawInfo,
-                        viewForgeEnv.SerdeResolver);
+                        viewForgeEnv.SerdeResolver,
+                        viewForgeEnv.StateMgmtSettingsProvider);
                 }
                 catch (ExprValidationException ex) {
                     throw new ViewParameterException(ex.Message, ex);
                 }
             }
+
+            base.AssignStateMgmtSettings(fabricCharge, viewForgeEnv, grouping);
+            if (AggregationServiceForgeDesc != null) {
+                fabricCharge.Add(AggregationServiceForgeDesc.FabricCharge);
+            }
         }
 
-        internal override void Assign(
-            CodegenMethod method,
-            CodegenExpressionRef factory,
-            SAIFFInitializeSymbol symbols,
-            CodegenClassScope classScope)
-        {
-            if (scheduleCallbackId == -1) {
-                throw new IllegalStateException("Schedule callback id not provided");
-            }
-
-            var evalClass = MakeExpiryEval(classScope);
-            classScope.AddInnerClass(evalClass);
-
-            method.Block
-                .DeclareVar(
-                    evalClass.ClassName,
-                    "eval",
-                    NewInstanceInner(evalClass.ClassName, Ref("statementFields")))
-                .SetProperty(
-                    factory,
-                    "BuiltinMapType",
-                    EventTypeUtility.ResolveTypeCodegen(builtinType, EPStatementInitServicesConstants.REF))
-                .SetProperty(
-                    factory,
-                    "ScheduleCallbackId",
-                    Constant(scheduleCallbackId))
-                .SetProperty(
-                    factory,
-                    "AggregationServiceFactory",
-                    MakeAggregationService(classScope, method, symbols))
-                .SetProperty(
-                    factory,
-                    "AggregationResultFutureAssignable",
-                    Ref("eval"))
-                .SetProperty(
-                    factory,
-                    "ExpiryEval",
-                    Ref("eval"));
-            if (variableNames != null && !variableNames.IsEmpty()) {
-                method.Block.SetProperty(
-                    factory,
-                    "Variables",
-                    VariableDeployTimeResolver.MakeResolveVariables(
-                        variableNames.Values,
-                        symbols.GetAddInitSvc(method)));
-            }
-
-            MakeSetters(factory, method.Block);
-        }
+        public int ScheduleCallbackId { get; set; } = -1;
 
         private CodegenExpression MakeAggregationService(
             CodegenClassScope classScope,
             CodegenMethodScope parent,
-            SAIFFInitializeSymbol symbols)
+            SAIFFInitializeSymbol symbols,
+            bool isTargetHA)
         {
-            if (aggregationServiceForgeDesc == null) {
+            if (AggregationServiceForgeDesc == null) {
                 return ConstantNull();
             }
 
             var aggregationClassNames =
-                new AggregationClassNames(CodegenNamespaceScopeNames.ClassPostfixAggregationForView(streamNumber));
+                new AggregationClassNames(CodegenNamespaceScopeNames.ClassPostfixAggregationForView(StreamNumber));
             var aggResult = AggregationServiceFactoryCompiler.MakeInnerClassesAndInit(
-                false,
-                aggregationServiceForgeDesc.AggregationServiceFactoryForge,
+                AggregationServiceForgeDesc.AggregationServiceFactoryForge,
                 parent,
                 classScope,
                 classScope.OutermostClassName,
-                aggregationClassNames);
+                aggregationClassNames,
+                isTargetHA);
             classScope.AddInnerClasses(aggResult.InnerClasses);
             return LocalMethod(aggResult.InitMethod, symbols.GetAddInitSvc(parent));
         }
 
         private CodegenInnerClass MakeExpiryEval(CodegenClassScope classScope)
         {
-            var classNameExpressionEval = "ExprViewEval_" + streamNumber;
-
-            var evalMethod = CodegenMethod.MakeMethod(
+            var classNameExpressionEval = "Exprview_eval_" + StreamNumber;
+            var evalMethod = CodegenMethod.MakeParentNode(
                     typeof(object),
                     GetType(),
                     CodegenSymbolProviderEmpty.INSTANCE,
                     classScope)
                 .AddParam(PARAMS);
-            var evalMethodCall = CodegenLegoMethodExpression.CodegenExpression(ExpiryExpression.Forge, evalMethod, classScope, true);
+            var evalMethodCall = CodegenLegoMethodExpression.CodegenExpression(
+                ExpiryExpression.Forge,
+                evalMethod,
+                classScope);
             evalMethod.Block.MethodReturn(LocalMethod(evalMethodCall, REF_EPS, REF_ISNEWDATA, REF_EXPREVALCONTEXT));
-
             var assignMethod = CodegenMethod
-                .MakeMethod(typeof(void), GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
-                .AddParam(typeof(AggregationResultFuture), "future");
+                .MakeParentNode(typeof(void), GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+                .AddParam<AggregationResultFuture>("future");
             var field = classScope.NamespaceScope.AddOrGetDefaultFieldWellKnown(
-                new CodegenFieldNameViewAgg(streamNumber),
+                new CodegenFieldNameViewAgg(StreamNumber),
                 typeof(AggregationResultFuture));
             assignMethod.Block.AssignRef(field, Ref("future"));
 
@@ -275,22 +281,23 @@ namespace com.espertech.esper.common.@internal.view.expression
             var innerMethods = new CodegenClassMethods();
             CodegenStackGenerator.RecursiveBuildStack(evalMethod, "Evaluate", innerMethods, innerProperties);
             CodegenStackGenerator.RecursiveBuildStack(assignMethod, "Assign", innerMethods, innerProperties);
-
-            var statementFieldsClassName = classScope.NamespaceScope.FieldsClassName;
+            
+            var statementFieldsClassName = classScope.NamespaceScope.FieldsClassNameOptional;
             var ctor = new CodegenCtor(
                 typeof(StmtClassForgeableRSPFactoryProvider),
                 classScope,
                 new List<CodegenTypedParam>() {
                     new CodegenTypedParam(statementFieldsClassName, null, "statementFields")
                 });
-
             return new CodegenInnerClass(
                 classNameExpressionEval,
                 typeof(AggregationResultFutureAssignableWEval),
                 ctor,
-                Collections.GetEmptyList<CodegenTypedParam>(),
+                EmptyList<CodegenTypedParam>.Instance, 
                 innerMethods,
                 innerProperties);
         }
+
+        public AggregationServiceForgeDesc AggregationServiceForgeDesc { get; private set; }
     }
 } // end of namespace

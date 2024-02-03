@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -23,34 +23,27 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 namespace com.espertech.esper.common.@internal.@event.map
 {
     /// <summary>
-    ///     A getter that works on PONO events residing within a Map as an event property.
+    /// A getter that works on PONO events residing within a Map as an event property.
     /// </summary>
     public class MapPONOEntryPropertyGetter : BaseNativePropertyGetter,
         MapEventPropertyGetter
     {
-        private readonly BeanEventPropertyGetter mapEntryGetter;
         private readonly string propertyMap;
+        private readonly BeanEventPropertyGetter mapEntryGetter;
 
         public MapPONOEntryPropertyGetter(
             string propertyMap,
             BeanEventPropertyGetter mapEntryGetter,
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
             Type returnType,
-            Type nestedComponentType,
-            BeanEventTypeFactory beanEventTypeFactory)
-            : base(
-                eventBeanTypedEventFactory,
-                beanEventTypeFactory,
-                returnType,
-                nestedComponentType)
+            BeanEventTypeFactory beanEventTypeFactory) : base(
+            eventBeanTypedEventFactory,
+            beanEventTypeFactory,
+            returnType)
         {
             this.propertyMap = propertyMap;
             this.mapEntryGetter = mapEntryGetter;
         }
-
-        public override Type TargetType => typeof(IDictionary<object, object>);
-
-        public override Type BeanPropType => typeof(object);
 
         public object GetMap(IDictionary<string, object> map)
         {
@@ -61,18 +54,40 @@ namespace com.espertech.esper.common.@internal.@event.map
             }
 
             // Object within the map
-            if (value is EventBean) {
-                return mapEntryGetter.Get((EventBean) value);
+            if (value is EventBean bean) {
+                return mapEntryGetter.Get(bean);
             }
 
             return mapEntryGetter.GetBeanProp(value);
+        }
+
+        private CodegenMethod GetMapCodegen(
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
+                .AddParam(typeof(IDictionary<string, object>), "map")
+                .Block
+                .DeclareVar<object>("value", ExprDotMethod(Ref("map"), "Get", Constant(propertyMap)))
+                .IfRefNullReturnNull("value")
+                .IfInstanceOf("value", typeof(EventBean))
+                .BlockReturn(
+                    mapEntryGetter.EventBeanGetCodegen(
+                        CastRef(typeof(EventBean), "value"),
+                        codegenMethodScope,
+                        codegenClassScope))
+                .MethodReturn(
+                    mapEntryGetter.UnderlyingGetCodegen(
+                        CastRef(mapEntryGetter.TargetType, "value"),
+                        codegenMethodScope,
+                        codegenClassScope));
         }
 
         public bool IsMapExistsProperty(IDictionary<string, object> map)
         {
             return true; // Property exists as the property is not dynamic (unchecked)
         }
-        
+
         public override object Get(EventBean obj)
         {
             return GetMap(BaseNestableEventUtil.CheckedCastUnderlyingMap(obj));
@@ -118,27 +133,8 @@ namespace com.espertech.esper.common.@internal.@event.map
             return ConstantTrue();
         }
 
-        private CodegenMethod GetMapCodegen(
-            CodegenMethodScope codegenMethodScope,
-            CodegenClassScope codegenClassScope)
-        {
-            return codegenMethodScope
-                .MakeChild(typeof(object), GetType(), codegenClassScope)
-                .AddParam(typeof(IDictionary<string, object>), "map")
-                .Block
-                .DeclareVar<object>("value", ExprDotMethod(Ref("map"), "Get", Constant(propertyMap)))
-                .IfRefNullReturnNull("value")
-                .IfInstanceOf("value", typeof(EventBean))
-                .BlockReturn(
-                    mapEntryGetter.EventBeanGetCodegen(
-                        CastRef(typeof(EventBean), "value"),
-                        codegenMethodScope,
-                        codegenClassScope))
-                .MethodReturn(
-                    mapEntryGetter.UnderlyingGetCodegen(
-                        CastRef(mapEntryGetter.TargetType, "value"),
-                        codegenMethodScope,
-                        codegenClassScope));
-        }
+        public override Type TargetType => typeof(IDictionary<string, object>);
+
+        public override Type BeanPropType => typeof(object);
     }
 } // end of namespace

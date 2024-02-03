@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -56,17 +56,17 @@ namespace com.espertech.esper.common.@internal.epl.script.core
                 return false;
             }
 
-            var that = (ScriptCodegenFieldSharable) o;
-            if (!(ExprNodeUtilityCompare.DeepEquals(_parameters, that._parameters, false))) {
+            var that = (ScriptCodegenFieldSharable)o;
+            if (!ExprNodeUtilityCompare.DeepEquals(_parameters, that._parameters, false)) {
                 return false;
             }
-            
+
             return _scriptName.Equals(that._scriptName);
         }
 
         public override int GetHashCode()
         {
-            int result = _scriptName.GetHashCode();
+            var result = _scriptName.GetHashCode();
             result = 31 * result + _parameters.Length;
             return result;
         }

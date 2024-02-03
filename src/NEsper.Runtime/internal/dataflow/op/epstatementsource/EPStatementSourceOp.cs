@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -23,15 +23,15 @@ namespace com.espertech.esper.runtime.@internal.dataflow.op.epstatementsource
 {
     public class EPStatementSourceOp : DataFlowSourceOperator, DataFlowOperatorLifecycle, DeploymentStateListener
     {
-        private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        private readonly EPStatementSourceFactory factory;
-        private readonly AgentInstanceContext agentInstanceContext;
-        private readonly string statementDeploymentId;
-        private readonly string statementName;
-        private readonly EPDataFlowEPStatementFilter statementFilter;
-        private readonly EPDataFlowIRStreamCollector collector;
-        private IDictionary<EPStatement, UpdateListener> listeners = new Dictionary<EPStatement, UpdateListener>();
+        private readonly EPStatementSourceFactory _factory;
+        private readonly AgentInstanceContext _agentInstanceContext;
+        private readonly string _statementDeploymentId;
+        private readonly string _statementName;
+        private readonly EPDataFlowEPStatementFilter _statementFilter;
+        private readonly EPDataFlowIRStreamCollector _collector;
+        private readonly IDictionary<EPStatement, UpdateListener> _listeners = new Dictionary<EPStatement, UpdateListener>();
 
 #pragma warning disable 649
         [DataFlowContext] private EPDataFlowEmitter graphContext;
@@ -41,12 +41,12 @@ namespace com.espertech.esper.runtime.@internal.dataflow.op.epstatementsource
 
         public EPStatementSourceOp(EPStatementSourceFactory factory, AgentInstanceContext agentInstanceContext, string statementDeploymentId, string statementName, EPDataFlowEPStatementFilter statementFilter, EPDataFlowIRStreamCollector collector)
         {
-            this.factory = factory;
-            this.agentInstanceContext = agentInstanceContext;
-            this.statementDeploymentId = statementDeploymentId;
-            this.statementName = statementName;
-            this.statementFilter = statementFilter;
-            this.collector = collector;
+            this._factory = factory;
+            this._agentInstanceContext = agentInstanceContext;
+            this._statementDeploymentId = statementDeploymentId;
+            this._statementName = statementName;
+            this._statementFilter = statementFilter;
+            this._collector = collector;
         }
 
         public void Next()
@@ -73,12 +73,12 @@ namespace com.espertech.esper.runtime.@internal.dataflow.op.epstatementsource
             lock (this)
             {
                 // start observing statement management
-                var spi = (EPRuntimeSPI) agentInstanceContext.Runtime;
+                var spi = (EPRuntimeSPI) _agentInstanceContext.Runtime;
                 spi.DeploymentService.AddDeploymentStateListener(this);
 
-                if (statementDeploymentId != null && statementName != null)
+                if (_statementDeploymentId != null && _statementName != null)
                 {
-                    var stmt = spi.DeploymentService.GetStatement(statementDeploymentId, statementName);
+                    var stmt = spi.DeploymentService.GetStatement(_statementDeploymentId, _statementName);
                     if (stmt != null)
                     {
                         AddStatement(stmt);
@@ -97,7 +97,7 @@ namespace com.espertech.esper.runtime.@internal.dataflow.op.epstatementsource
 
                         foreach (var stmt in info.Statements)
                         {
-                            if (statementFilter.Pass(ToContext(stmt)))
+                            if (_statementFilter.Pass(ToContext(stmt)))
                             {
                                 AddStatement(stmt);
                             }
@@ -111,16 +111,16 @@ namespace com.espertech.esper.runtime.@internal.dataflow.op.epstatementsource
         {
             foreach (var stmt in @event.Statements)
             {
-                if (statementFilter == null)
+                if (_statementFilter == null)
                 {
-                    if (stmt.DeploymentId.Equals(statementDeploymentId) && stmt.Name.Equals(statementName))
+                    if (stmt.DeploymentId.Equals(_statementDeploymentId) && stmt.Name.Equals(_statementName))
                     {
                         AddStatement(stmt);
                     }
                 }
                 else
                 {
-                    if (statementFilter.Pass(ToContext(stmt)))
+                    if (_statementFilter.Pass(ToContext(stmt)))
                     {
                         AddStatement(stmt);
                     }
@@ -132,7 +132,7 @@ namespace com.espertech.esper.runtime.@internal.dataflow.op.epstatementsource
         {
             foreach (var stmt in @event.Statements)
             {
-                if (listeners.TryRemove(stmt, out var listener))
+                if (_listeners.TryRemove(stmt, out var listener))
                 {
                     stmt.RemoveListener(listener);
                 }
@@ -141,7 +141,7 @@ namespace com.espertech.esper.runtime.@internal.dataflow.op.epstatementsource
 
         public void Close(DataFlowOpCloseContext openContext)
         {
-            foreach (var entry in listeners)
+            foreach (var entry in _listeners)
             {
                 try
                 {
@@ -149,36 +149,36 @@ namespace com.espertech.esper.runtime.@internal.dataflow.op.epstatementsource
                 }
                 catch (Exception ex)
                 {
-                    log.Debug("Exception encountered removing listener: " + ex.Message, ex);
+                    Log.Debug("Exception encountered removing listener: " + ex.Message, ex);
                     // possible
                 }
             }
-            listeners.Clear();
+            _listeners.Clear();
         }
 
         private void AddStatement(EPStatement stmt)
         {
             // statement may be added already
-            if (listeners.ContainsKey(stmt))
+            if (_listeners.ContainsKey(stmt))
             {
                 return;
             }
 
             // attach listener
             UpdateListener listener;
-            if (collector == null)
+            if (_collector == null)
             {
-                listener = new EmitterUpdateListener(emittables, factory.IsSubmitEventBean);
+                listener = new EmitterUpdateListener(emittables, _factory.IsSubmitEventBean);
             }
             else
             {
                 var emitterForCollector = new LocalEmitter(emittables);
-                listener = new EmitterCollectorUpdateListener(collector, emitterForCollector, factory.IsSubmitEventBean);
+                listener = new EmitterCollectorUpdateListener(_collector, emitterForCollector, _factory.IsSubmitEventBean);
             }
             stmt.AddListener(listener);
 
             // save listener instance
-            listeners.Put(stmt, listener);
+            _listeners.Put(stmt, listener);
         }
 
         private EPDataFlowEPStatementFilterContext ToContext(EPStatement stmt)

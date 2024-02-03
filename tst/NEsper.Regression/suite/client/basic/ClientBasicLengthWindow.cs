@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -10,6 +10,7 @@ using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.client.basic
 {
@@ -17,7 +18,7 @@ namespace com.espertech.esper.regressionlib.suite.client.basic
     {
         public void Run(RegressionEnvironment env)
         {
-            var epl = "@Name('s0') select irstream * from SupportBean#length(2)";
+            var epl = "@name('s0') select irstream * from SupportBean#length(2)";
             env.CompileDeploy(epl).AddListener("s0");
 
             var sb0 = SendAssertNoRStream(env, "E1");
@@ -41,9 +42,13 @@ namespace com.espertech.esper.regressionlib.suite.client.basic
             SupportBean rstream)
         {
             var sb = SendBean(env, theString);
-            var pair = env.Listener("s0").AssertPairGetIRAndReset();
-            Assert.AreEqual(rstream, pair.Second.Underlying);
-            Assert.AreSame(sb, pair.First.Underlying);
+            env.AssertListener(
+                "s0",
+                listener => {
+                    var pair = listener.AssertPairGetIRAndReset();
+                    ClassicAssert.AreEqual(rstream, pair.Second.Underlying);
+                    ClassicAssert.AreSame(sb, pair.First.Underlying);
+                });
         }
 
         private SupportBean SendAssertNoRStream(
@@ -51,7 +56,7 @@ namespace com.espertech.esper.regressionlib.suite.client.basic
             string theString)
         {
             var sb = SendBean(env, theString);
-            Assert.AreSame(sb, env.Listener("s0").AssertOneGetNewAndReset().Underlying);
+            env.AssertEventNew("s0", @event => ClassicAssert.AreEqual(sb, @event.Underlying));
             return sb;
         }
 

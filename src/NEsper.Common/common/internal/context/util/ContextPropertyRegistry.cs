@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -41,8 +41,8 @@ namespace com.espertech.esper.common.@internal.context.util
         {
             if (controllerValidations.Length == 1) {
                 if (controllerValidations[0] is ContextControllerKeyedValidation) {
-                    var partitioned = (ContextControllerKeyedValidation) controllerValidations[0];
-                    foreach (ContextControllerKeyedValidationItem item in partitioned.Items) {
+                    var partitioned = (ContextControllerKeyedValidation)controllerValidations[0];
+                    foreach (var item in partitioned.Items) {
                         if (item.EventType == fromType) {
                             for (var i = 0; i < item.PropertyNames.Length; i++) {
                                 if (item.PropertyNames[i].Equals(propertyName)) {
@@ -59,8 +59,8 @@ namespace com.espertech.esper.common.@internal.context.util
 
         public bool IsContextPropertyPrefix(string prefixName)
         {
-            return (prefixName != null) &&
-                   (prefixName.ToLowerInvariant() == CONTEXT_PREFIX);
+            return prefixName != null &&
+                   prefixName.ToLowerInvariant() == CONTEXT_PREFIX;
         }
     }
 } // end of namespace

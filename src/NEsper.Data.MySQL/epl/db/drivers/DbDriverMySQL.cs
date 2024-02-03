@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -10,6 +10,7 @@ using System;
 using System.ComponentModel;
 using System.Data.Common;
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 using com.espertech.esper.common.@internal.db.drivers;
 using com.espertech.esper.compat;
@@ -22,9 +23,9 @@ namespace com.espertech.esper.epl.db.drivers
     /// A database driver specific to the MySQL driver.  The MySQL driver
     /// is a named positional driver.
     /// </summary>
-    [Serializable]
     public class DbDriverMySQL : BaseDbDriver
     {
+        [JsonIgnore]
         [NonSerialized]
         private readonly DbProviderFactory _dbProviderFactory;
 

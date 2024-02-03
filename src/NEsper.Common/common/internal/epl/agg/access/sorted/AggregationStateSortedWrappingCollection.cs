@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -30,7 +30,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 
         public bool Remove(EventBean item)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         public int Count { get; }
@@ -44,7 +44,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 
         public void Add(EventBean item)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         public void Clear()
@@ -54,14 +54,14 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 
         public bool Contains(EventBean item)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         public void CopyTo(
             EventBean[] array,
             int arrayIndex)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         IEnumerator IEnumerable.GetEnumerator()

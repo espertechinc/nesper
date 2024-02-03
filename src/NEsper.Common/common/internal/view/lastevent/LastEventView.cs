@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -52,7 +52,7 @@ namespace com.espertech.esper.common.@internal.view.lastevent
 
         public ViewFactory ViewFactory => _viewFactory;
 
-        public override EventType EventType => parent.EventType;
+        public override EventType EventType => Parent.EventType;
 
         public override void Update(
             EventBean[] newData,
@@ -66,10 +66,13 @@ namespace com.espertech.esper.common.@internal.view.lastevent
             if (newData != null && newData.Length == 1 && (oldData == null || oldData.Length == 0)) {
                 var currentLast = _lastEvent;
                 _lastEvent = newData[0];
-                if (child != null) {
-                    var oldDataToPostHere = currentLast == null ? null : new[] {currentLast};
-                    _agentInstanceContext.InstrumentationProvider.QViewIndicate(_viewFactory, newData, oldDataToPostHere);
-                    child.Update(newData, oldDataToPostHere);
+                if (Child != null) {
+                    var oldDataToPostHere = currentLast == null ? null : new[] { currentLast };
+                    _agentInstanceContext.InstrumentationProvider.QViewIndicate(
+                        _viewFactory,
+                        newData,
+                        oldDataToPostHere);
+                    Child.Update(newData, oldDataToPostHere);
                     _agentInstanceContext.InstrumentationProvider.AViewIndicate();
                 }
             }
@@ -90,7 +93,7 @@ namespace com.espertech.esper.common.@internal.view.lastevent
                         }
                     }
 
-                    _lastEvent = newData[newData.Length - 1];
+                    _lastEvent = newData[^1];
                 }
 
                 if (oldData != null) {
@@ -107,16 +110,19 @@ namespace com.espertech.esper.common.@internal.view.lastevent
                 }
 
                 // If there are child views, fireStatementStopped update method
-                if (child != null) {
+                if (Child != null) {
                     if (oldDataToPost != null && !oldDataToPost.IsEmpty()) {
                         var oldDataArray = oldDataToPost.ToArray();
-                        _agentInstanceContext.InstrumentationProvider.QViewIndicate(_viewFactory, newData, oldDataArray);
-                        child.Update(newData, oldDataArray);
+                        _agentInstanceContext.InstrumentationProvider.QViewIndicate(
+                            _viewFactory,
+                            newData,
+                            oldDataArray);
+                        Child.Update(newData, oldDataArray);
                         _agentInstanceContext.InstrumentationProvider.AViewIndicate();
                     }
                     else {
                         _agentInstanceContext.InstrumentationProvider.QViewIndicate(_viewFactory, newData, null);
-                        child.Update(newData, null);
+                        Child.Update(newData, null);
                         _agentInstanceContext.InstrumentationProvider.AViewIndicate();
                     }
                 }

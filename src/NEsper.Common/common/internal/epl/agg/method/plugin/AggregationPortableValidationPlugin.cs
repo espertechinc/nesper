@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -28,7 +28,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.plugin
             : base(distinct)
 
         {
-            this._functionName = functionName;
+            _functionName = functionName;
         }
 
         public AggregationPortableValidationPlugin()
@@ -55,16 +55,14 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.plugin
             string intoExpression,
             AggregationForgeFactory factory)
         {
-            AggregationPortableValidationPlugin that = (AggregationPortableValidationPlugin) intoTableAgg;
-            if (!_functionName.Equals(that._functionName))
-            {
+            var that = (AggregationPortableValidationPlugin)intoTableAgg;
+            if (!_functionName.Equals(that._functionName)) {
                 throw new ExprValidationException(
                     "The aggregation declares '" + _functionName + "' and provided is '" + that._functionName + "'");
             }
         }
 
-        public string FunctionName
-        {
+        public string FunctionName {
             get => _functionName;
             set => _functionName = value;
         }

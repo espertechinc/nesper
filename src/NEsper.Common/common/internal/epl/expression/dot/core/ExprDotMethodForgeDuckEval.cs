@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -29,21 +29,21 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private readonly IDictionary<Type, MethodInfo> cache;
+        private readonly IDictionary<Type, MethodInfo> _cache;
 
-        private readonly ExprDotMethodForgeDuck forge;
-        private readonly ExprEvaluator[] parameters;
+        private readonly ExprDotMethodForgeDuck _forge;
+        private readonly ExprEvaluator[] _parameters;
 
         internal ExprDotMethodForgeDuckEval(
             ExprDotMethodForgeDuck forge,
             ExprEvaluator[] parameters)
         {
-            this.forge = forge;
-            this.parameters = parameters;
-            cache = new Dictionary<Type, MethodInfo>();
+            _forge = forge;
+            _parameters = parameters;
+            _cache = new Dictionary<Type, MethodInfo>();
         }
 
-        public EPType TypeInfo => forge.TypeInfo;
+        public EPChainableType TypeInfo => _forge.TypeInfo;
 
         public object Evaluate(
             object target,
@@ -57,23 +57,23 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 
             var method = DotMethodDuckGetMethod(
                 target.GetType(),
-                cache,
-                forge.MethodName,
-                forge.ParameterTypes,
-                new bool[forge.Parameters.Length]);
+                _cache,
+                _forge.MethodName,
+                _forge.ParameterTypes,
+                new bool[_forge.Parameters.Length]);
             if (method == null) {
                 return null;
             }
 
-            var args = new object[parameters.Length];
+            var args = new object[_parameters.Length];
             for (var i = 0; i < args.Length; i++) {
-                args[i] = parameters[i].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+                args[i] = _parameters[i].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
             }
 
-            return DotMethodDuckInvokeMethod(method, target, args, forge.StatementName);
+            return DotMethodDuckInvokeMethod(method, target, args, _forge.StatementName);
         }
 
-        public ExprDotForge DotForge => forge;
+        public ExprDotForge DotForge => _forge;
 
         public static CodegenExpression Codegen(
             ExprDotMethodForgeDuck forge,

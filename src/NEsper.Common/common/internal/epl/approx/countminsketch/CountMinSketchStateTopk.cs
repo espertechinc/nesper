@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -49,7 +49,7 @@ namespace com.espertech.esper.common.@internal.epl.approx.countminsketch
                         }
                     }
                     else {
-                        values.Add((ByteBuffer) entry.Value);
+                        values.Add((ByteBuffer)entry.Value);
                     }
                 }
 
@@ -119,7 +119,7 @@ namespace com.espertech.esper.common.@internal.epl.approx.countminsketch
             }
             else {
                 Deque<ByteBuffer> deque = new ArrayDeque<ByteBuffer>(2);
-                deque.Add((ByteBuffer) existing);
+                deque.Add((ByteBuffer)existing);
                 deque.Add(value);
                 Topk.Put(frequency, deque);
             }
@@ -142,7 +142,7 @@ namespace com.espertech.esper.common.@internal.epl.approx.countminsketch
                 }
                 else {
                     Topk.Remove(last.Key);
-                    _lastFreqForItem.Remove((ByteBuffer) last.Value);
+                    _lastFreqForItem.Remove((ByteBuffer)last.Value);
                 }
             }
         }

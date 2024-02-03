@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -8,7 +8,7 @@
 
 using System;
 using System.Numerics;
-
+using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.util;
 
@@ -41,9 +41,9 @@ namespace com.espertech.esper.common.@internal.type
                 object objOne,
                 object objTwo)
             {
-                BigInteger s1 = convOne.CoerceBoxedBigInt((object) objOne);
-                BigInteger s2 = convTwo.CoerceBoxedBigInt((object) objTwo);
-                int result = s1.CompareTo(s2);
+                var s1 = convOne.CoerceBoxedBigInt(objOne);
+                var s2 = convTwo.CoerceBoxedBigInt(objTwo);
+                var result = s1.CompareTo(s2);
                 return result > 0;
             }
 
@@ -51,7 +51,9 @@ namespace com.espertech.esper.common.@internal.type
                 CodegenExpression lhs,
                 Type lhsType,
                 CodegenExpression rhs,
-                Type rhsType)
+                Type rhsType,
+                CodegenMethodScope codegenMethodScope, 
+                CodegenClassScope codegenClassScope)
             {
                 return RelationalOpEnumExtensions.CodegenBigIntConv(
                     lhs,
@@ -60,7 +62,9 @@ namespace com.espertech.esper.common.@internal.type
                     rhsType,
                     convOne,
                     convTwo,
-                    CodegenExpressionRelational.CodegenRelational.GT);
+                    CodegenExpressionRelational.CodegenRelational.GT,
+                    codegenMethodScope,
+                    codegenClassScope);
             }
         }
     }

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -9,6 +9,7 @@
 using System.Text;
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
+using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
@@ -40,7 +41,7 @@ namespace com.espertech.esper.common.@internal.filterspec
             _heightEval = heightEval;
         }
 
-        public override CodegenMethod MakeCodegen(
+        public override CodegenExpression MakeCodegen(
             CodegenClassScope classScope,
             CodegenMethodScope parent,
             SAIFFInitializeSymbolWEventType symbols)
@@ -50,7 +51,9 @@ namespace com.espertech.esper.common.@internal.filterspec
                 .DeclareVar<ExprFilterSpecLookupable>(
                     "lookupable",
                     LocalMethod(lookupable.MakeCodegen(method, symbols, classScope)))
-                .DeclareVar<FilterOperator>("filterOperator", EnumValue(typeof(FilterOperator), filterOperator.GetName()))
+                .DeclareVar<FilterOperator>(
+                    "filterOperator",
+                    EnumValue(typeof(FilterOperator), filterOperator.GetName()))
                 .DeclareVar<FilterSpecParamAdvancedIndexQuadTreeMXCIF>(
                     "fpai",
                     NewInstance<FilterSpecParamAdvancedIndexQuadTreeMXCIF>(Ref("lookupable"), Ref("filterOperator")))
@@ -79,7 +82,8 @@ namespace com.espertech.esper.common.@internal.filterspec
                         classScope,
                         method))
                 .MethodReturn(Ref("fpai"));
-            return method;
+
+            return LocalMethod(method);
         }
 
         public override bool Equals(object obj)

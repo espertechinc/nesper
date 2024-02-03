@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -13,6 +13,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.support.subscriber
 {
@@ -37,7 +38,7 @@ namespace com.espertech.esper.regressionlib.support.subscriber
                 EPAssertionUtil.AssertEqualsExactOrder(new[] {stmt}, statements.ToArray());
             }
             else {
-                Assert.IsTrue(statements.IsEmpty());
+                ClassicAssert.IsTrue(statements.IsEmpty());
             }
         }
 
@@ -46,19 +47,19 @@ namespace com.espertech.esper.regressionlib.support.subscriber
             int size)
         {
             if (requiresStatementDelivery) {
-                Assert.AreEqual(size, statements.Count);
+                ClassicAssert.AreEqual(size, statements.Count);
                 foreach (var indicated in statements) {
-                    Assert.AreSame(indicated, stmt);
+                    ClassicAssert.AreSame(indicated, stmt);
                 }
             }
             else {
-                Assert.IsTrue(statements.IsEmpty());
+                ClassicAssert.IsTrue(statements.IsEmpty());
             }
         }
 
         protected void AssertStmtNoneReceived()
         {
-            Assert.IsTrue(statements.IsEmpty());
+            ClassicAssert.IsTrue(statements.IsEmpty());
         }
 
         protected void ResetStmts()

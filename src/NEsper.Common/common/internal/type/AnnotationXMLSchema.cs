@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -23,18 +23,23 @@ namespace com.espertech.esper.common.@internal.type
             CodegenMethodScope parent,
             CodegenClassScope scope)
         {
-            return new CodegenSetterBuilder(typeof(AnnotationXMLSchema), typeof(AnnotationXMLSchema), "xmlschema", parent, scope)
-                .Constant("RootElementName", xmlSchema.RootElementName)
-                .Constant("SchemaResource", xmlSchema.SchemaResource)
-                .Constant("SchemaText", xmlSchema.SchemaText)
-                .Constant("XPathPropertyExpr", xmlSchema.XPathPropertyExpr)
-                .Constant("DefaultNamespace", xmlSchema.DefaultNamespace)
-                .Constant("EventSenderValidatesRoot", xmlSchema.EventSenderValidatesRoot)
-                .Constant("AutoFragment", xmlSchema.AutoFragment)
-                .Constant("XPathFunctionResolver", xmlSchema.XPathFunctionResolver)
-                .Constant("XPathVariableResolver", xmlSchema.XPathVariableResolver)
-                .Constant("RootElementNamespace", xmlSchema.RootElementNamespace)
-                .Constant("XPathResolvePropertiesAbsolute", xmlSchema.XPathResolvePropertiesAbsolute)
+            return new CodegenSetterBuilder(
+                    typeof(AnnotationXMLSchema),
+                    typeof(AnnotationXMLSchema),
+                    "xmlschema",
+                    parent,
+                    scope)
+                .ConstantExplicit("RootElementName", xmlSchema.RootElementName)
+                .ConstantExplicit("SchemaResource", xmlSchema.SchemaResource)
+                .ConstantExplicit("SchemaText", xmlSchema.SchemaText)
+                .ConstantExplicit("XPathPropertyExpr", xmlSchema.XPathPropertyExpr)
+                .ConstantExplicit("DefaultNamespace", xmlSchema.DefaultNamespace)
+                .ConstantExplicit("EventSenderValidatesRoot", xmlSchema.EventSenderValidatesRoot)
+                .ConstantExplicit("AutoFragment", xmlSchema.AutoFragment)
+                .ConstantExplicit("XPathFunctionResolver", xmlSchema.XPathFunctionResolver)
+                .ConstantExplicit("XPathVariableResolver", xmlSchema.XPathVariableResolver)
+                .ConstantExplicit("RootElementNamespace", xmlSchema.RootElementNamespace)
+                .ConstantExplicit("XPathResolvePropertiesAbsolute", xmlSchema.XPathResolvePropertiesAbsolute)
                 .Build();
         }
     }

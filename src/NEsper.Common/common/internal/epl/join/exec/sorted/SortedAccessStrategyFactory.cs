@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -22,12 +22,12 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.sorted
             QueryGraphValueEntryRange rangeKeyPair)
         {
             if (rangeKeyPair.Type.IsRange()) {
-                QueryGraphValueEntryRangeIn rangeIn = (QueryGraphValueEntryRangeIn) rangeKeyPair;
-                ExprEvaluator startExpr = rangeIn.ExprStart;
-                ExprEvaluator endExpr = rangeIn.ExprEnd;
-                bool includeStart = rangeKeyPair.Type.IsIncludeStart();
+                var rangeIn = (QueryGraphValueEntryRangeIn)rangeKeyPair;
+                var startExpr = rangeIn.ExprStart;
+                var endExpr = rangeIn.ExprEnd;
+                var includeStart = rangeKeyPair.Type.IsIncludeStart();
 
-                bool includeEnd = rangeKeyPair.Type.IsIncludeEnd();
+                var includeEnd = rangeKeyPair.Type.IsIncludeEnd();
                 if (!rangeKeyPair.Type.IsRangeInverted()) {
                     return new SortedAccessStrategyRange(
                         isNWOnTrigger,
@@ -51,8 +51,8 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.sorted
                 }
             }
             else {
-                QueryGraphValueEntryRangeRelOp relOp = (QueryGraphValueEntryRangeRelOp) rangeKeyPair;
-                ExprEvaluator keyExpr = relOp.Expression;
+                var relOp = (QueryGraphValueEntryRangeRelOp)rangeKeyPair;
+                var keyExpr = relOp.Expression;
                 if (rangeKeyPair.Type == QueryGraphRangeEnum.GREATER_OR_EQUAL) {
                     return new SortedAccessStrategyGE(isNWOnTrigger, lookupStream, numStreams, keyExpr);
                 }

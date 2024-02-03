@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -17,15 +17,13 @@ namespace com.espertech.esper.common.client.soda
     /// Event row regular expressions are organized into a tree-like structure
     /// with nodes representing sub-expressions.
     /// </summary>
-    [Serializable]
     public class MatchRecognizeRegExAlteration
         : MatchRecognizeRegEx
     {
         public override void WriteEPL(TextWriter writer)
         {
-            string delimiter = "";
-            foreach (MatchRecognizeRegEx node in Children)
-            {
+            var delimiter = "";
+            foreach (var node in Children) {
                 writer.Write(delimiter);
                 node.WriteEPL(writer);
                 delimiter = "|";

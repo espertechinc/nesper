@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -23,6 +23,13 @@ namespace com.espertech.esper.common.@internal.epl.script.core
     {
         private readonly string _defaultDialect;
 
+        private readonly string optionalDialect;
+        private readonly string scriptName;
+        private readonly string expression;
+        private readonly string[] parameterNames;
+        private readonly ExprNode[] parameters;
+        private readonly Type returnType;
+
         public ScriptDescriptorCompileTime(
             string optionalDialect,
             string scriptName,
@@ -32,74 +39,60 @@ namespace com.espertech.esper.common.@internal.epl.script.core
             Type returnType,
             string defaultDialect)
         {
-            OptionalDialect = optionalDialect;
-            ScriptName = scriptName;
-            Expression = expression;
-            ParameterNames = parameterNames;
-            Parameters = parameters;
-            ReturnType = returnType;
+            this.optionalDialect = optionalDialect;
+            this.scriptName = scriptName;
+            this.expression = expression;
+            this.parameterNames = parameterNames;
+            this.parameters = parameters;
+            this.returnType = returnType;
             _defaultDialect = defaultDialect;
         }
-
-        public string OptionalDialect { get; }
-
-        public string ScriptName { get; }
-
-        public string Expression { get; }
-
-        public string[] ParameterNames { get; }
-
-        public ExprNode[] Parameters { get; }
-
-        public Type ReturnType { get; }
 
         public CodegenExpression Make(
             CodegenMethodScope parentInitMethod,
             CodegenClassScope classScope)
         {
             var method = parentInitMethod.MakeChild(typeof(ScriptDescriptorRuntime), GetType(), classScope)
-                .AddParam(
-                    typeof(EPStatementInitServices),
-                    EPStatementInitServicesConstants.REF.Ref);
+                .AddParam<EPStatementInitServices>(EPStatementInitServicesConstants.REF.Ref);
             method.Block
-                .DeclareVar<ScriptDescriptorRuntime>("sd", NewInstance(typeof(ScriptDescriptorRuntime)))
-                .SetProperty(Ref("sd"), "OptionalDialect", Constant(OptionalDialect))
-                .SetProperty(Ref("sd"), "ScriptName", Constant(ScriptName))
-                .SetProperty(Ref("sd"), "Expression", Constant(Expression))
-                .SetProperty(Ref("sd"), "ParameterNames", Constant(ParameterNames))
-                .SetProperty(
-                    Ref("sd"),
-                    "EvaluationTypes",
-                    Constant(ExprNodeUtilityQuery.GetExprResultTypes(Parameters)))
-                .SetProperty(
-                    Ref("sd"),
-                    "Parameters",
-                    ExprNodeUtilityCodegen.CodegenEvaluators(Parameters, method, GetType(), classScope))
+                .DeclareVarNewInstance(typeof(ScriptDescriptorRuntime), "sd")
+                .SetProperty(Ref("sd"), "OptionalDialect", Constant(optionalDialect))
+                .SetProperty(Ref("sd"), "ScriptName", Constant(scriptName))
+                .SetProperty(Ref("sd"), "Expression", Constant(expression))
+                .SetProperty(Ref("sd"), "ParameterNames", Constant(parameterNames))
+                .SetProperty(Ref("sd"), "EvaluationTypes", Constant(ExprNodeUtilityQuery.GetExprResultTypes(parameters)))
+                .SetProperty(Ref("sd"), "Parameters", ExprNodeUtilityCodegen.CodegenEvaluators(parameters, method, GetType(), classScope))
                 .SetProperty(Ref("sd"), "DefaultDialect", Constant(_defaultDialect))
-                .SetProperty(
-                    Ref("sd"),
-                    "ImportService",
-                    ExprDotName(
-                            EPStatementInitServicesConstants.REF,
-                            EPStatementInitServicesConstants.IMPORTSERVICERUNTIME))
-                .SetProperty(
-                    Ref("sd"),
-                    "ScriptCompiler",
-                    ExprDotName(
-                        EPStatementInitServicesConstants.REF,
-                        EPStatementInitServicesConstants.SCRIPTCOMPILER))
+                .SetProperty(Ref("sd"), "ImportService", 
+                    ExprDotMethodChain(EPStatementInitServicesConstants.REF)
+                        .Get(EPStatementInitServicesConstants.IMPORTSERVICERUNTIME))
+                .SetProperty(Ref("sd"), "ScriptCompiler", 
+                    ExprDotMethodChain(EPStatementInitServicesConstants.REF)
+                        .Get(EPStatementInitServicesConstants.SCRIPTCOMPILER))
                 .SetProperty(
                     Ref("sd"),
                     "Coercer",
-                    ReturnType.IsNumeric()
+                    returnType.IsTypeNumeric()
                         ? StaticMethod(
                             typeof(SimpleNumberCoercerFactory),
                             "GetCoercer",
                             Constant(typeof(object)),
-                            Constant(ReturnType.GetBoxedType()))
+                            Constant(returnType.GetBoxedType()))
                         : ConstantNull())
                 .MethodReturn(Ref("sd"));
             return LocalMethod(method, EPStatementInitServicesConstants.REF);
         }
+
+        public string OptionalDialect => optionalDialect;
+
+        public string ScriptName => scriptName;
+
+        public string Expression => expression;
+
+        public string[] ParameterNames => parameterNames;
+
+        public ExprNode[] Parameters => parameters;
+
+        public Type ReturnType => returnType;
     }
 } // end of namespace

@@ -1,15 +1,19 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+
 using com.espertech.esper.common.client;
-using com.espertech.esper.common.@internal.context.util;
+using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.output.condition;
 using com.espertech.esper.common.@internal.@event.arr;
+using com.espertech.esper.compat;
+
 
 namespace com.espertech.esper.common.@internal.epl.output.polled
 {
@@ -20,25 +24,20 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
     {
         private readonly OutputConditionPolledExpressionFactory factory;
         private readonly OutputConditionPolledExpressionState state;
-        private readonly AgentInstanceContext agentInstanceContext;
-
+        private readonly ExprEvaluatorContext exprEvaluatorContext;
         private ObjectArrayEventBean builtinProperties;
         private EventBean[] eventsPerStream = new EventBean[1];
 
         public OutputConditionPolledExpression(
             OutputConditionPolledExpressionFactory factory,
             OutputConditionPolledExpressionState state,
-            AgentInstanceContext agentInstanceContext,
+            ExprEvaluatorContext exprEvaluatorContext,
             ObjectArrayEventBean builtinProperties)
         {
             this.factory = factory;
             this.state = state;
             this.builtinProperties = builtinProperties;
-            this.agentInstanceContext = agentInstanceContext;
-        }
-
-        public OutputConditionPolledState State {
-            get => state;
+            this.exprEvaluatorContext = exprEvaluatorContext;
         }
 
         public bool UpdateOutputCondition(
@@ -49,11 +48,9 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
             state.TotalOldEventsCount = state.TotalOldEventsCount + oldEventsCount;
             state.TotalNewEventsSum = state.TotalNewEventsSum + newEventsCount;
             state.TotalOldEventsSum = state.TotalOldEventsCount + oldEventsCount;
-
-            bool isOutput = Evaluate();
+            var isOutput = Evaluate();
             if (isOutput) {
                 ResetBuiltinProperties();
-
                 // execute assignments
                 if (factory.VariableReadWritePackage != null) {
                     if (builtinProperties != null) {
@@ -62,7 +59,7 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
                     }
 
                     try {
-                        factory.VariableReadWritePackage.WriteVariables(eventsPerStream, null, agentInstanceContext);
+                        factory.VariableReadWritePackage.WriteVariables(eventsPerStream, null, exprEvaluatorContext);
                     }
                     finally {
                     }
@@ -90,9 +87,9 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
                 eventsPerStream[0] = builtinProperties;
             }
 
-            bool result = false;
-            var output = factory.WhenExpression.Evaluate(eventsPerStream, true, agentInstanceContext);
-            if ((output != null) && true.Equals(output)) {
+            var result = false;
+            var output = factory.WhenExpression.Evaluate(eventsPerStream, true, exprEvaluatorContext).AsBoxedBoolean();
+            if (output != null && true.Equals(output)) {
                 result = true;
             }
 
@@ -104,8 +101,10 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
             if (builtinProperties != null) {
                 state.TotalNewEventsCount = 0;
                 state.TotalOldEventsCount = 0;
-                state.LastOutputTimestamp = agentInstanceContext.StatementContext.SchedulingService.Time;
+                state.LastOutputTimestamp = exprEvaluatorContext.TimeProvider.Time;
             }
         }
+
+        public OutputConditionPolledState State => state;
     }
 } // end of namespace

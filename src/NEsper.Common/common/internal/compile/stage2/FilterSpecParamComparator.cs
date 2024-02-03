@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -16,7 +16,6 @@ namespace com.espertech.esper.common.@internal.compile.stage2
     /// <summary>
     ///     Sort comparator for filter parameters that sorts filter parameters according to filter operator type.
     /// </summary>
-    [Serializable]
     public class FilterSpecParamComparator
         : IComparer<FilterOperator>
     {
@@ -56,7 +55,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             var values = Enum.GetValues(typeof(FilterOperator));
             FilterSortOrder = new int[values.Length];
             for (var i = 0; i < FilterSortOrder.Length; i++) {
-                FilterSortOrder[i] = IndexOf((FilterOperator) values.GetValue(i));
+                FilterSortOrder[i] = IndexOf((FilterOperator)values.GetValue(i));
             }
         }
 
@@ -70,8 +69,8 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             }
 
             // Within different filter operator types sort by the table above
-            var opIndex1 = FilterSortOrder[(int) param1];
-            var opIndex2 = FilterSortOrder[(int) param2];
+            var opIndex1 = FilterSortOrder[(int)param1];
+            var opIndex2 = FilterSortOrder[(int)param2];
             return opIndex1 < opIndex2 ? -1 : 1;
         }
 

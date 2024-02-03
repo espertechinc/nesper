@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -20,6 +20,7 @@ using com.espertech.esper.regressionlib.support.multithread;
 using com.espertech.esper.regressionlib.support.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.multithread
 {
@@ -28,11 +29,16 @@ namespace com.espertech.esper.regressionlib.suite.multithread
     /// </summary>
     public class MultithreadStmtNamedWindowDelete : RegressionExecution
     {
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
+        }
+
         public void Run(RegressionEnvironment env)
         {
             var path = new RegressionPath();
             env.CompileDeploy(
-                "@Name('window') create window MyWindow#keepall as select TheString, LongPrimitive from SupportBean",
+                "@name('window') @public create window MyWindow#keepall as select TheString, LongPrimitive from SupportBean",
                 path);
             var listenerWindow = new SupportMTUpdateListener();
             env.Statement("window").AddListener(listenerWindow);
@@ -42,7 +48,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                 path);
             env.CompileDeploy("on SupportBean_A as S0 delete from MyWindow as win where win.TheString = S0.Id", path);
 
-            env.CompileDeploy("@Name('consumer') select irstream TheString, LongPrimitive from MyWindow", path);
+            env.CompileDeploy("@name('consumer') select irstream TheString, LongPrimitive from MyWindow", path);
             var listenerConsumer = new SupportMTUpdateListener();
             env.Statement("consumer").AddListener(listenerConsumer);
 
@@ -74,7 +80,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             IList<string> expectedIdsList = new List<string>();
             for (var i = 0; i < numThreads; i++) {
                 try {
-                    expectedIdsList.AddAll((IList<string>) future[i].Get());
+                    expectedIdsList.AddAll((IList<string>)future[i].Get());
                 }
                 catch (Exception t) {
                     throw new EPException(t);
@@ -83,17 +89,17 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 
             var expectedIds = expectedIdsList.ToArray();
 
-            Assert.AreEqual(2 * numThreads * numRepeats, listenerWindow.NewDataList.Count); // old and new each
-            Assert.AreEqual(2 * numThreads * numRepeats, listenerConsumer.NewDataList.Count); // old and new each
+            ClassicAssert.AreEqual(2 * numThreads * numRepeats, listenerWindow.NewDataList.Count); // old and new each
+            ClassicAssert.AreEqual(2 * numThreads * numRepeats, listenerConsumer.NewDataList.Count); // old and new each
 
             // compute list of received
-            var newEvents = listenerWindow.GetNewDataListFlattened();
+            var newEvents = listenerWindow.NewDataListFlattened;
             var receivedIds = new string[newEvents.Length];
             for (var i = 0; i < newEvents.Length; i++) {
-                receivedIds[i] = (string) newEvents[i].Get("TheString");
+                receivedIds[i] = (string)newEvents[i].Get("TheString");
             }
 
-            Assert.AreEqual(receivedIds.Length, expectedIds.Length);
+            ClassicAssert.AreEqual(receivedIds.Length, expectedIds.Length);
 
             Array.Sort(receivedIds);
             Array.Sort(expectedIds);

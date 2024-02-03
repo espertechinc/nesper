@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -9,8 +9,7 @@
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
-
-using static com.espertech.esper.regressionlib.framework.SupportMessageAssertUtil;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 {
@@ -26,34 +25,29 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 "create index MyIndex on MyWindow(x dummy_name, (y,z) dummy_name_2(\"a\"), p dummyname3)");
 
             var path = new RegressionPath();
-            env.CompileDeploy("create window MyWindow#keepall as SupportSpatialPoint", path);
+            env.CompileDeploy("@public create window MyWindow#keepall as SupportSpatialPoint", path);
 
-            TryInvalidCompile(
-                env,
+            env.TryInvalidCompile(
                 path,
                 "create index MyIndex on MyWindow(())",
                 "Invalid empty list of index expressions");
 
-            TryInvalidCompile(
-                env,
+            env.TryInvalidCompile(
                 path,
                 "create index MyIndex on MyWindow(IntPrimitive+1)",
                 "Invalid index expression 'IntPrimitive+1'");
 
-            TryInvalidCompile(
-                env,
+            env.TryInvalidCompile(
                 path,
                 "create index MyIndex on MyWindow((x, y))",
                 "Invalid multiple index expressions");
 
-            TryInvalidCompile(
-                env,
+            env.TryInvalidCompile(
                 path,
                 "create index MyIndex on MyWindow(x.y)",
                 "Invalid index expression 'x.y'");
 
-            TryInvalidCompile(
-                env,
+            env.TryInvalidCompile(
                 path,
                 "create index MyIndex on MyWindow(Id xxxx)",
                 "Unrecognized advanced-type index 'xxxx'");
@@ -66,7 +60,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             string epl)
         {
             var model = env.EplToModel(epl);
-            Assert.AreEqual(epl, model.ToEPL());
+            ClassicAssert.AreEqual(epl, model.ToEPL());
         }
     }
 } // end of namespace

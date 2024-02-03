@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -22,64 +22,91 @@ using com.espertech.esper.common.@internal.epl.table.strategy;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.threading.locks;
+
+using static com.espertech.esper.common.@internal.epl.fafquery.querymethod.FAFQueryMethodUtil;
 
 namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
 {
     /// <summary>
-    ///     Starts and provides the stop method for EPL statements.
+    /// Starts and provides the stop method for EPL statements.
     /// </summary>
-    public abstract class FAFQueryMethodIUDBase : FAFQueryMethod
+    public abstract class FAFQueryMethodIUDBase : FAFQueryMethod,
+        FAFQueryMethodSessionPrepared,
+        FAFQuerySessionUnprepared
     {
-        private string _contextName;
-        private bool _hasTableAccess;
-        private InternalEventRouteDest _internalEventRouteDest;
-        private FireAndForgetProcessor _processor;
-        private IDictionary<int, ExprTableEvalStrategyFactory> _tableAccesses;
-        private QueryGraph _queryGraph;
-        private IDictionary<int, SubSelectFactory> _subselects;
-
-        public IDictionary<int, SubSelectFactory> Subselects {
-            get => _subselects;
-            set => _subselects = value;
-        }
+        private string contextName;
+        private FireAndForgetProcessor processor;
+        private InternalEventRouteDest internalEventRouteDest;
+        protected QueryGraph queryGraph;
+        private Attribute[] annotations;
+        private IDictionary<int, ExprTableEvalStrategyFactory> tableAccesses;
+        private bool hasTableAccess;
+        private IDictionary<int, SubSelectFactory> subselects;
+        private IReaderWriterLock eventProcessingRWLock;
 
         public string ContextName {
-            get => throw new NotImplementedException();
-            set => _contextName = value;
+            set => contextName = value;
         }
 
         public FireAndForgetProcessor Processor {
-            get => throw new NotImplementedException();
-            set => _processor = value;
+            set => processor = value;
         }
 
         public InternalEventRouteDest InternalEventRouteDest {
-            get => throw new NotImplementedException();
-            set => _internalEventRouteDest = value;
+            set => internalEventRouteDest = value;
         }
 
         public virtual QueryGraph QueryGraph {
-            get => throw new NotImplementedException();
-            set => _queryGraph = value;
+            get => queryGraph;
+            set => queryGraph = value;
         }
 
         public IDictionary<int, ExprTableEvalStrategyFactory> TableAccesses {
-            get => throw new NotImplementedException();
-            set => _tableAccesses = value;
+            set => tableAccesses = value;
         }
 
         public bool HasTableAccess {
-            get => throw new NotImplementedException();
-            set => _hasTableAccess = value;
+            set => hasTableAccess = value;
         }
 
-        public Attribute[] Annotations { get; set; }
+        public IDictionary<int, SubSelectFactory> Subselects {
+            get => subselects;
+            set => subselects = value;
+        }
 
-        public void Ready(StatementContextRuntimeServices services)
+        protected abstract EventBean[] Execute(FireAndForgetInstance fireAndForgetProcessorInstance);
+
+        public FAFQuerySessionUnprepared ReadyUnprepared(StatementContextRuntimeServices services)
         {
-            if (!_subselects.IsEmpty()) {
-                FAFQueryMethodUtil.InitializeSubselects(services, Annotations, _subselects);
-            }
+            Ready(services);
+            return this;
+        }
+
+        public FAFQueryMethodSessionPrepared ReadyPrepared(StatementContextRuntimeServices services)
+        {
+            Ready(services);
+            return this;
+        }
+
+        public FAFQueryMethodSessionPrepared Prepared()
+        {
+            return this;
+        }
+
+        public FAFQuerySessionUnprepared Unprepared()
+        {
+            return this;
+        }
+
+        public void Init()
+        {
+            // no action required
+        }
+
+        public void Close()
+        {
+            // no action required
         }
 
         public EPPreparedQueryResult Execute(
@@ -89,103 +116,111 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             ContextManagementService contextManagementService)
         {
             if (!serviceStatusProvider.Get()) {
-                throw FAFQueryMethodUtil.RuntimeDestroyed();
+                throw RuntimeDestroyed();
             }
 
             try {
-                if (contextPartitionSelectors != null && contextPartitionSelectors.Length != 1) {
-                    throw new ArgumentException("Number of context partition selectors must be one");
-                }
+                using (eventProcessingRWLock.AcquireReadLock()) {
+                    if (contextPartitionSelectors != null && contextPartitionSelectors.Length != 1) {
+                        throw new ArgumentException("Number of context partition selectors must be one");
+                    }
 
-                var optionalSingleSelector = contextPartitionSelectors != null && contextPartitionSelectors.Length > 0
-                    ? contextPartitionSelectors[0]
-                    : null;
+                    var optionalSingleSelector =
+                        contextPartitionSelectors != null && contextPartitionSelectors.Length > 0
+                            ? contextPartitionSelectors[0]
+                            : null;
 
-                // validate context
-                if (_processor.ContextName != null &&
-                    _contextName != null &&
-                    !_processor.ContextName.Equals(_contextName)) {
-                    throw new EPException(
-                        "Context for named window is '" +
-                        _processor.ContextName +
-                        "' and query specifies context '" +
-                        _contextName +
-                        "'");
-                }
+                    // validate context
+                    if (processor.ContextName != null &&
+                        contextName != null &&
+                        !processor.ContextName.Equals(contextName)) {
+                        throw new EPException(
+                            "Context for named window is '" +
+                            processor.ContextName +
+                            "' and query specifies context '" +
+                            contextName +
+                            "'");
+                    }
 
-                // handle non-specified context
-                if (_contextName == null) {
-                    var processorInstance = _processor.ProcessorInstanceNoContext;
-                    if (processorInstance != null) {
+                    // handle non-specified context
+                    if (contextName == null) {
+                        var processorInstance = processor.ProcessorInstanceNoContext;
+                        if (processorInstance != null) {
+                            Assign(processorInstance.AgentInstanceContext, assignerSetter);
+                            var rows = Execute(processorInstance);
+                            if (rows != null && rows.Length > 0) {
+                                Dispatch();
+                            }
+
+                            return new EPPreparedQueryResult(processor.EventTypePublic, rows);
+                        }
+                    }
+
+                    // context partition runtime query
+                    var agentInstanceIds = AgentInstanceIds(
+                        processor,
+                        optionalSingleSelector,
+                        contextManagementService);
+
+                    // collect events and agent instances
+                    if (agentInstanceIds.IsEmpty()) {
+                        return new EPPreparedQueryResult(
+                            processor.EventTypeResultSetProcessor,
+                            CollectionUtil.EVENTBEANARRAY_EMPTY);
+                    }
+
+                    if (agentInstanceIds.Count == 1) {
+                        var agentInstanceId = agentInstanceIds.First();
+                        var processorInstance =
+                            processor.GetProcessorInstanceContextById(agentInstanceId);
                         Assign(processorInstance.AgentInstanceContext, assignerSetter);
                         var rows = Execute(processorInstance);
-                        if (rows != null && rows.Length > 0) {
+                        if (rows.Length > 0) {
                             Dispatch();
                         }
 
-                        return new EPPreparedQueryResult(_processor.EventTypePublic, rows);
+                        return new EPPreparedQueryResult(processor.EventTypeResultSetProcessor, rows);
                     }
-                }
 
-                // context partition runtime query
-                var agentInstanceIds = FAFQueryMethodUtil.AgentInstanceIds(
-                    _processor,
-                    optionalSingleSelector,
-                    contextManagementService);
+                    var allRows = new ArrayDeque<EventBean>();
+                    foreach (var agentInstanceId in agentInstanceIds) {
+                        var processorInstance =
+                            processor.GetProcessorInstanceContextById(agentInstanceId);
+                        if (processorInstance != null) {
+                            Assign(processorInstance.AgentInstanceContext, assignerSetter);
+                            var rows = Execute(processorInstance);
+                            allRows.AddAll(Arrays.AsList(rows));
+                        }
+                    }
 
-                // collect events and agent instances
-                if (agentInstanceIds.IsEmpty()) {
-                    return new EPPreparedQueryResult(
-                        _processor.EventTypeResultSetProcessor,
-                        CollectionUtil.EVENTBEANARRAY_EMPTY);
-                }
-
-                if (agentInstanceIds.Count == 1) {
-                    var agentInstanceId = agentInstanceIds.First();
-                    var processorInstance = _processor.GetProcessorInstanceContextById(agentInstanceId);
-                    Assign(processorInstance.AgentInstanceContext, assignerSetter);
-                    var rows = Execute(processorInstance);
-                    if (rows.Length > 0) {
+                    if (allRows.Count > 0) {
                         Dispatch();
                     }
 
-                    return new EPPreparedQueryResult(_processor.EventTypeResultSetProcessor, rows);
+                    return new EPPreparedQueryResult(processor.EventTypeResultSetProcessor, allRows.ToArray());
                 }
-
-                var allRows = new ArrayDeque<EventBean>();
-                foreach (var agentInstanceId in agentInstanceIds) {
-                    var processorInstance = _processor.GetProcessorInstanceContextById(agentInstanceId);
-                    if (processorInstance != null) {
-                        Assign(processorInstance.AgentInstanceContext, assignerSetter);
-                        var rows = Execute(processorInstance);
-                        allRows.AddAll(rows);
-                    }
-                }
-
-                if (allRows.Count > 0) {
-                    Dispatch();
-                }
-
-                return new EPPreparedQueryResult(_processor.EventTypeResultSetProcessor, allRows.ToArray());
             }
             finally {
-                if (_hasTableAccess) {
-                    _processor.StatementContext.TableExprEvaluatorContext.ReleaseAcquiredLocks();
+                if (hasTableAccess) {
+                    processor.StatementContext.TableExprEvaluatorContext.ReleaseAcquiredLocks();
                 }
             }
         }
 
         /// <summary>
-        ///     Returns the event type of the prepared statement.
+        /// Returns the event type of the prepared statement.
         /// </summary>
-        /// <returns>event type</returns>
-        public EventType EventType => _processor.EventTypeResultSetProcessor;
+        /// <value>event type</value>
+        public EventType EventType => processor.EventTypeResultSetProcessor;
 
-        protected abstract EventBean[] Execute(FireAndForgetInstance fireAndForgetProcessorInstance);
+        public Attribute[] Annotations {
+            get => annotations;
+            set => annotations = value;
+        }
 
         protected void Dispatch()
         {
-            _internalEventRouteDest.ProcessThreadWorkQueue();
+            internalEventRouteDest.ProcessThreadWorkQueue();
         }
 
         private void Assign(
@@ -193,25 +228,30 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             FAFQueryMethodAssignerSetter assignerSetter)
         {
             // start table-access
-            var tableAccessEvals = ExprTableEvalHelperStart.StartTableAccess(_tableAccesses, agentInstanceContext);
+            var tableAccessEvals =
+                ExprTableEvalHelperStart.StartTableAccess(tableAccesses, agentInstanceContext);
 
             // start subselects
-            var subselectStopCallbacks = new List<AgentInstanceMgmtCallback>();
+            IList<AgentInstanceMgmtCallback> subselectStopCallbacks = new List<AgentInstanceMgmtCallback>(2);
             var subselectActivations = SubSelectHelperStart.StartSubselects(
-                _subselects,
+                subselects,
+                agentInstanceContext,
                 agentInstanceContext,
                 subselectStopCallbacks,
                 false);
 
             // assign
             assignerSetter.Assign(
-                new StatementAIFactoryAssignmentsImpl(
-                    null,
-                    null,
-                    null,
-                    subselectActivations,
-                    tableAccessEvals,
-                    null));
+                new StatementAIFactoryAssignmentsImpl(null, null, null, subselectActivations, tableAccessEvals, null));
+        }
+
+        private void Ready(StatementContextRuntimeServices services)
+        {
+            if (!subselects.IsEmpty()) {
+                InitializeSubselects(services, annotations, subselects);
+            }
+
+            eventProcessingRWLock = services.EventProcessingRWLock;
         }
     }
 } // end of namespace

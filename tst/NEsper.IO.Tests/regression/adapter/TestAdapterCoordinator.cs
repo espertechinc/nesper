@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -18,6 +18,7 @@ using com.espertech.esperio.csv;
 using com.espertech.esperio.support.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esperio.regression.adapter
 {
@@ -108,7 +109,7 @@ namespace com.espertech.esperio.regression.adapter
     		_coordinator.Coordinate(new CSVInputAdapter(_noTimestampsLooping));
     
     		// TimeInMillis is 0
-    		Assert.IsFalse(_listener.GetAndClearIsInvoked());
+    		ClassicAssert.IsFalse(_listener.GetAndClearIsInvoked());
     		_coordinator.Start();
     
     		// TimeInMillis is 50
@@ -122,7 +123,7 @@ namespace com.espertech.esperio.regression.adapter
     
     		// TimeInMillis is 150
     		SendTimeEvent(50);
-    		Assert.IsFalse(_listener.GetAndClearIsInvoked());
+    		ClassicAssert.IsFalse(_listener.GetAndClearIsInvoked());
     
     		// TimeInMillis is 200
     		SendTimeEvent(50);
@@ -142,17 +143,17 @@ namespace com.espertech.esperio.regression.adapter
     
     		// TimeInMillis is 350
     		SendTimeEvent(50);
-    		Assert.IsFalse(_listener.GetAndClearIsInvoked());
+    		ClassicAssert.IsFalse(_listener.GetAndClearIsInvoked());
     
     		_coordinator.Pause();
     
     		// TimeInMillis is 400
     		SendTimeEvent(50);
-    		Assert.IsFalse(_listener.GetAndClearIsInvoked());
+    		ClassicAssert.IsFalse(_listener.GetAndClearIsInvoked());
     
     		// TimeInMillis is 450
     		SendTimeEvent(50);
-    		Assert.IsFalse(_listener.GetAndClearIsInvoked());
+    		ClassicAssert.IsFalse(_listener.GetAndClearIsInvoked());
     
     		_coordinator.Resume();
     
@@ -179,7 +180,7 @@ namespace com.espertech.esperio.regression.adapter
     
     		_coordinator.Stop();
     		SendTimeEvent(1000);
-    		Assert.IsFalse(_listener.GetAndClearIsInvoked());
+    		ClassicAssert.IsFalse(_listener.GetAndClearIsInvoked());
     	}
     
         [Test]
@@ -209,12 +210,12 @@ namespace com.espertech.esperio.regression.adapter
     		// TimeInMillis is 600
     		SendTimeEvent(100);
             Log.Debug(".testRunTillNull time==600");
-    		Assert.IsFalse(_listener.GetAndClearIsInvoked());
+    		ClassicAssert.IsFalse(_listener.GetAndClearIsInvoked());
     
     		// TimeInMillis is 700
     		SendTimeEvent(100);
             Log.Debug(".testRunTillNull time==700");
-    		Assert.IsFalse(_listener.GetAndClearIsInvoked());
+    		ClassicAssert.IsFalse(_listener.GetAndClearIsInvoked());
     
     		// TimeInMillis is 800
     		SendTimeEvent(100);
@@ -233,9 +234,9 @@ namespace com.espertech.esperio.regression.adapter
     		long endTime = Environment.TickCount;
     
     		// The last event should be sent after 500 ms
-    		Assert.IsTrue(endTime - startTime > 500);
+    		ClassicAssert.IsTrue(endTime - startTime > 500);
     
-    		Assert.AreEqual(6, _listener.GetNewDataList().Count);
+    		ClassicAssert.AreEqual(6, _listener.GetNewDataList().Count);
     		AssertEvent(0, 1, 1.1, "noTimestampOne.one");
     		AssertEvent(1, 1, 1.1, "timestampOne.one");
     		AssertEvent(2, 2, 2.2, "noTimestampOne.two");
@@ -258,7 +259,7 @@ namespace com.espertech.esperio.regression.adapter
     		// Check that we haven't been kept waiting
             Assert.That(endTime - startTime, Is.LessThan(100));
     
-    		Assert.AreEqual(6, _listener.GetNewDataList().Count);
+    		ClassicAssert.AreEqual(6, _listener.GetNewDataList().Count);
     		AssertEvent(0, 1, 1.1, "noTimestampOne.one");
     		AssertEvent(1, 1, 1.1, "timestampOne.one");
     		AssertEvent(2, 2, 2.2, "noTimestampOne.two");
@@ -269,14 +270,14 @@ namespace com.espertech.esperio.regression.adapter
     
     	private void AssertEvent(int howManyBack, int? myInt, double? myDouble, String myString)
     	{
-    		Assert.IsTrue(_listener.IsInvoked());
-    		Assert.IsTrue(howManyBack < _listener.GetNewDataList().Count);
+    		ClassicAssert.IsTrue(_listener.IsInvoked);
+    		ClassicAssert.IsTrue(howManyBack < _listener.GetNewDataList().Count);
     		var data = _listener.GetNewDataList()[howManyBack];
-    		Assert.AreEqual(1, data.Length);
+    		ClassicAssert.AreEqual(1, data.Length);
     		var theEvent = data[0];
-    		Assert.AreEqual(myInt, theEvent.Get("MyInt"));
-    		Assert.AreEqual(myDouble, theEvent.Get("MyDouble"));
-    		Assert.AreEqual(myString, theEvent.Get("MyString"));
+    		ClassicAssert.AreEqual(myInt, theEvent.Get("MyInt"));
+    		ClassicAssert.AreEqual(myDouble, theEvent.Get("MyDouble"));
+    		ClassicAssert.AreEqual(myString, theEvent.Get("MyString"));
     	}
     
     
@@ -288,7 +289,7 @@ namespace com.espertech.esperio.regression.adapter
     	private void AssertSizeAndReset(int size)
     	{
     		var list = _listener.GetNewDataList();
-    		Assert.AreEqual(size, list.Count);
+    		ClassicAssert.AreEqual(size, list.Count);
     		list.Clear();
     		_listener.GetAndClearIsInvoked();
     	}

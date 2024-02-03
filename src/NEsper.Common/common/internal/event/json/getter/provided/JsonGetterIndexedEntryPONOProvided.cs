@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -19,7 +19,9 @@ using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.json.getter.core;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
-using static com.espertech.esper.common.@internal.@event.json.getter.provided.JsonFieldGetterHelperProvided; // getJsonProvidedIndexedProp
+using static
+    com.espertech.esper.common.@internal.@event.json.getter.provided.
+    JsonFieldGetterHelperProvided; // getJsonProvidedIndexedProp
 
 namespace com.espertech.esper.common.@internal.@event.json.getter.provided
 {
@@ -29,9 +31,9 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
     public class JsonGetterIndexedEntryPONOProvided : BaseNativePropertyGetter,
         JsonEventPropertyGetter
     {
-        private readonly FieldInfo field;
-        private readonly int index;
-        private readonly BeanEventPropertyGetter nestedGetter;
+        private readonly FieldInfo _field;
+        private readonly int _index;
+        private readonly BeanEventPropertyGetter _nestedGetter;
 
         public JsonGetterIndexedEntryPONOProvided(
             FieldInfo field,
@@ -40,23 +42,26 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
             BeanEventTypeFactory beanEventTypeFactory,
             Type returnType)
-            : base(eventBeanTypedEventFactory, beanEventTypeFactory, returnType, null)
+            : base(eventBeanTypedEventFactory, beanEventTypeFactory, returnType)
         {
-            this.field = field;
-            this.index = index;
-            this.nestedGetter = nestedGetter;
+            _field = field;
+            _index = index;
+            _nestedGetter = nestedGetter;
         }
 
-        public override Type TargetType => field.DeclaringType;
+        public override Type TargetType => _field.DeclaringType;
 
-        public override Type BeanPropType => typeof(object);
+        // public override Type BeanPropType => typeof(object);
 
         public override CodegenExpression EventBeanGetCodegen(
             CodegenExpression beanExpression,
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return UnderlyingGetCodegen(CastUnderlying(field.DeclaringType, beanExpression), codegenMethodScope, codegenClassScope);
+            return UnderlyingGetCodegen(
+                CastUnderlying(_field.DeclaringType, beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
         public override CodegenExpression UnderlyingGetCodegen(
@@ -72,7 +77,10 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return UnderlyingExistsCodegen(CastUnderlying(field.DeclaringType, beanExpression), codegenMethodScope, codegenClassScope);
+            return UnderlyingExistsCodegen(
+                CastUnderlying(_field.DeclaringType, beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
         public override CodegenExpression UnderlyingExistsCodegen(
@@ -95,27 +103,27 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
 
         public object GetJsonProp(object @object)
         {
-            var result = GetJsonProvidedIndexedProp(@object, field, index);
+            var result = GetJsonProvidedIndexedProp(@object, _field, _index);
             if (result == null) {
                 return null;
             }
 
-            return nestedGetter.GetBeanProp(result);
+            return _nestedGetter.GetBeanProp(result);
         }
 
         public bool GetJsonExists(object @object)
         {
-            var result = GetJsonProvidedIndexedProp(@object, field, index);
+            var result = GetJsonProvidedIndexedProp(@object, _field, _index);
             if (result == null) {
                 return false;
             }
 
-            return nestedGetter.IsBeanExistsProperty(result);
+            return _nestedGetter.IsBeanExistsProperty(result);
         }
 
         public object GetJsonFragment(object @object)
         {
-            var result = GetJsonProvidedIndexedProp(@object, field, index);
+            var result = GetJsonProvidedIndexedProp(@object, _field, _index);
             if (result == null) {
                 return null;
             }
@@ -127,17 +135,18 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
-                .AddParam(field.DeclaringType, "und")
+            var propertyType = _nestedGetter.BeanPropType;
+            return codegenMethodScope.MakeChild(propertyType, GetType(), codegenClassScope)
+                .AddParam(_field.DeclaringType, "und")
                 .Block
-                .DeclareVar<object>("value", ExprDotName(Ref("und"), field.Name))
+                .DeclareVar<object>("value", ExprDotName(Ref("und"), _field.Name))
                 .MethodReturn(
                     LocalMethod(
                         BaseNestableEventUtil.GetBeanArrayValueCodegen(
                             codegenMethodScope,
                             codegenClassScope,
-                            nestedGetter,
-                            index),
+                            _nestedGetter,
+                            _index),
                         Ref("value")));
         }
 
@@ -146,16 +155,16 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
             CodegenClassScope codegenClassScope)
         {
             return codegenMethodScope.MakeChild(typeof(bool), GetType(), codegenClassScope)
-                .AddParam(field.DeclaringType, "und")
+                .AddParam(_field.DeclaringType, "und")
                 .Block
-                .DeclareVar<object>("value", ExprDotName(Ref("und"), field.Name))
+                .DeclareVar<object>("value", ExprDotName(Ref("und"), _field.Name))
                 .MethodReturn(
                     LocalMethod(
                         BaseNestableEventUtil.GetBeanArrayValueExistsCodegen(
                             codegenMethodScope,
                             codegenClassScope,
-                            nestedGetter,
-                            index),
+                            _nestedGetter,
+                            _index),
                         Ref("value")));
         }
     }

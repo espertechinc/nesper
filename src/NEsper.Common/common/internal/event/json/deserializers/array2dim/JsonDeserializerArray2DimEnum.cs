@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -31,11 +31,11 @@ namespace com.espertech.esper.common.@internal.@event.json.deserializers.array2d
         public Type EnumType => _enumType;
 
         public Type EnumTypeArray => _enumTypeArray;
-        
+
         private Array ToEnumArray(IList<object> baseList)
         {
             var asArray = Arrays.CreateInstanceChecked(_enumType, baseList.Count);
-            for (int ii = 0; ii < baseList.Count; ii++) {
+            for (var ii = 0; ii < baseList.Count; ii++) {
                 asArray.SetValue(baseList[ii], ii);
             }
 
@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.@internal.@event.json.deserializers.array2d
         {
             var arrayType = _enumType.MakeArrayType();
             var asArray = Arrays.CreateInstanceChecked(arrayType, baseList.Count);
-            for (int ii = 0; ii < baseList.Count; ii++) {
+            for (var ii = 0; ii < baseList.Count; ii++) {
                 asArray.SetValue(baseList[ii], ii);
             }
 
@@ -61,7 +61,7 @@ namespace com.espertech.esper.common.@internal.@event.json.deserializers.array2d
                         element.ElementToArray(
                             _ => Enum.Parse(_enumType, _.GetString()))));
         }
-        
+
         public override object Deserialize(JsonElement element)
         {
             var baseList = DeserializeToList(element);

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -14,21 +14,20 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
 namespace com.espertech.esper.common.@internal.@event.json.serializers.forge
 {
-	public class JsonSerializerForgeNumber : JsonSerializerForge
-	{
+    public class JsonSerializerForgeNumber : JsonSerializerForge
+    {
+        public static readonly JsonSerializerForgeNumber INSTANCE = new JsonSerializerForgeNumber();
 
-		public static readonly JsonSerializerForgeNumber INSTANCE = new JsonSerializerForgeNumber();
+        private JsonSerializerForgeNumber()
+        {
+        }
 
-		private JsonSerializerForgeNumber()
-		{
-		}
-
-		public CodegenExpression CodegenSerialize(
-			JsonSerializerForgeRefs refs,
-			CodegenMethod method,
-			CodegenClassScope classScope)
-		{
-			return StaticMethod(typeof(JsonSerializerUtil), "WriteNullableNumber", refs.Context, refs.Field);
-		}
-	}
+        public CodegenExpression CodegenSerialize(
+            JsonSerializerForgeRefs refs,
+            CodegenMethod method,
+            CodegenClassScope classScope)
+        {
+            return StaticMethod(typeof(JsonSerializerUtil), "WriteNullableNumber", refs.Context, refs.Field);
+        }
+    }
 } // end of namespace

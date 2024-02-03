@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -17,13 +17,13 @@ namespace com.espertech.esper.common.client.configuration.common
     /// <summary>
     ///     Event representation metadata.
     /// </summary>
-    [Serializable]
     public class ConfigurationCommonEventTypeMeta
     {
         private AvroSettingsConfig _avroSettings;
         private PropertyResolutionStyle _classPropertyResolutionStyle;
         private AccessorStyle _defaultAccessorStyle;
         private EventUnderlyingType _defaultEventRepresentation;
+        private bool isEnableXmlxsd;
 
         /// <summary>
         ///     Ctor.
@@ -74,12 +74,19 @@ namespace com.espertech.esper.common.client.configuration.common
         }
 
         /// <summary>
+        /// Returns indicator whether XML XSD Schema processing is enabled or not
+        /// </summary>
+        public bool IsEnableXmlXsd {
+            get => isEnableXmlxsd;
+            set => isEnableXmlxsd = value;
+        }
+
+        /// <summary>
         ///     Avro settings.
         /// </summary>
-        [Serializable]
         public class AvroSettingsConfig
         {
-            private bool _enableAvro = true;
+            private bool _enableAvro = false;
             private bool _enableNativeString = true;
             private bool _enableSchemaDefaultNonNull = true;
             private string _objectValueTypeWidenerFactoryClass;

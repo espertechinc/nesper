@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -29,6 +29,7 @@ using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
+
 namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
 {
     public class CreateWindowUtil
@@ -38,7 +39,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
         //
         // This section expected s single FilterStreamSpecCompiled representing the selected type.
         // It creates a new event type representing the window type and a sets the type selected on the filter stream spec.
-        protected internal static CreateWindowCompileResult HandleCreateWindow(
+        internal static CreateWindowCompileResult HandleCreateWindow(
             StatementBaseInfo @base,
             StatementCompileTimeServices services)
         {
@@ -60,7 +61,6 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
             // Create Map or Wrapper event type from the select clause of the window.
             // If no columns selected, simply create a wrapper type
             // Build a list of properties
-            var newSelectClauseSpecRaw = new SelectClauseSpecRaw();
             LinkedHashMap<string, object> properties;
             var hasProperties = false;
             if (columns != null && !columns.IsEmpty()) {
@@ -68,6 +68,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
                     columns,
                     null,
                     services.ImportServiceCompileTime,
+                    services.ClassProvidedExtension,
                     services.EventTypeCompileTimeResolver);
                 hasProperties = true;
             }
@@ -89,8 +90,6 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
                     }
 
                     // Add any properties to the new select clause for use by consumers to the statement itself
-                    newSelectClauseSpecRaw.Add(
-                        new SelectClauseExprRawSpec(new ExprIdentNodeImpl(selectElement.AssignedName), null, false));
                     hasProperties = true;
                 }
             }
@@ -99,9 +98,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
             // If no columns selected, simply create a wrapper type
             var isOnlyWildcard = @base.StatementSpec.Raw.SelectClauseSpec.IsOnlyWildcard;
             var isWildcard = @base.StatementSpec.Raw.SelectClauseSpec.IsUsingWildcard;
-            var namedWindowVisibility = services.ModuleVisibilityRules.GetAccessModifierNamedWindow(@base, typeName);
-            var additionalForgeables = new List<StmtClassForgeableFactory>();
-            
+            var namedWindowVisibility =
+                services.ModuleVisibilityRules.GetAccessModifierNamedWindow(@base, typeName);
+            IList<StmtClassForgeableFactory> additionalForgeables = new List<StmtClassForgeableFactory>(2);
             try {
                 if (isWildcard && !isOnlyWildcard) {
                     var metadata = new EventTypeMetadata(
@@ -175,8 +174,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
                                 null,
                                 null,
                                 @base.StatementName);
-                        } else if (representation == EventUnderlyingType.JSON) {
-                            EventTypeForgeablesPair pair = JsonEventTypeUtility.MakeJsonTypeCompileTimeNewType(
+                        }
+                        else if (representation == EventUnderlyingType.JSON) {
+                            var pair = JsonEventTypeUtility.MakeJsonTypeCompileTimeNewType(
                                 metadata.Invoke(EventTypeApplicationType.JSON),
                                 compiledProperties,
                                 null,
@@ -184,7 +184,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
                                 @base.StatementRawInfo,
                                 services);
                             targetType = pair.EventType;
-                            additionalForgeables.AddRange(pair.AdditionalForgeables);
+                            additionalForgeables.AddAll(pair.AdditionalForgeables);
                         }
                         else {
                             throw new IllegalStateException("Unrecognized representation " + representation);
@@ -199,7 +199,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
 
                         // No columns selected, no wildcard, use the type as is or as a wrapped type
                         if (selectFromType is ObjectArrayEventType) {
-                            var oaType = (ObjectArrayEventType) selectFromType;
+                            var oaType = (ObjectArrayEventType)selectFromType;
                             targetType = BaseNestableEventUtil.MakeOATypeCompileTime(
                                 metadata.Invoke(EventTypeApplicationType.OBJECTARR),
                                 oaType.Types,
@@ -211,7 +211,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
                                 services.EventTypeCompileTimeResolver);
                         }
                         else if (selectFromType is AvroSchemaEventType) {
-                            var avroSchemaEventType = (AvroSchemaEventType) selectFromType;
+                            var avroSchemaEventType = (AvroSchemaEventType)selectFromType;
                             var avro = new ConfigurationCommonEventTypeAvro();
                             avro.AvroSchema = avroSchemaEventType.Schema;
                             targetType = services.EventTypeAvroHandler.NewEventTypeFromSchema(
@@ -220,15 +220,16 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
                                 avro,
                                 null,
                                 null);
-                        } else if (selectFromType is JsonEventType) {
-                            JsonEventType jsonType = (JsonEventType) selectFromType;
+                        }
+                        else if (selectFromType is JsonEventType) {
+                            var jsonType = (JsonEventType)selectFromType;
                             targetType = JsonEventTypeUtility.MakeJsonTypeCompileTimeExistingType(
                                 metadata.Invoke(EventTypeApplicationType.JSON),
                                 jsonType,
                                 services);
                         }
                         else if (selectFromType is MapEventType) {
-                            var mapType = (MapEventType) selectFromType;
+                            var mapType = (MapEventType)selectFromType;
                             targetType = BaseNestableEventUtil.MakeMapTypeCompileTime(
                                 metadata.Invoke(EventTypeApplicationType.MAP),
                                 mapType.Types,
@@ -240,7 +241,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
                                 services.EventTypeCompileTimeResolver);
                         }
                         else if (selectFromType is BeanEventType) {
-                            var beanType = (BeanEventType) selectFromType;
+                            var beanType = (BeanEventType)selectFromType;
                             targetType = new BeanEventType(
                                 services.Container,
                                 beanType.Stem,
@@ -272,7 +273,6 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
             var filter = new FilterSpecCompiled(targetType, typeName, FilterSpecPlanForge.EMPTY, null);
             return new CreateWindowCompileResult(
                 filter,
-                newSelectClauseSpecRaw,
                 optionalSelectFrom?.EventType,
                 additionalForgeables);
         }
@@ -284,20 +284,19 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
         {
             IList<NamedWindowSelectedProps> selectProps = new List<NamedWindowSelectedProps>();
             StreamTypeService streams = new StreamTypeServiceImpl(
-                new[] {selectFromInfo.EventType},
-                new[] {"stream_0"},
-                new[] {false},
+                new EventType[] { selectFromInfo.EventType },
+                new string[] { "stream_0" },
+                new bool[] { false },
                 false,
                 false);
 
             var validationContext =
                 new ExprValidationContextBuilder(streams, @base.StatementRawInfo, compileTimeServices).Build();
             foreach (var item in @base.StatementSpec.SelectClauseCompiled.SelectExprList) {
-                if (!(item is SelectClauseExprCompiledSpec)) {
+                if (!(item is SelectClauseExprCompiledSpec exprSpec)) {
                     continue;
                 }
 
-                var exprSpec = (SelectClauseExprCompiledSpec) item;
                 var validatedExpression = ExprNodeUtilityValidate.GetValidatedSubtree(
                     ExprNodeOrigin.SELECT,
                     exprSpec.SelectExpression,
@@ -311,9 +310,10 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
 
                 // check for fragments
                 EventType fragmentType = null;
-                if (validatedExpression is ExprIdentNode && !(selectFromInfo.EventType is NativeEventType)) {
-                    var identNode = (ExprIdentNode) validatedExpression;
-                    var fragmentEventType = selectFromInfo.EventType.GetFragmentType(identNode.FullUnresolvedName);
+                if (validatedExpression is ExprIdentNode identNode &&
+                    !(selectFromInfo.EventType is NativeEventType)) {
+                    var fragmentEventType =
+                        selectFromInfo.EventType.GetFragmentType(identNode.FullUnresolvedName);
                     if (fragmentEventType != null && !fragmentEventType.IsNative) {
                         fragmentType = fragmentEventType.FragmentType;
                     }

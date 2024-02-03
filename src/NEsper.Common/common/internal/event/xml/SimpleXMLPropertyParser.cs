@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -46,11 +46,10 @@ namespace com.espertech.esper.common.@internal.@event.xml
                 xPathBuf.Append(rootElementName);
             }
 
-            if (!(property is NestedProperty)) {
+            if (!(property is NestedProperty nestedProperty)) {
                 xPathBuf.Append(MakeProperty(property, defaultNamespacePrefix));
             }
             else {
-                var nestedProperty = (NestedProperty) property;
                 foreach (var propertyNested in nestedProperty.Properties) {
                     xPathBuf.Append(MakeProperty(propertyNested, defaultNamespacePrefix));
                 }
@@ -69,14 +68,14 @@ namespace com.espertech.esper.common.@internal.@event.xml
             }
 
             var unescapedIdent = property.PropertyNameAtomic;
-            if (property is PropertyWithIndex) {
-                var index = ((PropertyWithIndex) property).Index;
+            if (property is PropertyWithIndex withIndex) {
+                var index = withIndex.Index;
                 var xPathPosition = index + 1;
                 return '/' + prefix + unescapedIdent + "[position() = " + xPathPosition + ']';
             }
 
             if (property is MappedProperty) {
-                var key = ((PropertyWithKey) property).Key;
+                var key = ((PropertyWithKey)property).Key;
                 return '/' + prefix + unescapedIdent + "[@id='" + key + "']";
             }
 

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -17,7 +17,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     ///     Context dimension information for keyed segmented context.
     /// </summary>
-    [Serializable]
     public class ContextDescriptorKeyedSegmented : ContextDescriptor
     {
         private IList<ContextDescriptorConditionFilter> initiationConditions;
@@ -61,8 +60,7 @@ namespace com.espertech.esper.common.client.soda
         ///     Returns the key set descriptions
         /// </summary>
         /// <returns>list</returns>
-        public IList<ContextDescriptorKeyedSegmentedItem> Items
-        {
+        public IList<ContextDescriptorKeyedSegmentedItem> Items {
             get => items;
             set => items = value;
         }
@@ -71,8 +69,7 @@ namespace com.espertech.esper.common.client.soda
         ///     Returns the terminating condition or null if there is none
         /// </summary>
         /// <returns>condition</returns>
-        public ContextDescriptorCondition TerminationCondition
-        {
+        public ContextDescriptorCondition TerminationCondition {
             get => terminationCondition;
             set => terminationCondition = value;
         }
@@ -81,8 +78,7 @@ namespace com.espertech.esper.common.client.soda
         ///     Returns the initiation conditions, if any.
         /// </summary>
         /// <returns>null or list of filters for initiation</returns>
-        public IList<ContextDescriptorConditionFilter> InitiationConditions
-        {
+        public IList<ContextDescriptorConditionFilter> InitiationConditions {
             get => initiationConditions;
             set => initiationConditions = value;
         }
@@ -93,27 +89,23 @@ namespace com.espertech.esper.common.client.soda
         {
             writer.Write("partition by ");
             var delimiter = "";
-            foreach (var item in items)
-            {
+            foreach (var item in items) {
                 writer.Write(delimiter);
                 item.ToEPL(writer, formatter);
                 delimiter = ", ";
             }
 
-            if (initiationConditions != null && !initiationConditions.IsEmpty())
-            {
+            if (initiationConditions != null && !initiationConditions.IsEmpty()) {
                 writer.Write(" initiated by ");
                 var delimiterInit = "";
-                foreach (var filter in initiationConditions)
-                {
+                foreach (var filter in initiationConditions) {
                     writer.Write(delimiterInit);
                     filter.ToEPL(writer, formatter);
                     delimiterInit = ", ";
                 }
             }
 
-            if (terminationCondition != null)
-            {
+            if (terminationCondition != null) {
                 writer.Write(" terminated by ");
                 terminationCondition.ToEPL(writer, formatter);
             }

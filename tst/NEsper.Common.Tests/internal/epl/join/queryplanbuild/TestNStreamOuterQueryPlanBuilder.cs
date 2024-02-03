@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -19,6 +19,7 @@ using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
 {
@@ -132,9 +133,9 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                 requiredPerStream,
                 new DependencyGraph(6, false));
 
-            Assert.AreEqual(6, substreamsPerStream.Count);
-            EPAssertionUtil.AssertEqualsExactOrder(substreamsPerStream.Get(2), new[] {3, 1});
-            EPAssertionUtil.AssertEqualsExactOrder(substreamsPerStream.Get(3), new[] {4, 5});
+            ClassicAssert.AreEqual(6, substreamsPerStream.Count);
+            EPAssertionUtil.AssertEqualsExactOrder(substreamsPerStream[2], new[] {3, 1});
+            EPAssertionUtil.AssertEqualsExactOrder(substreamsPerStream[3], new[] {4, 5});
             EPAssertionUtil.AssertEqualsExactOrder(substreamsPerStream.Get(1), new[] {0});
             EPAssertionUtil.AssertEqualsExactOrder(substreamsPerStream.Get(4), new int[] { });
             EPAssertionUtil.AssertEqualsExactOrder(substreamsPerStream.Get(5), new int[] { });

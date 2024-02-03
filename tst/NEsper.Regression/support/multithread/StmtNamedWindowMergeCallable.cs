@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -20,7 +20,7 @@ namespace com.espertech.esper.regressionlib.support.multithread
 {
     public class StmtNamedWindowMergeCallable : ICallable<bool?>
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private readonly int numEvents;
         private readonly EPEventServiceSPI runtime;
 
@@ -43,7 +43,7 @@ namespace com.espertech.esper.regressionlib.support.multithread
                 }
             }
             catch (Exception ex) {
-                log.Error("Error in thread " + Thread.CurrentThread.ManagedThreadId, ex);
+                Log.Error("Error in thread " + Thread.CurrentThread.ManagedThreadId, ex);
                 return null;
             }
 

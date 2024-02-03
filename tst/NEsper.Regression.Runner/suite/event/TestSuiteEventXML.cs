@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -20,6 +20,7 @@ using com.espertech.esper.regressionrun.runner;
 using com.espertech.esper.regressionrun.suite.core;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionrun.suite.@event
 {
@@ -52,7 +53,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
             var schemaStream = resourceManager
                 .GetResourceAsStream("regression/simpleSchemaWithRestriction.xsd");
             var schemaReader = new StreamReader(schemaStream);
-            Assert.IsNotNull(schemaStream);
+            ClassicAssert.IsNotNull(schemaStream);
             var schemaTextSimpleSchemaWithRestriction = FileUtil.LinesToText(
                 FileUtil.ReadFile(schemaReader));
 
@@ -127,12 +128,12 @@ namespace com.espertech.esper.regressionrun.suite.@event
             configuration.Common.AddEventType("MyEventWTypeAndUID", myEventWTypeAndUID);
 
             var stockQuote = new ConfigurationCommonEventTypeXMLDOM();
-            stockQuote.AddXPathProperty("symbol_a", "//m0:symbol", XPathResultType.String);
+            stockQuote.AddXPathProperty("symbol_a", "//m0:Symbol", XPathResultType.String);
             stockQuote.AddXPathProperty(
                 "symbol_b",
                 "//*[local-name(.) = 'getQuote' and namespace-uri(.) = 'http://services.samples/xsd']",
                 XPathResultType.String);
-            stockQuote.AddXPathProperty("symbol_c", "/m0:getQuote/m0:request/m0:symbol", XPathResultType.String);
+            stockQuote.AddXPathProperty("symbol_c", "/m0:getQuote/m0:request/m0:Symbol", XPathResultType.String);
             stockQuote.RootElementName = "getQuote";
             stockQuote.DefaultNamespace = "http://services.samples/xsd";
             stockQuote.RootElementNamespace = "http://services.samples/xsd";

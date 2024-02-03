@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -13,7 +13,8 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 {
     public class DIOBoxedCharacterArray2DimNullableSerde : DataInputOutputSerdeBase<char?[][]>
     {
-        public static readonly DIOBoxedCharacterArray2DimNullableSerde INSTANCE = new DIOBoxedCharacterArray2DimNullableSerde();
+        public static readonly DIOBoxedCharacterArray2DimNullableSerde INSTANCE =
+            new DIOBoxedCharacterArray2DimNullableSerde();
 
         private DIOBoxedCharacterArray2DimNullableSerde()
         {

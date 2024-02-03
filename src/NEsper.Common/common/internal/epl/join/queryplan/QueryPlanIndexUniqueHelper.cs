@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -34,7 +34,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
                         functions = new List<QueryGraphValueEntryHashKeyedForge>();
                     for (var i = 0; i < indexes.Length; i++) {
                         props[i] = hashPropsProvided[indexes[i]];
-                        types[i] = hashCoercionTypes == null ? null : hashCoercionTypes[indexes[i]];
+                        types[i] = hashCoercionTypes?[indexes[i]];
                         functions.Add(hashFunctions[indexes[i]]);
                     }
 

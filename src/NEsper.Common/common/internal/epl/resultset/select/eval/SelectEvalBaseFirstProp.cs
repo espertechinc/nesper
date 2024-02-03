@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -14,6 +14,8 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.resultset.select.core;
+
+using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
 {
@@ -46,25 +48,26 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenMethod methodNode = codegenMethodScope.MakeChild(
-                typeof(EventBean),
-                this.GetType(),
-                codegenClassScope);
-            ExprForge first = selectExprForgeContext.ExprForges[0];
-            Type evaluationType = first.EvaluationType;
-            methodNode.Block.MethodReturn(
-                ProcessFirstColCodegen(
-                    evaluationType,
-                    first.EvaluateCodegen(evaluationType, methodNode, exprSymbol, codegenClassScope),
-                    resultEventType,
-                    eventBeanFactory,
-                    methodNode,
-                    codegenClassScope));
+            var first = selectExprForgeContext.ExprForges[0];
+            var evaluationType = first.EvaluationType;
+            var methodNode = codegenMethodScope.MakeChild(typeof(EventBean), GetType(), codegenClassScope);
+            if (evaluationType == null) {
+                methodNode.Block.MethodReturn(ConstantNull());
+            }
+            else {
+                methodNode.Block.MethodReturn(
+                    ProcessFirstColCodegen(
+                        evaluationType,
+                        first.EvaluateCodegen(evaluationType, methodNode, exprSymbol, codegenClassScope),
+                        resultEventType,
+                        eventBeanFactory,
+                        methodNode,
+                        codegenClassScope));
+            }
+
             return methodNode;
         }
 
-        public EventType ResultEventType {
-            get => resultEventType;
-        }
+        public EventType ResultEventType => resultEventType;
     }
 } // end of namespace

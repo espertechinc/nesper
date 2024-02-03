@@ -36,20 +36,20 @@ namespace com.espertech.esper.common.@internal.util
             const int r = 24;
 
             uint m = 0x5bd1e995;
-            uint h = (uint) (seed ^ length);
+            var h = (uint)(seed ^ length);
 
-            int len_4 = length >> 2;
+            var len_4 = length >> 2;
 
-            for (int i = 0; i < len_4; i++) {
-                uint i_4 = (uint) ((i << 2) + offset);
+            for (var i = 0; i < len_4; i++) {
+                var i_4 = (uint)((i << 2) + offset);
                 uint k = data[i_4 + 3];
                 k = k << 8;
-                k = k | (uint) (data[i_4 + 2] & 0xff);
+                k = k | (uint)(data[i_4 + 2] & 0xff);
                 k = k << 8;
-                k = k | (uint) (data[i_4 + 1] & 0xff);
+                k = k | (uint)(data[i_4 + 1] & 0xff);
                 k = k << 8;
                 //noinspection PointlessArithmeticExpression
-                k = k | (uint) (data[i_4 + 0] & 0xff);
+                k = k | (uint)(data[i_4 + 0] & 0xff);
                 k *= m;
                 k ^= k >> r;
                 k *= m;
@@ -58,17 +58,17 @@ namespace com.espertech.esper.common.@internal.util
             }
 
             // avoid calculating modulo
-            int len_m = len_4 << 2;
-            int left = length - len_m;
-            int i_m = len_m + offset;
+            var len_m = len_4 << 2;
+            var left = length - len_m;
+            var i_m = len_m + offset;
 
             if (left != 0) {
                 if (left >= 3) {
-                    h ^= ((uint) data[i_m + 2]) << 16;
+                    h ^= (uint)data[i_m + 2] << 16;
                 }
 
                 if (left >= 2) {
-                    h ^= ((uint) data[i_m + 1]) << 8;
+                    h ^= (uint)data[i_m + 1] << 8;
                 }
 
                 if (left >= 1) {
@@ -82,7 +82,7 @@ namespace com.espertech.esper.common.@internal.util
             h *= m;
             h ^= h >> 15;
 
-            return (int) h;
+            return (int)h;
         }
     }
 }

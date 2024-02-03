@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -18,18 +18,17 @@ namespace com.espertech.esper.common.@internal.statement.insertintolatch
     ///     A suspend-and-notify implementation of a latch for use in guaranteeing delivery between
     ///     a single event produced by a single statement and consumable by another statement.
     /// </summary>
-    public class InsertIntoLatchWait
+    public class InsertIntoLatchWait : InsertIntoLatch
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         // The earlier latch is the latch generated before this latch
-        private InsertIntoLatchWait _earlier;
-        private readonly int _msecTimeout;
-        private readonly EventBean _payload;
+        private InsertIntoLatchWait earlier;
+        private volatile bool isCompleted;
 
         // The later latch is the latch generated after this latch
-        private InsertIntoLatchWait _later;
-        private volatile bool _isCompleted;
+        private InsertIntoLatchWait later;
+        private readonly long msecTimeout;
 
         /// <summary>
         ///     Ctor.
@@ -37,14 +36,17 @@ namespace com.espertech.esper.common.@internal.statement.insertintolatch
         /// <param name="earlier">the latch before this latch that this latch should be waiting for</param>
         /// <param name="msecTimeout">the timeout after which delivery occurs</param>
         /// <param name="payload">the payload is an event to deliver</param>
+        /// <param name="factory">the factory originating the latch</param>
         public InsertIntoLatchWait(
+            InsertIntoLatchFactory factory,
             InsertIntoLatchWait earlier,
-            int msecTimeout,
+            long msecTimeout,
             EventBean payload)
         {
-            this._earlier = earlier;
-            this._msecTimeout = msecTimeout;
-            this._payload = payload;
+            Factory = factory;
+            this.earlier = earlier;
+            this.msecTimeout = msecTimeout;
+            Event = payload;
         }
 
         /// <summary>
@@ -53,43 +55,41 @@ namespace com.espertech.esper.common.@internal.statement.insertintolatch
         /// <param name="factory">the latch factory</param>
         public InsertIntoLatchWait(InsertIntoLatchFactory factory)
         {
-            _isCompleted = true;
-            _earlier = null;
-            _msecTimeout = 0;
+            Factory = factory;
+            isCompleted = true;
+            earlier = null;
+            msecTimeout = 0;
         }
 
         /// <summary>
         ///     Returns true if the dispatch completed for this future.
         /// </summary>
-        /// <returns>true for completed, false if not</returns>
-        public bool IsCompleted => _isCompleted;
-
-        public InsertIntoLatchWait Later {
-            get => _later;
-            set => _later = value;
-        }
+        /// <value>true for completed, false if not</value>
+        public bool IsCompleted => isCompleted;
 
         /// <summary>
         ///     Hand a later latch to use for indicating completion via notify.
         /// </summary>
-        /// <param name="later">is the later latch</param>
-        public InsertIntoLatchWait WithLater(InsertIntoLatchWait later)
-        {
-            _later = later;
-            return this;
+        /// <value>is the later latch</value>
+        public InsertIntoLatchWait Later {
+            set => later = value;
         }
 
+        public InsertIntoLatchFactory Factory { get; }
+
+        public EventBean Event { set; get; }
+
         /// <summary>
-        ///     Blocking call that returns only when the earlier latch completed.
+        ///     Blcking call that returns only when the earlier latch completed.
         /// </summary>
         /// <returns>payload of the latch</returns>
         public EventBean Await()
         {
-            if (!_earlier._isCompleted) {
+            if (!earlier.isCompleted) {
                 lock (this) {
-                    if (!_earlier._isCompleted) {
+                    if (!earlier.isCompleted) {
                         try {
-                            Monitor.Wait(this, _msecTimeout);
+                            Monitor.Wait(this, (int)msecTimeout);
                         }
                         catch (ThreadInterruptedException e) {
                             Log.Error("Interrupted: " + e.Message, e);
@@ -98,11 +98,11 @@ namespace com.espertech.esper.common.@internal.statement.insertintolatch
                 }
             }
 
-            if (!_earlier._isCompleted) {
+            if (!earlier.isCompleted) {
                 Log.Info("Wait timeout exceeded for insert-into dispatch with notify");
             }
 
-            return _payload;
+            return Event;
         }
 
         /// <summary>
@@ -110,15 +110,15 @@ namespace com.espertech.esper.common.@internal.statement.insertintolatch
         /// </summary>
         public void Done()
         {
-            _isCompleted = true;
-            if (Later != null) {
-                lock (Later) {
-                    Monitor.Pulse(Later);
+            isCompleted = true;
+            if (later != null) {
+                lock (later) {
+                    Monitor.Pulse(later);
                 }
             }
 
-            _earlier = null;
-            Later = null;
+            earlier = null;
+            later = null;
         }
     }
 } // end of namespace

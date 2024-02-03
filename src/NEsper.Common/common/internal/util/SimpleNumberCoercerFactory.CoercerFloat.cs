@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -11,6 +11,7 @@ using System;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.util
 {
@@ -26,16 +27,23 @@ namespace com.espertech.esper.common.@internal.util
 
             public object CoerceBoxed(object value)
             {
-                return value.AsFloat();
+                return value.AsBoxedFloat();
             }
 
-            public Type ReturnType => typeof(float);
-
+            public Type GetReturnType(Type valueType)
+            {
+                return valueType.CanBeNull() ? typeof(float?) : typeof(float);
+            }
+            
             public CodegenExpression CoerceCodegen(
                 CodegenExpression value,
-                Type valueType)
+                Type valueType,
+                CodegenMethodScope codegenMethodScope,
+                CodegenClassScope codegenClassScope)
             {
-                return CodegenFloat(value, valueType);
+                return valueType.CanBeNull() 
+                    ? CoerceCodegenMayNullBoxed(value, valueType, codegenMethodScope, codegenClassScope)
+                    : CodegenFloat(value, valueType);
             }
 
             public CodegenExpression CoerceCodegenMayNullBoxed(
@@ -44,27 +52,32 @@ namespace com.espertech.esper.common.@internal.util
                 CodegenMethodScope codegenMethodScope,
                 CodegenClassScope codegenClassScope)
             {
-                return ((valueType != typeof(float)) &&
-                        (valueType != typeof(float?)))
-                    ? CodegenExpressionBuilder.ExprDotMethod(value, "AsBoxedFloat")
-                    : value;
+                // return valueType != typeof(float) &&
+                //        valueType != typeof(float?)
+                //     ? CodegenExpressionBuilder.ExprDotMethod(value, "AsBoxedFloat")
+                //     : value;
 
-//                return CodegenCoerceMayNull(
-//                    typeof(float),
-//                    typeof(float?),
-//                    "AsFloat",
-//                    value,
-//                    valueTypeMustNumeric,
-//                    codegenMethodScope,
-//                    typeof(CoercerFloat),
-//                    codegenClassScope);
+                if (valueType == typeof(float) ||
+                    valueType == typeof(float?)) {
+                    return value;
+                }
+
+                return CodegenCoerceMayNull(
+                    typeof(float),
+                    typeof(float?),
+                    "AsFloat",
+                    value,
+                    valueType,
+                    codegenMethodScope,
+                    typeof(CoercerFloat),
+                    codegenClassScope);
             }
 
             public static CodegenExpression CodegenFloat(
                 CodegenExpression value,
                 Type valueType)
             {
-                return ((valueType != typeof(float)))
+                return valueType != typeof(float)
                     ? CodegenExpressionBuilder.ExprDotMethod(value, "AsFloat")
                     : value;
 

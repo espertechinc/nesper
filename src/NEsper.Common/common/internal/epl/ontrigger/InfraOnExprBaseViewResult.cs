@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -27,12 +27,8 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
             this.optionalAggregationService = optionalAggregationService;
         }
 
-        public View View {
-            get => view;
-        }
+        public View View => view;
 
-        public AggregationService OptionalAggregationService {
-            get => optionalAggregationService;
-        }
+        public AggregationService OptionalAggregationService => optionalAggregationService;
     }
 } // end of namespace

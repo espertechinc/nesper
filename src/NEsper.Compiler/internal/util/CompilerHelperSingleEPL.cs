@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -11,7 +11,7 @@ using System.Collections.Generic;
 using System.Reflection;
 
 using Antlr4.Runtime.Tree;
-
+using com.espertech.esper.common.client.artifact;
 using com.espertech.esper.common.@internal.compile.stage1;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.compile.stage1.specmapper;
@@ -22,7 +22,9 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.function;
 using com.espertech.esper.compat.logging;
+using com.espertech.esper.compiler.client.option;
 using com.espertech.esper.compiler.@internal.parse;
 using com.espertech.esper.grammar.@internal.generated;
 
@@ -38,6 +40,7 @@ namespace com.espertech.esper.compiler.@internal.util
 
 		internal static CompilerHelperSingleResult ParseCompileInlinedClassesWalk(
 			Compilable compilable,
+			InlinedClassInspectionOption inlinedClassConsumer,
 			StatementCompileTimeServices compileTimeServices)
 		{
 			CompilerHelperSingleResult result;
@@ -49,7 +52,11 @@ namespace com.espertech.esper.compiler.@internal.util
 					var parseResult = Parse(compilableEPL.Epl);
 
 					// compile application-provided classes (both create-class as well as just class-keyword)
-					var classesInlined = CompileAddExtensions(parseResult.Classes, compilable, compileTimeServices);
+					var classesInlined = CompileAddExtensions(
+						parseResult.Classes,
+						compilable,
+						inlinedClassConsumer,
+						compileTimeServices);
 
 					// walk - this may use the new classes already such as for extension-single-row-function
 					var raw = Walk(parseResult, compilableEPL.Epl, compileTimeServices.StatementSpecMapEnv);
@@ -72,7 +79,11 @@ namespace com.espertech.esper.compiler.@internal.util
 							classTexts.Add(soda.CreateClass.ClassProvidedExpression.ClassText);
 						}
 
-						classesInlined = CompileAddExtensions(classTexts, compilable, compileTimeServices);
+						classesInlined = CompileAddExtensions(
+							classTexts,
+							compilable,
+							inlinedClassConsumer,
+							compileTimeServices);
 					}
 					else {
 						classesInlined = ClassProvidedPrecompileResult.EMPTY;
@@ -107,11 +118,20 @@ namespace com.espertech.esper.compiler.@internal.util
 		private static ClassProvidedPrecompileResult CompileAddExtensions(
 			IList<string> classes,
 			Compilable compilable,
+			InlinedClassInspectionOption option,
 			StatementCompileTimeServices compileTimeServices)
 		{
+			Consumer<IArtifact> compileResultConsumer = null;
+			if (option != null) {
+				compileResultConsumer = artifact => {
+					//ClassFile[] files = ((List<ClassFile>) compilerResult).toArray(new ClassFile[0]);
+					option.Visit(new InlinedClassInspectionContext(artifact));
+				};
+			}
+			
 			ClassProvidedPrecompileResult classesInlined;
 			try {
-				classesInlined = CompileClassProvided(classes, compileTimeServices, null);
+				classesInlined = CompileClassProvided(classes, compileResultConsumer, compileTimeServices, null);
 				// add inlined classes including create-class
 				compileTimeServices.ClassProvidedExtension.Add(classesInlined.Classes);
 			}

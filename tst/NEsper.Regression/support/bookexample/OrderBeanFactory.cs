@@ -1,10 +1,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
+
+using System;
 
 namespace com.espertech.esper.regressionlib.support.bookexample
 {
@@ -19,7 +21,7 @@ namespace com.espertech.esper.regressionlib.support.bookexample
                     new OrderItem("A002", "10021", 25, 7.50),
                     new OrderItem("A003", "10020", 30, 10)
                 });
-            return new OrderBean(order, GetBookDesc(), new GameDesc[0]);
+            return new OrderBean(order, GetBookDesc(), Array.Empty<GameDesc>());
         }
 
         public static OrderBean MakeEventTwo()
@@ -30,7 +32,7 @@ namespace com.espertech.esper.regressionlib.support.bookexample
                     new OrderItem("B001", "10022", 5, 99.50)
                 });
 
-            return new OrderBean(order, GetBookDesc(), new GameDesc[0]);
+            return new OrderBean(order, GetBookDesc(), Array.Empty<GameDesc>());
         }
 
         public static OrderBean MakeEventThree()
@@ -62,7 +64,7 @@ namespace com.espertech.esper.regressionlib.support.bookexample
         {
             var order = new OrderWithItems(
                 "PO200904",
-                new OrderItem[0]);
+                Array.Empty<OrderItem>());
             return new OrderBean(
                 order,
                 new[] {
@@ -72,12 +74,12 @@ namespace com.espertech.esper.regressionlib.support.bookexample
                         "Isaac Asimov",
                         15.00d,
                         new[] {
-                            new Review(201, "great book")
+                            new Review(201, "great Book")
                         }),
                     new BookDesc(
-                        "10032", "Red Planet", "Robert A Heinlein", 13.00d, new Review[0])
+                        "10032", "Red Planet", "Robert A Heinlein", 13.00d, Array.Empty<Review>())
                 },
-                new GameDesc[0]);
+                Array.Empty<GameDesc>());
         }
 
         private static BookDesc[] GetBookDesc()
@@ -89,7 +91,7 @@ namespace com.espertech.esper.regressionlib.support.bookexample
                     "Orson Scott Card",
                     24.00d,
                     new[] {
-                        new Review(1, "best book ever"),
+                        new Review(1, "best Book ever"),
                         new Review(2, "good science fiction")
                     }),
                 new BookDesc(
@@ -98,14 +100,14 @@ namespace com.espertech.esper.regressionlib.support.bookexample
                     "Isaac Asimov",
                     35.00d,
                     new[] {
-                        new Review(10, "great book")
+                        new Review(10, "great Book")
                     }),
                 new BookDesc(
                     "10022",
                     "Stranger in a Strange Land",
                     "Robert A Heinlein",
                     27.00d,
-                    new Review[0])
+                    Array.Empty<Review>())
             };
         }
     }

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -15,7 +15,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     ///     Context condition that start/initiated or ends/terminates context partitions based on a crontab expression.
     /// </summary>
-    [Serializable]
     public class ContextDescriptorConditionCrontab : ContextDescriptorCondition
     {
         /// <summary>Ctor. </summary>
@@ -57,22 +56,22 @@ namespace com.espertech.esper.common.client.soda
             if (now) {
                 writer.Write("@now and ");
             }
-            String delimiter = "";
-            foreach (IList<Expression> crontab in crontabs) {
+
+            var delimiter = "";
+            foreach (var crontab in crontabs) {
                 writer.Write(delimiter);
                 Write(writer, crontab);
                 delimiter = ", ";
             }
         }
-        
+
         private static void Write(
             TextWriter writer,
             IList<Expression> expressions)
         {
             writer.Write("(");
-            string delimiter = "";
-            foreach (Expression e in expressions)
-            {
+            var delimiter = "";
+            foreach (var e in expressions) {
                 writer.Write(delimiter);
                 e.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                 delimiter = ", ";

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.Json.Serialization;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -31,50 +32,97 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
         ExprForgeInstrumentable,
         ExprEvaluator
     {
-        private readonly string _tableName;
-        private ExprForge[] _groupKeyEvaluators;
-#if NOT_USED
+        private readonly string tableName;
+        private TableMetaData tableMeta;
         private ExprTableEvalStrategyFactoryForge strategy;
-#endif
-        private TableMetaData _tableMeta;
+        private ExprForge[] groupKeyEvaluators;
+        private int tableAccessNumber = -1;
 
-        /// <summary>
-        ///     Ctor.
-        ///     Getting a table name allows "eplToModel" without knowing tables.
-        /// </summary>
-        /// <param name="tableName">table name</param>
-        protected ExprTableAccessNode(string tableName)
-        {
-            _tableName = tableName;
-        }
+        protected ExprForge[] GroupKeyEvaluators => groupKeyEvaluators;
 
+        [JsonIgnore]
+        public abstract Type EvaluationType { get; }
+        
+        protected abstract void ValidateBindingInternal(ExprValidationContext validationContext);
+
+        protected abstract bool EqualsNodeInternal(ExprTableAccessNode other);
+
+        [JsonIgnore]
         protected abstract string InstrumentationQName { get; }
 
+        [JsonIgnore]
         protected abstract CodegenExpression[] InstrumentationQParams { get; }
 
+        [JsonIgnore]
         public abstract ExprTableEvalStrategyFactoryForge TableAccessFactoryForge { get; }
 
-        public abstract Type EvaluationType { get; }
+        /// <summary>
+        /// Ctor.
+        /// Getting a table name allows "eplToModel" without knowing tables.
+        /// </summary>
+        /// <param name="tableName">table name</param>
+        public ExprTableAccessNode(string tableName)
+        {
+            this.tableName = tableName;
+        }
 
-        public string TableName => _tableName;
+        public string TableName => tableName;
 
-        public TableMetaData TableMeta => _tableMeta;
+        public override ExprNode Validate(ExprValidationContext validationContext)
+        {
+            tableMeta = validationContext.TableCompileTimeResolver.Resolve(tableName);
+            if (tableMeta == null) {
+                throw new ExprValidationException("Failed to resolve table name '" + tableName + "' to a table");
+            }
 
-        public ExprForge[] GroupKeyEvaluators => _groupKeyEvaluators;
+            if (!validationContext.IsAllowBindingConsumption) {
+                throw new ExprValidationException(
+                    "Invalid use of table access expression, expression '" + TableName + "' is not allowed here");
+            }
+
+            if (tableMeta.OptionalContextName != null &&
+                validationContext.ContextDescriptor != null &&
+                !tableMeta.OptionalContextName.Equals(validationContext.ContextDescriptor.ContextName)) {
+                throw new ExprValidationException(
+                    "Table by name '" +
+                    TableName +
+                    "' has been declared for context '" +
+                    tableMeta.OptionalContextName +
+                    "' and can only be used within the same context");
+            }
+
+            // additional validations depend on detail
+            ValidateBindingInternal(validationContext);
+            return null;
+        }
+
+        protected void ValidateGroupKeys(
+            TableMetaData metadata,
+            ExprValidationContext validationContext)
+        {
+            if (ChildNodes.Length > 0) {
+                groupKeyEvaluators = ExprNodeUtilityQuery.GetForges(ChildNodes);
+            }
+            else {
+                groupKeyEvaluators = Array.Empty<ExprForge>();
+            }
+
+            var typesReturned = ExprNodeUtilityQuery.GetExprResultTypes(ChildNodes);
+            var keyTypes = metadata.IsKeyed ? metadata.KeyTypes : Type.EmptyTypes;
+            ExprTableNodeUtil.ValidateExpressions(TableName, typesReturned, "key", ChildNodes, keyTypes, "key");
+        }
 
         public override ExprPrecedenceEnum Precedence => ExprPrecedenceEnum.UNARY;
 
-        public int TableAccessNumber { get; set; } = -1;
+        [JsonIgnore]
+        public ExprNodeRenderable ForgeRenderable => this;
+        
+        [JsonIgnore]
+        ExprNodeRenderable ExprForge.ExprForgeRenderable => ForgeRenderable;
 
-        public object Evaluate(
-            EventBean[] eventsPerStream,
-            bool isNewData,
-            ExprEvaluatorContext context)
-        {
-            throw ExprNodeUtilityMake.MakeUnsupportedCompileTime();
-        }
-
-        public virtual ExprNodeRenderable ExprForgeRenderable => this;
+        
+        [JsonIgnore]
+        public ExprNodeRenderable EnumForgeRenderable { get; }
 
         public CodegenExpression EvaluateCodegenUninstrumented(
             Type requiredType,
@@ -101,58 +149,6 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
                     codegenClassScope)
                 .Qparams(InstrumentationQParams)
                 .Build();
-        }
-
-        public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
-
-        public virtual ExprEvaluator ExprEvaluator => this;
-
-        protected abstract void ValidateBindingInternal(ExprValidationContext validationContext);
-
-        protected abstract bool EqualsNodeInternal(ExprTableAccessNode other);
-
-        public override ExprNode Validate(ExprValidationContext validationContext)
-        {
-            _tableMeta = validationContext.TableCompileTimeResolver.Resolve(_tableName);
-            if (_tableMeta == null) {
-                throw new ExprValidationException("Failed to resolve table name '" + _tableName + "' to a table");
-            }
-
-            if (!validationContext.IsAllowBindingConsumption) {
-                throw new ExprValidationException(
-                    "Invalid use of table access expression, expression '" + TableName + "' is not allowed here");
-            }
-
-            if (_tableMeta.OptionalContextName != null &&
-                validationContext.ContextDescriptor != null &&
-                !_tableMeta.OptionalContextName.Equals(validationContext.ContextDescriptor.ContextName)) {
-                throw new ExprValidationException(
-                    "Table by name '" +
-                    TableName +
-                    "' has been declared for context '" +
-                    _tableMeta.OptionalContextName +
-                    "' and can only be used within the same context");
-            }
-
-            // additional validations depend on detail
-            ValidateBindingInternal(validationContext);
-            return null;
-        }
-
-        protected void ValidateGroupKeys(
-            TableMetaData metadata,
-            ExprValidationContext validationContext)
-        {
-            if (ChildNodes.Length > 0) {
-                _groupKeyEvaluators = ExprNodeUtilityQuery.GetForges(ChildNodes);
-            }
-            else {
-                _groupKeyEvaluators = new ExprForge[0];
-            }
-
-            var typesReturned = ExprNodeUtilityQuery.GetExprResultTypes(ChildNodes);
-            var keyTypes = metadata.IsKeyed ? metadata.KeyTypes : new Type[0];
-            ExprTableNodeUtil.ValidateExpressions(TableName, typesReturned, "key", ChildNodes, keyTypes, "key");
         }
 
         public CodegenExpression EvaluateGetROCollectionEventsCodegen(
@@ -189,6 +185,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
             CodegenClassScope codegenClassScope)
         {
             return MakeEvaluate(GETEVENT, this, typeof(EventBean), parent, exprSymbol, codegenClassScope);
+        }
+
+        public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
+
+        public virtual ExprEvaluator ExprEvaluator => this;
+
+        public object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
+        {
+            throw ExprNodeUtilityMake.MakeUnsupportedCompileTime();
         }
 
         protected void ToPrecedenceFreeEPLInternal(
@@ -244,13 +252,20 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
                 return false;
             }
 
-            var that = (ExprTableAccessNode) o;
+            var that = (ExprTableAccessNode)o;
             if (!TableName.Equals(that.TableName)) {
                 return false;
             }
 
             return EqualsNodeInternal(that);
         }
+
+        public int TableAccessNumber {
+            get => tableAccessNumber;
+            set => tableAccessNumber = value;
+        }
+
+        public TableMetaData TableMeta => tableMeta;
 
         internal static CodegenExpression MakeEvaluate(
             AccessEvaluationType evaluationType,
@@ -260,21 +275,26 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
             ExprForgeCodegenSymbol symbols,
             CodegenClassScope classScope)
         {
+            if (resultType == null) {
+                return ConstantNull();
+            }
+
+            var resultClass = resultType;
             if (accessNode.TableAccessNumber == -1) {
                 throw new IllegalStateException("Table expression node has not been assigned");
             }
 
-            var method = parent.MakeChild(resultType, typeof(ExprTableAccessNode), classScope);
+            var method = parent.MakeChild(resultClass, typeof(ExprTableAccessNode), classScope);
 
-            CodegenExpression eps = symbols.GetAddEPS(method);
+            CodegenExpression eps = symbols.GetAddEps(method);
             var newData = symbols.GetAddIsNewData(method);
             CodegenExpression evalCtx = symbols.GetAddExprEvalCtx(method);
 
             var future = classScope.NamespaceScope.AddOrGetDefaultFieldWellKnown(
-                new CodegenFieldNameTableAccess(accessNode.TableAccessNumber),
+                new CodegenFieldNameTableAccess(accessNode.tableAccessNumber),
                 typeof(ExprTableEvalStrategy));
             var evaluation = ExprDotMethod(future, evaluationType.MethodName, eps, newData, evalCtx);
-            if (resultType != typeof(object)) {
+            if (resultClass != typeof(object)) {
                 evaluation = CodegenLegoCast.CastSafeFromObjectType(resultType, evaluation);
                 //evaluation = Cast(resultType, evaluation);
             }
@@ -285,8 +305,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
 
         public class AccessEvaluationType
         {
-            public static readonly AccessEvaluationType PLAIN =
-                new AccessEvaluationType("Evaluate");
+            public static readonly AccessEvaluationType PLAIN = new AccessEvaluationType("Evaluate");
 
             public static readonly AccessEvaluationType GETEVENTCOLL =
                 new AccessEvaluationType("EvaluateGetROCollectionEvents");
@@ -294,8 +313,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
             public static readonly AccessEvaluationType GETSCALARCOLL =
                 new AccessEvaluationType("EvaluateGetROCollectionScalar");
 
-            public static readonly AccessEvaluationType GETEVENT = 
-                new AccessEvaluationType("EvaluateGetEventBean");
+            public static readonly AccessEvaluationType GETEVENT = new AccessEvaluationType("EvaluateGetEventBean");
 
             public static readonly AccessEvaluationType EVALTYPABLESINGLE =
                 new AccessEvaluationType("EvaluateTypableSingle");

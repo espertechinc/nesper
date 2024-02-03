@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -15,7 +15,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     ///     Pattern observer expression observes occurances such as timer-at (crontab) and timer-interval.
     /// </summary>
-    [Serializable]
     public class PatternObserverExpr : EPBaseNamedObject,
         PatternExpr
     {
@@ -56,16 +55,15 @@ namespace com.espertech.esper.common.client.soda
         {
         }
 
-        public string TreeObjectName
-        {
+        public string TreeObjectName {
             get => treeObjectName;
             set => treeObjectName = value;
         }
 
-        public IList<PatternExpr> Children
-        {
+        public IList<PatternExpr> Children {
             get => new List<PatternExpr>();
-            set { /* this expression has no child expressions */ }
+            set { /* this expression has no child expressions */
+            }
         }
 
         public PatternExprPrecedenceEnum Precedence => PatternExprPrecedenceEnum.ATOM;
@@ -75,14 +73,12 @@ namespace com.espertech.esper.common.client.soda
             PatternExprPrecedenceEnum parentPrecedence,
             EPStatementFormatter formatter)
         {
-            if (Precedence.GetLevel() < parentPrecedence.GetLevel())
-            {
+            if (Precedence.GetLevel() < parentPrecedence.GetLevel()) {
                 writer.Write("(");
                 ToPrecedenceFreeEPL(writer);
                 writer.Write(")");
             }
-            else
-            {
+            else {
                 ToPrecedenceFreeEPL(writer);
             }
         }

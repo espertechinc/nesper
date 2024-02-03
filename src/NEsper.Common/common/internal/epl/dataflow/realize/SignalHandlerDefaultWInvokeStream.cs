@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -16,9 +16,9 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
 {
     public class SignalHandlerDefaultWInvokeStream : SignalHandlerDefaultWInvoke
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(SignalHandlerDefaultWInvokeStream));
+        private static readonly ILog Log = LogManager.GetLogger(typeof(SignalHandlerDefaultWInvokeStream));
 
-        private readonly int streamNum;
+        private readonly int _streamNum;
 
         public SignalHandlerDefaultWInvokeStream(
             object target,
@@ -26,16 +26,16 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
             int streamNum)
             : base(target, method)
         {
-            this.streamNum = streamNum;
+            _streamNum = streamNum;
         }
 
         internal override void HandleSignalInternal(EPDataFlowSignal signal)
         {
             try {
-                method.Invoke(target, new object[] {streamNum, signal});
+                method.Invoke(target, new object[] { _streamNum, signal });
             }
             catch (MemberAccessException e) {
-                log.Error("Failed to invoke signal handler: " + e.Message, e);
+                Log.Error("Failed to invoke signal handler: " + e.Message, e);
             }
         }
     }

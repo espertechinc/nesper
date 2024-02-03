@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-using System.Reflection;
 
 using com.espertech.esper.common.client.soda;
 using com.espertech.esper.compat;
@@ -17,6 +16,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 {
@@ -25,18 +25,230 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         private const string SYMBOL_DELL = "DELL";
         private const string SYMBOL_IBM = "IBM";
 
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-
-        public static IList<RegressionExecution> Executions()
+        public static ICollection<RegressionExecution> Executions()
         {
-            var execs = new List<RegressionExecution>();
-            execs.Add(new ResultSetAggregateMinMax());
-            execs.Add(new ResultSetAggregateMinMaxOM());
-            execs.Add(new ResultSetAggregateMinMaxViewCompile());
-            execs.Add(new ResultSetAggregateMinMaxJoin());
-            execs.Add(new ResultSetAggregateMinNoGroupHaving());
+            IList<RegressionExecution> execs = new List<RegressionExecution>();
+            WithMax(execs);
+            WithMaxOM(execs);
+            WithMaxViewCompile(execs);
+            WithMaxJoin(execs);
+            WithNoGroupHaving(execs);
+            WithNoGroupSelectHaving(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNoGroupSelectHaving(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ResultSetAggregateMinNoGroupSelectHaving());
             return execs;
+        }
+
+        public static IList<RegressionExecution> WithNoGroupHaving(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetAggregateMinNoGroupHaving());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithMaxJoin(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetAggregateMinMaxJoin());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithMaxViewCompile(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetAggregateMinMaxViewCompile());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithMaxOM(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetAggregateMinMaxOM());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithMax(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetAggregateMinMax());
+            return execs;
+        }
+
+        private class ResultSetAggregateMinMax : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var milestone = new AtomicLong();
+                var epl = "@name('s0') select irstream Symbol, " +
+                          "min(all Volume) as minVol," +
+                          "max(all Volume) as maxVol," +
+                          "min(distinct Volume) as minDistVol," +
+                          "max(distinct Volume) as maxDistVol" +
+                          " from SupportMarketDataBean#length(3) " +
+                          "where Symbol='DELL' or Symbol='IBM' or Symbol='GE' " +
+                          "group by Symbol";
+                env.CompileDeploy(epl).AddListener("s0");
+
+                TryAssertionMinMax(env, milestone);
+
+                env.UndeployAll();
+            }
+        }
+
+        private class ResultSetAggregateMinMaxOM : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var model = new EPStatementObjectModel();
+                model.SelectClause = SelectClause.Create()
+                    .SetStreamSelector(StreamSelector.RSTREAM_ISTREAM_BOTH)
+                    .Add("Symbol")
+                    .Add(Expressions.Min("Volume"), "minVol")
+                    .Add(Expressions.Max("Volume"), "maxVol")
+                    .Add(Expressions.MinDistinct("Volume"), "minDistVol")
+                    .Add(Expressions.MaxDistinct("Volume"), "maxDistVol");
+
+                model.FromClause = FromClause.Create(
+                    FilterStream.Create(nameof(SupportMarketDataBean)).AddView("length", Expressions.Constant(3)));
+                model.WhereClause = Expressions.Or()
+                    .Add(Expressions.Eq("Symbol", "DELL"))
+                    .Add(Expressions.Eq("Symbol", "IBM"))
+                    .Add(Expressions.Eq("Symbol", "GE"));
+                model.GroupByClause = GroupByClause.Create("Symbol");
+                model = env.CopyMayFail(model);
+
+                var epl = "select irstream Symbol, " +
+                          "min(Volume) as minVol, " +
+                          "max(Volume) as maxVol, " +
+                          "min(distinct Volume) as minDistVol, " +
+                          "max(distinct Volume) as maxDistVol " +
+                          "from SupportMarketDataBean#length(3) " +
+                          "where Symbol=\"DELL\" or Symbol=\"IBM\" or Symbol=\"GE\" " +
+                          "group by Symbol";
+                ClassicAssert.AreEqual(epl, model.ToEPL());
+
+                model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
+                env.CompileDeploy(model).AddListener("s0");
+
+                TryAssertionMinMax(env, new AtomicLong());
+
+                env.UndeployAll();
+            }
+        }
+
+        private class ResultSetAggregateMinMaxViewCompile : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var epl = "@name('s0') select irstream Symbol, " +
+                          "min(Volume) as minVol, " +
+                          "max(Volume) as maxVol, " +
+                          "min(distinct Volume) as minDistVol, " +
+                          "max(distinct Volume) as maxDistVol " +
+                          "from SupportMarketDataBean#length(3) " +
+                          "where Symbol=\"DELL\" or Symbol=\"IBM\" or Symbol=\"GE\" " +
+                          "group by Symbol";
+                env.EplToModelCompileDeploy(epl).AddListener("s0");
+
+                TryAssertionMinMax(env, new AtomicLong());
+
+                env.UndeployAll();
+            }
+        }
+
+        private class ResultSetAggregateMinMaxJoin : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var milestone = new AtomicLong();
+                var epl = "@name('s0') select irstream Symbol, " +
+                          "min(Volume) as minVol," +
+                          "max(Volume) as maxVol," +
+                          "min(distinct Volume) as minDistVol," +
+                          "max(distinct Volume) as maxDistVol" +
+                          " from SupportBeanString#length(100) as one, " +
+                          "SupportMarketDataBean#length(3) as two " +
+                          "where (Symbol='DELL' or Symbol='IBM' or Symbol='GE') " +
+                          "  and one.TheString = two.Symbol " +
+                          "group by Symbol";
+                env.CompileDeployAddListenerMile(epl, "s0", milestone.GetAndIncrement());
+
+                env.SendEventBean(new SupportBeanString(SYMBOL_DELL));
+                env.SendEventBean(new SupportBeanString(SYMBOL_IBM));
+
+                TryAssertionMinMax(env, milestone);
+
+                env.UndeployAll();
+            }
+        }
+
+        private class ResultSetAggregateMinNoGroupHaving : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var stmtText = "@name('s0') select Symbol from SupportMarketDataBean#time(5 sec) " +
+                               "having Volume > min(Volume) * 1.3";
+                env.CompileDeployAddListenerMileZero(stmtText, "s0");
+
+                SendEvent(env, "DELL", 100L);
+                SendEvent(env, "DELL", 105L);
+                SendEvent(env, "DELL", 100L);
+                env.AssertListenerNotInvoked("s0");
+
+                env.Milestone(1);
+
+                SendEvent(env, "DELL", 131L);
+                env.AssertEqualsNew("s0", "Symbol", "DELL");
+
+                SendEvent(env, "DELL", 132L);
+                env.AssertEqualsNew("s0", "Symbol", "DELL");
+
+                env.Milestone(2);
+
+                SendEvent(env, "DELL", 129L);
+                env.AssertListenerNotInvoked("s0");
+
+                env.UndeployAll();
+            }
+        }
+
+        private class ResultSetAggregateMinNoGroupSelectHaving : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var fields = "Symbol,mymin".SplitCsv();
+                var stmtText = "@name('s0') select Symbol, min(Volume) as mymin from SupportMarketDataBean#length(5) " +
+                               "having Volume > min(Volume) * 1.3";
+                env.CompileDeployAddListenerMileZero(stmtText, "s0");
+
+                SendEvent(env, "DELL", 100L);
+                SendEvent(env, "DELL", 105L);
+                SendEvent(env, "DELL", 100L);
+                env.AssertListenerNotInvoked("s0");
+
+                SendEvent(env, "DELL", 131L);
+                env.AssertPropsNew("s0", fields, new object[] { "DELL", 100L });
+
+                env.Milestone(1);
+
+                SendEvent(env, "DELL", 132L);
+                env.AssertPropsNew("s0", fields, new object[] { "DELL", 100L });
+
+                SendEvent(env, "DELL", 129L);
+                SendEvent(env, "DELL", 125L);
+                SendEvent(env, "DELL", 125L);
+                env.AssertListenerNotInvoked("s0");
+
+                SendEvent(env, "DELL", 170L);
+                env.AssertPropsNew("s0", fields, new object[] { "DELL", 125L });
+
+                env.UndeployAll();
+            }
         }
 
         private static void TryAssertionMinMax(
@@ -44,11 +256,15 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             AtomicLong milestone)
         {
             // assert select result type
-            Assert.AreEqual(typeof(string), env.Statement("s0").EventType.GetPropertyType("Symbol"));
-            Assert.AreEqual(typeof(long?), env.Statement("s0").EventType.GetPropertyType("minVol"));
-            Assert.AreEqual(typeof(long?), env.Statement("s0").EventType.GetPropertyType("maxVol"));
-            Assert.AreEqual(typeof(long?), env.Statement("s0").EventType.GetPropertyType("minDistVol"));
-            Assert.AreEqual(typeof(long?), env.Statement("s0").EventType.GetPropertyType("maxDistVol"));
+            env.AssertStatement(
+                "s0",
+                statement => {
+                    ClassicAssert.AreEqual(typeof(string), statement.EventType.GetPropertyType("Symbol"));
+                    ClassicAssert.AreEqual(typeof(long?), statement.EventType.GetPropertyType("minVol"));
+                    ClassicAssert.AreEqual(typeof(long?), statement.EventType.GetPropertyType("maxVol"));
+                    ClassicAssert.AreEqual(typeof(long?), statement.EventType.GetPropertyType("minDistVol"));
+                    ClassicAssert.AreEqual(typeof(long?), statement.EventType.GetPropertyType("maxDistVol"));
+                });
 
             SendEvent(env, SYMBOL_DELL, 50L);
             AssertEvents(
@@ -65,7 +281,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 50L
             );
 
-            env.Milestone(0);
+            env.MilestoneInc(milestone);
 
             SendEvent(env, SYMBOL_DELL, 30L);
             AssertEvents(
@@ -97,7 +313,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 50L
             );
 
-            env.Milestone(1);
+            env.MilestoneInc(milestone);
 
             SendEvent(env, SYMBOL_DELL, 90L);
             AssertEvents(
@@ -147,7 +363,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 18L
             );
 
-            env.Milestone(2);
+            env.MilestoneInc(milestone);
 
             SendEvent(env, SYMBOL_IBM, null);
             AssertEvents(
@@ -208,26 +424,29 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             long? minDistVolNew,
             long? maxDistVolNew)
         {
-            var oldData = env.Listener("s0").LastOldData;
-            var newData = env.Listener("s0").LastNewData;
+            env.AssertListener(
+                "s0",
+                listener => {
+                    var oldData = listener.LastOldData;
+                    var newData = listener.LastNewData;
 
-            Assert.AreEqual(1, oldData.Length);
-            Assert.AreEqual(1, newData.Length);
+                    ClassicAssert.AreEqual(1, oldData.Length);
+                    ClassicAssert.AreEqual(1, newData.Length);
 
-            Assert.AreEqual(symbolOld, oldData[0].Get("Symbol"));
-            Assert.AreEqual(minVolOld, oldData[0].Get("minVol"));
-            Assert.AreEqual(maxVolOld, oldData[0].Get("maxVol"));
-            Assert.AreEqual(minDistVolOld, oldData[0].Get("minDistVol"));
-            Assert.AreEqual(maxDistVolOld, oldData[0].Get("maxDistVol"));
+                    ClassicAssert.AreEqual(symbolOld, oldData[0].Get("Symbol"));
+                    ClassicAssert.AreEqual(minVolOld, oldData[0].Get("minVol"));
+                    ClassicAssert.AreEqual(maxVolOld, oldData[0].Get("maxVol"));
+                    ClassicAssert.AreEqual(minDistVolOld, oldData[0].Get("minDistVol"));
+                    ClassicAssert.AreEqual(maxDistVolOld, oldData[0].Get("maxDistVol"));
 
-            Assert.AreEqual(symbolNew, newData[0].Get("Symbol"));
-            Assert.AreEqual(minVolNew, newData[0].Get("minVol"));
-            Assert.AreEqual(maxVolNew, newData[0].Get("maxVol"));
-            Assert.AreEqual(minDistVolNew, newData[0].Get("minDistVol"));
-            Assert.AreEqual(maxDistVolNew, newData[0].Get("maxDistVol"));
+                    ClassicAssert.AreEqual(symbolNew, newData[0].Get("Symbol"));
+                    ClassicAssert.AreEqual(minVolNew, newData[0].Get("minVol"));
+                    ClassicAssert.AreEqual(maxVolNew, newData[0].Get("maxVol"));
+                    ClassicAssert.AreEqual(minDistVolNew, newData[0].Get("minDistVol"));
+                    ClassicAssert.AreEqual(maxDistVolNew, newData[0].Get("maxDistVol"));
 
-            env.Listener("s0").Reset();
-            Assert.IsFalse(env.Listener("s0").IsInvoked);
+                    listener.Reset();
+                });
         }
 
         private static void SendEvent(
@@ -239,178 +458,6 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             env.SendEventBean(bean);
         }
 
-        internal class ResultSetAggregateMinMax : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var milestone = new AtomicLong();
-                var epl = "@Name('s0') select irstream Symbol, " +
-                          "min(all Volume) as minVol," +
-                          "max(all Volume) as maxVol," +
-                          "min(distinct Volume) as minDistVol," +
-                          "max(distinct Volume) as maxDistVol" +
-                          " from SupportMarketDataBean#length(3) " +
-                          "where Symbol='DELL' or Symbol='IBM' or Symbol='GE' " +
-                          "group by Symbol";
-                env.CompileDeploy(epl).AddListener("s0");
-
-                TryAssertionMinMax(env, milestone);
-
-                env.UndeployAll();
-            }
-        }
-
-        internal class ResultSetAggregateMinMaxOM : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var model = new EPStatementObjectModel();
-                model.SelectClause = SelectClause.Create()
-                    .SetStreamSelector(StreamSelector.RSTREAM_ISTREAM_BOTH)
-                    .Add("Symbol")
-                    .Add(Expressions.Min("Volume"), "minVol")
-                    .Add(Expressions.Max("Volume"), "maxVol")
-                    .Add(Expressions.MinDistinct("Volume"), "minDistVol")
-                    .Add(Expressions.MaxDistinct("Volume"), "maxDistVol");
-
-                model.FromClause = FromClause.Create(
-                    FilterStream.Create(nameof(SupportMarketDataBean)).AddView("length", Expressions.Constant(3)));
-                model.WhereClause = Expressions.Or()
-                    .Add(Expressions.Eq("Symbol", "DELL"))
-                    .Add(Expressions.Eq("Symbol", "IBM"))
-                    .Add(Expressions.Eq("Symbol", "GE"));
-                model.GroupByClause = GroupByClause.Create("Symbol");
-                model = env.CopyMayFail(model);
-
-                var epl = "select irstream Symbol, " +
-                          "min(Volume) as minVol, " +
-                          "max(Volume) as maxVol, " +
-                          "min(distinct Volume) as minDistVol, " +
-                          "max(distinct Volume) as maxDistVol " +
-                          "from " + nameof(SupportMarketDataBean) + "#length(3) " +
-                          "where Symbol=\"DELL\" or Symbol=\"IBM\" or Symbol=\"GE\" " +
-                          "group by Symbol";
-                Assert.AreEqual(epl, model.ToEPL());
-
-                model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
-                env.CompileDeploy(model).AddListener("s0");
-
-                TryAssertionMinMax(env, new AtomicLong());
-
-                env.UndeployAll();
-            }
-        }
-
-        internal class ResultSetAggregateMinMaxViewCompile : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var epl = "@Name('s0') select irstream Symbol, " +
-                          "min(Volume) as minVol, " +
-                          "max(Volume) as maxVol, " +
-                          "min(distinct Volume) as minDistVol, " +
-                          "max(distinct Volume) as maxDistVol " +
-                          "from SupportMarketDataBean#length(3) " +
-                          "where Symbol=\"DELL\" or Symbol=\"IBM\" or Symbol=\"GE\" " +
-                          "group by Symbol";
-                env.EplToModelCompileDeploy(epl).AddListener("s0");
-
-                TryAssertionMinMax(env, new AtomicLong());
-
-                env.UndeployAll();
-            }
-        }
-
-        internal class ResultSetAggregateMinMaxJoin : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var epl = "@Name('s0') select irstream Symbol, " +
-                          "min(Volume) as minVol," +
-                          "max(Volume) as maxVol," +
-                          "min(distinct Volume) as minDistVol," +
-                          "max(distinct Volume) as maxDistVol" +
-                          " from SupportBeanString#length(100) as one, " +
-                          "SupportMarketDataBean#length(3) as two " +
-                          "where (Symbol='DELL' or Symbol='IBM' or Symbol='GE') " +
-                          "  and one.TheString = two.Symbol " +
-                          "group by Symbol";
-                env.CompileDeployAddListenerMileZero(epl, "s0");
-
-                env.SendEventBean(new SupportBeanString(SYMBOL_DELL));
-                env.SendEventBean(new SupportBeanString(SYMBOL_IBM));
-
-                TryAssertionMinMax(env, new AtomicLong());
-
-                env.UndeployAll();
-            }
-        }
-
-        internal class ResultSetAggregateMinNoGroupHaving : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var stmtText = "@Name('s0') select Symbol from SupportMarketDataBean#time(5 sec) " +
-                               "having Volume > min(Volume) * 1.3";
-                env.CompileDeployAddListenerMileZero(stmtText, "s0");
-
-                SendEvent(env, "DELL", 100L);
-                SendEvent(env, "DELL", 105L);
-                SendEvent(env, "DELL", 100L);
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
-
-                env.Milestone(1);
-
-                SendEvent(env, "DELL", 131L);
-                Assert.AreEqual("DELL", env.Listener("s0").AssertOneGetNewAndReset().Get("Symbol"));
-
-                SendEvent(env, "DELL", 132L);
-                Assert.AreEqual("DELL", env.Listener("s0").AssertOneGetNewAndReset().Get("Symbol"));
-
-                SendEvent(env, "DELL", 129L);
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
-
-                env.UndeployAll();
-            }
-        }
-
-        internal class ResultSetAggregateMinNoGroupSelectHaving : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var stmtText = "@Name('s0') select Symbol, min(Volume) as mymin from SupportMarketDataBean#length(5) " +
-                               "having Volume > min(Volume) * 1.3";
-                env.CompileDeployAddListenerMileZero(stmtText, "s0");
-
-                SendEvent(env, "DELL", 100L);
-                SendEvent(env, "DELL", 105L);
-                SendEvent(env, "DELL", 100L);
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
-
-                SendEvent(env, "DELL", 131L);
-                var theEvent = env.Listener("s0").AssertOneGetNewAndReset();
-                Assert.AreEqual("DELL", theEvent.Get("Symbol"));
-                Assert.AreEqual(100L, theEvent.Get("mymin"));
-
-                env.Milestone(1);
-
-                SendEvent(env, "DELL", 132L);
-                theEvent = env.Listener("s0").AssertOneGetNewAndReset();
-                Assert.AreEqual("DELL", theEvent.Get("Symbol"));
-                Assert.AreEqual(100L, theEvent.Get("mymin"));
-
-                SendEvent(env, "DELL", 129L);
-                SendEvent(env, "DELL", 125L);
-                SendEvent(env, "DELL", 125L);
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
-
-                SendEvent(env, "DELL", 170L);
-                theEvent = env.Listener("s0").AssertOneGetNewAndReset();
-                Assert.AreEqual("DELL", theEvent.Get("Symbol"));
-                Assert.AreEqual(125L, theEvent.Get("mymin"));
-
-                env.UndeployAll();
-            }
-        }
+        private static readonly ILog Log = LogManager.GetLogger(typeof(ResultSetAggregateMaxMinGroupBy));
     }
 } // end of namespace

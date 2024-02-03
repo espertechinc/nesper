@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -22,7 +22,6 @@ namespace com.espertech.esper.common.@internal.type
         /// <summary>
         ///     Computer for type-specific arith. operations.
         /// </summary>
-        [Serializable]
         public class DivideDecimalWMathContext : Computer
         {
             private readonly bool _divisionByZeroReturnsNull;
@@ -37,8 +36,8 @@ namespace com.espertech.esper.common.@internal.type
                 bool divisionByZeroReturnsNull,
                 MathContext mathContext)
             {
-                this._divisionByZeroReturnsNull = divisionByZeroReturnsNull;
-                this._mathContext = mathContext;
+                _divisionByZeroReturnsNull = divisionByZeroReturnsNull;
+                _mathContext = mathContext;
             }
 
             public object Compute(
@@ -74,7 +73,7 @@ namespace com.espertech.esper.common.@internal.type
                 if (ltype.IsNullable() || rtype.IsNullable() || _divisionByZeroReturnsNull) {
                     returnType = typeof(decimal?);
                 }
-                
+
                 CodegenExpression math =
                     codegenClassScope.AddOrGetDefaultFieldSharable(new MathContextCodegenField(_mathContext));
                 var block = codegenMethodScope

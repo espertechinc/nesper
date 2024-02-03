@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -121,7 +121,7 @@ namespace com.espertech.esper.runtime.@internal.dataflow.op.logsink
         private void GetEventOut(
             int port,
             object theEvent,
-            StringWriter writer)
+            TextWriter writer)
         {
             if (theEvent is EventBean) {
                 renderer.Render((EventBean) theEvent, writer);
@@ -130,7 +130,7 @@ namespace com.espertech.esper.runtime.@internal.dataflow.op.logsink
 
             if (shellPerStream[port] != null) {
                 lock (this) {
-                    shellPerStream[port].UnderlyingSpi = theEvent;
+                    shellPerStream[port].Underlying = theEvent;
                     renderer.Render(shellPerStream[port], writer);
                 }
 

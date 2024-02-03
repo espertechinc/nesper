@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -10,6 +10,7 @@ using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.@event.bean
 {
@@ -20,13 +21,13 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
             TryCaseInsensitive(
                 env,
                 "BeanWCIED",
-                "@Name('s0') select THESTRING, INTPRIMITIVE from BeanWCIED where THESTRING='A'",
+                "@name('s0') select THESTRING, INTPRIMITIVE from BeanWCIED where THESTRING='A'",
                 "THESTRING",
                 "INTPRIMITIVE");
             TryCaseInsensitive(
                 env,
                 "BeanWCIED",
-                "@Name('s0') select ThEsTrInG, INTprimitIVE from BeanWCIED where THESTRing='A'",
+                "@name('s0') select ThEsTrInG, INTprimitIVE from BeanWCIED where THESTRing='A'",
                 "ThEsTrInG",
                 "INTprimitIVE");
         }
@@ -41,9 +42,12 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
             env.CompileDeploy(stmtText).AddListener("s0");
 
             env.SendEventBean(new SupportBean("A", 10), eventTypeName);
-            var result = env.Listener("s0").AssertOneGetNewAndReset();
-            Assert.AreEqual("A", result.Get(propOneName));
-            Assert.AreEqual(10, result.Get(propTwoName));
+            env.AssertEventNew(
+                "s0",
+                result => {
+                    ClassicAssert.AreEqual("A", result.Get(propOneName));
+                    ClassicAssert.AreEqual(10, result.Get(propTwoName));
+                });
 
             env.UndeployAll();
         }

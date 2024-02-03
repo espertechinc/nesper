@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -8,6 +8,7 @@
 
 using System;
 using System.IO;
+using System.Text.Json.Serialization;
 
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
@@ -20,19 +21,21 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
     /// </summary>
     public class ExprCoalesceNode : ExprNodeBase
     {
-        [NonSerialized] private ExprCoalesceNodeForge forge;
+        [JsonIgnore]
+        [NonSerialized]
+        private ExprCoalesceNodeForge _forge;
 
         public ExprEvaluator ExprEvaluator {
             get {
-                CheckValidated(forge);
-                return forge.ExprEvaluator;
+                CheckValidated(_forge);
+                return _forge.ExprEvaluator;
             }
         }
 
         public override ExprForge Forge {
             get {
-                CheckValidated(forge);
-                return forge;
+                CheckValidated(_forge);
+                return _forge;
             }
         }
 
@@ -65,15 +68,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             var isNumericCoercion = new bool[ChildNodes.Length];
             for (var i = 0; i < ChildNodes.Length; i++) {
                 var node = ChildNodes[i];
-                if (node.Forge.EvaluationType.GetBoxedType() != resultType &&
-                    node.Forge.EvaluationType != null &&
+                var forgeEvaluationType = node.Forge.EvaluationType;
+                if (forgeEvaluationType != null &&
+                    forgeEvaluationType.GetBoxedType() != resultType &&
                     resultType != null) {
-                    if (!resultType.IsNumeric()) {
+                    if (!resultType.IsTypeNumeric()) {
                         throw new ExprValidationException(
                             "Implicit conversion from datatype '" +
                             resultType.CleanName() +
                             "' to " +
-                            node.Forge.EvaluationType.CleanName() +
+                            forgeEvaluationType.CleanName() +
                             " is not allowed");
                     }
 
@@ -81,11 +85,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 }
             }
 
-            forge = new ExprCoalesceNodeForge(this, resultType, isNumericCoercion);
+            _forge = new ExprCoalesceNodeForge(this, resultType, isNumericCoercion);
             return null;
         }
 
-        public override void ToPrecedenceFreeEPL(TextWriter writer,
+        public override void ToPrecedenceFreeEPL(
+            TextWriter writer,
             ExprNodeRenderableFlags flags)
         {
             ExprNodeUtilityPrint.ToExpressionStringWFunctionName("coalesce", ChildNodes, writer);

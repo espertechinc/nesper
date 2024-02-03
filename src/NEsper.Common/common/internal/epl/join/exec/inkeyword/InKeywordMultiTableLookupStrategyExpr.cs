@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -32,25 +32,23 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.inkeyword
             InKeywordTableLookupPlanMultiIdxFactory factory,
             PropertyHashedEventTable[] indexes)
         {
-            this._factory = factory;
-            this._indexes = indexes;
-            this._eventsPerStream = new EventBean[factory.LookupStream + 1];
+            _factory = factory;
+            _indexes = indexes;
+            _eventsPerStream = new EventBean[factory.LookupStream + 1];
         }
 
-        public PropertyHashedEventTable[] Index {
-            get => _indexes;
-        }
+        public PropertyHashedEventTable[] Index => _indexes;
 
         public ICollection<EventBean> Lookup(
             EventBean theEvent,
             Cursor cursor,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            InstrumentationCommon instrumentationCommon = exprEvaluatorContext.InstrumentationProvider;
+            var instrumentationCommon = exprEvaluatorContext.InstrumentationProvider;
             instrumentationCommon.QIndexJoinLookup(this, _indexes[0]);
 
             _eventsPerStream[_factory.LookupStream] = theEvent;
-            ISet<EventBean> result = InKeywordTableLookupUtil.MultiIndexLookup(
+            var result = InKeywordTableLookupUtil.MultiIndexLookup(
                 _factory.KeyExpr,
                 _eventsPerStream,
                 exprEvaluatorContext,
@@ -61,8 +59,6 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.inkeyword
             return result;
         }
 
-        public LookupStrategyType LookupStrategyType {
-            get => LookupStrategyType.INKEYWORDMULTIIDX;
-        }
+        public LookupStrategyType LookupStrategyType => LookupStrategyType.INKEYWORDMULTIIDX;
     }
 } // end of namespace

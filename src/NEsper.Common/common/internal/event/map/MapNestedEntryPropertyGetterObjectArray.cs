@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -46,9 +46,10 @@ namespace com.espertech.esper.common.@internal.@event.map
 
             return null;
         }
-        
-        
-        public override bool HandleNestedValueExists(object value) {
+
+
+        public override bool HandleNestedValueExists(object value)
+        {
             if (value is object[] arrayValue) {
                 return arrayGetter.IsObjectArrayExistsProperty(arrayValue);
             }
@@ -62,16 +63,16 @@ namespace com.espertech.esper.common.@internal.@event.map
 
         public override object HandleNestedValueFragment(object value)
         {
-            if (!(value is object[])) {
-                if (value is EventBean) {
-                    return arrayGetter.GetFragment((EventBean) value);
+            if (!(value is object[] objects)) {
+                if (value is EventBean bean) {
+                    return arrayGetter.GetFragment(bean);
                 }
 
                 return null;
             }
 
             // If the map does not contain the key, this is allowed and represented as null
-            EventBean eventBean = eventBeanTypedEventFactory.AdapterForTypedObjectArray((object[]) value, fragmentType);
+            EventBean eventBean = eventBeanTypedEventFactory.AdapterForTypedObjectArray(objects, fragmentType);
             return arrayGetter.GetFragment(eventBean);
         }
 
@@ -96,7 +97,7 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            CodegenMethod method = CodegenLegoPropertyBeanOrUnd.From(
+            var method = CodegenLegoPropertyBeanOrUnd.From(
                 codegenMethodScope,
                 codegenClassScope,
                 typeof(object[]),
@@ -105,7 +106,7 @@ namespace com.espertech.esper.common.@internal.@event.map
                 GetType());
             return LocalMethod(method, name);
         }
-        
+
         public override CodegenExpression HandleNestedValueFragmentCodegen(
             CodegenExpression name,
             CodegenMethodScope codegenMethodScope,

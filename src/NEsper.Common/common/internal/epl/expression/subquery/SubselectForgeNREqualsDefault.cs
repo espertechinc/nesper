@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -26,8 +26,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
     /// </summary>
     public class SubselectForgeNREqualsDefault : SubselectForgeNREqualsBase
     {
-        private readonly ExprForge filterEval;
-        private readonly bool isAll;
+        private readonly ExprForge _filterEval;
+        private readonly bool _isAll;
 
         public SubselectForgeNREqualsDefault(
             ExprSubselectNode subselect,
@@ -37,11 +37,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             bool isNot,
             Coercer coercer,
             ExprForge filterEval,
-            bool isAll)
-            : base(subselect, valueEval, selectEval, resultWhenNoMatchingEvents, isNot, coercer)
+            bool isAll) : base(subselect, valueEval, selectEval, resultWhenNoMatchingEvents, isNot, coercer)
         {
-            this.filterEval = filterEval;
-            this.isAll = isAll;
+            _filterEval = filterEval;
+            _isAll = isAll;
         }
 
         protected override CodegenExpression CodegenEvaluateInternal(
@@ -49,42 +48,49 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             SubselectForgeNRSymbol symbols,
             CodegenClassScope classScope)
         {
-            var method = parent.MakeChild(typeof(bool?), this.GetType(), classScope);
+            if (subselect.EvaluationType == null) {
+                return ConstantNull();
+            }
+
+            var method = parent.MakeChild(typeof(bool?), GetType(), classScope);
             var left = symbols.GetAddLeftResult(method);
             method.Block.DeclareVar<bool>("hasNullRow", ConstantFalse());
-            var @foreach = method.Block.ForEach(typeof(EventBean), "theEvent", symbols.GetAddMatchingEvents(method));
+            var foreachX = method.Block.ForEach(
+                typeof(EventBean),
+                "theEvent",
+                symbols.GetAddMatchingEvents(method));
             {
-                @foreach.AssignArrayElement(NAME_EPS, Constant(0), Ref("theEvent"));
-                if (filterEval != null) {
+                foreachX.AssignArrayElement(NAME_EPS, Constant(0), Ref("theEvent"));
+                if (_filterEval != null) {
                     CodegenLegoBooleanExpression.CodegenContinueIfNotNullAndNotPass(
-                        @foreach,
-                        filterEval.EvaluationType,
-                        filterEval.EvaluateCodegen(typeof(bool?), method, symbols, classScope));
+                        foreachX,
+                        _filterEval.EvaluationType,
+                        _filterEval.EvaluateCodegen(typeof(bool), method, symbols, classScope));
                 }
 
-                @foreach.IfNullReturnNull(left);
+                foreachX.IfNullReturnNull(left);
 
                 Type valueRightType;
                 if (selectEval != null) {
-                    valueRightType = Boxing.GetBoxedType(selectEval.EvaluationType);
-                    @foreach.DeclareVar(
+                    valueRightType = selectEval.EvaluationType.GetBoxedType();
+                    foreachX.DeclareVar(
                         valueRightType,
                         "valueRight",
                         selectEval.EvaluateCodegen(valueRightType, method, symbols, classScope));
                 }
                 else {
                     valueRightType = typeof(object);
-                    @foreach.DeclareVar(
+                    foreachX.DeclareVar(
                         valueRightType,
                         "valueRight",
-                        ExprDotUnderlying(ArrayAtIndex(symbols.GetAddEPS(method), Constant(0))));
+                        ExprDotUnderlying(ArrayAtIndex(symbols.GetAddEps(method), Constant(0))));
                 }
 
-                var ifRight = @foreach.IfCondition(NotEqualsNull(Ref("valueRight")));
+                var ifRight = foreachX.IfCondition(NotEqualsNull(Ref("valueRight")));
                 {
                     if (coercer == null) {
                         ifRight.DeclareVar<bool>("eq", ExprDotMethod(left, "Equals", Ref("valueRight")));
-                        if (isAll) {
+                        if (_isAll) {
                             ifRight.IfCondition(NotOptional(!isNot, Ref("eq"))).BlockReturn(ConstantFalse());
                         }
                         else {
@@ -92,10 +98,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                         }
                     }
                     else {
-                        ifRight.DeclareVar<object>("left", coercer.CoerceCodegen(left, symbols.LeftResultType))
-                            .DeclareVar<object>("right", coercer.CoerceCodegen(Ref("valueRight"), valueRightType))
-                            .DeclareVar<bool>("eq", StaticMethod<object>("Equals", Ref("left"), Ref("right")));
-                        if (isAll) {
+                        ifRight.DeclareVar<object>(
+                                "left",
+                                coercer.CoerceCodegen(left, symbols.LeftResultType, method, classScope))
+                            .DeclareVar<object>(
+                                "right",
+                                coercer.CoerceCodegen(Ref("valueRight"), valueRightType, method, classScope))
+                            .DeclareVar<bool>("eq", ExprDotMethod(Ref("left"), "Equals", Ref("right")));
+                        if (_isAll) {
                             ifRight.IfCondition(NotOptional(!isNot, Ref("eq"))).BlockReturn(ConstantFalse());
                         }
                         else {
@@ -109,7 +119,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             method.Block
                 .IfCondition(Ref("hasNullRow"))
                 .BlockReturn(ConstantNull())
-                .MethodReturn(isAll ? ConstantTrue() : ConstantFalse());
+                .MethodReturn(_isAll ? ConstantTrue() : ConstantFalse());
             return LocalMethod(method);
         }
     }

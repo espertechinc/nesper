@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -8,10 +8,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.@internal.bytecodemodel.@base;
+using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
+using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.streamtype;
 using com.espertech.esper.common.@internal.@event.arr;
@@ -51,8 +55,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                 expressionReturnTypes[0] is Type &&
                 insertIntoDesc.ColumnNames.IsEmpty() &&
                 columnNamesAsProvided[0] == null) {
-
-                var resultType = (Type) expressionReturnTypes[0];
+                var resultType = (Type)expressionReturnTypes[0];
                 var compatible = (eventType is BaseNestableEventType || eventType is AvroSchemaEventType) &&
                                  TypeHelper.IsSubclassOrImplementsInterface(resultType, eventType.UnderlyingType);
                 compatible = compatible | (eventType is JsonEventType && resultType == typeof(string));
@@ -61,20 +64,18 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                     if (eventType is MapEventType) {
                         return new SelectExprInsertNativeExpressionCoerceMap(eventType, forges[0]);
                     }
-
-                    if (eventType is ObjectArrayEventType) {
+                    else if (eventType is ObjectArrayEventType) {
                         return new SelectExprInsertNativeExpressionCoerceObjectArray(eventType, forges[0]);
                     }
-
-                    if (eventType is AvroSchemaEventType) {
+                    else if (eventType is AvroSchemaEventType) {
                         return new SelectExprInsertNativeExpressionCoerceAvro(eventType, forges[0]);
                     }
-
-                    if (eventType is JsonEventType) {
+                    else if (eventType is JsonEventType) {
                         return new SelectExprInsertNativeExpressionCoerceJson(eventType, forges[0]);
                     }
-
-                    throw new IllegalStateException("Unrecognized event type " + eventType);
+                    else {
+                        throw new IllegalStateException("Unrecognied event type " + eventType);
+                    }
                 }
             }
 
@@ -82,13 +83,13 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
             if (eventType.PropertyDescriptors.Count == 0 &&
                 columnNames.Length == 1 &&
                 columnNames[0].Equals("null") &&
-                expressionReturnTypes[0] == null &&
+                (expressionReturnTypes[0] == null || expressionReturnTypes[0] == null) &&
                 !isUsingWildcard) {
                 EventBeanManufacturerForge eventManufacturer;
                 try {
                     eventManufacturer = EventTypeUtility.GetManufacturer(
                         eventType,
-                        new WriteablePropertyDescriptor[0],
+                        Array.Empty<WriteablePropertyDescriptor>(),
                         importService,
                         true,
                         eventTypeAvroHandler);
@@ -101,7 +102,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
             }
 
             // handle writing to defined columns
-            var writableProps = EventTypeUtility.GetWriteableProperties(eventType, false, false);
+            var writableProps =
+                EventTypeUtility.GetWriteableProperties(eventType, false, false);
             var isEligible = CheckEligible(eventType, writableProps, allowNestableTargetFragmentTypes);
             if (!isEligible) {
                 return null;
@@ -121,25 +123,21 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                     eventTypeAvroHandler);
             }
             catch (ExprValidationException ex) {
-                if (!(eventType is BeanEventType)) {
+                if (!(eventType is BeanEventType type)) {
                     throw;
                 }
 
                 // Try constructor injection
                 try {
-                    return InitializeCtorInjection(
-                        (BeanEventType) eventType,
-                        forges,
-                        expressionReturnTypes,
-                        importService);
+                    return InitializeCtorInjection(type, forges, expressionReturnTypes, importService);
                 }
                 catch (ExprValidationException) {
                     if (writableProps.IsEmpty()) {
                         throw;
                     }
-
-                    throw ex;
                 }
+
+                throw;
             }
         }
 
@@ -151,7 +149,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
             string statementName,
             EventTypeAvroHandler eventTypeAvroHandler)
         {
-            var writableProps = EventTypeUtility.GetWriteableProperties(eventType, false, false);
+            var writableProps =
+                EventTypeUtility.GetWriteableProperties(eventType, false, false);
             var isEligible = CheckEligible(eventType, writableProps, false);
             if (!isEligible) {
                 return null;
@@ -168,7 +167,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                     eventTypeAvroHandler);
             }
             catch (ExprValidationException ex) {
-                if (!(eventType is BeanEventType)) {
+                if (!(eventType is BeanEventType type)) {
                     throw;
                 }
 
@@ -181,11 +180,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                         resultTypes[i] = forges[i].EvaluationType;
                     }
 
-                    return InitializeCtorInjection(
-                        (BeanEventType) eventType,
-                        forges,
-                        resultTypes,
-                        importService);
+                    return InitializeCtorInjection(type, forges, resultTypes, importService);
                 }
                 catch (ExprValidationException) {
                     if (writableProps.IsEmpty()) {
@@ -262,14 +257,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                         catch (TypeWidenerException ex) {
                             throw new ExprValidationException(ex.Message, ex);
                         }
-                    }
-                    else if (columnType is EventType) {
-                        var columnEventType = (EventType) columnType;
-                        var returnType = columnEventType.UnderlyingType;
+                    } else if (columnType is EventType columnEventTypeX) {
+                        var returnType = columnEventTypeX.UnderlyingType;
                         try {
                             widener = TypeWidenerFactory.GetCheckPropertyAssignType(
                                 columnNames[i],
-                                columnEventType.UnderlyingType,
+                                columnEventTypeX.UnderlyingType,
                                 desc.PropertyType,
                                 desc.PropertyName,
                                 false,
@@ -281,13 +274,13 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                         }
 
                         // handle evaluator returning an event
-                        if (TypeHelper.IsSubclassOrImplementsInterface(returnType, desc.PropertyType)) {
+                        if (desc.PropertyType is Type &&
+                            TypeHelper.IsSubclassOrImplementsInterface(returnType, desc.PropertyType)) {
                             selectedWritable = desc;
-                            widener = new ProxyTypeWidenerSPI {
-                                ProcWidenResultType = () => desc.PropertyType,
-                                ProcWiden = input => {
-                                    if (input is EventBean eventBean) {
-                                        return eventBean.Underlying;
+                            widener = new ProxyTypeWidenerSPI() {
+                                ProcWiden = (input) => {
+                                    if (input is EventBean bean) {
+                                        return bean.Underlying;
                                     }
 
                                     return input;
@@ -299,7 +292,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                                     codegenClassScope) => {
                                     var method = codegenMethodScope
                                         .MakeChild(typeof(object), typeof(TypeWidenerSPI), codegenClassScope)
-                                        .AddParam(typeof(object), "input")
+                                        .AddParam<object>("input")
                                         .Block
                                         .IfCondition(InstanceOf(Ref("input"), typeof(EventBean)))
                                         .BlockReturn(
@@ -314,7 +307,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                         // find stream
                         var streamNum = 0;
                         for (var j = 0; j < typeService.EventTypes.Length; j++) {
-                            if (typeService.EventTypes[j] == columnEventType) {
+                            if (typeService.EventTypes[j] == columnEventTypeX) {
                                 streamNum = j;
                                 break;
                             }
@@ -324,11 +317,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                             streamNum,
                             typeService.EventTypes[streamNum].UnderlyingType);
                     }
-                    else if (columnType is EventType[]) {
+                    else if (columnType is EventType[] types) {
                         // handle case where the select-clause contains an fragment array
-                        var columnEventType = ((EventType[]) columnType)[0];
+                        var columnEventType = types[0];
                         var componentReturnType = columnEventType.UnderlyingType;
-                        var arrayReturnType = componentReturnType.MakeArrayType();
+                        var arrayReturnType = TypeHelper.GetArrayType(componentReturnType);
 
                         var allowObjectArrayToCollectionConversion = eventType is AvroSchemaEventType;
                         try {
@@ -348,7 +341,22 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                         var inner = forge;
                         forge = new ExprForgeStreamWithInner(inner, componentReturnType);
                     }
-                    else if (!(columnType is Type columnAsType)) {
+                    else if (columnType is Type) {
+                        try {
+                            widener = TypeWidenerFactory.GetCheckPropertyAssignType(
+                                columnNames[i],
+                                (Type)columnType,
+                                desc.PropertyType,
+                                desc.PropertyName,
+                                false,
+                                typeWidenerCustomizer,
+                                statementName);
+                        }
+                        catch (TypeWidenerException ex) {
+                            throw new ExprValidationException(ex.Message, ex);
+                        }
+                    }
+                    else {
                         var message = "Invalid assignment of column '" +
                                       columnNames[i] +
                                       "' of type '" +
@@ -359,21 +367,6 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                                       desc.PropertyType.CleanName() +
                                       "', column and parameter types mismatch";
                         throw new ExprValidationException(message);
-                    }
-                    else {
-                        try {
-                            widener = TypeWidenerFactory.GetCheckPropertyAssignType(
-                                columnNames[i],
-                                (Type) columnType,
-                                desc.PropertyType,
-                                desc.PropertyName,
-                                false,
-                                typeWidenerCustomizer,
-                                statementName);
-                        }
-                        catch (TypeWidenerException ex) {
-                            throw new ExprValidationException(ex.Message, ex);
-                        }
                     }
 
                     selectedWritable = desc;
@@ -397,7 +390,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
             if (isUsingWildcard) {
                 var sourceType = typeService.EventTypes[0];
                 foreach (var eventPropDescriptor in sourceType.PropertyDescriptors) {
-                    if (eventPropDescriptor.IsRequiresIndex || eventPropDescriptor.IsRequiresMapKey) {
+                    if (eventPropDescriptor.IsRequiresIndex || eventPropDescriptor.IsRequiresMapkey) {
                         continue;
                     }
 
@@ -427,7 +420,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                         selectedWritable = writableDesc;
 
                         var propertyName = eventPropDescriptor.PropertyName;
-                        var getter = ((EventTypeSPI) sourceType).GetGetterSPI(propertyName);
+                        var getter = ((EventTypeSPI)sourceType).GetGetterSPI(propertyName);
                         forge = new ExprForgeStreamWithGetter(getter);
                         break;
                     }
@@ -462,12 +455,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
             catch (EventBeanManufactureException e) {
                 throw new ExprValidationException(e.Message, e);
             }
-            
+
             if (eventManufacturer == null) {
                 return null;
             }
 
-            return new SelectExprInsertNativeWidening(eventType, eventManufacturer, exprForges, wideners);
+            return SelectExprInsertNativeBase.MakeInsertNative(eventType, eventManufacturer, exprForges, wideners);
         }
 
         private static SelectExprProcessorForge InitializeCtorInjection(
@@ -481,7 +474,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                 importService,
                 forges,
                 expressionReturnTypes);
-            var eventManufacturer = new EventBeanManufacturerCtorForge(pair.First, beanEventType);
+            var eventManufacturer =
+                new EventBeanManufacturerCtorForge(pair.First, beanEventType);
             return new SelectExprInsertNativeNoWiden(beanEventType, eventManufacturer, pair.Second);
         }
 
@@ -560,7 +554,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                 throw new ExprValidationException(e.Message, e);
             }
 
-            return new SelectExprInsertNativeWidening(eventType, eventManufacturer, exprForges, wideners);
+            return SelectExprInsertNativeBase.MakeInsertNative(eventType, eventManufacturer, exprForges, wideners);
         }
     }
 } // end of namespace

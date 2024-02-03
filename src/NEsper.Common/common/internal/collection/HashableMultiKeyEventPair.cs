@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Text.Json.Serialization;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.compat.collections;
@@ -19,12 +20,15 @@ namespace com.espertech.esper.common.@internal.collection
     ///     The class allows a Map that uses MultiKeyUntyped entries for key values to use multiple objects as keys.
     ///     It calculates the hashCode from the key objects on construction and caches the hashCode.
     /// </summary>
-    [Serializable]
     public sealed class HashableMultiKeyEventPair
     {
-        [NonSerialized] private readonly EventBean _eventBean;
+        [JsonIgnore]
+        [NonSerialized]
+        private readonly EventBean _eventBean;
         private readonly int _hashCode;
-        [NonSerialized] private readonly object[] _keys;
+        [JsonIgnore]
+        [NonSerialized]
+        private readonly object[] _keys;
 
         /// <summary>
         ///     Constructor for multiple keys supplied in an object array.
@@ -48,8 +52,8 @@ namespace com.espertech.esper.common.@internal.collection
             }
 
             _hashCode = total;
-            this._keys = keys;
-            this._eventBean = eventBean;
+            _keys = keys;
+            _eventBean = eventBean;
         }
 
         /// <summary>
@@ -87,7 +91,7 @@ namespace com.espertech.esper.common.@internal.collection
             }
 
             if (other is HashableMultiKeyEventPair otherKeys) {
-                return CompatExtensions.AreEqual(_keys, otherKeys._keys);
+                return _keys.AreEqual(otherKeys._keys);
             }
 
             return false;

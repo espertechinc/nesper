@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -24,7 +24,9 @@ namespace com.espertech.esper.common.@internal.@event.wrap
         private readonly WrapperEventType wrapperEventType;
         private readonly EventPropertyGetterSPI underlyingGetter;
 
-        public WrapperUnderlyingPropertyGetter(WrapperEventType wrapperEventType, EventPropertyGetterSPI underlyingGetter)
+        public WrapperUnderlyingPropertyGetter(
+            WrapperEventType wrapperEventType,
+            EventPropertyGetterSPI underlyingGetter)
         {
             this.wrapperEventType = wrapperEventType;
             this.underlyingGetter = underlyingGetter;
@@ -36,13 +38,27 @@ namespace com.espertech.esper.common.@internal.@event.wrap
                 throw new PropertyAccessException("Mismatched property getter to EventBean type");
             }
 
-            var wrapperEvent = (DecoratingEventBean) theEvent;
+            var wrapperEvent = (DecoratingEventBean)theEvent;
             var wrappedEvent = wrapperEvent.UnderlyingEvent;
             if (wrappedEvent == null) {
                 return null;
             }
 
             return underlyingGetter.Get(wrappedEvent);
+        }
+
+        private CodegenMethod GetCodegen(
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
+                .AddParam<EventBean>("theEvent")
+                .Block
+                .DeclareVarWCast(typeof(DecoratingEventBean), "wrapperEvent", "theEvent")
+                .DeclareVar<EventBean>("wrappedEvent", ExprDotName(Ref("wrapperEvent"), "UnderlyingEvent"))
+                .IfRefNullReturnNull("wrappedEvent")
+                .MethodReturn(
+                    underlyingGetter.EventBeanGetCodegen(Ref("wrappedEvent"), codegenMethodScope, codegenClassScope));
         }
 
         public bool IsExistsProperty(EventBean eventBean)
@@ -56,13 +72,30 @@ namespace com.espertech.esper.common.@internal.@event.wrap
                 throw new PropertyAccessException("Mismatched property getter to EventBean type");
             }
 
-            var wrapperEvent = (DecoratingEventBean) theEvent;
+            var wrapperEvent = (DecoratingEventBean)theEvent;
             var wrappedEvent = wrapperEvent.UnderlyingEvent;
             if (wrappedEvent == null) {
                 return null;
             }
 
             return underlyingGetter.GetFragment(wrappedEvent);
+        }
+
+        private CodegenMethod GetFragmentCodegen(
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
+                .AddParam<EventBean>("theEvent")
+                .Block
+                .DeclareVarWCast(typeof(DecoratingEventBean), "wrapperEvent", "theEvent")
+                .DeclareVar<EventBean>("wrappedEvent", ExprDotName(Ref("wrapperEvent"), "UnderlyingEvent"))
+                .IfRefNullReturnNull("wrappedEvent")
+                .MethodReturn(
+                    underlyingGetter.EventBeanFragmentCodegen(
+                        Ref("wrappedEvent"),
+                        codegenMethodScope,
+                        codegenClassScope));
         }
 
         public CodegenExpression EventBeanGetCodegen(
@@ -93,7 +126,7 @@ namespace com.espertech.esper.common.@internal.@event.wrap
         {
             return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Pair<,>).GetGenericTypeDefinition();
         }
-
+        
         public CodegenExpression UnderlyingGetCodegen(
             CodegenExpression underlyingExpression,
             CodegenMethodScope codegenMethodScope,
@@ -101,20 +134,20 @@ namespace com.espertech.esper.common.@internal.@event.wrap
         {
             var method = codegenMethodScope
                 .MakeChild(typeof(object), GetType(), codegenClassScope)
-                .AddParam(typeof(object), "und");
+                .AddParam<object>("und");
             var undType = wrapperEventType.UnderlyingEventType.UnderlyingType;
-            
             if (IsGenericPair(wrapperEventType.UnderlyingType)) {
                 method.Block
                     .DeclareVarWCast(wrapperEventType.UnderlyingType, "pair", "und")
                     .DeclareVar(undType, "wrapped", Cast(undType, ExprDotName(Ref("pair"), "First")))
-                    .MethodReturn(underlyingGetter.UnderlyingGetCodegen(Ref("wrapped"), codegenMethodScope, codegenClassScope));
+                    .MethodReturn(
+                        underlyingGetter.UnderlyingGetCodegen(Ref("wrapped"), codegenMethodScope, codegenClassScope));
                 return LocalMethod(method, Ref("und"));
             }
             else {
-                method.Block
-                    .DeclareVar(undType, "wrapped", Cast(undType, Ref("und")))
-                    .MethodReturn(underlyingGetter.UnderlyingGetCodegen(Ref("wrapped"), codegenMethodScope, codegenClassScope));
+                method.Block.DeclareVar(undType, "wrapped", Cast(undType, Ref("und")))
+                    .MethodReturn(
+                        underlyingGetter.UnderlyingGetCodegen(Ref("wrapped"), codegenMethodScope, codegenClassScope));
                 return LocalMethod(method, Ref("und"));
             }
         }
@@ -133,37 +166,6 @@ namespace com.espertech.esper.common.@internal.@event.wrap
             CodegenClassScope codegenClassScope)
         {
             throw ImplementationNotProvided();
-        }
-
-        private CodegenMethod GetCodegen(
-            CodegenMethodScope codegenMethodScope,
-            CodegenClassScope codegenClassScope)
-        {
-            return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
-                .AddParam(typeof(EventBean), "theEvent")
-                .Block
-                .DeclareVarWCast(typeof(DecoratingEventBean), "wrapperEvent", "theEvent")
-                .DeclareVar<EventBean>("wrappedEvent", ExprDotName(Ref("wrapperEvent"), "UnderlyingEvent"))
-                .IfRefNullReturnNull("wrappedEvent")
-                .MethodReturn(
-                    underlyingGetter.EventBeanGetCodegen(Ref("wrappedEvent"), codegenMethodScope, codegenClassScope));
-        }
-
-        private CodegenMethod GetFragmentCodegen(
-            CodegenMethodScope codegenMethodScope,
-            CodegenClassScope codegenClassScope)
-        {
-            return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
-                .AddParam(typeof(EventBean), "theEvent")
-                .Block
-                .DeclareVarWCast(typeof(DecoratingEventBean), "wrapperEvent", "theEvent")
-                .DeclareVar<EventBean>("wrappedEvent", ExprDotName(Ref("wrapperEvent"), "UnderlyingEvent"))
-                .IfRefNullReturnNull("wrappedEvent")
-                .MethodReturn(
-                    underlyingGetter.EventBeanFragmentCodegen(
-                        Ref("wrappedEvent"),
-                        codegenMethodScope,
-                        codegenClassScope));
         }
 
         private UnsupportedOperationException ImplementationNotProvided()

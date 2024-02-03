@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -71,11 +71,11 @@ namespace com.espertech.esper.common.@internal.db
         /// <summary>
         /// Gets the actual SQL that is sent to the driver.
         /// </summary>
-        String CommandText { get; }
+        string CommandText { get; }
 
         /// <summary>
         /// Gets the pseudo SQL that is provided to and from the client.
         /// </summary>
-        String PseudoText { get; }
+        string PseudoText { get; }
     }
 }

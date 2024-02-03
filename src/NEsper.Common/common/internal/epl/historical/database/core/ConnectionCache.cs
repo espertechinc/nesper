@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -64,10 +64,10 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
             string sql,
             IEnumerable<Attribute> contextAttributes)
         {
-            this._databaseConnectionFactory = databaseConnectionFactory;
-            this._sql = sql;
-            this._sqlFragments = PlaceholderParser.ParsePlaceholder(sql);
-            this._contextAttributes = contextAttributes;
+            _databaseConnectionFactory = databaseConnectionFactory;
+            _sql = sql;
+            _sqlFragments = PlaceholderParser.ParsePlaceholder(sql);
+            _contextAttributes = contextAttributes;
         }
 
         /// <summary>
@@ -95,9 +95,9 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
 
             try {
                 // Get the driver
-                DbDriver dbDriver = _databaseConnectionFactory.Driver;
+                var dbDriver = _databaseConnectionFactory.Driver;
                 // Get the command
-                DbDriverCommand dbCommand = dbDriver.CreateCommand(_sqlFragments, null, _contextAttributes);
+                var dbCommand = dbDriver.CreateCommand(_sqlFragments, null, _contextAttributes);
 
                 return new Pair<DbDriver, DbDriverCommand>(dbDriver, dbCommand);
             }

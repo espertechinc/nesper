@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -48,7 +48,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
             exprEvaluatorContext.InstrumentationProvider.QIndexAddRemove(this, newData, oldData);
 
             if (newData != null) {
-                for (int ii = 0; ii < newData.Length; ii++) {
+                for (var ii = 0; ii < newData.Length; ii++) {
                     eventSet.Add(newData[ii]);
                 }
             }
@@ -67,7 +67,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
             ExprEvaluatorContext exprEvaluatorContext)
         {
             if (events != null) {
-                for (int ii = 0; ii < events.Length; ii++) {
+                for (var ii = 0; ii < events.Length; ii++) {
                     eventSet.Add(events[ii]);
                 }
             }

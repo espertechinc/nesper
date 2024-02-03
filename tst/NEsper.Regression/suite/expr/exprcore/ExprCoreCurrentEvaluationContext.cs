@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -11,58 +11,88 @@ using System.Collections.Generic;
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.client.hook.expr;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compiler.client;
-using com.espertech.esper.compiler.client.option;
 using com.espertech.esper.regressionlib.framework;
+using com.espertech.esper.regressionlib.support.client;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 {
-	public class ExprCoreCurrentEvaluationContext {
-	    public static ICollection<RegressionExecution> Executions() {
-	        var execs = new List<RegressionExecution>();
-	        execs.Add(new ExprCoreCurrentEvalCtx(false));
-	        execs.Add(new ExprCoreCurrentEvalCtx(true));
-	        return execs;
-	    }
+    public class ExprCoreCurrentEvaluationContext
+    {
+        public static ICollection<RegressionExecution> Executions()
+        {
+            IList<RegressionExecution> execs = new List<RegressionExecution>();
+            WithEvalCtx(execs);
+            return execs;
+        }
 
-	    private class ExprCoreCurrentEvalCtx : RegressionExecution {
-	        private readonly bool soda;
+        public static IList<RegressionExecution> WithEvalCtx(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprCoreCurrentEvalCtx(false));
+            execs.Add(new ExprCoreCurrentEvalCtx(true));
+            return execs;
+        }
 
-	        public ExprCoreCurrentEvalCtx(bool soda) {
-	            this.soda = soda;
-	        }
+        private class ExprCoreCurrentEvalCtx : RegressionExecution
+        {
+            private readonly bool soda;
 
-	        public void Run(RegressionEnvironment env) {
-	            SendTimer(env, 0);
+            public ExprCoreCurrentEvalCtx(bool soda)
+            {
+                this.soda = soda;
+            }
 
-	            var epl = "@Name('s0') select " +
-	                      "current_evaluation_context() as c0, " +
-	                      "current_evaluation_context(), " +
-	                      "current_evaluation_context().GetRuntimeURI() as c2 from SupportBean";
-	            var resolver = new StatementUserObjectOption(_ => "my_user_object");
-	            var arguments = new CompilerArguments(new Configuration());
-	            arguments.Options.StatementUserObject = resolver;
-	            var compiled = env.Compile(soda, epl, arguments);
-	            env.Deploy(compiled).AddListener("s0").Milestone(0);
-	            Assert.AreEqual(typeof(EPLExpressionEvaluationContext), env.Statement("s0").EventType.GetPropertyType("current_evaluation_context()"));
+            public void Run(RegressionEnvironment env)
+            {
+                SendTimer(env, 0);
 
-	            env.SendEventBean(new SupportBean());
-	            var @event = env.Listener("s0").AssertOneGetNewAndReset();
-	            var ctx = (EPLExpressionEvaluationContext) @event.Get("c0");
-	            Assert.AreEqual(env.RuntimeURI, ctx.RuntimeURI);
-	            Assert.AreEqual(env.Statement("s0").Name, ctx.StatementName);
-	            Assert.AreEqual(-1, ctx.ContextPartitionId);
-	            Assert.AreEqual("my_user_object", ctx.StatementUserObject);
-	            Assert.AreEqual(env.RuntimeURI, @event.Get("c2"));
+                var epl = "@name('s0') select " +
+                          "current_evaluation_context() as c0, " +
+                          "current_evaluation_context(), " +
+                          "current_evaluation_context().GetRuntimeURI() as c2 from SupportBean";
+                var arguments = new CompilerArguments(new Configuration());
+                arguments.Options.SetStatementUserObject(
+                    new SupportPortableCompileOptionStmtUserObject("my_user_object").GetValue);
+                var compiled = env.Compile(soda, epl, arguments);
+                env.Deploy(compiled).AddListener("s0").Milestone(0);
+                env.AssertStmtType("s0", "current_evaluation_context()", typeof(EPLExpressionEvaluationContext));
 
-	            env.UndeployAll();
-	        }
-	    }
+                env.SendEventBean(new SupportBean());
+                env.AssertEventNew(
+                    "s0",
+                    @event => {
+                        var ctx = (EPLExpressionEvaluationContext)@event.Get("c0");
+                        ClassicAssert.AreEqual(env.RuntimeURI, ctx.RuntimeURI);
+                        ClassicAssert.AreEqual(env.Statement("s0").Name, ctx.StatementName);
+                        ClassicAssert.AreEqual(-1, ctx.ContextPartitionId);
+                        ClassicAssert.AreEqual("my_user_object", ctx.StatementUserObject);
+                        ClassicAssert.AreEqual(env.RuntimeURI, @event.Get("c2"));
+                    });
 
-	    private static void SendTimer(RegressionEnvironment env, long timeInMSec) {
-	        env.AdvanceTime(timeInMSec);
-	    }
-	}
+                env.UndeployAll();
+            }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.STATICHOOK);
+            }
+
+            public string Name()
+            {
+                return $"{this.GetType().Name}{{soda={soda}}}";
+            }
+        }
+
+        private static void SendTimer(
+            RegressionEnvironment env,
+            long timeInMSec)
+        {
+            env.AdvanceTime(timeInMSec);
+        }
+    }
 } // end of namespace

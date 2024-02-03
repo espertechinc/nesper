@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -35,7 +35,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
             TimeZoneInfo timeZone,
             TimeAbacus timeAbacus)
         {
-            EventBean[] events = optionalConvertor == null ? null : optionalConvertor.Invoke(beginState);
+            var events = optionalConvertor?.Invoke(beginState);
             return Compute(parameter, events, exprEvaluatorContext);
         }
 
@@ -44,12 +44,12 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
             EventBean[] events,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            object param = PatternExpressionUtil.EvaluateChecked(
+            var param = PatternExpressionUtil.EvaluateChecked(
                 NAME_OBSERVER,
                 parameter,
                 events,
                 exprEvaluatorContext);
-            string iso = (string) param;
+            var iso = (string)param;
             if (iso == null) {
                 throw new ScheduleParameterException("Received null parameter value");
             }

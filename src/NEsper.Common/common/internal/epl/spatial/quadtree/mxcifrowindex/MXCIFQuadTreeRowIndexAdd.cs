@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -62,15 +62,13 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
             bool unique,
             string indexName)
         {
-            if (node is MXCIFQuadTreeNodeLeaf) {
-                var leaf = (MXCIFQuadTreeNodeLeaf) node;
-
-                if (leaf.Count < tree.LeafCapacity || node.Level >= tree.MaxTreeHeight) {
+            if (node is MXCIFQuadTreeNodeLeaf leaf) {
+                if (leaf.Count < tree.LeafCapacity || leaf.Level >= tree.MaxTreeHeight) {
                     // can be multiple as value can be a collection
                     var numAdded = AddToData(leaf, x, y, width, height, value, unique, indexName);
                     leaf.IncCount(numAdded);
 
-                    if (leaf.Count <= tree.LeafCapacity || node.Level >= tree.MaxTreeHeight) {
+                    if (leaf.Count <= tree.LeafCapacity || leaf.Level >= tree.MaxTreeHeight) {
                         return leaf;
                     }
                 }
@@ -78,7 +76,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
                 node = Subdivide(leaf, tree, unique, indexName);
             }
 
-            var branch = (MXCIFQuadTreeNodeBranch) node;
+            var branch = (MXCIFQuadTreeNodeBranch)node;
             AddToBranch(branch, x, y, width, height, value, tree, unique, indexName);
             return node;
         }
@@ -138,12 +136,11 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
             var branch = new MXCIFQuadTreeNodeBranch(leaf.Bb, leaf.Level, null, 0, nw, ne, sw, se);
 
             var data = leaf.Data;
-            if (data is XYWHRectangleMultiType) {
-                var rectangle = (XYWHRectangleMultiType) data;
-                Subdivide(rectangle, branch, tree, unique, indexName);
+            if (data is XYWHRectangleMultiType type) {
+                Subdivide(type, branch, tree, unique, indexName);
             }
             else {
-                var collection = (ICollection<XYWHRectangleMultiType>) data;
+                var collection = (ICollection<XYWHRectangleMultiType>)data;
                 foreach (var rectangle in collection) {
                     Subdivide(rectangle, branch, tree, unique, indexName);
                 }
@@ -198,8 +195,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
             var currentValue = node.Data;
 
             // value can be multitype itself since we may subdivide-add and don't want to allocate a new object
-            if (value is XYWHRectangleMultiType) {
-                var rectangle = (XYWHRectangleMultiType) value;
+            if (value is XYWHRectangleMultiType rectangle) {
                 if (!rectangle.CoordinateEquals(x, y, width, height)) {
                     throw new IllegalStateException();
                 }
@@ -209,25 +205,24 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
                     return rectangle.Count();
                 }
 
-                if (currentValue is XYWHRectangleMultiType) {
-                    var other = (XYWHRectangleMultiType) currentValue;
-                    if (other.CoordinateEquals(x, y, width, height)) {
+                if (currentValue is XYWHRectangleMultiType type) {
+                    if (type.CoordinateEquals(x, y, width, height)) {
                         if (unique) {
-                            throw HandleUniqueViolation(indexName, other);
+                            throw HandleUniqueViolation(indexName, type);
                         }
 
-                        other.AddMultiType(rectangle);
+                        type.AddMultiType(rectangle);
                         return rectangle.Count();
                     }
 
                     ICollection<XYWHRectangleMultiType> collectionX = new List<XYWHRectangleMultiType>();
-                    collectionX.Add(other);
+                    collectionX.Add(type);
                     collectionX.Add(rectangle);
                     node.Data = collectionX;
                     return rectangle.Count();
                 }
 
-                var collectionY = (ICollection<XYWHRectangleMultiType>) currentValue;
+                var collectionY = (ICollection<XYWHRectangleMultiType>)currentValue;
                 foreach (var other in collectionY) {
                     if (other.CoordinateEquals(x, y, width, height)) {
                         if (unique) {
@@ -248,25 +243,24 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
                 return 1;
             }
 
-            if (currentValue is XYWHRectangleMultiType) {
-                var other = (XYWHRectangleMultiType) currentValue;
-                if (other.CoordinateEquals(x, y, width, height)) {
+            if (currentValue is XYWHRectangleMultiType item) {
+                if (item.CoordinateEquals(x, y, width, height)) {
                     if (unique) {
-                        throw HandleUniqueViolation(indexName, other);
+                        throw HandleUniqueViolation(indexName, item);
                     }
 
-                    other.AddSingleValue(value);
+                    item.AddSingleValue(value);
                     return 1;
                 }
 
                 ICollection<XYWHRectangleMultiType> collectionZ = new List<XYWHRectangleMultiType>();
-                collectionZ.Add(other);
+                collectionZ.Add(item);
                 collectionZ.Add(new XYWHRectangleMultiType(x, y, width, height, value));
                 node.Data = collectionZ;
                 return 1;
             }
 
-            var collection = (ICollection<XYWHRectangleMultiType>) currentValue;
+            var collection = (ICollection<XYWHRectangleMultiType>)currentValue;
             foreach (var other in collection) {
                 if (other.CoordinateEquals(x, y, width, height)) {
                     if (unique) {

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -21,9 +21,7 @@ namespace com.espertech.esper.common.client.hook.vdw
         /// Returns the injection strategy for the virtual data window factory
         /// </summary>
         /// <returns>strategy</returns>
-        public InjectionStrategy InjectionStrategyFactoryFactory {
-            get => injectionStrategyFactoryFactory;
-        }
+        public InjectionStrategy InjectionStrategyFactoryFactory => injectionStrategyFactoryFactory;
 
         /// <summary>
         /// Sets the injection strategy for the virtual data window factory
@@ -32,7 +30,7 @@ namespace com.espertech.esper.common.client.hook.vdw
         /// <returns>itself</returns>
         public VirtualDataWindowFactoryModeManaged SetInjectionStrategyFactoryFactory(InjectionStrategy strategy)
         {
-            this.injectionStrategyFactoryFactory = strategy;
+            injectionStrategyFactoryFactory = strategy;
             return this;
         }
     }

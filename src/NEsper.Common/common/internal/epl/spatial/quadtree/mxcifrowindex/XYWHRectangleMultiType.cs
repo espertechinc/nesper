@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -56,13 +56,15 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
 
         public void AddMultiType(XYWHRectangleMultiType other)
         {
-            if (other.X != X || other.Y != Y) throw new ArgumentException("Coordinate mismatch");
-            if (!(other.Multityped is Collection)) {
+            if (other.X != X || other.Y != Y) {
+                throw new ArgumentException("Coordinate mismatch");
+            }
+
+            if (!(other.Multityped is Collection otherCollection)) {
                 AddSingleValue(other.Multityped);
                 return;
             }
 
-            var otherCollection = (Collection) other.Multityped;
             if (Multityped is Collection collection) {
                 collection.AddAll(otherCollection);
                 return;
@@ -86,22 +88,27 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
 
         public bool Remove(object value)
         {
-            if (Multityped == null) return false;
+            if (Multityped == null) {
+                return false;
+            }
+
             if (Multityped.Equals(value)) {
                 Multityped = null;
                 return true;
             }
 
-            if (Multityped is Collection collection)
+            if (Multityped is Collection collection) {
                 return collection.Remove(value);
+            }
+
             return false;
         }
 
         public bool IsEmpty()
         {
             return Multityped == null ||
-                   Multityped is Collection collection &&
-                   collection.IsEmpty();
+                   (Multityped is Collection collection &&
+                    collection.IsEmpty());
         }
 
         public override string ToString()

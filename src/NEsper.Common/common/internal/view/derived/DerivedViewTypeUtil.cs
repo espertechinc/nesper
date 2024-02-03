@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -22,12 +22,11 @@ namespace com.espertech.esper.common.@internal.view.derived
         public static EventType NewType(
             string name,
             LinkedHashMap<string, object> schemaMap,
-            ViewForgeEnv env,
-            int streamNum)
+            ViewForgeEnv env)
         {
-            string outputEventTypeName =
-                env.StatementCompileTimeServices.EventTypeNameGeneratorStatement.GetViewDerived(name, streamNum);
-            EventTypeMetadata metadata = new EventTypeMetadata(
+            var outputEventTypeName =
+                env.StatementCompileTimeServices.EventTypeNameGeneratorStatement.GetViewDerived(name, env.StreamNumber);
+            var metadata = new EventTypeMetadata(
                 outputEventTypeName,
                 env.ModuleName,
                 EventTypeTypeClass.VIEWDERIVED,
@@ -36,7 +35,7 @@ namespace com.espertech.esper.common.@internal.view.derived
                 EventTypeBusModifier.NONBUS,
                 false,
                 EventTypeIdPair.Unassigned());
-            IDictionary<string, object> propertyTypes = EventTypeUtility.GetPropertyTypesNonPrimitive(schemaMap);
+            var propertyTypes = EventTypeUtility.GetPropertyTypesNonPrimitive(schemaMap);
             EventType resultEventType = BaseNestableEventUtil.MakeMapTypeCompileTime(
                 metadata,
                 propertyTypes,

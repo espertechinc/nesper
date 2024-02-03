@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -20,16 +20,22 @@ using com.espertech.esper.regressionlib.support.client;
 using com.espertech.esper.runtime.client.scopetest;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.multithread
 {
     public class MultithreadContextPartitionedWCount : RegressionExecution
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
+        }
 
         public void Run(RegressionEnvironment env)
         {
-            var choices = new [] { "A","B","C","D" };
+            var choices = new[] { "A", "B", "C", "D" };
             TrySend(env, 4, 1000, choices);
         }
 
@@ -45,10 +51,12 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 
             env.AdvanceTime(0);
             var path = new RegressionPath();
-            env.CompileDeploy("@Name('var') create variable boolean myvar = false", path);
-            env.CompileDeploy("create context SegmentedByString as partition by TheString from SupportBean", path);
+            env.CompileDeploy("@name('var') @public create variable boolean myvar = false", path);
             env.CompileDeploy(
-                "@Name('s0') context SegmentedByString select TheString, count(*) - 1 as cnt from SupportBean output snapshot when myvar = true",
+                "@public create context SegmentedByString as partition by TheString from SupportBean",
+                path);
+            env.CompileDeploy(
+                "@name('s0') context SegmentedByString select TheString, count(*) - 1 as cnt from SupportBean output snapshot when myvar = true",
                 path);
             var listener = new SupportUpdateListener();
             env.Statement("s0").AddListener(listener);
@@ -72,7 +80,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             }
 
             // join
-            log.Info("Waiting for completion");
+            Log.Info("Waiting for completion");
             for (var i = 0; i < runnables.Length; i++) {
                 SupportCompileDeployUtil.ThreadJoin(threads[i]);
             }
@@ -85,27 +93,27 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             // verify
             var sum = 0;
             for (var i = 0; i < runnables.Length; i++) {
-                Assert.IsNull(runnables[i].Exception);
+                ClassicAssert.IsNull(runnables[i].Exception);
                 foreach (var entry in runnables[i].GetTotals()) {
                     var current = totals.Get(entry.Key);
                     current += entry.Value;
                     sum += entry.Value;
                     totals.Put(entry.Key, current);
-                    //System.out.println("Thread " + i + " key " + entry.getKey() + " count " + entry.getValue());
+                    //Console.WriteLine("Thread " + i + " key " + entry.getKey() + " count " + entry.getValue());
                 }
             }
 
-            Assert.AreEqual(numThreads * numEvents, sum);
+            ClassicAssert.AreEqual(numThreads * numEvents, sum);
 
             env.Runtime.VariableService.SetVariableValue(env.DeploymentId("var"), "myvar", true);
             env.AdvanceTime(10000);
             var result = listener.LastNewData;
-            Assert.AreEqual(choices.Length, result.Length);
+            ClassicAssert.AreEqual(choices.Length, result.Length);
             foreach (var item in result) {
-                var theString = (string) item.Get("TheString");
+                var theString = (string)item.Get("TheString");
                 var count = item.Get("cnt").AsInt64();
-                //System.out.println("String " + string + " count " + count);
-                Assert.AreEqual(count, totals.Get(theString));
+                //Console.WriteLine("String " + string + " count " + count);
+                ClassicAssert.AreEqual(count, totals.Get(theString));
             }
 
             env.UndeployAll();
@@ -133,7 +141,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 
             public void Run()
             {
-                log.Info("Started event send");
+                Log.Info("Started event send");
 
                 try {
                     for (var i = 0; i < numEvents; i++) {
@@ -149,11 +157,11 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                     }
                 }
                 catch (Exception ex) {
-                    log.Error("Exception encountered: " + ex.Message, ex);
+                    Log.Error("Exception encountered: " + ex.Message, ex);
                     Exception = ex;
                 }
 
-                log.Info("Completed event send");
+                Log.Info("Completed event send");
             }
 
             public IDictionary<string, int> GetTotals()

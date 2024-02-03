@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -12,13 +12,13 @@ namespace com.espertech.esper.common.@internal.epl.methodbase
 {
     public interface DotMethodInputTypeMatcher
     {
+        public static readonly DotMethodInputTypeMatcher DEFAULT_ALL = new DotMethodInputTypeMatcherImpl();
+
         bool Matches(DotMethodFP footprint);
     }
 
     public sealed class DotMethodInputTypeMatcherImpl : DotMethodInputTypeMatcher
     {
-        public static readonly DotMethodInputTypeMatcher DEFAULT_ALL = new DotMethodInputTypeMatcherImpl();
-
         #region DotMethodInputTypeMatcher Members
 
         public bool Matches(DotMethodFP footprint)

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -34,28 +34,26 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.sorted
             QueryGraphValueEntryRange rangeKeyPair,
             PropertySortedEventTable index)
         {
-            this._index = index;
-            this._strategy = SortedAccessStrategyFactory.Make(false, lookupStream, numStreams, rangeKeyPair);
+            _index = index;
+            _strategy = SortedAccessStrategyFactory.Make(false, lookupStream, numStreams, rangeKeyPair);
         }
 
         /// <summary>
         /// Returns index to look up in.
         /// </summary>
         /// <returns>index to use</returns>
-        public PropertySortedEventTable Index {
-            get => _index;
-        }
+        public PropertySortedEventTable Index => _index;
 
         public ICollection<EventBean> Lookup(
             EventBean theEvent,
             Cursor cursor,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            InstrumentationCommon instrumentationCommon = exprEvaluatorContext.InstrumentationProvider;
+            var instrumentationCommon = exprEvaluatorContext.InstrumentationProvider;
             if (instrumentationCommon.Activated()) {
                 instrumentationCommon.QIndexJoinLookup(this, _index);
-                List<object> keys = new List<object>(2);
-                ISet<EventBean> result = _strategy.LookupCollectKeys(theEvent, _index, exprEvaluatorContext, keys);
+                var keys = new List<object>(2);
+                var result = _strategy.LookupCollectKeys(theEvent, _index, exprEvaluatorContext, keys);
                 instrumentationCommon.AIndexJoinLookup(result, keys.Count > 1 ? keys.ToArray() : keys[0]);
                 return result;
             }
@@ -63,8 +61,6 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.sorted
             return _strategy.Lookup(theEvent, _index, exprEvaluatorContext);
         }
 
-        public LookupStrategyType LookupStrategyType {
-            get => LookupStrategyType.RANGE;
-        }
+        public LookupStrategyType LookupStrategyType => LookupStrategyType.RANGE;
     }
 } // end of namespace

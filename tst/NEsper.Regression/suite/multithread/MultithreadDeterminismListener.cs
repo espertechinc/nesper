@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -11,25 +11,34 @@ using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.concurrency;
+using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.client;
 using com.espertech.esper.regressionlib.support.multithread;
 using com.espertech.esper.regressionlib.support.util;
 using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.multithread
 {
     /// <summary>
     ///     Test for multithread-safety and deterministic behavior when using insert-into.
     /// </summary>
-    public class MultithreadDeterminismListener
+    public class MultithreadDeterminismListener : RegressionExecutionPreConfigured
     {
-        public void Run(Configuration configuration)
+        private readonly Configuration _configuration;
+
+        public MultithreadDeterminismListener(Configuration configuration)
+        {
+            _configuration = configuration;
+        }
+
+        public void Run()
         {
             var runtimeProvider = new EPRuntimeProvider();
-            TrySend(runtimeProvider, 4, 10000, true, Locking.SUSPEND, configuration);
-            TrySend(runtimeProvider, 4, 10000, true, Locking.SPIN, configuration);
+            TrySend(runtimeProvider, 4, 10000, true, Locking.SUSPEND, _configuration);
+            TrySend(runtimeProvider, 4, 10000, true, Locking.SPIN, _configuration);
         }
 
         public void ManualTestOrderedDeliveryFail()
@@ -55,7 +64,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 
             // setup statements
             var deployed = SupportCompileDeployUtil.CompileDeploy(
-                "@Name('s0') select count(*) as cnt from SupportBean",
+                "@name('s0') select count(*) as cnt from SupportBean",
                 runtime,
                 configuration);
             var listener = new SupportMTUpdateListener();
@@ -74,7 +83,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             SupportCompileDeployUtil.ExecutorAwait(threadPool, 10, TimeUnit.SECONDS);
             SupportCompileDeployUtil.AssertFutures(future);
 
-            var events = listener.GetNewDataListFlattened();
+            var events = listener.NewDataListFlattened;
             var result = new long[events.Length];
             for (var i = 0; i < events.Length; i++) {
                 result[i] = events[i].Get("cnt").AsInt64();
@@ -82,9 +91,9 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             //log.info(".trySend result=" + Arrays.toString(result));
 
             // assert result
-            Assert.AreEqual(numEvents * numThreads, events.Length);
+            ClassicAssert.AreEqual(numEvents * numThreads, events.Length);
             for (var i = 0; i < numEvents * numThreads; i++) {
-                Assert.AreEqual(result[i], (long) i + 1);
+                ClassicAssert.AreEqual(result[i], (long)i + 1);
             }
 
             runtime.Destroy();

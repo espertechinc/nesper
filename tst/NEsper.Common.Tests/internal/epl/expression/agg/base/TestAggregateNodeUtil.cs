@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -13,6 +13,7 @@ using com.espertech.esper.common.@internal.supportunit.util;
 using com.espertech.esper.compat.collections;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
 {
@@ -49,17 +50,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
             IList<ExprAggregateNode> aggregates = new List<ExprAggregateNode>();
             ExprAggregateNodeUtil.GetAggregatesBottomUp(top, aggregates);
 
-            Assert.AreEqual(5, aggregates.Count);
-            Assert.AreSame(c2_1_1, aggregates[0]);
-            Assert.AreSame(c2_1_2, aggregates[1]);
-            Assert.AreSame(c1_1, aggregates[2]);
-            Assert.AreSame(c1_2, aggregates[3]);
-            Assert.AreSame(top, aggregates[4]);
+            ClassicAssert.AreEqual(5, aggregates.Count);
+            ClassicAssert.AreSame(c2_1_1, aggregates[0]);
+            ClassicAssert.AreSame(c2_1_2, aggregates[1]);
+            ClassicAssert.AreSame(c1_1, aggregates[2]);
+            ClassicAssert.AreSame(c1_2, aggregates[3]);
+            ClassicAssert.AreSame(top, aggregates[4]);
 
             // Test no aggregates
             aggregates.Clear();
             ExprAggregateNodeUtil.GetAggregatesBottomUp(new SupportExprNode(null), aggregates);
-            Assert.IsTrue(aggregates.IsEmpty());
+            ClassicAssert.IsTrue(aggregates.IsEmpty());
         }
     }
 } // end of namespace

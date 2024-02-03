@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -48,81 +48,62 @@ namespace com.espertech.esper.common.client.hook.vdw
         /// Returns the statement context which holds statement information (name, expression, id) and statement-level services.
         /// </summary>
         /// <returns>statement context</returns>
-        public StatementContext StatementContext {
-            get => agentInstanceViewFactoryContext.AgentInstanceContext.StatementContext;
-        }
+        public StatementContext StatementContext =>
+            agentInstanceViewFactoryContext.AgentInstanceContext.StatementContext;
 
         /// <summary>
         /// Returns the event type of the events held in the virtual data window as per declaration of the named window.
         /// </summary>
         /// <returns>event type</returns>
-        public EventType EventType {
-            get => factory.EventType;
-        }
+        public EventType EventType => factory.EventType;
 
         /// <summary>
         /// Returns the parameters passed; for example "create window ABC.my:vdw("10.0.0.1")" passes one paramater here.
         /// </summary>
         /// <returns>parameters</returns>
-        public object[] Parameters {
-            get => factory.Parameters;
-        }
+        public object[] Parameters => factory.Parameters;
 
         /// <summary>
         /// Returns the factory for creating instances of EventBean from rows.
         /// </summary>
         /// <returns>event bean factory</returns>
-        public EventBeanFactory EventFactory {
-            get => eventBeanFactory;
-        }
+        public EventBeanFactory EventFactory => eventBeanFactory;
 
         /// <summary>
         /// Returns a handle for use to send insert and remove stream data to consuming statements.
         /// <para />Typically use "context.getOutputStream().update(newData, oldData);" in the update method of the virtual data window.
         /// </summary>
         /// <returns>handle for posting insert and remove stream</returns>
-        public VirtualDataWindowOutStream OutputStream {
-            get => outputStream;
-        }
+        public VirtualDataWindowOutStream OutputStream => outputStream;
 
         /// <summary>
         /// Returns the name of the named window used in connection with the virtual data window.
         /// </summary>
         /// <returns>named window</returns>
-        public string NamedWindowName {
-            get => factory.NamedWindowName;
-        }
+        public string NamedWindowName => factory.NamedWindowName;
 
         /// <summary>
         /// Returns the expressions passed as parameters to the virtual data window.
         /// </summary>
         /// <returns>parameter expressions</returns>
-        public ExprEvaluator[] ParameterExpressions {
-            get => factory.ParameterExpressions;
-        }
+        public ExprEvaluator[] ParameterExpressions => factory.ParameterExpressions;
 
         /// <summary>
         /// Returns the agent instance (context partition) context.
         /// </summary>
         /// <returns>context</returns>
-        public AgentInstanceContext AgentInstanceContext {
-            get => agentInstanceViewFactoryContext.AgentInstanceContext;
-        }
+        public AgentInstanceContext AgentInstanceContext => agentInstanceViewFactoryContext.AgentInstanceContext;
 
         /// <summary>
         /// Returns the factory
         /// </summary>
         /// <returns>factory</returns>
-        public VirtualDWViewFactory Factory {
-            get => factory;
-        }
+        public VirtualDWViewFactory Factory => factory;
 
         /// <summary>
         /// Returns the agent instance context
         /// </summary>
         /// <returns>agent instance context</returns>
-        public AgentInstanceViewFactoryChainContext AgentInstanceViewFactoryContext {
-            get => agentInstanceViewFactoryContext;
-        }
+        public AgentInstanceViewFactoryChainContext AgentInstanceViewFactoryContext => agentInstanceViewFactoryContext;
     }
 } // end of namespace

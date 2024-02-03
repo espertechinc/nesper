@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
             EventBean[] oldData,
             bool isGenerateSynthetic)
         {
-            UniformPair<EventBean[]> pair = processor.ProcessViewResult(newData, oldData, isGenerateSynthetic);
+            var pair = processor.ProcessViewResult(newData, oldData, isGenerateSynthetic);
             Apply(pair);
         }
 
@@ -40,14 +40,14 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
             ISet<MultiKeyArrayOfKeys<EventBean>> oldEvents,
             bool isGenerateSynthetic)
         {
-            UniformPair<EventBean[]> pair = processor.ProcessJoinResult(newEvents, oldEvents, isGenerateSynthetic);
+            var pair = processor.ProcessJoinResult(newEvents, oldEvents, isGenerateSynthetic);
             Apply(pair);
         }
 
         public UniformPair<EventBean[]> Output()
         {
-            EventBean[] oldEvents = EventBeanUtility.ToArrayNullIfEmpty(eventsOld);
-            EventBean[] newEvents = EventBeanUtility.ToArrayNullIfEmpty(eventsNew);
+            var oldEvents = EventBeanUtility.ToArrayNullIfEmpty(eventsOld);
+            var newEvents = EventBeanUtility.ToArrayNullIfEmpty(eventsNew);
 
             UniformPair<EventBean[]> result = null;
             if (oldEvents != null || newEvents != null) {

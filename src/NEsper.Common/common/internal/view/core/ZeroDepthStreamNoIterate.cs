@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -20,9 +20,6 @@ namespace com.espertech.esper.common.@internal.view.core
     /// </summary>
     public class ZeroDepthStreamNoIterate : EventStream
     {
-        private static int _gid = 0;
-        private int _uid = ++_gid;
-        
         /// <summary>
         ///     Ctor.
         /// </summary>
@@ -36,7 +33,7 @@ namespace com.espertech.esper.common.@internal.view.core
         {
             // Get a new array created rather then re-use the old one since some client listeners
             // to this view may keep reference to the new data
-            EventBean[] row = {theEvent};
+            EventBean[] row = { theEvent };
             Child.Update(row, null);
         }
 

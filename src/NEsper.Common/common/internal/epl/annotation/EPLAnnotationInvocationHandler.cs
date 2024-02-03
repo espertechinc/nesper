@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.@internal.epl.annotation
             AnnotationClass = annotationClass;
             Attributes = attributes;
             Underlying = null;
-            
+
             var constructor = annotationClass.GetDefaultConstructor();
             if (constructor != null) {
                 Underlying = constructor.Invoke(null);
@@ -49,7 +49,7 @@ namespace com.espertech.esper.common.@internal.epl.annotation
         }
 
         public object Underlying { get; }
-        
+
         public Type AnnotationClass { get; }
 
         public IDictionary<string, object> Attributes { get; }
@@ -95,8 +95,11 @@ namespace com.espertech.esper.common.@internal.epl.annotation
                 .GetInterfaces()
                 .ToArray();
 
-            return (Attribute) Generator.CreateClassProxy(
-                AnnotationClass, interfaces, ProxyGenerationOptions.Default, this);
+            return (Attribute)Generator.CreateClassProxy(
+                AnnotationClass,
+                interfaces,
+                ProxyGenerationOptions.Default,
+                this);
         }
 
         private string HandleToString()
@@ -152,11 +155,10 @@ namespace com.espertech.esper.common.@internal.epl.annotation
                 return true;
             }
 
-            if (!(arg is Attribute)) {
+            if (!(arg is Attribute other)) {
                 return false;
             }
 
-            var other = (Attribute) arg;
             if (other.GetType() != AnnotationClass) {
                 return false;
             }
@@ -171,7 +173,7 @@ namespace com.espertech.esper.common.@internal.epl.annotation
             }
 
 #if false
-// Don't know if Castle will create a real proxy or a fake proxy - TBD
+// Don't know if Castle will create a real proxy or a fake proxy - TODO
             if (!(other is EPLAnnotationInvocationHandler handler)) {
                 return false;
             }

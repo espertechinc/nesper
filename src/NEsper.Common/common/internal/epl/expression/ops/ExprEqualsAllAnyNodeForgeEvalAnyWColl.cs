@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -30,8 +30,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             ExprEqualsAllAnyNodeForge forge,
             ExprEvaluator[] evaluators)
         {
-            this._forge = forge;
-            this._evaluators = evaluators;
+            _forge = forge;
+            _evaluators = evaluators;
         }
 
         public object Evaluate(
@@ -233,8 +233,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 else if (reftype != null && reftype.IsGenericCollection()) {
                     var leftInitializer = refforge.EvaluateCodegen(
                         reftype,
-                        methodNode,
-                        exprSymbol,
+                                methodNode,
+                                exprSymbol,
                         codegenClassScope);
                     
                     var leftWithBoxing = ExprEqualsAllAnyNodeForgeHelper.ItemToCollectionUnboxing(
@@ -275,7 +275,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                         methodNode,
                         exprSymbol,
                         codegenClassScope);
-                    
+
                     block.IfRefNullReturnNull("leftCoerced");
                     block.DeclareVar(
                         forge.CoercionTypeBoxed,
@@ -284,10 +284,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                             ? leftCoercedInitializer
                             : forge.Coercer.CoerceCodegenMayNullBoxed(
                                 leftCoercedInitializer,
-                                reftype,
+                                //reftype,
+                                forge.CoercionTypeBoxed,
                                 methodNode,
                                 codegenClassScope));
-                    
+
                     block
                         .IfRefNotNull(refname)
                         .AssignRef("hasNonNullRow", ConstantTrue())

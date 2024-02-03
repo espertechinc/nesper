@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -13,7 +13,6 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.common.@internal.filtersvc;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.threading.locks;
 using com.espertech.esper.runtime.@internal.metrics.instrumentation;
 
@@ -26,8 +25,6 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
     /// </summary>
     public class FilterParamIndexDoubleRange : FilterParamIndexDoubleRangeBase
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(FilterParamIndexDoubleRange));
-
         public FilterParamIndexDoubleRange(
             ExprFilterSpecLookupable lookupable,
             IReaderWriterLock readWriteLock,

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -13,56 +13,42 @@ using System.Linq;
 
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.join.lookup
 {
     /// <summary>
-    ///     Holds property information for joined properties in a lookup.
+    /// Holds property information for joined properties in a lookup.
     /// </summary>
-    public class IndexedPropDesc : IComparable
+    public class IndexedPropDesc : IComparable<IndexedPropDesc>
     {
+        private readonly string indexPropName;
+        private readonly Type coercionType;
+
         /// <summary>
-        ///     Ctor.
+        /// Ctor.
         /// </summary>
-        /// <param name="indexPropName">is the property name of the indexed field</param>
-        /// <param name="coercionType">is the type to coerce to</param>
+        /// <param name = "indexPropName">is the property name of the indexed field</param>
+        /// <param name = "coercionType">is the type to coerce to</param>
         public IndexedPropDesc(
             string indexPropName,
             Type coercionType)
         {
-            IndexPropName = indexPropName;
-            CoercionType = coercionType;
-        }
-
-        /// <summary>
-        ///     Returns the property name of the indexed field.
-        /// </summary>
-        /// <returns>property name of indexed field</returns>
-        public string IndexPropName { get; }
-
-        /// <summary>
-        ///     Returns the coercion type of key to index field.
-        /// </summary>
-        /// <returns>type to coerce to</returns>
-        public Type CoercionType { get; }
-
-        public int CompareTo(object o)
-        {
-            var other = (IndexedPropDesc) o;
-            return IndexPropName.CompareTo(other.IndexPropName);
+            this.indexPropName = indexPropName;
+            this.coercionType = coercionType;
         }
 
         public CodegenExpression Make()
         {
-            return NewInstance<IndexedPropDesc>(Constant(IndexPropName), Constant(CoercionType));
+            return NewInstance(typeof(IndexedPropDesc), Constant(indexPropName), Constant(coercionType));
         }
 
         /// <summary>
-        ///     Returns the index property names given an array of descriptors.
+        /// Returns the index property names given an array of descriptors.
         /// </summary>
-        /// <param name="descList">descriptors of joined properties</param>
+        /// <param name = "descList">descriptors of joined properties</param>
         /// <returns>array of index property names</returns>
         public static string[] GetIndexProperties(IndexedPropDesc[] descList)
         {
@@ -100,9 +86,9 @@ namespace com.espertech.esper.common.@internal.epl.join.lookup
         }
 
         /// <summary>
-        ///     Returns the key coercion types.
+        /// Returns the key coercion types.
         /// </summary>
-        /// <param name="descList">a list of descriptors</param>
+        /// <param name = "descList">a list of descriptors</param>
         /// <returns>key coercion types</returns>
         public static Type[] GetCoercionTypes(IndexedPropDesc[] descList)
         {
@@ -115,6 +101,16 @@ namespace com.espertech.esper.common.@internal.epl.join.lookup
             return result;
         }
 
+        public int CompareTo(IndexedPropDesc other)
+        {
+            return String.Compare(indexPropName, other.IndexPropName, StringComparison.Ordinal);
+        }
+
+        public int CompareTo(object o)
+        {
+            return CompareTo((IndexedPropDesc)o);
+        }
+
         public override bool Equals(object o)
         {
             if (this == o) {
@@ -125,13 +121,12 @@ namespace com.espertech.esper.common.@internal.epl.join.lookup
                 return false;
             }
 
-            var that = (IndexedPropDesc) o;
-
-            if (CoercionType != that.CoercionType) {
+            var that = (IndexedPropDesc)o;
+            if (!coercionType.Equals(that.coercionType)) {
                 return false;
             }
 
-            if (!IndexPropName.Equals(that.IndexPropName)) {
+            if (!indexPropName.Equals(that.indexPropName)) {
                 return false;
             }
 
@@ -149,7 +144,7 @@ namespace com.espertech.esper.common.@internal.epl.join.lookup
             var copyFirst = new List<IndexedPropDesc>(first);
             var copySecond = new List<IndexedPropDesc>(second);
             Comparison<IndexedPropDesc> comparator = (
-                o1,
+                    o1,
                 o2) => o1.IndexPropName.CompareTo(o2.IndexPropName);
 
             copyFirst.Sort(comparator);
@@ -166,8 +161,8 @@ namespace com.espertech.esper.common.@internal.epl.join.lookup
         public override int GetHashCode()
         {
             int result;
-            result = IndexPropName.GetHashCode();
-            result = 31 * result + CoercionType.GetHashCode();
+            result = indexPropName.GetHashCode();
+            result = 31 * result + coercionType.GetHashCode();
             return result;
         }
 
@@ -200,5 +195,9 @@ namespace com.espertech.esper.common.@internal.epl.join.lookup
 
             return NewArrayWithInit(typeof(IndexedPropDesc), expressions);
         }
+
+        public string IndexPropName => indexPropName;
+
+        public Type CoercionType => coercionType;
     }
 } // end of namespace

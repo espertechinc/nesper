@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -18,6 +18,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.client.compile
 {
@@ -26,10 +27,12 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
+#if REGRESSION_EXECUTIONS
             WithOrder(execs);
             WithCircular(execs);
             WithUnresolvedUses(execs);
-            WithIgnorableUses(execs);
+            With(IgnorableUses)(execs);
+#endif
             return execs;
         }
 
@@ -65,8 +68,8 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
         {
             public void Run(RegressionEnvironment env)
             {
-                RegressionPath path = new RegressionPath();
-                string eplObjects = "@public create variable int MYVAR;\n";
+                var path = new RegressionPath();
+                var eplObjects = "@public create variable int MYVAR;\n";
                 env.Compile(eplObjects, path);
 
                 env.Compile("uses dummy; select MYVAR from SupportBean", path);
@@ -91,40 +94,49 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                     moduleC = GetModule("C", "A", "B", "D");
                     moduleD = GetModule("D", "A", "B");
                     order = ModuleOrderUtil.GetModuleOrder(
-                        Arrays.AsList(new Module[] {moduleC, moduleD, moduleB, moduleA}),
+                        Arrays.AsList(new Module[] { moduleC, moduleD, moduleB, moduleA }),
                         EmptySet<string>.Instance,
                         new ModuleOrderOptions());
-                    AssertOrder(new Module[] {moduleA, moduleB, moduleD, moduleC}, order);
+                    AssertOrder(new Module[] { moduleA, moduleB, moduleD, moduleC }, order);
 
                     // Zero items
-                    order = ModuleOrderUtil.GetModuleOrder(Arrays.AsList(new Module[] { }), EmptySet<string>.Instance, new ModuleOrderOptions());
+                    order = ModuleOrderUtil.GetModuleOrder(
+                        Arrays.AsList(new Module[] { }),
+                        EmptySet<string>.Instance,
+                        new ModuleOrderOptions());
                     AssertOrder(new Module[] { }, order);
 
                     // 1 item
                     moduleA = GetModule("A");
-                    order = ModuleOrderUtil.GetModuleOrder(Arrays.AsList(new Module[] {moduleA}), EmptySet<string>.Instance, new ModuleOrderOptions());
-                    AssertOrder(new Module[] {moduleA}, order);
+                    order = ModuleOrderUtil.GetModuleOrder(
+                        Arrays.AsList(new Module[] { moduleA }),
+                        EmptySet<string>.Instance,
+                        new ModuleOrderOptions());
+                    AssertOrder(new Module[] { moduleA }, order);
 
                     // 2 item
                     moduleA = GetModule("A", "B");
                     moduleB = GetModule("B");
-                    order = ModuleOrderUtil.GetModuleOrder(Arrays.AsList(new Module[] {moduleB, moduleA}), EmptySet<string>.Instance, new ModuleOrderOptions());
-                    AssertOrder(new Module[] {moduleB, moduleA}, order);
+                    order = ModuleOrderUtil.GetModuleOrder(
+                        Arrays.AsList(new Module[] { moduleB, moduleA }),
+                        EmptySet<string>.Instance,
+                        new ModuleOrderOptions());
+                    AssertOrder(new Module[] { moduleB, moduleA }, order);
 
                     // 3 item
                     moduleB = GetModule("B");
                     moduleC = GetModule("C", "B");
                     moduleD = GetModule("D");
                     order = ModuleOrderUtil.GetModuleOrder(
-                        Arrays.AsList(new Module[] {moduleB, moduleC, moduleD}),
+                        Arrays.AsList(new Module[] { moduleB, moduleC, moduleD }),
                         EmptySet<string>.Instance,
                         new ModuleOrderOptions());
-                    AssertOrder(new Module[] {moduleB, moduleC, moduleD}, order);
+                    AssertOrder(new Module[] { moduleB, moduleC, moduleD }, order);
                     order = ModuleOrderUtil.GetModuleOrder(
-                        Arrays.AsList(new Module[] {moduleD, moduleC, moduleB}),
+                        Arrays.AsList(new Module[] { moduleD, moduleC, moduleB }),
                         EmptySet<string>.Instance,
                         new ModuleOrderOptions());
-                    AssertOrder(new Module[] {moduleB, moduleD, moduleC}, order);
+                    AssertOrder(new Module[] { moduleB, moduleD, moduleC }, order);
 
                     // 2 trees of 2 deep
                     moduleA = GetModule("A", "B");
@@ -132,10 +144,10 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                     moduleC = GetModule("C", "D");
                     moduleD = GetModule("D");
                     order = ModuleOrderUtil.GetModuleOrder(
-                        Arrays.AsList(new Module[] {moduleC, moduleB, moduleA, moduleD}),
+                        Arrays.AsList(new Module[] { moduleC, moduleB, moduleA, moduleD }),
                         EmptySet<string>.Instance,
                         new ModuleOrderOptions());
-                    AssertOrder(new Module[] {moduleB, moduleD, moduleC, moduleA}, order);
+                    AssertOrder(new Module[] { moduleB, moduleD, moduleC, moduleA }, order);
 
                     // Tree of 5 deep
                     moduleA = GetModule("A", "C");
@@ -144,20 +156,20 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                     moduleD = GetModule("D", "C", "E");
                     moduleE = GetModule("E");
                     order = ModuleOrderUtil.GetModuleOrder(
-                        Arrays.AsList(new Module[] {moduleA, moduleB, moduleC, moduleD, moduleE}),
+                        Arrays.AsList(new Module[] { moduleA, moduleB, moduleC, moduleD, moduleE }),
                         EmptySet<string>.Instance,
                         new ModuleOrderOptions());
-                    AssertOrder(new Module[] {moduleB, moduleC, moduleE, moduleA, moduleD}, order);
+                    AssertOrder(new Module[] { moduleB, moduleC, moduleE, moduleA, moduleD }, order);
                     order = ModuleOrderUtil.GetModuleOrder(
-                        Arrays.AsList(new Module[] {moduleB, moduleE, moduleC, moduleA, moduleD}),
+                        Arrays.AsList(new Module[] { moduleB, moduleE, moduleC, moduleA, moduleD }),
                         EmptySet<string>.Instance,
                         new ModuleOrderOptions());
-                    AssertOrder(new Module[] {moduleB, moduleE, moduleC, moduleA, moduleD}, order);
+                    AssertOrder(new Module[] { moduleB, moduleE, moduleC, moduleA, moduleD }, order);
                     order = ModuleOrderUtil.GetModuleOrder(
-                        Arrays.AsList(new Module[] {moduleA, moduleD, moduleE, moduleC, moduleB}),
+                        Arrays.AsList(new Module[] { moduleA, moduleD, moduleE, moduleC, moduleB }),
                         EmptySet<string>.Instance,
                         new ModuleOrderOptions());
-                    AssertOrder(new Module[] {moduleB, moduleE, moduleC, moduleA, moduleD}, order);
+                    AssertOrder(new Module[] { moduleB, moduleE, moduleC, moduleA, moduleD }, order);
 
                     // Tree with null names
                     moduleA = GetModule(null, "C", "A", "B", "D");
@@ -165,13 +177,13 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                     moduleC = GetModule("A");
                     moduleD = GetModule("B", "A", "C");
                     moduleE = GetModule("C");
-                    ModuleOrderOptions options = new ModuleOrderOptions();
+                    var options = new ModuleOrderOptions();
                     options.IsCheckUses = false;
                     order = ModuleOrderUtil.GetModuleOrder(
-                        Arrays.AsList(new Module[] {moduleA, moduleB, moduleC, moduleD, moduleE}),
+                        Arrays.AsList(new Module[] { moduleA, moduleB, moduleC, moduleD, moduleE }),
                         EmptySet<string>.Instance,
                         options);
-                    AssertOrder(new Module[] {moduleC, moduleE, moduleD, moduleA, moduleB}, order);
+                    AssertOrder(new Module[] { moduleC, moduleE, moduleD, moduleA, moduleB }, order);
 
                     // Tree with duplicate names
                     moduleA = GetModule("A", "C");
@@ -180,10 +192,10 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                     moduleD = GetModule("D", "A");
                     moduleE = GetModule("C");
                     order = ModuleOrderUtil.GetModuleOrder(
-                        Arrays.AsList(new Module[] {moduleA, moduleB, moduleC, moduleD, moduleE}),
+                        Arrays.AsList(new Module[] { moduleA, moduleB, moduleC, moduleD, moduleE }),
                         EmptySet<string>.Instance,
                         options);
-                    AssertOrder(new Module[] {moduleE, moduleB, moduleA, moduleC, moduleD}, order);
+                    AssertOrder(new Module[] { moduleE, moduleB, moduleA, moduleC, moduleD }, order);
                 }
                 catch (Exception ex) {
                     throw new EPRuntimeException(ex);
@@ -196,19 +208,19 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             public void Run(RegressionEnvironment env)
             {
                 // Circular 3
-                Module moduleB = GetModule("B", "C");
-                Module moduleC = GetModule("C", "D");
-                Module moduleD = GetModule("D", "B");
+                var moduleB = GetModule("B", "C");
+                var moduleC = GetModule("C", "D");
+                var moduleD = GetModule("D", "B");
 
                 try {
                     ModuleOrderUtil.GetModuleOrder(
-                        Arrays.AsList(new Module[] {moduleC, moduleD, moduleB}),
+                        Arrays.AsList(new Module[] { moduleC, moduleD, moduleB }),
                         EmptySet<string>.Instance,
                         new ModuleOrderOptions());
                     Assert.Fail();
                 }
                 catch (ModuleOrderException ex) {
-                    Assert.AreEqual(
+                    ClassicAssert.AreEqual(
                         "Circular dependency detected in module uses-relationships: module 'C' uses (depends on) module 'D' uses (depends on) module 'B'",
                         ex.Message);
                 }
@@ -218,7 +230,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 ModuleOrder order = null;
                 try {
                     order = ModuleOrderUtil.GetModuleOrder(
-                        Arrays.AsList(new Module[] {moduleC, moduleD, moduleB}),
+                        Arrays.AsList(new Module[] { moduleC, moduleD, moduleB }),
                         EmptySet<string>.Instance,
                         new ModuleOrderOptions());
                 }
@@ -226,30 +238,38 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                     throw new EPRuntimeException(e);
                 }
 
-                AssertOrder(new Module[] {moduleB, moduleD, moduleC}, order);
+                AssertOrder(new Module[] { moduleB, moduleD, moduleC }, order);
 
                 // Circular 2
                 moduleB = GetModule("B", "C");
                 moduleC = GetModule("C", "B");
                 try {
-                    ModuleOrderUtil.GetModuleOrder(Arrays.AsList(new Module[] {moduleC, moduleB}), EmptySet<string>.Instance, new ModuleOrderOptions());
+                    ModuleOrderUtil.GetModuleOrder(
+                        Arrays.AsList(new Module[] { moduleC, moduleB }),
+                        EmptySet<string>.Instance,
+                        new ModuleOrderOptions());
                     Assert.Fail();
                 }
                 catch (ModuleOrderException ex) {
-                    Assert.AreEqual("Circular dependency detected in module uses-relationships: module 'C' uses (depends on) module 'B'", ex.Message);
+                    ClassicAssert.AreEqual(
+                        "Circular dependency detected in module uses-relationships: module 'C' uses (depends on) module 'B'",
+                        ex.Message);
                 }
 
                 // turn off circular check
-                ModuleOrderOptions options = new ModuleOrderOptions();
+                var options = new ModuleOrderOptions();
                 options.IsCheckCircularDependency = false;
                 try {
-                    order = ModuleOrderUtil.GetModuleOrder(Arrays.AsList(new Module[] {moduleC, moduleB}), EmptySet<string>.Instance, options);
+                    order = ModuleOrderUtil.GetModuleOrder(
+                        Arrays.AsList(new Module[] { moduleC, moduleB }),
+                        EmptySet<string>.Instance,
+                        options);
                 }
                 catch (ModuleOrderException e) {
                     throw new EPRuntimeException(e);
                 }
 
-                AssertOrder(new Module[] {moduleB, moduleC}, order);
+                AssertOrder(new Module[] { moduleB, moduleC }, order);
             }
         }
 
@@ -258,27 +278,37 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             public void Run(RegressionEnvironment env)
             {
                 // Single module
-                Module moduleB = GetModule("B", "C");
+                var moduleB = GetModule("B", "C");
                 try {
-                    ModuleOrderUtil.GetModuleOrder(Arrays.AsList(new Module[] {moduleB}), EmptySet<string>.Instance, new ModuleOrderOptions());
+                    ModuleOrderUtil.GetModuleOrder(
+                        Arrays.AsList(new Module[] { moduleB }),
+                        EmptySet<string>.Instance,
+                        new ModuleOrderOptions());
                     Assert.Fail();
                 }
                 catch (ModuleOrderException ex) {
-                    Assert.AreEqual("Module-dependency not found as declared by module 'B' for uses-declaration 'C'", ex.Message);
+                    ClassicAssert.AreEqual(
+                        "Module-dependency not found as declared by module 'B' for uses-declaration 'C'",
+                        ex.Message);
                 }
 
                 // multiple module
-                Module[] modules = new Module[] {GetModule("B", "C"), GetModule("C", "D"), GetModule("D", "x")};
+                var modules = new Module[] { GetModule("B", "C"), GetModule("C", "D"), GetModule("D", "x") };
                 try {
-                    ModuleOrderUtil.GetModuleOrder(Arrays.AsList(modules), EmptySet<string>.Instance, new ModuleOrderOptions());
+                    ModuleOrderUtil.GetModuleOrder(
+                        Arrays.AsList(modules),
+                        EmptySet<string>.Instance,
+                        new ModuleOrderOptions());
                     Assert.Fail();
                 }
                 catch (ModuleOrderException ex) {
-                    Assert.AreEqual("Module-dependency not found as declared by module 'D' for uses-declaration 'x'", ex.Message);
+                    ClassicAssert.AreEqual(
+                        "Module-dependency not found as declared by module 'D' for uses-declaration 'x'",
+                        ex.Message);
                 }
 
                 // turn off uses-checks
-                ModuleOrderOptions options = new ModuleOrderOptions();
+                var options = new ModuleOrderOptions();
                 options.IsCheckUses = false;
                 try {
                     ModuleOrderUtil.GetModuleOrder(Arrays.AsList(modules), EmptySet<string>.Instance, options);

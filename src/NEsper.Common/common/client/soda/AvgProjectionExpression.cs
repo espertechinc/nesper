@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -15,7 +15,6 @@ namespace com.espertech.esper.common.client.soda
     /// Average of the (distinct) values returned by an expression.
     /// <para />Expects a single child expression providing the values to aggregate.
     /// </summary>
-    [Serializable]
     public class AvgProjectionExpression : ExpressionBase
     {
         private bool distinct;
@@ -49,10 +48,7 @@ namespace com.espertech.esper.common.client.soda
             Children.Add(expression);
         }
 
-        public override ExpressionPrecedenceEnum Precedence
-        {
-            get => ExpressionPrecedenceEnum.UNARY;
-        }
+        public override ExpressionPrecedenceEnum Precedence => ExpressionPrecedenceEnum.UNARY;
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
@@ -63,8 +59,7 @@ namespace com.espertech.esper.common.client.soda
         /// Returns true if the projection considers distinct values only.
         /// </summary>
         /// <returns>true if distinct</returns>
-        public bool IsDistinct
-        {
+        public bool IsDistinct {
             get => distinct;
             set => distinct = value;
         }
@@ -73,8 +68,7 @@ namespace com.espertech.esper.common.client.soda
         /// Returns true if the projection considers distinct values only.
         /// </summary>
         /// <returns>true if distinct</returns>
-        public bool Distinct
-        {
+        public bool Distinct {
             get => distinct;
             set => distinct = value;
         }

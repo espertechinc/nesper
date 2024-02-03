@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -66,7 +66,7 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
                 return new OutputConditionPolledCountFactoryForge(rate, variableMetaData);
             }
 
-            if (variableMetaData != null && !variableMetaData.Type.IsNumeric()) {
+            if (variableMetaData != null && !variableMetaData.Type.IsTypeNumeric()) {
                 throw new ArgumentException(
                     "Variable named '" + outputLimitSpec.VariableName + "' must be of numeric type");
             }

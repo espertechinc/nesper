@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -22,7 +22,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 {
     public class ExprDotNodeAggregationMethodForgeLocal : ExprDotNodeAggregationMethodForge
     {
-        private readonly ExprAggMultiFunctionNode agg;
+        private readonly ExprAggMultiFunctionNode _agg;
 
         public ExprDotNodeAggregationMethodForgeLocal(
             ExprDotNodeImpl parent,
@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             ExprAggMultiFunctionNode agg)
             : base(parent, aggregationMethodName, parameters, validation)
         {
-            this.agg = agg;
+            _agg = agg;
         }
 
         protected override string TableName => null;
@@ -48,17 +48,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             ExprForgeCodegenSymbol symbols,
             CodegenClassScope classScope)
         {
-            var future = agg.GetAggFuture(classScope);
+            var future = _agg.GetAggFuture(classScope);
             var method = parent.MakeChild(requiredType, GetType(), classScope);
             method.Block
-                .DeclareVar(
-                    typeof(AggregationRow),
-                    "row",
+                .DeclareVar<AggregationRow>("row",
                     ExprDotMethod(
                         future,
                         "GetAggregationRow",
                         ExprDotName(symbols.GetAddExprEvalCtx(parent), "AgentInstanceId"),
-                        symbols.GetAddEPS(parent),
+                        symbols.GetAddEps(parent),
                         symbols.GetAddIsNewData(parent),
                         symbols.GetAddExprEvalCtx(parent)))
                 .IfRefNullReturnNull("row")
@@ -68,9 +66,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                         ExprDotMethod(
                             GetReader(classScope),
                             readerMethodName,
-                            Constant(agg.Column),
+                            Constant(_agg.Column),
                             Ref("row"),
-                            symbols.GetAddEPS(method),
+                            symbols.GetAddEps(method),
                             symbols.GetAddIsNewData(method),
                             symbols.GetAddExprEvalCtx(method))));
             return LocalMethod(method);
@@ -80,7 +78,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             TextWriter writer,
             ExprNodeRenderableFlags flags)
         {
-            agg.ToEPL(writer, ExprPrecedenceEnum.MINIMUM, flags);
+            _agg.ToEPL(writer, ExprPrecedenceEnum.MINIMUM, flags);
         }
     }
 } // end of namespace

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -9,8 +9,6 @@
 using System;
 
 using com.espertech.esper.common.client;
-using com.espertech.esper.common.@internal.bytecodemodel.@base;
-using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.agg.method.core;
 using com.espertech.esper.common.@internal.epl.expression.agg.@base;
@@ -18,39 +16,62 @@ using com.espertech.esper.common.@internal.epl.expression.agg.method;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 
+
 namespace com.espertech.esper.common.@internal.epl.agg.method.firstlastever
 {
-	public class AggregationForgeFactoryFirstLastEver : AggregationForgeFactoryBase {
-		private readonly ExprFirstLastEverNode _parent;
-	    private readonly Type _childType;
-	    private readonly DataInputOutputSerdeForge _serde;
-	    private AggregatorMethod _aggregator;
+    public class AggregationForgeFactoryFirstLastEver : AggregationForgeFactoryBase
+    {
+        protected readonly ExprFirstLastEverNode parent;
+        protected readonly Type childType;
+        protected readonly DataInputOutputSerdeForge serde;
+        private readonly AggregatorMethod aggregator;
 
-	    public AggregationForgeFactoryFirstLastEver(ExprFirstLastEverNode parent, Type childType, DataInputOutputSerdeForge serde) {
-	        this._parent = parent;
-	        this._childType = childType;
-	        this._serde = serde;
-	    }
+        public AggregationForgeFactoryFirstLastEver(
+            ExprFirstLastEverNode parent,
+            Type childType,
+            DataInputOutputSerdeForge serde)
+        {
+            this.parent = parent;
+            this.childType = childType;
+            this.serde = serde;
+            if (parent.IsFirst) {
+                aggregator = new AggregatorFirstEver(
+                    null,
+                    null,
+                    parent.HasFilter,
+                    parent.OptionalFilter,
+                    childType,
+                    serde);
+            }
+            else {
+                aggregator = new AggregatorLastEver(
+                    null,
+                    null,
+                    parent.HasFilter,
+                    parent.OptionalFilter,
+                    childType,
+                    serde);
+            }
+        }
 
-	    public override Type ResultType => _childType;
+        public override ExprForge[] GetMethodAggregationForge(
+            bool join,
+            EventType[] typesPerStream)
+        {
+            return ExprMethodAggUtil.GetDefaultForges(parent.PositionalParams, join, typesPerStream);
+        }
 
-	    public override void InitMethodForge(int col, CodegenCtor rowCtor, CodegenMemberCol membersColumnized, CodegenClassScope classScope) {
-	        if (_parent.IsFirst) {
-	            _aggregator = new AggregatorFirstEver(this, col, rowCtor, membersColumnized, classScope, null, null, _parent.HasFilter, _parent.OptionalFilter, _childType, _serde);
-	        } else {
-	            _aggregator = new AggregatorLastEver(this, col, rowCtor, membersColumnized, classScope, null, null, _parent.HasFilter, _parent.OptionalFilter, _childType, _serde);
-	        }
-	    }
+        public override Type ResultType => childType;
 
-	    public override AggregatorMethod Aggregator => _aggregator;
+        public override AggregatorMethod Aggregator => aggregator;
 
-	    public override ExprAggregateNodeBase AggregationExpression => _parent;
+        public override ExprAggregateNodeBase AggregationExpression => parent;
 
-	    public override AggregationPortableValidation AggregationPortableValidation => new AggregationPortableValidationFirstLastEver(_parent.IsDistinct, _parent.HasFilter, _childType, _parent.IsFirst);
-
-	    public override ExprForge[] GetMethodAggregationForge(bool join, EventType[] typesPerStream) {
-	        return ExprMethodAggUtil.GetDefaultForges(_parent.PositionalParams, join, typesPerStream);
-	    }
-	}
-
+        public override AggregationPortableValidation AggregationPortableValidation =>
+            new AggregationPortableValidationFirstLastEver(
+                parent.IsDistinct,
+                parent.HasFilter,
+                childType,
+                parent.IsFirst);
+    }
 } // end of namespace

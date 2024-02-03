@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -17,13 +17,16 @@ namespace com.espertech.esper.common.client.hook.aggmultifunc
     {
         private InjectionStrategy _injectionStrategyAggregationAccessorFactory;
 
-        public AggregationMultiFunctionAccessorModeManaged() {
+        public AggregationMultiFunctionAccessorModeManaged()
+        {
         }
 
-        public AggregationMultiFunctionAccessorModeManaged(InjectionStrategy injectionStrategyAggregationAccessorFactory) {
-            this._injectionStrategyAggregationAccessorFactory = injectionStrategyAggregationAccessorFactory;
+        public AggregationMultiFunctionAccessorModeManaged(
+            InjectionStrategy injectionStrategyAggregationAccessorFactory)
+        {
+            _injectionStrategyAggregationAccessorFactory = injectionStrategyAggregationAccessorFactory;
         }
-        
+
         /// <summary>
         /// Returns the injection strategy for the aggregation accessor factory
         /// </summary>
@@ -38,10 +41,10 @@ namespace com.espertech.esper.common.client.hook.aggmultifunc
         /// </summary>
         /// <param name="strategy">strategy</param>
         /// <returns>itself</returns>
-        public AggregationMultiFunctionAccessorModeManaged SetInjectionStrategyAggregationAccessorFactory(
+        public AggregationMultiFunctionAccessorModeManaged WithInjectionStrategyAggregationAccessorFactory(
             InjectionStrategy strategy)
         {
-            this._injectionStrategyAggregationAccessorFactory = strategy;
+            _injectionStrategyAggregationAccessorFactory = strategy;
             return this;
         }
     }

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -61,8 +61,8 @@ namespace com.espertech.esper.common.@internal.view.sort
 
         public ViewFactory ViewFactory => factory;
 
-        public override EventType EventType => parent.EventType;
-        
+        public override EventType EventType => Parent.EventType;
+
         public override void Update(
             EventBean[] newData,
             EventBean[] oldData)
@@ -108,8 +108,7 @@ namespace com.espertech.esper.common.@internal.view.sort
                     // Remove the last element of the last key - sort order is key and then natural order of arrival
                     var lastKey = sortedEvents.Keys.Last();
                     var lastEntry = sortedEvents.Get(lastKey);
-                    if (lastEntry is IList<EventBean>) {
-                        var events = (IList<EventBean>) lastEntry;
+                    if (lastEntry is IList<EventBean> events) {
                         var theEvent =
                             events.DeleteAt(events.Count - 1); // remove oldest event, newest events are first in list
                         eventCount--;
@@ -125,7 +124,7 @@ namespace com.espertech.esper.common.@internal.view.sort
                         InternalHandleRemoved(lastKey, theEvent);
                     }
                     else {
-                        var theEvent = (EventBean) lastEntry;
+                        var theEvent = (EventBean)lastEntry;
                         eventCount--;
                         sortedEvents.Remove(lastKey);
                         if (removedEvents == null) {
@@ -141,14 +140,14 @@ namespace com.espertech.esper.common.@internal.view.sort
             // If there are child views, fireStatementStopped update method
             optionalSortedRandomAccess?.Refresh(sortedEvents, eventCount, sortWindowSize);
 
-            if (child != null) {
+            if (Child != null) {
                 EventBean[] expiredArr = null;
                 if (removedEvents != null) {
                     expiredArr = removedEvents.ToArray();
                 }
 
                 agentInstanceContext.InstrumentationProvider.QViewIndicate(factory, newData, expiredArr);
-                child.Update(newData, expiredArr);
+                Child.Update(newData, expiredArr);
                 agentInstanceContext.InstrumentationProvider.AViewIndicate();
             }
 

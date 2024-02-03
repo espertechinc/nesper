@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -22,10 +22,10 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
 namespace com.espertech.esper.common.@internal.@event.json.getter.provided
 {
-	/// <summary>
-	///     Property getter for Json underlying fields.
-	/// </summary>
-	public sealed class JsonGetterIndexedProvidedBaseNative : BaseNativePropertyGetter,
+    /// <summary>
+    /// Property getter for Json underlying fields.
+    /// </summary>
+    public class JsonGetterIndexedProvidedBaseNative : BaseNativePropertyGetter,
         JsonEventPropertyGetter
     {
         private readonly FieldInfo _field;
@@ -36,22 +36,21 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
             BeanEventTypeFactory beanEventTypeFactory,
             Type returnType,
             FieldInfo field,
-            int index) : base(eventBeanTypedEventFactory, beanEventTypeFactory, returnType, null)
+            int index) : base(eventBeanTypedEventFactory, beanEventTypeFactory, returnType)
         {
             _field = field;
             _index = index;
         }
-
-        public override Type TargetType => _field.DeclaringType;
-
-        public override Type BeanPropType => typeof(object);
 
         public override CodegenExpression EventBeanGetCodegen(
             CodegenExpression beanExpression,
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return UnderlyingGetCodegen(CastUnderlying(_field.DeclaringType, beanExpression), codegenMethodScope, codegenClassScope);
+            return UnderlyingGetCodegen(
+                CastUnderlying(_field.DeclaringType, beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
         public override CodegenExpression UnderlyingGetCodegen(
@@ -62,7 +61,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
             return StaticMethod(
                 typeof(CollectionUtil),
                 "ArrayValueAtIndex",
-                Cast<Array>(ExprDotName(underlyingExpression, _field.Name)),
+                ExprDotName(underlyingExpression, _field.Name),
                 Constant(_index));
         }
 
@@ -71,7 +70,10 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return UnderlyingExistsCodegen(CastUnderlying(_field.DeclaringType, beanExpression), codegenMethodScope, codegenClassScope);
+            return UnderlyingExistsCodegen(
+                CastUnderlying(_field.DeclaringType, beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
         public override CodegenExpression UnderlyingExistsCodegen(
@@ -82,7 +84,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
             return StaticMethod(
                 typeof(CollectionUtil),
                 "ArrayExistsAtIndex",
-                Cast<Array>(ExprDotName(underlyingExpression, _field.Name)),
+                ExprDotName(underlyingExpression, _field.Name),
                 Constant(_index));
         }
 
@@ -120,5 +122,9 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
 
             return GetFragmentFromValue(value);
         }
+
+        public override Type TargetType => _field.DeclaringType;
+
+        public override Type BeanPropType => typeof(object);
     }
 } // end of namespace

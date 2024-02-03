@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -29,11 +29,11 @@ namespace com.espertech.esper.common.@internal.collection
 
         public bool IsParentTo(IntSeqKey other)
         {
-            if (!(other is IntSeqKeyMany)) {
+            if (!(other is IntSeqKeyMany many)) {
                 return false;
             }
 
-            return IntArrayUtil.CompareParentKey(((IntSeqKeyMany) other).Array, Array);
+            return IntArrayUtil.CompareParentKey(many.Array, Array);
         }
 
         public IntSeqKey AddToEnd(int num)
@@ -52,7 +52,7 @@ namespace com.espertech.esper.common.@internal.collection
 
         public int Length => Array.Length;
 
-        public int Last => Array[Array.Length - 1];
+        public int Last => Array[^1];
 
         public int[] AsIntArray()
         {
@@ -69,8 +69,8 @@ namespace com.espertech.esper.common.@internal.collection
                 return false;
             }
 
-            var that = (IntSeqKeyMany) o;
-            return CompatExtensions.AreEqual(Array, that.Array);
+            var that = (IntSeqKeyMany)o;
+            return Array.AreEqual(that.Array);
         }
 
         public override int GetHashCode()
@@ -91,7 +91,7 @@ namespace com.espertech.esper.common.@internal.collection
 
         public static IntSeqKeyMany Read(DataInput input)
         {
-            int size = input.ReadInt();
+            var size = input.ReadInt();
             var array = new int[size];
             for (var i = 0; i < size; i++) {
                 array[i] = input.ReadInt();

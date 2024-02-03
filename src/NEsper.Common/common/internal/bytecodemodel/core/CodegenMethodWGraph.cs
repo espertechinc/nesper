@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -12,7 +12,7 @@ using System.Linq;
 using System.Text;
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
-
+using com.espertech.esper.compat.collections;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -51,14 +51,14 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
 
         public bool IsPublic { get; set; }
 
-        public CodegenMethod Originator { get; set;  }
+        public CodegenMethod Originator { get; set; }
 
         public CodegenMethodWGraph WithStatic()
         {
             Modifiers = Modifiers.Enable(MemberModifier.STATIC);
             return this;
         }
-        
+
         public void MergeClasses(ISet<Type> classes)
         {
             Footprint.MergeClasses(classes);
@@ -72,8 +72,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
             CodegenIndent indent,
             int additionalIndent)
         {
-            if (Footprint.OptionalComment != null)
-            {
+            if (Footprint.OptionalComment != null) {
                 indent.Indent(builder, 1 + additionalIndent);
                 builder
                     .Append("// ")
@@ -82,39 +81,32 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
             }
 
             indent.Indent(builder, 1 + additionalIndent);
-            if (isPublic)
-            {
+            if (isPublic) {
                 builder.Append("public ");
             }
-            else
-            {
+            else {
                 // We found that there's an important distinction with internal classes between Java and C#.  In Java
                 // private methods in an inner class are still visible and callable between parent and child.  In C#
                 // this is not true.  We alleviate this by making the default method access internal.
                 builder.Append("internal ");
             }
 
-            if (Modifiers.IsStatic())
-            {
+            if (Modifiers.IsStatic()) {
                 builder.Append("static ");
             }
 
-            if (Modifiers.IsOverride())
-            {
+            if (Modifiers.IsOverride()) {
                 builder.Append("override ");
             }
 
-            if (Modifiers.IsVirtual())
-            {
+            if (Modifiers.IsVirtual()) {
                 builder.Append("virtual ");
             }
 
-            if (Footprint.ReturnType != null)
-            {
+            if (Footprint.ReturnType != null) {
                 AppendClassName(builder, Footprint.ReturnType);
             }
-            else
-            {
+            else {
                 builder.Append(Footprint.ReturnTypeName);
             }
 
@@ -124,8 +116,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
                 .Append("(");
 
             var delimiter = "";
-            foreach (var param in Footprint.Params)
-            {
+            foreach (var param in Footprint.Params) {
                 builder.Append(delimiter);
                 param.Render(builder);
                 delimiter = ",";
@@ -134,6 +125,37 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
             builder.Append(")");
 
             builder.Append("{\n");
+            
+#if DEBUG
+#if DISABLED
+            indent.Indent(builder, 2 + additionalIndent);
+            builder
+                .Append("using var __trace = ")
+                .Append(typeof(CompatExtensions).FullName)
+                .Append('.')
+                .Append("Trace(")
+                .Append(Modifiers.IsStatic() ? "null" : "GetType().FullName")
+                .Append(",")
+                .Append("\"")
+                .Append(Name)
+                .Append("\"");
+                
+            foreach (var param in Footprint.Params) {
+                builder.Append(",");
+                if (param.HasOutputModifier) {
+                    builder.Append($"\"{{{param.Name}}} as output\"");
+                }
+                else {
+                    builder.Append(param.Name);
+                }
+            }
+
+            builder
+                .Append(");")
+                .Append("\n");
+#endif
+#endif
+            
             Block.Render(builder, isInnerClass, 2 + additionalIndent, indent);
             indent.Indent(builder, 1 + additionalIndent);
             builder.Append("}\n");

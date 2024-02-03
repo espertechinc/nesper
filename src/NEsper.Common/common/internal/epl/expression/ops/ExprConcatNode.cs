@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -8,8 +8,8 @@
 
 using System;
 using System.IO;
+using System.Text.Json.Serialization;
 
-using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.container;
@@ -19,10 +19,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
     /// <summary>
     ///     Represents a string concatenation.
     /// </summary>
-    [Serializable]
     public class ExprConcatNode : ExprNodeBase
     {
-        [NonSerialized] private ExprConcatNodeForge _forge;
+        [JsonIgnore]
+        [NonSerialized]
+        private ExprConcatNodeForge _forge;
         public bool IsConstantResult => false;
 
         public override ExprPrecedenceEnum Precedence => ExprPrecedenceEnum.CONCAT;
@@ -59,7 +60,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             }
 
             var threadLocalManager = validationContext.Container.ThreadLocalManager();
-            var threadingProfile = validationContext.StatementCompileTimeService.Configuration.Common.Execution.ThreadingProfile;
+            var threadingProfile = validationContext.StatementCompileTimeService.Configuration.Common.Execution
+                .ThreadingProfile;
             _forge = new ExprConcatNodeForge(threadLocalManager, this, threadingProfile);
             return null;
         }

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -36,25 +36,24 @@ namespace com.espertech.esper.common.client.soda
     {
         public static string GetText(this OutputLimitUnit value)
         {
-            switch (value)
-            {
+            switch (value) {
                 case OutputLimitUnit.TIME_PERIOD:
-                    return ("timeperiod");
+                    return "timeperiod";
 
                 case OutputLimitUnit.EVENTS:
-                    return ("events");
+                    return "events";
 
                 case OutputLimitUnit.WHEN_EXPRESSION:
-                    return ("when");
+                    return "when";
 
                 case OutputLimitUnit.CRONTAB_EXPRESSION:
-                    return ("crontab");
+                    return "crontab";
 
                 case OutputLimitUnit.AFTER:
-                    return ("after");
+                    return "after";
 
                 case OutputLimitUnit.CONTEXT_PARTITION_TERM:
-                    return ("when terminated");
+                    return "when terminated";
             }
 
             throw new ArgumentException();

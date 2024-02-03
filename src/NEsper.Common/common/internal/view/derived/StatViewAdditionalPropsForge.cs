@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -24,7 +24,7 @@ using static com.espertech.esper.common.@internal.epl.expression.core.ExprNodeUt
 namespace com.espertech.esper.common.@internal.view.derived
 {
     public class StatViewAdditionalPropsForge
-    {  
+    {
         private StatViewAdditionalPropsForge(
             string[] additionalProps,
             ExprNode[] additionalEvals,
@@ -49,7 +49,6 @@ namespace com.espertech.esper.common.@internal.view.derived
             ExprNode[] validated,
             int startIndex,
             EventType parentEventType,
-            int streamNumber,
             ViewForgeEnv viewForgeEnv)
         {
             if (validated.Length <= startIndex) {
@@ -72,7 +71,8 @@ namespace com.espertech.esper.common.@internal.view.derived
                     var evalType = validated[i].Forge.EvaluationType;
                     lastValueTypes.Add(evalType);
                     lastValueForges.Add(validated[i]);
-                    lastSerdes.Add(viewForgeEnv.SerdeResolver.SerdeForDerivedViewAddProp(evalType, viewForgeEnv.StatementRawInfo));
+                    lastSerdes.Add(
+                        viewForgeEnv.SerdeResolver.SerdeForDerivedViewAddProp(evalType, viewForgeEnv.StatementRawInfo));
                 }
             }
 
@@ -85,9 +85,13 @@ namespace com.espertech.esper.common.@internal.view.derived
                     additionalProps.Add(propertyDescriptor.PropertyName);
                     var type = propertyDescriptor.PropertyType;
                     lastValueForges.Add(
-                        new ExprIdentNodeImpl(parentEventType, propertyDescriptor.PropertyName, streamNumber));
+                        new ExprIdentNodeImpl(
+                            parentEventType,
+                            propertyDescriptor.PropertyName,
+                            viewForgeEnv.StreamNumber));
                     lastValueTypes.Add(type);
-                    lastSerdes.Add(viewForgeEnv.SerdeResolver.SerdeForDerivedViewAddProp(type, viewForgeEnv.StatementRawInfo));
+                    lastSerdes.Add(
+                        viewForgeEnv.SerdeResolver.SerdeForDerivedViewAddProp(type, viewForgeEnv.StatementRawInfo));
                 }
             }
 
@@ -126,7 +130,7 @@ namespace com.espertech.esper.common.@internal.view.derived
         {
             return NewInstance<StatViewAdditionalPropsEval>(
                 Constant(AdditionalProps),
-                CodegenEvaluators(AdditionalEvals, method, this.GetType(), classScope),
+                CodegenEvaluators(AdditionalEvals, method, GetType(), classScope),
                 Constant(AdditionalTypes),
                 DataInputOutputSerdeForgeExtensions.CodegenArray(AdditionalSerdes, method, classScope, null));
         }

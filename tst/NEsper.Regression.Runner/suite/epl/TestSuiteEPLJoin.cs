@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -289,9 +289,9 @@ namespace com.espertech.esper.regressionrun.suite.epl
                 EPLJoinEventRepresentation.WithMapEventNotUnique());
 
             [Test, RunInApplicationDomain]
-            public void WithEventRepresentations() => RegressionRunner.Run(
+            public void WithEventRepresentations([Values] EventRepresentationChoice rep) => RegressionRunner.Run(
                 _session,
-                EPLJoinEventRepresentation.WithEventRepresentations());
+                EPLJoinEventRepresentation.WithEventRepresentations(rep));
         }
 
         /// <summary>
@@ -1325,6 +1325,8 @@ namespace com.espertech.esper.regressionrun.suite.epl
                 configuration.Common.AddEventType(clazz);
             }
 
+            configuration.Common.EventMeta.AvroSettings.IsEnableAvro = true;
+            
             IDictionary<string, object> typeInfo = new Dictionary<string, object>();
             typeInfo.Put("Id", typeof(string));
             typeInfo.Put("P00", typeof(int));

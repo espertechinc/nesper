@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -18,8 +18,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.cache
 {
     public class ExpressionResultCacheForPropUnwrapImpl : ExpressionResultCacheForPropUnwrap
     {
-        private readonly Dictionary<string, SoftReference<ExpressionResultCacheEntryBeanAndCollBean>> collPropertyCache =
-            new Dictionary<string, SoftReference<ExpressionResultCacheEntryBeanAndCollBean>>();
+        private readonly Dictionary<string, SoftReference<ExpressionResultCacheEntryBeanAndCollBean>>
+            collPropertyCache =
+                new Dictionary<string, SoftReference<ExpressionResultCacheEntryBeanAndCollBean>>();
 
         public ExpressionResultCacheEntryBeanAndCollBean GetPropertyColl(
             string propertyNameFullyQualified,
@@ -44,7 +45,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.cache
         public void SavePropertyColl(
             string propertyNameFullyQualified,
             EventBean reference,
-            FlexCollection events)
+            ICollection<EventBean> events)
         {
             var entry = new ExpressionResultCacheEntryBeanAndCollBean(reference, events);
             collPropertyCache.Put(

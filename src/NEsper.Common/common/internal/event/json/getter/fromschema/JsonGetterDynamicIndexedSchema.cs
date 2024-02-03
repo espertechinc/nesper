@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -26,8 +26,8 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
             string propertyName,
             int index)
         {
-            this._propertyName = propertyName;
-            this._index = index;
+            _propertyName = propertyName;
+            _index = index;
         }
 
         public CodegenExpression EventBeanGetCodegen(
@@ -35,7 +35,10 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return UnderlyingGetCodegen(CastUnderlying(typeof(IDictionary<string, object>), beanExpression), codegenMethodScope, codegenClassScope);
+            return UnderlyingGetCodegen(
+                CastUnderlying(typeof(IDictionary<string, object>), beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
         public CodegenExpression UnderlyingGetCodegen(
@@ -56,7 +59,10 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return UnderlyingExistsCodegen(CastUnderlying(typeof(IDictionary<string, object>), beanExpression), codegenMethodScope, codegenClassScope);
+            return UnderlyingExistsCodegen(
+                CastUnderlying(typeof(IDictionary<string, object>), beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
         public CodegenExpression UnderlyingExistsCodegen(
@@ -105,7 +111,10 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
 
         public object GetJsonProp(object @object)
         {
-            return JsonGetterDynamicHelperSchema.GetJsonPropertyIndexedValue(_propertyName, _index, (IDictionary<string, object>) @object);
+            return JsonGetterDynamicHelperSchema.GetJsonPropertyIndexedValue(
+                _propertyName,
+                _index,
+                (IDictionary<string, object>)@object);
         }
 
         public object GetJsonFragment(object @object)
@@ -115,7 +124,10 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
 
         public bool GetJsonExists(object @object)
         {
-            return JsonGetterDynamicHelperSchema.GetJsonPropertyIndexedExists(_propertyName, _index, (IDictionary<string, object>) @object);
+            return JsonGetterDynamicHelperSchema.GetJsonPropertyIndexedExists(
+                _propertyName,
+                _index,
+                (IDictionary<string, object>)@object);
         }
     }
 } // end of namespace

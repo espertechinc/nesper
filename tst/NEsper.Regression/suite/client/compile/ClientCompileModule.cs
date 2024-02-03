@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -26,8 +26,7 @@ using com.espertech.esper.regressionlib.support.epl;
 using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
-
-using static com.espertech.esper.regressionlib.framework.SupportMessageAssertUtil;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.client.compile
 {
@@ -44,6 +43,14 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             WithParse(execs);
             WithParseFail(execs);
             WithCommentTrailing(execs);
+            WithEPLModuleText(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithEPLModuleText(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientCompileModuleEPLModuleText());
             return execs;
         }
 
@@ -89,13 +96,44 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             return execs;
         }
 
+        private class ClientCompileModuleEPLModuleText : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                EPDeployment deployment;
+
+                var epl = "@name('s0') select * from SupportBean";
+                env.CompileDeploy(epl);
+                deployment = env.Deployment.GetDeployment(env.DeploymentId("s0"));
+                ClassicAssert.AreEqual(epl, deployment.ModuleProperties.Get(ModuleProperty.MODULETEXT));
+                env.UndeployAll();
+
+                env.EplToModelCompileDeploy(epl);
+                deployment = env.Deployment.GetDeployment(env.DeploymentId("s0"));
+                ClassicAssert.AreEqual(epl, deployment.ModuleProperties.Get(ModuleProperty.MODULETEXT));
+                env.UndeployAll();
+            }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.COMPILEROPS);
+            }
+        }
+
         private class ClientCompileModuleCommentTrailing : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@public @buseventtype create map schema Fubar as (foo String, bar Double);" + Environment.NewLine + "/** comment after */";
+                    "@public @buseventtype create map schema Fubar as (foo String, bar Double);" +
+                    Environment.NewLine +
+                    "/** comment after */";
                 env.CompileDeploy(epl).UndeployAll();
+            }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.COMPILEROPS);
             }
         }
 
@@ -105,7 +143,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             {
                 var resource = "regression/test_module_12.epl";
                 var input = env.Container.ResourceManager().GetResourceAsStream(resource);
-                Assert.IsNotNull(input);
+                ClassicAssert.IsNotNull(input);
 
                 Module module;
                 try {
@@ -128,9 +166,11 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 }
 
                 var deplomentInfo = env.Deployment.GetDeployment(deployed.DeploymentId);
-                Assert.AreEqual("regression.test", deplomentInfo.ModuleName);
-                Assert.AreEqual(2, deplomentInfo.Statements.Length);
-                Assert.AreEqual("create schema MyType(col1 integer)", deplomentInfo.Statements[0].GetProperty(StatementProperty.EPL));
+                ClassicAssert.AreEqual("regression.test", deplomentInfo.ModuleName);
+                ClassicAssert.AreEqual(2, deplomentInfo.Statements.Length);
+                ClassicAssert.AreEqual(
+                    "create schema MyType(col1 integer)",
+                    deplomentInfo.Statements[0].GetProperty(StatementProperty.EPL));
 
                 var moduleText = "module regression.test.two;" +
                                  "uses regression.test;" +
@@ -149,43 +189,43 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 env.Deploy(compiledTwo);
 
                 var deploymentIds = env.Deployment.Deployments;
-                Assert.AreEqual(2, deploymentIds.Length);
+                ClassicAssert.AreEqual(2, deploymentIds.Length);
 
-                var infoList = new List<EPDeployment>();
-                for (var i = 0; i < deploymentIds.Length; i++) {
-                    infoList.Add(env.Deployment.GetDeployment(deploymentIds[i]));
-                }
-
-                infoList.Sort(
-                    (
-                        o1,
-                        o2) => String.Compare(o1.ModuleName, o2.ModuleName, StringComparison.Ordinal));
+                var infoList = deploymentIds
+                    .Select(_ => env.Deployment.GetDeployment(_))
+                    .OrderBy(_ => _.ModuleName)
+                    .ToList();
 
                 var infoOne = infoList[0];
                 var infoTwo = infoList[1];
-                Assert.AreEqual("regression.test", infoOne.ModuleName);
-                Assert.AreEqual("uri1", infoOne.ModuleProperties.Get(ModuleProperty.URI));
-                Assert.AreEqual("archive1", infoOne.ModuleProperties.Get(ModuleProperty.ARCHIVENAME));
-                Assert.AreEqual("obj1", infoOne.ModuleProperties.Get(ModuleProperty.USEROBJECT));
-                Assert.IsNull(infoOne.ModuleProperties.Get(ModuleProperty.USES));
-                Assert.IsNotNull(infoOne.ModuleProperties.Get(ModuleProperty.MODULETEXT));
-                Assert.IsNotNull(infoOne.LastUpdateDate);
-                Assert.AreEqual("regression.test.two", infoTwo.ModuleName);
-                Assert.AreEqual("uri2", infoTwo.ModuleProperties.Get(ModuleProperty.URI));
-                Assert.AreEqual("archive2", infoTwo.ModuleProperties.Get(ModuleProperty.ARCHIVENAME));
-                Assert.AreEqual("obj2", infoTwo.ModuleProperties.Get(ModuleProperty.USEROBJECT));
-                Assert.IsNotNull(infoOne.ModuleProperties.Get(ModuleProperty.MODULETEXT));
-                Assert.IsNotNull(infoTwo.LastUpdateDate);
+                ClassicAssert.AreEqual("regression.test", infoOne.ModuleName);
+                ClassicAssert.AreEqual("uri1", infoOne.ModuleProperties.Get(ModuleProperty.URI));
+                ClassicAssert.AreEqual("archive1", infoOne.ModuleProperties.Get(ModuleProperty.ARCHIVENAME));
+                ClassicAssert.AreEqual("obj1", infoOne.ModuleProperties.Get(ModuleProperty.USEROBJECT));
+                ClassicAssert.IsNull(infoOne.ModuleProperties.Get(ModuleProperty.USES));
+                ClassicAssert.IsNotNull(infoOne.ModuleProperties.Get(ModuleProperty.MODULETEXT));
+                ClassicAssert.IsNotNull(infoOne.LastUpdateDate);
+                ClassicAssert.AreEqual("regression.test.two", infoTwo.ModuleName);
+                ClassicAssert.AreEqual("uri2", infoTwo.ModuleProperties.Get(ModuleProperty.URI));
+                ClassicAssert.AreEqual("archive2", infoTwo.ModuleProperties.Get(ModuleProperty.ARCHIVENAME));
+                ClassicAssert.AreEqual("obj2", infoTwo.ModuleProperties.Get(ModuleProperty.USEROBJECT));
+                ClassicAssert.IsNotNull(infoOne.ModuleProperties.Get(ModuleProperty.MODULETEXT));
+                ClassicAssert.IsNotNull(infoTwo.LastUpdateDate);
 
                 CollectionAssert.AreEquivalent(
                     new string[] {"a", "b"},
-                    (string[]) infoTwo.ModuleProperties.Get(ModuleProperty.USES));
+                    (string[])infoTwo.ModuleProperties.Get(ModuleProperty.USES));
 
                 CollectionAssert.AreEquivalent(
                     new Import[] {new ImportNamespace("c"), new ImportNamespace("d")},
-                    (Import[]) infoTwo.ModuleProperties.Get(ModuleProperty.IMPORTS));
+                    (Import[])infoTwo.ModuleProperties.Get(ModuleProperty.IMPORTS));
 
                 env.UndeployAll();
+            }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.COMPILEROPS);
             }
         }
 
@@ -200,9 +240,11 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                                  "select * from DEF";
 
                 var module = env.ParseModule(moduleText);
-                Assert.AreEqual(2, module.Items.Count);
-                Assert.AreEqual(3, module.Items[0].LineNumber);
-                Assert.AreEqual(4, module.Items[1].LineNumber);
+                ClassicAssert.AreEqual(2, module.Items.Count);
+                ClassicAssert.AreEqual(3, module.Items[0].LineNumber);
+                ClassicAssert.AreEqual(3, module.Items[0].LineNumberEnd);
+                ClassicAssert.AreEqual(4, module.Items[1].LineNumber);
+                ClassicAssert.AreEqual(4, module.Items[1].LineNumberEnd);
 
                 module = env.ParseModule("/* abc */");
                 var compiled = env.Compile(module);
@@ -214,7 +256,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                     throw new EPRuntimeException(e);
                 }
 
-                Assert.AreEqual(0, resultOne.Statements.Length);
+                ClassicAssert.AreEqual(0, resultOne.Statements.Length);
 
                 module = env.ParseModule("select * from SupportBean; \r\n/* abc */\r\n");
                 compiled = env.Compile(module);
@@ -226,9 +268,14 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                     throw new EPRuntimeException(e);
                 }
 
-                Assert.AreEqual(1, resultTwo.Statements.Length);
+                ClassicAssert.AreEqual(1, resultTwo.Statements.Length);
 
                 env.UndeployAll();
+            }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.COMPILEROPS);
             }
         }
 
@@ -236,27 +283,34 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
         {
             public void Run(RegressionEnvironment env)
             {
-                var module = MakeModule("com.testit", "@Name('A') select SupportStaticMethodLib.PlusOne(IntPrimitive) as val from SupportBean");
+                var module = MakeModule(
+                    "com.testit",
+                    "@name('A') select SupportStaticMethodLib.PlusOne(IntPrimitive) as val from SupportBean");
                 module.Imports.Add(new ImportNamespace(typeof(SupportStaticMethodLib)));
 
                 var compiled = CompileModule(env, module);
                 env.Deploy(compiled).AddListener("A");
 
                 env.SendEventBean(new SupportBean("E1", 4));
-                Assert.AreEqual(5, env.Listener("A").AssertOneGetNewAndReset().Get("val"));
+                ClassicAssert.AreEqual(5, env.Listener("A").AssertOneGetNewAndReset().Get("val"));
 
                 env.UndeployAll();
 
                 var epl = "import " +
                           typeof(SupportStaticMethodLib).FullName +
                           ";\n" +
-                          "@Name('A') select SupportStaticMethodLib.PlusOne(IntPrimitive) as val from SupportBean;\n";
+                          "@name('A') select SupportStaticMethodLib.PlusOne(IntPrimitive) as val from SupportBean;\n";
                 env.CompileDeploy(epl).AddListener("A");
 
                 env.SendEventBean(new SupportBean("E1", 6));
-                Assert.AreEqual(7, env.Listener("A").AssertOneGetNewAndReset().Get("val"));
+                ClassicAssert.AreEqual(7, env.Listener("A").AssertOneGetNewAndReset().Get("val"));
 
                 env.UndeployAll();
+            }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.COMPILEROPS);
             }
         }
 
@@ -265,27 +319,26 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             public void Run(RegressionEnvironment env)
             {
                 var module = env.ReadModule("regression/test_module_4.epl");
-                AssertModule(
+                AssertModuleNoLines(
                     module,
                     null,
                     "abd",
-                    new Import[] { },
+                    Array.Empty<Import>(),
                     new string[] {
                         "select * from ABC",
                         "/* Final comment */"
-                    },
-                    new bool[] {false, true},
-                    new int[] {3, 8},
-                    new int[] {12, 0},
-                    new int[] {37, 0}
-                );
+                    });
+                AssertModuleLinesOnly(
+                    module,
+                    new ModuleItem(null, false, 3, -1, -1, 7, 3, 3),
+                    new ModuleItem(null, true, 8, -1, -1, 9, -1, -1));
 
                 module = env.ReadModule("regression/test_module_1.epl");
-                AssertModule(
+                AssertModuleNoLines(
                     module,
                     "abc",
                     "def,jlk",
-                    new Import[] { },
+                    Array.Empty<Import>(),
                     new string[] {
                         "select * from A",
                         "select * from B" + NEWLINE + "where C=d",
@@ -295,11 +348,11 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 );
 
                 module = env.ReadModule("regression/test_module_2.epl");
-                AssertModule(
+                AssertModuleNoLines(
                     module,
                     "abc.def.hij",
                     "def.hik,jlk.aja",
-                    new Import[] { },
+                    Array.Empty<Import>(),
                     new string[] {
                         "// Note 4 white spaces after * and before from" + NEWLINE + "select * from A",
                         "select * from B",
@@ -308,11 +361,11 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 );
 
                 module = env.ReadModule("regression/test_module_3.epl");
-                AssertModule(
+                AssertModuleNoLines(
                     module,
                     null,
                     null,
-                    new Import[] { },
+                    Array.Empty<Import>(),
                     new string[] {
                         "create window ABC",
                         "select * from ABC"
@@ -320,19 +373,19 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 );
 
                 module = env.ReadModule("regression/test_module_5.epl");
-                AssertModule(module, "abd.def", null, new Import[0], new string[0]);
+                AssertModuleNoLines(module, "abd.def", null, Array.Empty<Import>(), Array.Empty<string>());
 
                 module = env.ReadModule("regression/test_module_6.epl");
-                AssertModule(module, null, null, new Import[0], new string[0]);
+                AssertModuleNoLines(module, null, null, Array.Empty<Import>(), Array.Empty<string>());
 
                 module = env.ReadModule("regression/test_module_7.epl");
-                AssertModule(module, null, null, new Import[0], new string[0]);
+                AssertModuleNoLines(module, null, null, Array.Empty<Import>(), Array.Empty<string>());
 
                 module = env.ReadModule("regression/test_module_8.epl");
-                AssertModule(module, "def.jfk", null, new Import[0], new string[0]);
+                AssertModuleNoLines(module, "def.jfk", null, Array.Empty<Import>(), Array.Empty<string>());
 
                 module = env.ParseModule("module mymodule; uses mymodule2; import abc; select * from MyEvent;");
-                AssertModule(
+                AssertModuleNoLines(
                     module,
                     "mymodule",
                     "mymodule2",
@@ -342,15 +395,15 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                     });
 
                 module = env.ReadModule("regression/test_module_11.epl");
-                AssertModule(
+                AssertModuleNoLines(
                     module,
                     null,
                     null,
                     new Import[] {new ImportType("com.mycompany.pck1")},
-                    new string[0]);
+                    Array.Empty<string>());
 
                 module = env.ReadModule("regression/test_module_10.epl");
-                AssertModule(
+                AssertModuleNoLines(
                     module,
                     "abd.def",
                     "one.use,two.use",
@@ -363,30 +416,34 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                     }
                 );
 
-                Assert.AreEqual(
+                ClassicAssert.AreEqual(
                     "org.mycompany.events",
                     env.ParseModule("module org.mycompany.events; select * from System.Object;").Name);
-                Assert.AreEqual(
+                ClassicAssert.AreEqual(
                     "glob.update.me",
                     env.ParseModule("module glob.update.me; select * from System.Object;").Name);
-                Assert.AreEqual(
+                ClassicAssert.AreEqual(
                     "seconds.until.every.where",
-                    env.ParseModule("uses seconds.until.every.where; select * from System.Object;")
-                        .Uses.ToArray()[0]);
-                Assert.AreEqual(
+                    env.ParseModule("uses seconds.until.every.where; select * from System.Object;").Uses.ToArray()[0]);
+                ClassicAssert.AreEqual(
                     new ImportType("seconds.until.every.where"),
                     env.ParseModule("import seconds.until.every.where; select * from System.Object;")
                         .Imports.ToArray()[0]);
 
                 // Test script square brackets
                 module = env.ReadModule("regression/test_module_13.epl");
-                Assert.AreEqual(1, module.Items.Count);
+                ClassicAssert.AreEqual(1, module.Items.Count);
 
                 module = env.ReadModule("regression/test_module_14.epl");
-                Assert.AreEqual(4, module.Items.Count);
+                ClassicAssert.AreEqual(4, module.Items.Count);
 
                 module = env.ReadModule("regression/test_module_15.epl");
-                Assert.AreEqual(1, module.Items.Count);
+                ClassicAssert.AreEqual(1, module.Items.Count);
+            }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.COMPILEROPS);
             }
         }
 
@@ -447,12 +504,19 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 // try control chars
                 TryInvalidControlCharacters(env);
             }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.COMPILEROPS, RegressionFlag.INVALIDITY);
+            }
         }
 
         private static void TryInvalidControlCharacters(RegressionEnvironment env)
         {
             var epl = "select * \u008F from SupportBean";
-            TryInvalidCompile(env, epl, "Failed to parse: Unrecognized control characters found in text, failed to parse text ");
+            env.TryInvalidCompile(
+                epl,
+                "Failed to parse: Unrecognized control characters found in text, failed to parse text ");
         }
 
         private static void TryInvalidIO(
@@ -465,7 +529,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 Assert.Fail();
             }
             catch (IOException ex) {
-                Assert.AreEqual(message, ex.Message);
+                ClassicAssert.AreEqual(message, ex.Message);
             }
             catch (ParseException ex) {
                 throw new EPRuntimeException(ex);
@@ -485,75 +549,45 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 throw new EPRuntimeException(ex);
             }
             catch (ParseException ex) {
-                Assert.AreEqual(message, ex.Message);
+                ClassicAssert.AreEqual(message, ex.Message);
             }
         }
 
-        private static void AssertModule(
-            Module module,
-            string name,
-            string usesCSV,
-            Import[] importsCSV,
-            string[] statements)
-        {
-            AssertModule(
-                module,
-                name,
-                usesCSV,
-                importsCSV,
-                statements,
-                new bool[statements.Length],
-                new int[statements.Length],
-                new int[statements.Length],
-                new int[statements.Length]);
-        }
-
-        private static void AssertModule(
+        private static void AssertModuleNoLines(
             Module module,
             string name,
             string usesCSV,
             Import[] expectedImports,
-            string[] statementsExpected,
-            bool[] commentsExpected,
-            int[] lineNumsExpected,
-            int[] charStartsExpected,
-            int[] charEndsExpected)
+            string[] statements)
         {
-            Assert.AreEqual(name, module.Name);
+            ClassicAssert.AreEqual(name, module.Name);
 
-            var expectedUses = usesCSV == null ? new string[0] : usesCSV.SplitCsv();
+            var expectedUses = usesCSV == null ? Array.Empty<string>() : usesCSV.SplitCsv();
             CollectionAssert.AreEqual(expectedUses, module.Uses);
-            CollectionAssert.AreEqual(expectedImports, module.Imports.ToArray());
+            CollectionAssert.AreEqual(expectedImports, module.Imports);
 
             var stmtsFound = new string[module.Items.Count];
-            var comments = new bool[module.Items.Count];
-            var lineNumsFound = new int[module.Items.Count];
-            var charStartsFound = new int[module.Items.Count];
-            var charEndsFound = new int[module.Items.Count];
-
             for (var i = 0; i < module.Items.Count; i++) {
                 stmtsFound[i] = module.Items[i].Expression;
-                comments[i] = module.Items[i].IsCommentOnly;
-                lineNumsFound[i] = module.Items[i].LineNumber;
-                charStartsFound[i] = module.Items[i].CharPosStart;
-                charEndsFound[i] = module.Items[i].CharPosEnd;
             }
 
-            CollectionAssert.AreEqual(statementsExpected, stmtsFound);
-            CollectionAssert.AreEqual(commentsExpected, comments);
+            EPAssertionUtil.AssertEqualsExactOrder(statements, stmtsFound);
+        }
 
-            var isCompareLineNums = false;
-            foreach (var l in lineNumsExpected) {
-                if (l > 0) {
-                    isCompareLineNums = true;
-                }
-            }
-
-            if (isCompareLineNums) {
-                EPAssertionUtil.AssertEqualsExactOrder(lineNumsExpected, lineNumsFound);
-                // Start and end character position can be platform-dependent
-                // commented-out: EPAssertionUtil.assertEqualsExactOrder(charStartsExpected, charStartsFound);
-                // commented-out: EPAssertionUtil.assertEqualsExactOrder(charEndsExpected, charEndsFound);
+        private static void AssertModuleLinesOnly(
+            Module module,
+            params ModuleItem[] expecteds)
+        {
+            ClassicAssert.AreEqual(expecteds.Length, module.Items.Count);
+            for (var i = 0; i < expecteds.Length; i++) {
+                var expected = expecteds[i];
+                var actual = module.Items[i];
+                var message = "Failed to Item#" + i;
+                ClassicAssert.AreEqual(expected.IsCommentOnly, actual.IsCommentOnly, message);
+                ClassicAssert.AreEqual(expected.LineNumber, actual.LineNumber, message);
+                ClassicAssert.AreEqual(expected.LineNumberEnd, actual.LineNumberEnd, message);
+                ClassicAssert.AreEqual(expected.LineNumberContent, actual.LineNumberContent, message);
+                ClassicAssert.AreEqual(expected.LineNumberContentEnd, actual.LineNumberContent, message);
             }
         }
 
@@ -575,7 +609,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
         {
             var items = new ModuleItem[statements.Length];
             for (var i = 0; i < statements.Length; i++) {
-                items[i] = new ModuleItem(statements[i], false, 0, 0, 0);
+                items[i] = new ModuleItem(statements[i], false, 0, 0, 0, 0, 0, 0);
             }
 
             return new Module(

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -68,7 +68,7 @@ namespace com.espertech.esper.common.@internal.view.groupwin
 
         public void Stop(AgentInstanceStopServices services)
         {
-            foreach (KeyValuePair<object, View> entry in subViewPerKey) {
+            foreach (var entry in subViewPerKey) {
                 GroupByViewUtil.RemoveSubview(entry.Value, services);
             }
         }
@@ -79,14 +79,14 @@ namespace com.espertech.esper.common.@internal.view.groupwin
             EventBean[] newData,
             EventBean[] oldData)
         {
-            AgentInstanceContext aiContext = agentInstanceContext.AgentInstanceContext;
+            var aiContext = agentInstanceContext.AgentInstanceContext;
             aiContext.AuditProvider.View(newData, oldData, aiContext, ViewFactory);
             aiContext.InstrumentationProvider.QViewProcessIRStream(ViewFactory, newData, oldData);
 
             // Algorithm for single new event
             if (newData != null && oldData == null && newData.Length == 1) {
                 var theEvent = newData[0];
-                var newDataToPost = new EventBean[] {theEvent};
+                var newDataToPost = new EventBean[] { theEvent };
 
                 var groupByValuesKey = GetGroupKey(theEvent);
 
@@ -118,7 +118,7 @@ namespace com.espertech.esper.common.@internal.view.groupwin
                 }
 
                 // Update child views
-                foreach (KeyValuePair<View, Pair<object, object>> entry in groupedEvents) {
+                foreach (var entry in groupedEvents) {
                     var newEvents = ConvertToArray(entry.Value.First);
                     var oldEvents = ConvertToArray(entry.Value.Second);
                     agentInstanceContext.InstrumentationProvider.QViewIndicate(ViewFactory, newEvents, oldEvents);
@@ -135,7 +135,7 @@ namespace com.espertech.esper.common.@internal.view.groupwin
         public void VisitViewContainer(ViewDataVisitorContained viewDataVisitor)
         {
             viewDataVisitor.VisitPrimary(VIEWNAME, subViewPerKey.Count);
-            foreach (KeyValuePair<object, View> entry in subViewPerKey) {
+            foreach (var entry in subViewPerKey) {
                 VisitView(viewDataVisitor, entry.Key, entry.Value);
             }
         }
@@ -144,12 +144,9 @@ namespace com.espertech.esper.common.@internal.view.groupwin
 
         public AgentInstanceViewFactoryChainContext AgentInstanceContext => agentInstanceContext;
 
-        public override EventType EventType {
-            get {
-                // The schema is the parent view's schema
-                return parent.EventType;
-            }
-        }
+        public override EventType EventType =>
+            // The schema is the parent view's schema
+            Parent.EventType;
 
         public override IEnumerator<EventBean> GetEnumerator()
         {
@@ -189,7 +186,7 @@ namespace com.espertech.esper.common.@internal.view.groupwin
             }
 
             // Construct a pair of lists to hold the events for the grouped value if not already there
-            Pair<object, object> pair = groupedEvents.Get(subView);
+            var pair = groupedEvents.Get(subView);
             if (pair == null) {
                 pair = new Pair<object, object>(null, null);
                 groupedEvents.Put(subView, pair);
@@ -218,14 +215,13 @@ namespace com.espertech.esper.common.@internal.view.groupwin
                 return theEvent;
             }
 
-            if (holder is Deque<EventBean>) {
-                var deque = (Deque<EventBean>) holder;
-                deque.Add(theEvent);
-                return deque;
+            if (holder is Deque<EventBean> beans) {
+                beans.Add(theEvent);
+                return beans;
             }
             else {
                 var deque = new ArrayDeque<EventBean>(4);
-                deque.Add((EventBean) holder);
+                deque.Add((EventBean)holder);
                 deque.Add(theEvent);
                 return deque;
             }
@@ -237,13 +233,15 @@ namespace com.espertech.esper.common.@internal.view.groupwin
                 return null;
             }
 
-            if (eventOrDeque is EventBean) {
-                return new[] {(EventBean) eventOrDeque};
+            if (eventOrDeque is EventBean bean) {
+                return new[] {
+                    bean
+                };
             }
 
-            return ((ArrayDeque<EventBean>) eventOrDeque).ToArray();
+            return ((ArrayDeque<EventBean>)eventOrDeque).ToArray();
         }
-        
+
         public void Transfer(AgentInstanceTransferServices services)
         {
         }

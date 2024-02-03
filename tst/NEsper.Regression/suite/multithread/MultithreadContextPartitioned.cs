@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -13,6 +13,7 @@ using System.Reflection;
 
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.concurrency;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.regressionlib.framework;
@@ -22,6 +23,7 @@ using com.espertech.esper.regressionlib.support.util;
 using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.multithread
 {
@@ -30,13 +32,18 @@ namespace com.espertech.esper.regressionlib.suite.multithread
     /// </summary>
     public class MultithreadContextPartitioned : RegressionExecution
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
+        }
 
         public void Run(RegressionEnvironment env)
         {
             var path = new RegressionPath();
-            env.CompileDeploy("create context CtxEachString partition by TheString from SupportBean", path);
-            env.CompileDeploy("@Name('select') context CtxEachString select * from SupportBean", path);
+            env.CompileDeploy("@public create context CtxEachString partition by TheString from SupportBean", path);
+            env.CompileDeploy("@name('select') context CtxEachString select * from SupportBean", path);
 
             TryPerformanceDispatch(env, 8, 100);
 
@@ -85,12 +92,12 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             foreach (var eventList in events) {
                 foreach (var @event in eventList) {
                     if (!listener.Beans.Contains(@event)) {
-                        log.Info("Expected event was not received, event " + @event);
+                        Log.Info("Expected event was not received, event " + @event);
                     }
                 }
             }
 
-            Assert.AreEqual(numRepeats * numThreads, listener.Beans.Count);
+            ClassicAssert.AreEqual(numRepeats * numThreads, listener.Beans.Count);
             Assert.That(delta, Is.LessThan(500));
         }
 
@@ -105,10 +112,10 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                 var newEvents = eventArgs.NewEvents;
                 lock (this) {
                     if (newEvents.Length > 1) {
-                        Assert.AreEqual(1, newEvents.Length);
+                        ClassicAssert.AreEqual(1, newEvents.Length);
                     }
 
-                    Beans.Add((SupportBean) newEvents[0].Underlying);
+                    Beans.Add((SupportBean)newEvents[0].Underlying);
                 }
             }
         }

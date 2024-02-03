@@ -1,5 +1,5 @@
 ﻿///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -60,55 +60,65 @@ namespace com.espertech.esper.compiler.@internal.util
             return type.Name;
         }
         
-        private static IEnumerable<UsingDirectiveSyntax> ConvertToUsingDirectives(Type type)
+        private static IEnumerable<UsingDirectiveSyntax> ConvertToUsingDirectives(Type type, ISet<Type> visitorSet)
         {
-            var @namespace = type.Namespace;
-            if (type.IsArray) {
-                foreach (var directive in ConvertToUsingDirectives(type.GetElementType())) {
-                    yield return directive;
-                }
-            } else if (type.IsGenericType) {
-                // Generic types cannot be imported using an alias.  As such, their entire
-                // namespace must be imported or they must be aliased to a very specific
-                // type.  Both of these cause some issues.
-                yield return SyntaxFactory.UsingDirective(SyntaxFactory.ParseName(CleanNamespace(type.Namespace)));
-                foreach (var argument in type.GetGenericArguments()) {
-                    foreach (var directive in ConvertToUsingDirectives(argument)) {
+            visitorSet ??= new HashSet<Type>();
+
+            if (!visitorSet.Contains(type)) {
+                visitorSet.Add(type);
+
+                if (type.IsArray) {
+                    foreach (var directive in ConvertToUsingDirectives(type.GetElementType(), visitorSet)) {
                         yield return directive;
                     }
                 }
-            }
-            else {
-                var typeAlias = type.Name;
-                var typeNamespace = CleanNamespace(type.Namespace);
-                
-                SimpleNameSyntax typeNameSyntax = SyntaxFactory.IdentifierName(type.Name);
-                if (type.IsNested && type.DeclaringType != null) {
-                    foreach (var directive in ConvertToUsingDirectives(type.DeclaringType)) {
-                        yield return directive;
+                else if (type.IsGenericType) {
+                    // Generic types cannot be imported using an alias.  As such, their entire
+                    // namespace must be imported or they must be aliased to a very specific
+                    // type.  Both of these cause some issues.
+                    yield return SyntaxFactory.UsingDirective(SyntaxFactory.ParseName(CleanNamespace(type.Namespace)));
+                    foreach (var argument in type.GetGenericArguments()) {
+                        if (!argument.IsGenericParameter) {
+                            foreach (var directive in ConvertToUsingDirectives(argument, visitorSet)) {
+                                yield return directive;
+                            }
+                        }
                     }
-
-                    typeNameSyntax = SyntaxFactory.IdentifierName(GetNestedTypeName(type));
-                }
-
-                NameSyntax importName;
-                if (typeNamespace != null) {
-                    importName = SyntaxFactory.QualifiedName(SyntaxFactory.ParseName(typeNamespace), typeNameSyntax);
                 }
                 else {
-                    importName = typeNameSyntax;
-                }
+                    var typeAlias = type.Name;
+                    var typeNamespace = CleanNamespace(type.Namespace);
 
-                if (type.IsDefined(typeof(ExtensionAttribute), false)) {
-                    yield return SyntaxFactory.UsingDirective(
-                        SyntaxFactory.Token(SyntaxKind.UsingKeyword),
-                        SyntaxFactory.Token(SyntaxKind.StaticKeyword),
-                        null,
-                        importName,
-                        SyntaxFactory.Token(SyntaxKind.SemicolonToken));
+                    SimpleNameSyntax typeNameSyntax = SyntaxFactory.IdentifierName(type.Name);
+                    if (type.IsNested && type.DeclaringType != null) {
+                        foreach (var directive in ConvertToUsingDirectives(type.DeclaringType, visitorSet)) {
+                            yield return directive;
+                        }
+
+                        typeNameSyntax = SyntaxFactory.IdentifierName(GetNestedTypeName(type));
+                    }
+
+                    NameSyntax importName;
+                    if (typeNamespace != null) {
+                        importName = SyntaxFactory.QualifiedName(
+                            SyntaxFactory.ParseName(typeNamespace),
+                            typeNameSyntax);
+                    }
+                    else {
+                        importName = typeNameSyntax;
+                    }
+
+                    if (type.IsDefined(typeof(ExtensionAttribute), false)) {
+                        yield return SyntaxFactory.UsingDirective(
+                            SyntaxFactory.Token(SyntaxKind.UsingKeyword),
+                            SyntaxFactory.Token(SyntaxKind.StaticKeyword),
+                            null,
+                            importName,
+                            SyntaxFactory.Token(SyntaxKind.SemicolonToken));
+                    }
+
+                    yield return SyntaxFactory.UsingDirective(SyntaxFactory.NameEquals(typeAlias), importName);
                 }
-                
-                yield return SyntaxFactory.UsingDirective(SyntaxFactory.NameEquals(typeAlias), importName);
             }
         }
 
@@ -137,7 +147,7 @@ namespace com.espertech.esper.compiler.@internal.util
         {
             Namespace = type.Namespace;
             TypeName = type.Name;
-            UsingDirectives = ConvertToUsingDirectives(type).ToList();
+            UsingDirectives = ConvertToUsingDirectives(type, null).ToList();
         }
         
         public ImportDecl(

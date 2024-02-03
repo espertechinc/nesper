@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -93,13 +93,13 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
                 ExprForgeCodegenSymbol exprSymbol,
                 CodegenClassScope codegenClassScope)
             {
-                CodegenMethod methodNode = codegenMethodScope.MakeChild(
+                var methodNode = codegenMethodScope.MakeChild(
                     typeof(bool?),
                     typeof(SettingsApplicationDotMethodRectangeIntersectsRectangle.RectangleIntersectsRectangleEvaluator
                     ),
                     codegenClassScope);
 
-                CodegenBlock block = methodNode.Block;
+                var block = methodNode.Block;
                 CodegenLegoCast.AsDoubleNullReturnNull(
                     block,
                     "px",

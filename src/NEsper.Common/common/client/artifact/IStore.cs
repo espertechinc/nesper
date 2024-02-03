@@ -8,7 +8,7 @@
         /// <param name="id"></param>
         /// <returns></returns>
         byte[] Load(string id);
-        
+
         /// <summary>
         /// Stores the image.
         /// </summary>

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -46,15 +46,14 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
                 this.heightEval = heightEval;
             }
 
-            public ExprEvaluator ExprEvaluator {
-                get => new PointIntersectsRectangleEvaluator(
+            public ExprEvaluator ExprEvaluator =>
+                new PointIntersectsRectangleEvaluator(
                     pxEval.ExprEvaluator,
                     pyEval.ExprEvaluator,
                     xEval.ExprEvaluator,
                     yEval.ExprEvaluator,
                     widthEval.ExprEvaluator,
                     heightEval.ExprEvaluator);
-            }
 
             public CodegenExpression EvaluateCodegen(
                 Type requiredType,
@@ -69,17 +68,11 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
                     codegenClassScope);
             }
 
-            public ExprForgeConstantType ForgeConstantType {
-                get => ExprForgeConstantType.NONCONST;
-            }
+            public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
 
-            public Type EvaluationType {
-                get => typeof(bool?);
-            }
+            public Type EvaluationType => typeof(bool?);
 
-            public ExprNodeRenderable ExprForgeRenderable {
-                get => parent;
-            }
+            public ExprNodeRenderable ExprForgeRenderable => parent;
         }
     }
 }

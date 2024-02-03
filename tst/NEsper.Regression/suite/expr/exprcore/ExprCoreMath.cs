@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -18,6 +18,7 @@ using com.espertech.esper.regressionlib.support.expreval;
 using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 {
@@ -26,6 +27,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         public static ICollection<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
+#if REGRESSION_EXECUTIONS
             WithDouble(execs);
             WithLong(execs);
             WithFloat(execs);
@@ -35,7 +37,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             WithBigInt(execs);
             WithBigIntConv(execs);
             WithShortAndByteArithmetic(execs);
-            WithModulo(execs);
+            With(Modulo)(execs);
+#endif
             return execs;
         }
 
@@ -135,9 +138,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             string[] fields,
             params Type[] types)
         {
-            Assert.AreEqual(fields.Length, types.Length);
+            ClassicAssert.AreEqual(fields.Length, types.Length);
             for (var i = 0; i < fields.Length; i++) {
-                Assert.AreEqual(types[i], stmt.EventType.GetPropertyType(fields[i]), "failed for " + i);
+                ClassicAssert.AreEqual(types[i], stmt.EventType.GetPropertyType(fields[i]), "failed for " + i);
             }
         }
 
@@ -146,9 +149,22 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             public void Run(RegressionEnvironment env)
             {
                 var fields = "c0,c1,c2,c3,c4".SplitCsv();
-                var builder = new SupportEvalBuilder("SupportBean").WithExpressions(fields, "10d+5d", "10d-5d", "10d*5d", "10d/5d", "10d%4d")
+                var builder = new SupportEvalBuilder("SupportBean").WithExpressions(
+                        fields,
+                        "10d+5d",
+                        "10d-5d",
+                        "10d*5d",
+                        "10d/5d",
+                        "10d%4d")
                     .WithStatementConsumer(
-                        stmt => AssertTypes(stmt, fields, typeof(double?), typeof(double?), typeof(double?), typeof(double?), typeof(double?)));
+                        stmt => AssertTypes(
+                            stmt,
+                            fields,
+                            typeof(double?),
+                            typeof(double?),
+                            typeof(double?),
+                            typeof(double?),
+                            typeof(double?)));
                 builder.WithAssertion(new SupportBean()).Expect(fields, 15d, 5d, 50d, 2d, 2d);
                 builder.Run(env);
                 env.UndeployAll();
@@ -160,8 +176,16 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             public void Run(RegressionEnvironment env)
             {
                 var fields = "c0,c1,c2,c3".SplitCsv();
-                var builder = new SupportEvalBuilder("SupportBean").WithExpressions(fields, "10L+5L", "10L-5L", "10L*5L", "10L/5L")
-                    .WithStatementConsumer(stmt => AssertTypes(stmt, fields, typeof(long?), typeof(long?), typeof(long?), typeof(double?)));
+                var builder = new SupportEvalBuilder("SupportBean")
+                    .WithExpressions(fields, "10L+5L", "10L-5L", "10L*5L", "10L/5L")
+                    .WithStatementConsumer(
+                        stmt => AssertTypes(
+                            stmt,
+                            fields,
+                            typeof(long?),
+                            typeof(long?),
+                            typeof(long?),
+                            typeof(double?)));
                 builder.WithAssertion(new SupportBean()).Expect(fields, 15L, 5L, 50L, 2d);
                 builder.Run(env);
                 env.UndeployAll();
@@ -173,8 +197,22 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             public void Run(RegressionEnvironment env)
             {
                 var fields = "c0,c1,c2,c3,c4".SplitCsv();
-                var builder = new SupportEvalBuilder("SupportBean").WithExpressions(fields, "10f+5f", "10f-5f", "10f*5f", "10f/5f", "10f%4f")
-                    .WithStatementConsumer(stmt => AssertTypes(stmt, fields, typeof(float?), typeof(float?), typeof(float?), typeof(double?), typeof(float?)));
+                var builder = new SupportEvalBuilder("SupportBean").WithExpressions(
+                        fields,
+                        "10f+5f",
+                        "10f-5f",
+                        "10f*5f",
+                        "10f/5f",
+                        "10f%4f")
+                    .WithStatementConsumer(
+                        stmt => AssertTypes(
+                            stmt,
+                            fields,
+                            typeof(float?),
+                            typeof(float?),
+                            typeof(float?),
+                            typeof(double?),
+                            typeof(float?)));
                 builder.WithAssertion(new SupportBean()).Expect(fields, 15f, 5f, 50f, 2d, 2f);
                 builder.Run(env);
                 env.UndeployAll();
@@ -185,13 +223,38 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "c0".SplitCsv();
-                var builder = new SupportEvalBuilder("SupportBean").WithExpressions(fields, "IntPrimitive/IntBoxed")
-                    .WithStatementConsumer(stmt => Assert.AreEqual(typeof(double?), stmt.EventType.GetPropertyType("c0")));
-                builder.WithAssertion(MakeEvent(100, 3)).Expect(fields, 100 / 3d);
-                builder.WithAssertion(MakeEvent(100, null)).Expect(fields, new object[] {null});
-                builder.WithAssertion(MakeEvent(100, 0)).Expect(fields, double.PositiveInfinity);
-                builder.WithAssertion(MakeEvent(-5, 0)).Expect(fields, double.NegativeInfinity);
+                var fields = "c0,c1,c2,c3,c4,c5,c6,c7".SplitCsv();
+                var builder = new SupportEvalBuilder("SupportBean")
+                    .WithExpression(fields[0], "IntPrimitive/IntBoxed")
+                    .WithExpression(fields[1], "IntPrimitive*IntBoxed")
+                    .WithExpression(fields[2], "IntPrimitive+IntBoxed")
+                    .WithExpression(fields[3], "IntPrimitive-IntBoxed")
+                    .WithExpression(fields[4], "IntBoxed/IntPrimitive")
+                    .WithExpression(fields[5], "IntBoxed*IntPrimitive")
+                    .WithExpression(fields[6], "IntBoxed+IntPrimitive")
+                    .WithExpression(fields[7], "IntBoxed-IntPrimitive")
+                    .WithStatementConsumer(
+                        stmt => AssertTypes(
+                            stmt,
+                            fields,
+                            typeof(double?),
+                            typeof(int?),
+                            typeof(int?),
+                            typeof(int?),
+                            typeof(double?),
+                            typeof(int?),
+                            typeof(int?),
+                            typeof(int?)));
+
+                builder.WithAssertion(MakeEvent(100, 3))
+                    .Expect(fields, 100 / 3d, 300, 103, 97, 3 / 100d, 300, 103, -97);
+                builder.WithAssertion(MakeEvent(100, null))
+                    .Expect(fields, null, null, null, null, null, null, null, null);
+                builder.WithAssertion(MakeEvent(100, 0))
+                    .Expect(fields, double.PositiveInfinity, 0, 100, 100, 0d, 0, 100, -100);
+                builder.WithAssertion(MakeEvent(-5, 0))
+                    .Expect(fields, double.NegativeInfinity, 0, -5, -5, -0d, 0, -5, 5);
+
                 builder.Run(env);
                 env.UndeployAll();
             }
@@ -206,7 +269,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     .WithExpression(fields[1], "10-5.0m")
                     .WithExpression(fields[2], "10*5.0m")
                     .WithExpression(fields[3], "10/5.0m")
-                    .WithStatementConsumer(stmt => AssertTypes(stmt, fields, typeof(decimal?), typeof(decimal?), typeof(decimal?), typeof(decimal?)));
+                    .WithStatementConsumer(
+                        stmt => AssertTypes(
+                            stmt,
+                            fields,
+                            typeof(decimal),
+                            typeof(decimal),
+                            typeof(decimal),
+                            typeof(decimal)));
                 builder.WithAssertion(new SupportBean()).Expect(fields, 15.0m, 5.0m, 50.0m, 2.0m);
                 builder.Run(env);
                 env.UndeployAll();
@@ -219,7 +289,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             {
                 var bigInteger = typeof(BigIntegerHelper).FullName;
                 var fields = "c0,c1,c2,c3".SplitCsv();
-                var builder = new SupportEvalBuilder("SupportBean").WithExpression(fields[0], $"10+{bigInteger}.ValueOf(5)")
+                var builder = new SupportEvalBuilder("SupportBean")
+                    .WithExpression(fields[0], $"10+{bigInteger}.ValueOf(5)")
                     .WithExpression(fields[1], $"10-{bigInteger}.ValueOf(5)")
                     .WithExpression(fields[2], $"10*{bigInteger}.ValueOf(5)")
                     .WithExpression(fields[3], $"10/{bigInteger}.ValueOf(5)")
@@ -231,8 +302,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                             typeof(BigInteger?),
                             typeof(BigInteger?),
                             typeof(double?)));
-                
-                builder.WithAssertion(new SupportBean()).Expect(fields, new BigInteger(15), new BigInteger(5), new BigInteger(50), 2d);
+
+                builder.WithAssertion(new SupportBean())
+                    .Expect(fields, new BigInteger(15), new BigInteger(5), new BigInteger(50), 2d);
                 builder.Run(env);
                 env.UndeployAll();
             }
@@ -244,12 +316,22 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             {
                 var bigInteger = typeof(BigIntegerHelper).FullName;
                 var fields = "c0,c1,c2,c3".SplitCsv();
-                var builder = new SupportEvalBuilder("SupportBean").WithExpression(fields[0], $"{bigInteger}.ValueOf(10)+{bigInteger}.ValueOf(5)")
+                var builder = new SupportEvalBuilder("SupportBean").WithExpression(
+                        fields[0],
+                        $"{bigInteger}.ValueOf(10)+{bigInteger}.ValueOf(5)")
                     .WithExpression(fields[1], $"{bigInteger}.ValueOf(10)-{bigInteger}.ValueOf(5)")
                     .WithExpression(fields[2], $"{bigInteger}.ValueOf(10)*{bigInteger}.ValueOf(5)")
                     .WithExpression(fields[3], $"{bigInteger}.ValueOf(10)/{bigInteger}.ValueOf(5)")
-                    .WithStatementConsumer(stmt => AssertTypes(stmt, fields, typeof(BigInteger?), typeof(BigInteger?), typeof(BigInteger?), typeof(double?)));
-                builder.WithAssertion(new SupportBean()).Expect(fields, new BigInteger(15), new BigInteger(5), new BigInteger(50), 2d);
+                    .WithStatementConsumer(
+                        stmt => AssertTypes(
+                            stmt,
+                            fields,
+                            typeof(BigInteger?),
+                            typeof(BigInteger?),
+                            typeof(BigInteger?),
+                            typeof(double?)));
+                builder.WithAssertion(new SupportBean())
+                    .Expect(fields, new BigInteger(15), new BigInteger(5), new BigInteger(50), 2d);
                 builder.Run(env);
                 env.UndeployAll();
             }
@@ -264,7 +346,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     .WithExpression(fields[1], "10.0m-5.0m")
                     .WithExpression(fields[2], "10.0m*5.0m")
                     .WithExpression(fields[3], "10.0m/5.0m")
-                    .WithStatementConsumer(stmt => AssertTypes(stmt, fields, typeof(decimal?), typeof(decimal?), typeof(decimal?), typeof(decimal?)));
+                    .WithStatementConsumer(
+                        stmt => AssertTypes(
+                            stmt,
+                            fields,
+                            typeof(decimal),
+                            typeof(decimal),
+                            typeof(decimal),
+                            typeof(decimal)));
                 builder.WithAssertion(new SupportBean()).Expect(fields, 15.0m, 5.0m, 50.0m, 2.0m);
                 builder.Run(env);
                 env.UndeployAll();
@@ -276,7 +365,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             public void Run(RegressionEnvironment env)
             {
                 var fields = "c0,c1,c2,c3,c4,c5,c6,c7,c8,c9".SplitCsv();
-                var builder = new SupportEvalBuilder("SupportBean").WithExpression(fields[0], "ShortPrimitive + ShortBoxed")
+                var builder = new SupportEvalBuilder("SupportBean")
+                    .WithExpression(fields[0], "ShortPrimitive + ShortBoxed")
                     .WithExpression(fields[1], "BytePrimitive + ByteBoxed ")
                     .WithExpression(fields[2], "ShortPrimitive - ShortBoxed")
                     .WithExpression(fields[3], "BytePrimitive - ByteBoxed ")
@@ -297,7 +387,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                                 expected = typeof(long?);
                             }
 
-                            Assert.AreEqual(expected, stmt.EventType.GetPropertyType(field), "for field " + field);
+                            ClassicAssert.AreEqual(expected, stmt.EventType.GetPropertyType(field), "for field " + field);
                         }
                     }
                     ;
@@ -320,7 +410,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             public void Run(RegressionEnvironment env)
             {
                 var fields = "c0,c1".SplitCsv();
-                var builder = new SupportEvalBuilder("SupportBean").WithExpressions(fields, "LongBoxed % IntBoxed", "IntPrimitive % IntBoxed");
+                var builder = new SupportEvalBuilder("SupportBean").WithExpressions(
+                    fields,
+                    "LongBoxed % IntBoxed",
+                    "IntPrimitive % IntBoxed");
                 builder.WithAssertion(MakeBoxedEvent(5, 1L, 1)).Expect(fields, 0L, 0);
                 builder.WithAssertion(MakeBoxedEvent(5, 2L, 3)).Expect(fields, 2L, 2);
                 builder.Run(env);

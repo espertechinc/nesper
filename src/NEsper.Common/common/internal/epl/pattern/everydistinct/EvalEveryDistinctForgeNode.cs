@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -10,10 +10,13 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.Json.Serialization;
 
+using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.compile.multikey;
 using com.espertech.esper.common.@internal.compile.stage2;
+using com.espertech.esper.common.@internal.compile.util;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.time.eval;
@@ -29,7 +32,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.everydistinct
     /// </summary>
     public class EvalEveryDistinctForgeNode : EvalForgeNodeBase
     {
-        [NonSerialized] private MatchedEventConvertorForge _convertor;
+        [JsonIgnore]
+        [NonSerialized]
+        private MatchedEventConvertorForge _convertor;
 
         private ExprNode _expiryTimeExp;
         private TimePeriodComputeForge _timePeriodComputeForge;
@@ -40,7 +45,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.everydistinct
         /// </summary>
         /// <param name="attachPatternText">whether to attach EPL subexpression text</param>
         /// <param name="expressions">distinct-value expressions</param>
-        public EvalEveryDistinctForgeNode(bool attachPatternText, IList<ExprNode> expressions) : base(attachPatternText)
+        public EvalEveryDistinctForgeNode(
+            bool attachPatternText,
+            IList<ExprNode> expressions) : base(attachPatternText)
         {
             Expressions = expressions;
         }
@@ -73,15 +80,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.everydistinct
 
         public override PatternExpressionPrecedenceEnum Precedence => PatternExpressionPrecedenceEnum.UNARY;
 
-        protected override Type TypeOfFactory()
-        {
-            return typeof(EvalEveryDistinctFactoryNode);
-        }
+        protected override Type TypeOfFactory => typeof(EvalEveryDistinctFactoryNode);
 
-        protected override string NameOfFactory()
-        {
-            return "EveryDistinct";
-        }
+        protected override string NameOfFactory => "EveryDistinct";
 
         protected override void InlineCodegen(
             CodegenMethod method,
@@ -125,8 +126,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.everydistinct
         }
 
         public override void CollectSelfFilterAndSchedule(
-            IList<FilterSpecCompiled> filters,
-            IList<ScheduleHandleCallbackProvider> schedules)
+            Func<short, CallbackAttribution> callbackAttribution,
+            IList<FilterSpecTracked> filters,
+            IList<ScheduleHandleTracked> schedules)
         {
             // nothing to collect for this node
         }
@@ -142,7 +144,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.everydistinct
         /// <param name="convertor">convertor</param>
         public EvalEveryDistinctForgeNode SetConvertor(MatchedEventConvertorForge convertor)
         {
-            this._convertor = convertor;
+            _convertor = convertor;
             return this;
         }
 
@@ -153,9 +155,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.everydistinct
             ExprNode expiryTimeExp)
         {
             DistinctExpressions = distinctExpressions;
-            this._distinctMultiKey = distincMultiKey;
-            this._timePeriodComputeForge = timePeriodComputeForge;
-            this._expiryTimeExp = expiryTimeExp;
+            _distinctMultiKey = distincMultiKey;
+            _timePeriodComputeForge = timePeriodComputeForge;
+            _expiryTimeExp = expiryTimeExp;
         }
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
@@ -169,6 +171,11 @@ namespace com.espertech.esper.common.@internal.epl.pattern.everydistinct
 
             writer.Write(") ");
             ChildNodes[0].ToEPL(writer, Precedence);
+        }
+
+        public override AppliesTo AppliesTo()
+        {
+            return client.annotation.AppliesTo.PATTERN_EVERYDISTINCT;
         }
     }
 } // end of namespace

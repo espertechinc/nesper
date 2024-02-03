@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -23,7 +23,7 @@ using com.espertech.esper.compat.logging;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
-namespace com.espertech.esper.common.@internal.epl.enummethod.eval
+namespace com.espertech.esper.common.@internal.epl.enummethod.eval.plain.sequenceequal
 {
     public class EnumSequenceEqualForgeEval : EnumEval
     {
@@ -53,11 +53,13 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             CodegenClassScope codegenClassScope)
         {
             var scope = new ExprForgeCodegenSymbol(false, null);
-            var namedParams = EnumForgeCodegenNames.PARAMS;
 
             var methodNode = codegenMethodScope
                 .MakeChildWithScope(typeof(bool), typeof(EnumSequenceEqualForgeEval), scope, codegenClassScope)
-                .AddParam(namedParams);
+                .AddParam(ExprForgeCodegenNames.FP_EPS)
+                .AddParam(args.EnumcollType, EnumForgeCodegenNames.REF_ENUMCOLL.Ref)
+                .AddParam(ExprForgeCodegenNames.FP_ISNEWDATA)
+                .AddParam(ExprForgeCodegenNames.FP_EXPREVALCONTEXT);
 
             methodNode.Block.MethodReturn(
                 StaticMethod(
@@ -105,12 +107,13 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 }
 
                 IEnumerator oneEnum = enumcoll.GetEnumerator();
-                IEnumerator twoEnum = otherArray.GetEnumerator();
+                var twoEnum = otherArray.GetEnumerator();
                 return CompareSequenceImpl<T>(oneEnum, twoEnum);
             }
 
             var otherObjType = otherObj.GetType();
-            if (otherObjType.IsGenericCollection() && typeof(T).IsAssignableFrom(otherObjType.GetCollectionItemType())) {
+            if (otherObjType.IsGenericCollection() &&
+                typeof(T).IsAssignableFrom(otherObjType.GetCollectionItemType())) {
                 var unwrapCollection = otherObj.Unwrap<T>();
                 if (enumcoll.Count != unwrapCollection.Count) {
                     return false;
@@ -127,11 +130,13 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 
             Log.Warn(
                 "Enumeration method 'sequenceEqual' expected a Collection-type return value from its parameter but received '" +
-                otherObj.GetType().CleanName() + "'");
+                otherObj.GetType().CleanName() +
+                "'");
             return false;
         }
 
-        private static bool CompareSequenceImpl<T>(IEnumerator oneEnum,
+        private static bool CompareSequenceImpl<T>(
+            IEnumerator oneEnum,
             IEnumerator twoEnum)
         {
             while (oneEnum.MoveNext() && twoEnum.MoveNext()) {

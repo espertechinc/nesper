@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -19,7 +19,6 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
     /// <summary>
     ///     Represents the "new {...}" operator in an expression tree.
     /// </summary>
-    [Serializable]
     public class ExprNewStructNode : ExprNodeBase
     {
         private ExprNewStructNodeForge _forge;
@@ -72,7 +71,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
                 IDictionary<string, object> eventTypeResult = null;
                 if (ChildNodes[i].Forge is ExprTypableReturnForge) {
-                    eventTypeResult = ((ExprTypableReturnForge) ChildNodes[i].Forge).RowProperties;
+                    eventTypeResult = ((ExprTypableReturnForge)ChildNodes[i].Forge).RowProperties;
                 }
 
                 if (eventTypeResult != null) {
@@ -92,16 +91,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             ExprNode node,
             bool ignoreStreamPrefix)
         {
-            if (!(node is ExprNewStructNode)) {
+            if (!(node is ExprNewStructNode other)) {
                 return false;
             }
 
-            var other = (ExprNewStructNode) node;
             var columnNamesSet = new HashSet<string>(ColumnNames);
             return columnNamesSet.SetEquals(other.ColumnNames);
         }
 
-        public override void ToPrecedenceFreeEPL(TextWriter writer,
+        public override void ToPrecedenceFreeEPL(
+            TextWriter writer,
             ExprNodeRenderableFlags flags)
         {
             writer.Write("new{");
@@ -112,8 +111,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 var expr = ChildNodes[i];
 
                 var outputexpr = true;
-                if (expr is ExprIdentNode) {
-                    var prop = (ExprIdentNode) expr;
+                if (expr is ExprIdentNode prop) {
                     if (prop.ResolvedPropertyName.Equals(ColumnNames[i])) {
                         outputexpr = false;
                     }

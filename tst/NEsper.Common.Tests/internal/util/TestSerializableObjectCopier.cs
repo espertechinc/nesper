@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -19,7 +19,7 @@ namespace com.espertech.esper.common.@internal.util
         public void TestCopyEnum()
         {
             SupportEnum enumOne = SupportEnum.ENUM_VALUE_2;
-            var objectCopier  =SerializableObjectCopier.GetInstance(container);
+            var objectCopier = SerializableObjectCopier.GetInstance(container);
             object result = objectCopier.Copy(enumOne);
             Assert.That(result, Is.Not.Null);
             Assert.That(result, Is.InstanceOf<SupportEnum>());

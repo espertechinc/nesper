@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -7,26 +7,31 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.client;
 using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.multithread
 {
     public class MultithreadContextStartedBySameEvent : RegressionExecutionWithConfigure
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        public bool EnableHATest => true;
-        public bool HAWithCOnly => false;
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
+        }
 
         public void Configure(Configuration configuration)
         {
@@ -37,10 +42,10 @@ namespace com.espertech.esper.regressionlib.suite.multithread
         public void Run(RegressionEnvironment env)
         {
             var path = new RegressionPath();
-            var eplStatement = "create context MyContext start PayloadEvent end after 0.5 seconds";
+            var eplStatement = "@public create context MyContext start PayloadEvent end after 0.5 seconds";
             env.CompileDeploy(eplStatement, path);
 
-            var aggStatement = "@Name('select') context MyContext " +
+            var aggStatement = "@name('select') context MyContext " +
                                "select count(*) as theCount " +
                                "from PayloadEvent " +
                                "output snapshot when terminated";
@@ -59,8 +64,8 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             SupportCompileDeployUtil.ThreadSleep(1000);
 
             // assert
-            Assert.IsNull(myRunnable.exception);
-            Assert.AreEqual(numEvents, listener.total);
+            ClassicAssert.IsNull(myRunnable.exception);
+            ClassicAssert.AreEqual(numEvents, listener.total);
 
             env.UndeployAll();
         }
@@ -98,7 +103,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                     Console.Out.WriteLine("sent " + numEvents + " events");
                 }
                 catch (Exception ex) {
-                    log.Error("Error while processing", ex);
+                    Log.Error("Error while processing", ex);
                     exception = ex;
                 }
             }
@@ -114,7 +119,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             {
                 var theCount = eventArgs.NewEvents[0].Get("theCount").AsInt64();
                 total += theCount;
-                Console.Out.WriteLine("count " + theCount + " total " + total);
+                Console.Out.WriteLine("count " + theCount + " Total " + total);
             }
         }
     }

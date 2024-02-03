@@ -1,13 +1,16 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Collections.Generic;
+
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.concurrency;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.client;
@@ -15,6 +18,7 @@ using com.espertech.esper.regressionlib.support.multithread;
 using com.espertech.esper.regressionlib.support.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.multithread
 {
@@ -23,6 +27,11 @@ namespace com.espertech.esper.regressionlib.suite.multithread
     /// </summary>
     public class MultithreadStmtNamedWindowSubqueryLookup : RegressionExecution
     {
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
+        }
+
         public void Run(RegressionEnvironment env)
         {
             TrySend(env, 3, 10000);
@@ -34,11 +43,12 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             int numEventsPerThread)
         {
             var path = new RegressionPath();
-            var schemas = "create schema MyUpdateEvent as (key string, intupd int);\n" +
-                          "create schema MySchema as (TheString string, intval int);\n";
-            env.CompileDeployWBusPublicType(schemas, path);
+            var schemas =
+                "@public @buseventtype create schema MyUpdateEvent as (key string, intupd int);\n" +
+                "@public @buseventtype create schema MySchema as (TheString string, intval int);\n";
+            env.CompileDeploy(schemas, path);
 
-            env.CompileDeploy("@Name('window') create window MyWindow#keepall as MySchema", path);
+            env.CompileDeploy("@public @name('window') create window MyWindow#keepall as MySchema", path);
             env.CompileDeploy(
                 "on MyUpdateEvent mue merge MyWindow mw " +
                 "where mw.TheString = mue.key " +
@@ -46,7 +56,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                 "when matched then delete",
                 path);
             env.CompileDeploy(
-                "@Name('target') select (select intval from MyWindow mw where mw.TheString = sb.TheString) as val from SupportBean sb",
+                "@name('target') select (select intval from MyWindow mw where mw.TheString = sb.TheString) as val from SupportBean sb",
                 path);
 
             // execute
@@ -64,12 +74,12 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             }
 
             threadPool.Shutdown();
-            
+
             SupportCompileDeployUtil.ExecutorAwait(threadPool, 10, TimeUnit.SECONDS);
             SupportCompileDeployUtil.AssertFutures(future);
 
             var events = EPAssertionUtil.EnumeratorToArray(env.GetEnumerator("window"));
-            Assert.AreEqual(0, events.Length);
+            ClassicAssert.AreEqual(0, events.Length);
 
             env.UndeployAll();
         }

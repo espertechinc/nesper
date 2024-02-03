@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -19,14 +19,14 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
     public class EPEventServiceThreadLocalEntry
     {
         public EPEventServiceThreadLocalEntry(
-            DualWorkQueue<object> dualWorkQueue,
+            WorkQueue workQueue,
             ArrayBackedCollection<FilterHandle> matchesArrayThreadLocal,
             ArrayBackedCollection<ScheduleHandle> scheduleArrayThreadLocal,
             IDictionary<EPStatementAgentInstanceHandle, object> matchesPerStmtThreadLocal,
             IDictionary<EPStatementAgentInstanceHandle, object> schedulePerStmtThreadLocal,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            DualWorkQueue = dualWorkQueue;
+            WorkQueue = workQueue;
             MatchesArrayThreadLocal = matchesArrayThreadLocal;
             ScheduleArrayThreadLocal = scheduleArrayThreadLocal;
             MatchesPerStmtThreadLocal = matchesPerStmtThreadLocal;
@@ -34,7 +34,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             ExprEvaluatorContext = exprEvaluatorContext;
         }
 
-        public DualWorkQueue<object> DualWorkQueue { get; }
+        public WorkQueue WorkQueue { get; }
 
         public ArrayBackedCollection<FilterHandle> MatchesArrayThreadLocal { get; }
 

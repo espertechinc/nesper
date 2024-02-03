@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -11,7 +11,6 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.container;
 
@@ -44,7 +43,7 @@ namespace com.espertech.esper.common.@internal.util
                 TypeResolverProviderDefault.NAME,
                 typeof(TypeResolverProvider));
         }
-        
+
         public static TypeResolver ResolveTypeResolver(
             IContainer container,
             IDictionary<string, object> transientConfiguration,
@@ -55,13 +54,13 @@ namespace com.espertech.esper.common.@internal.util
                     typeResolverDefault = container.Resolve<TypeResolver>();
                 }
             }
-            
+
             var typeResolver = Resolve(
                 transientConfiguration,
                 typeResolverDefault,
                 TypeResolverConstants.NAME,
                 typeof(TypeResolver));
-            return typeResolver ?? ResolveTypeResolverProvider(container, transientConfiguration).GetTypeResolver();
+            return typeResolver ?? ResolveTypeResolverProvider(container, transientConfiguration).TypeResolver;
         }
 
         private static T Resolve<T>(
@@ -90,7 +89,7 @@ namespace com.espertech.esper.common.@internal.util
                 return defaultProvider;
             }
 
-            return (T) value;
+            return (T)value;
         }
     }
 } // end of namespace

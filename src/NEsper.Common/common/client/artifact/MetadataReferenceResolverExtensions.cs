@@ -1,4 +1,12 @@
-﻿using System.Reflection;
+﻿///////////////////////////////////////////////////////////////////////////////////////
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
+// http://esper.codehaus.org                                                          /
+// ---------------------------------------------------------------------------------- /
+// The software in this package is published under the terms of the GPL license       /
+// a copy of which has been included with this distribution in the license.txt file.  /
+///////////////////////////////////////////////////////////////////////////////////////
+
+using System.Reflection;
 
 using com.espertech.esper.container;
 
@@ -36,6 +44,22 @@ namespace com.espertech.esper.common.client.artifact
             }
 
             return container.Resolve<MetadataReferenceResolver>();
+        }
+
+        public static bool RegisterMetadataReferenceResolver(
+            this IContainer container,
+            MetadataReferenceResolver resolver)
+        {
+            container.CheckContainer();
+
+            lock (container) {
+                if (container.DoesNotHave<MetadataReferenceResolver>()) {
+                    container.Register(resolver, Lifespan.Singleton);
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }

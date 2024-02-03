@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.filterspec
             var x = XEval.GetFilterValueDouble(matchedEvents, exprEvaluatorContext, filterEvalEnv);
             var y = YEval.GetFilterValueDouble(matchedEvents, exprEvaluatorContext, filterEvalEnv);
             var point = new XYPoint(x, y);
-            var lookupable = this.lkupable.Make(matchedEvents, exprEvaluatorContext);
+            var lookupable = lkupable.Make(matchedEvents, exprEvaluatorContext);
             return new FilterValueSetParamImpl(lookupable, FilterOperator, point);
         }
 
@@ -52,8 +52,8 @@ namespace com.espertech.esper.common.@internal.filterspec
                 return true;
             }
 
-            return obj is FilterSpecParamAdvancedIndexQuadTreePointRegion &&
-                   Equals((FilterSpecParamAdvancedIndexQuadTreePointRegion) obj);
+            return obj is FilterSpecParamAdvancedIndexQuadTreePointRegion region &&
+                   Equals(region);
         }
 
         public override int GetHashCode()

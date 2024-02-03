@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -13,7 +13,6 @@ using System.IO;
 namespace com.espertech.esper.common.client.soda
 {
     /// <summary>Create an index on a named window. </summary>
-    [Serializable]
     public class CreateIndexClause
     {
         /// <summary>Ctor. </summary>
@@ -81,8 +80,7 @@ namespace com.espertech.esper.common.client.soda
             IndexName = indexName;
             WindowName = windowName;
             IsUnique = isUnique;
-            foreach (var prop in properties)
-            {
+            foreach (var prop in properties) {
                 Columns.Add(new CreateIndexColumn(prop));
             }
         }
@@ -138,8 +136,7 @@ namespace com.espertech.esper.common.client.soda
         public void ToEPL(TextWriter writer)
         {
             writer.Write("create ");
-            if (IsUnique)
-            {
+            if (IsUnique) {
                 writer.Write("unique ");
             }
 
@@ -150,8 +147,7 @@ namespace com.espertech.esper.common.client.soda
             writer.Write('(');
             var delimiter = "";
 
-            foreach (var prop in Columns)
-            {
+            foreach (var prop in Columns) {
                 writer.Write(delimiter);
                 prop.ToEPL(writer);
                 delimiter = ", ";

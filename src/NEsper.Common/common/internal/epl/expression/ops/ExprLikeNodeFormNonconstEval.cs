@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -31,9 +31,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             ExprEvaluator optionalEscapeEval)
         {
             _form = forge;
-            this._lhsEval = lhsEval;
-            this._patternEval = patternEval;
-            this._optionalEscapeEval = optionalEscapeEval;
+            _lhsEval = lhsEval;
+            _patternEval = patternEval;
+            _optionalEscapeEval = optionalEscapeEval;
         }
 
         public object Evaluate(
@@ -41,14 +41,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            var pattern = (string) _patternEval.Evaluate(eventsPerStream, isNewData, context);
+            var pattern = (string)_patternEval.Evaluate(eventsPerStream, isNewData, context);
             if (pattern == null) {
                 return null;
             }
 
             var es = '\\';
             if (_optionalEscapeEval != null) {
-                var escapeString = (string) _optionalEscapeEval.Evaluate(eventsPerStream, isNewData, context);
+                var escapeString = (string)_optionalEscapeEval.Evaluate(eventsPerStream, isNewData, context);
                 if (!string.IsNullOrEmpty(escapeString)) {
                     es = escapeString[0];
                 }
@@ -65,7 +65,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 value = value.ToString();
             }
 
-            var result = _form.ForgeRenderable.IsNot ^ likeUtil.CompareTo((string) value);
+            var result = _form.ForgeRenderable.IsNot ^ likeUtil.CompareTo((string)value);
 
             return result;
         }
@@ -96,8 +96,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                     "escapeString",
                     optionalEscape.Forge.EvaluateCodegen(typeof(string), methodNode, exprSymbol, codegenClassScope));
                 blockMethod.IfCondition(
-                        And(NotEqualsNull(Ref("escapeString")), Not(
-                            StaticMethod<string>("IsNullOrEmpty", Ref("escapeString")))))
+                        And(
+                            NotEqualsNull(Ref("escapeString")),
+                            Not(
+                                StaticMethod<string>("IsNullOrEmpty", Ref("escapeString")))))
                     .AssignRef("es", ArrayAtIndex(Ref("escapeString"), Constant(0)));
             }
 

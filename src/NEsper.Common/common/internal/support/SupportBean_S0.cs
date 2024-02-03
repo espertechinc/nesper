@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -7,29 +7,26 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Text.Json.Serialization;
 
 namespace com.espertech.esper.common.@internal.support
 {
-    [Serializable]
     public class SupportBean_S0
     {
-        private static int _idCounter;
-
         public static object[] MakeS0(
             string propOne,
             string[] propTwo)
         {
-            _idCounter++;
             var events = new object[propTwo.Length];
-            for (int i = 0; i < propTwo.Length; i++) {
-                events[i] = new SupportBean_S0(_idCounter, propOne, propTwo[i]);
+            for (var i = 0; i < propTwo.Length; i++) {
+                events[i] = new SupportBean_S0(-1, propOne, propTwo[i]);
             }
 
             return events;
         }
 
         private int value;
-        
+
         public SupportBean_S0(int id)
         {
             Id = id;
@@ -65,6 +62,7 @@ namespace com.espertech.esper.common.@internal.support
             P02 = p02;
         }
 
+        [JsonConstructor]
         public SupportBean_S0(
             int id,
             string p00,
@@ -88,12 +86,12 @@ namespace com.espertech.esper.common.@internal.support
         public string P02 { get; set; }
 
         public string P03 { get; set; }
-        
+
         public string GetP00()
         {
             return P00;
         }
-        
+
         public override string ToString()
         {
             return "SupportBean_S0{" +
@@ -119,7 +117,7 @@ namespace com.espertech.esper.common.@internal.support
             if (this == o) return true;
             if (o == null || GetType() != o.GetType()) return false;
 
-            var that = (SupportBean_S0) o;
+            var that = (SupportBean_S0)o;
 
             if (Id != that.Id) return false;
             if (!P00?.Equals(that.P00) ?? that.P00 != null) return false;
@@ -132,7 +130,7 @@ namespace com.espertech.esper.common.@internal.support
 
         public override int GetHashCode()
         {
-            int result = Id;
+            var result = Id;
             result = 31 * result + (P00 != null ? P00.GetHashCode() : 0);
             result = 31 * result + (P01 != null ? P01.GetHashCode() : 0);
             result = 31 * result + (P02 != null ? P02.GetHashCode() : 0);

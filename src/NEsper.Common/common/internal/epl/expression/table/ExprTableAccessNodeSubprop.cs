@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -7,8 +7,10 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.Json.Serialization;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -32,32 +34,88 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
         ExprEnumerationEval,
         ExprForge
     {
-        [NonSerialized] private EPType _optionalEnumerationType;
-        [NonSerialized] private ExprEnumerationGivenEventForge _optionalPropertyEnumEvaluator;
-        private Type _evaluationType;
+        private readonly string subpropName;
+        private Type bindingReturnType;
+        [NonSerialized]
+        private EPChainableType optionalEnumerationType;
+        [NonSerialized]
+        private ExprEnumerationGivenEventForge optionalPropertyEnumEvaluator;
 
         public ExprTableAccessNodeSubprop(
             string tableName,
-            string subpropName)
-            : base(tableName)
+            string subpropName) : base(tableName)
         {
-            SubpropName = subpropName;
+            this.subpropName = subpropName;
         }
 
-        public override ExprForge Forge => this;
+        public override ExprTableEvalStrategyFactoryForge TableAccessFactoryForge {
+            get {
+                var tableMeta = TableMeta;
+                var column = tableMeta.Columns.Get(subpropName);
+                var ungrouped = !tableMeta.IsKeyed;
+                var forge = new ExprTableEvalStrategyFactoryForge(tableMeta, GroupKeyEvaluators);
+                if (column is TableMetadataColumnPlain plain) {
+                    forge.PropertyIndex = plain.IndexPlain;
+                    forge.StrategyEnum = ungrouped ? UNGROUPED_PLAINCOL : GROUPED_PLAINCOL;
+                    forge.OptionalEnumEval = optionalPropertyEnumEvaluator;
+                }
+                else {
+                    var aggcol = (TableMetadataColumnAggregation)column;
+                    forge.AggColumnNum = aggcol.Column;
+                    forge.StrategyEnum = ungrouped ? UNGROUPED_AGG_SIMPLE : GROUPED_AGG_SIMPLE;
+                }
 
-        public ExprNodeRenderable EnumForgeRenderable => this;
-        public override ExprNodeRenderable ExprForgeRenderable => this;
+                return forge;
+            }
+        }
 
         protected override string InstrumentationQName => "ExprTableSubproperty";
 
-        protected override CodegenExpression[] InstrumentationQParams =>
-            new[] {
-                Constant(TableMeta.TableName), 
-                Constant(SubpropName)
-            };
+        protected override CodegenExpression[] InstrumentationQParams {
+            get {
+                return new CodegenExpression[] {
+                    Constant(TableMeta.TableName),
+                    Constant(subpropName)
+                };
+            }
+        }
 
-        public string SubpropName { get; }
+        protected override void ValidateBindingInternal(ExprValidationContext validationContext)
+        {
+            var tableMeta = TableMeta;
+            ValidateGroupKeys(tableMeta, validationContext);
+            var column = ValidateSubpropertyGetCol(tableMeta, subpropName);
+            var propType = tableMeta.PublicEventType.GetPropertyType(subpropName);
+            bindingReturnType = propType;
+            if (column is TableMetadataColumnPlain) {
+                var enumerationSource = ExprDotNodeUtility.GetPropertyEnumerationSource(
+                    subpropName,
+                    0,
+                    tableMeta.InternalEventType,
+                    true,
+                    true);
+                optionalEnumerationType = enumerationSource.ReturnType;
+                optionalPropertyEnumEvaluator = enumerationSource.EnumerationGivenEvent;
+            }
+            else {
+                var aggcol = (TableMetadataColumnAggregation)column;
+                optionalEnumerationType = aggcol.OptionalEnumerationType;
+            }
+        }
+
+        public override void ToPrecedenceFreeEPL(
+            TextWriter writer,
+            ExprNodeRenderableFlags flags)
+        {
+            ToPrecedenceFreeEPLInternal(writer, subpropName, flags);
+        }
+
+        public EventType GetEventTypeCollection(
+            StatementRawInfo statementRawInfo,
+            StatementCompileTimeServices compileTimeServices)
+        {
+            return optionalEnumerationType.OptionalIsEventTypeColl();
+        }
 
         public ICollection<EventBean> EvaluateGetROCollectionEvents(
             EventBean[] eventsPerStream,
@@ -75,6 +133,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
             throw ExprNodeUtilityMake.MakeUnsupportedCompileTime();
         }
 
+        public EventType GetEventTypeSingle(
+            StatementRawInfo statementRawInfo,
+            StatementCompileTimeServices compileTimeServices)
+        {
+            return optionalEnumerationType.OptionalIsEventTypeSingle();
+        }
+
         public EventBean EvaluateGetEventBean(
             EventBean[] eventsPerStream,
             bool isNewData,
@@ -83,87 +148,26 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
             throw ExprNodeUtilityMake.MakeUnsupportedCompileTime();
         }
 
-        public ExprEnumerationEval ExprEvaluatorEnumeration => this;
-
-        public EventType GetEventTypeCollection(
-            StatementRawInfo statementRawInfo,
-            StatementCompileTimeServices compileTimeServices)
+        protected override bool EqualsNodeInternal(ExprTableAccessNode other)
         {
-            return EPTypeHelper.OptionalIsEventTypeColl(_optionalEnumerationType);
-        }
-
-        public Type ComponentTypeCollection => EPTypeHelper.OptionalIsComponentTypeColl(_optionalEnumerationType);
-
-        public EventType GetEventTypeSingle(
-            StatementRawInfo statementRawInfo,
-            StatementCompileTimeServices compileTimeServices)
-        {
-            return EPTypeHelper.OptionalIsEventTypeSingle(_optionalEnumerationType);
+            var that = (ExprTableAccessNodeSubprop)other;
+            return subpropName.Equals(that.subpropName);
         }
 
         public override ExprEvaluator ExprEvaluator => this;
 
-        public override Type EvaluationType {
-            get => _evaluationType;
-        }
+        public override Type EvaluationType => bindingReturnType;
 
-        public override ExprTableEvalStrategyFactoryForge TableAccessFactoryForge {
-            get {
-                var tableMeta = TableMeta;
-                var column = tableMeta.Columns.Get(SubpropName);
-                var ungrouped = !tableMeta.IsKeyed;
-                var forge = new ExprTableEvalStrategyFactoryForge(tableMeta, GroupKeyEvaluators);
+        public override ExprForge Forge => this;
 
-                if (column is TableMetadataColumnPlain) {
-                    var plain = (TableMetadataColumnPlain) column;
-                    forge.PropertyIndex = plain.IndexPlain;
-                    forge.StrategyEnum = ungrouped ? UNGROUPED_PLAINCOL : GROUPED_PLAINCOL;
-                    forge.OptionalEnumEval = _optionalPropertyEnumEvaluator;
-                }
-                else {
-                    var aggcol = (TableMetadataColumnAggregation) column;
-                    forge.AggColumnNum = aggcol.Column;
-                    forge.StrategyEnum = ungrouped ? UNGROUPED_AGG_SIMPLE : GROUPED_AGG_SIMPLE;
-                }
+        [JsonIgnore]
+        public ExprEnumerationEval ExprEvaluatorEnumeration => this;
 
-                return forge;
-            }
-        }
+        [JsonIgnore]
+        public string SubpropName => subpropName;
 
-        protected override void ValidateBindingInternal(ExprValidationContext validationContext)
-        {
-            var tableMeta = TableMeta;
-            ValidateGroupKeys(tableMeta, validationContext);
-            var column = ValidateSubpropertyGetCol(tableMeta, SubpropName);
-            _evaluationType = tableMeta.PublicEventType.GetPropertyType(SubpropName);
-            if (column is TableMetadataColumnPlain) {
-                ExprDotEnumerationSourceForgeForProps enumerationSource =
-                    ExprDotNodeUtility.GetPropertyEnumerationSource(
-                        SubpropName,
-                        0,
-                        tableMeta.InternalEventType,
-                        true,
-                        true);
-                _optionalEnumerationType = enumerationSource.ReturnType;
-                _optionalPropertyEnumEvaluator = enumerationSource.EnumerationGivenEvent;
-            }
-            else {
-                var aggcol = (TableMetadataColumnAggregation) column;
-                _optionalEnumerationType = aggcol.OptionalEnumerationType;
-            }
-        }
-
-        public override void ToPrecedenceFreeEPL(
-            TextWriter writer,
-            ExprNodeRenderableFlags flags)
-        {
-            ToPrecedenceFreeEPLInternal(writer, SubpropName, flags);
-        }
-
-        protected override bool EqualsNodeInternal(ExprTableAccessNode other)
-        {
-            var that = (ExprTableAccessNodeSubprop) other;
-            return SubpropName.Equals(that.SubpropName);
-        }
+        [JsonIgnore]
+        public Type ComponentTypeCollection =>
+            EPChainableTypeHelper.GetCollectionOrArrayComponentTypeOrNull(optionalEnumerationType);
     }
 } // end of namespace

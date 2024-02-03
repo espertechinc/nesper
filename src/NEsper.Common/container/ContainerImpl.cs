@@ -1,5 +1,5 @@
 ﻿///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -227,7 +227,7 @@ namespace com.espertech.esper.container
                 var method = componentRegistration.GetType().GetMethod("LifestyleBoundTo", new Type[] { });
                 var genericMethod = method.MakeGenericMethod(typeBound.BoundType);
                 return (ComponentRegistration<T>)genericMethod.Invoke(
-                    componentRegistration, new object[0]);
+                    componentRegistration, Array.Empty<object>());
             }
             else
             {

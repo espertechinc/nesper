@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Concatenation expression that concatenates the result of child expressions to the expression.
     /// </summary>
-    [Serializable]
     public class ConcatExpression : ExpressionBase
     {
         /// <summary>
@@ -57,16 +56,12 @@ namespace com.espertech.esper.common.client.soda
             return this;
         }
 
-        public override ExpressionPrecedenceEnum Precedence
-        {
-            get => ExpressionPrecedenceEnum.CONCAT;
-        }
+        public override ExpressionPrecedenceEnum Precedence => ExpressionPrecedenceEnum.CONCAT;
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
-            string delimiter = "";
-            foreach (Expression child in Children)
-            {
+            var delimiter = "";
+            foreach (var child in Children) {
                 writer.Write(delimiter);
                 child.ToEPL(writer, Precedence);
                 delimiter = "||";

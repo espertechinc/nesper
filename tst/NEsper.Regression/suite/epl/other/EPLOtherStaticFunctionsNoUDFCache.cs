@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -11,6 +11,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.epl.other
 {
@@ -19,7 +20,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         public void Run(RegressionEnvironment env)
         {
             var text =
-                "@Name('s0') select SupportStaticMethodLib.Sleep(100) as val from SupportTemperatureBean as temp";
+                "@name('s0') select SupportStaticMethodLib.Sleep(100) as val from SupportTemperatureBean as temp";
             env.CompileDeploy(text).AddListener("s0");
 
             var startTime = PerformanceObserver.MilliTime;
@@ -29,11 +30,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             var endTime = PerformanceObserver.MilliTime;
             var delta = endTime - startTime;
 
-            Assert.IsTrue(delta > 120, "Failed perf test, delta=" + delta);
+            ClassicAssert.Greater(delta, 120, "Failed perf test, delta=" + delta);
             env.UndeployAll();
 
             // test plug-in single-row function
-            var textSingleRow = "@Name('s0') select sleepme(100) as val from SupportTemperatureBean as temp";
+            var textSingleRow = "@name('s0') select sleepme(100) as val from SupportTemperatureBean as temp";
             env.CompileDeploy(textSingleRow).AddListener("s0");
 
             startTime = PerformanceObserver.MilliTime;

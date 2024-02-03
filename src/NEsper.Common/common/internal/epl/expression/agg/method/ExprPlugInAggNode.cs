@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -47,14 +47,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
 
         public override AggregationForgeFactory ValidateAggregationChild(ExprValidationContext validationContext)
         {
-            Type[] parameterTypes = new Type[positionalParams.Length];
-            object[] constant = new object[positionalParams.Length];
-            bool[] isConstant = new bool[positionalParams.Length];
-            ExprNode[] expressions = new ExprNode[positionalParams.Length];
+            var parameterTypes = new Type[positionalParams.Length];
+            var constant = new object[positionalParams.Length];
+            var isConstant = new bool[positionalParams.Length];
+            var expressions = new ExprNode[positionalParams.Length];
 
-            int count = 0;
-            bool hasDataWindows = true;
-            foreach (ExprNode child in positionalParams) {
+            var count = 0;
+            var hasDataWindows = true;
+            foreach (var child in positionalParams) {
                 if (child.Forge.ForgeConstantType == ExprForgeConstantType.COMPILETIMECONST) {
                     isConstant[count] = true;
                     constant[count] = child.Forge.ExprEvaluator.Evaluate(null, true, null);
@@ -64,9 +64,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
                 expressions[count] = child;
 
                 if (!ExprNodeUtilityAggregation.HasRemoveStreamForAggregations(
-                    child,
-                    validationContext.StreamTypeService,
-                    validationContext.IsResettingAggregations)) {
+                        child,
+                        validationContext.StreamTypeService,
+                        validationContext.IsResettingAggregations)) {
                     hasDataWindows = false;
                 }
 
@@ -89,11 +89,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
                 positionalParams = ExprNodeUtilityMake.AddExpression(positionalParams, optionalFilter);
             }
 
-            AggregationFunctionValidationContext context = new AggregationFunctionValidationContext(
+            var context = new AggregationFunctionValidationContext(
                 parameterTypes,
                 isConstant,
                 constant,
-                base.IsDistinct,
+                IsDistinct,
                 hasDataWindows,
                 expressions,
                 namedParameters);
@@ -101,7 +101,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
                 // the aggregation function factory is transient, obtain if not provided
                 if (aggregationFunctionForge == null) {
                     aggregationFunctionForge = validationContext.ImportService.ResolveAggregationFunction(
-                        functionName, validationContext.ClassProvidedExtension);
+                        functionName,
+                        validationContext.ClassProvidedExtension);
                 }
 
                 aggregationFunctionForge.Validate(context);
@@ -112,7 +113,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
                     ex);
             }
 
-            AggregationFunctionMode mode = aggregationFunctionForge.AggregationFunctionMode;
+            var mode = aggregationFunctionForge.AggregationFunctionMode;
             if (mode == null) {
                 throw new ExprValidationException("Aggregation function forge returned a null value for mode");
             }
@@ -130,22 +131,28 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
             }
 
             var aggregatedValueType = PositionalParams.Length == 0 ? null : PositionalParams[0].Forge.EvaluationType;
-            var distinctForge = isDistinct ? validationContext.SerdeResolver.SerdeForAggregationDistinct(aggregatedValueType, validationContext.StatementRawInfo) : null;
-            return new AggregationForgeFactoryPlugin(this, aggregationFunctionForge, mode, aggregatedValueType, distinctForge);
+            var distinctForge = isDistinct
+                ? validationContext.SerdeResolver.SerdeForAggregationDistinct(
+                    aggregatedValueType,
+                    validationContext.StatementRawInfo)
+                : null;
+            return new AggregationForgeFactoryPlugin(
+                this,
+                aggregationFunctionForge,
+                mode,
+                aggregatedValueType,
+                distinctForge);
         }
 
-        public override string AggregationFunctionName {
-            get => functionName;
-        }
+        public override string AggregationFunctionName => functionName;
 
         public override bool EqualsNodeAggregateMethodOnly(ExprAggregateNode node)
         {
-            if (!(node is ExprPlugInAggNode)) {
+            if (!(node is ExprPlugInAggNode other)) {
                 return false;
             }
 
-            ExprPlugInAggNode other = (ExprPlugInAggNode) node;
-            return other.AggregationFunctionName.Equals(this.AggregationFunctionName);
+            return other.AggregationFunctionName.Equals(AggregationFunctionName);
         }
 
         public override bool IsFilterExpressionAsLastParameter => false;

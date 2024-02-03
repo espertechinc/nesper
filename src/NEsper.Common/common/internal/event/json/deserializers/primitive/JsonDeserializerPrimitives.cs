@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -22,7 +22,12 @@ namespace com.espertech.esper.common.@internal.@event.json.deserializers.primiti
         {
             var innerMsg = ex.Message == null ? "" : " " + ex.Message.Replace("For", "for");
             return new EPException(
-                "Failed to parse json value as a " + type.Name + "-type from value '" + value + "': NumberFormatException" + innerMsg,
+                "Failed to parse json value as a " +
+                type.Name +
+                "-type from value '" +
+                value +
+                "': NumberFormatException" +
+                innerMsg,
                 ex);
         }
 
@@ -41,6 +46,5 @@ namespace com.espertech.esper.common.@internal.@event.json.deserializers.primiti
                 "Failed to parse json value as a " + type.Name + "-type from value '" + value + "': " + innerMsg,
                 ex);
         }
-
     }
 } // end of namespace

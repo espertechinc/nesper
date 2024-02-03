@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -26,7 +26,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 {
 	public class EPRuntimeStatementSelectionSPI
 	{
-		private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
 		// Predefined properties available:
 		// - name (string)
@@ -162,7 +162,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 			}
 
 			var returnType = expression.Forge.EvaluationType;
-			if (!returnType.IsBoolean()) {
+			if (!returnType.IsTypeBoolean()) {
 				throw new EPException(
 					"Invalid expression, expected a boolean return type for expression and received '" +
 					returnType.CleanName() +
@@ -182,7 +182,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 				//return !((pass == null) || (false.Equals(pass)));
 			}
 			catch (Exception ex) {
-				log.Error("Unexpected exception filtering statements by expression, skipping statement: " + ex.Message, ex);
+				Log.Error("Unexpected exception filtering statements by expression, skipping statement: " + ex.Message, ex);
 			}
 
 			return false;
@@ -199,7 +199,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 				string description,
 				string hint,
 				int priority,
-				Boolean drop,
+				bool drop,
 				IDictionary<string, string> tag)
 			{
 				DeploymentId = deploymentId;

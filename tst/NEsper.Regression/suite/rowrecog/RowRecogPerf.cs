@@ -1,12 +1,15 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Collections.Generic;
+
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.rowrecog;
 
@@ -16,9 +19,14 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
 {
     public class RowRecogPerf : RegressionExecution
     {
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.PERFORMANCE);
+        }
+
         public void Run(RegressionEnvironment env)
         {
-            var text = "@Name('s0') select * from SupportRecogBean " +
+            var text = "@name('s0') select * from SupportRecogBean " +
                        "match_recognize (" +
                        "  partition by Value " +
                        "  measures A.TheString as a_string, C.TheString as c_string " +
@@ -41,10 +49,10 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                     env.SendEventBean(new SupportRecogBean("E2_" + i, "2", partition));
                 }
 
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+                env.AssertListenerNotInvoked("s0");
 
                 env.SendEventBean(new SupportRecogBean("E3", "3", partition));
-                Assert.IsTrue(env.Listener("s0").GetAndClearIsInvoked());
+                env.AssertListenerInvoked("s0");
             }
 
             var end = PerformanceObserver.MilliTime;

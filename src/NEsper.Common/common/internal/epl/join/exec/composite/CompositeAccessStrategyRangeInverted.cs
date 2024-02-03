@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -52,7 +52,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
                 return null;
             }
 
-            var index = (IOrderedDictionary<object, CompositeIndexEntry>) parent;
+            var index = (IOrderedDictionary<object, CompositeIndexEntry>)parent;
             var submapOne = index.Head(comparableStart, !includeStart);
             var submapTwo = index.Tail(comparableEnd, !includeEnd);
             return CompositeIndexQueryRange.Handle(
@@ -87,7 +87,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
                 return null;
             }
 
-            var index = (IOrderedDictionary<object, CompositeIndexEntry>) parent;
+            var index = (IOrderedDictionary<object, CompositeIndexEntry>)parent;
             var submapOne = index.Head(comparableStart, !includeStart);
             var submapTwo = index.Tail(comparableEnd, !includeEnd);
             return CompositeIndexQueryRange.Handle(eventsPerStream, submapOne, submapTwo, result, next, postProcessor);

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -155,14 +155,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
 
             int targetStreamNum;
             string targetProperty;
-            if (inputDesc is ExprDotNodeFilterAnalyzerInputStream) {
-                var targetStream = (ExprDotNodeFilterAnalyzerInputStream) inputDesc;
-                targetStreamNum = targetStream.StreamNum;
+            if (inputDesc is ExprDotNodeFilterAnalyzerInputStream desc) {
+                targetStreamNum = desc.StreamNum;
                 var targetType = typesPerStream[targetStreamNum];
                 targetProperty = targetType.StartTimestampPropertyName;
             }
-            else if (inputDesc is ExprDotNodeFilterAnalyzerInputProp) {
-                var targetStream = (ExprDotNodeFilterAnalyzerInputProp) inputDesc;
+            else if (inputDesc is ExprDotNodeFilterAnalyzerInputProp targetStream) {
                 targetStreamNum = targetStream.StreamNum;
                 targetProperty = targetStream.PropertyName;
             }
@@ -194,7 +192,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
                 throw new ExprValidationException("Date-time method 'between' requires non-null parameter values");
             }
 
-            return (bool) value;
+            return (bool)value;
         }
     }
 } // end of namespace

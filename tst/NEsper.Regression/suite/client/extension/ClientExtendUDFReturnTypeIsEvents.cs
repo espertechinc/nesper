@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -36,26 +36,30 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             AtomicLong milestone)
         {
             var path = new RegressionPath();
-            var compiled = env.CompileWBusPublicType("create schema MyItem(Id string)");
+            var compiled = env.Compile("@public @buseventtype create schema MyItem(Id string)");
             env.Deploy(compiled);
             path.Add(compiled);
 
             env.CompileDeploy(
-                "@Name('s0') select " +
+                "@name('s0') select " +
                 methodName +
                 "(TheString).where(v -> v.Id in ('id1', 'id3')) as c0 from SupportBean",
                 path);
             env.AddListener("s0");
 
             env.SendEventBean(new SupportBean("id0,id1,id2,id3,id4", 0));
-            var real = env.Listener("s0").AssertOneGetNewAndReset().Get("c0");
-            var coll = real.Unwrap<IDictionary<string, object>>();
-            EPAssertionUtil.AssertPropsPerRow(
-                coll.ToArray(),
-                new [] { "Id" },
-                new[] {
-                    new object[] {"id1"},
-                    new object[] {"id3"}
+            env.AssertEventNew(
+                "s0",
+                @event => {
+                    var real = @event.Get("c0");
+                    var coll = real.Unwrap<IDictionary<string, object>>();
+                    EPAssertionUtil.AssertPropsPerRow(
+                        coll.ToArray(),
+                        new[] { "Id" },
+                        new[] {
+                            new object[] { "id1" },
+                            new object[] { "id3" }
+                        });
                 });
 
             env.UndeployAll();
@@ -64,16 +68,14 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
         private static void TryAssertionReturnTypeIsEventsInvalid(RegressionEnvironment env)
         {
             env.CompileDeploy("select myItemProducerInvalidNoType(TheString) as c0 from SupportBean");
-            SupportMessageAssertUtil.TryInvalidCompile(
-                env,
-                "select myItemProducerInvalidNoType(TheString).where(v -> v.Id='Id1') as c0 from SupportBean",
+            env.TryInvalidCompile(
+                "select myItemProducerInvalidNoType(TheString).where(v => v.Id='Id1') as c0 from SupportBean",
                 "Failed to validate select-clause expression 'myItemProducerInvalidNoType(TheStri...(68 chars)': Method 'MyItemProducerEventBeanArray' returns EventBean-array but does not provide the event type name [");
 
             // test invalid: event type name invalid
-            SupportMessageAssertUtil.TryInvalidCompile(
-                env,
-                "select myItemProducerInvalidWrongType(TheString).where(v -> v.Id='Id1') as c0 from SupportBean",
-                "Failed to validate select-clause expression 'myItemProducerInvalidWrongType(TheS...(74 chars)': Method 'MyItemProducerEventBeanArray' returns event type 'dummy' and the event type cannot be found [select myItemProducerInvalidWrongType(TheString).where(v -> v.Id='Id1') as c0 from SupportBean]");
+            env.TryInvalidCompile(
+                "select myItemProducerInvalidWrongType(TheString).where(v => v.Id='Id1') as c0 from SupportBean",
+                "Failed to validate select-clause expression 'myItemProducerInvalidWrongType(TheS...(74 chars)': Method 'MyItemProducerEventBeanArray' returns event type 'dummy' and the event type cannot be found [select myItemProducerInvalidWrongType(TheString).where(v => v.Id='Id1') as c0 from SupportBean]");
 
             env.UndeployAll();
         }

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -8,8 +8,6 @@
 
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.regressionlib.framework;
-
-using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
 {
@@ -36,22 +34,22 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
         public void Run(RegressionEnvironment env)
         {
             env.AdvanceTime(startTime);
-            var epl = "@Name('s0') select * from SupportBean output every " + size + " seconds";
+            var epl = "@name('s0') select * from SupportBean output every " + size + " seconds";
             env.CompileDeploy(epl).AddListener("s0");
 
             env.SendEventBean(new SupportBean("E1", 10));
             env.AdvanceTime(flipTime - 1);
-            Assert.IsFalse(env.Listener("s0").IsInvoked);
+            env.AssertListenerNotInvoked("s0");
 
             env.AdvanceTime(flipTime);
-            Assert.IsTrue(env.Listener("s0").IsInvokedAndReset());
+            env.AssertListenerInvoked("s0");
 
             env.SendEventBean(new SupportBean("E2", 10));
             env.AdvanceTime(repeatTime + flipTime - 1);
-            Assert.IsFalse(env.Listener("s0").IsInvoked);
+            env.AssertListenerNotInvoked("s0");
 
             env.AdvanceTime(repeatTime + flipTime);
-            Assert.IsTrue(env.Listener("s0").IsInvokedAndReset());
+            env.AssertListenerInvoked("s0");
 
             env.UndeployAll();
         }

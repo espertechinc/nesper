@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-using System.Reflection;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.soda;
@@ -18,6 +17,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.resultset.querytype
 {
@@ -25,33 +25,298 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
     {
         private const string SYMBOL_DELL = "DELL";
 
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-
-        public static IList<RegressionExecution> Executions()
+        public static ICollection<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new ResultSetQueryTypeHavingWildcardSelect());
-            execs.Add(new ResultSetQueryTypeStatementOM());
-            execs.Add(new ResultSetQueryTypeStatement());
-            execs.Add(new ResultSetQueryTypeStatementJoin());
-            execs.Add(new ResultSetQueryTypeSumHavingNoAggregatedProp());
-            execs.Add(new ResultSetQueryTypeNoAggregationJoinHaving());
-            execs.Add(new ResultSetQueryTypeNoAggregationJoinWhere());
-            execs.Add(new ResultSetQueryTypeSubstreamSelectHaving());
-            execs.Add(new ResultSetQueryTypeHavingSum());
+            WithHavingWildcardSelect(execs);
+            WithStatementOM(execs);
+            WithStatement(execs);
+            WithStatementJoin(execs);
+            WithSumHavingNoAggregatedProp(execs);
+            WithNoAggregationJoinHaving(execs);
+            WithNoAggregationJoinWhere(execs);
+            WithSubstreamSelectHaving(execs);
+            WithHavingSum(execs);
+            WithHavingSumIStream(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithHavingSumIStream(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ResultSetQueryTypeHavingSumIStream());
             return execs;
+        }
+
+        public static IList<RegressionExecution> WithHavingSum(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetQueryTypeHavingSum());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSubstreamSelectHaving(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetQueryTypeSubstreamSelectHaving());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNoAggregationJoinWhere(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetQueryTypeNoAggregationJoinWhere());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNoAggregationJoinHaving(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetQueryTypeNoAggregationJoinHaving());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSumHavingNoAggregatedProp(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetQueryTypeSumHavingNoAggregatedProp());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithStatementJoin(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetQueryTypeStatementJoin());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithStatement(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetQueryTypeStatement());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithStatementOM(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetQueryTypeStatementOM());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithHavingWildcardSelect(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetQueryTypeHavingWildcardSelect());
+            return execs;
+        }
+
+        private class ResultSetQueryTypeHavingWildcardSelect : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var epl = "@name('s0') select * " +
+                          "from SupportBean#length_batch(2) " +
+                          "where IntPrimitive>0 " +
+                          "having count(*)=2";
+                env.CompileDeploy(epl).AddListener("s0");
+
+                env.SendEventBean(new SupportBean("E1", 0));
+                env.SendEventBean(new SupportBean("E2", 0));
+                env.AssertListenerNotInvoked("s0");
+
+                env.Milestone(0);
+
+                env.SendEventBean(new SupportBean("E3", 1));
+                env.SendEventBean(new SupportBean("E4", 1));
+                env.AssertListenerInvoked("s0");
+
+                env.Milestone(1);
+
+                env.SendEventBean(new SupportBean("E3", 0));
+                env.SendEventBean(new SupportBean("E4", 1));
+                env.AssertListenerNotInvoked("s0");
+
+                env.UndeployAll();
+            }
+        }
+
+        private class ResultSetQueryTypeStatementOM : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var model = new EPStatementObjectModel();
+                model.SelectClause = SelectClause.Create("Symbol", "Price")
+                    .SetStreamSelector(StreamSelector.RSTREAM_ISTREAM_BOTH)
+                    .Add(Expressions.Avg("Price"), "avgPrice");
+                model.FromClause = FromClause.Create(
+                    FilterStream.Create(nameof(SupportMarketDataBean)).AddView("length", Expressions.Constant(5)));
+                model.HavingClause = Expressions.Lt(Expressions.Property("Price"), Expressions.Avg("Price"));
+                model = env.CopyMayFail(model);
+
+                var epl = "select irstream Symbol, Price, avg(Price) as avgPrice " +
+                          "from SupportMarketDataBean#length(5) " +
+                          "having Price<avg(Price)";
+                ClassicAssert.AreEqual(epl, model.ToEPL());
+
+                model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
+                env.CompileDeploy(model).AddListener("s0");
+
+                TryAssertion(env);
+
+                env.UndeployAll();
+            }
+        }
+
+        private class ResultSetQueryTypeStatement : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var epl = "@name('s0') select irstream Symbol, Price, avg(Price) as avgPrice " +
+                          "from SupportMarketDataBean#length(5) " +
+                          "having Price < avg(Price)";
+                env.CompileDeploy(epl).AddListener("s0");
+
+                TryAssertion(env);
+
+                env.UndeployAll();
+            }
+        }
+
+        private class ResultSetQueryTypeStatementJoin : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var epl = "@name('s0') select irstream Symbol, Price, avg(Price) as avgPrice " +
+                          "from SupportBeanString#length(100) as one, " +
+                          "SupportMarketDataBean#length(5) as two " +
+                          "where one.TheString = two.Symbol " +
+                          "having Price < avg(Price)";
+                env.CompileDeploy(epl).AddListener("s0");
+
+                env.SendEventBean(new SupportBeanString(SYMBOL_DELL));
+
+                TryAssertion(env);
+
+                env.UndeployAll();
+            }
+        }
+
+        private class ResultSetQueryTypeSumHavingNoAggregatedProp : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var epl = "@name('s0') select irstream Symbol, Price, avg(Price) as avgPrice " +
+                          "from SupportMarketDataBean#length(5) as two " +
+                          "having Volume < avg(Price)";
+                env.CompileDeploy(epl).UndeployAll();
+            }
+        }
+
+        private class ResultSetQueryTypeNoAggregationJoinHaving : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                RunNoAggregationJoin(env, "having");
+            }
+        }
+
+        private class ResultSetQueryTypeNoAggregationJoinWhere : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                RunNoAggregationJoin(env, "where");
+            }
+        }
+
+        private class ResultSetQueryTypeSubstreamSelectHaving : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var stmtText =
+                    "@name('s0') insert into MyStream select quote.* from SupportBean#length(14) quote having avg(IntPrimitive) >= 3\n";
+                env.CompileDeploy(stmtText).AddListener("s0");
+
+                env.SendEventBean(new SupportBean("abc", 2));
+                env.AssertListenerNotInvoked("s0");
+
+                env.Milestone(0);
+
+                env.SendEventBean(new SupportBean("abc", 2));
+                env.AssertListenerNotInvoked("s0");
+
+                env.SendEventBean(new SupportBean("abc", 3));
+                env.AssertListenerNotInvoked("s0");
+
+                env.Milestone(1);
+
+                env.SendEventBean(new SupportBean("abc", 5));
+                env.AssertListenerInvoked("s0");
+
+                env.UndeployAll();
+            }
+        }
+
+        private class ResultSetQueryTypeHavingSum : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var epl =
+                    "@name('s0') select irstream sum(myEvent.IntPrimitive) as mysum from pattern [every myEvent=SupportBean] having sum(myEvent.IntPrimitive) = 2";
+                env.CompileDeploy(epl).AddListener("s0");
+
+                SendEvent(env, 1);
+                env.AssertListenerNotInvoked("s0");
+
+                SendEvent(env, 1);
+                env.AssertEqualsNew("s0", "mysum", 2);
+
+                env.Milestone(0);
+
+                SendEvent(env, 1);
+                env.AssertEqualsOld("s0", "mysum", 2);
+
+                env.UndeployAll();
+            }
+        }
+
+        private class ResultSetQueryTypeHavingSumIStream : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var epl =
+                    "@name('s0') select istream sum(myEvent.IntPrimitive) as mysum from pattern [every myEvent=SupportBean" +
+                    "] having sum(myEvent.IntPrimitive) = 2";
+                env.CompileDeploy(epl).AddListener("s0");
+
+                SendEvent(env, 1);
+                env.AssertListenerNotInvoked("s0");
+
+                env.Milestone(0);
+
+                SendEvent(env, 1);
+                env.AssertEqualsNew("s0", "mysum", 2);
+
+                SendEvent(env, 1);
+                env.AssertListenerNotInvoked("s0");
+
+                env.UndeployAll();
+            }
         }
 
         private static void TryAssertion(RegressionEnvironment env)
         {
             // assert select result type
-            Assert.AreEqual(typeof(string), env.Statement("s0").EventType.GetPropertyType("Symbol"));
-            Assert.AreEqual(typeof(double?), env.Statement("s0").EventType.GetPropertyType("Price"));
-            Assert.AreEqual(typeof(double?), env.Statement("s0").EventType.GetPropertyType("avgPrice"));
+            env.AssertStatement(
+                "s0",
+                statement => {
+                    ClassicAssert.AreEqual(typeof(string), statement.EventType.GetPropertyType("Symbol"));
+                    ClassicAssert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("Price"));
+                    ClassicAssert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("avgPrice"));
+                });
 
             SendEvent(env, SYMBOL_DELL, 10);
-            Assert.IsFalse(env.Listener("s0").IsInvoked);
+            env.AssertListenerNotInvoked("s0");
 
             SendEvent(env, SYMBOL_DELL, 5);
             AssertNewEvents(env, SYMBOL_DELL, 5d, 7.5d);
@@ -59,13 +324,13 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             env.Milestone(0);
 
             SendEvent(env, SYMBOL_DELL, 15);
-            Assert.IsFalse(env.Listener("s0").IsInvoked);
+            env.AssertListenerNotInvoked("s0");
 
             SendEvent(env, SYMBOL_DELL, 8); // avg = (10 + 5 + 15 + 8) / 4 = 38/4=9.5
             AssertNewEvents(env, SYMBOL_DELL, 8d, 9.5d);
 
             SendEvent(env, SYMBOL_DELL, 10); // avg = (10 + 5 + 15 + 8 + 10) / 5 = 48/5=9.5
-            Assert.IsFalse(env.Listener("s0").IsInvoked);
+            env.AssertListenerNotInvoked("s0");
 
             env.Milestone(1);
 
@@ -84,17 +349,21 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             double? newAvgPrice
         )
         {
-            var oldData = env.Listener("s0").LastOldData;
-            var newData = env.Listener("s0").LastNewData;
+            env.AssertListener(
+                "s0",
+                listener => {
+                    var oldData = listener.LastOldData;
+                    var newData = listener.LastNewData;
 
-            Assert.IsNull(oldData);
-            Assert.AreEqual(1, newData.Length);
+                    ClassicAssert.IsNull(oldData);
+                    ClassicAssert.AreEqual(1, newData.Length);
 
-            Assert.AreEqual(symbol, newData[0].Get("Symbol"));
-            Assert.AreEqual(newPrice, newData[0].Get("Price"));
-            Assert.AreEqual(newAvgPrice, newData[0].Get("avgPrice"));
+                    ClassicAssert.AreEqual(symbol, newData[0].Get("Symbol"));
+                    ClassicAssert.AreEqual(newPrice, newData[0].Get("Price"));
+                    ClassicAssert.AreEqual(newAvgPrice, newData[0].Get("avgPrice"));
 
-            env.Listener("s0").Reset();
+                    listener.Reset();
+                });
         }
 
         private static void AssertOldEvents(
@@ -104,17 +373,21 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             double? oldAvgPrice
         )
         {
-            var oldData = env.Listener("s0").LastOldData;
-            var newData = env.Listener("s0").LastNewData;
+            env.AssertListener(
+                "s0",
+                listener => {
+                    var oldData = listener.LastOldData;
+                    var newData = listener.LastNewData;
 
-            Assert.IsNull(newData);
-            Assert.AreEqual(1, oldData.Length);
+                    ClassicAssert.IsNull(newData);
+                    ClassicAssert.AreEqual(1, oldData.Length);
 
-            Assert.AreEqual(symbol, oldData[0].Get("Symbol"));
-            Assert.AreEqual(oldPrice, oldData[0].Get("Price"));
-            Assert.AreEqual(oldAvgPrice, oldData[0].Get("avgPrice"));
+                    ClassicAssert.AreEqual(symbol, oldData[0].Get("Symbol"));
+                    ClassicAssert.AreEqual(oldPrice, oldData[0].Get("Price"));
+                    ClassicAssert.AreEqual(oldAvgPrice, oldData[0].Get("avgPrice"));
 
-            env.Listener("s0").Reset();
+                    listener.Reset();
+                });
         }
 
         private static void RunNoAggregationJoin(
@@ -122,7 +395,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             string filterClause)
         {
             var epl =
-                "@Name('s0') select irstream a.Price as aPrice, b.Price as bPrice, Math.Max(a.Price, b.Price) - Math.Min(a.Price, b.Price) as spread " +
+                "@name('s0') select irstream a.Price as aPrice, b.Price as bPrice, Math.Max(a.Price, b.Price) - Math.Min(a.Price, b.Price) as spread " +
                 "from SupportMarketDataBean(Symbol='SYM1')#length(1) as a, " +
                 "SupportMarketDataBean(Symbol='SYM2')#length(1) as b " +
                 filterClause +
@@ -130,7 +403,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             env.CompileDeploy(epl).AddListener("s0");
 
             SendPriceEvent(env, "SYM1", 20);
-            Assert.IsFalse(env.Listener("s0").IsInvoked);
+            env.AssertListenerNotInvoked("s0");
 
             env.Milestone(0);
 
@@ -145,13 +418,13 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             SendPriceEvent(env, "SYM2", 20);
             SendPriceEvent(env, "SYM2", 20);
             SendPriceEvent(env, "SYM1", 20);
-            Assert.IsFalse(env.Listener("s0").IsInvoked);
+            env.AssertListenerNotInvoked("s0");
 
             SendPriceEvent(env, "SYM1", 18.7);
-            Assert.IsFalse(env.Listener("s0").IsInvoked);
+            env.AssertListenerNotInvoked("s0");
 
             SendPriceEvent(env, "SYM2", 20);
-            Assert.IsFalse(env.Listener("s0").IsInvoked);
+            env.AssertListenerNotInvoked("s0");
 
             env.Milestone(2);
 
@@ -178,18 +451,22 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             double newbprice,
             double newspread)
         {
-            Assert.AreEqual(1, env.Listener("s0").OldDataList.Count);
-            Assert.AreEqual(1, env.Listener("s0").LastOldData.Length);
-            Assert.AreEqual(1, env.Listener("s0").NewDataList.Count); // since event null is put into the list
-            Assert.AreEqual(1, env.Listener("s0").LastNewData.Length);
+            env.AssertListener(
+                "s0",
+                listener => {
+                    ClassicAssert.AreEqual(1, listener.OldDataList.Count);
+                    ClassicAssert.AreEqual(1, listener.LastOldData.Length);
+                    ClassicAssert.AreEqual(1, listener.NewDataList.Count); // since event null is put into the list
+                    ClassicAssert.AreEqual(1, listener.LastNewData.Length);
 
-            var oldEvent = env.Listener("s0").LastOldData[0];
-            var newEvent = env.Listener("s0").LastNewData[0];
+                    var oldEvent = listener.LastOldData[0];
+                    var newEvent = listener.LastNewData[0];
 
-            CompareSpreadEvent(oldEvent, oldaprice, oldbprice, oldspread);
-            CompareSpreadEvent(newEvent, newaprice, newbprice, newspread);
+                    CompareSpreadEvent(oldEvent, oldaprice, oldbprice, oldspread);
+                    CompareSpreadEvent(newEvent, newaprice, newbprice, newspread);
 
-            env.Listener("s0").Reset();
+                    listener.Reset();
+                });
         }
 
         private static void AssertOldSpreadEvent(
@@ -198,16 +475,19 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             double bprice,
             double spread)
         {
-            var listener = env.Listener("s0");
-            Assert.AreEqual(1, listener.OldDataList.Count);
-            Assert.AreEqual(1, listener.LastOldData.Length);
-            Assert.AreEqual(1, listener.NewDataList.Count); // since event null is put into the list
-            Assert.IsNull(listener.LastNewData);
+            env.AssertListener(
+                "s0",
+                listener => {
+                    ClassicAssert.AreEqual(1, listener.OldDataList.Count);
+                    ClassicAssert.AreEqual(1, listener.LastOldData.Length);
+                    ClassicAssert.AreEqual(1, listener.NewDataList.Count); // since event null is put into the list
+                    ClassicAssert.IsNull(listener.LastNewData);
 
-            var theEvent = listener.LastOldData[0];
+                    var theEvent = listener.LastOldData[0];
 
-            CompareSpreadEvent(theEvent, aprice, bprice, spread);
-            listener.Reset();
+                    CompareSpreadEvent(theEvent, aprice, bprice, spread);
+                    listener.Reset();
+                });
         }
 
         private static void AssertNewSpreadEvent(
@@ -216,15 +496,18 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             double bprice,
             double spread)
         {
-            var listener = env.Listener("s0");
-            Assert.AreEqual(1, listener.NewDataList.Count);
-            Assert.AreEqual(1, listener.LastNewData.Length);
-            Assert.AreEqual(1, listener.OldDataList.Count);
-            Assert.IsNull(listener.LastOldData);
+            env.AssertListener(
+                "s0",
+                listener => {
+                    ClassicAssert.AreEqual(1, listener.NewDataList.Count);
+                    ClassicAssert.AreEqual(1, listener.LastNewData.Length);
+                    ClassicAssert.AreEqual(1, listener.OldDataList.Count);
+                    ClassicAssert.IsNull(listener.LastOldData);
 
-            var theEvent = listener.LastNewData[0];
-            CompareSpreadEvent(theEvent, aprice, bprice, spread);
-            listener.Reset();
+                    var theEvent = listener.LastNewData[0];
+                    CompareSpreadEvent(theEvent, aprice, bprice, spread);
+                    listener.Reset();
+                });
         }
 
         private static void CompareSpreadEvent(
@@ -233,9 +516,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             double bprice,
             double spread)
         {
-            Assert.AreEqual(aprice, theEvent.Get("aPrice"));
-            Assert.AreEqual(bprice, theEvent.Get("bPrice"));
-            Assert.AreEqual(spread, theEvent.Get("spread"));
+            ClassicAssert.AreEqual(aprice, theEvent.Get("aPrice"));
+            ClassicAssert.AreEqual(bprice, theEvent.Get("bPrice"));
+            ClassicAssert.AreEqual(spread, theEvent.Get("spread"));
         }
 
         private static void SendPriceEvent(
@@ -264,197 +547,6 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             env.SendEventBean(bean);
         }
 
-        internal class ResultSetQueryTypeHavingWildcardSelect : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var epl = "@Name('s0') select * " +
-                          "from SupportBean#length_batch(2) " +
-                          "where IntPrimitive>0 " +
-                          "having count(*)=2";
-                env.CompileDeploy(epl).AddListener("s0");
-
-                env.SendEventBean(new SupportBean("E1", 0));
-                env.SendEventBean(new SupportBean("E2", 0));
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
-
-                env.Milestone(0);
-
-                env.SendEventBean(new SupportBean("E3", 1));
-                env.SendEventBean(new SupportBean("E4", 1));
-                Assert.IsTrue(env.Listener("s0").GetAndClearIsInvoked());
-
-                env.Milestone(1);
-
-                env.SendEventBean(new SupportBean("E3", 0));
-                env.SendEventBean(new SupportBean("E4", 1));
-                Assert.IsFalse(env.Listener("s0").GetAndClearIsInvoked());
-
-                env.UndeployAll();
-            }
-        }
-
-        internal class ResultSetQueryTypeStatementOM : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var model = new EPStatementObjectModel();
-                model.SelectClause = SelectClause.Create("Symbol", "Price")
-                    .SetStreamSelector(StreamSelector.RSTREAM_ISTREAM_BOTH)
-                    .Add(Expressions.Avg("Price"), "avgPrice");
-                model.FromClause = FromClause.Create(
-                    FilterStream.Create(nameof(SupportMarketDataBean)).AddView("length", Expressions.Constant(5)));
-                model.HavingClause = Expressions.Lt(Expressions.Property("Price"), Expressions.Avg("Price"));
-                model = env.CopyMayFail(model);
-
-                var epl = "select irstream Symbol, Price, avg(Price) as avgPrice " +
-                          "from SupportMarketDataBean#length(5) " +
-                          "having Price<avg(Price)";
-                Assert.AreEqual(epl, model.ToEPL());
-
-                model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
-                env.CompileDeploy(model).AddListener("s0");
-
-                TryAssertion(env);
-
-                env.UndeployAll();
-            }
-        }
-
-        internal class ResultSetQueryTypeStatement : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var epl = "@Name('s0') select irstream Symbol, Price, avg(Price) as avgPrice " +
-                          "from SupportMarketDataBean#length(5) " +
-                          "having Price < avg(Price)";
-                env.CompileDeploy(epl).AddListener("s0");
-
-                TryAssertion(env);
-
-                env.UndeployAll();
-            }
-        }
-
-        internal class ResultSetQueryTypeStatementJoin : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var epl = "@Name('s0') select irstream Symbol, Price, avg(Price) as avgPrice " +
-                          "from SupportBeanString#length(100) as one, " +
-                          "SupportMarketDataBean#length(5) as two " +
-                          "where one.TheString = two.Symbol " +
-                          "having Price < avg(Price)";
-                env.CompileDeploy(epl).AddListener("s0");
-
-                env.SendEventBean(new SupportBeanString(SYMBOL_DELL));
-
-                TryAssertion(env);
-
-                env.UndeployAll();
-            }
-        }
-
-        internal class ResultSetQueryTypeSumHavingNoAggregatedProp : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var epl = "@Name('s0') select irstream Symbol, Price, avg(Price) as avgPrice " +
-                          "from SupportMarketDataBean#length(5) as two " +
-                          "having Volume < avg(Price)";
-                env.CompileDeploy(epl).UndeployAll();
-            }
-        }
-
-        internal class ResultSetQueryTypeNoAggregationJoinHaving : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                RunNoAggregationJoin(env, "having");
-            }
-        }
-
-        internal class ResultSetQueryTypeNoAggregationJoinWhere : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                RunNoAggregationJoin(env, "where");
-            }
-        }
-
-        internal class ResultSetQueryTypeSubstreamSelectHaving : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var stmtText =
-                    "@Name('s0') insert into MyStream select quote.* from SupportBean#length(14) quote having avg(IntPrimitive) >= 3\n";
-                env.CompileDeploy(stmtText).AddListener("s0");
-
-                env.SendEventBean(new SupportBean("abc", 2));
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
-
-                env.Milestone(0);
-
-                env.SendEventBean(new SupportBean("abc", 2));
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
-
-                env.SendEventBean(new SupportBean("abc", 3));
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
-
-                env.Milestone(1);
-
-                env.SendEventBean(new SupportBean("abc", 5));
-                Assert.IsTrue(env.Listener("s0").IsInvoked);
-
-                env.UndeployAll();
-            }
-        }
-
-        internal class ResultSetQueryTypeHavingSum : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var epl =
-                    "@Name('s0') select irstream sum(myEvent.IntPrimitive) as mysum from pattern [every myEvent=SupportBean] having sum(myEvent.IntPrimitive) = 2";
-                env.CompileDeploy(epl).AddListener("s0");
-
-                SendEvent(env, 1);
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
-
-                SendEvent(env, 1);
-                Assert.AreEqual(2, env.Listener("s0").AssertOneGetNewAndReset().Get("mysum"));
-
-                env.Milestone(0);
-
-                SendEvent(env, 1);
-                Assert.AreEqual(2, env.Listener("s0").AssertOneGetOldAndReset().Get("mysum"));
-
-                env.UndeployAll();
-            }
-        }
-
-        internal class ResultSetQueryTypeHavingSumIStream : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var epl =
-                    "@Name('s0') select istream sum(myEvent.IntPrimitive) as mysum from pattern [every myEvent=SupportBean" +
-                    "] having sum(myEvent.IntPrimitive) = 2";
-                env.CompileDeploy(epl).AddListener("s0");
-
-                SendEvent(env, 1);
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
-
-                env.Milestone(0);
-
-                SendEvent(env, 1);
-                Assert.AreEqual(2, env.Listener("s0").AssertOneGetNewAndReset().Get("mysum"));
-
-                SendEvent(env, 1);
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
-
-                env.UndeployAll();
-            }
-        }
+        private static readonly ILog Log = LogManager.GetLogger(typeof(ResultSetQueryTypeHaving));
     }
 } // end of namespace

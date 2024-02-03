@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -12,10 +12,10 @@ using com.espertech.esper.common.@internal.@event.bean.manufacturer;
 
 namespace com.espertech.esper.common.@internal.epl.expression.ops
 {
-	/// <summary>
-	///     Represents the "new Class(...)" operator in an expression tree.
-	/// </summary>
-	public class ExprNewInstanceNodeNonArrayForgeEval : ExprEvaluator
+    /// <summary>
+    ///     Represents the "new Class(...)" operator in an expression tree.
+    /// </summary>
+    public class ExprNewInstanceNodeNonArrayForgeEval : ExprEvaluator
     {
         private readonly InstanceManufacturer _manufacturer;
 

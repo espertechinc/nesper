@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -11,24 +11,25 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
-using com.espertech.esper.common.@internal.epl.table.core;
-using com.espertech.esper.common.@internal.epl.updatehelper;
 using com.espertech.esper.common.@internal.@event.arr;
 using com.espertech.esper.common.@internal.@event.core;
+using com.espertech.esper.common.@internal.epl.table.core;
+using com.espertech.esper.common.@internal.epl.updatehelper;
+using com.espertech.esper.common.@internal.type;
 
 namespace com.espertech.esper.common.@internal.epl.table.update
 {
     public class TableUpdateStrategyWUniqueConstraint : TableUpdateStrategy
     {
-        private readonly ISet<string> _affectedIndexNames;
-        private readonly EventBeanUpdateHelperNoCopy _updateHelper;
+        private readonly EventBeanUpdateHelperNoCopy updateHelper;
+        private readonly ISet<NameAndModule> affectedIndexNames;
 
         public TableUpdateStrategyWUniqueConstraint(
             EventBeanUpdateHelperNoCopy updateHelper,
-            ISet<string> affectedIndexNames)
+            ISet<NameAndModule> affectedIndexNames)
         {
-            _updateHelper = updateHelper;
-            _affectedIndexNames = affectedIndexNames;
+            this.updateHelper = updateHelper;
+            this.affectedIndexNames = affectedIndexNames;
         }
 
         public void UpdateTable(
@@ -46,8 +47,8 @@ namespace com.espertech.esper.common.@internal.epl.table.update
             }
 
             // remove from affected indexes
-            foreach (var affectedIndexName in _affectedIndexNames) {
-                var index = instance.GetIndex(affectedIndexName);
+            foreach (var affectedIndexName in affectedIndexNames) {
+                var index = instance.GetIndex(affectedIndexName.Name, affectedIndexName.ModuleName);
                 index.Remove(events, exprEvaluatorContext);
             }
 
@@ -59,46 +60,46 @@ namespace com.espertech.esper.common.@internal.epl.table.update
                 eventsPerStream[0] = events[i];
 
                 // copy non-aggregated value references
-                var updatedEvent = (ObjectArrayBackedEventBean) events[i];
+                var updatedEvent = (ObjectArrayBackedEventBean)events[i];
                 var prev = new object[updatedEvent.Properties.Length];
                 Array.Copy(updatedEvent.Properties, 0, prev, 0, prev.Length);
                 previousData[i] = prev;
 
                 // if "initial.property" is part of the assignment expressions, provide initial value event
-                if (_updateHelper.IsRequiresStream2InitialValueEvent) {
+                if (updateHelper.IsRequiresStream2InitialValueEvent) {
                     eventsPerStream[2] = new ObjectArrayEventBean(prev, updatedEvent.EventType);
                 }
 
                 // apply in-place updates
                 instance.HandleRowUpdateKeyBeforeUpdate(updatedEvent);
-                _updateHelper.UpdateNoCopy(updatedEvent, eventsPerStream, exprEvaluatorContext);
+                updateHelper.UpdateNoCopy(updatedEvent, eventsPerStream, exprEvaluatorContext);
                 instance.HandleRowUpdateKeyAfterUpdate(updatedEvent);
             }
 
             // add to affected indexes
             try {
-                foreach (var affectedIndexName in _affectedIndexNames) {
-                    var index = instance.GetIndex(affectedIndexName);
+                foreach (var affectedIndexName in affectedIndexNames) {
+                    var index = instance.GetIndex(affectedIndexName.Name, affectedIndexName.ModuleName);
                     index.Add(events, exprEvaluatorContext);
                 }
             }
             catch (EPException) {
                 // rollback
                 // remove updated events
-                foreach (var affectedIndexName in _affectedIndexNames) {
-                    var index = instance.GetIndex(affectedIndexName);
+                foreach (var affectedIndexName in affectedIndexNames) {
+                    var index = instance.GetIndex(affectedIndexName.Name, affectedIndexName.ModuleName);
                     index.Remove(events, exprEvaluatorContext);
                 }
 
                 // rollback change to events
                 for (var i = 0; i < events.Length; i++) {
-                    var oa = (ObjectArrayBackedEventBean) events[i];
+                    var oa = (ObjectArrayBackedEventBean)events[i];
                     oa.PropertyValues = previousData[i];
                 }
 
                 // add old events
-                foreach (var affectedIndexName in _affectedIndexNames) {
-                    var index = instance.GetIndex(affectedIndexName);
+                foreach (var affectedIndexName in affectedIndexNames) {
+                    var index = instance.GetIndex(affectedIndexName.Name, affectedIndexName.ModuleName);
                     index.Add(events, exprEvaluatorContext);
                 }
 

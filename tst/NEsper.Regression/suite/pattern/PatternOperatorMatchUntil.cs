@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -9,26 +9,25 @@
 using System;
 using System.Collections.Generic;
 
-using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
+using com.espertech.esper.regressionlib.support.client;
 using com.espertech.esper.regressionlib.support.patternassert;
 using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
-
-using static com.espertech.esper.regressionlib.framework.SupportMessageAssertUtil;
-
+using NUnit.Framework.Legacy;
 using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A;
 
 namespace com.espertech.esper.regressionlib.suite.pattern
 {
     public class PatternOperatorMatchUntil
     {
-        public static IList<RegressionExecution> Executions()
+        public static ICollection<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
             WithMatchUntilSimple(execs);
@@ -106,81 +105,36 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             return execs;
         }
 
-        private static void ValidateStmt(
-            RegressionEnvironment env,
-            string stmtText,
-            int numEventsA,
-            bool match,
-            int? matchCount)
-        {
-            env.CompileDeploy("@Name('s0') select * from pattern[" + stmtText + "]").AddListener("s0");
-
-            for (var i = 0; i < numEventsA; i++) {
-                env.SendEventBean(new SupportBean("A", i));
-            }
-
-            Assert.IsFalse(env.Listener("s0").IsInvoked);
-            env.SendEventBean(new SupportBean("B", -1));
-
-            Assert.AreEqual(match, env.Listener("s0").IsInvoked);
-            if (!match) {
-                env.UndeployAll();
-                return;
-            }
-
-            var valueATag = env.Listener("s0").AssertOneGetNewAndReset().Get("a");
-            if (matchCount == null) {
-                Assert.IsNull(valueATag);
-            }
-            else {
-                Assert.That(valueATag, Is.InstanceOf<Array>());
-                Assert.AreEqual((int) matchCount, ((Array) valueATag).Length);
-            }
-
-            env.UndeployAll();
-        }
-
-        private static void TryInvalidPattern(
-            RegressionEnvironment env,
-            string epl,
-            string message)
-        {
-            TryInvalidCompile(env, "select * from pattern[" + epl + "]", message);
-        }
-
         public class PatternMatchUntilSimple : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new[] {"c0", "c1", "c2"};
+                var fields = "c0,c1,c2".SplitCsv();
 
                 var epl =
-                    "@Name('s0') select a[0].TheString as c0, a[1].TheString as c1, b.TheString as c2 from pattern [a=SupportBean(IntPrimitive=0) until b=SupportBean(IntPrimitive=1)]";
+                    "@name('s0') select a[0].TheString as c0, a[1].TheString as c1, b.TheString as c2 from pattern [a=SupportBean(IntPrimitive=0) until b=SupportBean(IntPrimitive=1)]";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.Milestone(0);
 
                 SendSupportBean(env, "A1", 0);
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+                env.AssertListenerNotInvoked("s0");
 
                 env.Milestone(1);
 
                 SendSupportBean(env, "A2", 0);
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+                env.AssertListenerNotInvoked("s0");
 
                 env.Milestone(2);
 
                 SendSupportBean(env, "B1", 1);
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {"A1", "A2", "B1"});
+                env.AssertPropsNew("s0", fields, new object[] { "A1", "A2", "B1" });
 
                 env.Milestone(3);
 
                 SendSupportBean(env, "A1", 0);
                 SendSupportBean(env, "B1", 1);
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+                env.AssertListenerNotInvoked("s0");
 
                 env.UndeployAll();
             }
@@ -194,7 +148,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             }
         }
 
-        internal class PatternOp : RegressionExecution
+        private class PatternOp : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
@@ -229,13 +183,13 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                     "(a=SupportBean_A or b=SupportBean_B) until d=SupportBean_D(Id='D3')");
                 testCase.Add(
                     "D3",
-                    new[] {
-                        new[] {"a[0]", events.GetEvent("A1")},
-                        new[] {"a[1]", events.GetEvent("A2")},
-                        new[] {"b[0]", events.GetEvent("B1")},
-                        new[] {"b[1]", events.GetEvent("B2")},
-                        new[] {"b[2]", events.GetEvent("B3")},
-                        new[] {"d", events.GetEvent("D3")}
+                    new object[][] {
+                        new object[] { "a[0]", events.GetEvent("A1") },
+                        new object[] { "a[1]", events.GetEvent("A2") },
+                        new object[] { "b[0]", events.GetEvent("B1") },
+                        new object[] { "b[1]", events.GetEvent("B2") },
+                        new object[] { "b[2]", events.GetEvent("B3") },
+                        new object[] { "d", events.GetEvent("D3") }
                     });
                 testCaseList.AddTest(testCase);
 
@@ -243,12 +197,12 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                     "(a=SupportBean_A or b=SupportBean_B) until (g=SupportBean_G or d=SupportBean_D)");
                 testCase.Add(
                     "D1",
-                    new[] {
-                        new[] {"a[0]", events.GetEvent("A1")},
-                        new[] {"a[1]", events.GetEvent("A2")},
-                        new[] {"b[0]", events.GetEvent("B1")},
-                        new[] {"b[1]", events.GetEvent("B2")},
-                        new[] {"d", events.GetEvent("D1")}
+                    new object[][] {
+                        new object[] { "a[0]", events.GetEvent("A1") },
+                        new object[] { "a[1]", events.GetEvent("A2") },
+                        new object[] { "b[0]", events.GetEvent("B1") },
+                        new object[] { "b[1]", events.GetEvent("B2") },
+                        new object[] { "d", events.GetEvent("D1") }
                     });
                 testCaseList.AddTest(testCase);
 
@@ -531,9 +485,9 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 testCase = new EventExpressionCase("every [2] a=SupportBean_A");
                 testCase.Add(
                     "A2",
-                    new[] {
-                        new[] {"a[0]", events.GetEvent("A1")},
-                        new[] {"a[1]", events.GetEvent("A2")}
+                    new object[][] {
+                        new object[] { "a[0]", events.GetEvent("A1") },
+                        new object[] { "a[1]", events.GetEvent("A2") },
                     });
                 testCaseList.AddTest(testCase);
 
@@ -541,10 +495,10 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                     "every [2] a=SupportBean_A until d=SupportBean_D"); // every has precedence; ESPER-339
                 testCase.Add(
                     "D1",
-                    new[] {
-                        new[] {"a[0]", events.GetEvent("A1")},
-                        new[] {"a[1]", events.GetEvent("A2")},
-                        new[] {"d", events.GetEvent("D1")}
+                    new object[][] {
+                        new object[] { "a[0]", events.GetEvent("A1") },
+                        new object[] { "a[1]", events.GetEvent("A2") },
+                        new object[] { "d", events.GetEvent("D1") },
                     });
                 testCaseList.AddTest(testCase);
 
@@ -573,94 +527,99 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 testCase = new EventExpressionCase("(a=SupportBean_A until b=SupportBean_B) until g=SupportBean_G");
                 testCase.Add(
                     "G1",
-                    new[] {
-                        new[] {"a[0]", events.GetEvent("A1")}, new[] {"b[0]", events.GetEvent("B1")},
-                        new[] {"a[1]", events.GetEvent("A2")}, new[] {"b[1]", events.GetEvent("B2")},
-                        new[] {"b[2]", events.GetEvent("B3")},
-                        new[] {"g", events.GetEvent("G1")}
+                    new object[][] {
+                        new object[] { "a[0]", events.GetEvent("A1") }, new object[] { "b[0]", events.GetEvent("B1") },
+                        new object[] { "a[1]", events.GetEvent("A2") }, new object[] { "b[1]", events.GetEvent("B2") },
+                        new object[] { "b[2]", events.GetEvent("B3") },
+                        new object[] { "g", events.GetEvent("G1") }
                     });
                 testCaseList.AddTest(testCase);
 
                 testCase = new EventExpressionCase("SupportBean_B until not SupportBean_B");
                 testCaseList.AddTest(testCase);
 
-                var util = new PatternTestHarness(events, testCaseList, GetType());
+                var util = new PatternTestHarness(events, testCaseList);
                 util.RunTest(env);
             }
         }
 
-        internal class PatternSelectArray : RegressionExecution
+        private class PatternSelectArray : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 var stmt =
-                    "@Name('s0') select a, b, a[0] as a0, a[0].Id as a0Id, a[1] as a1, a[1].Id as a1Id, a[2] as a2, a[2].Id as a2Id from pattern [a=SupportBean_A until b=SupportBean_B]";
+                    "@name('s0') select a, b, a[0] as a0, a[0].Id as a0Id, a[1] as a1, a[1].Id as a1Id, a[2] as a2, a[2].Id as a2Id from pattern [a=SupportBean_A until b=SupportBean_B]";
                 env.CompileDeploy(stmt).AddListener("s0");
 
                 env.Milestone(0);
 
-                var eventA1 = new SupportBean_A("A1");
+                object eventA1 = new SupportBean_A("A1");
                 env.SendEventBean(eventA1);
 
                 env.Milestone(1);
 
-                var eventA2 = new SupportBean_A("A2");
+                object eventA2 = new SupportBean_A("A2");
                 env.SendEventBean(eventA2);
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+                env.AssertListenerNotInvoked("s0");
 
                 env.Milestone(2);
 
-                var eventB1 = new SupportBean_B("B1");
+                object eventB1 = new SupportBean_B("B1");
                 env.SendEventBean(eventB1);
 
-                var theEvent = env.Listener("s0").AssertOneGetNewAndReset();
-                EPAssertionUtil.AssertEqualsExactOrder(
-                    (object[]) theEvent.Get("a"),
-                    new object[] {eventA1, eventA2});
-                Assert.AreEqual(eventA1, theEvent.Get("a0"));
-                Assert.AreEqual(eventA2, theEvent.Get("a1"));
-                Assert.IsNull(theEvent.Get("a2"));
-                Assert.AreEqual("A1", theEvent.Get("a0Id"));
-                Assert.AreEqual("A2", theEvent.Get("a1Id"));
-                Assert.IsNull(theEvent.Get("a2Id"));
-                Assert.AreEqual(eventB1, theEvent.Get("b"));
+                env.AssertEventNew(
+                    "s0",
+                    theEvent => {
+                        EPAssertionUtil.AssertEqualsExactOrder(
+                            (object[])theEvent.Get("a"),
+                            new object[] { eventA1, eventA2 });
+                        ClassicAssert.AreEqual(eventA1, theEvent.Get("a0"));
+                        ClassicAssert.AreEqual(eventA2, theEvent.Get("a1"));
+                        ClassicAssert.IsNull(theEvent.Get("a2"));
+                        ClassicAssert.AreEqual("A1", theEvent.Get("a0Id"));
+                        ClassicAssert.AreEqual("A2", theEvent.Get("a1Id"));
+                        ClassicAssert.IsNull(theEvent.Get("a2Id"));
+                        ClassicAssert.AreEqual(eventB1, theEvent.Get("b"));
+                    });
 
                 env.UndeployModuleContaining("s0");
 
                 // try wildcard
-                stmt = "@Name('s0') select * from pattern [a=SupportBean_A until b=SupportBean_B]";
+                stmt = "@name('s0') select * from pattern [a=SupportBean_A until b=SupportBean_B]";
                 env.CompileDeploy(stmt).AddListener("s0");
 
                 env.SendEventBean(eventA1);
                 env.SendEventBean(eventA2);
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+                env.AssertListenerNotInvoked("s0");
                 env.SendEventBean(eventB1);
 
-                theEvent = env.Listener("s0").AssertOneGetNewAndReset();
-                EPAssertionUtil.AssertEqualsExactOrder(
-                    (object[]) theEvent.Get("a"),
-                    new object[] {eventA1, eventA2});
-                Assert.AreSame(eventA1, theEvent.Get("a[0]"));
-                Assert.AreSame(eventA2, theEvent.Get("a[1]"));
-                Assert.IsNull(theEvent.Get("a[2]"));
-                Assert.AreEqual("A1", theEvent.Get("a[0].Id"));
-                Assert.AreEqual("A2", theEvent.Get("a[1].Id"));
-                Assert.IsNull(theEvent.Get("a[2].Id"));
-                Assert.AreSame(eventB1, theEvent.Get("b"));
+                env.AssertEventNew(
+                    "s0",
+                    theEvent => {
+                        EPAssertionUtil.AssertEqualsExactOrder(
+                            (object[])theEvent.Get("a"),
+                            new object[] { eventA1, eventA2 });
+                        ClassicAssert.AreSame(eventA1, theEvent.Get("a[0]"));
+                        ClassicAssert.AreSame(eventA2, theEvent.Get("a[1]"));
+                        ClassicAssert.IsNull(theEvent.Get("a[2]"));
+                        ClassicAssert.AreEqual("A1", theEvent.Get("a[0].Id"));
+                        ClassicAssert.AreEqual("A2", theEvent.Get("a[1].Id"));
+                        ClassicAssert.IsNull(theEvent.Get("a[2].Id"));
+                        ClassicAssert.AreSame(eventB1, theEvent.Get("b"));
+                    });
 
                 env.UndeployAll();
             }
         }
 
-        internal class PatternUseFilter : RegressionExecution
+        private class PatternUseFilter : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 string stmt;
-                EventBean theEvent;
 
                 stmt =
-                    "@Name('s0') select * from pattern [a=SupportBean_A until b=SupportBean_B -> c=SupportBean_C(Id = ('C' || a[0].Id || a[1].Id || b.Id))]";
+                    "@name('s0') select * from pattern [a=SupportBean_A until b=SupportBean_B -> c=SupportBean_C(Id = ('C' || a[0].Id || a[1].Id || b.Id))]";
                 env.CompileDeploy(stmt).AddListener("s0");
 
                 object eventA1 = new SupportBean_A("A1");
@@ -679,130 +638,145 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.Milestone(2);
 
                 env.SendEventBean(new SupportBean_C("C1"));
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+                env.AssertListenerNotInvoked("s0");
 
                 env.Milestone(3);
 
                 object eventC1 = new SupportBean_C("CA1A2B1");
                 env.SendEventBean(eventC1);
-                theEvent = env.Listener("s0").AssertOneGetNewAndReset();
-                Assert.AreEqual(eventA1, theEvent.Get("a[0]"));
-                Assert.AreEqual(eventA2, theEvent.Get("a[1]"));
-                Assert.IsNull(theEvent.Get("a[2]"));
-                Assert.AreEqual(eventB1, theEvent.Get("b"));
-                Assert.AreEqual(eventC1, theEvent.Get("c"));
+                env.AssertEventNew(
+                    "s0",
+                    theEvent => {
+                        ClassicAssert.AreEqual(eventA1, theEvent.Get("a[0]"));
+                        ClassicAssert.AreEqual(eventA2, theEvent.Get("a[1]"));
+                        ClassicAssert.IsNull(theEvent.Get("a[2]"));
+                        ClassicAssert.AreEqual(eventB1, theEvent.Get("b"));
+                        ClassicAssert.AreEqual(eventC1, theEvent.Get("c"));
+                    });
                 env.UndeployAll();
 
                 // Test equals-optimization with array event
                 stmt =
-                    "@Name('s0') select * from pattern [a=SupportBean_A until b=SupportBean_B -> c=SupportBean(TheString = a[1].Id)]";
+                    "@name('s0') select * from pattern [a=SupportBean_A until b=SupportBean_B -> c=SupportBean(TheString = a[1].Id)]";
                 env.CompileDeploy(stmt).AddListener("s0");
 
                 env.SendEventBean(new SupportBean_A("A1"));
                 env.SendEventBean(new SupportBean_A("A2"));
                 env.SendEventBean(new SupportBean_B("B1"));
 
+                env.Milestone(4);
+
                 env.SendEventBean(new SupportBean("A3", 20));
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+                env.AssertListenerNotInvoked("s0");
 
                 env.SendEventBean(new SupportBean("A2", 10));
-                theEvent = env.Listener("s0").AssertOneGetNewAndReset();
-                Assert.AreEqual(10, theEvent.Get("c.IntPrimitive"));
+                env.AssertEqualsNew("s0", "c.IntPrimitive", 10);
                 env.UndeployAll();
 
                 // Test in-optimization
                 stmt =
-                    "@Name('s0') select * from pattern [a=SupportBean_A until b=SupportBean_B -> c=SupportBean(TheString in(a[2].Id))]";
+                    "@name('s0') select * from pattern [a=SupportBean_A until b=SupportBean_B -> c=SupportBean(TheString in(a[2].Id))]";
                 env.CompileDeploy(stmt).AddListener("s0");
 
                 env.SendEventBean(new SupportBean_A("A1"));
                 env.SendEventBean(new SupportBean_A("A2"));
+
+                env.Milestone(5);
+
                 env.SendEventBean(new SupportBean_A("A3"));
                 env.SendEventBean(new SupportBean_B("B1"));
 
                 env.SendEventBean(new SupportBean("A2", 20));
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+                env.AssertListenerNotInvoked("s0");
 
                 env.SendEventBean(new SupportBean("A3", 5));
-                theEvent = env.Listener("s0").AssertOneGetNewAndReset();
-                Assert.AreEqual(5, theEvent.Get("c.IntPrimitive"));
+                env.AssertEqualsNew("s0", "c.IntPrimitive", 5);
                 env.UndeployAll();
 
                 // Test not-in-optimization
                 stmt =
-                    "@Name('s0') select * from pattern [a=SupportBean_A until b=SupportBean_B -> c=SupportBean(TheString!=a[0].Id and TheString!=a[1].Id and TheString!=a[2].Id)]";
+                    "@name('s0') select * from pattern [a=SupportBean_A until b=SupportBean_B -> c=SupportBean(TheString!=a[0].Id and TheString!=a[1].Id and TheString!=a[2].Id)]";
                 env.CompileDeploy(stmt).AddListener("s0");
 
                 env.SendEventBean(new SupportBean_A("A1"));
                 env.SendEventBean(new SupportBean_A("A2"));
+
+                env.Milestone(6);
+
                 env.SendEventBean(new SupportBean_A("A3"));
                 env.SendEventBean(new SupportBean_B("B1"));
 
                 env.SendEventBean(new SupportBean("A2", 20));
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+                env.AssertListenerNotInvoked("s0");
                 env.SendEventBean(new SupportBean("A1", 20));
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+                env.AssertListenerNotInvoked("s0");
 
                 env.SendEventBean(new SupportBean("A6", 5));
-                theEvent = env.Listener("s0").AssertOneGetNewAndReset();
-                Assert.AreEqual(5, theEvent.Get("c.IntPrimitive"));
+                env.AssertEqualsNew("s0", "c.IntPrimitive", 5);
                 env.UndeployAll();
 
                 // Test range-optimization
-                stmt = "@Name('s0') select * from pattern [" +
-                       " a=SupportBean(TheString like 'A%') until " +
-                       " b=SupportBean(TheString like 'B%') -> " +
-                       " c=SupportBean(IntPrimitive between a[0].IntPrimitive and a[1].IntPrimitive)" +
-                       "]";
+                stmt =
+                    "@name('s0') select * from pattern [a=SupportBean(TheString like 'A%') until b=SupportBean(TheString like 'B%') -> c=SupportBean(IntPrimitive between a[0].IntPrimitive and a[1].IntPrimitive)]";
                 env.CompileDeploy(stmt).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("A1", 5));
                 env.SendEventBean(new SupportBean("A2", 8));
                 env.SendEventBean(new SupportBean("B1", -1));
 
+                env.Milestone(7);
+
                 env.SendEventBean(new SupportBean("E1", 20));
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+                env.AssertListenerNotInvoked("s0");
                 env.SendEventBean(new SupportBean("E2", 3));
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+                env.AssertListenerNotInvoked("s0");
 
                 env.SendEventBean(new SupportBean("E3", 5));
-                theEvent = env.Listener("s0").AssertOneGetNewAndReset();
-                Assert.AreEqual(5, theEvent.Get("c.IntPrimitive"));
+                env.AssertEqualsNew("s0", "c.IntPrimitive", 5);
 
                 env.UndeployAll();
             }
         }
 
-        internal class PatternRepeatUseTags : RegressionExecution
+        private class PatternRepeatUseTags : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 var stmt =
-                    "@Name('s0') select * from pattern [every [2] (a=SupportBean_A() -> b=SupportBean_B(Id=a.Id))]";
+                    "@name('s0') select * from pattern [every [2] (a=SupportBean_A() -> b=SupportBean_B(Id=a.Id))]";
 
                 env.CompileDeploy(stmt);
                 env.AddListener("s0");
 
                 env.SendEventBean(new SupportBean_A("A1"));
                 env.SendEventBean(new SupportBean_B("A1"));
+
+                env.Milestone(0);
+
                 env.SendEventBean(new SupportBean_A("A2"));
                 env.SendEventBean(new SupportBean_B("A2"));
-                Assert.IsTrue(env.Listener("s0").IsInvoked);
+                env.AssertListenerInvoked("s0");
 
                 env.UndeployAll();
 
                 // test with timer:interval
                 env.AdvanceTime(0);
                 var query =
-                    "@Name('s0') select * from pattern [every ([2:]e1=SupportBean(TheString='2') until timer:interval(5))->([2:]e2=SupportBean(TheString='3') until timer:interval(2))]";
+                    "@name('s0') select * from pattern [every ([2:]e1=SupportBean(TheString='2') until timer:interval(5))->([2:]e2=SupportBean(TheString='3') until timer:interval(2))]";
                 env.CompileDeploy(query).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("2", 0));
+
+                env.Milestone(1);
+
                 env.SendEventBean(new SupportBean("2", 0));
                 env.AdvanceTime(5000);
 
                 env.SendEventBean(new SupportBean("3", 0));
                 env.SendEventBean(new SupportBean("3", 0));
+
+                env.Milestone(2);
+
                 env.SendEventBean(new SupportBean("3", 0));
                 env.SendEventBean(new SupportBean("3", 0));
                 env.AdvanceTime(10000);
@@ -814,54 +788,64 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 // test followed by 3 streams
                 env.UndeployAll();
 
-                var epl = "@Name('s0') select * from pattern [ every [2] A=SupportBean(TheString='1') " +
+                var epl = "@name('s0') select * from pattern [ every [2] A=SupportBean(TheString='1') " +
                           "-> [2] B=SupportBean(TheString='2' and IntPrimitive=A[0].IntPrimitive)" +
                           "-> [2] C=SupportBean(TheString='3' and IntPrimitive=A[0].IntPrimitive)]";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("1", 10));
                 env.SendEventBean(new SupportBean("1", 20));
+
+                env.Milestone(3);
+
                 env.SendEventBean(new SupportBean("2", 10));
                 env.SendEventBean(new SupportBean("2", 10));
                 env.SendEventBean(new SupportBean("3", 10));
                 env.SendEventBean(new SupportBean("3", 10));
-                Assert.IsTrue(env.Listener("s0").IsInvoked);
+                env.AssertListenerInvoked("s0");
 
                 env.UndeployAll();
             }
         }
 
-        internal class PatternArrayFunctionRepeat : RegressionExecution
+        private class PatternArrayFunctionRepeat : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 var stmt =
-                    $"@Name('s0') select " +
+                    $"@name('s0') select " +
                     $" SupportStaticMethodLib.ArrayLength(a) as length, " +
-                    $" {typeof(Arrays).FullName}.GetLength(a) as l2 from pattern [[1:] a=SupportBean_A until SupportBean_B]";
+                    $" {typeof(Arrays).FullName}.GetLength(a) as l2 " +
+                    $" from pattern [[1:] a=SupportBean_A until SupportBean_B]";
 
                 env.CompileDeploy(stmt);
                 env.AddListener("s0");
 
                 env.SendEventBean(new SupportBean_A("A1"));
                 env.SendEventBean(new SupportBean_A("A2"));
+
+                env.Milestone(0);
+
                 env.SendEventBean(new SupportBean_A("A3"));
                 env.SendEventBean(new SupportBean_B("A2"));
-                var theEvent = env.Listener("s0").AssertOneGetNewAndReset();
-                Assert.AreEqual(3, theEvent.Get("length"));
-                Assert.AreEqual(3, theEvent.Get("l2"));
+                env.AssertEventNew(
+                    "s0",
+                    theEvent => {
+                        ClassicAssert.AreEqual(3, theEvent.Get("length"));
+                        ClassicAssert.AreEqual(3, theEvent.Get("l2"));
+                    });
 
                 env.UndeployAll();
             }
         }
 
-        internal class PatternExpressionBounds : RegressionExecution
+        private class PatternExpressionBounds : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 // test variables - closed bounds
-                env.Runtime.VariableService.SetVariableValue(null, "lower", 2);
-                env.Runtime.VariableService.SetVariableValue(null, "upper", 3);
+                env.RuntimeSetVariable(null, "lower", 2);
+                env.RuntimeSetVariable(null, "upper", 3);
                 var stmtOne = "[lower:upper] a=SupportBean (TheString = 'A') until b=SupportBean (TheString = 'B')";
                 ValidateStmt(env, stmtOne, 0, false, null);
                 ValidateStmt(env, stmtOne, 1, false, null);
@@ -871,8 +855,8 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 ValidateStmt(env, stmtOne, 5, true, 3);
 
                 // test variables - half open
-                env.Runtime.VariableService.SetVariableValue(null, "lower", 3);
-                env.Runtime.VariableService.SetVariableValue(null, "upper", null);
+                env.RuntimeSetVariable(null, "lower", 3);
+                env.RuntimeSetVariable(null, "upper", null);
                 var stmtTwo = "[lower:] a=SupportBean (TheString = 'A') until b=SupportBean (TheString = 'B')";
                 ValidateStmt(env, stmtTwo, 0, false, null);
                 ValidateStmt(env, stmtTwo, 1, false, null);
@@ -882,8 +866,8 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 ValidateStmt(env, stmtTwo, 5, true, 5);
 
                 // test variables - half closed
-                env.Runtime.VariableService.SetVariableValue(null, "lower", null);
-                env.Runtime.VariableService.SetVariableValue(null, "upper", 2);
+                env.RuntimeSetVariable(null, "lower", null);
+                env.RuntimeSetVariable(null, "upper", 2);
                 var stmtThree = "[:upper] a=SupportBean (TheString = 'A') until b=SupportBean (TheString = 'B')";
                 ValidateStmt(env, stmtThree, 0, true, null);
                 ValidateStmt(env, stmtThree, 1, true, 1);
@@ -893,17 +877,16 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 ValidateStmt(env, stmtThree, 5, true, 2);
 
                 // test followed-by - bounded
-                env.CompileDeploy("@Name('s0') select * from pattern [S0=SupportBean_S0 -> [S0.Id] b=SupportBean]")
+                env.CompileDeploy("@name('s0') select * from pattern [s0=SupportBean_S0 -> [s0.Id] b=SupportBean]")
                     .AddListener("s0");
                 env.SendEventBean(new SupportBean_S0(2));
                 env.SendEventBean(new SupportBean("E1", 1));
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+                env.AssertListenerNotInvoked("s0");
+
+                env.Milestone(0);
 
                 env.SendEventBean(new SupportBean("E2", 2));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    new[] {"b[0].TheString", "b[1].TheString"},
-                    new object[] {"E1", "E2"});
+                env.AssertPropsNew("s0", "b[0].TheString,b[1].TheString".SplitCsv(), new object[] { "E1", "E2" });
 
                 env.UndeployAll();
 
@@ -912,13 +895,14 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 var compiled = env.Compile(epl);
                 env.Deploy(
                     compiled,
-                    new DeploymentOptions().WithStatementSubstitutionParameter(prepared => prepared.SetObject(1, 2)));
+                    new DeploymentOptions().WithStatementSubstitutionParameter(
+                        new SupportPortableDeploySubstitutionParams(1, 2).SetStatementParameters));
                 env.UndeployAll();
 
                 // test exactly-1
                 env.AdvanceTime(0);
                 var eplExact1 =
-                    "@Name('s0') select * from pattern [a=SupportBean_A -> [1] every (timer:interval(10) and not SupportBean_B)]";
+                    "@name('s0') select * from pattern [a=SupportBean_A -> [1] every (timer:interval(10) and not SupportBean_B)]";
                 env.CompileDeploy(eplExact1).AddListener("s0");
 
                 env.AdvanceTime(5000);
@@ -926,25 +910,27 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
                 env.AdvanceTime(6000);
                 env.SendEventBean(new SupportBean_B("B1"));
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+                env.AssertListenerNotInvoked("s0");
 
                 env.AdvanceTime(15999);
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+                env.AssertListenerNotInvoked("s0");
+
+                env.Milestone(1);
+
                 env.AdvanceTime(16000);
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    new[] {"a.Id"},
-                    new object[] {"A1"});
+                env.AssertPropsNew("s0", "a.Id".SplitCsv(), new object[] { "A1" });
 
                 env.AdvanceTime(999999);
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+                env.AssertListenerNotInvoked("s0");
                 env.UndeployAll();
 
                 // test until
                 env.AdvanceTime(1000000);
                 var eplUntilOne =
-                    "@Name('s0') select * from pattern [a=SupportBean_A -> b=SupportBean_B until ([1] every (timer:interval(10) and not SupportBean_C))]";
+                    "@name('s0') select * from pattern [a=SupportBean_A -> b=SupportBean_B until ([1] every (timer:interval(10) and not SupportBean_C))]";
                 env.CompileDeploy(eplUntilOne).AddListener("s0");
+
+                env.Milestone(2);
 
                 env.AdvanceTime(1005000);
                 env.SendEventBean(new SupportBean_A("A1"));
@@ -952,33 +938,36 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.AdvanceTime(1006000);
                 env.SendEventBean(new SupportBean_B("B1"));
                 env.AdvanceTime(1014999);
+
+                env.Milestone(3);
+
                 env.SendEventBean(new SupportBean_B("B2"));
                 env.SendEventBean(new SupportBean_C("C1"));
                 env.AdvanceTime(1015000);
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+                env.AssertListenerNotInvoked("s0");
 
                 env.AdvanceTime(1024998);
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+                env.AssertListenerNotInvoked("s0");
+
+                env.Milestone(4);
+
                 env.AdvanceTime(1024999);
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    new[] {"a.Id", "b[0].Id", "b[1].Id"},
-                    new object[] {"A1", "B1", "B2"});
+                env.AssertPropsNew("s0", "a.Id,b[0].Id,b[1].Id".SplitCsv(), new object[] { "A1", "B1", "B2" });
 
                 env.AdvanceTime(1999999);
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+                env.AssertListenerNotInvoked("s0");
 
                 env.UndeployAll();
             }
         }
 
-        internal class PatternBoundRepeatWithNot : RegressionExecution
+        private class PatternBoundRepeatWithNot : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new[] {"e[0].IntPrimitive", "e[1].IntPrimitive"};
+                var fields = "e[0].IntPrimitive,e[1].IntPrimitive".SplitCsv();
                 var epl =
-                    "@Name('s0') select * from pattern [every [2] (e = SupportBean(TheString='A') and not SupportBean(TheString='B'))]";
+                    "@name('s0') select * from pattern [every [2] (e = SupportBean(TheString='A') and not SupportBean(TheString='B'))]";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("A", 1));
@@ -986,10 +975,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.Milestone(0);
 
                 env.SendEventBean(new SupportBean("A", 2));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {1, 2});
+                env.AssertPropsNew("s0", fields, new object[] { 1, 2 });
 
                 env.SendEventBean(new SupportBean("A", 3));
 
@@ -1000,21 +986,18 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.Milestone(2);
 
                 env.SendEventBean(new SupportBean("A", 5));
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+                env.AssertListenerNotInvoked("s0");
 
                 env.Milestone(3);
 
                 env.SendEventBean(new SupportBean("A", 6));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {5, 6});
+                env.AssertPropsNew("s0", fields, new object[] { 5, 6 });
 
                 env.UndeployAll();
             }
         }
 
-        internal class PatternInvalid : RegressionExecution
+        private class PatternInvalid : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
@@ -1054,7 +1037,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                     env,
                     "(a=SupportBean_A until c=SupportBean_B) -> c=SupportBean_C",
                     "Tag 'c' for event 'SupportBean_C' has already been declared for events of type " +
-                    nameof(SupportBean_B));
+                    typeof(SupportBean_B).FullName);
                 TryInvalidPattern(
                     env,
                     "((a=SupportBean_A until b=SupportBean_B) until a=SupportBean_A)",
@@ -1072,6 +1055,48 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                     "a=SupportBean -> [a.TheString:1] b=SupportBean",
                     "Match-until bounds value expressions must return a numeric value");
             }
+        }
+
+        private static void ValidateStmt(
+            RegressionEnvironment env,
+            string stmtText,
+            int numEventsA,
+            bool match,
+            int? matchCount)
+        {
+            env.CompileDeploy("@name('s0') select * from pattern[" + stmtText + "]").AddListener("s0");
+
+            for (var i = 0; i < numEventsA; i++) {
+                env.SendEventBean(new SupportBean("A", i));
+            }
+
+            env.AssertListenerNotInvoked("s0");
+            env.SendEventBean(new SupportBean("B", -1));
+
+            env.AssertListener(
+                "s0",
+                listener => {
+                    ClassicAssert.AreEqual(match, listener.IsInvoked);
+                    if (match) {
+                        var valueATag = (Array)listener.AssertOneGetNewAndReset().Get("a");
+                        if (matchCount == null) {
+                            ClassicAssert.IsNull(valueATag);
+                        }
+                        else {
+                            ClassicAssert.AreEqual((int)matchCount, valueATag.Length);
+                        }
+                    }
+                });
+
+            env.UndeployAll();
+        }
+
+        private static void TryInvalidPattern(
+            RegressionEnvironment env,
+            string epl,
+            string message)
+        {
+            env.TryInvalidCompile("select * from pattern[" + epl + "]", message);
         }
     }
 } // end of namespace

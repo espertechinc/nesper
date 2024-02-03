@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -29,39 +29,65 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 namespace com.espertech.esper.common.@internal.@event.bean.getter
 {
     /// <summary>
-    ///     Getter for a list property identified by a given index, using vanilla reflection.
+    /// Getter for a list property identified by a given index, using vanilla reflection.
     /// </summary>
     public class ListMethodPropertyGetter : BaseNativePropertyGetter,
         BeanEventPropertyGetter,
         EventPropertyGetterAndIndexed
     {
-        private readonly int _index;
-        private readonly MethodInfo _method;
+        private readonly MethodInfo method;
+        private readonly int index;
 
         public ListMethodPropertyGetter(
             MethodInfo method,
             int index,
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
-            BeanEventTypeFactory beanEventTypeFactory)
-            : base(
-                eventBeanTypedEventFactory,
-                beanEventTypeFactory,
-                TypeHelper.GetGenericReturnType(method, false),
-                null)
+            BeanEventTypeFactory beanEventTypeFactory) : base(
+            eventBeanTypedEventFactory,
+            beanEventTypeFactory,
+            method.ReturnType.GetComponentType())
         {
-            _index = index;
-            _method = method;
-
+            this.index = index;
+            this.method = method;
             if (index < 0) {
                 throw new ArgumentException("Invalid negative index value");
             }
         }
 
-        public object GetBeanProp(object @object)
+        public object Get(
+            EventBean eventBean,
+            int index)
         {
-            return GetBeanPropInternal(@object, _index);
+            return GetBeanPropInternal(eventBean.Underlying, index);
         }
 
+        public object GetBeanProp(object @object)
+        {
+            return GetBeanPropInternal(@object, index);
+        }
+
+        public object GetBeanPropInternal(
+            object @object,
+            int index)
+        {
+            try {
+                var value = method.Invoke(@object, null);
+                var valueList = value.AsObjectList(MagicMarker.SingletonInstance);
+                if (valueList != null) {
+                    if (valueList.Count <= index) {
+                        return null;
+                    }
+
+                    return valueList[index];
+                }
+
+                return null;
+            }
+            catch (InvalidCastException e) {
+                throw PropertyUtility.GetMismatchException(method, @object, e);
+            }
+        }
+        
         public bool IsBeanExistsProperty(object @object)
         {
             return true; // Property exists as the property is not dynamic (unchecked)
@@ -73,14 +99,21 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             return GetBeanProp(underlying);
         }
 
+        public override string ToString()
+        {
+            return "ListMethodPropertyGetter " +
+                   " method=" +
+                   method.ToString() +
+                   " index=" +
+                   index;
+        }
+
         public override bool IsExistsProperty(EventBean eventBean)
         {
             return true; // Property exists as the property is not dynamic (unchecked)
         }
 
-        public override Type BeanPropType => TypeHelper.GetGenericReturnType(_method, false);
-
-        public override Type TargetType => _method.DeclaringType;
+        public override Type TargetType => method.DeclaringType;
 
         public override CodegenExpression EventBeanGetCodegen(
             CodegenExpression beanExpression,
@@ -107,9 +140,14 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             CodegenClassScope codegenClassScope)
         {
             return LocalMethod(
-                GetBeanPropInternalCodegen(codegenMethodScope, BeanPropType, TargetType, _method, codegenClassScope),
+                GetBeanPropInternalCodegen(
+                    codegenMethodScope,
+                    BeanPropType,
+                    TargetType,
+                    method,
+                    codegenClassScope),
                 underlyingExpression,
-                Constant(_index));
+                Constant(index));
         }
 
         public override CodegenExpression UnderlyingExistsCodegen(
@@ -118,35 +156,6 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             CodegenClassScope codegenClassScope)
         {
             return ConstantTrue();
-        }
-
-        public object Get(
-            EventBean eventBean,
-            int index)
-        {
-            return GetBeanPropInternal(eventBean.Underlying, index);
-        }
-
-        public object GetBeanPropInternal(
-            object @object,
-            int index)
-        {
-            try {
-                var value = _method.Invoke(@object, null);
-                var valueList = value.AsObjectList(MagicMarker.SingletonInstance);
-                if (valueList != null) {
-                    if (valueList.Count <= index) {
-                        return null;
-                    }
-
-                    return valueList[index];
-                }
-
-                return null;
-            }
-            catch (InvalidCastException e) {
-                throw PropertyUtility.GetMismatchException(_method, @object, e);
-            }
         }
 
         private static CodegenMethod GetBeanPropInternalCodegen(
@@ -159,25 +168,15 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             return codegenMethodScope
                 .MakeChild(beanPropType, typeof(ListMethodPropertyGetter), codegenClassScope)
                 .AddParam(targetType, "@object")
-                .AddParam(typeof(int), "index")
+                .AddParam<int>("index")
                 .Block
                 .DeclareVar<object>("value", ExprDotMethod(Ref("@object"), method.Name))
+                .IfRefNotTypeReturnConst("value", typeof(IList<object>), null)
                 .DeclareVar<IList<object>>(
                     "l",
-                    CodegenLegoCast.CastSafeFromObjectType(
-                        typeof(IList<object>),
-                        Ref("value")))
-                .IfRefNullReturnNull("l")
+                    Cast(typeof(IList<object>), Ref("value")))
                 .IfConditionReturnConst(Relational(ExprDotName(Ref("l"), "Count"), LE, Ref("index")), null)
-                .MethodReturn(
-                    Cast(
-                        beanPropType,
-                        ArrayAtIndex(Ref("l"), Ref("index"))));
-        }
-
-        public override string ToString()
-        {
-            return $"ListMethodPropertyGetter method={_method} index={_index}";
+                .MethodReturn(Cast(beanPropType, ExprDotMethod(Ref("l"), "Get", Ref("index"))));
         }
 
         public CodegenExpression EventBeanGetIndexedCodegen(
@@ -187,7 +186,12 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             CodegenExpression key)
         {
             return LocalMethod(
-                GetBeanPropInternalCodegen(codegenMethodScope, BeanPropType, TargetType, _method, codegenClassScope),
+                GetBeanPropInternalCodegen(
+                    codegenMethodScope,
+                    BeanPropType,
+                    TargetType,
+                    method,
+                    codegenClassScope),
                 CastUnderlying(TargetType, beanExpression),
                 key);
         }

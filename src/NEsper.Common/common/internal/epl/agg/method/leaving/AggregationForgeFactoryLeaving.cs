@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -9,51 +9,42 @@
 using System;
 
 using com.espertech.esper.common.client;
-using com.espertech.esper.common.@internal.bytecodemodel.@base;
-using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.agg.method.core;
 using com.espertech.esper.common.@internal.epl.expression.agg.@base;
 using com.espertech.esper.common.@internal.epl.expression.agg.method;
 using com.espertech.esper.common.@internal.epl.expression.core;
 
+
 namespace com.espertech.esper.common.@internal.epl.agg.method.leaving
 {
-	public class AggregationForgeFactoryLeaving : AggregationForgeFactoryBase
-	{
-		private readonly ExprLeavingAggNode parent;
-		private AggregatorLeaving forge;
+    public class AggregationForgeFactoryLeaving : AggregationForgeFactoryBase
+    {
+        protected readonly ExprLeavingAggNode parent;
+        protected readonly AggregatorLeaving forge;
 
-		public AggregationForgeFactoryLeaving(ExprLeavingAggNode parent)
-		{
-			this.parent = parent;
-		}
+        public AggregationForgeFactoryLeaving(ExprLeavingAggNode parent)
+        {
+            this.parent = parent;
+            forge = new AggregatorLeaving(this);
+        }
 
-		public override Type ResultType => typeof(bool?);
+        public override ExprForge[] GetMethodAggregationForge(
+            bool join,
+            EventType[] typesPerStream)
+        {
+            return ExprMethodAggUtil.GetDefaultForges(parent.PositionalParams, join, typesPerStream);
+        }
 
-		public override ExprAggregateNodeBase AggregationExpression => parent;
+        public override Type ResultType => typeof(bool?);
 
-		public override void InitMethodForge(
-			int col,
-			CodegenCtor rowCtor,
-			CodegenMemberCol membersColumnized,
-			CodegenClassScope classScope)
-		{
-			forge = new AggregatorLeaving(this, col, membersColumnized);
-		}
+        public override ExprAggregateNodeBase AggregationExpression => parent;
 
-		public override AggregatorMethod Aggregator => forge;
+        public override AggregatorMethod Aggregator => forge;
 
-		public override AggregationPortableValidation AggregationPortableValidation => new AggregationPortableValidationLeaving(
-			parent.IsDistinct,
-			parent.OptionalFilter != null,
-			typeof(bool));
-
-		public override ExprForge[] GetMethodAggregationForge(
-			bool join,
-			EventType[] typesPerStream)
-		{
-			return ExprMethodAggUtil.GetDefaultForges(parent.PositionalParams, join, typesPerStream);
-		}
-	}
+        public override AggregationPortableValidation AggregationPortableValidation => new AggregationPortableValidationLeaving(
+            parent.IsDistinct,
+            parent.OptionalFilter != null,
+            typeof(bool));
+    }
 } // end of namespace

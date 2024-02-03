@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.io;
 
 namespace com.espertech.esper.common.@internal.collection
 {
@@ -80,7 +81,7 @@ namespace com.espertech.esper.common.@internal.collection
             }
 
             double? valueAtIndex = _values[index];
-            if ((valueAtIndex != null) && (valueAtIndex.Value != val)) {
+            if (valueAtIndex != null && valueAtIndex.Value != val) {
                 throw new IllegalStateException("Value not found in collection");
             }
 
@@ -203,6 +204,33 @@ namespace com.espertech.esper.common.@internal.collection
                     return nextMiddle;
                 }
             }
+        }
+
+        /// <summary>
+        /// NOTE: Code-generation-invoked method, method name and parameter order matters
+        /// </summary>
+        public static void WritePoints(
+            DataOutput output,
+            SortedDoubleVector vector)
+        {
+            output.WriteInt(vector.Values.Count);
+            foreach (var num in vector.Values) {
+                output.WriteDouble(num);
+            }
+        }
+
+        /// <summary>
+        /// NOTE: Code-generation-invoked method, method name and parameter order matters
+        /// </summary>
+        public static SortedDoubleVector ReadPoints(DataInput input)
+        {
+            var points = new SortedDoubleVector();
+            var size = input.ReadInt();
+            for (var i = 0; i < size; i++) {
+                points.Add(input.ReadDouble());
+            }
+
+            return points;
         }
     }
 }

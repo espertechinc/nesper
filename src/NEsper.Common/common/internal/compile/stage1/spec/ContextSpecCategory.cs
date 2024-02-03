@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -23,7 +24,9 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
 {
     public class ContextSpecCategory : ContextSpec
     {
-        [NonSerialized] private FilterSpecCompiled filterSpecCompiled;
+        [JsonIgnore]
+        [NonSerialized]
+        private FilterSpecCompiled filterSpecCompiled;
 
         public ContextSpecCategory(
             IList<ContextSpecCategoryItem> items,
@@ -68,9 +71,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
             }
 
             method.Block
-                .DeclareVar<ContextControllerDetailCategory>(
-                    "detail",
-                    NewInstance(typeof(ContextControllerDetailCategory)))
+                .DeclareVarNewInstance<ContextControllerDetailCategory>("detail")
                 .SetProperty(Ref("detail"), "FilterSpecActivatable", Ref("filterSpec"))
                 .SetProperty(Ref("detail"), "Items", Ref("items"))
                 .MethodReturn(Ref("detail"));

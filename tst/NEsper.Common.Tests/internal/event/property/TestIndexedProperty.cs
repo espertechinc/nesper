@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -15,6 +15,7 @@ using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.supportunit.@event;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.@event.property
 {
@@ -50,12 +51,12 @@ namespace com.espertech.esper.common.@internal.@event.property
                         eventType,
                         EventBeanTypedEventFactoryCompileTime.INSTANCE,
                         supportEventTypeFactory.BEAN_EVENT_TYPE_FACTORY);
-                Assert.AreEqual(expected[i], getter.Get(theEvent));
+                ClassicAssert.AreEqual(expected[i], getter.Get(theEvent));
             }
 
             // try invalid case
             var ind = new IndexedProperty("dummy", 0);
-            Assert.IsNull(
+            ClassicAssert.IsNull(
                 ind.GetGetter(
                     eventType,
                     EventBeanTypedEventFactoryCompileTime.INSTANCE,
@@ -65,10 +66,9 @@ namespace com.espertech.esper.common.@internal.@event.property
         [Test]
         public void TestGetPropertyType()
         {
-            Type[] expected = {typeof(int), typeof(int), typeof(int), typeof(int)};
             for (var i = 0; i < indexed.Length; i++) {
-                Assert.AreEqual(
-                    expected[i],
+                ClassicAssert.AreEqual(
+                    typeof(int),
                     indexed[i]
                         .GetPropertyType(
                             eventType,
@@ -77,7 +77,7 @@ namespace com.espertech.esper.common.@internal.@event.property
 
             // try invalid case
             var ind = new IndexedProperty("dummy", 0);
-            Assert.IsNull(
+            ClassicAssert.IsNull(
                 ind.GetPropertyType(
                     eventType,
                     supportEventTypeFactory.BEAN_EVENT_TYPE_FACTORY));

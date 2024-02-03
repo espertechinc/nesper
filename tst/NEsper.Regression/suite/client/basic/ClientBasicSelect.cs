@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -15,12 +15,11 @@ namespace com.espertech.esper.regressionlib.suite.client.basic
     {
         public void Run(RegressionEnvironment env)
         {
-            var epl = "@Name('s0') select * from SupportBean";
+            var epl = "@name('s0') select * from SupportBean";
             env.CompileDeployAddListenerMileZero(epl, "s0");
 
-            env.SendEventBean(new SupportBean())
-                .Listener("s0")
-                .AssertInvokedAndReset();
+            env.SendEventBean(new SupportBean());
+            env.AssertListenerInvoked("s0");
             env.Milestone(1);
 
             env.UndeployAll();

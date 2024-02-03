@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -19,12 +19,12 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
 namespace com.espertech.esper.common.@internal.@event.json.getter.provided
 {
-	/// <summary>
-	///     Property getter for Json underlying fields.
-	/// </summary>
-	public sealed class JsonGetterIndexedProvided : JsonGetterIndexedBase
+    /// <summary>
+    ///     Property getter for Json underlying fields.
+    /// </summary>
+    public sealed class JsonGetterIndexedProvided : JsonGetterIndexedBase
     {
-        private readonly FieldInfo field;
+        private readonly FieldInfo _field;
 
         public JsonGetterIndexedProvided(
             int index,
@@ -34,10 +34,10 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
             FieldInfo field)
             : base(index, underlyingClassName, optionalInnerType, eventBeanTypedEventFactory)
         {
-            this.field = field;
+            _field = field;
         }
 
-        public override string FieldName => field.Name;
+        public override string FieldName => _field.Name;
 
         public override CodegenExpression UnderlyingFragmentCodegen(
             CodegenExpression underlyingExpression,
@@ -48,7 +48,8 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
                 return ConstantNull();
             }
 
-            CodegenExpression factory = codegenClassScope.AddOrGetDefaultFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
+            CodegenExpression factory =
+                codegenClassScope.AddOrGetDefaultFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
             CodegenExpression eventType = codegenClassScope.AddDefaultFieldUnshared(
                 true,
                 typeof(EventType),
@@ -56,7 +57,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
             return StaticMethod(
                 typeof(JsonFieldGetterHelperProvided),
                 "HandleJsonProvidedCreateFragmentIndexed",
-                ExprDotName(underlyingExpression, field.Name),
+                ExprDotName(underlyingExpression, _field.Name),
                 Constant(Index),
                 eventType,
                 factory);
@@ -64,12 +65,12 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
 
         public override object GetJsonProp(object @object)
         {
-            return JsonFieldGetterHelperProvided.GetJsonProvidedIndexedProp(@object, field, Index);
+            return JsonFieldGetterHelperProvided.GetJsonProvidedIndexedProp(@object, _field, Index);
         }
 
         public override bool GetJsonExists(object @object)
         {
-            return JsonFieldGetterHelperProvided.GetJsonProvidedIndexedPropExists(@object, field, Index);
+            return JsonFieldGetterHelperProvided.GetJsonProvidedIndexedPropExists(@object, _field, Index);
         }
 
         public override object GetJsonFragment(object @object)
@@ -78,7 +79,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
                 return null;
             }
 
-            var value = JsonFieldGetterHelperProvided.GetJsonProvidedIndexedProp(@object, field, Index);
+            var value = JsonFieldGetterHelperProvided.GetJsonProvidedIndexedProp(@object, _field, Index);
             if (value == null) {
                 return null;
             }

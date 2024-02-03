@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -20,18 +20,33 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.rowrecog;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.rowrecog
 {
     public class RowRecogDataSet
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new RowRecogExampleFinancialWPattern());
+            WithFinancialWPattern(execs);
+            WithWithPREV(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithWithPREV(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new RowRecogExampleWithPREV());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithFinancialWPattern(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new RowRecogExampleFinancialWPattern());
             return execs;
         }
 
@@ -42,54 +57,65 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             object theEvent)
         {
             if (row.Length < 3 || row[2] == null) {
-                if (env.Listener("s0").IsInvoked) {
-                    var matchesInner = env.Listener("s0").LastNewData;
-                    if (matchesInner != null) {
-                        for (var i = 0; i < matchesInner.Length; i++) {
-                            log.Info("Received matches: " + GetProps(matchesInner[i]));
+                env.AssertListener(
+                    "s0",
+                    listener => {
+                        if (listener.IsInvoked) {
+                            var matchesInner = listener.LastNewData;
+                            if (matchesInner != null) {
+                                for (var i = 0; i < matchesInner.Length; i++) {
+                                    Log.Info("Received matches: " + GetProps(matchesInner[i]));
+                                }
+                            }
                         }
-                    }
-                }
 
-                Assert.IsFalse(env.Listener("s0").IsInvoked, "For event " + theEvent + " row " + rowCount);
+                        ClassicAssert.IsFalse(listener.IsInvoked, "For event " + theEvent + " row " + rowCount);
+                    });
+
                 return;
             }
 
-            var expected = (string[]) row[2];
+            var expected = (string[])row[2];
+            env.AssertListener(
+                "s0",
+                listener => {
+                    var matches = listener.LastNewData;
+                    string[] matchesText = null;
+                    if (matches != null) {
+                        matchesText = new string[matches.Length];
+                        for (var i = 0; i < matches.Length; i++) {
+                            matchesText[i] = GetProps(matches[i]);
+                            Log.Debug(GetProps(matches[i]));
+                        }
+                    }
+                    else {
+                        if (expected != null) {
+                            Log.Info("Received no matches but expected: ");
+                            for (var i = 0; i < expected.Length; i++) {
+                                Log.Info(expected[i]);
+                            }
 
-            var matches = env.Listener("s0").LastNewData;
-            string[] matchesText = null;
-            if (matches != null) {
-                matchesText = new string[matches.Length];
-                for (var i = 0; i < matches.Length; i++) {
-                    matchesText[i] = GetProps(matches[i]);
-                    log.Debug(GetProps(matches[i]));
-                }
-            }
-            else {
-                if (expected != null) {
-                    log.Info("Received no matches but expected: ");
-                    for (var i = 0; i < expected.Length; i++) {
-                        log.Info(expected[i]);
+                            Assert.Fail();
+                        }
                     }
 
-                    Assert.Fail();
-                }
-            }
+                    Array.Sort(expected);
+                    Array.Sort(matchesText);
 
-            Array.Sort(expected);
-            Array.Sort(matchesText);
+                    ClassicAssert.AreEqual(matches.Length, expected.Length, "For event " + theEvent);
+                    for (var i = 0; i < expected.Length; i++) {
+                        if (!expected[i].Equals(matchesText[i])) {
+                            Log.Info("expected:" + expected[i]);
+                            Log.Info("  actual:" + expected[i]);
+                            ClassicAssert.AreEqual(
+                                expected[i],
+                                matchesText[i],
+                                "Sending event " + theEvent + " row " + rowCount);
+                        }
+                    }
 
-            Assert.AreEqual(matches.Length, expected.Length, "For event " + theEvent);
-            for (var i = 0; i < expected.Length; i++) {
-                if (!expected[i].Equals(matchesText[i])) {
-                    log.Info("expected:" + expected[i]);
-                    log.Info("  actual:" + expected[i]);
-                    Assert.AreEqual(expected[i], matchesText[i], "Sending event " + theEvent + " row " + rowCount);
-                }
-            }
-
-            env.Listener("s0").Reset();
+                    listener.Reset();
+                });
         }
 
         private static string GetProps(EventBean theEvent)
@@ -111,7 +137,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
         {
             public void Run(RegressionEnvironment env)
             {
-                var text = "@Name('s0') select * " +
+                var text = "@name('s0') select * " +
                            "from SupportBean " +
                            "match_recognize (" +
                            " measures A.TheString as beginA, last(Z.TheString) as lastZ" +
@@ -128,108 +154,117 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 env.CompileDeploy(text).AddListener("s0");
 
                 object[][] data = {
-                    new object[] {"E1", 8}, // 0
-                    new object[] {"E2", 8},
-                    new object[] {"E3", 8}, // A
-                    new object[] {"E4", 6}, // W
-                    new object[] {"E5", 3}, // W
-                    new object[] {"E6", 7},
-                    new object[] {"E7", 6},
-                    new object[] {"E8", 2},
+                    new object[] { "E1", 8 }, // 0
+                    new object[] { "E2", 8 },
+                    new object[] { "E3", 8 }, // A
+                    new object[] { "E4", 6 }, // W
+                    new object[] { "E5", 3 }, // W
+                    new object[] { "E6", 7 },
+                    new object[] { "E7", 6 },
+                    new object[] { "E8", 2 },
                     new object[] {
                         "E9", 6, // Z
                         new[] { "beginA=\"E3\",lastZ=\"E9\"", "beginA=\"E4\",lastZ=\"E9\"" }
                     },
-                    new object[] {"E10", 2},
+                    new object[] { "E10", 2 },
                     new object[] {
                         "E11", 9, // 10
                         new[] { "beginA=\"E6\",lastZ=\"E11\"", "beginA=\"E7\",lastZ=\"E11\"" }
                     },
-                    new object[] {"E12", 9},
-                    new object[] {"E13", 8},
-                    new object[] {"E14", 5},
-                    new object[] {"E15", 0},
-                    new object[] {"E16", 9},
-                    new object[] {"E17", 2},
-                    new object[] {"E18", 0},
+                    new object[] { "E12", 9 },
+                    new object[] { "E13", 8 },
+                    new object[] { "E14", 5 },
+                    new object[] { "E15", 0 },
+                    new object[] { "E16", 9 },
+                    new object[] { "E17", 2 },
+                    new object[] { "E18", 0 },
                     new object[] {
                         "E19", 2,
-                        new[] { "beginA=\"E12\",lastZ=\"E19\"", "beginA=\"E13\",lastZ=\"E19\"", "beginA=\"E14\",lastZ=\"E19\"" }
+                        new[] {
+                            "beginA=\"E12\",lastZ=\"E19\"", "beginA=\"E13\",lastZ=\"E19\"",
+                            "beginA=\"E14\",lastZ=\"E19\""
+                        }
                     },
                     new object[] {
                         "E20", 3,
-                        new[] { "beginA=\"E12\",lastZ=\"E20\"", "beginA=\"E13\",lastZ=\"E20\"", "beginA=\"E14\",lastZ=\"E20\"" }
+                        new[] {
+                            "beginA=\"E12\",lastZ=\"E20\"", "beginA=\"E13\",lastZ=\"E20\"",
+                            "beginA=\"E14\",lastZ=\"E20\""
+                        }
                     },
                     new object[] {
                         "E21", 8,
-                        new[] { "beginA=\"E12\",lastZ=\"E21\"", "beginA=\"E13\",lastZ=\"E21\"", "beginA=\"E14\",lastZ=\"E21\"" }
+                        new[] {
+                            "beginA=\"E12\",lastZ=\"E21\"", "beginA=\"E13\",lastZ=\"E21\"",
+                            "beginA=\"E14\",lastZ=\"E21\""
+                        }
                     },
-                    new object[] {"E22", 5},
+                    new object[] { "E22", 5 },
                     new object[] {
                         "E23", 9,
                         new[] { "beginA=\"E16\",lastZ=\"E23\"", "beginA=\"E17\",lastZ=\"E23\"" }
                     },
-                    new object[] {"E24", 9},
-                    new object[] {"E25", 4},
-                    new object[] {"E26", 7},
-                    new object[] {"E27", 2},
+                    new object[] { "E24", 9 },
+                    new object[] { "E25", 4 },
+                    new object[] { "E26", 7 },
+                    new object[] { "E27", 2 },
                     new object[] {
                         "E28", 8,
                         new[] { "beginA=\"E24\",lastZ=\"E28\"" }
                     },
-                    new object[] {"E29", 0},
+                    new object[] { "E29", 0 },
                     new object[] {
                         "E30", 4,
                         new[] { "beginA=\"E26\",lastZ=\"E30\"" }
                     },
-                    new object[] {"E31", 4},
-                    new object[] {"E32", 7},
-                    new object[] {"E33", 8},
-                    new object[] {"E34", 6},
-                    new object[] {"E35", 4},
-                    new object[] {"E36", 5},
-                    new object[] {"E37", 1},
+                    new object[] { "E31", 4 },
+                    new object[] { "E32", 7 },
+                    new object[] { "E33", 8 },
+                    new object[] { "E34", 6 },
+                    new object[] { "E35", 4 },
+                    new object[] { "E36", 5 },
+                    new object[] { "E37", 1 },
                     new object[] {
                         "E38", 7,
                         new[] { "beginA=\"E33\",lastZ=\"E38\"", "beginA=\"E34\",lastZ=\"E38\"" }
                     },
-                    new object[] {"E39", 5},
+                    new object[] { "E39", 5 },
                     new object[] {
                         "E40", 8,
                         new[] { "beginA=\"E36\",lastZ=\"E40\"" }
                     },
-                    new object[] {"E41", 6},
-                    new object[] {"E42", 6},
-                    new object[] {"E43", 0},
-                    new object[] {"E44", 6},
-                    new object[] {"E45", 8},
-                    new object[] {"E46", 4},
-                    new object[] {"E47", 3},
+                    new object[] { "E41", 6 },
+                    new object[] { "E42", 6 },
+                    new object[] { "E43", 0 },
+                    new object[] { "E44", 6 },
+                    new object[] { "E45", 8 },
+                    new object[] { "E46", 4 },
+                    new object[] { "E47", 3 },
                     new object[] {
                         "E48", 8,
                         new[] { "beginA=\"E42\",lastZ=\"E48\"" }
                     },
-                    new object[] {"E49", 2},
+                    new object[] { "E49", 2 },
                     new object[] {
                         "E50", 5,
                         new[] { "beginA=\"E45\",lastZ=\"E50\"", "beginA=\"E46\",lastZ=\"E50\"" }
                     },
-                    new object[] {"E51", 3},
-                    new object[] {"E52", 3},
-                    new object[] {"E53", 9},
-                    new object[] {"E54", 8},
-                    new object[] {"E55", 5},
-                    new object[] {"E56", 5},
-                    new object[] {"E57", 9},
-                    new object[] {"E58", 7},
-                    new object[] {"E59", 3},
-                    new object[] {"E60", 3}
+                    new object[] { "E51", 3 },
+                    new object[] { "E52", 3 },
+                    new object[] { "E53", 9 },
+                    new object[] { "E54", 8 },
+                    new object[] { "E55", 5 },
+                    new object[] { "E56", 5 },
+                    new object[] { "E57", 9 },
+                    new object[] { "E58", 7 },
+                    new object[] { "E59", 3 },
+                    new object[] { "E60", 3 }
                 };
 
                 var rowCount = 0;
                 var milestone = new AtomicLong();
                 foreach (var row in data) {
-                    var theEvent = new SupportBean((string) row[0], row[1].AsInt32());
+                    var theEvent = new SupportBean((string)row[0], row[1].AsInt32());
                     env.SendEventBean(theEvent);
 
                     Compare(env, row, rowCount, theEvent);
@@ -246,7 +281,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 env.EplToModelCompileDeploy(text).AddListener("s0");
 
                 foreach (var row in data) {
-                    var theEvent = new SupportBean((string) row[0], row[1].AsInt32());
+                    var theEvent = new SupportBean((string)row[0], row[1].AsInt32());
                     env.SendEventBean(theEvent);
 
                     Compare(env, row, rowCount, theEvent);
@@ -261,7 +296,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
         {
             public void Run(RegressionEnvironment env)
             {
-                var query = "@Name('s0') SELECT * " +
+                var query = "@name('s0') SELECT * " +
                             "FROM SupportRecogBean#keepall" +
                             "   MATCH_RECOGNIZE (" +
                             "       MEASURES A.TheString AS a_string," +
@@ -298,12 +333,12 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 env.CompileDeploy(query).AddListener("s0");
 
                 object[][] data = {
-                    new object[] {"E1", 100, null},
-                    new object[] {"E2", 98, null},
-                    new object[] {"E3", 75, null},
-                    new object[] {"E4", 61, null},
-                    new object[] {"E5", 50, null},
-                    new object[] {"E6", 49, null},
+                    new object[] { "E1", 100, null },
+                    new object[] { "E2", 98, null },
+                    new object[] { "E3", 75, null },
+                    new object[] { "E4", 61, null },
+                    new object[] { "E5", 50, null },
+                    new object[] { "E6", 49, null },
                     new object[] {
                         "E7", 64,
                         new[] {
@@ -334,7 +369,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 var rowCount = 0;
                 foreach (var row in data) {
                     rowCount++;
-                    var theEvent = new SupportRecogBean((string) row[0], row[1].AsInt32());
+                    var theEvent = new SupportRecogBean((string)row[0], row[1].AsInt32());
                     env.SendEventBean(theEvent);
 
                     Compare(env, row, rowCount, theEvent);

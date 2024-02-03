@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Reflection;
 
 using Microsoft.CodeAnalysis;
@@ -49,7 +48,7 @@ namespace com.espertech.esper.common.client.artifact
         /// Returns true if the artifact has materialized the assembly.
         /// </summary>
         public bool HasMaterializedAssembly { get; }
-        
+
         /// <summary>
         /// The assembly for this image.
         /// </summary>

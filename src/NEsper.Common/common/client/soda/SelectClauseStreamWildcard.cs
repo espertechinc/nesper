@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -19,7 +19,6 @@ namespace com.espertech.esper.common.client.soda
     /// For example: <pre>select streamOne.* from StreamOne as streamOne, StreamTwo as
     /// streamTwo</pre>
     /// </summary>
-    [Serializable]
     public class SelectClauseStreamWildcard : SelectClauseElement
     {
         /// <summary>
@@ -68,8 +67,7 @@ namespace com.espertech.esper.common.client.soda
         {
             writer.Write(StreamName);
             writer.Write(".*");
-            if (OptionalColumnName != null)
-            {
+            if (OptionalColumnName != null) {
                 writer.Write(" as ");
                 writer.Write(OptionalColumnName);
             }

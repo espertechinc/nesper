@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -16,19 +16,20 @@ namespace com.espertech.esper.common.@internal.settings
     /// <summary>
     ///     Provides information about a single-row function.
     /// </summary>
-    [Serializable]
     public class ImportSingleRowDesc
     {
-        public ImportSingleRowDesc(Type clazz, ExtensionSingleRowFunctionAttribute anno) : this(
-                clazz.FullName,
-                anno.MethodName,
-                anno.ValueCache,
-                anno.FilterOptimizable,
-                anno.RethrowExceptions,
-                anno.EventTypeName)
+        public ImportSingleRowDesc(
+            Type clazz,
+            ExtensionSingleRowFunctionAttribute anno) : this(
+            clazz.FullName,
+            anno.MethodName,
+            anno.ValueCache,
+            anno.FilterOptimizable,
+            anno.RethrowExceptions,
+            anno.EventTypeName)
         {
         }
-        
+
         public ImportSingleRowDesc(
             string className,
             string methodName,

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -17,6 +17,7 @@ using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.historical.database.core;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 
 namespace com.espertech.esper.common.@internal.db.drivers
@@ -122,7 +123,7 @@ namespace com.espertech.esper.common.@internal.db.drivers
         /// <returns></returns>
         public virtual DbDriverCommand Clone()
         {
-            var dbClone = (BaseDbDriverCommand) MemberwiseClone();
+            var dbClone = (BaseDbDriverCommand)MemberwiseClone();
             // Create an independent lock
             dbClone._allocLock = new object();
             // Ensure theConnection and theCommand are not copied
@@ -376,13 +377,13 @@ namespace com.espertech.esper.common.@internal.db.drivers
         /// <returns></returns>
         protected virtual Type GetColumnType(DataRow schemaDataRow)
         {
-            var columnType = (Type) schemaDataRow["DataType"];
-            var columnSize = (int) schemaDataRow["ColumnSize"];
+            var columnType = (Type)schemaDataRow["DataType"];
+            var columnSize = (int)schemaDataRow["ColumnSize"];
 
             // Some providers (read MySQL) provide bools as an integer
             // with a size of 1.  We should probably convert these to bool
             // to make client integration easier.
-            if ((columnType == typeof(sbyte)) && (columnSize == 1)) {
+            if (columnType == typeof(sbyte) && columnSize == 1) {
                 columnType = typeof(bool);
             }
 
@@ -397,7 +398,7 @@ namespace com.espertech.esper.common.@internal.db.drivers
         /// <returns></returns>
         protected virtual string GetColumnSqlType(DataRow schemaDataRow)
         {
-            var dataType = (Type) schemaDataRow["DataType"];
+            var dataType = (Type)schemaDataRow["DataType"];
             return dataType.FullName;
 
             //var providerType = (Int32)schemaDataRow["ProviderType"];
@@ -418,7 +419,7 @@ namespace com.espertech.esper.common.@internal.db.drivers
         {
             IDictionary<string, DBOutputTypeDesc> outputProperties = new Dictionary<string, DBOutputTypeDesc>();
             foreach (DataRow dataRow in schemaTable.Rows) {
-                var columnName = (string) dataRow["ColumnName"];
+                var columnName = (string)dataRow["ColumnName"];
                 var columnType = GetColumnType(dataRow);
                 var sqlTypeName = GetColumnSqlType(dataRow);
                 //var canBeNull = (Boolean)dataRow["AllowDBNull"];
@@ -445,14 +446,16 @@ namespace com.espertech.esper.common.@internal.db.drivers
                 // converting the resultant type from the dataType that has been
                 // provided to us into a different type.
 
-                //if (columnSettings.SqlTypeBinding != null)
-                //{
-                //    String typeBinding = columnSettings.SqlTypeBinding.Get(columnType);
-                //    if (typeBinding != null)
-                //    {
-                //        binding = DatabaseTypeEnum.GetEnum(typeBinding).Binding;
-                //    }
-                //}
+                if (columnSettings.DataTypesMapping != null)
+                {
+                    var typeBinding = columnSettings.DataTypesMapping.Get(columnType);
+                    if (typeBinding != null)
+                    {
+                        binding = DatabaseTypeEnumExtensions
+                            .GetEnum(typeBinding.Name)
+                            .GetBinding();
+                    }
+                }
 
                 var outputDesc = new DBOutputTypeDesc(sqlTypeName, columnType, binding);
                 outputProperties[columnName] = outputDesc;

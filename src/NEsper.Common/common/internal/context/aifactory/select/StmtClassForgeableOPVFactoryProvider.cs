@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -13,6 +13,7 @@ using System.IO;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
+using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.bytecodemodel.util;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.compile.stage2;
@@ -40,10 +41,10 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
         private const string CLASSNAME_OUTPUTPROCESSVIEW = "OPV";
         private const string MEMBERNAME_STATEMENTRESULTSVC = "statementResultService";
 
+        private readonly string _className;
         private readonly int _numStreams;
         private readonly CodegenNamespaceScope _namespaceScope;
         private readonly StatementRawInfo _raw;
-
         private readonly OutputProcessViewFactoryForge _spec;
 
         public StmtClassForgeableOPVFactoryProvider(
@@ -53,7 +54,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
             int numStreams,
             StatementRawInfo raw)
         {
-            ClassName = className;
+            _className = className;
             _spec = spec;
             _namespaceScope = namespaceScope;
             _numStreams = numStreams;
@@ -64,6 +65,10 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
             bool includeDebugSymbols,
             bool fireAndForget)
         {
+            if (_spec.IsDirectAndSimple) {
+                return null;
+            }
+
             Supplier<string> debugInformationProvider = () => {
                 var writer = new StringWriter();
                 _raw.AppendCodeDebugInfo(writer);
@@ -71,46 +76,39 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                 writer.Write(_spec.GetType().FullName);
                 return writer.ToString();
             };
-
+            
             try {
                 IList<CodegenInnerClass> innerClasses = new List<CodegenInnerClass>();
-
                 // build ctor
                 IList<CodegenTypedParam> ctorParms = new List<CodegenTypedParam>();
                 ctorParms.Add(
-                    new CodegenTypedParam(
-                        typeof(EPStatementInitServices),
-                        EPStatementInitServicesConstants.REF.Ref,
-                        false));
+                    new CodegenTypedParam(typeof(EPStatementInitServices), EPStatementInitServicesConstants.REF.Ref, false));
                 ctorParms.Add(
                     new CodegenTypedParam(
-                        _namespaceScope.FieldsClassName,
+                        _namespaceScope.FieldsClassNameOptional,
                         null,
-                        "statementFields",
+                        StmtClassForgeableStmtProvider.MEMBERNAME_STATEMENT_FIELDS,
                         true,
                         false));
-
                 var providerCtor = new CodegenCtor(
                     typeof(StmtClassForgeableOPVFactoryProvider),
-                    ClassName,
                     includeDebugSymbols,
                     ctorParms);
-                var classScope = new CodegenClassScope(includeDebugSymbols, _namespaceScope, ClassName);
-                var providerExplicitMembers = new List<CodegenTypedParam>();
-                providerExplicitMembers.Add(
-                    new CodegenTypedParam(typeof(StatementResultService), MEMBERNAME_STATEMENTRESULTSVC));
+                var classScope = new CodegenClassScope(includeDebugSymbols, _namespaceScope, _className);
+                IList<CodegenTypedParam> providerExplicitMembers = new List<CodegenTypedParam>();
                 providerExplicitMembers.Add(
                     new CodegenTypedParam(typeof(OutputProcessViewFactory), MEMBERNAME_OPVFACTORY));
-
                 if (_spec.IsCodeGenerated) {
                     // make factory and view both, assign to member
-                    MakeOPVFactory(classScope, innerClasses, providerExplicitMembers, providerCtor, ClassName);
+                    providerExplicitMembers.Add(
+                        new CodegenTypedParam(typeof(StatementResultService), MEMBERNAME_STATEMENTRESULTSVC));
+                    MakeOPVFactory(classScope, innerClasses, providerCtor, _className);
                     MakeOPV(
                         classScope,
                         innerClasses,
                         Collections.GetEmptyList<CodegenTypedParam>(),
                         providerCtor,
-                        ClassName,
+                        _className,
                         _spec,
                         _numStreams);
                 }
@@ -119,11 +117,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                     var symbols = new SAIFFInitializeSymbol();
                     var init = providerCtor
                         .MakeChildWithScope(typeof(OutputProcessViewFactory), GetType(), symbols, classScope)
-                        .AddParam(
-                            typeof(EPStatementInitServices),
-                            EPStatementInitServicesConstants.REF.Ref);
+                        .AddParam<EPStatementInitServices>(EPStatementInitServicesConstants.REF.Ref);
                     _spec.ProvideCodegen(init, symbols, classScope);
-                    providerCtor.Block.AssignRef(
+                    providerCtor.Block.AssignMember(
                         MEMBERNAME_OPVFACTORY,
                         LocalMethod(init, EPStatementInitServicesConstants.REF));
                 }
@@ -148,12 +144,11 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                     "OutputProcessViewFactory",
                     methods,
                     properties);
-
                 // render and compile
                 return new CodegenClass(
                     CodegenClassType.OUTPUTPROCESSVIEWFACTORYPROVIDER,
                     typeof(OutputProcessViewFactoryProvider),
-                    ClassName,
+                    _className,
                     classScope,
                     providerExplicitMembers,
                     providerCtor,
@@ -161,44 +156,43 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                     properties,
                     innerClasses);
             }
-            catch (Exception t) {
+            catch (Exception ex) {
                 throw new EPException(
                     "Fatal exception during code-generation for " +
                     debugInformationProvider.Invoke() +
                     " : " +
-                    t.Message,
-                    t);
+                    ex.Message,
+                    ex);
             }
         }
 
-        public string ClassName { get; }
-
-        public StmtClassForgeableType ForgeableType => StmtClassForgeableType.OPVPROVIDER;
-
         private static void MakeOPVFactory(
             CodegenClassScope classScope,
-            ICollection<CodegenInnerClass> innerClasses,
-            ICollection<CodegenTypedParam> providerExplicitMembers,
+            IList<CodegenInnerClass> innerClasses,
             CodegenCtor providerCtor,
             string providerClassName)
         {
-            var makeViewMethod = CodegenMethod.MakeMethod(
+            var makeViewMethod = CodegenMethod
+                .MakeParentNode(
                     typeof(OutputProcessView),
                     typeof(StmtClassForgeableOPVFactoryProvider),
                     CodegenSymbolProviderEmpty.INSTANCE,
                     classScope)
-                .AddParam(typeof(ResultSetProcessor), NAME_RESULTSETPROCESSOR)
-                .AddParam(typeof(AgentInstanceContext), NAME_AGENTINSTANCECONTEXT);
+                .AddParam<ResultSetProcessor>(NAME_RESULTSETPROCESSOR)
+                .AddParam<AgentInstanceContext>(NAME_AGENTINSTANCECONTEXT);
             makeViewMethod.Block.MethodReturn(
-                NewInstanceInner(CLASSNAME_OUTPUTPROCESSVIEW, Ref("o"), MEMBER_RESULTSETPROCESSOR, MEMBER_AGENTINSTANCECONTEXT));
+                NewInstanceInner(
+                    CLASSNAME_OUTPUTPROCESSVIEW,
+                    Ref("o"),
+                    MEMBER_RESULTSETPROCESSOR,
+                    MEMBER_AGENTINSTANCECONTEXT));
+            
             var methods = new CodegenClassMethods();
             var properties = new CodegenClassProperties();
-
+            
             CodegenStackGenerator.RecursiveBuildStack(makeViewMethod, "MakeView", methods, properties);
-
             var ctorParams = Collections.SingletonList(new CodegenTypedParam(providerClassName, "o"));
             var ctor = new CodegenCtor(typeof(StmtClassForgeableOPVFactoryProvider), classScope, ctorParams);
-
             var innerClass = new CodegenInnerClass(
                 CLASSNAME_OUTPUTPROCESSVIEWFACTORY,
                 typeof(OutputProcessViewFactory),
@@ -207,14 +201,14 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                 methods,
                 properties);
             innerClasses.Add(innerClass);
-
-            providerCtor.Block.AssignRef(
+            providerCtor.Block
+                .AssignMember(
                     MEMBERNAME_OPVFACTORY,
                     NewInstanceInner(CLASSNAME_OUTPUTPROCESSVIEWFACTORY, Ref("this")))
-                .AssignRef(
+                .AssignMember(
                     MEMBERNAME_STATEMENTRESULTSVC,
                     ExprDotName(
-                        EPStatementInitServicesConstants.REF,
+                        EPStatementInitServicesConstants.REF, 
                         EPStatementInitServicesConstants.STATEMENTRESULTSERVICE));
         }
 
@@ -231,22 +225,20 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
             ctorParams.Add(new CodegenTypedParam(classNameParent, "o"));
             ctorParams.Add(new CodegenTypedParam(typeof(ResultSetProcessor), NAME_RESULTSETPROCESSOR));
             ctorParams.Add(new CodegenTypedParam(typeof(AgentInstanceContext), NAME_AGENTINSTANCECONTEXT));
-
             // make ctor code
             var serviceCtor = new CodegenCtor(typeof(StmtClassForgeableOPVFactoryProvider), classScope, ctorParams);
-
             // Get-Result-Type Method
             var eventTypeGetter = CodegenProperty
                 .MakePropertyNode(typeof(EventType), forge.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
                 .WithOverride();
             eventTypeGetter.GetterBlock.BlockReturn(ExprDotName(Ref(NAME_RESULTSETPROCESSOR), "ResultEventType"));
-
+            
             // Process-View-Result Method
             var updateMethod = CodegenMethod
-                .MakeMethod(typeof(void), forge.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+                .MakeParentNode(typeof(void), forge.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
                 .WithOverride()
-                .AddParam(typeof(EventBean[]), NAME_NEWDATA)
-                .AddParam(typeof(EventBean[]), NAME_OLDDATA);
+                .AddParam<EventBean[]>(NAME_NEWDATA)
+                .AddParam<EventBean[]>(NAME_OLDDATA);
             if (numStreams == 1) {
                 forge.UpdateCodegen(updateMethod, classScope);
             }
@@ -256,13 +248,11 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
 
             // Process-Join-Result Method
             var processMethod = CodegenMethod
-                .MakeMethod(typeof(void), forge.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+                .MakeParentNode(typeof(void), forge.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
                 .WithOverride()
                 .AddParam(typeof(ISet<MultiKeyArrayOfKeys<EventBean>>), NAME_NEWDATA)
                 .AddParam(typeof(ISet<MultiKeyArrayOfKeys<EventBean>>), NAME_OLDDATA)
-                .AddParam(
-                    typeof(ExprEvaluatorContext),
-                    "notApplicable");
+                .AddParam(typeof(ExprEvaluatorContext), "notApplicable");
             if (numStreams == 1) {
                 processMethod.Block.MethodThrowUnsupported();
             }
@@ -272,11 +262,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
 
             // Stop-Method (generates last as other methods may allocate members)
             var enumeratorMethod = CodegenMethod
-                .MakeMethod(
-                    typeof(IEnumerator<EventBean>),
-                    forge.GetType(),
-                    CodegenSymbolProviderEmpty.INSTANCE,
-                    classScope)
+                .MakeParentNode(typeof(IEnumerator<EventBean>), forge.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
                 .WithOverride();
             forge.EnumeratorCodegen(enumeratorMethod, classScope);
 
@@ -285,22 +271,22 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                 .MakePropertyNode(typeof(int), forge.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
                 .WithOverride();
             numChangesetRowsProp.GetterBlock.BlockReturn(Constant(0));
-
+            
             // OptionalOutputCondition (always null for generated code)
             var optionalOutputConditionProp = CodegenProperty
                 .MakePropertyNode(typeof(OutputCondition), forge.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
                 .WithOverride();
             optionalOutputConditionProp.GetterBlock.BlockReturn(ConstantNull());
-
+            
             // Stop-Method (no action for generated code)
-            CodegenMethod stopMethod = CodegenMethod
-                .MakeMethod(typeof(void), forge.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+            var stopMethod = CodegenMethod
+                .MakeParentNode(typeof(void), forge.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
                 .WithOverride()
-                .AddParam(typeof(AgentInstanceStopServices), "svc");
-
+                .AddParam<AgentInstanceStopServices>("svc");
+            
             // Terminate-Method (no action for generated code)
-            CodegenMethod terminatedMethod = CodegenMethod
-                .MakeMethod(typeof(void), forge.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+            var terminatedMethod = CodegenMethod
+                .MakeParentNode(typeof(void), forge.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
                 .WithOverride();
 
             var innerProperties = new CodegenClassProperties();
@@ -345,16 +331,19 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                 "Terminated",
                 innerMethods,
                 innerProperties);
-
-
             var innerClass = new CodegenInnerClass(
                 CLASSNAME_OUTPUTPROCESSVIEW,
                 typeof(OutputProcessView),
                 serviceCtor,
-                Collections.GetEmptyList<CodegenTypedParam>(),
+                EmptyList<CodegenTypedParam>.Instance, 
                 innerMethods,
                 innerProperties);
+            
             innerClasses.Add(innerClass);
         }
+
+        public string ClassName => _className;
+
+        public StmtClassForgeableType ForgeableType => StmtClassForgeableType.OPVPROVIDER;
     }
 } // end of namespace

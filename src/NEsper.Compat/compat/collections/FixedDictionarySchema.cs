@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -18,17 +18,17 @@ namespace com.espertech.esper.compat.collections
     /// used to create Map objects that have a much smaller memory footprint
     /// than conventional hashtables.
     /// </summary>
-    /// <typeparam name="K"></typeparam>
+    /// <typeparam name="TK"></typeparam>
 
-    public class FixedDictionarySchema<K> : IEnumerable<KeyValuePair<K,int>>
+    public class FixedDictionarySchema<TK> : IEnumerable<KeyValuePair<TK,int>>
     {
         private readonly int _keyCount;
 
         /// <summary>
         /// This dictionary maps keys to a linear index.
         /// </summary>
-        private readonly IDictionary<K, int> _keyToIndex =
-            new Dictionary<K, int>();
+        private readonly IDictionary<TK, int> _keyToIndex =
+            new Dictionary<TK, int>();
 
         /// <summary>
         /// Gets the count.
@@ -40,13 +40,13 @@ namespace com.espertech.esper.compat.collections
         /// Gets the keys for the schema.
         /// </summary>
         /// <value>The keys.</value>
-        public ICollection<K> Keys => _keyToIndex.Keys;
+        public ICollection<TK> Keys => _keyToIndex.Keys;
 
         /// <summary>
         /// Gets the index associated with the specified key.
         /// </summary>
         /// <value></value>
-        public int this[K key] => _keyToIndex[key];
+        public int this[TK key] => _keyToIndex[key];
 
         /// <summary>
         /// Tries the get the index for the key.  If the index does not
@@ -55,7 +55,7 @@ namespace com.espertech.esper.compat.collections
         /// <param name="key">The key.</param>
         /// <param name="index">The index.</param>
         /// <returns></returns>
-        public bool TryGetIndex(K key, out int index)
+        public bool TryGetIndex(TK key, out int index)
         {
             return _keyToIndex.TryGetValue(key, out index);
         }
@@ -85,7 +85,7 @@ namespace com.espertech.esper.compat.collections
         /// A <see cref="T:System.Collections.Generic.IEnumerator`1" /> that can be used to iterate through the collection.
         /// </returns>
         /// <filterpriority>1</filterpriority>
-        public IEnumerator<KeyValuePair<K, int>> GetEnumerator()
+        public IEnumerator<KeyValuePair<TK, int>> GetEnumerator()
         {
             return _keyToIndex.GetEnumerator();
         }
@@ -96,7 +96,7 @@ namespace com.espertech.esper.compat.collections
         /// Initializes a new instance of the <see cref="FixedDictionarySchema{K}"/> class.
         /// </summary>
         /// <param name="keyList">The key list.</param>
-        public FixedDictionarySchema(IEnumerable<K> keyList)
+        public FixedDictionarySchema(IEnumerable<TK> keyList)
         {
             var index = 0;
             foreach( var key in keyList ) {

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -48,7 +48,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             }
             else {
                 invocation.ReturnValue = invocation.Method.Invoke(
-                    Proxy, invocation.Arguments);
+                    Proxy,
+                    invocation.Arguments);
             }
         }
 
@@ -57,21 +58,24 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             if (exprNode is IProxyTargetAccessor) {
                 return exprNode;
             }
-            
+
             var interfaces = exprNode.GetType()
                 .GetInterfaces()
                 .Where(t => t != typeof(ExprNode))
                 .ToArray();
 
             return generator.CreateInterfaceProxyWithTarget(
-                typeof(ExprNode), interfaces, exprNode, new ExprNodeProxy(exprNode));
+                typeof(ExprNode),
+                interfaces,
+                exprNode,
+                new ExprNodeProxy(exprNode));
         }
 
         private void HandleEqualsNode(IInvocation invocation)
         {
             var args = invocation.Arguments;
-            var otherNode = (ExprNode) args[0];
-            invocation.ReturnValue = Proxy.EqualsNode(otherNode, (bool) args[1]);
+            var otherNode = (ExprNode)args[0];
+            invocation.ReturnValue = Proxy.EqualsNode(otherNode, (bool)args[1]);
         }
 
         private void HandleGetForge(IInvocation invocation)
@@ -87,7 +91,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 // no action
             }
 
-            var forge = (ExprForge) invocation.Method.Invoke(Proxy, invocation.Arguments);
+            var forge = (ExprForge)invocation.Method.Invoke(Proxy, invocation.Arguments);
             invocation.ReturnValue = ExprForgeProxy.NewInstance(expressionToString, forge);
         }
     }

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -42,15 +42,19 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             SubselectForgeNRSymbol symbols,
             CodegenClassScope classScope)
         {
-            var method = parent.MakeChild(typeof(bool?), this.GetType(), classScope);
-            var eps = symbols.GetAddEPS(method);
+            if (subselect.EvaluationType == null) {
+                return ConstantNull();
+            }
+
+            var method = parent.MakeChild(typeof(bool?), GetType(), classScope);
+            var eps = symbols.GetAddEps(method);
             var evalCtx = symbols.GetAddExprEvalCtx(method);
             var left = symbols.GetAddLeftResult(method);
 
             method.Block.IfNullReturnNull(symbols.GetAddLeftResult(method));
             if (havingEval != null) {
                 CodegenExpression having = LocalMethod(
-                    CodegenLegoMethodExpression.CodegenExpression(havingEval, method, classScope, true),
+                    CodegenLegoMethodExpression.CodegenExpression(havingEval, method, classScope),
                     eps,
                     ConstantTrue(),
                     evalCtx);
@@ -62,11 +66,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             }
 
             CodegenExpression select = LocalMethod(
-                CodegenLegoMethodExpression.CodegenExpression(selectEval, method, classScope, true),
+                CodegenLegoMethodExpression.CodegenExpression(selectEval, method, classScope),
                 eps,
                 ConstantTrue(),
                 evalCtx);
-            var rightEvalType = Boxing.GetBoxedType(selectEval.EvaluationType);
+            var rightEvalType = selectEval.EvaluationType.GetBoxedType();
             method.Block
                 .DeclareVar(rightEvalType, "rhs", select)
                 .IfRefNullReturnNull("rhs");
@@ -75,8 +79,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 method.Block.IfCondition(ExprDotMethod(left, "Equals", Ref("rhs"))).BlockReturn(Constant(!isNotIn));
             }
             else {
-                method.Block.DeclareVar<object>("left", coercer.CoerceCodegen(left, symbols.LeftResultType))
-                    .DeclareVar<object>("right", coercer.CoerceCodegen(Ref("valueRight"), rightEvalType))
+                method.Block.DeclareVar<object>("left", coercer.CoerceCodegen(left, symbols.LeftResultType, method, classScope))
+                    .DeclareVar<object>("right", coercer.CoerceCodegen(Ref("valueRight"), rightEvalType, method, classScope))
                     .DeclareVar<bool>("eq", StaticMethod<object>("Equals", Ref("left"), Ref("right")))
                     .IfCondition(Ref("eq"))
                     .BlockReturn(Constant(!isNotIn));

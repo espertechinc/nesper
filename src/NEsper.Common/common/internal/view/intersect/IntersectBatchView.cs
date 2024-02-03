@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -62,6 +62,8 @@ namespace com.espertech.esper.common.@internal.view.intersect
         public View[] ViewContained => views;
 
         public ViewFactory ViewFactory => factory;
+
+        public View[] RelatedViews => views;
 
         public void Stop(AgentInstanceStopServices services)
         {
@@ -196,7 +198,7 @@ namespace com.espertech.esper.common.@internal.view.intersect
             // handle case where irstream originates from view, i.e. timer-based
             if (streamId == factory.BatchViewIndex) {
                 agentInstanceContext.InstrumentationProvider.QViewIndicate(factory, newEvents, oldEvents);
-                child.Update(newEvents, oldEvents);
+                Child.Update(newEvents, oldEvents);
                 agentInstanceContext.InstrumentationProvider.AViewIndicate();
 
                 if (newEvents != null) {
@@ -239,7 +241,7 @@ namespace com.espertech.esper.common.@internal.view.intersect
         {
             IntersectDefaultView.VisitViewContained(viewDataVisitor, factory, views);
         }
-        
+
         public void Transfer(AgentInstanceTransferServices services)
         {
         }

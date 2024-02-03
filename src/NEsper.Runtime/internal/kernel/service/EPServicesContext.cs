@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -9,7 +9,6 @@
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.client.hook.expr;
-using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.context.activator;
@@ -112,6 +111,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 	    private readonly EventTypeRepositoryImpl _eventTypeRepositoryBus;
 	    private readonly EventTypeResolvingBeanFactory _eventTypeResolvingBeanFactory;
 	    private readonly EventTypeSerdeRepository _eventTypeSerdeRepository;
+	    private readonly EventTypeXMLXSDHandler _eventTypeXMLXSDHandler;
 	    private readonly ExceptionHandlingService _exceptionHandlingService;
 	    private readonly ExpressionResultCacheService _expressionResultCacheService;
 	    private readonly FilterBooleanExpressionFactory _filterBooleanExpressionFactory;
@@ -195,6 +195,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 		    EventTypeRepositoryImpl eventTypeRepositoryBus,
 		    EventTypeResolvingBeanFactory eventTypeResolvingBeanFactory,
 		    EventTypeSerdeRepository eventTypeSerdeRepository,
+		    EventTypeXMLXSDHandler eventTypeXMLXSDHandler,
 		    ExceptionHandlingService exceptionHandlingService,
 		    ExpressionResultCacheService expressionResultCacheService,
 		    FilterBooleanExpressionFactory filterBooleanExpressionFactory,
@@ -273,6 +274,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 	        _eventTypeRepositoryBus = eventTypeRepositoryBus;
 	        _eventTypeResolvingBeanFactory = eventTypeResolvingBeanFactory;
 	        _eventTypeSerdeRepository = eventTypeSerdeRepository;
+	        _eventTypeXMLXSDHandler = eventTypeXMLXSDHandler;
 	        _exceptionHandlingService = exceptionHandlingService;
 	        _expressionResultCacheService = expressionResultCacheService;
 	        _filterBooleanExpressionFactory = filterBooleanExpressionFactory;
@@ -336,7 +338,9 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 			    if (_statementContextRuntimeServices == null) {
 				    _statementContextRuntimeServices = new StatementContextRuntimeServices(
 					    _container,
+					    _configSnapshot,
 					    _contextManagementService,
+					    _contextPathRegistry,
 					    _contextServiceFactory,
 					    _databaseConfigServiceRuntime,
 					    _dataFlowFilterServiceAdapter,
@@ -357,6 +361,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 					    _eventTypePathRegistry,
 					    _eventTypeRepositoryBus,
 					    _eventTypeResolvingBeanFactory,
+					    _eventProcessingRWLock,
 					    _exceptionHandlingService,
 					    _expressionResultCacheService,
 					    _filterBooleanExpressionFactory,
@@ -371,6 +376,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 					    _namedWindowPathRegistry,
 					    _rowRecogStateRepoFactory,
 					    _resultSetProcessorHelperFactory,
+					    _schedulingService,
 					    _statementAgentInstanceLockFactory,
 					    _statementResourceHolderBuilder,
 					    _tableExprEvaluatorContext,
@@ -388,6 +394,9 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 		    get {
 			    if (_stageRuntimeServices == null) {
 				    _stageRuntimeServices = new StageRuntimeServices(
+					    _container,
+					    _importServiceRuntime,
+					    _configSnapshot,
 					    _dispatchService,
 					    _eventBeanService,
 					    _eventBeanTypedEventFactory,
@@ -470,6 +479,8 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 	    public EventTypeResolvingBeanFactory EventTypeResolvingBeanFactory => _eventTypeResolvingBeanFactory;
 
 	    public EventTypeSerdeRepository EventTypeSerdeRepository => _eventTypeSerdeRepository;
+
+	    public EventTypeXMLXSDHandler EventTypeXMLXSDHandler => _eventTypeXMLXSDHandler;
 
 	    public ExceptionHandlingService ExceptionHandlingService => _exceptionHandlingService;
 

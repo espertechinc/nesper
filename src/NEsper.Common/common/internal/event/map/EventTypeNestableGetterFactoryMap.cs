@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -16,13 +16,14 @@ using com.espertech.esper.common.@internal.@event.bean.service;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.property;
 
+
 namespace com.espertech.esper.common.@internal.@event.map
 {
     public class EventTypeNestableGetterFactoryMap : EventTypeNestableGetterFactory
     {
         public EventPropertyGetterSPI GetPropertyDynamicGetter(
             IDictionary<string, object> nestableTypes,
-            string propertyName,
+            string propertyExpression,
             DynamicProperty prop,
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
             BeanEventTypeFactory beanEventTypeFactory)
@@ -37,8 +38,7 @@ namespace com.espertech.esper.common.@internal.@event.map
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
             BeanEventTypeFactory beanEventTypeFactory)
         {
-            return (EventPropertyGetterMappedSPI) mappedProperty
-                .GetGetterMap(nestableTypes, eventBeanTypedEventFactory, beanEventTypeFactory);
+            return (EventPropertyGetterMappedSPI) mappedProperty.GetGetterMap(nestableTypes, eventBeanTypedEventFactory, beanEventTypeFactory);
         }
 
         public EventPropertyGetterIndexedSPI GetPropertyProvidedGetterIndexed(
@@ -48,16 +48,38 @@ namespace com.espertech.esper.common.@internal.@event.map
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
             BeanEventTypeFactory beanEventTypeFactory)
         {
-            return (EventPropertyGetterIndexedSPI) indexedProperty
-                .GetGetterMap(nestableTypes, eventBeanTypedEventFactory, beanEventTypeFactory);
+            return (EventPropertyGetterIndexedSPI) indexedProperty.GetGetterMap(nestableTypes, eventBeanTypedEventFactory, beanEventTypeFactory);
         }
 
         public EventPropertyGetterSPI GetGetterProperty(
             string name,
             BeanEventType nativeFragmentType,
+            EventBeanTypedEventFactory eventBeanTypedEventFactory,
+            bool canFragment)
+        {
+            return new MapEntryPropertyGetter(name, nativeFragmentType, eventBeanTypedEventFactory, canFragment);
+        }
+
+        public EventPropertyGetterSPI GetGetterEventBean(
+            string name,
+            Type underlyingType)
+        {
+            return new MapEventBeanPropertyGetter(name, underlyingType);
+        }
+
+        public EventPropertyGetterSPI GetGetterEventBeanArray(
+            string name,
+            EventType eventType)
+        {
+            return new MapEventBeanArrayPropertyGetter(name, eventType.UnderlyingType);
+        }
+
+        public EventPropertyGetterSPI GetGetterBeanNestedArray(
+            string name,
+            EventType eventType,
             EventBeanTypedEventFactory eventBeanTypedEventFactory)
         {
-            return new MapEntryPropertyGetter(name, nativeFragmentType, eventBeanTypedEventFactory);
+            return new MapFragmentArrayPropertyGetter(name, eventType, eventBeanTypedEventFactory);
         }
 
         public EventPropertyGetterSPI GetGetterIndexedEventBean(
@@ -136,15 +158,13 @@ namespace com.espertech.esper.common.@internal.@event.map
             BeanEventPropertyGetter nestedGetter,
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
             BeanEventTypeFactory beanEventTypeFactory,
-            Type nestedReturnType,
-            Type nestedComponentType)
+            Type nestedValueType)
         {
             return new MapPONOEntryPropertyGetter(
                 propertyName,
                 nestedGetter,
                 eventBeanTypedEventFactory,
-                nestedReturnType,
-                nestedComponentType,
+                nestedValueType,
                 beanEventTypeFactory);
         }
 
@@ -161,19 +181,19 @@ namespace com.espertech.esper.common.@internal.@event.map
             EventType innerType,
             EventBeanTypedEventFactory eventBeanTypedEventFactory)
         {
-            if (getter is ObjectArrayEventPropertyGetter) {
+            if (getter is ObjectArrayEventPropertyGetter propertyGetter) {
                 return new MapNestedEntryPropertyGetterObjectArray(
                     propertyName,
                     innerType,
                     eventBeanTypedEventFactory,
-                    (ObjectArrayEventPropertyGetter) getter);
+                    propertyGetter);
             }
 
             return new MapNestedEntryPropertyGetterMap(
                 propertyName,
                 innerType,
                 eventBeanTypedEventFactory,
-                (MapEventPropertyGetter) getter);
+                (MapEventPropertyGetter)getter);
         }
 
         public EventPropertyGetterSPI GetGetterNestedEntryBeanArray(
@@ -183,13 +203,13 @@ namespace com.espertech.esper.common.@internal.@event.map
             EventType innerType,
             EventBeanTypedEventFactory eventBeanTypedEventFactory)
         {
-            if (getter is ObjectArrayEventPropertyGetter) {
+            if (getter is ObjectArrayEventPropertyGetter propertyGetter) {
                 return new MapNestedEntryPropertyGetterArrayObjectArray(
                     propertyNameAtomic,
                     innerType,
                     eventBeanTypedEventFactory,
                     index,
-                    (ObjectArrayEventPropertyGetter) getter);
+                    propertyGetter);
             }
 
             return new MapNestedEntryPropertyGetterArrayMap(
@@ -197,7 +217,19 @@ namespace com.espertech.esper.common.@internal.@event.map
                 innerType,
                 eventBeanTypedEventFactory,
                 index,
-                (MapEventPropertyGetter) getter);
+                (MapEventPropertyGetter)getter);
+        }
+
+        public EventPropertyGetterSPI GetGetterBeanNested(
+            string name,
+            EventType eventType,
+            EventBeanTypedEventFactory eventBeanTypedEventFactory)
+        {
+            if (eventType is ObjectArrayEventType) {
+                return new MapPropertyGetterDefaultObjectArray(name, eventType, eventBeanTypedEventFactory);
+            }
+
+            return new MapPropertyGetterDefaultMap(name, eventType, eventBeanTypedEventFactory);
         }
 
         public EventPropertyGetterSPI GetGetterNestedPropertyProvidedGetterDynamic(
@@ -219,70 +251,6 @@ namespace com.espertech.esper.common.@internal.@event.map
             BeanEventTypeFactory beanEventTypeFactory)
         {
             return prop.GetGetterMap(null, eventBeanTypedEventFactory, beanEventTypeFactory);
-        }
-
-        EventPropertyGetterSPI EventTypeNestableGetterFactory.GetGetterEventBean(
-            string name,
-            Type underlyingType)
-        {
-            return GetGetterEventBean(name, underlyingType);
-        }
-
-        EventPropertyGetterSPI EventTypeNestableGetterFactory.GetGetterEventBeanArray(
-            string name,
-            EventType eventType)
-        {
-            return GetGetterEventBeanArray(name, eventType);
-        }
-
-        EventPropertyGetterSPI EventTypeNestableGetterFactory.GetGetterBeanNested(
-            string name,
-            EventType eventType,
-            EventBeanTypedEventFactory eventBeanTypedEventFactory)
-        {
-            return GetGetterBeanNested(name, eventType, eventBeanTypedEventFactory);
-        }
-
-        EventPropertyGetterSPI EventTypeNestableGetterFactory.GetGetterBeanNestedArray(
-            string name,
-            EventType eventType,
-            EventBeanTypedEventFactory eventBeanTypedEventFactory)
-        {
-            return GetGetterBeanNestedArray(name, eventType, eventBeanTypedEventFactory);
-        }
-
-        public MapEventPropertyGetter GetGetterEventBean(
-            string name,
-            Type underlyingType)
-        {
-            return new MapEventBeanPropertyGetter(name, underlyingType);
-        }
-
-        public MapEventPropertyGetter GetGetterEventBeanArray(
-            string name,
-            EventType eventType)
-        {
-            return new MapEventBeanArrayPropertyGetter(name, eventType.UnderlyingType);
-        }
-
-        public MapEventPropertyGetter GetGetterBeanNestedArray(
-            string name,
-            EventType eventType,
-            EventBeanTypedEventFactory eventBeanTypedEventFactory)
-        {
-            return new MapFragmentArrayPropertyGetter(name, eventType, eventBeanTypedEventFactory);
-        }
-
-        public MapEventPropertyGetter GetGetterBeanNested(
-            string name,
-            EventType eventType,
-            EventBeanTypedEventFactory eventBeanTypedEventFactory)
-        {
-            if (eventType is ObjectArrayEventType) {
-                return new MapPropertyGetterDefaultObjectArray(name, eventType, eventBeanTypedEventFactory);
-            }
-
-            return new MapPropertyGetterDefaultMap(name, eventType, eventBeanTypedEventFactory);
         }
     }
 } // end of namespace

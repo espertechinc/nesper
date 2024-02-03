@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -12,12 +12,12 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.collection
 {
-	/// <summary>
-	///     Functions as a key value for Maps where keys need to be composite values.
-	///     The class allows a Map that uses HashableMultiKey entries for key values to use multiple objects as keys.
-	///     It calculates the hashCode from the key objects on construction and caches the hashCode.
-	/// </summary>
-	public class MultiKeyArrayOfKeys<T>
+    /// <summary>
+    ///     Functions as a key value for Maps where keys need to be composite values.
+    ///     The class allows a Map that uses HashableMultiKey entries for key values to use multiple objects as keys.
+    ///     It calculates the hashCode from the key objects on construction and caches the hashCode.
+    /// </summary>
+    public class MultiKeyArrayOfKeys<T>
     {
         private readonly int _hashCode;
 

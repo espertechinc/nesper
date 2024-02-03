@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -11,9 +11,11 @@ using System.Collections.Generic;
 using System.Linq;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.context.util;
+using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.fafquery.processor;
 using com.espertech.esper.common.@internal.epl.join.querygraph;
@@ -27,7 +29,7 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
 {
     public class FAFQueryMethodSelectExecUtil
     {
-        protected internal static ICollection<EventBean> Snapshot(
+        internal static ICollection<EventBean> Snapshot(
             ExprEvaluator filter,
             FireAndForgetInstance processorInstance,
             QueryGraph queryGraph,
@@ -41,27 +43,50 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             return coll;
         }
 
-        protected internal static ResultSetProcessor ProcessorWithAssign(
+        internal static ResultSetProcessor ProcessorWithAssign(
             ResultSetProcessorFactoryProvider processorProvider,
             AgentInstanceContext agentInstanceContext,
             FAFQueryMethodAssignerSetter assignerSetter,
             IDictionary<int, ExprTableEvalStrategyFactory> tableAccesses,
             IDictionary<int, SubSelectFactory> subselects)
         {
-            // start table-access
-            var tableAccessEvals = ExprTableEvalHelperStart.StartTableAccess(tableAccesses, agentInstanceContext);
-
-            // get RSP
-            var pair = StatementAgentInstanceFactoryUtil.StartResultSetAndAggregation(
+            return ProcessorWithAssign(
                 processorProvider,
                 agentInstanceContext,
-                false,
-                null);
-            
+                agentInstanceContext,
+                assignerSetter,
+                tableAccesses,
+                subselects);
+        }
+
+        internal static ResultSetProcessor ProcessorWithAssign(
+            ResultSetProcessorFactoryProvider processorProvider,
+            ExprEvaluatorContext exprEvaluatorContext,
+            AgentInstanceContext agentInstanceContextOpt,
+            FAFQueryMethodAssignerSetter assignerSetter,
+            IDictionary<int, ExprTableEvalStrategyFactory> tableAccesses,
+            IDictionary<int, SubSelectFactory> subselects)
+        {
+            // start table-access
+            var tableAccessEvals =
+                ExprTableEvalHelperStart.StartTableAccess(tableAccesses, exprEvaluatorContext);
+
+            // get RSP
+            var pair =
+                StatementAgentInstanceFactoryUtil.StartResultSetAndAggregation(
+                    processorProvider,
+                    exprEvaluatorContext,
+                    false,
+                    null);
+
             // start subselects
-            var subselectStopCallbacks = new List<AgentInstanceMgmtCallback>(2);
-            IDictionary<int, SubSelectFactoryResult> subselectActivations = SubSelectHelperStart.StartSubselects(
-                subselects, agentInstanceContext, subselectStopCallbacks, false);
+            IList<AgentInstanceMgmtCallback> subselectStopCallbacks = new List<AgentInstanceMgmtCallback>(2);
+            var subselectActivations = SubSelectHelperStart.StartSubselects(
+                subselects,
+                exprEvaluatorContext,
+                agentInstanceContextOpt,
+                subselectStopCallbacks,
+                false);
 
             // assign
             assignerSetter.Assign(
@@ -76,26 +101,34 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             return pair.First;
         }
 
-        protected internal static ICollection<EventBean> Filtered(
+        internal static ICollection<EventBean> Filtered(
             ICollection<EventBean> snapshot,
             ExprEvaluator filterExpressions,
-            AgentInstanceContext agentInstanceContext)
+            ExprEvaluatorContext exprEvaluatorContext)
         {
-            ArrayDeque<EventBean> deque = new ArrayDeque<EventBean>(Math.Min(snapshot.Count, 16));
+            var deque = new ArrayDeque<EventBean>(Math.Min(snapshot.Count, 16));
             ExprNodeUtilityEvaluate.ApplyFilterExpressionIterable(
                 snapshot.GetEnumerator(),
                 filterExpressions,
-                agentInstanceContext,
+                exprEvaluatorContext,
                 deque);
             return deque;
         }
 
-        protected internal static EPPreparedQueryResult ProcessedNonJoin(
+        internal static EPPreparedQueryResult ProcessedNonJoin(
             ResultSetProcessor resultSetProcessor,
             ICollection<EventBean> events,
             EventPropertyValueGetter distinctKeyGetter)
         {
             var rows = events.ToArray();
+            return ProcessedNonJoin(resultSetProcessor, rows, distinctKeyGetter);
+        }
+
+        internal static EPPreparedQueryResult ProcessedNonJoin(
+            ResultSetProcessor resultSetProcessor,
+            EventBean[] rows,
+            EventPropertyValueGetter distinctKeyGetter)
+        {
             var results = resultSetProcessor.ProcessViewResult(rows, null, true);
 
             EventBean[] distinct;
@@ -107,6 +140,13 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             }
 
             return new EPPreparedQueryResult(resultSetProcessor.ResultEventType, distinct);
+        }
+
+        internal static void ReleaseTableLocks(FireAndForgetProcessor[] processors)
+        {
+            foreach (var processor in processors) {
+                processor.StatementContext.TableExprEvaluatorContext.ReleaseAcquiredLocks();
+            }
         }
     }
 } // end of namespace

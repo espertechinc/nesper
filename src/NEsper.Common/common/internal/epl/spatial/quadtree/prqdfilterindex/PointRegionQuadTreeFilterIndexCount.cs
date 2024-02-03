@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -25,16 +25,19 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilterin
                 return CountLeaf(treeNodeLeaf);
             }
 
-            var branch = (PointRegionQuadTreeNodeBranch) node;
+            var branch = (PointRegionQuadTreeNodeBranch)node;
             return Count(branch.Nw) + Count(branch.Ne) + Count(branch.Sw) + Count(branch.Se);
         }
 
         private static int CountLeaf(PointRegionQuadTreeNodeLeaf<object> leaf)
         {
-            if (leaf.Points == null)
+            if (leaf.Points == null) {
                 return 0;
-            if (leaf.Points is XYPointWOpaqueValue)
+            }
+
+            if (leaf.Points is XYPointWOpaqueValue) {
                 return CountCallbacks(leaf.Points);
+            }
 
             var coll = leaf.Points.Unwrap<XYPointWOpaqueValue>();
             var count = 0;

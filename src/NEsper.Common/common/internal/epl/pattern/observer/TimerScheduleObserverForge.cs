@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.common.@internal.compile.util;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -37,7 +38,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
         private const string REPETITIONS_NAME = "repetitions";
         private const string DATE_NAME = "date";
         private const string PERIOD_NAME = "period";
-        private static readonly string[] NAMED_PARAMETERS = {ISO_NAME, REPETITIONS_NAME, DATE_NAME, PERIOD_NAME};
+        private static readonly string[] NAMED_PARAMETERS = { ISO_NAME, REPETITIONS_NAME, DATE_NAME, PERIOD_NAME };
         private bool allConstantResult;
         private MatchedEventConvertorForge convertor;
         private int scheduleCallbackId = -1;
@@ -66,7 +67,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
                 try {
                     allConstantResult = ExprNodeUtilityValidate.ValidateNamedExpectType(
                         isoStringExpr,
-                        new[] {typeof(string)});
+                        new[] { typeof(string) });
                 }
                 catch (ExprValidationException ex) {
                     throw new ObserverParameterException(ex.Message, ex);
@@ -106,22 +107,22 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
                     if (repetitionsNamedNode != null) {
                         allConstantResult &= ExprNodeUtilityValidate.ValidateNamedExpectType(
                             repetitionsNamedNode,
-                            new[] {typeof(int), typeof(long)});
+                            new[] { typeof(int), typeof(long) });
                     }
 
                     if (periodNamedNode != null) {
                         allConstantResult &= ExprNodeUtilityValidate.ValidateNamedExpectType(
                             periodNamedNode,
-                            new[] {typeof(TimePeriod)});
+                            new[] { typeof(TimePeriod) });
                     }
                 }
                 catch (ExprValidationException ex) {
                     throw new ObserverParameterException(ex.Message, ex);
                 }
 
-                var dateNode = dateNamedNode == null ? null : dateNamedNode.ChildNodes[0];
-                var repetitionsNode = repetitionsNamedNode == null ? null : repetitionsNamedNode.ChildNodes[0];
-                var periodNode = periodNamedNode == null ? null : (ExprTimePeriod) periodNamedNode.ChildNodes[0];
+                var dateNode = dateNamedNode?.ChildNodes[0];
+                var repetitionsNode = repetitionsNamedNode?.ChildNodes[0];
+                var periodNode = (ExprTimePeriod)periodNamedNode?.ChildNodes[0];
                 scheduleComputer = new TimerScheduleSpecComputeFromExprForge(dateNode, repetitionsNode, periodNode);
             }
 
@@ -136,7 +137,8 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
         }
 
         public int ScheduleCallbackId {
-            set { scheduleCallbackId = value; }
+            get => scheduleCallbackId;
+            set => scheduleCallbackId = value;
         }
 
         public CodegenExpression MakeCodegen(
@@ -165,14 +167,17 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
                 .SetProperty(
                     Ref("factory"),
                     "OptionalConvertor",
-                    convertor == null ? null : convertor.MakeAnonymous(method, classScope))
+                    convertor?.MakeAnonymous(method, classScope))
                 .MethodReturn(Ref("factory"));
             return LocalMethod(method);
         }
 
-        public void CollectSchedule(IList<ScheduleHandleCallbackProvider> schedules)
+        public void CollectSchedule(
+            short factoryNodeId,
+            Func<short, CallbackAttribution> callbackAttribution,
+            IList<ScheduleHandleTracked> schedules)
         {
-            schedules.Add(this);
+            schedules.Add(new ScheduleHandleTracked(callbackAttribution.Invoke(factoryNodeId), this));
         }
     }
 } // end of namespace

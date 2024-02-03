@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -28,14 +28,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             ExprNode validated,
             Type targetType)
         {
-            this._widener = widener;
-            this._validated = validated;
-            this._targetType = targetType;
+            _widener = widener;
+            _validated = validated;
+            _targetType = targetType;
         }
 
-        public ExprEvaluator ExprEvaluator {
-            get { throw new UnsupportedOperationException("Not available at compile time"); }
-        }
+        public ExprEvaluator ExprEvaluator => throw new UnsupportedOperationException("Not available at compile time");
 
         public CodegenExpression EvaluateCodegen(
             Type requiredType,
@@ -43,7 +41,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenExpression inner = _validated.Forge.EvaluateCodegen(
+            var inner = _validated.Forge.EvaluateCodegen(
                 _validated.Forge.EvaluationType,
                 codegenMethodScope,
                 exprSymbol,
@@ -51,19 +49,19 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             return _widener.WidenCodegen(inner, codegenMethodScope, codegenClassScope);
         }
 
-        public Type EvaluationType {
-            get => _targetType;
-        }
+        public Type EvaluationType => _targetType;
 
-        public ExprForgeConstantType ForgeConstantType {
-            get => ExprForgeConstantType.NONCONST;
-        }
+        public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
 
         public ExprNodeRenderable ExprForgeRenderable {
             get {
-                return new ProxyExprNodeRenderable((writer, parentPrecedence, flags) => {
-                    writer.Write(nameof(ExprEvalWithTypeWidener));
-                });
+                return new ProxyExprNodeRenderable(
+                    (
+                        writer,
+                        parentPrecedence,
+                        flags) => {
+                        writer.Write(nameof(ExprEvalWithTypeWidener));
+                    });
             }
         }
     }

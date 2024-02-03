@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     ///     Conjunction represents a logical AND allowing multiple sub-expressions to be connected by AND.
     /// </summary>
-    [Serializable]
     public class Conjunction : Junction
     {
         /// <summary>
@@ -39,8 +38,7 @@ namespace com.espertech.esper.common.client.soda
         {
             AddChild(first);
             AddChild(second);
-            for (var i = 0; i < expressions.Length; i++)
-            {
+            for (var i = 0; i < expressions.Length; i++) {
                 AddChild(expressions[i]);
             }
         }
@@ -50,8 +48,7 @@ namespace com.espertech.esper.common.client.soda
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             var delimiter = "";
-            foreach (var child in Children)
-            {
+            foreach (var child in Children) {
                 writer.Write(delimiter);
                 child.ToEPL(writer, Precedence);
                 delimiter = " and ";

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -39,12 +39,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            var start = getterStartTimestamp.Get((EventBean) target);
+            var start = getterStartTimestamp.Get((EventBean)target);
             if (start == null) {
                 return null;
             }
 
-            var end = getterEndTimestamp.Get((EventBean) target);
+            var end = getterEndTimestamp.Get((EventBean)target);
             if (end == null) {
                 return null;
             }
@@ -61,7 +61,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
         {
             var methodNode = codegenMethodScope
                 .MakeChild(typeof(bool?), typeof(DTLocalBeanIntervalWithEndEval), codegenClassScope)
-                .AddParam(typeof(EventBean), "target");
+                .AddParam<EventBean>("target");
 
             var block = methodNode.Block;
             block.DeclareVar(
@@ -70,8 +70,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
                 CodegenLegoCast.CastSafeFromObjectType(
                     forge.getterStartReturnType,
                     forge.getterStartTimestamp.EventBeanGetCodegen(
-                        Ref("target"), 
-                        methodNode, 
+                        Ref("target"),
+                        methodNode,
                         codegenClassScope)));
             if (forge.getterStartReturnType.CanBeNull()) {
                 block.IfRefNullReturnNull("start");
@@ -83,22 +83,22 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
                 CodegenLegoCast.CastSafeFromObjectType(
                     forge.getterEndReturnType,
                     forge.getterEndTimestamp.EventBeanGetCodegen(
-                        Ref("target"), 
-                        methodNode, 
+                        Ref("target"),
+                        methodNode,
                         codegenClassScope)));
             if (forge.getterEndReturnType.CanBeNull()) {
                 block.IfRefNullReturnNull("end");
             }
 
-            CodegenExpression startValue = Unbox(Ref("start"), forge.getterStartReturnType);
-            CodegenExpression endValue = Unbox(Ref("end"), forge.getterEndReturnType);
+            var startValue = Unbox(Ref("start"), forge.getterStartReturnType);
+            var endValue = Unbox(Ref("end"), forge.getterEndReturnType);
 
             block.MethodReturn(
                 forge.inner.Codegen(
                     startValue,
                     endValue,
-                    methodNode, 
-                    exprSymbol, 
+                    methodNode,
+                    exprSymbol,
                     codegenClassScope));
 
             return LocalMethod(methodNode, inner);

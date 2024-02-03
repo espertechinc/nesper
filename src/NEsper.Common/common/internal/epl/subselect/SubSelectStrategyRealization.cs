@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -43,32 +43,19 @@ namespace com.espertech.esper.common.@internal.epl.subselect
             this.indexes = indexes;
         }
 
-        public SubordTableLookupStrategy LookupStrategy {
-            get => lookupStrategy;
-        }
+        public SubordTableLookupStrategy LookupStrategy => lookupStrategy;
 
-        public SubselectAggregationPreprocessorBase SubselectAggregationPreprocessor {
-            get => subselectAggregationPreprocessor;
-        }
+        public SubselectAggregationPreprocessorBase SubselectAggregationPreprocessor =>
+            subselectAggregationPreprocessor;
 
-        public AggregationService AggregationService {
-            get => aggregationService;
-        }
+        public AggregationService AggregationService => aggregationService;
 
-        public PriorEvalStrategy PriorStrategy {
-            get => priorStrategy;
-        }
+        public PriorEvalStrategy PriorStrategy => priorStrategy;
 
-        public PreviousGetterStrategy PreviousStrategy {
-            get => previousStrategy;
-        }
+        public PreviousGetterStrategy PreviousStrategy => previousStrategy;
 
-        public Viewable SubselectView {
-            get => subselectView;
-        }
+        public Viewable SubselectView => subselectView;
 
-        public EventTable[] Indexes {
-            get => indexes;
-        }
+        public EventTable[] Indexes => indexes;
     }
 } // end of namespace

@@ -1,12 +1,10 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
-
-using System;
 
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.agg.method.rate;
@@ -14,7 +12,6 @@ using com.espertech.esper.common.@internal.epl.expression.agg.@base;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.time.node;
 using com.espertech.esper.common.@internal.util;
-using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.@internal.epl.expression.agg.method
 {
@@ -34,24 +31,24 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
 
         public override AggregationForgeFactory ValidateAggregationChild(ExprValidationContext validationContext)
         {
-            if (this.positionalParams.Length == 0) {
+            if (positionalParams.Length == 0) {
                 throw new ExprValidationException(
                     "The rate aggregation function minimally requires a numeric constant or expression as a parameter.");
             }
 
             // handle "ever"
-            ExprNode first = this.positionalParams[0];
+            var first = positionalParams[0];
             if (first.Forge.ForgeConstantType.IsCompileTimeConstant) {
-                string messageX =
+                var messageX =
                     "The rate aggregation function requires a numeric constant or time period as the first parameter in the constant-value notation";
                 long intervalTime;
-                if (first is ExprTimePeriod) {
-                    double secInterval = ((ExprTimePeriod) first).EvaluateAsSeconds(null, true, null);
+                if (first is ExprTimePeriod period) {
+                    var secInterval = period.EvaluateAsSeconds(null, true, null);
                     intervalTime =
                         validationContext.ImportService.TimeAbacus.DeltaForSecondsDouble(secInterval);
                 }
                 else if (ExprNodeUtilityQuery.IsConstant(first)) {
-                    if (!first.Forge.EvaluationType.IsNumeric()) {
+                    if (!first.Forge.EvaluationType.IsTypeNumeric()) {
                         throw new ExprValidationException(messageX);
                     }
 
@@ -63,19 +60,23 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
                 }
 
                 if (optionalFilter == null) {
-                    this.positionalParams = ExprNodeUtilityQuery.EMPTY_EXPR_ARRAY;
+                    positionalParams = ExprNodeUtilityQuery.EMPTY_EXPR_ARRAY;
                 }
                 else {
-                    this.positionalParams = new ExprNode[] {optionalFilter};
+                    positionalParams = new ExprNode[] { optionalFilter };
                 }
 
-                return new AggregationForgeFactoryRate(this, true, intervalTime, validationContext.ImportService.TimeAbacus);
+                return new AggregationForgeFactoryRate(
+                    this,
+                    true,
+                    intervalTime,
+                    validationContext.ImportService.TimeAbacus);
             }
 
-            string message =
+            const string message =
                 "The rate aggregation function requires a property or expression returning a non-constant long-type value as the first parameter in the timestamp-property notation";
-            Type boxedParamOne = first.Forge.EvaluationType.GetBoxedType();
-            if (boxedParamOne != typeof(long?)) {
+            var paramOne = first.Forge.EvaluationType;
+            if (!paramOne.IsTypeInt64()) {
                 throw new ExprValidationException(message);
             }
 
@@ -88,14 +89,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
                     "The rate aggregation function does not allow the current runtime timestamp as a parameter");
             }
 
-            if (this.positionalParams.Length > 1) {
-                if (!this.positionalParams[1].Forge.EvaluationType.IsNumeric()) {
+            if (positionalParams.Length > 1) {
+                if (!positionalParams[1].Forge.EvaluationType.IsTypeNumeric()) {
                     throw new ExprValidationException(
                         "The rate aggregation function accepts an expression returning a numeric value to accumulate as an optional second parameter");
                 }
             }
 
-            bool hasDataWindows = ExprNodeUtilityAggregation.HasRemoveStreamForAggregations(
+            var hasDataWindows = ExprNodeUtilityAggregation.HasRemoveStreamForAggregations(
                 first,
                 validationContext.StreamTypeService,
                 validationContext.IsResettingAggregations);
@@ -111,9 +112,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
             return new AggregationForgeFactoryRate(this, false, -1, validationContext.ImportService.TimeAbacus);
         }
 
-        public override string AggregationFunctionName {
-            get => "rate";
-        }
+        public override string AggregationFunctionName => "rate";
 
         public override bool EqualsNodeAggregateMethodOnly(ExprAggregateNode node)
         {

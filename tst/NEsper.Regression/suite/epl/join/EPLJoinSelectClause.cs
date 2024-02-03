@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -11,6 +11,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.epl.join
 {
@@ -18,34 +19,44 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
     {
         public void Run(RegressionEnvironment env)
         {
-            var epl = "@Name('s0') select S0.DoubleBoxed, S1.IntPrimitive*S1.IntBoxed/2.0 as div from " +
-                      "SupportBean(TheString='s0')#length(3) as S0," +
-                      "SupportBean(TheString='s1')#length(3) as S1" +
-                      " where S0.DoubleBoxed = S1.DoubleBoxed";
+            var epl = "@name('s0') select s0.DoubleBoxed, s1.IntPrimitive*s1.IntBoxed/2.0 as div from " +
+                      "SupportBean(TheString='s0')#length(3) as s0," +
+                      "SupportBean(TheString='s1')#length(3) as s1" +
+                      " where s0.DoubleBoxed = s1.DoubleBoxed";
             env.CompileDeployAddListenerMileZero(epl, "s0");
 
-            var result = env.Statement("s0").EventType;
-            Assert.AreEqual(typeof(double?), result.GetPropertyType("S0.DoubleBoxed"));
-            Assert.AreEqual(typeof(double?), result.GetPropertyType("div"));
-            Assert.AreEqual(2, env.Statement("s0").EventType.PropertyNames.Length);
-
-            Assert.IsNull(env.Listener("s0").LastNewData);
+            env.AssertStatement(
+                "s0",
+                statement => {
+                    var result = statement.EventType;
+                    ClassicAssert.AreEqual(typeof(double?), result.GetPropertyType("s0.DoubleBoxed"));
+                    ClassicAssert.AreEqual(typeof(double?), result.GetPropertyType("div"));
+                    ClassicAssert.AreEqual(2, statement.EventType.PropertyNames.Length);
+                });
+            env.AssertListenerNotInvoked("s0");
 
             SendEvent(env, "s0", 1, 4, 5);
 
             env.Milestone(1);
 
             SendEvent(env, "s1", 1, 3, 2);
-            var newEvents = env.Listener("s0").LastNewData;
-            Assert.AreEqual(1d, newEvents[0].Get("S0.DoubleBoxed"));
-            Assert.AreEqual(3d, newEvents[0].Get("div"));
+            env.AssertListener(
+                "s0",
+                listener => {
+                    var newEvents = listener.LastNewData;
+                    ClassicAssert.AreEqual(1d, newEvents[0].Get("s0.DoubleBoxed"));
+                    ClassicAssert.AreEqual(3d, newEvents[0].Get("div"));
+                });
 
             env.Milestone(2);
 
-            var iterator = env.Statement("s0").GetEnumerator();
-            var theEvent = iterator.Advance();
-            Assert.AreEqual(1d, theEvent.Get("S0.DoubleBoxed"));
-            Assert.AreEqual(3d, theEvent.Get("div"));
+            env.AssertIterator(
+                "s0",
+                iterator => {
+                    var theEvent = iterator.Advance();
+                    ClassicAssert.AreEqual(1d, theEvent.Get("s0.DoubleBoxed"));
+                    ClassicAssert.AreEqual(3d, theEvent.Get("div"));
+                });
 
             env.UndeployAll();
         }

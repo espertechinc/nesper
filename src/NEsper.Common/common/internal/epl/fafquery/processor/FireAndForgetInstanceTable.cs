@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -39,10 +39,30 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.processor
             TableEvalLockUtil.ObtainLockUnless(
                 instance.TableLevelRWLock.WriteLock,
                 instance.AgentInstanceContext.TableExprEvaluatorContext);
-            var theEvent = insert.InsertHelper.Process(new EventBean[0], true, true, instance.AgentInstanceContext);
-            var aggs = instance.Table.AggregationRowFactory.Make();
-            ((Array) theEvent.Underlying).SetValue(aggs, 0);
-            instance.AddEvent(theEvent);
+
+            var eventBeansZero = Array.Empty<EventBean>();
+
+            var inserted = new EventBean[insert.InsertHelpers.Length];
+            for (var i = 0; i < insert.InsertHelpers.Length; i++) {
+                inserted[i] = insert.InsertHelpers[i]
+                    .Process(eventBeansZero, true, true, instance.AgentInstanceContext);
+            }
+
+            try {
+                foreach (var @event in inserted) {
+                    var aggs = instance.Table.AggregationRowFactory.Make();
+                    ((object[])@event.Underlying)[0] = aggs;
+                    instance.AddEvent(@event);
+                }
+            }
+            catch (EPException) {
+                foreach (var @event in inserted) {
+                    instance.DeleteEvent(@event);
+                }
+
+                throw;
+            }
+
             return CollectionUtil.EVENTBEANARRAY_EMPTY;
         }
 
@@ -159,7 +179,7 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.processor
 
             // fall back to window operator if snapshot doesn't resolve successfully
             var sourceCollection = instance.EventCollection;
-            using (IEnumerator<EventBean> enumerator = sourceCollection.GetEnumerator()) {
+            using (var enumerator = sourceCollection.GetEnumerator()) {
                 if (!enumerator.MoveNext()) {
                     return EmptyList<EventBean>.Instance;
                 }

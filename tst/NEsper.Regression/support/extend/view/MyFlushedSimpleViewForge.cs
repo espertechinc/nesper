@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -36,7 +36,6 @@ namespace com.espertech.esper.regressionlib.support.extend.view
 
         public void Attach(
             EventType parentEventType,
-            int streamNumber,
             ViewForgeEnv viewForgeEnv)
         {
             EventType = parentEventType;
@@ -48,7 +47,7 @@ namespace com.espertech.esper.regressionlib.support.extend.view
 
         public CodegenExpression Make(
             CodegenMethodScope parent,
-            CodegenSymbolProvider symbols,
+            SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
             return new SAIFFInitializeBuilder(
@@ -56,15 +55,15 @@ namespace com.espertech.esper.regressionlib.support.extend.view
                     GetType(),
                     "factory",
                     parent,
-                    (SAIFFInitializeSymbol) symbols,
+                    symbols,
                     classScope)
                 .Eventtype("eventType", EventType)
                 .Build();
         }
 
-        public void Accept(ViewForgeVisitor visitor)
+        public T Accept<T>(ViewFactoryForgeVisitor<T> visitor)
         {
-            visitor.Visit(this);
+            return visitor.VisitExtension(this);
         }
     }
 } // end of namespace

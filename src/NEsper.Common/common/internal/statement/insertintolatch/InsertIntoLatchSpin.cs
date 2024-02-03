@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -18,17 +18,15 @@ namespace com.espertech.esper.common.@internal.statement.insertintolatch
     ///     A spin-locking implementation of a latch for use in guaranteeing delivery between
     ///     a single event produced by a single statement and consumable by another statement.
     /// </summary>
-    public class InsertIntoLatchSpin
+    public class InsertIntoLatchSpin : InsertIntoLatch
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         // The earlier latch is the latch generated before this latch
-        private readonly InsertIntoLatchFactory _factory;
-        private readonly long _msecTimeout;
-        private readonly EventBean _payload;
-        private InsertIntoLatchSpin _earlier;
+        private readonly long msecTimeout;
+        private InsertIntoLatchSpin earlier;
 
-        private volatile bool _isCompleted;
+        private volatile bool isCompleted;
 
         /// <summary>
         ///     Ctor.
@@ -43,10 +41,10 @@ namespace com.espertech.esper.common.@internal.statement.insertintolatch
             long msecTimeout,
             EventBean payload)
         {
-            _factory = factory;
-            _earlier = earlier;
-            _msecTimeout = msecTimeout;
-            _payload = payload;
+            Factory = factory;
+            this.earlier = earlier;
+            this.msecTimeout = msecTimeout;
+            Event = payload;
         }
 
         /// <summary>
@@ -55,17 +53,21 @@ namespace com.espertech.esper.common.@internal.statement.insertintolatch
         /// <param name="factory">the latch factory</param>
         public InsertIntoLatchSpin(InsertIntoLatchFactory factory)
         {
-            _factory = factory;
-            _isCompleted = true;
-            _earlier = null;
-            _msecTimeout = 0;
+            Factory = factory;
+            isCompleted = true;
+            earlier = null;
+            msecTimeout = 0;
         }
 
         /// <summary>
         ///     Returns true if the dispatch completed for this future.
         /// </summary>
-        /// <returns>true for completed, false if not</returns>
-        public bool IsCompleted => _isCompleted;
+        /// <value>true for completed, false if not</value>
+        public bool IsCompleted => isCompleted;
+
+        public InsertIntoLatchFactory Factory { get; }
+
+        public EventBean Event { set; get; }
 
         /// <summary>
         ///     Blocking call that returns only when the earlier latch completed.
@@ -73,26 +75,26 @@ namespace com.espertech.esper.common.@internal.statement.insertintolatch
         /// <returns>payload of the latch</returns>
         public EventBean Await()
         {
-            if (!_earlier._isCompleted) {
-                var spinStartTime = _factory.TimeSourceService.TimeMillis;
+            if (!earlier.isCompleted) {
+                var spinStartTime = Factory.TimeSourceService.TimeMillis;
 
-                while (!_earlier._isCompleted) {
+                while (!earlier.isCompleted) {
                     Thread.Yield();
 
-                    var spinDelta = _factory.TimeSourceService.TimeMillis - spinStartTime;
-                    if (spinDelta > _msecTimeout) {
+                    var spinDelta = Factory.TimeSourceService.TimeMillis - spinStartTime;
+                    if (spinDelta > msecTimeout) {
                         Log.Info(
                             "Spin wait timeout exceeded in insert-into dispatch at " +
-                            _msecTimeout +
+                            msecTimeout +
                             "ms for " +
-                            _factory.Name +
+                            Factory.Name +
                             ", consider disabling insert-into between-statement latching for better performance");
                         break;
                     }
                 }
             }
 
-            return _payload;
+            return Event;
         }
 
         /// <summary>
@@ -100,8 +102,8 @@ namespace com.espertech.esper.common.@internal.statement.insertintolatch
         /// </summary>
         public void Done()
         {
-            _isCompleted = true;
-            _earlier = null;
+            isCompleted = true;
+            earlier = null;
         }
     }
 } // end of namespace

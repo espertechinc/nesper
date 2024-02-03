@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -8,6 +8,7 @@
 
 using System;
 using System.IO;
+using System.Text.Json.Serialization;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -32,7 +33,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         ExprEvaluator,
         ExprForgeInstrumentable
     {
-        [NonSerialized] private EventPropertyGetterSPI getter;
+        [JsonIgnore]
+        [NonSerialized]
+        private EventPropertyGetterSPI getter;
 
         public ExprContextPropertyNodeImpl(string propertyName)
         {
@@ -47,7 +50,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
         public string PropertyName { get; }
 
-        public Type Type { get; private set; }
+        public Type ValueType { get; private set; }
 
         public EventPropertyGetterSPI Getter => getter;
 
@@ -63,7 +66,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
         public ExprEvaluator ExprEvaluator => this;
 
-        public Type EvaluationType => Type;
+        public Type EvaluationType => ValueType;
 
         public ExprNodeRenderable ExprForgeRenderable => this;
 
@@ -73,6 +76,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
+            if (ValueType == null) {
+                return ConstantNull();
+            }
+
             var methodNode = codegenMethodScope.MakeChild(
                 EvaluationType,
                 typeof(ExprContextPropertyNodeImpl),
@@ -83,7 +90,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 .IfRefNullReturnNull("props");
             block.MethodReturn(
                 CodegenLegoCast.CastSafeFromObjectType(
-                    Type,
+                    ValueType,
                     getter.EventBeanGetCodegen(Ref("props"), methodNode, codegenClassScope)));
             return LocalMethod(methodNode);
         }
@@ -114,14 +121,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                     "Context property '" + PropertyName + "' cannot be used in the expression as provided");
             }
 
-            var eventType = (EventTypeSPI) validationContext.ContextDescriptor.ContextPropertyRegistry.ContextEventType;
+            var eventType = (EventTypeSPI)validationContext.ContextDescriptor.ContextPropertyRegistry.ContextEventType;
             if (eventType == null) {
                 throw new ExprValidationException(
                     "Context property '" + PropertyName + "' cannot be used in the expression as provided");
             }
 
             getter = eventType.GetGetterSPI(PropertyName);
-            if (getter == null) {
+            var propertyType = eventType.GetPropertyType(PropertyName);
+            if (getter == null || propertyType == null) {
                 throw new ExprValidationException(
                     "Context property '" +
                     PropertyName +
@@ -129,7 +137,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                     eventType.PropertyNames.RenderAny());
             }
 
-            Type = eventType.GetPropertyType(PropertyName).GetBoxedType();
+            ValueType = eventType.GetPropertyType(PropertyName).GetBoxedType();
             return null;
         }
 
@@ -153,23 +161,25 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 return false;
             }
 
-            var that = (ExprContextPropertyNodeImpl) node;
+            var that = (ExprContextPropertyNodeImpl)node;
             return PropertyName.Equals(that.PropertyName);
         }
-        
+
         public ExprEnumerationForgeDesc GetEnumerationForge(
             StreamTypeService streamTypeService,
             ContextCompileTimeDescriptor contextDescriptor)
         {
-            var eventType = (EventTypeSPI) contextDescriptor.ContextPropertyRegistry.ContextEventType;
+            var eventType = (EventTypeSPI)contextDescriptor.ContextPropertyRegistry.ContextEventType;
             var fragmentEventType = eventType?.GetFragmentType(PropertyName);
             if (fragmentEventType == null || fragmentEventType.IsIndexed) {
                 return null;
             }
-            var forge = new ExprContextPropertyNodeFragmentEnumerationForge(
-                PropertyName, fragmentEventType.FragmentType, getter);
-            return new ExprEnumerationForgeDesc(forge, true, -1);
 
+            var forge = new ExprContextPropertyNodeFragmentEnumerationForge(
+                PropertyName,
+                fragmentEventType.FragmentType,
+                getter);
+            return new ExprEnumerationForgeDesc(forge, true, -1);
         }
     }
 } // end of namespace

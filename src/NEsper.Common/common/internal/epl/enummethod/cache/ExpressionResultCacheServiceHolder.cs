@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -11,7 +11,6 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.cache
     public class ExpressionResultCacheServiceHolder
     {
         private readonly int _declareExprCacheSize;
-
         private ExpressionResultCacheForPropUnwrap _propUnwrap;
         private ExpressionResultCacheForDeclaredExprLastValue _declaredExprLastValue;
         private ExpressionResultCacheForDeclaredExprLastColl _declaredExprLastColl;
@@ -19,41 +18,35 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.cache
 
         public ExpressionResultCacheServiceHolder(int declareExprCacheSize)
         {
-            this._declareExprCacheSize = declareExprCacheSize;
+            _declareExprCacheSize = declareExprCacheSize;
         }
 
-        public ExpressionResultCacheForPropUnwrap GetAllocateUnwrapProp()
-        {
-            return _propUnwrap ?? (_propUnwrap = new ExpressionResultCacheForPropUnwrapImpl());
-        }
+        public ExpressionResultCacheForPropUnwrap AllocateUnwrapProp =>
+            _propUnwrap ?? (_propUnwrap = new ExpressionResultCacheForPropUnwrapImpl());
 
-        public ExpressionResultCacheForDeclaredExprLastValue GetAllocateDeclaredExprLastValue()
-        {
-            if (_declaredExprLastValue == null) {
-                if (_declareExprCacheSize < 1) {
-                    _declaredExprLastValue = new ExpressionResultCacheForDeclaredExprLastValueNone();
+        public ExpressionResultCacheForDeclaredExprLastValue AllocateDeclaredExprLastValue {
+            get {
+                if (_declaredExprLastValue == null) {
+                    if (_declareExprCacheSize < 1) {
+                        _declaredExprLastValue = new ExpressionResultCacheForDeclaredExprLastValueNone();
+                    }
+                    else if (_declareExprCacheSize < 2) {
+                        _declaredExprLastValue = new ExpressionResultCacheForDeclaredExprLastValueSingle();
+                    }
+                    else {
+                        _declaredExprLastValue =
+                            new ExpressionResultCacheForDeclaredExprLastValueMulti(_declareExprCacheSize);
+                    }
                 }
-                else if (_declareExprCacheSize < 2) {
-                    _declaredExprLastValue = new ExpressionResultCacheForDeclaredExprLastValueSingle();
-                }
-                else {
-                    _declaredExprLastValue =
-                        new ExpressionResultCacheForDeclaredExprLastValueMulti(_declareExprCacheSize);
-                }
+
+                return _declaredExprLastValue;
             }
-
-            return _declaredExprLastValue;
         }
 
-        public ExpressionResultCacheForDeclaredExprLastColl GetAllocateDeclaredExprLastColl()
-        {
-            return _declaredExprLastColl ??
-                   (_declaredExprLastColl = new ExpressionResultCacheForDeclaredExprLastCollImpl());
-        }
+        public ExpressionResultCacheForDeclaredExprLastColl AllocateDeclaredExprLastColl => _declaredExprLastColl ??
+            (_declaredExprLastColl = new ExpressionResultCacheForDeclaredExprLastCollImpl());
 
-        public ExpressionResultCacheForEnumerationMethod GetAllocateEnumerationMethod()
-        {
-            return _enumerationMethod ?? (_enumerationMethod = new ExpressionResultCacheForEnumerationMethodImpl());
-        }
+        public ExpressionResultCacheForEnumerationMethod AllocateEnumerationMethod => _enumerationMethod ??
+            (_enumerationMethod = new ExpressionResultCacheForEnumerationMethodImpl());
     }
 } // end of namespace

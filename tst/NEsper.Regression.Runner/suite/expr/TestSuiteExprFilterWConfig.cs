@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -29,7 +29,7 @@ using com.espertech.esper.regressionrun.runner;
 using com.espertech.esper.regressionrun.suite.core;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using SupportBeanComplexProps = com.espertech.esper.regressionlib.support.bean.SupportBeanComplexProps;
 
 namespace com.espertech.esper.regressionrun.suite.expr
@@ -80,7 +80,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
             }
 
             FilterSpecParamForge forge = SupportFilterPlanHook.AssertPlanSingleTripletAndReset("SupportBean");
-            Assert.AreEqual(expected, forge.FilterOperator);
+            ClassicAssert.AreEqual(expected, forge.FilterOperator);
         }
 
         private FilterSpecPlanForge CompileGetPlan(
@@ -106,7 +106,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
             return configuration;
         }
 
-        protected static void Configure(Configuration configuration)
+        private static void Configure(Configuration configuration)
         {
             foreach (var clazz in new[] {
                          typeof(SupportBean),
@@ -228,15 +228,15 @@ namespace com.espertech.esper.regressionrun.suite.expr
             var eplContext = "create context MyContext start SupportBean_S0 as s0;\n";
             var eplCondition = HOOK + "context MyContext select * from SupportBean(TheString = 'a' or context.s0.P00 = 'x');\n";
             RunAssertionBooleanExpression(none, eplContext + eplCondition, FilterOperator.BOOLEAN_EXPRESSION);
-            Assert.AreEqual(2, CompileGetPlan(basic, eplContext + eplCondition).Paths.Length);
+            ClassicAssert.AreEqual(2, CompileGetPlan(basic, eplContext + eplCondition).Paths.Length);
 
             var planBasicWithHint = CompileGetPlan(basic, eplContext + hintCondition + eplCondition);
-            Assert.AreEqual(1, planBasicWithHint.Paths.Length);
-            Assert.IsNotNull(planBasicWithHint.FilterConfirm);
+            ClassicAssert.AreEqual(1, planBasicWithHint.Paths.Length);
+            ClassicAssert.IsNotNull(planBasicWithHint.FilterConfirm);
 
             var planAdvanced = CompileGetPlan(advanced, eplContext + eplCondition);
-            Assert.AreEqual(1, planAdvanced.Paths.Length);
-            Assert.IsNotNull(planAdvanced.FilterConfirm);
+            ClassicAssert.AreEqual(1, planAdvanced.Paths.Length);
+            ClassicAssert.IsNotNull(planAdvanced.FilterConfirm);
         }
 
         [Test, RunInApplicationDomain]
@@ -1423,10 +1423,10 @@ namespace com.espertech.esper.regressionrun.suite.expr
             }
 
             [Test, RunInApplicationDomain]
-            public void WithCurrentTimestamp() => RunAssertionFilter(
+            public void WithCurrentTimestampWEquals() => RunAssertionFilter(
                 _session,
                 _indexPlanning,
-                ExprFilterOptimizableLookupableLimitedExpr.WithCurrentTimestamp());
+                ExprFilterOptimizableLookupableLimitedExpr.WithCurrentTimestampWEquals());
 
             [Test, RunInApplicationDomain]
             public void WithDisqualify() => RunAssertionFilter(

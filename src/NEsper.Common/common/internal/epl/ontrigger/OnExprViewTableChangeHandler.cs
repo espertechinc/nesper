@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -24,11 +24,7 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
             this.table = table;
         }
 
-        public EventBean[] Events {
-            get {
-                return coll?.ToArray();
-            }
-        }
+        public EventBean[] Events => coll?.ToArray();
 
         public void Add(
             EventBean theEvent,
@@ -40,8 +36,8 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
                 coll = new OneEventCollection();
             }
 
-            if (theEvent is NaturalEventBean) {
-                theEvent = ((NaturalEventBean) theEvent).OptionalSynthetic;
+            if (theEvent is NaturalEventBean bean) {
+                theEvent = bean.OptionalSynthetic;
             }
 
             coll.Add(table.EventToPublic.Convert(theEvent, eventsPerStream, isNewData, context));

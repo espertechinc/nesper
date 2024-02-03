@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -87,7 +87,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
         {
             var methodNode = codegenMethodScope
                 .MakeChild(typeof(DateTimeEx), typeof(CalendarWithTimeForgeOp), codegenClassScope)
-                .AddParam(typeof(DateTimeEx), "dtx");
+                .AddParam<DateTimeEx>("dtx");
 
             var block = methodNode.Block;
             CodegenDeclareInts(block, forge, methodNode, exprSymbol, codegenClassScope);
@@ -112,7 +112,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
         {
             var methodNode = codegenMethodScope
                 .MakeChild(typeof(DateTimeOffset), typeof(CalendarWithTimeForgeOp), codegenClassScope)
-                .AddParam(typeof(DateTimeOffset), "dto");
+                .AddParam<DateTimeOffset>("dto");
 
             var block = methodNode.Block;
             CodegenDeclareInts(block, forge, methodNode, exprSymbol, codegenClassScope);
@@ -137,7 +137,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
         {
             var methodNode = codegenMethodScope
                 .MakeChild(typeof(DateTime), typeof(CalendarWithTimeForgeOp), codegenClassScope)
-                .AddParam(typeof(DateTime), "dateTime");
+                .AddParam<DateTime>("dateTime");
 
             var block = methodNode.Block;
             CodegenDeclareInts(block, forge, methodNode, exprSymbol, codegenClassScope);

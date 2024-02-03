@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -15,16 +15,19 @@ namespace com.espertech.esper.common.@internal.@event.json.deserializers.core
 {
     public class JsonDeserializerGenericObject : JsonDeserializerGenericBase
     {
-        private IDictionary<string, object> _result;
-
         public override object Deserialize(JsonElement element)
         {
-            if (element.ValueKind != JsonValueKind.Object) {
-                throw new IllegalStateException($"expected {nameof(JsonValueKind.Object)}, but received {element.ValueKind}");
-            }
-
-            _result = JsonElementExtensions.ElementToDictionary(element);
-            return _result;
+            return element.ValueKind switch {
+                JsonValueKind.Object => element.ElementToDictionary(),
+                JsonValueKind.True => true,
+                JsonValueKind.False => false,
+                JsonValueKind.Null => null,
+                JsonValueKind.String => element.GetString(),
+                JsonValueKind.Number => element.ElementToNumeric(),
+                JsonValueKind.Array => element.ElementToArray(),
+                _ => throw new IllegalStateException(
+                    $"expected {nameof(JsonValueKind.Object)}, but received {element.ValueKind}")
+            };
         }
     }
 } // end of namespace

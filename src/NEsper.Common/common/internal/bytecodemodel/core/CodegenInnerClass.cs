@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -22,13 +22,13 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
             IList<CodegenTypedParam> explicitMembers,
             CodegenClassMethods methods,
             CodegenClassProperties properties)
-            : this(className, ctor, explicitMembers, methods, properties)
         {
-            if (optionalInterfaceImplemented != null) {
-            }
-            
             ClassName = className.CodeInclusionTypeName();
-            BaseList.AssignType(optionalInterfaceImplemented);
+            BaseList = new CodegenClassBaseList();
+            if (optionalInterfaceImplemented != null) {
+                BaseList.AssignType(optionalInterfaceImplemented);
+            }
+
             Ctor = ctor;
             ExplicitMembers = explicitMembers;
             Methods = methods;
@@ -49,7 +49,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
             Methods = methods;
             Properties = properties;
         }
-        
+
         public string ClassName { get; }
 
         public CodegenClassBaseList BaseList { get; }
@@ -63,5 +63,17 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
         public CodegenCtor Ctor { get; }
 
         public string InterfaceGenericClass { get; set; }
+
+        public CodegenInnerClass AddInterfaceImplemented(Type type)
+        {
+            BaseList.AddInterface(type);
+            return this;
+        }
+        
+        public CodegenInnerClass AddInterfaceImplemented(string typeName)
+        {
+            BaseList.AddInterface(typeName);
+            return this;
+        }
     }
 } // end of namespace

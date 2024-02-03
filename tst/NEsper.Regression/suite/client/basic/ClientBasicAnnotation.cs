@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -10,6 +10,7 @@ using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.client.basic
 {
@@ -17,13 +18,16 @@ namespace com.espertech.esper.regressionlib.suite.client.basic
     {
         public void Run(RegressionEnvironment env)
         {
-            var epl = "@Name('abc') @Tag(Name='a', Value='b') @Priority(1) @Drop select * from SupportBean";
+            var epl = "@name('abc') @Tag(Name='a', Value='b') @Priority(1) @Drop select * from SupportBean";
             env.CompileDeployAddListenerMileZero(epl, "abc");
 
-            var annotations = env.Statement("abc").Annotations;
-
-            Assert.AreEqual(typeof(AnnotationName), annotations[0].GetType());
-            Assert.AreEqual("abc", ((AnnotationName) annotations[0]).Value);
+            env.AssertStatement(
+                "abc",
+                statement => {
+                    var annotations = statement.Annotations;
+                    ClassicAssert.AreEqual(typeof(AnnotationName), annotations[0].GetType());
+                    ClassicAssert.AreEqual("abc", ((AnnotationName)annotations[0]).Value);
+                });
 
             env.UndeployAll();
         }

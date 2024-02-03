@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -21,19 +21,20 @@ using com.espertech.esper.common.@internal.epl.expression.visitor;
 using com.espertech.esper.common.@internal.epl.streamtype;
 using com.espertech.esper.common.@internal.epl.subselect;
 using com.espertech.esper.common.@internal.settings;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 
 namespace com.espertech.esper.common.@internal.compile.stage2
 {
     /// <summary>
-    /// Helper to compile (validate and optimize) filter expressions as used in pattern and filter-based streams.
+    ///     Helper to compile (validate and optimize) filter expressions as used in pattern and filter-based streams.
     /// </summary>
-    internal class FilterSpecCompiler
+    public class FilterSpecCompiler
     {
+        public static readonly string NEWLINE = Environment.NewLine;
+        
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-
-        public static readonly String NEWLINE = Environment.NewLine;
 
         public static FilterSpecCompiledDesc MakeFilterSpec(
             EventType eventType,
@@ -111,7 +112,8 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             ISet<string> allTagNamesOrdered,
             StreamTypeService streamTypeService,
             StatementRawInfo statementRawInfo,
-            StatementCompileTimeServices compileTimeServices)
+            StatementCompileTimeServices compileTimeServices
+        )
         {
             PropertyEvaluatorForge optionalPropertyEvaluator = null;
             if (optionalPropertyEvalSpec != null) {
@@ -136,12 +138,14 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 compileTimeServices);
             var plan = FilterSpecCompilerIndexPlanner.PlanFilterParameters(unwound, args);
 
-            var hook = (FilterSpecCompileHook) ImportUtil.GetAnnotationHook(
+            var hook = (FilterSpecCompileHook)ImportUtil.GetAnnotationHook(
                 statementRawInfo.Annotations,
                 HookType.INTERNAL_FILTERSPEC,
                 typeof(FilterSpecCompileHook),
                 compileTimeServices.ImportServiceCompileTime);
-            hook?.FilterIndexPlan(eventType, unwound, plan);
+            if (hook != null) {
+                hook.FilterIndexPlan(eventType, unwound, plan);
+            }
 
             if (compileTimeServices.Configuration.Compiler.Logging.IsEnableFilterPlan) {
                 LogFilterPlans(unwound, plan, eventType, optionalStreamName, statementRawInfo);
@@ -164,13 +168,12 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             StatementCompileTimeServices services)
         {
             IList<ExprNode> validatedNodes = new List<ExprNode>();
-            IList<StmtClassForgeableFactory> additionalForgeables = new List<StmtClassForgeableFactory>();
+            IList<StmtClassForgeableFactory> additionalForgeables = new List<StmtClassForgeableFactory>(2);
 
-            ExprValidationContext validationContext =
-                new ExprValidationContextBuilder(streamTypeService, statementRawInfo, services)
-                    .WithAllowBindingConsumption(true)
-                    .WithIsFilterExpression(true)
-                    .Build();
+            var validationContext = new ExprValidationContextBuilder(streamTypeService, statementRawInfo, services)
+                .WithAllowBindingConsumption(true)
+                .WithIsFilterExpression(true)
+                .Build();
             foreach (var node in exprNodes) {
                 // Determine subselects
                 var visitor = new ExprNodeSubselectDeclaredDotVisitor();
@@ -205,8 +208,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 
                 var validated = ExprNodeUtilityValidate.GetValidatedSubtree(exprNodeOrigin, node, validationContext);
                 validatedNodes.Add(validated);
-
-                if (validated.Forge.EvaluationType != typeof(bool?) && validated.Forge.EvaluationType != typeof(bool)) {
+                if (!validated.Forge.EvaluationType.IsTypeBoolean()) {
                     throw new ExprValidationException(
                         "Filter expression not returning a boolean value: '" +
                         ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(validated) +
@@ -216,7 +218,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 
             return new FilterSpecValidatedDesc(validatedNodes, additionalForgeables);
         }
-        
+
         private static void LogFilterPlans(
             IList<ExprNode> validatedNodes,
             FilterSpecPlanForge plan,
@@ -225,28 +227,28 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             StatementRawInfo statementRawInfo)
         {
             var buf = new StringBuilder();
-            buf
-                .Append("Filter plan for statement '")
+            buf.Append("Filter plan for statement '")
                 .Append(statementRawInfo.StatementName)
                 .Append("' filtering event type '")
                 .Append(eventType.Name + "'");
-
             if (optionalStreamName != null) {
                 buf.Append(" alias '" + optionalStreamName + "'");
             }
+
             if (validatedNodes.IsEmpty()) {
                 buf.Append(" empty");
-            } else {
+            }
+            else {
                 var andNode = ExprNodeUtilityMake.ConnectExpressionsByLogicalAndWhenNeeded(validatedNodes);
                 var expression = ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(andNode);
-                buf
-                    .Append(" expression '")
+                buf.Append(" expression '")
                     .Append(expression)
                     .Append("' for ")
                     .Append(plan.Paths.Length)
                     .Append(" paths");
             }
-            buf.Append(Environment.NewLine);
+
+            buf.Append(NEWLINE);
 
             plan.AppendPlan(buf);
 

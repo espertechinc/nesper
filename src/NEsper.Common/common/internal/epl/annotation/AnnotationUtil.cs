@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -112,26 +112,19 @@ namespace com.espertech.esper.common.@internal.epl.annotation
             return annotations;
         }
 
-        public static CodegenMethod MakeAnnotations(
+        public static CodegenExpression MakeAnnotations(
             Type arrayType,
             Attribute[] annotations,
             CodegenMethod parent,
             CodegenClassScope classScope)
         {
-            var method = parent.MakeChild(arrayType, typeof(AnnotationUtil), classScope);
-            method.Block.DeclareVar(
-                arrayType,
-                "annotations",
-                NewArrayByLength(arrayType.GetElementType(), Constant(annotations.Length)));
-            for (var i = 0; i < annotations.Length; i++) {
-                method.Block.AssignArrayElement(
-                    "annotations",
-                    Constant(i),
-                    MakeAnnotation(annotations[i], parent, classScope));
+            var componentType = arrayType.GetElementType();
+            var expressions = new CodegenExpression[annotations.Length];
+            for (int i = 0; i < annotations.Length; i++) {
+                expressions[i] = MakeAnnotation(annotations[i], parent, classScope);
             }
 
-            method.Block.MethodReturn(Ref("annotations"));
-            return method;
+            return NewArrayWithInit(componentType, expressions);
         }
 
         /// <summary>
@@ -326,21 +319,39 @@ namespace com.espertech.esper.common.@internal.epl.annotation
                 return CreateAttributeInstance((AnnotationDesc) value, importService);
             }
 
-            if (!(value is Array valueAsArray)) {
-                throw new AnnotationException(
-                    "Annotation '" +
-                    annotationClass.GetSimpleName() +
-                    "' requires a " +
-                    annotationAttribute.AnnotationType.GetSimpleName() +
-                    "-typed value for attribute '" +
-                    annotationAttribute.Name +
-                    "' but received " +
-                    "a " +
-                    value.GetType().GetSimpleName() +
-                    "-typed value");
+            var componentType = annotationAttribute.AnnotationType.GetElementType();
+
+            if (!(value is Array valueAsArray))
+            {
+                valueAsArray = null;
+                
+                // sometimes lists can be converted to arrays
+                if (value.GetType().IsGenericList())
+                {
+                    var elementType = value.GetType().GetComponentType();
+                    if ((elementType == componentType) || 
+                        (elementType.IsAssignableFrom(componentType)))
+                    {
+                        valueAsArray = value.UnwrapIntoArray(componentType);
+                    }
+                }
+                
+                if (valueAsArray == null)
+                {
+                    throw new AnnotationException(
+                        "Annotation '" +
+                        annotationClass.GetSimpleName() +
+                        "' requires a " +
+                        annotationAttribute.AnnotationType.GetSimpleName() +
+                        "-typed value for attribute '" +
+                        annotationAttribute.Name +
+                        "' but received " +
+                        "a " +
+                        value.GetType().GetSimpleName() +
+                        "-typed value");
+                }
             }
 
-            var componentType = annotationAttribute.AnnotationType.GetElementType();
             var array = Arrays.CreateInstanceChecked(componentType, valueAsArray.Length);
 
             for (var i = 0; i < valueAsArray.Length; i++) {
@@ -452,7 +463,7 @@ namespace com.espertech.esper.common.@internal.epl.annotation
                     continue;
                 }
 
-                props.Add(new AnnotationAttribute(method.Name, method.ReturnType, null)); // TBD: method.DefaultValue
+                props.Add(new AnnotationAttribute(method.Name, method.ReturnType, null)); // TODO: method.DefaultValue
             }
 #endif
 
@@ -737,9 +748,7 @@ namespace com.espertech.esper.common.@internal.epl.annotation
                     }
                     else if (property.PropertyType.IsArray && property.PropertyType.GetElementType().IsAttribute())
                     {
-                        valueExpression = LocalMethod(
-                            MakeAnnotations(
-                                property.PropertyType, (Attribute[]) value, methodNode, codegenClassScope));
+                        valueExpression = MakeAnnotations(property.PropertyType, (Attribute[]) value, methodNode, codegenClassScope);
                     }
                     else if (!property.PropertyType.IsAttribute())
                     {
@@ -747,7 +756,7 @@ namespace com.espertech.esper.common.@internal.epl.annotation
                     }
                     else
                     {
-                        valueExpression = FlexCast(
+                        valueExpression = Cast(
                             property.PropertyType, 
                             MakeAnnotation((Attribute) value, methodNode, codegenClassScope));
                     }

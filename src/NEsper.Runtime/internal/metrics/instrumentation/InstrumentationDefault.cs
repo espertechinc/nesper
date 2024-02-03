@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -1472,7 +1472,7 @@ namespace com.espertech.esper.runtime.@internal.metrics.instrumentation
         }
 
         public void QExprDotChain(
-            EPType targetTypeInfo,
+            EPChainableType targetTypeInfo,
             object target,
             int numUnpacking)
         {
@@ -1506,7 +1506,7 @@ namespace com.espertech.esper.runtime.@internal.metrics.instrumentation
         }
 
         public void AExprDotChainElement(
-            EPType typeInfo,
+            EPChainableType typeInfo,
             object result)
         {
         }
@@ -1826,6 +1826,14 @@ namespace com.espertech.esper.runtime.@internal.metrics.instrumentation
         }
 
         public void AExprTableTop(object result)
+        {
+        }
+
+        public void QRuntimeManagementDeploy(string runtimeURI, string deploymentId, int size)
+        {
+        }
+
+        public void ARuntimeManagementDeploy(string runtimeURI)
         {
         }
 

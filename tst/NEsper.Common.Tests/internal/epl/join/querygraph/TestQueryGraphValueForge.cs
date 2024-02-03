@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -10,6 +10,7 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.supportunit.bean;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.epl.join.querygraph
 {
@@ -46,7 +47,7 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
             object[][] ranges,
             QueryGraphValueForge value)
         {
-            Assert.AreEqual(ranges.Length, value.Items.Count);
+            ClassicAssert.AreEqual(ranges.Length, value.Items.Count);
 
             var count = -1;
             foreach (var desc in value.Items)
@@ -54,19 +55,19 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
                 count++;
                 var r = (QueryGraphValueEntryRangeForge) desc.Entry;
 
-                Assert.AreEqual(ranges[count][3], r.Type);
-                Assert.AreEqual(ranges[count][4], ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(desc.IndexExprs[0]));
+                ClassicAssert.AreEqual(ranges[count][3], r.Type);
+                ClassicAssert.AreEqual(ranges[count][4], ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(desc.IndexExprs[0]));
 
                 if (r is QueryGraphValueEntryRangeRelOpForge)
                 {
                     var relOp = (QueryGraphValueEntryRangeRelOpForge) r;
-                    Assert.AreEqual(ranges[count][0], GetProp(relOp.Expression));
+                    ClassicAssert.AreEqual(ranges[count][0], GetProp(relOp.Expression));
                 }
                 else
                 {
                     var rangeIn = (QueryGraphValueEntryRangeInForge) r;
-                    Assert.AreEqual(ranges[count][1], GetProp(rangeIn.ExprStart));
-                    Assert.AreEqual(ranges[count][2], GetProp(rangeIn.ExprEnd));
+                    ClassicAssert.AreEqual(ranges[count][1], GetProp(rangeIn.ExprStart));
+                    ClassicAssert.AreEqual(ranges[count][2], GetProp(rangeIn.ExprEnd));
                 }
             }
         }

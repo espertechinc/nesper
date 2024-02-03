@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -14,6 +14,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.agg.access.core;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.fabric;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.agg.method.core.AggregatorCodegenUtil;
@@ -22,30 +23,31 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.plugin
 {
     public class AggregatorAccessPlugin : AggregatorAccessWFilterBase
     {
-        private readonly AggregationMultiFunctionStateModeManaged mode;
-
-        private readonly CodegenExpressionMember state;
+        private AggregationMultiFunctionStateModeManaged mode;
+        private CodegenExpressionMember state;
 
         public AggregatorAccessPlugin(
-            int col,
-            bool join,
-            CodegenCtor ctor,
-            CodegenMemberCol membersColumnized,
-            CodegenClassScope classScope,
             ExprNode optionalFilter,
             AggregationMultiFunctionStateModeManaged mode)
             : base(optionalFilter)
+        {
+            this.mode = mode;
+        }
 
+        public override void InitAccessForge(
+            int col,
+            CodegenCtor rowCtor,
+            CodegenMemberCol membersColumnized,
+            CodegenClassScope classScope)
         {
             state = membersColumnized.AddMember(col, typeof(AggregationMultiFunctionState), "state");
-            this.mode = mode;
 
-            var injectionStrategy = (InjectionStrategyClassNewInstance) mode.InjectionStrategyAggregationStateFactory;
+            var injectionStrategy = (InjectionStrategyClassNewInstance)mode.InjectionStrategyAggregationStateFactory;
             var factoryField = classScope.AddDefaultFieldUnshared(
                 true,
                 typeof(AggregationMultiFunctionStateFactory),
                 injectionStrategy.GetInitializationExpression(classScope));
-            ctor.Block.AssignRef(state, ExprDotMethod(factoryField, "NewState", ConstantNull()));
+            rowCtor.Block.AssignRef(state, ExprDotMethod(factoryField, "NewState", ConstantNull()));
         }
 
         internal override void ApplyEnterFiltered(
@@ -57,7 +59,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.plugin
             method.Block.ExprDotMethod(
                 state,
                 "ApplyEnter",
-                symbols.GetAddEPS(method),
+                symbols.GetAddEps(method),
                 symbols.GetAddExprEvalCtx(method));
         }
 
@@ -70,7 +72,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.plugin
             method.Block.ExprDotMethod(
                 state,
                 "ApplyLeave",
-                symbols.GetAddEPS(method),
+                symbols.GetAddEps(method),
                 symbols.GetAddExprEvalCtx(method));
         }
 
@@ -84,14 +86,14 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.plugin
         public override void WriteCodegen(
             CodegenExpressionRef row,
             int col,
-            CodegenExpressionRef @ref,
-            CodegenExpressionRef unitKey,
             CodegenExpressionRef output,
+            CodegenExpressionRef unitKey,
+            CodegenExpressionRef writer,
             CodegenMethod method,
             CodegenClassScope classScope)
         {
             if (mode.HasHA) {
-                method.Block.Expression(StaticMethod(mode.Serde, "Write", output, RowDotMember(row, state)));
+                method.Block.Expression(StaticMethod(mode.Serde, "Write", output, writer, RowDotMember(row, state)));
             }
         }
 
@@ -105,6 +107,13 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.plugin
         {
             if (mode.HasHA) {
                 method.Block.AssignRef(RowDotMember(row, state), StaticMethod(mode.Serde, "Read", input));
+            }
+        }
+
+        public override void CollectFabricType(FabricTypeCollector collector)
+        {
+            if (mode.HasHA) {
+                collector.PlugInAggregation(mode.Serde);
             }
         }
 

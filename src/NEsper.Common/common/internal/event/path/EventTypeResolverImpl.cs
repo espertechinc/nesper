@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -10,7 +10,6 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
-using com.espertech.esper.common.client.meta;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.@event.bean.core;
@@ -19,15 +18,16 @@ using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.serde.runtime.@event;
 using com.espertech.esper.compat.collections;
 
+
 namespace com.espertech.esper.common.@internal.@event.path
 {
     public class EventTypeResolverImpl : EventTypeResolver,
         EventTypeNameResolver
     {
-        private readonly BeanEventTypeFactoryPrivate beanEventTypeFactoryPrivate;
         private readonly IDictionary<string, EventType> locals;
         private readonly PathRegistry<string, EventType> path;
         private readonly EventTypeNameResolver publics;
+        private readonly BeanEventTypeFactoryPrivate beanEventTypeFactoryPrivate;
         private readonly EventSerdeFactory eventSerdeFactory;
 
         public EventTypeResolverImpl(
@@ -72,65 +72,65 @@ namespace com.espertech.esper.common.@internal.@event.path
             return beanEventTypeFactoryPrivate.GetCreateBeanType(clazz, publicFields);
         }
 
-        public EventTypeSPI Resolve(EventTypeMetadata metadata)
+        public EventTypeSPI Resolve(
+            string name,
+            string moduleName,
+            NameAccessModifier accessModifier)
         {
-            return (EventTypeSPI) Resolve(metadata, publics, locals, path);
-        }
-
-        public EventSerdeFactory GetEventSerdeFactory()
-        {
-            return eventSerdeFactory;
+            return (EventTypeSPI) Resolve(name, moduleName, accessModifier, publics, locals, path);
         }
 
         public static EventType Resolve(
-            EventTypeMetadata metadata,
+            string name,
+            string moduleName,
+            NameAccessModifier accessModifier,
             EventTypeNameResolver publics,
             IDictionary<string, EventType> locals,
             PathRegistry<string, EventType> path)
         {
-            EventTypeSPI type;
+            EventType type;
             // public can only see public
-            if (metadata.AccessModifier == NameAccessModifier.PRECONFIGURED) {
-                type = (EventTypeSPI) publics.GetTypeByName(metadata.Name);
-
+            if (accessModifier == NameAccessModifier.PRECONFIGURED) {
+                type = publics.GetTypeByName(name);
                 // for create-schema the type may be defined by the same module
                 if (type == null) {
-                    type = (EventTypeSPI) locals.Get(metadata.Name);
+                    type = locals.Get(name);
                 }
             }
-            else if (metadata.AccessModifier == NameAccessModifier.PUBLIC ||
-                     metadata.AccessModifier == NameAccessModifier.INTERNAL) {
+            else if (accessModifier == NameAccessModifier.PUBLIC || accessModifier == NameAccessModifier.INTERNAL) {
                 // path-visibility can be provided as local
-                var local = locals.Get(metadata.Name);
+                var local = locals.Get(name);
                 if (local != null) {
                     if (local.Metadata.AccessModifier == NameAccessModifier.PUBLIC ||
                         local.Metadata.AccessModifier == NameAccessModifier.INTERNAL) {
-                        return (EventTypeSPI) local;
+                        return local;
                     }
                 }
 
                 try {
                     var pair = path.GetAnyModuleExpectSingle(
-                        metadata.Name,
-                        Collections.SingletonSet(metadata.ModuleName));
-                    type = (EventTypeSPI) pair?.First;
+                        name,
+                        Collections.SingletonSet(moduleName));
+                    type = pair?.First;
                 }
                 catch (PathException e) {
                     throw new EPException(e.Message, e);
                 }
             }
             else {
-                type = (EventTypeSPI) locals.Get(metadata.Name);
+                type = locals.Get(name);
             }
 
             if (type == null) {
                 throw new EPException(
                     "Failed to find event type '" +
-                    metadata.Name +
+                    name +
                     "' among public types, modules-in-path or the current module itself");
             }
 
             return type;
         }
+
+        public EventSerdeFactory EventSerdeFactory => eventSerdeFactory;
     }
 } // end of namespace

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -20,6 +20,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.@event.map
 {
@@ -74,13 +75,13 @@ namespace com.espertech.esper.common.@internal.@event.map
             levelZero.Put("obj", new SupportBean_A("A1"));
             levelZero.Put("map", levelOne);
             IDictionary<string, object> noDefZero = new Dictionary<string, object>();
-            noDefZero.Put("item", "|nodefmap.item|");
+            noDefZero.Put("Item", "|nodefmap.Item|");
             levelZero.Put("nodefmap", noDefZero);
 
             return levelZero;
         }
 
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         [Test]
         public void TestEquals()
@@ -100,17 +101,17 @@ namespace com.espertech.esper.common.@internal.@event.map
             mapTwo.Put("MySupportBean", typeof(SupportBean));
             mapTwo.Put("MyNullableSupportBean", typeof(SupportBean));
             mapTwo.Put("MyComplexBean", typeof(SupportBeanComplexProps));
-            Assert.IsFalse(
+            ClassicAssert.IsFalse(
                 new MapEventType(metadata, mapTwo, null, null, null, null, supportEventTypeFactory.BEAN_EVENT_TYPE_FACTORY).Equals(eventType));
             mapTwo.Put("MyString", typeof(string));
             mapTwo.Put("MyNullableString", typeof(string));
             mapTwo.Put("MyNullType", null);
 
             // compare, should equal
-            Assert.IsNull(
+            ClassicAssert.IsNull(
                 new MapEventType(metadata, mapTwo, null, null, null, null, supportEventTypeFactory.BEAN_EVENT_TYPE_FACTORY).EqualsCompareType(
                     eventType));
-            Assert.AreEqual(
+            ClassicAssert.AreEqual(
                 null,
                 new MapEventType(metadata, mapTwo, null, null, null, null, supportEventTypeFactory.BEAN_EVENT_TYPE_FACTORY).EqualsCompareType(
                     eventType));
@@ -120,7 +121,7 @@ namespace com.espertech.esper.common.@internal.@event.map
             mapOne.Put("MyInt", typeof(int));
             mapTwo = new LinkedHashMap<string, object>();
             mapTwo.Put("MyInt", typeof(int?));
-            Assert.IsNull(
+            ClassicAssert.IsNull(
                 new MapEventType(metadata, mapOne, null, null, null, null, supportEventTypeFactory.BEAN_EVENT_TYPE_FACTORY).EqualsCompareType(
                     new MapEventType(metadata, mapTwo, null, null, null, null,
                         supportEventTypeFactory.BEAN_EVENT_TYPE_FACTORY)));
@@ -141,9 +142,9 @@ namespace com.espertech.esper.common.@internal.@event.map
             valuesMap.Put("MyNullableSupportBean", null);
             valuesMap.Put("MyNullableString", null);
 
-            Assert.AreEqual(20, eventType.GetValue("MyInt", valuesMap));
-            Assert.AreEqual(100, eventType.GetValue("MySupportBean.IntPrimitive", valuesMap));
-            Assert.AreEqual("NestedValue", eventType.GetValue("MyComplexBean.Nested.NestedValue", valuesMap));
+            ClassicAssert.AreEqual(20, eventType.GetValue("MyInt", valuesMap));
+            ClassicAssert.AreEqual(100, eventType.GetValue("MySupportBean.IntPrimitive", valuesMap));
+            ClassicAssert.AreEqual("NestedValue", eventType.GetValue("MyComplexBean.Nested.NestedValue", valuesMap));
         }
 
         [Test]
@@ -153,7 +154,7 @@ namespace com.espertech.esper.common.@internal.@event.map
             nestedSupportBean.IntPrimitive = 100;
             var complexPropBean = SupportBeanComplexProps.MakeDefaultBean();
 
-            Assert.AreEqual(null, eventType.GetGetter("dummy"));
+            ClassicAssert.AreEqual(null, eventType.GetGetter("dummy"));
 
             IDictionary<string, object> valuesMap = new Dictionary<string, object>();
             valuesMap.Put("MyInt", 20);
@@ -165,25 +166,25 @@ namespace com.espertech.esper.common.@internal.@event.map
             EventBean eventBean = new MapEventBean(valuesMap, eventType);
 
             var getter = eventType.GetGetter("MyInt");
-            Assert.AreEqual(20, getter.Get(eventBean));
+            ClassicAssert.AreEqual(20, getter.Get(eventBean));
 
             getter = eventType.GetGetter("MyString");
-            Assert.AreEqual("a", getter.Get(eventBean));
+            ClassicAssert.AreEqual("a", getter.Get(eventBean));
 
             getter = eventType.GetGetter("MyNullableString");
-            Assert.IsNull(getter.Get(eventBean));
+            ClassicAssert.IsNull(getter.Get(eventBean));
 
             getter = eventType.GetGetter("MySupportBean");
-            Assert.AreEqual(nestedSupportBean, getter.Get(eventBean));
+            ClassicAssert.AreEqual(nestedSupportBean, getter.Get(eventBean));
 
             getter = eventType.GetGetter("MySupportBean.IntPrimitive");
-            Assert.AreEqual(100, getter.Get(eventBean));
+            ClassicAssert.AreEqual(100, getter.Get(eventBean));
 
             getter = eventType.GetGetter("MyNullableSupportBean.IntPrimitive");
-            Assert.IsNull(getter.Get(eventBean));
+            ClassicAssert.IsNull(getter.Get(eventBean));
 
             getter = eventType.GetGetter("MyComplexBean.Nested.NestedValue");
-            Assert.AreEqual("NestedValue", getter.Get(eventBean));
+            ClassicAssert.AreEqual("NestedValue", getter.Get(eventBean));
         }
 
         [Test]
@@ -198,49 +199,49 @@ namespace com.espertech.esper.common.@internal.@event.map
         [Test]
         public void TestGetPropertyType()
         {
-            Assert.AreEqual(typeof(int?), eventType.GetPropertyType("MyInt"));
-            Assert.AreEqual(typeof(string), eventType.GetPropertyType("MyString"));
-            Assert.AreEqual(typeof(SupportBean), eventType.GetPropertyType("MySupportBean"));
-            Assert.AreEqual(typeof(SupportBeanComplexProps), eventType.GetPropertyType("MyComplexBean"));
-            Assert.AreEqual(typeof(int?), eventType.GetPropertyType("MySupportBean.IntPrimitive"));
-            Assert.AreEqual(typeof(string), eventType.GetPropertyType("MyComplexBean.Nested.NestedValue"));
-            Assert.AreEqual(typeof(int?), eventType.GetPropertyType("MyComplexBean.Indexed[1]"));
-            Assert.AreEqual(typeof(string), eventType.GetPropertyType("MyComplexBean.Mapped('a')"));
-            Assert.AreEqual(null, eventType.GetPropertyType("MyNullType"));
+            ClassicAssert.AreEqual(typeof(int?), eventType.GetPropertyType("MyInt"));
+            ClassicAssert.AreEqual(typeof(string), eventType.GetPropertyType("MyString"));
+            ClassicAssert.AreEqual(typeof(SupportBean), eventType.GetPropertyType("MySupportBean"));
+            ClassicAssert.AreEqual(typeof(SupportBeanComplexProps), eventType.GetPropertyType("MyComplexBean"));
+            ClassicAssert.AreEqual(typeof(int?), eventType.GetPropertyType("MySupportBean.IntPrimitive"));
+            ClassicAssert.AreEqual(typeof(string), eventType.GetPropertyType("MyComplexBean.Nested.NestedValue"));
+            ClassicAssert.AreEqual(typeof(int?), eventType.GetPropertyType("MyComplexBean.Indexed[1]"));
+            ClassicAssert.AreEqual(typeof(string), eventType.GetPropertyType("MyComplexBean.Mapped('a')"));
+            ClassicAssert.AreEqual(typeof(object), eventType.GetPropertyType("MyNullType"));
 
-            Assert.IsNull(eventType.GetPropertyType("dummy"));
-            Assert.IsNull(eventType.GetPropertyType("MySupportBean.dfgdg"));
-            Assert.IsNull(eventType.GetPropertyType("xxx.IntPrimitive"));
-            Assert.IsNull(eventType.GetPropertyType("MyComplexBean.Nested.NestedValueXXX"));
+            ClassicAssert.IsNull(eventType.GetPropertyType("dummy"));
+            ClassicAssert.IsNull(eventType.GetPropertyType("MySupportBean.dfgdg"));
+            ClassicAssert.IsNull(eventType.GetPropertyType("xxx.IntPrimitive"));
+            ClassicAssert.IsNull(eventType.GetPropertyType("MyComplexBean.Nested.NestedValueXXX"));
         }
 
         [Test]
         public void TestGetSuperTypes()
         {
-            Assert.IsNull(eventType.SuperTypes);
+            ClassicAssert.IsNull(eventType.SuperTypes);
         }
 
         [Test]
         public void TestGetUnderlyingType()
         {
-            Assert.AreEqual(typeof(IDictionary<string, object>), eventType.UnderlyingType);
+            ClassicAssert.AreEqual(typeof(IDictionary<string, object>), eventType.UnderlyingType);
         }
 
         [Test]
         public void TestIsValidProperty()
         {
-            Assert.IsTrue(eventType.IsProperty("MyInt"));
-            Assert.IsTrue(eventType.IsProperty("MyString"));
-            Assert.IsTrue(eventType.IsProperty("MySupportBean.IntPrimitive"));
-            Assert.IsTrue(eventType.IsProperty("MyComplexBean.Nested.NestedValue"));
-            Assert.IsTrue(eventType.IsProperty("MyComplexBean.Indexed[1]"));
-            Assert.IsTrue(eventType.IsProperty("MyComplexBean.Mapped('a')"));
-            Assert.IsTrue(eventType.IsProperty("MyNullType"));
+            ClassicAssert.IsTrue(eventType.IsProperty("MyInt"));
+            ClassicAssert.IsTrue(eventType.IsProperty("MyString"));
+            ClassicAssert.IsTrue(eventType.IsProperty("MySupportBean.IntPrimitive"));
+            ClassicAssert.IsTrue(eventType.IsProperty("MyComplexBean.Nested.NestedValue"));
+            ClassicAssert.IsTrue(eventType.IsProperty("MyComplexBean.Indexed[1]"));
+            ClassicAssert.IsTrue(eventType.IsProperty("MyComplexBean.Mapped('a')"));
+            ClassicAssert.IsTrue(eventType.IsProperty("MyNullType"));
 
-            Assert.IsFalse(eventType.IsProperty("dummy"));
-            Assert.IsFalse(eventType.IsProperty("MySupportBean.dfgdg"));
-            Assert.IsFalse(eventType.IsProperty("xxx.IntPrimitive"));
-            Assert.IsFalse(eventType.IsProperty("MyComplexBean.Nested.NestedValueXXX"));
+            ClassicAssert.IsFalse(eventType.IsProperty("dummy"));
+            ClassicAssert.IsFalse(eventType.IsProperty("MySupportBean.dfgdg"));
+            ClassicAssert.IsFalse(eventType.IsProperty("xxx.IntPrimitive"));
+            ClassicAssert.IsFalse(eventType.IsProperty("MyComplexBean.Nested.NestedValueXXX"));
         }
 
         [Test]
@@ -284,31 +285,25 @@ namespace com.espertech.esper.common.@internal.@event.map
 
             object[][] expected = {
                 new object[] {"map.mapOne.simpleTwo", typeof(float?), 300f},
-                new object[] {"nodefmap.item?", typeof(object), "|nodefmap.item|"},
+                new object[] {"nodefmap.Item?", typeof(object), "|nodefmap.Item|"},
                 new object[] {"map.objOne", typeof(SupportBean_B), new SupportBean_B("B1")},
                 new object[] {"map.simpleOne", typeof(int?), 20},
-                new[] {
-                    "map.mapOne", typeof(IDictionary<string, object>),
-                    testData.Get("map").AsDataMap().Get("mapOne")
-                },
+                new object[] {"map.mapOne", typeof(IDictionary<string, object>), testData.Get("map").AsDataMap().Get("mapOne") },
                 new object[] {"map.mapOne.objTwo", typeof(SupportBean_C), new SupportBean_C("C1")},
-                new[] {
-                    "map.mapOne.mapTwo", typeof(IDictionary<string, object>),
-                    testData.Get("map").AsDataMap().Get("mapOne").AsDataMap().Get("mapTwo")
-                },
+                new object[] {"map.mapOne.mapTwo", typeof(IDictionary<string, object>), testData.Get("map").AsDataMap().Get("mapOne").AsDataMap().Get("mapTwo") },
                 new object[] {"map.mapOne.mapTwo.simpleThree", typeof(long?), 4000L},
                 new object[] {"map.mapOne.mapTwo.objThree", typeof(SupportBean_D), new SupportBean_D("D1")},
                 new object[] {"simple", typeof(double?), 1d},
                 new object[] {"obj", typeof(SupportBean_A), new SupportBean_A("A1")},
-                new[] {"nodefmap", typeof(IDictionary<string, object>), testData.Get("nodefmap")},
-                new[] {"map", typeof(IDictionary<string, object>), testData.Get("map")}
+                new object[] {"nodefmap", typeof(IDictionary<string, object>), testData.Get("nodefmap")},
+                new object[] {"map", typeof(IDictionary<string, object>), testData.Get("map")}
             };
 
             // assert getter available for all properties
             for (var i = 0; i < expected.Length; i++)
             {
                 var propName = (string) expected[i][0];
-                Assert.IsNotNull(mapType.GetGetter(propName), "failed for property:" + propName);
+                ClassicAssert.IsNotNull(mapType.GetGetter(propName), "failed for property:" + propName);
             }
 
             // assert property types
@@ -317,7 +312,7 @@ namespace com.espertech.esper.common.@internal.@event.map
                 var propName = (string) expected[i][0];
                 var propType = (Type) expected[i][1];
                 var mapPropType = mapType.GetPropertyType(propName);
-                Assert.AreEqual(propType, mapPropType, "failed for property:" + propName);
+                ClassicAssert.AreEqual(propType, mapPropType, "failed for property:" + propName);
             }
 
             // assert property names
@@ -330,8 +325,8 @@ namespace com.espertech.esper.common.@internal.@event.map
             {
                 var propName = (string) expected[i][0];
                 var valueExpected = expected[i][2];
-                Assert.AreEqual(valueExpected, mapType.GetGetter(propName).Get(theEvent), "failed for property type-getter:" + propName);
-                Assert.AreEqual(valueExpected, theEvent.Get(propName), "failed for property event-getter:" + propName);
+                ClassicAssert.AreEqual(valueExpected, mapType.GetGetter(propName).Get(theEvent), "failed for property type-getter:" + propName);
+                ClassicAssert.AreEqual(valueExpected, theEvent.Get(propName), "failed for property event-getter:" + propName);
             }
 
             // assert access to objects nested within
@@ -346,9 +341,9 @@ namespace com.espertech.esper.common.@internal.@event.map
                 var propType = (Type) expected[i][1];
                 var valueExpected = expected[i][2];
                 var getter = mapType.GetGetter(propName);
-                Assert.AreEqual(propType, mapType.GetPropertyType(propName), "failed for property:" + propName);
-                Assert.AreEqual(valueExpected, getter.Get(theEvent), "failed for property type-getter:" + propName);
-                Assert.AreEqual(valueExpected, theEvent.Get(propName), "failed for property event-getter:" + propName);
+                ClassicAssert.AreEqual(propType, mapType.GetPropertyType(propName), "failed for property:" + propName);
+                ClassicAssert.AreEqual(valueExpected, getter.Get(theEvent), "failed for property type-getter:" + propName);
+                ClassicAssert.AreEqual(valueExpected, theEvent.Get(propName), "failed for property event-getter:" + propName);
             }
         }
     }

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -10,22 +10,24 @@ using System;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.hook.aggmultifunc;
-using com.espertech.esper.common.@internal.bytecodemodel.@base;
-using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.epl.agg.access.core;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.agg.accessagg;
 using com.espertech.esper.common.@internal.epl.expression.agg.@base;
 using com.espertech.esper.common.@internal.settings;
-using com.espertech.esper.compat;
+
 
 namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 {
     public class AggregationForgeFactoryAccessSorted : AggregationForgeFactoryAccessBase
     {
-        private readonly AggregationAgentForge optionalAgent;
-
+        private readonly ExprAggMultiFunctionSortedMinMaxByNode parent;
+        private readonly AggregationAccessorForge accessor;
+        private readonly Type accessorResultType;
+        private readonly EventType containedEventType;
         private readonly AggregationMultiFunctionStateKey optionalStateKey;
+        private readonly SortedAggregationStateDesc optionalSortedStateDesc;
+        private readonly AggregationAgentForge optionalAgent;
 
         public AggregationForgeFactoryAccessSorted(
             ExprAggMultiFunctionSortedMinMaxByNode parent,
@@ -36,40 +38,13 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
             SortedAggregationStateDesc optionalSortedStateDesc,
             AggregationAgentForge optionalAgent)
         {
-            Parent = parent;
-            AccessorForge = accessor;
-            ResultType = accessorResultType;
-            ContainedEventType = containedEventType;
+            this.parent = parent;
+            this.accessor = accessor;
+            this.accessorResultType = accessorResultType;
+            this.containedEventType = containedEventType;
             this.optionalStateKey = optionalStateKey;
-            OptionalSortedStateDesc = optionalSortedStateDesc;
+            this.optionalSortedStateDesc = optionalSortedStateDesc;
             this.optionalAgent = optionalAgent;
-        }
-
-        public override Type ResultType { get; }
-
-        public override AggregationAccessorForge AccessorForge { get; }
-
-        public override ExprAggregateNodeBase AggregationExpression => Parent;
-
-        public override AggregationPortableValidation AggregationPortableValidation =>
-            new AggregationPortableValidationSorted(
-                Parent.AggregationFunctionName,
-                ContainedEventType,
-                OptionalSortedStateDesc?.CriteriaTypes);
-
-        public EventType ContainedEventType { get; }
-
-        public ExprAggMultiFunctionSortedMinMaxByNode Parent { get; }
-
-        public SortedAggregationStateDesc OptionalSortedStateDesc { get; }
-
-        public override void InitMethodForge(
-            int col,
-            CodegenCtor rowCtor,
-            CodegenMemberCol membersColumnized,
-            CodegenClassScope classScope)
-        {
-            throw new UnsupportedOperationException("Not supported");
         }
 
         public override AggregationMultiFunctionStateKey GetAggregationStateKey(bool isMatchRecognize)
@@ -77,17 +52,19 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
             return optionalStateKey;
         }
 
-        public override AggregationStateFactoryForge GetAggregationStateFactory(bool isMatchRecognize)
+        public override AggregationStateFactoryForge GetAggregationStateFactory(
+            bool isMatchRecognize,
+            bool join)
         {
-            if (isMatchRecognize || OptionalSortedStateDesc == null) {
+            if (isMatchRecognize || optionalSortedStateDesc == null) {
                 return null;
             }
 
-            if (OptionalSortedStateDesc.IsEver) {
+            if (optionalSortedStateDesc.IsEver) {
                 return new AggregationStateMinMaxByEverForge(this);
             }
 
-            return new AggregationStateSortedForge(this);
+            return new AggregationStateSortedForge(this, join);
         }
 
         public override AggregationAgentForge GetAggregationStateAgent(
@@ -96,5 +73,22 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
         {
             return optionalAgent;
         }
+
+        public override Type ResultType => accessorResultType;
+
+        public override AggregationAccessorForge AccessorForge => accessor;
+
+        public override ExprAggregateNodeBase AggregationExpression => parent;
+
+        public override AggregationPortableValidation AggregationPortableValidation => new AggregationPortableValidationSorted(
+            parent.AggregationFunctionName,
+            containedEventType,
+            optionalSortedStateDesc?.CriteriaTypes);
+
+        public EventType ContainedEventType => containedEventType;
+
+        public ExprAggMultiFunctionSortedMinMaxByNode Parent => parent;
+
+        public SortedAggregationStateDesc OptionalSortedStateDesc => optionalSortedStateDesc;
     }
 } // end of namespace

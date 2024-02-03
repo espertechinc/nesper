@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -15,6 +15,7 @@ using com.espertech.esper.common.@internal.epl.@join.rep;
 using com.espertech.esper.common.@internal.supportunit.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.epl.join.assemble
 {
@@ -76,7 +77,7 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
             optCartNode.Process(resultMultipleEvents, resultFinalRows, null);
 
             // 5 generated rows: 2 (stream 2) + 2 (stream 3) + 1 (self, Node 2)
-            Assert.AreEqual(5, parentNode.RowsList.Count);
+            ClassicAssert.AreEqual(5, parentNode.RowsList.Count);
 
             var rowArr = supportJoinResultNodeFactory.ConvertTo2DimArr(parentNode.RowsList);
             EPAssertionUtil.AssertEqualsAnyOrder(
@@ -100,11 +101,11 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
             optCartNode.Process(resultSingleEvent, resultFinalRows, null);
 
             // check generated row
-            Assert.AreEqual(1, parentNode.RowsList.Count);
+            ClassicAssert.AreEqual(1, parentNode.RowsList.Count);
             EventBean[] row = parentNode.RowsList[0];
-            Assert.AreEqual(4, row.Length);
+            ClassicAssert.AreEqual(4, row.Length);
             Node node = resultSingleEvent[1][0];
-            Assert.AreEqual(node.Events.First(), row[1]);
+            ClassicAssert.AreEqual(node.Events.First(), row[1]);
         }
     }
 } // end of namespace

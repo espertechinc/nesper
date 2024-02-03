@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -9,7 +9,7 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
-using com.espertech.esper.common.@internal.context.util;
+using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.historical.execstrategy;
 using com.espertech.esper.common.@internal.epl.historical.method.poll;
 
@@ -17,15 +17,15 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
 {
     public class PollExecStrategyMethod : PollExecStrategy
     {
-        private readonly MethodConversionStrategy methodConversionStrategy;
-        private readonly MethodTargetStrategy methodTargetStrategy;
+        private readonly MethodConversionStrategy _methodConversionStrategy;
+        private readonly MethodTargetStrategy _methodTargetStrategy;
 
         public PollExecStrategyMethod(
             MethodTargetStrategy methodTargetStrategy,
             MethodConversionStrategy methodConversionStrategy)
         {
-            this.methodTargetStrategy = methodTargetStrategy;
-            this.methodConversionStrategy = methodConversionStrategy;
+            _methodTargetStrategy = methodTargetStrategy;
+            _methodConversionStrategy = methodConversionStrategy;
         }
 
         public void Start()
@@ -35,11 +35,11 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
 
         public IList<EventBean> Poll(
             object lookupValues,
-            AgentInstanceContext agentInstanceContext)
+            ExprEvaluatorContext exprEvaluatorContext)
         {
-            var result = methodTargetStrategy.Invoke(lookupValues, agentInstanceContext);
+            var result = _methodTargetStrategy.Invoke(lookupValues, exprEvaluatorContext);
             if (result != null) {
-                return methodConversionStrategy.Convert(result, methodTargetStrategy, agentInstanceContext);
+                return _methodConversionStrategy.Convert(result, _methodTargetStrategy, exprEvaluatorContext);
             }
 
             return null;
@@ -50,7 +50,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
             // no action
         }
 
-        public void Destroy()
+        public void Dispose()
         {
             // no action
         }

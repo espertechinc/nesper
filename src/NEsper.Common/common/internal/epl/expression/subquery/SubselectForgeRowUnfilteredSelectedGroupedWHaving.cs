@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -26,12 +26,11 @@ using static com.espertech.esper.common.@internal.epl.expression.subquery.Subsel
 namespace com.espertech.esper.common.@internal.epl.expression.subquery
 {
     /// <summary>
-    ///     Represents a subselect in an expression tree.
+    /// Represents a subselect in an expression tree.
     /// </summary>
     public class SubselectForgeRowUnfilteredSelectedGroupedWHaving : SubselectForgeStrategyRowPlain
     {
-        public SubselectForgeRowUnfilteredSelectedGroupedWHaving(ExprSubselectRowNode subselect)
-            : base(subselect)
+        public SubselectForgeRowUnfilteredSelectedGroupedWHaving(ExprSubselectRowNode subselect) : base(subselect)
         {
         }
 
@@ -40,30 +39,33 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             ExprSubselectEvalMatchSymbol symbols,
             CodegenClassScope classScope)
         {
-            CodegenExpression aggService = classScope.NamespaceScope.AddOrGetDefaultFieldWellKnown(
-                new CodegenFieldNameSubqueryAgg(subselect.SubselectNumber),
+            if (Subselect.EvaluationType == null) {
+                return ConstantNull();
+            }
+
+            var aggService = classScope.NamespaceScope.AddOrGetDefaultFieldWellKnown(
+                new CodegenFieldNameSubqueryAgg(Subselect.SubselectNumber),
                 typeof(AggregationResultFuture));
 
-            var method = parent.MakeChild(subselect.EvaluationType, GetType(), classScope);
+            var method = parent.MakeChild(Subselect.EvaluationType, GetType(), classScope);
             var evalCtx = symbols.GetAddExprEvalCtx(method);
 
             method.Block
                 .DeclareVar<int>("cpid", ExprDotName(evalCtx, "AgentInstanceId"))
-                .DeclareVar<AggregationService>(
-                    "aggregationService",
-                    ExprDotMethod(aggService, "GetContextPartitionAggregationService", Ref("cpid")))
-                .DeclareVar<ICollection<object>>(
-                    "groupKeys",
-                    ExprDotMethod(Ref("aggregationService"), "GetGroupKeys", evalCtx))
+                .DeclareVar<AggregationService>("aggregationService", ExprDotMethod(aggService, "GetContextPartitionAggregationService", Ref("cpid")))
+                .DeclareVar<ICollection<object>>("groupKeys", ExprDotMethod(Ref("aggregationService"), "GetGroupKeys", evalCtx))
                 .IfCondition(ExprDotMethod(Ref("groupKeys"), "IsEmpty"))
                 .BlockReturn(ConstantNull())
                 .ApplyTri(DECLARE_EVENTS_SHIFTED, method, symbols)
                 .DeclareVar<bool>("haveResult", ConstantFalse())
                 .DeclareVar<object>("groupKeyMatch", ConstantNull());
 
-            var forEach = method.Block.ForEach(typeof(object), "groupKey", Ref("groupKeys"));
+            var forEach = method.Block.ForEach<object>("groupKey", Ref("groupKeys"));
             {
-                var havingExpr = CodegenLegoMethodExpression.CodegenExpression(subselect.HavingExpr, method, classScope, true);
+                var havingExpr = CodegenLegoMethodExpression.CodegenExpression(
+                    Subselect.havingExpr,
+                    method,
+                    classScope);
                 CodegenExpression havingCall = LocalMethod(
                     havingExpr,
                     REF_EVENTS_SHIFTED,
@@ -93,15 +95,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                     Ref("cpid"),
                     ConstantNull());
 
-            if (subselect.SelectClause.Length == 1) {
-                var eval = CodegenLegoMethodExpression.CodegenExpression(subselect.SelectClause[0].Forge, method, classScope, true);
+            if (Subselect.selectClause.Length == 1) {
+                var eval = CodegenLegoMethodExpression.CodegenExpression(
+                    Subselect.selectClause[0].Forge,
+                    method,
+                    classScope);
                 method.Block.MethodReturn(
                     LocalMethod(eval, REF_EVENTS_SHIFTED, ConstantTrue(), symbols.GetAddExprEvalCtx(method)));
             }
             else {
                 var methodSelect = ExprNodeUtilityCodegen.CodegenMapSelect(
-                    subselect.SelectClause,
-                    subselect.SelectAsNames,
+                    Subselect.selectClause,
+                    Subselect.selectAsNames,
                     GetType(),
                     method,
                     classScope);
@@ -121,46 +126,43 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             ExprSubselectEvalMatchSymbol symbols,
             CodegenClassScope classScope)
         {
-            CodegenExpression aggService = classScope.NamespaceScope.AddOrGetDefaultFieldWellKnown(
-                new CodegenFieldNameSubqueryAgg(subselect.SubselectNumber),
+            var aggService = classScope.NamespaceScope.AddOrGetDefaultFieldWellKnown(
+                new CodegenFieldNameSubqueryAgg(Subselect.SubselectNumber),
                 typeof(AggregationResultFuture));
-            var factory = classScope.AddOrGetDefaultFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
+            var factory =
+                classScope.AddOrGetDefaultFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
             var subselectMultirowType = classScope.AddDefaultFieldUnshared(
                 false,
                 typeof(EventType),
-                EventTypeUtility.ResolveTypeCodegen(
-                    subselect.subselectMultirowType,
-                    EPStatementInitServicesConstants.REF));
+                EventTypeUtility.ResolveTypeCodegen(Subselect.SubselectMultirowType, EPStatementInitServicesConstants.REF));
 
-            var method = parent.MakeChild(typeof(FlexCollection), GetType(), classScope);
+            var method = parent.MakeChild(typeof(ICollection<EventBean>), GetType(), classScope);
             var evalCtx = symbols.GetAddExprEvalCtx(method);
 
             method.Block
                 .DeclareVar<int>("cpid", ExprDotName(evalCtx, "AgentInstanceId"))
-                .DeclareVar<AggregationService>(
-                    "aggregationService",
-                    ExprDotMethod(aggService, "GetContextPartitionAggregationService", Ref("cpid")))
-                .DeclareVar<ICollection<object>>(
-                    "groupKeys",
-                    ExprDotMethod(Ref("aggregationService"), "GetGroupKeys", evalCtx))
+                .DeclareVar<AggregationService>("aggregationService", ExprDotMethod(aggService, "GetContextPartitionAggregationService", Ref("cpid")))
+                .DeclareVar<ICollection<object>>("groupKeys", ExprDotMethod(Ref("aggregationService"), "GetGroupKeys", evalCtx))
                 .IfCondition(ExprDotMethod(Ref("groupKeys"), "IsEmpty"))
                 .BlockReturn(ConstantNull())
                 .ApplyTri(DECLARE_EVENTS_SHIFTED, method, symbols)
                 .DeclareVar<ICollection<EventBean>>(
                     "result",
-                    NewInstance<ArrayDeque<EventBean>>(ExprDotName(Ref("groupKeys"), "Count")));
+                    NewInstance(typeof(ArrayDeque<EventBean>), ExprDotName(Ref("groupKeys"), "Count")));
 
-            var forEach = method.Block.ForEach(typeof(object), "groupKey", Ref("groupKeys"));
+            var forEach = method.Block.ForEach<object>("groupKey", Ref("groupKeys"));
             {
-                var havingExpr = CodegenLegoMethodExpression.CodegenExpression(subselect.HavingExpr, method, classScope, true);
+                var havingExpr = CodegenLegoMethodExpression.CodegenExpression(
+                    Subselect.havingExpr,
+                    method,
+                    classScope);
                 CodegenExpression havingCall = LocalMethod(
                     havingExpr,
                     REF_EVENTS_SHIFTED,
                     symbols.GetAddIsNewData(method),
                     evalCtx);
 
-                forEach
-                    .ExprDotMethod(
+                forEach.ExprDotMethod(
                         Ref("aggregationService"),
                         "SetCurrentAccess",
                         Ref("groupKey"),
@@ -168,10 +170,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                         ConstantNull())
                     .DeclareVar<bool?>("pass", Cast(typeof(bool?), havingCall))
                     .IfCondition(And(NotEqualsNull(Ref("pass")), Unbox(Ref("pass"))))
-                    .DeclareVar<IDictionary<string, object>>(
+                    .DeclareVar(
+                        typeof(IDictionary<string, object>),
                         "row",
                         LocalMethod(
-                            subselect.EvaluateRowCodegen(method, classScope),
+                            Subselect.EvaluateRowCodegen(method, classScope),
                             REF_EVENTS_SHIFTED,
                             ConstantTrue(),
                             symbols.GetAddExprEvalCtx(method)))
@@ -180,7 +183,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                         ExprDotMethod(factory, "AdapterForTypedMap", Ref("row"), subselectMultirowType))
                     .ExprDotMethod(Ref("result"), "Add", Ref("@event"));
             }
-            method.Block.MethodReturn(FlexWrap(Ref("result")));
+            method.Block.MethodReturn(Ref("result"));
             return LocalMethod(method);
         }
 

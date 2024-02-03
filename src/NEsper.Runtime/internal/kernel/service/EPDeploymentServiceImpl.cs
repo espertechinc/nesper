@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -9,17 +9,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 
 #if NETCOREAPP3_0_OR_GREATER
-using System.Runtime.Loader;
-
 using com.espertech.esper.common.client.artifact;
-using com.espertech.esper.runtime.@internal.metrics.codahale_metrics.metrics.reporting;
 #endif
 
 using com.espertech.esper.common.client;
-using com.espertech.esper.common.client.artifact;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
@@ -37,7 +32,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 {
 	public class EPDeploymentServiceImpl : EPDeploymentServiceSPI
 	{
-		private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+		private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
 		private readonly EPServicesContext _services;
 		private readonly EPRuntimeSPI _runtime;
@@ -168,7 +163,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 					options.StatementNameRuntime,
 					options.StatementUserObjectRuntime,
 					options.StatementSubstitutionParameter,
-					options.DeploymentClassLoaderOption,
+					options.DeploymentTypeResolverOption,
 					_runtime);
 				statementIdRecovery.CurrentStatementId = currentStatementId + deployerResult.Statements.Length;
 
@@ -365,7 +360,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 					Undeployer.Undeploy(deploymentId, deployment.DeploymentTypes, reverted, deployment.ModuleProvider, _services);
 				}
 				catch (Exception ex) {
-					log.Error("Exception encountered during undeploy: " + ex.Message, ex);
+					Log.Error("Exception encountered during undeploy: " + ex.Message, ex);
 					undeployException = ex;
 				}
 
@@ -488,7 +483,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 			string typeOfOperation,
 			Exception ex)
 		{
-			log.Error(
+			Log.Error(
 				"Application-provided deployment state listener reported an exception upon receiving the " +
 				typeOfOperation +
 				" event, logging and ignoring the exception, detail: " +

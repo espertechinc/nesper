@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -49,16 +49,15 @@ namespace com.espertech.esper.common.@internal.@event.xml
             EventType eventType,
             string propertyName)
         {
-            if (!(eventType is BaseXMLEventType)) {
+            if (!(eventType is BaseXMLEventType type)) {
                 throw new EPException(
                     "Failed to obtain xpath property getter, expected an xml event type but received type '" +
                     eventType.Metadata.Name +
                     "'");
             }
 
-            var type = (BaseXMLEventType) eventType;
             var getter = type.GetGetter(propertyName);
-            if (!(getter is XPathPropertyGetter)) {
+            if (!(getter is XPathPropertyGetter propertyGetter)) {
                 throw new EPException(
                     "Failed to obtain xpath property getter for property '" +
                     propertyName +
@@ -68,7 +67,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
                     getter);
             }
 
-            return (XPathPropertyGetter) getter;
+            return propertyGetter;
         }
 
         public override bool Equals(object o)
@@ -81,7 +80,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
                 return false;
             }
 
-            var that = (XPathPropertyGetterCodegenFieldSharable) o;
+            var that = (XPathPropertyGetterCodegenFieldSharable)o;
 
             if (!baseXMLEventType.Equals(that.baseXMLEventType)) {
                 return false;

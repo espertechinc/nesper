@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -47,8 +47,8 @@ namespace com.espertech.esper.common.@internal.type
                 object d1,
                 object d2)
             {
-                decimal s1 = _convOne.CoerceBoxed(d1).AsDecimal();
-                decimal s2 = _convTwo.CoerceBoxed(d2).AsDecimal();
+                var s1 = _convOne.CoerceBoxed(d1).AsDecimal();
+                var s2 = _convTwo.CoerceBoxed(d2).AsDecimal();
                 if (s2 == 0.0m) {
                     if (_divisionByZeroReturnsNull) {
                         return null;
@@ -73,7 +73,7 @@ namespace com.espertech.esper.common.@internal.type
                 if (ltype.IsNullable() || rtype.IsNullable() || _divisionByZeroReturnsNull) {
                     resultType = typeof(decimal?);
                 }
-                
+
                 var block = codegenMethodScope
                     .MakeChild(resultType, typeof(DivideDecimalConvComputerBase), codegenClassScope)
                     .AddParam(ltype, "d1")
@@ -81,10 +81,10 @@ namespace com.espertech.esper.common.@internal.type
                     .Block
                     .DeclareVar<decimal>(
                         "s1",
-                        _convOne.CoerceCodegen(CodegenExpressionBuilder.Ref("d1"), ltype))
+                        _convOne.CoerceCodegen(CodegenExpressionBuilder.Ref("d1"), ltype, codegenMethodScope, codegenClassScope))
                     .DeclareVar<decimal>(
                         "s2",
-                        _convTwo.CoerceCodegen(CodegenExpressionBuilder.Ref("d2"), rtype));
+                        _convTwo.CoerceCodegen(CodegenExpressionBuilder.Ref("d2"), rtype, codegenMethodScope, codegenClassScope));
                 var ifZeroDivisor =
                     block.IfCondition(
                         CodegenExpressionBuilder.EqualsIdentity(

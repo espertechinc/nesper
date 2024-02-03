@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -665,5 +665,17 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
         void AJoinCompositionHistorical(
             ISet<MultiKeyArrayOfKeys<EventBean>> newResults,
             ISet<MultiKeyArrayOfKeys<EventBean>> oldResults);
+
+        void QOutputProcessNonBuffered(
+            EventBean[] newData,
+            EventBean[] oldData);
+
+        void AOutputProcessNonBuffered();
+
+        void QOutputProcessNonBufferedJoin(
+            ISet<MultiKeyArrayOfKeys<EventBean>> newEvents,
+            ISet<MultiKeyArrayOfKeys<EventBean>> oldEvents);
+
+        void AOutputProcessNonBufferedJoin();
     }
 } // end of namespace

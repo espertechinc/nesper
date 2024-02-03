@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -89,8 +89,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
             // public properties
             var delimiter = "";
-            foreach (var publicMethod in properties.PublicProperties)
-            {
+            foreach (var publicMethod in properties.PublicProperties) {
                 builder.Append(delimiter);
                 publicMethod.Render(builder, true, isInnerClass, indent, level + 1);
                 delimiter = "\n";
@@ -98,8 +97,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
             // private properties
             delimiter = "";
-            foreach (var method in properties.PrivateProperties)
-            {
+            foreach (var method in properties.PrivateProperties) {
                 builder.Append(delimiter);
                 method.Render(builder, false, isInnerClass, indent, level + 1);
                 delimiter = "\n";

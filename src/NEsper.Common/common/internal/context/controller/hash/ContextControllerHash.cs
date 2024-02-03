@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -51,8 +51,7 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
             ContextPartitionVisitor visitor,
             ContextPartitionSelector[] selectorPerLevel)
         {
-            if (selector is ContextPartitionSelectorHash) {
-                var selectorHash = (ContextPartitionSelectorHash) selector;
+            if (selector is ContextPartitionSelectorHash selectorHash) {
                 if (selectorHash.Hashes == null || selectorHash.Hashes.IsEmpty()) {
                     return;
                 }
@@ -72,8 +71,7 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
                 return;
             }
 
-            if (selector is ContextPartitionSelectorFiltered) {
-                var filter = (ContextPartitionSelectorFiltered) selector;
+            if (selector is ContextPartitionSelectorFiltered filter) {
                 var identifierHash = new ContextPartitionIdentifierHash();
 
                 VisitPartitions(
@@ -112,8 +110,7 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
                 return;
             }
 
-            if (selector is ContextPartitionSelectorById) {
-                var byId = (ContextPartitionSelectorById) selector;
+            if (selector is ContextPartitionSelectorById byId) {
                 VisitPartitions(
                     path,
                     (
@@ -132,7 +129,7 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
             }
 
             throw ContextControllerSelectorUtil.GetInvalidSelector(
-                new[] {typeof(ContextPartitionSelectorHash)},
+                new[] { typeof(ContextPartitionSelectorHash) },
                 selector);
         }
 

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -29,7 +29,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 			var ast = ParseEPL(expression);
 			Log.Debug(".parseAndWalk success, tree walking...");
 			SupportParserHelper.DisplayAST(ast.First);
-			var listener = SupportEPLTreeWalkerFactory.MakeWalker(ast.Second, SupportClasspathImport.GetInstance(container));
+			var listener = SupportEPLTreeWalkerFactory.MakeWalker(ast.Second, SupportImport.GetInstance(container));
 			var walker = new ParseTreeWalker(); // create standard walker
 			walker.Walk(listener, (IParseTree) ast.First); // initiate walk of tree with listener
 			return listener;
@@ -65,7 +65,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 			ParseRuleSelector parseRuleSelector,
 			string text)
 		{
-			var lex = ParseHelper.NewLexer(new CaseInsensitiveInputStream(text));
+			var lex = ParseHelper.NewLexer(CaseChangingCharStreamFactory.Make(text));
 
 			var tokens = new CommonTokenStream(lex);
 			var g = ParseHelper.NewParser(tokens);

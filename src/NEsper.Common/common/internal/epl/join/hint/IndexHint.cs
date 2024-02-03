@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -82,17 +82,6 @@ namespace com.espertech.esper.common.@internal.epl.join.hint
             return Collections.GetEmptyList<IndexHintInstruction>();
         }
 
-        public IList<IndexHintInstruction> GetInstructionsFireAndForget()
-        {
-            foreach (var pair in pairs) {
-                if (pair.Selector.IsEmpty()) { // empty selector mean hint applies to all
-                    return pair.Instructions;
-                }
-            }
-
-            return Collections.GetEmptyList<IndexHintInstruction>();
-        }
-
         protected internal static bool CheckValueInParen(
             string type,
             string value)
@@ -159,6 +148,18 @@ namespace com.espertech.esper.common.@internal.epl.join.hint
             }
 
             throw new IllegalStateException("Not a parentheses value");
+        }
+
+        public IList<IndexHintInstruction> InstructionsFireAndForget {
+            get {
+                foreach (var pair in pairs) {
+                    if (pair.Selector.IsEmpty()) { // empty selector mean hint applies to all
+                        return pair.Instructions;
+                    }
+                }
+
+                return Collections.GetEmptyList<IndexHintInstruction>();
+            }
         }
     }
 } // end of namespace

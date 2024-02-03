@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFrameworks>netcoreapp3.1;net6.0</TargetFrameworks>
+        <TargetFrameworks>net6.0;net7.0</TargetFrameworks>
     </PropertyGroup>
 
     <PropertyGroup>
@@ -12,7 +12,7 @@
 
     <ItemGroup Condition="'$(NetCore)'=='true'">
         <PackageReference Include="System.Data.Common" Version="4.3.0" />
-        <PackageReference Include="System.Data.SqlClient" Version="4.5.0" />
+        <PackageReference Include="System.Data.SqlClient" Version="4.8.6" />
         <PackageReference Include="System.Configuration.Abstractions" Version="2.0.2.45" />
     </ItemGroup>
 

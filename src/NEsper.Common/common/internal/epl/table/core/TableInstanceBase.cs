@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.@internal.epl.table.core
                 throw new IllegalStateException("Unexpected event type for add: " + @event.EventType.Name);
             }
 
-            var oa = (ObjectArrayBackedEventBean) @event;
+            var oa = (ObjectArrayBackedEventBean)@event;
             var aggs = table.AggregationRowFactory.Make();
             oa.Properties[0] = aggs;
             AddEvent(@event);
@@ -69,8 +69,14 @@ namespace com.espertech.esper.common.@internal.epl.table.core
             QueryPlanIndexItem explicitIndexDesc,
             bool isRecoveringResilient);
 
-        public abstract void RemoveExplicitIndex(string indexName);
-        public abstract EventTable GetIndex(string indexName);
+        public abstract void RemoveExplicitIndex(
+            string indexName,
+            string indexModuleName);
+
+        public abstract EventTable GetIndex(
+            string indexName,
+            string indexModuleName);
+
         public abstract void HandleRowUpdateKeyBeforeUpdate(ObjectArrayBackedEventBean updatedEvent);
         public abstract void HandleRowUpdateKeyAfterUpdate(ObjectArrayBackedEventBean updatedEvent);
     }

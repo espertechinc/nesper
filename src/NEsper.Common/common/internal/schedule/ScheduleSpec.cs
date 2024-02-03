@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -28,7 +28,6 @@ namespace com.espertech.esper.common.@internal.schedule
     ///     the specification for each unit minutes, hours, day of month, month, and day of week.
     ///     There is optionally an element in the specification for the unit seconds.
     /// </summary>
-    [Serializable]
     public sealed class ScheduleSpec
     {
         // Per unit hold the set of valid integer values, or null if wildcarded.
@@ -146,7 +145,7 @@ namespace com.espertech.esper.common.@internal.schedule
                 return false;
             }
 
-            var other = (ScheduleSpec) otherObject;
+            var other = (ScheduleSpec)otherObject;
             if (UnitValues.Count != other.UnitValues.Count) {
                 return false;
             }
@@ -232,10 +231,9 @@ namespace com.espertech.esper.common.@internal.schedule
 
             foreach (var unit in EnumHelper.GetValues<ScheduleUnit>()) {
                 if ((unit == ScheduleUnit.SECONDS ||
-                     unit == ScheduleUnit.MILLISECONDS || 
-                     unit == ScheduleUnit.MICROSECONDS) && 
-                    (!unitValues.ContainsKey(unit)))
-                {
+                     unit == ScheduleUnit.MILLISECONDS ||
+                     unit == ScheduleUnit.MICROSECONDS) &&
+                    !unitValues.ContainsKey(unit)) {
                     // Seconds, milliseconds and microseconds are optional
                     continue;
                 }
@@ -264,7 +262,7 @@ namespace com.espertech.esper.common.@internal.schedule
         {
             var method = parent.MakeChild(typeof(ScheduleSpec), GetType(), classScope);
             var spec = Ref("spec");
-            method.Block.DeclareVar<ScheduleSpec>(spec.Ref, NewInstance(typeof(ScheduleSpec)));
+            method.Block.DeclareVarNewInstance<ScheduleSpec>(spec.Ref);
             if (_optionalTimeZone != null) {
                 method.Block.SetProperty(spec, "OptionalTimeZone", Constant(_optionalTimeZone));
             }

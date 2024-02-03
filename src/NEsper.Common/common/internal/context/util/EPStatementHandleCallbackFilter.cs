@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -32,32 +32,24 @@ namespace com.espertech.esper.common.@internal.context.util
             FilterHandleCallback callback)
         {
             this.agentInstanceHandle = agentInstanceHandle;
-            this.filterCallback = callback;
+            filterCallback = callback;
         }
 
-        public int StatementId {
-            get => agentInstanceHandle.StatementId;
-        }
+        public int StatementId => agentInstanceHandle.StatementId;
 
-        public int AgentInstanceId {
-            get => agentInstanceHandle.AgentInstanceId;
-        }
+        public int AgentInstanceId => agentInstanceHandle.AgentInstanceId;
 
         /// <summary>
         /// Returns the statement handle.
         /// </summary>
         /// <returns>handle containing a statement resource lock</returns>
-        public EPStatementAgentInstanceHandle AgentInstanceHandle {
-            get => agentInstanceHandle;
-        }
+        public EPStatementAgentInstanceHandle AgentInstanceHandle => agentInstanceHandle;
 
         /// <summary>
         /// Returns the statement filter callback, or null if this is a schedule callback handle.
         /// </summary>
         /// <returns>filter callback</returns>
-        public FilterHandleCallback FilterCallback {
-            get => filterCallback;
-        }
+        public FilterHandleCallback FilterCallback => filterCallback;
 
         public void SetFilterCallback(FilterHandleCallback filterCallback)
         {

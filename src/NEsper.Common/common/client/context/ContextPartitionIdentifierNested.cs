@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -13,7 +13,6 @@ namespace com.espertech.esper.common.client.context
     /// <summary>
     /// Context partition identifier for nested contexts.
     /// </summary>
-    [Serializable]
     public class ContextPartitionIdentifierNested : ContextPartitionIdentifier
     {
         private ContextPartitionIdentifier[] _identifiers;
@@ -33,22 +32,21 @@ namespace com.espertech.esper.common.client.context
         /// <summary>Returns nested partition identifiers. </summary>
         /// <value>identifiers</value>
         public ContextPartitionIdentifier[] Identifiers {
-            get { return _identifiers; }
-            set { this._identifiers = value; }
+            get => _identifiers;
+            set => _identifiers = value;
         }
 
         public override bool CompareTo(ContextPartitionIdentifier other)
         {
-            if (!(other is ContextPartitionIdentifierNested)) {
+            if (!(other is ContextPartitionIdentifierNested nestedOther)) {
                 return false;
             }
 
-            var nestedOther = (ContextPartitionIdentifierNested) other;
             if (nestedOther.Identifiers.Length != _identifiers.Length) {
                 return false;
             }
 
-            for (int i = 0; i < _identifiers.Length; i++) {
+            for (var i = 0; i < _identifiers.Length; i++) {
                 if (!_identifiers[i].CompareTo(nestedOther.Identifiers[i])) {
                     return false;
                 }
@@ -61,7 +59,7 @@ namespace com.espertech.esper.common.client.context
         {
             return "ContextPartitionIdentifierNested{" +
                    "identifiers=" +
-                   (_identifiers) +
+                   _identifiers +
                    '}';
         }
     }

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -7,10 +7,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.concurrency;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.regressionlib.framework;
@@ -18,6 +20,7 @@ using com.espertech.esper.regressionlib.support.multithread;
 using com.espertech.esper.regressionlib.support.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.multithread
 {
@@ -26,7 +29,12 @@ namespace com.espertech.esper.regressionlib.suite.multithread
     /// </summary>
     public class MultithreadViewTimeWindow : RegressionExecution
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
+        }
 
         public void Run(RegressionEnvironment env)
         {
@@ -34,13 +42,14 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             var numEvents = 10000;
             var numStmt = 25;
 
-            log.Info($"Processing {numEvents} events for {numThreads} threads and {numStmt} statements");
+            Log.Info($"Processing {numEvents} events for {numThreads} threads and {numStmt} statements");
             var listeners = new SupportCountListener[numStmt];
             for (var i = 0; i < numStmt; i++) {
                 listeners[i] = new SupportCountListener();
                 var stmtName = "stmt" + i;
-                var nameAnnotation = "@Name('" + stmtName + "')";
-                var epl = $"{nameAnnotation}select irstream IntPrimitive, TheString as key from SupportBean#time(1 sec)";
+                var nameAnnotation = "@name('" + stmtName + "')";
+                var epl =
+                    $"{nameAnnotation}select irstream IntPrimitive, TheString as key from SupportBean#time(1 sec)";
                 env.CompileDeploy(epl).Statement(stmtName).AddListener(listeners[i]);
             }
 
@@ -70,16 +79,16 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                 future[i] = executor.Submit(callable);
             }
 
-            log.Info("Waiting for threadpool shutdown");
+            Log.Info("Waiting for threadpool shutdown");
             executor.Shutdown();
             executor.AwaitTermination(TimeSpan.FromSeconds(30));
 
             for (var i = 0; i < numThreads; i++) {
-                Assert.IsTrue(future[i].GetValue(TimeSpan.FromSeconds(5)));
+                ClassicAssert.IsTrue(future[i].GetValue(TimeSpan.FromSeconds(5)));
             }
 
             // set time to a large value
-            log.Info("Waiting for calm down");
+            Log.Info("Waiting for calm down");
             Thread.Sleep(5000);
 
             // Assert results
@@ -88,9 +97,9 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             // assert new data
             for (var i = 0; i < numStmts; i++) {
                 var count = listeners[i].CountNew;
-                Assert.AreEqual(count, totalExpected);
+                ClassicAssert.AreEqual(count, totalExpected);
                 var countOld = listeners[i].CountNew;
-                Assert.AreEqual(countOld, totalExpected);
+                ClassicAssert.AreEqual(countOld, totalExpected);
             }
         }
     }

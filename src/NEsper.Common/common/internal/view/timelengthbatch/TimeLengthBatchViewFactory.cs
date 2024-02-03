@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -41,18 +41,11 @@ namespace com.espertech.esper.common.@internal.view.timelengthbatch
         }
 
         public TimePeriodCompute TimePeriodCompute {
+            get => timePeriodCompute;
             set => timePeriodCompute = value;
         }
 
-        public bool ForceUpdate {
-            set => isForceUpdate = value;
-        }
-
-        public bool StartEager {
-            set => isStartEager = value;
-        }
-
-        public ExprEvaluator SizeEvaluator {
+        public ExprEvaluator Size {
             get => sizeEvaluator;
             set => sizeEvaluator = value;
         }
@@ -62,9 +55,15 @@ namespace com.espertech.esper.common.@internal.view.timelengthbatch
             set => scheduleCallbackId = value;
         }
 
-        public bool IsForceUpdate => isForceUpdate;
+        public bool IsForceUpdate {
+            get => isForceUpdate;
+            set => isForceUpdate = value;
+        }
 
-        public bool IsStartEager => isStartEager;
+        public bool IsStartEager {
+            get => isStartEager;
+            set => isStartEager = value;
+        }
 
         public string ViewName => ViewEnum.TIME_LENGTH_BATCH.GetViewName();
 
@@ -81,13 +80,13 @@ namespace com.espertech.esper.common.@internal.view.timelengthbatch
 
         public View MakeView(AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext)
         {
-            TimePeriodProvide timePeriodProvide =
+            var timePeriodProvide =
                 timePeriodCompute.GetNonVariableProvide(agentInstanceViewFactoryContext.AgentInstanceContext);
             var sizeValue = ViewFactoryUtil.EvaluateSizeParam(
                 ViewName,
                 sizeEvaluator,
                 agentInstanceViewFactoryContext.AgentInstanceContext);
-            ViewUpdatedCollection viewUpdatedCollection =
+            var viewUpdatedCollection =
                 agentInstanceViewFactoryContext.StatementContext.ViewServicePreviousFactory
                     .GetOptPreviousExprRelativeAccess(agentInstanceViewFactoryContext);
             return new TimeLengthBatchView(

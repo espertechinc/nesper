@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -56,9 +56,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             this.getterReturnType = getterReturnType;
         }
 
-        public ExprEnumerationEval ExprEvaluatorEnumeration {
-            get => this;
-        }
+        public ExprEnumerationEval ExprEvaluatorEnumeration => this;
 
         public ICollection<object> EvaluateGetROCollectionScalar(
             EventBean[] eventsPerStream,
@@ -73,7 +71,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(codegenMethodScope);
+            var refEPS = exprSymbol.GetAddEps(codegenMethodScope);
             return CodegenEvaluateInternal(
                 ArrayAtIndex(refEPS, Constant(streamId)),
                 codegenMethodScope,
@@ -81,18 +79,18 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
         }
 
         public CodegenExpression EvaluateEventGetROCollectionScalarCodegen(
-            CodegenMethodScope methodScope,
+            CodegenMethodScope codegenMethodScope,
             ExprEnumerationGivenEventSymbol symbols,
             CodegenClassScope codegenClassScope)
         {
             if (getterReturnType.IsGenericCollection()) {
                 return getter.EventBeanGetCodegen(
-                    symbols.GetAddEvent(methodScope),
-                    methodScope,
+                    symbols.GetAddEvent(codegenMethodScope),
+                    codegenMethodScope,
                     codegenClassScope);
             }
 
-            CodegenMethod method = methodScope.MakeChild(
+            var method = codegenMethodScope.MakeChild(
                 typeof(ICollection<object>),
                 typeof(PropertyDotScalarIterable),
                 codegenClassScope);
@@ -101,7 +99,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                     "result",
                     CodegenLegoCast.CastSafeFromObjectType(
                         typeof(IEnumerable),
-                        getter.EventBeanGetCodegen(symbols.GetAddEvent(method), methodScope, codegenClassScope)))
+                        getter.EventBeanGetCodegen(symbols.GetAddEvent(method), codegenMethodScope, codegenClassScope)))
                 .IfRefNullReturnNull("result")
                 .MethodReturn(StaticMethod(typeof(CollectionUtil), "IterableToCollection", Ref("result")));
             return LocalMethod(method);
@@ -116,7 +114,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
 
         private ICollection<T> EvaluateInternal<T>(EventBean @event)
         {
-            object result = getter.Get(@event);
+            var result = getter.Get(@event);
             if (result == null) {
                 return null;
             }
@@ -142,15 +140,13 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            if (getterReturnType.IsGenericCollection()) {
+            if (getterReturnType.IsImplementsInterface(typeof(ICollection))) {
                 return getter.EventBeanGetCodegen(@event, codegenMethodScope, codegenClassScope);
             }
 
-            CodegenMethod method = codegenMethodScope.MakeChild(
-                    typeof(ICollection<object>),
-                    typeof(PropertyDotScalarIterable),
-                    codegenClassScope)
-                .AddParam(typeof(EventBean), "@event")
+            var method = codegenMethodScope
+                .MakeChild(typeof(ICollection<object>), typeof(PropertyDotScalarIterable), codegenClassScope)
+                .AddParam<EventBean>("@event")
                 .Block
                 .DeclareVar(
                     getterReturnType,
@@ -170,9 +166,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             return null;
         }
 
-        public Type ComponentTypeCollection {
-            get => componentType;
-        }
+        public Type ComponentTypeCollection => componentType;
 
         public EventType GetEventTypeSingle(
             StatementRawInfo statementRawInfo,
@@ -220,7 +214,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
         }
 
         public CodegenExpression EvaluateEventGetEventBeanCodegen(
-            CodegenMethodScope methodScope,
+            CodegenMethodScope codegenMethodScope,
             ExprEnumerationGivenEventSymbol symbols,
             CodegenClassScope codegenClassScope)
         {
@@ -236,22 +230,23 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
         }
 
         public CodegenExpression EvaluateEventGetROCollectionEventsCodegen(
-            CodegenMethodScope methodScope,
+            CodegenMethodScope codegenMethodScope,
             ExprEnumerationGivenEventSymbol symbols,
             CodegenClassScope codegenClassScope)
         {
             return ConstantNull();
         }
 
-        public ExprNodeRenderable EnumForgeRenderable {
-            get => this;
-        }
+        public ExprNodeRenderable ForgeRenderable => this;
+        
+        public ExprNodeRenderable EnumForgeRenderable => ForgeRenderable;
 
-        public void ToEPL(TextWriter writer,
+        public void ToEPL(
+            TextWriter writer,
             ExprPrecedenceEnum parentPrecedence,
             ExprNodeRenderableFlags flags)
         {
-            writer.Write(this.GetType().GetSimpleName());
+            writer.Write(GetType().Name);
         }
     }
 } // end of namespace

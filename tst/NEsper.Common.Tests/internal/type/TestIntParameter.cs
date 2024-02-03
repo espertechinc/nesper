@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using com.espertech.esper.common.client.scopetest;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.type
 {
@@ -21,10 +22,10 @@ namespace com.espertech.esper.common.@internal.type
         public void TestIsWildcard()
         {
             IntParameter intParam = new IntParameter(5);
-            Assert.IsTrue(intParam.IsWildcard(5, 5));
-            Assert.IsFalse(intParam.IsWildcard(4, 5));
-            Assert.IsFalse(intParam.IsWildcard(5, 6));
-            Assert.IsFalse(intParam.IsWildcard(4, 6));
+            ClassicAssert.IsTrue(intParam.IsWildcard(5, 5));
+            ClassicAssert.IsFalse(intParam.IsWildcard(4, 5));
+            ClassicAssert.IsFalse(intParam.IsWildcard(5, 6));
+            ClassicAssert.IsFalse(intParam.IsWildcard(4, 6));
         }
 
         [Test]
@@ -51,15 +52,15 @@ namespace com.espertech.esper.common.@internal.type
         public void TestContainsPoint()
         {
             IntParameter intParam = new IntParameter(3);
-            Assert.IsTrue(intParam.ContainsPoint(3));
-            Assert.IsFalse(intParam.ContainsPoint(2));
+            ClassicAssert.IsTrue(intParam.ContainsPoint(3));
+            ClassicAssert.IsFalse(intParam.ContainsPoint(2));
         }
 
         [Test]
         public void TestFormat()
         {
             IntParameter intParam = new IntParameter(3);
-            Assert.AreEqual("3", intParam.Formatted());
+            ClassicAssert.AreEqual("3", intParam.Formatted());
         }
     }
 } // end of namespace

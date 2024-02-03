@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -14,23 +14,27 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.compile.stage2.FilterSpecCompilerIndexPlannerHelper;
-using static com.espertech.esper.common.@internal.compile.stage2.FilterSpecCompilerIndexPlannerWidthBasic; //planRemainingNodesBasic
-using static com.espertech.esper.common.@internal.compile.stage2.FilterSpecCompilerIndexPlannerWidthWithConditions; //planRemainingNodesWithConditions
+using static
+    com.espertech.esper.common.@internal.compile.stage2.
+    FilterSpecCompilerIndexPlannerWidthBasic; //planRemainingNodesBasic
+using static
+    com.espertech.esper.common.@internal.compile.stage2.
+    FilterSpecCompilerIndexPlannerWidthWithConditions; //planRemainingNodesWithConditions
 using static com.espertech.esper.common.@internal.compile.stage2.FilterSpecPlanForge; //makePlanFromTriplets
 
 namespace com.espertech.esper.common.@internal.compile.stage2
 {
     public class FilterSpecCompilerIndexPlanner
     {
-	    /// <summary>
-	    ///     Assigned for filter parameters that are based on boolean expression and not on
-	    ///     any particular property name.
-	    ///     <para>
-	    ///         Keeping this artificial property name is a simplification as optimized filter parameters
-	    ///         generally keep a property name.
-	    ///     </para>
-	    /// </summary>
-	    public const string PROPERTY_NAME_BOOLEAN_EXPRESSION = ".boolean_expression";
+        /// <summary>
+        ///     Assigned for filter parameters that are based on boolean expression and not on
+        ///     any particular property name.
+        ///     <para>
+        ///         Keeping this artificial property name is a simplification as optimized filter parameters
+        ///         generally keep a property name.
+        ///     </para>
+        /// </summary>
+        public const string PROPERTY_NAME_BOOLEAN_EXPRESSION = ".boolean_expression";
 
         public static FilterSpecPlanForge PlanFilterParameters(
             IList<ExprNode> validatedNodes,
@@ -49,17 +53,25 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 return EMPTY;
             }
 
-            if (args.compileTimeServices.Configuration.Compiler.Execution.FilterIndexPlanning == ConfigurationCompilerExecution.FilterIndexPlanningEnum.NONE) {
+            if (args.compileTimeServices.Configuration.Compiler.Execution.FilterIndexPlanning ==
+                ConfigurationCompilerExecution.FilterIndexPlanningEnum.NONE) {
                 DecomposeCheckAggregation(validatedNodes);
                 return BuildNoPlan(validatedNodes, args);
             }
 
-            var performConditionPlanning = HasLevelOrHint(FilterSpecCompilerIndexPlannerHint.CONDITIONS, args.statementRawInfo, args.compileTimeServices);
+            var performConditionPlanning = HasLevelOrHint(
+                FilterSpecCompilerIndexPlannerHint.CONDITIONS,
+                args.statementRawInfo,
+                args.compileTimeServices);
             var filterParamExprMap = new FilterSpecParaForgeMap();
 
             // Make filter parameter for each expression node, if it can be optimized.
             // Optionally receive a top-level control condition that negates
-            var topLevelNegation = DecomposePopulateConsolidate(filterParamExprMap, performConditionPlanning, validatedNodes, args);
+            var topLevelNegation = DecomposePopulateConsolidate(
+                filterParamExprMap,
+                performConditionPlanning,
+                validatedNodes,
+                args);
 
             // Use all filter parameter and unassigned expressions
             var countUnassigned = filterParamExprMap.CountUnassignedExpressions();
@@ -70,7 +82,8 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             }
 
             // determine max-width
-            var filterServiceMaxFilterWidth = args.compileTimeServices.Configuration.Compiler.Execution.FilterServiceMaxFilterWidth;
+            var filterServiceMaxFilterWidth =
+                args.compileTimeServices.Configuration.Compiler.Execution.FilterServiceMaxFilterWidth;
             var hint = HintEnum.MAX_FILTER_WIDTH.GetHint(args.statementRawInfo.Annotations);
             if (hint != null) {
                 var hintValue = HintEnum.MAX_FILTER_WIDTH.GetHintAssignedValue(hint);
@@ -80,7 +93,11 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             FilterSpecPlanForge plan = null;
             if (filterServiceMaxFilterWidth > 0) {
                 if (performConditionPlanning) {
-                    plan = PlanRemainingNodesWithConditions(filterParamExprMap, args, filterServiceMaxFilterWidth, topLevelNegation);
+                    plan = PlanRemainingNodesWithConditions(
+                        filterParamExprMap,
+                        args,
+                        filterServiceMaxFilterWidth,
+                        topLevelNegation);
                 }
                 else {
                     plan = PlanRemainingNodesBasic(filterParamExprMap, args, filterServiceMaxFilterWidth);
@@ -104,9 +121,9 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             FilterSpecCompilerArgs args)
         {
             var triplet = MakeRemainingNode(validatedNodes, args);
-            FilterSpecPlanPathTripletForge[] triplets = {triplet};
+            FilterSpecPlanPathTripletForge[] triplets = { triplet };
             var path = new FilterSpecPlanPathForge(triplets, null);
-            FilterSpecPlanPathForge[] paths = {path};
+            FilterSpecPlanPathForge[] paths = { path };
             return new FilterSpecPlanForge(paths, null, null, null);
         }
 

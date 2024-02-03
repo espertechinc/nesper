@@ -1,77 +1,56 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using com.espertech.esper.common.@internal.context.util;
+using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.variable.core;
 
 namespace com.espertech.esper.common.@internal.epl.output.polled
 {
     /// <summary>
-    /// Output limit condition that is satisfied when either
-    /// the total number of new events arrived or the total number
-    /// of old events arrived is greater than a preset value.
+    ///     Output limit condition that is satisfied when either
+    ///     the total number of new events arrived or the total number
+    ///     of old events arrived is greater than a preset value.
     /// </summary>
-    public sealed class OutputConditionPolledCountFactory : OutputConditionPolledFactory
+    public class OutputConditionPolledCountFactory : OutputConditionPolledFactory
     {
-        private int eventRate;
-        private Variable variable;
+        public int EventRate { get; set; }
 
-        public int EventRate {
-            get => eventRate;
-            set => eventRate = value;
-        }
+        public Variable Variable { get; set; }
 
-        public Variable Variable {
-            get => variable;
-            set => variable = value;
-        }
-
-        public OutputConditionPolledCountFactory SetEventRate(int eventRate)
+        public OutputConditionPolled MakeNew(ExprEvaluatorContext exprEvaluatorContext)
         {
-            this.eventRate = eventRate;
-            return this;
-        }
-
-        public OutputConditionPolledCountFactory SetVariable(Variable variable)
-        {
-            this.variable = variable;
-            return this;
-        }
-
-        public OutputConditionPolled MakeNew(AgentInstanceContext agentInstanceContext)
-        {
-            OutputConditionPolledCountState state = new OutputConditionPolledCountState(
-                eventRate,
-                eventRate,
-                eventRate,
+            var state = new OutputConditionPolledCountState(
+                EventRate,
+                EventRate,
+                EventRate,
                 true);
-            return new OutputConditionPolledCount(state, GetVariableReader(agentInstanceContext));
+            return new OutputConditionPolledCount(state, GetVariableReader(exprEvaluatorContext));
         }
 
         public OutputConditionPolled MakeFromState(
-            AgentInstanceContext agentInstanceContext,
+            ExprEvaluatorContext exprEvaluatorContext,
             OutputConditionPolledState state)
         {
             return new OutputConditionPolledCount(
-                (OutputConditionPolledCountState) state,
-                GetVariableReader(agentInstanceContext));
+                (OutputConditionPolledCountState)state,
+                GetVariableReader(exprEvaluatorContext));
         }
 
-        private VariableReader GetVariableReader(AgentInstanceContext agentInstanceContext)
+        private VariableReader GetVariableReader(ExprEvaluatorContext exprEvaluatorContext)
         {
-            if (variable == null) {
+            if (Variable == null) {
                 return null;
             }
 
-            return agentInstanceContext.VariableManagementService.GetReader(
-                variable.DeploymentId,
-                variable.MetaData.VariableName,
-                agentInstanceContext.AgentInstanceId);
+            return exprEvaluatorContext.VariableManagementService.GetReader(
+                Variable.DeploymentId,
+                Variable.MetaData.VariableName,
+                exprEvaluatorContext.AgentInstanceId);
         }
     }
 } // end of namespace

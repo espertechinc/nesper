@@ -1,0 +1,21 @@
+version: '3'
+services:
+  database:
+    # Official Postgres image from DockerHub (we use the last version)
+    image: postgres:latest
+     # Map host port 5432 to container port 5432
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: esper
+      POSTGRES_USER: esper
+      POSTGRES_PASSWORD: 3sp3rP@ssw0rd
+    volumes:
+      - ./data:/var/lib/postgresql/data
+      - ./load_sql.sh:/docker-entrypoint-initdb.d/load_sql.sh
+      - ../etc/regression/create_testdb_pgsql.sql:/docker-entrypoint-initdb.d/create_testdb.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U esper"]
+      interval: 5s
+      timeout: 5s
+      retries: 10

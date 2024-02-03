@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -16,6 +16,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.agg.method.core;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.fabric;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.agg.method.core.AggregatorCodegenUtil;
@@ -24,23 +25,24 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.plugin
 {
     public class AggregatorPlugInMultiParam : AggregatorMethod
     {
+        protected CodegenExpressionMember plugin;
         private readonly AggregationFunctionModeMultiParam mode;
 
-        internal CodegenExpressionMember plugin;
+        public AggregatorPlugInMultiParam(AggregationFunctionModeMultiParam mode)
+        {
+            this.mode = mode;
+        }
 
-        public AggregatorPlugInMultiParam(
-            AggregationForgeFactoryPlugin factory,
+        public void InitForge(
             int col,
             CodegenCtor rowCtor,
             CodegenMemberCol membersColumnized,
-            CodegenClassScope classScope,
-            AggregationFunctionModeMultiParam mode)
+            CodegenClassScope classScope)
         {
-            this.mode = mode;
-            var injectionStrategy =
-                (InjectionStrategyClassNewInstance) mode.InjectionStrategyAggregationFunctionFactory;
-            var factoryField = classScope.AddDefaultFieldUnshared<AggregationFunctionFactory>(
+            var injectionStrategy = (InjectionStrategyClassNewInstance)mode.InjectionStrategyAggregationFunctionFactory;
+            var factoryField = classScope.AddDefaultFieldUnshared(
                 true,
+                typeof(AggregationFunctionFactory),
                 injectionStrategy.GetInitializationExpression(classScope));
 
             plugin = membersColumnized.AddMember(col, typeof(AggregationFunction), "plugin");
@@ -124,6 +126,13 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.plugin
             }
         }
 
+        public void CollectFabricType(FabricTypeCollector collector)
+        {
+            if (mode.HasHA) {
+                collector.PlugInAggregation(mode.Serde);
+            }
+        }
+
         private void Apply(
             bool enter,
             CodegenMethod method,
@@ -140,16 +149,16 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.plugin
             }
             else {
                 method.Block.DeclareVar<object[]>(
-                    "parameters",
+                    "@params",
                     NewArrayByLength(typeof(object), Constant(forges.Length)));
                 for (var i = 0; i < forges.Length; i++) {
                     method.Block.AssignArrayElement(
-                        "parameters",
+                        "@params",
                         Constant(i),
                         forges[i].EvaluateCodegen(typeof(object), method, symbols, classScope));
                 }
 
-                expression = Ref("parameters");
+                expression = Ref("@params");
             }
 
             method.Block.ExprDotMethod(plugin, enter ? "Enter" : "Leave", expression);

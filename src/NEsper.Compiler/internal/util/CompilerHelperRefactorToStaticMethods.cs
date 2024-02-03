@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -20,7 +20,7 @@ namespace com.espertech.esper.compiler.@internal.util
 {
 	public class CompilerHelperRefactorToStaticMethods
 	{
-		public const int MAX_METHODS_PER_CLASS_MINIMUM = 1000;
+		public const int MAX_METHODS_PER_CLASS_MINIMUM = 100;
 
 		public static void RefactorMethods(
 			IList<CodegenClass> classes,

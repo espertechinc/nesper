@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -37,12 +37,10 @@ namespace com.espertech.esper.common.@internal.epl.join.indexlookupplan
             EventTable[] eventTable,
             EventType[] eventTypes)
         {
-            PropertyHashedEventTable index = (PropertyHashedEventTable) eventTable[0];
+            var index = (PropertyHashedEventTable)eventTable[0];
             return new InKeywordSingleTableLookupStrategyExpr(this, index);
         }
 
-        public ExprEvaluator[] Expressions {
-            get => expressions;
-        }
+        public ExprEvaluator[] Expressions => expressions;
     }
 } // end of namespace

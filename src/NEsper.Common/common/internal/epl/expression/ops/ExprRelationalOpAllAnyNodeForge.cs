@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -30,20 +30,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             RelationalOpEnumComputer computer,
             bool hasCollectionOrArray)
         {
-            this._parent = parent;
-            this._computer = computer;
-            this._hasCollectionOrArray = hasCollectionOrArray;
+            _parent = parent;
+            _computer = computer;
+            _hasCollectionOrArray = hasCollectionOrArray;
         }
 
-        public ExprEvaluator ExprEvaluator {
-            get => new ExprRelationalOpAllAnyNodeForgeEval(
+        public ExprEvaluator ExprEvaluator =>
+            new ExprRelationalOpAllAnyNodeForgeEval(
                 this,
                 ExprNodeUtilityQuery.GetEvaluatorsNoCompile(_parent.ChildNodes));
-        }
 
-        public ExprForgeConstantType ForgeConstantType {
-            get => ExprForgeConstantType.NONCONST;
-        }
+        public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
 
         public CodegenExpression EvaluateCodegen(
             Type requiredType,
@@ -72,22 +69,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             return ExprRelationalOpAllAnyNodeForgeEval.Codegen(this, codegenMethodScope, exprSymbol, codegenClassScope);
         }
 
-        public Type EvaluationType {
-            get => typeof(bool?);
-        }
+        public Type EvaluationType => typeof(bool?);
 
-        public ExprRelationalOpAllAnyNode ForgeRenderable {
-            get => _parent;
-        }
+        public ExprRelationalOpAllAnyNode ForgeRenderable => _parent;
 
         ExprNodeRenderable ExprForge.ExprForgeRenderable => ForgeRenderable;
 
-        public RelationalOpEnumComputer Computer {
-            get { return _computer; }
-        }
+        public RelationalOpEnumComputer Computer => _computer;
 
-        public bool IsCollectionOrArray {
-            get => _hasCollectionOrArray;
-        }
+        public bool IsCollectionOrArray => _hasCollectionOrArray;
     }
 } // end of namespace

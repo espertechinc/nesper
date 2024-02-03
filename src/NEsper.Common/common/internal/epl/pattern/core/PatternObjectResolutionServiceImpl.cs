@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -13,6 +13,7 @@ using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.epl.pattern.guard;
 using com.espertech.esper.common.@internal.epl.pattern.observer;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 
@@ -41,7 +42,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
             var result = CreateForge(spec, PluggableObjectType.PATTERN_OBSERVER);
             ObserverForge forge;
             try {
-                forge = (ObserverForge) result;
+                forge = (ObserverForge)result;
 
                 if (Log.IsDebugEnabled) {
                     Log.Debug(".create Successfully instantiated observer");
@@ -64,7 +65,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
             var result = CreateForge(spec, PluggableObjectType.PATTERN_GUARD);
             GuardForge forge;
             try {
-                forge = (GuardForge) result;
+                forge = (GuardForge)result;
 
                 if (Log.IsDebugEnabled) {
                     Log.Debug(".create Successfully instantiated guard");
@@ -72,7 +73,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
             }
             catch (InvalidCastException e) {
                 var message = "Error casting guard forge instance to " +
-                              nameof(GuardForge) +
+                              typeof(GuardForge).CleanName() +
                               " interface for guard '" +
                               spec.ObjectName +
                               "'";

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -13,24 +13,26 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.ops
 {
-	/// <summary>
-	///     Represents the "new Class[dim][dim]" operator in an expression tree.
-	/// </summary>
-	public class ExprNewInstanceNodeArrayForgeEval : ExprEvaluator
+    /// <summary>
+    /// Represents the "new Class[dim][dim]" operator in an expression tree.
+    /// </summary>
+    public class ExprNewInstanceNodeArrayForgeEval : ExprEvaluator
     {
         private const string NULL_MSG = "new-array received a null value for dimension";
 
-        private readonly ExprNewInstanceNodeArrayForge _forge;
+        private readonly ExprNewInstanceNodeArrayForge forge;
 
         public ExprNewInstanceNodeArrayForgeEval(ExprNewInstanceNodeArrayForge forge)
         {
-            _forge = forge;
+            this.forge = forge;
         }
 
         public object Evaluate(
@@ -38,14 +40,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            if (_forge.Parent.IsArrayInitializedByExpr) {
-                return _forge.Parent.ChildNodes[0].Forge.ExprEvaluator.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+            if (forge.Parent.IsArrayInitializedByExpr) {
+                return forge.Parent.ChildNodes[0]
+                    .Forge.ExprEvaluator.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
             }
 
-            var children = _forge.Parent.ChildNodes;
+            var children = forge.Parent.ChildNodes;
             var dimensions = new int[children.Length];
             for (var i = 0; i < children.Length; i++) {
-                var size = (int?) _forge.Parent.ChildNodes[i].Forge.ExprEvaluator.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+                var size = forge.Parent
+                    .ChildNodes[i]
+                    .Forge.ExprEvaluator.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext)
+                    .AsBoxedInt32();
                 if (size == null) {
                     throw new EPException(NULL_MSG);
                 }
@@ -53,7 +59,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 dimensions[i] = size.Value;
             }
 
-            return Arrays.CreateInstanceChecked(_forge.TargetClass, dimensions);
+            var target = forge.TargetClass;
+            if (forge.Parent.NumArrayDimensions > dimensions.Length) {
+                target = TypeHelper.GetArrayType(forge.TargetClass, forge.Parent.NumArrayDimensions - 1);
+            }
+
+            return Arrays.CreateInstanceChecked(target, dimensions);
         }
 
         public static CodegenExpression EvaluateCodegen(
@@ -81,16 +92,22 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 else {
                     var name = "dim" + i;
                     method.Block
-                        .DeclareVar(typeof(int?), name, dimExpr)
+                        .DeclareVar<int?>(name, dimExpr)
                         .IfRefNull(name)
                         .BlockThrow(NewInstance(typeof(EPException), Constant(NULL_MSG)));
                     dimValue[i] = Unbox(Ref(name));
                 }
             }
 
+            var numDimensions = forge.Parent.NumArrayDimensions;
+            if (numDimensions == 0 || numDimensions > 2) {
+                throw new IllegalStateException("Only handles one- and two-dimensional arrays");
+            }
+
             CodegenExpression make;
             if (dimValue.Length == 1) {
-                make = NewArrayByLength(forge.TargetClass, dimValue[0]);
+                var target = TypeHelper.GetArrayType(forge.TargetClass, forge.Parent.NumArrayDimensions - 1);
+                make = NewArrayByLength(target, dimValue[0]);
             }
             else {
                 var @params = new CodegenExpression[dimValue.Length + 1];
@@ -98,7 +115,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 Array.Copy(dimValue, 0, @params, 1, dimValue.Length);
                 make = StaticMethod(typeof(Arrays), "CreateJagged", @params);
             }
-            
+
             method.Block.MethodReturn(CodegenLegoCast.CastSafeFromObjectType(requiredType, make));
             return LocalMethod(method);
         }

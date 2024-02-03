@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -26,11 +26,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         public class NumberCasterComputer : CasterParserComputerForge,
             CasterParserComputer
         {
-            private readonly SimpleTypeCaster numericTypeCaster;
+            private readonly SimpleTypeCaster _numericTypeCaster;
 
             public NumberCasterComputer(SimpleTypeCaster numericTypeCaster)
             {
-                this.numericTypeCaster = numericTypeCaster;
+                _numericTypeCaster = numericTypeCaster;
             }
 
             public object Compute(
@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 ExprEvaluatorContext exprEvaluatorContext)
             {
                 if (input.IsNumber()) {
-                    return numericTypeCaster.Cast(input);
+                    return _numericTypeCaster.Cast(input);
                 }
 
                 return null;
@@ -56,8 +56,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 ExprForgeCodegenSymbol exprSymbol,
                 CodegenClassScope codegenClassScope)
             {
-                if (inputType.CanNotBeNull() || inputType.IsNumeric()) {
-                    return numericTypeCaster.Codegen(input, inputType, codegenMethodScope, codegenClassScope);
+                if (inputType.CanNotBeNull() || inputType.IsTypeNumeric()) {
+                    return _numericTypeCaster.Codegen(input, inputType, codegenMethodScope, codegenClassScope);
                 }
 
                 var methodNode = codegenMethodScope
@@ -67,7 +67,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 methodNode.Block
                     .IfInstanceOf("input", typeof(object))
                     .BlockReturn(
-                        numericTypeCaster.Codegen(
+                        _numericTypeCaster.Codegen(
                             CodegenExpressionBuilder.Ref("input"),
                             inputType,
                             methodNode,

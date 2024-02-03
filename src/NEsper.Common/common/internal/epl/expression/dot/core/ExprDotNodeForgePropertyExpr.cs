@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -21,8 +21,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 {
     public class ExprDotNodeForgePropertyExpr : ExprDotNodeForge
     {
-        private readonly string propertyName;
-        private readonly string statementName;
+        private readonly string _propertyName;
+        private readonly string _statementName;
 
         internal ExprDotNodeForgePropertyExpr(
             ExprDotNodeImpl parent,
@@ -35,8 +35,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             EventPropertyGetterMappedSPI mappedGetter)
         {
             Parent = parent;
-            this.statementName = statementName;
-            this.propertyName = propertyName;
+            _statementName = statementName;
+            _propertyName = propertyName;
             StreamNum = streamNum;
             ExprForge = exprForge;
             EvaluationType = propertyType;
@@ -58,8 +58,6 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 
         public override Type EvaluationType { get; }
 
-        public Type Type => EvaluationType;
-
         public int StreamNum { get; }
 
         public EventPropertyGetterIndexedSPI IndexedGetter { get; }
@@ -80,10 +78,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 
         public override ExprNodeRenderable ExprForgeRenderable => Parent;
 
-        public override bool IsLocalInlinedClass {
-            get => false;
-        }
-        
+        public override bool IsLocalInlinedClass => false;
+
         public override CodegenExpression EvaluateCodegenUninstrumented(
             Type requiredType,
             CodegenMethodScope codegenMethodScope,
@@ -126,7 +122,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             object received)
         {
             var receivedText = received == null ? "null" : received.GetType().CleanName();
-            return $"Statement '{statementName}' property {propertyName} parameter expression expected a value of {expectedType} but received {receivedText}";
+            return
+                $"Statement '{_statementName}' property {_propertyName} parameter expression expected a value of {expectedType} but received {receivedText}";
         }
     }
 } // end of namespace

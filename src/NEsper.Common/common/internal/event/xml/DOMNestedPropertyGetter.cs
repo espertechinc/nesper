@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
 
             var count = 0;
             foreach (var getter in getterChain) {
-                domGetterChain[count++] = (DOMPropertyGetter) getter;
+                domGetterChain[count++] = (DOMPropertyGetter)getter;
             }
         }
 
@@ -64,7 +64,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
                 }
             }
 
-            return domGetterChain[domGetterChain.Length - 1].GetValueAsNodeArray(node);
+            return domGetterChain[^1].GetValueAsNodeArray(node);
         }
 
         public XmlNode GetValueAsNode(XmlNode node)
@@ -106,38 +106,35 @@ namespace com.espertech.esper.common.@internal.@event.xml
         public object Get(EventBean obj)
         {
             // The underlying is expected to be a map
-            if (!(obj.Underlying is XmlNode)) {
+            if (!(obj.Underlying is XmlNode node)) {
                 throw new PropertyAccessException(
                     "Mismatched property getter to event bean type, " +
                     "the underlying data object is not of type XmlNode");
             }
 
-            var node = (XmlNode) obj.Underlying;
             return GetValueAsNode(node);
         }
 
         public bool IsExistsProperty(EventBean obj)
         {
             // The underlying is expected to be a map
-            if (!(obj.Underlying is XmlNode)) {
+            if (!(obj.Underlying is XmlNode node)) {
                 throw new PropertyAccessException(
                     "Mismatched property getter to event bean type, " +
                     "the underlying data object is not of type XmlNode");
             }
 
-            return IsExistsProperty((XmlNode) obj.Underlying);
+            return IsExistsProperty(node);
         }
 
         public object GetFragment(EventBean obj)
         {
             // The underlying is expected to be a map
-            if (!(obj.Underlying is XmlNode)) {
+            if (!(obj.Underlying is XmlNode value)) {
                 throw new PropertyAccessException(
                     "Mismatched property getter to event bean type, " +
                     "the underlying data object is not of type XmlNode");
             }
-
-            var value = (XmlNode) obj.Underlying;
 
             for (var i = 0; i < domGetterChain.Length - 1; i++) {
                 value = domGetterChain[i].GetValueAsNode(value);
@@ -147,7 +144,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
                 }
             }
 
-            return domGetterChain[domGetterChain.Length - 1].GetValueAsFragment(value);
+            return domGetterChain[^1].GetValueAsFragment(value);
         }
 
         public CodegenExpression EventBeanGetCodegen(
@@ -216,7 +213,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
                 typeof(FragmentFactory),
                 fragmentFactory.Make(codegenClassScope.NamespaceScope.InitMethod, codegenClassScope));
             return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
-                .AddParam(typeof(XmlNode), "node")
+                .AddParam<XmlNode>("node")
                 .Block
                 .DeclareVar<XmlNode>(
                     "result",
@@ -230,7 +227,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
             CodegenClassScope codegenClassScope)
         {
             var block = codegenMethodScope.MakeChild(typeof(XmlNode[]), GetType(), codegenClassScope)
-                .AddParam(typeof(XmlNode), "node")
+                .AddParam<XmlNode>("node")
                 .Block;
             for (var i = 0; i < domGetterChain.Length - 1; i++) {
                 block.AssignRef(
@@ -240,7 +237,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
             }
 
             return block.MethodReturn(
-                domGetterChain[domGetterChain.Length - 1]
+                domGetterChain[^1]
                     .GetValueAsNodeArrayCodegen(
                         Ref("node"),
                         codegenMethodScope,
@@ -252,7 +249,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
             CodegenClassScope codegenClassScope)
         {
             var block = codegenMethodScope.MakeChild(typeof(XmlNode), GetType(), codegenClassScope)
-                .AddParam(typeof(XmlNode), "node")
+                .AddParam<XmlNode>("node")
                 .Block;
             for (var i = 0; i < domGetterChain.Length; i++) {
                 block.AssignRef(
@@ -281,7 +278,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
             CodegenClassScope codegenClassScope)
         {
             var block = codegenMethodScope.MakeChild(typeof(bool), GetType(), codegenClassScope)
-                .AddParam(typeof(XmlNode), "value")
+                .AddParam<XmlNode>("value")
                 .Block;
             for (var i = 0; i < domGetterChain.Length; i++) {
                 block.AssignRef(
@@ -298,7 +295,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
             CodegenClassScope codegenClassScope)
         {
             var block = codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
-                .AddParam(typeof(XmlNode), "value")
+                .AddParam<XmlNode>("value")
                 .Block;
             for (var i = 0; i < domGetterChain.Length - 1; i++) {
                 block.AssignRef(
@@ -308,7 +305,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
             }
 
             return block.MethodReturn(
-                domGetterChain[domGetterChain.Length - 1]
+                domGetterChain[^1]
                     .UnderlyingFragmentCodegen(
                         Ref("value"),
                         codegenMethodScope,

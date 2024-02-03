@@ -1,14 +1,17 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Collections.Generic;
+
 using com.espertech.esper.common.client.metric;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.runtime.client;
 
@@ -20,22 +23,22 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
 
         public void Run(RegressionEnvironment env)
         {
-            string[] fields = {"StatementName"};
+            string[] fields = { "StatementName" };
             var statements = new EPStatement[5];
 
             SendTimer(env, 1000);
 
             statements[0] =
-                env.CompileDeploy("@Name('MyStatement@METRIC') select * from " + typeof(StatementMetric).FullName)
+                env.CompileDeploy("@name('MyStatement@METRIC') select * from " + typeof(StatementMetric).FullName)
                     .Statement("MyStatement@METRIC");
             statements[0].AddListener(env.ListenerNew());
 
             statements[1] =
-                env.CompileDeploy("@Name('stmtone') select * from SupportBean(IntPrimitive=1)#keepall where 2=2")
+                env.CompileDeploy("@name('stmtone') select * from SupportBean(IntPrimitive=1)#keepall where 2=2")
                     .Statement("stmtone");
             SendEvent(env, "E1", 1, CPUGOALONENANO);
             statements[2] =
-                env.CompileDeploy("@Name('stmttwo') select * from SupportBean(IntPrimitive>0)#lastevent where 1=1")
+                env.CompileDeploy("@name('stmttwo') select * from SupportBean(IntPrimitive>0)#lastevent where 1=1")
                     .Statement("stmttwo");
             SendEvent(env, "E2", 1, CPUGOALONENANO);
 
@@ -43,7 +46,7 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
             EPAssertionUtil.AssertPropsPerRow(
                 env.Listener("MyStatement@METRIC").NewDataListFlattened,
                 fields,
-                new[] {new object[] {"stmtone"}, new object[] {"stmttwo"}});
+                new[] { new object[] { "stmtone" }, new object[] { "stmttwo" } });
             env.Listener("MyStatement@METRIC").Reset();
 
             SendEvent(env, "E1", 1, CPUGOALONENANO);
@@ -51,7 +54,7 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
             EPAssertionUtil.AssertPropsPerRow(
                 env.Listener("MyStatement@METRIC").NewDataListFlattened,
                 fields,
-                new[] {new object[] {"stmtone"}, new object[] {"stmttwo"}});
+                new[] { new object[] { "stmtone" }, new object[] { "stmttwo" } });
             env.Listener("MyStatement@METRIC").Reset();
 
             env.Runtime.MetricsService.SetMetricsReportingStmtDisabled(env.DeploymentId("stmtone"), "stmtone");
@@ -61,7 +64,7 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
             EPAssertionUtil.AssertPropsPerRow(
                 env.Listener("MyStatement@METRIC").NewDataListFlattened,
                 fields,
-                new[] {new object[] {"stmttwo"}});
+                new[] { new object[] { "stmttwo" } });
             env.Listener("MyStatement@METRIC").Reset();
 
             env.Runtime.MetricsService.SetMetricsReportingStmtEnabled(env.DeploymentId("stmtone"), "stmtone");
@@ -72,9 +75,14 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
             EPAssertionUtil.AssertPropsPerRow(
                 env.Listener("MyStatement@METRIC").NewDataListFlattened,
                 fields,
-                new[] {new object[] {"stmtone"}});
+                new[] { new object[] { "stmtone" } });
 
             env.UndeployAll();
+        }
+
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.RUNTIMEOPS);
         }
 
         private void SendTimer(

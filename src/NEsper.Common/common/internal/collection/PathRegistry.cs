@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -38,11 +38,13 @@ namespace com.espertech.esper.common.@internal.collection
 
         public int Count => _entities.Count;
 
-        public bool IsEmpty() 
+        public IDictionary<TK, PathModuleEntry<TE>> Entities => _entities;
+
+        public bool IsEmpty()
         {
             return _entities.Count == 0;
         }
-        
+
         public void Add(
             TK entityKey,
             string moduleName,
@@ -65,8 +67,9 @@ namespace com.espertech.esper.common.@internal.collection
             existing.Add(moduleName, entity, deploymentId);
         }
 
-        public void AddEntry(TK entityKey,
-            String moduleName,
+        public void AddEntry(
+            TK entityKey,
+            string moduleName,
             PathDeploymentEntry<TE> entity)
         {
             CheckModuleNameParameter(moduleName);
@@ -98,10 +101,13 @@ namespace com.espertech.esper.common.@internal.collection
         {
             CheckModuleNameParameter(moduleName);
             var existing = _entities.Get(entityKey);
-            return existing == null ? default(TE) : existing.GetWithModule(moduleName);
+            return existing == null ? default : existing.GetWithModule(moduleName);
         }
-        
-        public PathDeploymentEntry<TE> GetEntryWithModule(TK entityKey, String moduleName) {
+
+        public PathDeploymentEntry<TE> GetEntryWithModule(
+            TK entityKey,
+            string moduleName)
+        {
             CheckModuleNameParameter(moduleName);
             return _entities.TryGetValue(entityKey, out var existing)
                 ? existing.GetEntryWithModule(moduleName)
@@ -166,15 +172,16 @@ namespace com.espertech.esper.common.@internal.collection
             }
         }
 
-        public void TraverseWithModule(BiConsumer<String, TE> consumer) {
+        public void TraverseWithModule(BiConsumer<string, TE> consumer)
+        {
             foreach (var entry in _entities) {
                 entry.Value.TraverseWithModule(consumer);
             }
         }
-        
+
         private void CheckModuleNameParameter(string moduleName)
         {
-            if (moduleName != null && moduleName.Length == 0) { 
+            if (moduleName != null && moduleName.Length == 0) {
                 throw new ArgumentException("Invalid empty module name, use null or a non-empty value");
             }
         }
@@ -193,13 +200,36 @@ namespace com.espertech.esper.common.@internal.collection
                 _entities.Put(entry.Key, entry.Value);
             }
         }
-        
-        public PathRegistry<TK, TE> Copy() {
+
+        public void MergeFromCheckDuplicate(
+            PathRegistry<TK, TE> other,
+            string moduleName)
+        {
+            if (other.ObjectType != ObjectType) {
+                throw new ArgumentException("Invalid object type " + other.ObjectType + " expected " + ObjectType);
+            }
+
+            foreach (var entry in other._entities) {
+                if (!_entities.TryGetValue(entry.Key, out var existing)) {
+                    _entities[entry.Key] = entry.Value;
+                }
+                else {
+                    var existingDeploymentId = existing.GetDeploymentId(moduleName);
+                    if (existingDeploymentId != null) {
+                        throw new PathExceptionAlreadyRegistered(entry.Key.ToString(), ObjectType, moduleName);
+                    }
+                }
+            }
+        }
+
+        public PathRegistry<TK, TE> Copy()
+        {
             var copy = new HashMap<TK, PathModuleEntry<TE>>();
             foreach (var entry in _entities) {
-                PathModuleEntry<TE> entryCopy = entry.Value.Copy();
+                var entryCopy = entry.Value.Copy();
                 copy[entry.Key] = entryCopy;
             }
+
             return new PathRegistry<TK, TE>(ObjectType, copy);
         }
     }

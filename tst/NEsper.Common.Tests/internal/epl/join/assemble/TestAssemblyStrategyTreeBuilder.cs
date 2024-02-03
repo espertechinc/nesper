@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -14,6 +14,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.epl.join.assemble
 {
@@ -32,7 +33,7 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
             }
             catch (ArgumentException ex)
             {
-                log.Debug(".tryInvalidBuild expected exception=" + ex);
+                Log.Debug(".tryInvalidBuild expected exception=" + ex);
                 // expected
             }
         }
@@ -48,7 +49,7 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
             return result;
         }
 
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         [Test]
         public void TestInvalidBuild()
@@ -83,17 +84,17 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
                 new[] { false, true, false });
 
             var top = (RootCartProdAssemblyNodeFactory) nodeFactory;
-            Assert.AreEqual(2, top.ChildNodes.Count);
+            ClassicAssert.AreEqual(2, top.ChildNodes.Count);
 
             var leaf1 = (LeafAssemblyNodeFactory) top.ChildNodes[0];
-            Assert.AreEqual(0, leaf1.StreamNum);
-            Assert.AreEqual(0, leaf1.ChildNodes.Count);
-            Assert.AreEqual(top, leaf1.ParentNode);
+            ClassicAssert.AreEqual(0, leaf1.StreamNum);
+            ClassicAssert.AreEqual(0, leaf1.ChildNodes.Count);
+            ClassicAssert.AreEqual(top, leaf1.ParentNode);
 
             var leaf2 = (LeafAssemblyNodeFactory) top.ChildNodes[0];
-            Assert.AreEqual(0, leaf2.StreamNum);
-            Assert.AreEqual(0, leaf2.ChildNodes.Count);
-            Assert.AreEqual(top, leaf2.ParentNode);
+            ClassicAssert.AreEqual(0, leaf2.StreamNum);
+            ClassicAssert.AreEqual(0, leaf2.ChildNodes.Count);
+            ClassicAssert.AreEqual(top, leaf2.ParentNode);
         }
 
         [Test]
@@ -106,19 +107,19 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
                 new[] { true, false, true });
 
             var child1 = (RootOptionalAssemblyNodeFactory) nodeFactory;
-            Assert.AreEqual(2, child1.StreamNum);
-            Assert.AreEqual(1, child1.ChildNodes.Count);
-            Assert.AreEqual(null, child1.ParentNode);
+            ClassicAssert.AreEqual(2, child1.StreamNum);
+            ClassicAssert.AreEqual(1, child1.ChildNodes.Count);
+            ClassicAssert.AreEqual(null, child1.ParentNode);
 
             var child1_1 = (BranchRequiredAssemblyNodeFactory) child1.ChildNodes[0];
-            Assert.AreEqual(1, child1_1.StreamNum);
-            Assert.AreEqual(1, child1_1.ChildNodes.Count);
-            Assert.AreEqual(child1, child1_1.ParentNode);
+            ClassicAssert.AreEqual(1, child1_1.StreamNum);
+            ClassicAssert.AreEqual(1, child1_1.ChildNodes.Count);
+            ClassicAssert.AreEqual(child1, child1_1.ParentNode);
 
             var leaf1_2 = (LeafAssemblyNodeFactory) child1_1.ChildNodes[0];
-            Assert.AreEqual(0, leaf1_2.StreamNum);
-            Assert.AreEqual(0, leaf1_2.ChildNodes.Count);
-            Assert.AreEqual(child1_1, leaf1_2.ParentNode);
+            ClassicAssert.AreEqual(0, leaf1_2.StreamNum);
+            ClassicAssert.AreEqual(0, leaf1_2.ChildNodes.Count);
+            ClassicAssert.AreEqual(child1_1, leaf1_2.ParentNode);
         }
 
         [Test]
@@ -133,19 +134,19 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
                 new[] { false, true, true });
 
             var child1 = (RootRequiredAssemblyNodeFactory) nodeFactory;
-            Assert.AreEqual(2, child1.StreamNum);
-            Assert.AreEqual(1, child1.ChildNodes.Count);
-            Assert.AreEqual(null, child1.ParentNode);
+            ClassicAssert.AreEqual(2, child1.StreamNum);
+            ClassicAssert.AreEqual(1, child1.ChildNodes.Count);
+            ClassicAssert.AreEqual(null, child1.ParentNode);
 
             var child1_1 = (BranchOptionalAssemblyNodeFactory) child1.ChildNodes[0];
-            Assert.AreEqual(1, child1_1.StreamNum);
-            Assert.AreEqual(1, child1_1.ChildNodes.Count);
-            Assert.AreEqual(child1, child1_1.ParentNode);
+            ClassicAssert.AreEqual(1, child1_1.StreamNum);
+            ClassicAssert.AreEqual(1, child1_1.ChildNodes.Count);
+            ClassicAssert.AreEqual(child1, child1_1.ParentNode);
 
             var leaf1_2 = (LeafAssemblyNodeFactory) child1_1.ChildNodes[0];
-            Assert.AreEqual(0, leaf1_2.StreamNum);
-            Assert.AreEqual(0, leaf1_2.ChildNodes.Count);
-            Assert.AreEqual(child1_1, leaf1_2.ParentNode);
+            ClassicAssert.AreEqual(0, leaf1_2.StreamNum);
+            ClassicAssert.AreEqual(0, leaf1_2.ChildNodes.Count);
+            ClassicAssert.AreEqual(child1_1, leaf1_2.ParentNode);
         }
     }
 } // end of namespace

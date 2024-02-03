@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -39,17 +39,13 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            EventBean theEvent = eventsPerStream[streamNum];
+            var theEvent = eventsPerStream[streamNum];
             return theEvent?.Underlying;
         }
 
-        public ExprNodeRenderable ExprForgeRenderable {
-            get => this;
-        }
+        public ExprNodeRenderable ExprForgeRenderable => this;
 
-        public ExprEvaluator ExprEvaluator {
-            get => this;
-        }
+        public ExprEvaluator ExprEvaluator => this;
 
         public CodegenExpression EvaluateCodegen(
             Type requiredType,
@@ -57,8 +53,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenMethod methodNode = codegenMethodScope.MakeChild(returnType, this.GetType(), codegenClassScope);
-            CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(methodNode);
+            var methodNode = codegenMethodScope.MakeChild(returnType, GetType(), codegenClassScope);
+            var refEPS = exprSymbol.GetAddEps(methodNode);
             methodNode.Block
                 .DeclareVar<EventBean>("@event", ArrayAtIndex(refEPS, Constant(streamNum)))
                 .IfRefNullReturnNull("@event")
@@ -67,19 +63,16 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
             return LocalMethod(methodNode);
         }
 
-        public ExprForgeConstantType ForgeConstantType {
-            get => ExprForgeConstantType.NONCONST;
-        }
+        public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
 
-        public Type EvaluationType {
-            get => returnType;
-        }
+        public Type EvaluationType => returnType;
 
-        public void ToEPL(TextWriter writer,
+        public void ToEPL(
+            TextWriter writer,
             ExprPrecedenceEnum parentPrecedence,
             ExprNodeRenderableFlags flags)
         {
-            writer.Write(this.GetType().Name + " stream " + streamNum);
+            writer.Write(GetType().Name + " stream " + streamNum);
         }
     }
 } // end of namespace

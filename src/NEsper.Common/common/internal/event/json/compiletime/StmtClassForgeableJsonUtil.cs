@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -29,8 +29,8 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
             var cases = new CodegenExpression[desc.PropertiesThisType.Count];
             var index = 0;
             foreach (var property in desc.PropertiesThisType) {
-                //var field = desc.FieldDescriptorsInclSupertype.Get(property.Key);
-                cases[index] = Constant(property.Key);
+                var field = desc.FieldDescriptorsInclSupertype.Get(property.Key);
+                cases[index] = Constant(field.PropertyNumber);
                 index++;
             }
 

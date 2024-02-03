@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -17,6 +17,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.grammar.@internal.generated;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.compiler.@internal.parse
 {
@@ -28,18 +29,18 @@ namespace com.espertech.esper.compiler.@internal.parse
 		{
 			object result;
 
-			Assert.AreEqual("abc", ParseLoadJson("\"abc\""));
-			Assert.AreEqual("http://www.uri.com", ParseLoadJson("\"http://www.uri.com\""));
-			Assert.AreEqual("new\nline", ParseLoadJson("\"new\\nline\""));
-			Assert.AreEqual(" ~ ", ParseLoadJson("\" \\u007E \""));
-			Assert.AreEqual("/", ParseLoadJson("\"\\/\""));
-			Assert.AreEqual(true, ParseLoadJson("true"));
-			Assert.AreEqual(false, ParseLoadJson("false"));
-			Assert.AreEqual(null, ParseLoadJson("null"));
-			Assert.AreEqual(10, ParseLoadJson("10"));
-			Assert.AreEqual(-10, ParseLoadJson("-10"));
-			Assert.AreEqual(20L, ParseLoadJson("20L"));
-			Assert.AreEqual(5.5d, ParseLoadJson("5.5"));
+			ClassicAssert.AreEqual("abc", ParseLoadJson("\"abc\""));
+			ClassicAssert.AreEqual("http://www.uri.com", ParseLoadJson("\"http://www.uri.com\""));
+			ClassicAssert.AreEqual("new\nline", ParseLoadJson("\"new\\nline\""));
+			ClassicAssert.AreEqual(" ~ ", ParseLoadJson("\" \\u007E \""));
+			ClassicAssert.AreEqual("/", ParseLoadJson("\"\\/\""));
+			ClassicAssert.AreEqual(true, ParseLoadJson("true"));
+			ClassicAssert.AreEqual(false, ParseLoadJson("false"));
+			ClassicAssert.AreEqual(null, ParseLoadJson("null"));
+			ClassicAssert.AreEqual(10, ParseLoadJson("10"));
+			ClassicAssert.AreEqual(-10, ParseLoadJson("-10"));
+			ClassicAssert.AreEqual(20L, ParseLoadJson("20L"));
+			ClassicAssert.AreEqual(5.5d, ParseLoadJson("5.5"));
 
 			result = ParseLoadJson("{\"name\":\"myname\",\"value\":5}");
 			EPAssertionUtil.AssertPropsMap(result.AsStringDictionary(), "name,value".SplitCsv(), "myname", 5);
@@ -52,7 +53,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 
 			result = ParseLoadJson("{\"one\": { 'a' : 2 } }");
 			var inner = result.AsStringDictionary().Get("one").AsStringDictionary();
-			Assert.AreEqual(1, inner.Count);
+			ClassicAssert.AreEqual(1, inner.Count);
 
 			var json = "{\n" +
 			           "    \"glossary\": {\n" +
@@ -79,7 +80,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 			var tree = ParseJson(json).First;
 			ASTUtil.DumpAST(tree);
 			var loaded = ParseLoadJson(json);
-			Assert.AreEqual(
+			ClassicAssert.AreEqual(
 				"{\"glossary\"={\"title\"=\"example glossary\", \"GlossDiv\"={\"title\"=\"S\", \"GlossList\"={\"GlossEntry\"={\"ID\"=\"SGML\", \"SortAs\"=\"SGML\", \"GlossTerm\"=\"Standard Generalized Markup Language\", \"Acronym\"=\"SGML\", \"Abbrev\"=\"ISO 8879:1986\", \"GlossDef\"={\"para\"=\"A meta-markup language, used to create markup languages such as DocBook.\", \"GlossSeeAlso\"=[\"GML\", \"XML\"]}, \"GlossSee\"=\"markup\"}}}}}",
 				loaded.ToString());
 		}
@@ -88,7 +89,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 		{
 			var parsed = ParseJson(expression);
 			var tree = (EsperEPL2GrammarParser.StartJsonValueRuleContext) parsed.First;
-			Assert.AreEqual(EsperEPL2GrammarParser.RULE_startJsonValueRule, ASTUtil.GetRuleIndexIfProvided(tree));
+			ClassicAssert.AreEqual(EsperEPL2GrammarParser.RULE_startJsonValueRule, ASTUtil.GetRuleIndexIfProvided(tree));
 			ITree root = tree.GetChild(0);
 			ASTUtil.DumpAST(root);
 			return ASTJsonHelper.Walk(parsed.Second, tree.jsonvalue());

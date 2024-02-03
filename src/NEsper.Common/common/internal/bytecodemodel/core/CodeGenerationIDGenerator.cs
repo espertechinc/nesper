@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -15,14 +15,15 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
 {
     public class CodeGenerationIDGenerator
     {
-        public static String GenerateClassNameUUID() {
+        public static string GenerateClassNameUUID()
+        {
             return UuidGenerator.Generate().Replace("-", "_");
         }
 
-        public static String GenerateClassNameWithUUID(
+        public static string GenerateClassNameWithUUID(
             Type interfaceClass,
-            String postfix,
-            String uuid)
+            string postfix,
+            string uuid)
         {
             var interfaceName = interfaceClass.Name.Replace('`', '_');
             var builder = new StringBuilder();
@@ -31,7 +32,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
             builder.Append(postfix.Replace("(", "_").Replace(")", "_"));
             builder.Append('_');
             builder.Append(uuid);
-            
+
             return builder.ToString();
         }
 

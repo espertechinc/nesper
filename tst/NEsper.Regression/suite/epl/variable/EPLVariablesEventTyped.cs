@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -7,139 +7,248 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+using System.Linq;
 
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.client.variable;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
+using com.espertech.esper.runtime.client;
+using com.espertech.esper.runtime.client.util;
 
 using NUnit.Framework;
-
-using static com.espertech.esper.regressionlib.framework.SupportMessageAssertUtil;
-
+using NUnit.Framework.Legacy;
 using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A;
 
 namespace com.espertech.esper.regressionlib.suite.epl.variable
 {
     public class EPLVariablesEventTyped
     {
-        public static readonly NonSerializable NON_SERIALIZABLE = new NonSerializable("abc");
+        public static readonly NonSerializable NON_SERIALIZABLE = new EPLVariablesEventTyped.NonSerializable("abc");
 
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new EPLVariableEventTypedSceneOne());
-            execs.Add(new EPLVariableEventTypedSceneTwo());
-            execs.Add(new EPLVariableConfig());
-            execs.Add(new EPLVariableEventTypedSetProp());
+            WithEventTypedSceneOne(execs);
+            WithEventTypedSceneTwo(execs);
+            WithConfig(execs);
+            WithEventTypedSetProp(execs);
+            WithInvalid(execs);
+            WithEventTypedCreateSchema(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithEventTypedCreateSchema(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLVariableEventTypedCreateSchema());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EPLVariableInvalid());
             return execs;
         }
 
-        internal class EPLVariableInvalid : RegressionExecution
+        public static IList<RegressionExecution> WithEventTypedSetProp(IList<RegressionExecution> execs = null)
         {
-            public void Run(RegressionEnvironment env)
-            {
-                try {
-                    env.Runtime.VariableService.SetVariableValue(null, "vars0_A", new SupportBean_S1(1));
-                    Assert.Fail();
-                }
-                catch (VariableValueException ex) {
-                    Assert.AreEqual(
-                        "Variable 'vars0_A' of declared event type 'SupportBean_S0' underlying type '" +
-                        typeof(SupportBean_S0).FullName +
-                        "' cannot be assigned a value of type '" +
-                        nameof(SupportBean_S1) +
-                        "'",
-                        ex.Message);
-                }
-
-                TryInvalidCompile(
-                    env,
-                    "on SupportBean_S0 arrival set vars1_A = arrival",
-                    "Failed to validate assignment expression 'vars1_A=arrival': Variable 'vars1_A' of declared event type '" +
-                    typeof(SupportBean_S1).FullName +
-                    "' underlying type '" +
-                    nameof(SupportBean_S1) +
-                    "' cannot be assigned a value of type '" +
-                    nameof(SupportBean_S0) +
-                    "'");
-
-                TryInvalidCompile(
-                    env,
-                    "on SupportBean_S0 arrival set vars0_A = 1",
-                    "Failed to validate assignment expression 'vars0_A=1': Variable 'vars0_A' of declared event type 'SupportBean_S0' underlying type '" +
-                    nameof(SupportBean_S0) +
-                    "' cannot be assigned a value of type 'Int32'");
-            }
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLVariableEventTypedSetProp());
+            return execs;
         }
 
-        internal class EPLVariableEventTypedSceneTwo : RegressionExecution
+        public static IList<RegressionExecution> WithConfig(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLVariableConfig());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithEventTypedSceneTwo(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLVariableEventTypedSceneTwo());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithEventTypedSceneOne(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLVariableEventTypedSceneOne());
+            return execs;
+        }
+
+        private class EPLVariableEventTypedCreateSchema : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                var vars = "@Name('vars') create variable " +
-                           nameof(SupportBean) +
-                           " varbeannull;\n" +
-                           "create variable " +
-                           nameof(SupportBean) +
-                           " varbean;\n" +
-                           "create variable SupportBean_S0 vars0;\n" +
-                           "create variable long varobj;\n" +
-                           "create variable long varobjnull;\n";
-                env.CompileDeploy(vars, path);
-                var deploymentId = env.DeploymentId("vars");
+                env.CompileDeploy(
+                    "@buseventtype @public @name('schema') create schema OrderEvent(OrderId string);",
+                    path);
+                var deployIdSchema = env.DeploymentId("schema");
 
-                var fields = new [] { "c0", "c1", "c2", "c3", "c4", "c5", "c6" };
+                env.CompileDeploy("@public @name('variable') create variable OrderEvent orderEvent;", path);
+                var deployIdVariable = env.DeploymentId("variable");
+
+                var consumed = env.Deployment.GetDeploymentDependenciesConsumed(deployIdVariable);
+                CollectionAssert.AreEquivalent(
+                    new EPDeploymentDependencyConsumed.Item[] {
+                        new EPDeploymentDependencyConsumed.Item(deployIdSchema, EPObjectType.EVENTTYPE, "OrderEvent"),
+                    },
+                    consumed.Dependencies.ToArray());
+
+                var provided = env.Deployment.GetDeploymentDependenciesProvided(deployIdSchema);
+                CollectionAssert.AreEquivalent(
+                    new EPDeploymentDependencyProvided.Item[] {
+                        new EPDeploymentDependencyProvided.Item(
+                            EPObjectType.EVENTTYPE,
+                            "OrderEvent",
+                            Collections.SingletonSet(deployIdVariable)),
+                    },
+                    provided.Dependencies.ToArray());
+
+                env.CompileDeploy(
+                    "on OrderEvent as oe set orderEvent = oe;\n" +
+                    "@name('s0') select orderEvent.OrderId as c0 from SupportBean;\n",
+                    path);
+                env.AddListener("s0");
+
+                env.Milestone(0);
+
+                SendOrderEvent(env, "O1");
+
+                env.Milestone(1);
+
+                AssertSelect(env, "O1");
+
+                SendOrderEvent(env, "O2");
+
+                env.Milestone(2);
+
+                AssertSelect(env, "O2");
+
+                env.UndeployAll();
+            }
+
+            private void AssertSelect(
+                RegressionEnvironment env,
+                string orderId)
+            {
+                env.SendEventBean(new SupportBean());
+                env.AssertEqualsNew("s0", "c0", orderId);
+            }
+
+            private void SendOrderEvent(
+                RegressionEnvironment env,
+                string orderId)
+            {
+                env.SendEventMap(Collections.SingletonDataMap("OrderId", orderId), "OrderEvent");
+            }
+        }
+
+        private class EPLVariableInvalid : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                try {
+                    env.RuntimeSetVariable(null, "vars0_A", new SupportBean_S1(1));
+                    Assert.Fail();
+                }
+                catch (VariableValueException ex) {
+                    ClassicAssert.AreEqual(
+                        "Variable 'vars0_A' of declared event type 'SupportBean_S0' underlying type '" +
+                        typeof(SupportBean_S0).FullName +
+                        "' cannot be assigned a value of type '" +
+                        typeof(SupportBean_S1).FullName +
+                        "'",
+                        ex.Message);
+                }
+
+                env.TryInvalidCompile(
+                    "on SupportBean_S0 arrival set vars1_A = arrival",
+                    "Failed to validate assignment expression 'vars1_A=arrival': Variable 'vars1_A' of declared event type '" +
+                    typeof(SupportBean_S1).FullName +
+                    "' underlying type '" +
+                    typeof(SupportBean_S1).FullName +
+                    "' cannot be assigned a value of type '" +
+                    typeof(SupportBean_S0).FullName +
+                    "'");
+
+                env.TryInvalidCompile(
+                    "on SupportBean_S0 arrival set vars0_A = 1",
+                    "Failed to validate assignment expression 'vars0_A=1': Variable 'vars0_A' of declared event type 'SupportBean_S0' underlying type '" +
+                    typeof(SupportBean_S0).FullName +
+                    "' cannot be assigned a value of type 'int'");
+            }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.INVALIDITY);
+            }
+        }
+
+        private class EPLVariableEventTypedSceneTwo : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var path = new RegressionPath();
+                var vars = "@name('vars') @public create variable " +
+                           typeof(SupportBean).FullName +
+                           " varbeannull;\n" +
+                           "@public create variable " +
+                           typeof(SupportBean).FullName +
+                           " varbean;\n" +
+                           "@public create variable SupportBean_S0 vars0;\n" +
+                           "@public create variable long varobj;\n" +
+                           "@public create variable long varobjnull;\n";
+                env.CompileDeploy(vars, path);
+
+                var fields = "c0,c1,c2,c3,c4,c5,c6".SplitCsv();
                 var stmtSelectText =
-                    "@Name('select') select varbean.TheString as c0,varbean.IntPrimitive as c1,vars0.Id as c2,vars0.P00 as c3,varobj as c4,varbeannull.TheString as c5, varobjnull as c6 from SupportBean_A";
-                env.CompileDeploy(stmtSelectText, path).AddListener("select");
+                    "@name('Select') select varbean.TheString as c0,varbean.IntPrimitive as c1,vars0.Id as c2,vars0.P00 as c3,varobj as c4,varbeannull.TheString as c5, varobjnull as c6 from SupportBean_A";
+                env.CompileDeploy(stmtSelectText, path).AddListener("Select");
 
                 env.SendEventBean(new SupportBean_A("A1"));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("select").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {null, null, null, null, null, null, null});
+                env.AssertPropsNew("Select", fields, new object[] { null, null, null, null, null, null, null });
 
                 // update via API
-                env.Runtime.VariableService.SetVariableValue(deploymentId, "varobj", 101L);
-                env.Runtime.VariableService.SetVariableValue(deploymentId, "vars0", new SupportBean_S0(1, "S01"));
-                env.Runtime.VariableService.SetVariableValue(deploymentId, "varbean", new SupportBean("E1", -1));
+                env.RuntimeSetVariable("vars", "varobj", 101L);
+                env.RuntimeSetVariable("vars", "vars0", new SupportBean_S0(1, "S01"));
+                env.RuntimeSetVariable("vars", "varbean", new SupportBean("E1", -1));
 
                 env.Milestone(0);
 
                 env.SendEventBean(new SupportBean_A("A2"));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("select").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {"E1", -1, 1, "S01", 101L, null, null});
+                env.AssertPropsNew("Select", fields, new object[] { "E1", -1, 1, "S01", 101L, null, null });
 
                 env.Milestone(1);
 
                 // update properties via on-set
                 var stmtUpdateText =
-                    "@Name('update') on SupportBean_B set varbean.TheString = 'EX', varbean.IntPrimitive = -999";
+                    "@name('Update') on SupportBean_B set varbean.TheString = 'EX', varbean.IntPrimitive = -999";
                 env.CompileDeploy(stmtUpdateText, path);
-                Assert.AreEqual(
-                    StatementType.ON_SET,
-                    env.Statement("update").GetProperty(StatementProperty.STATEMENTTYPE));
+                env.AssertStatement(
+                    "Update",
+                    statement => ClassicAssert.AreEqual(
+                        StatementType.ON_SET,
+                        statement.GetProperty(StatementProperty.STATEMENTTYPE)));
                 env.SendEventBean(new SupportBean_B("B1"));
 
                 env.Milestone(2);
 
                 env.SendEventBean(new SupportBean_A("A3"));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("select").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {"EX", -999, 1, "S01", 101L, null, null});
+                env.AssertPropsNew("Select", fields, new object[] { "EX", -999, 1, "S01", 101L, null, null });
 
                 // update full bean via on-set
-                stmtUpdateText = "@Name('update2') on SupportBean(IntPrimitive = 0) as sb set varbean = sb";
+                stmtUpdateText = "@name('Update2') on SupportBean(IntPrimitive = 0) as sb set varbean = sb";
                 env.CompileDeploy(stmtUpdateText, path);
 
                 var bean = new SupportBean("E2", 0);
@@ -148,162 +257,152 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 env.Milestone(3);
 
                 env.SendEventBean(new SupportBean_A("A4"));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("select").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {"E2", 0, 1, "S01", 101L, null, null});
+                env.AssertPropsNew("Select", fields, new object[] { "E2", 0, 1, "S01", 101L, null, null });
 
                 env.UndeployAll();
             }
         }
 
-        internal class EPLVariableConfig : RegressionExecution
+        private class EPLVariableConfig : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
-                Assert.AreEqual(
-                    10,
-                    ((SupportBean_S0) env.Runtime.VariableService.GetVariableValue(null, "vars0_A")).Id);
-                Assert.AreEqual(
-                    20,
-                    ((SupportBean_S1) env.Runtime.VariableService.GetVariableValue(null, "vars1_A")).Id);
-                Assert.AreEqual(123, env.Runtime.VariableService.GetVariableValue(null, "varsobj1"));
+                ClassicAssert.AreEqual(10, ((SupportBean_S0)env.Runtime.VariableService.GetVariableValue(null, "vars0_A")).Id);
+                ClassicAssert.AreEqual(20, ((SupportBean_S1)env.Runtime.VariableService.GetVariableValue(null, "vars1_A")).Id);
+                ClassicAssert.AreEqual(123, env.Runtime.VariableService.GetVariableValue(null, "varsobj1"));
                 var value = env.Runtime.VariableService.GetVariableValue(null, "myNonSerializable");
                 if (!env.IsHA) {
-                    Assert.AreSame(NON_SERIALIZABLE, value);
+                    ClassicAssert.AreSame(NON_SERIALIZABLE, value);
                 }
                 else {
-                    Assert.AreEqual(NON_SERIALIZABLE, value);
+                    ClassicAssert.AreEqual(NON_SERIALIZABLE, value);
                 }
 
                 env.Milestone(0);
 
-                Assert.AreEqual(30, ((SupportBean_S2) env.Runtime.VariableService.GetVariableValue(null, "vars2")).Id);
-                Assert.AreEqual(40, ((SupportBean_S3) env.Runtime.VariableService.GetVariableValue(null, "vars3")).Id);
-                Assert.AreEqual("ABC", env.Runtime.VariableService.GetVariableValue(null, "varsobj2"));
+                ClassicAssert.AreEqual(30, ((SupportBean_S2)env.Runtime.VariableService.GetVariableValue(null, "vars2")).Id);
+                ClassicAssert.AreEqual(40, ((SupportBean_S3)env.Runtime.VariableService.GetVariableValue(null, "vars3")).Id);
+                ClassicAssert.AreEqual("ABC", env.Runtime.VariableService.GetVariableValue(null, "varsobj2"));
 
-                env.CompileDeploy("@Name('create') create variable object varsobj3=222");
-                Assert.AreEqual(
+                env.CompileDeploy("@name('create') create variable object varsobj3=222");
+                ClassicAssert.AreEqual(
                     222,
                     env.Runtime.VariableService.GetVariableValue(env.DeploymentId("create"), "varsobj3"));
 
                 env.UndeployAll();
             }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.RUNTIMEOPS);
+            }
         }
 
-        internal class EPLVariableEventTypedSetProp : RegressionExecution
+        private class EPLVariableEventTypedSetProp : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                env.CompileDeploy("@Name('create') create variable SupportBean varbean", path);
+                env.CompileDeploy("@name('create') @public create variable SupportBean varbean", path);
 
-                var fields = new [] { "varbean.TheString","varbean.IntPrimitive","varbean.GetTheString()" };
+                var fields = "varbean.TheString,varbean.IntPrimitive,varbean.TheString".SplitCsv();
                 env.CompileDeploy(
-                    "@Name('s0') select varbean.TheString,varbean.IntPrimitive,varbean.GetTheString() from SupportBean_S0",
+                    "@name('s0') select varbean.TheString,varbean.IntPrimitive,varbean.TheString from SupportBean_S0",
                     path);
                 env.AddListener("s0");
 
                 env.SendEventBean(new SupportBean_S0(1));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {null, null, null});
+                env.AssertPropsNew("s0", fields, new object[] { null, null, null });
 
                 env.CompileDeploy(
-                    "@Name('set') on SupportBean_A set varbean.TheString = 'A', varbean.IntPrimitive = 1",
+                    "@name('set') on SupportBean_A set varbean.TheString = 'A', varbean.IntPrimitive = 1",
                     path);
                 env.AddListener("set");
                 env.SendEventBean(new SupportBean_A("E1"));
-                env.Listener("set").Reset();
+                env.ListenerReset("set");
 
                 env.Milestone(0);
 
                 env.SendEventBean(new SupportBean_S0(2));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {null, null, null});
+                env.AssertPropsNew("s0", fields, new object[] { null, null, null });
 
                 var setBean = new SupportBean();
-                env.Runtime.VariableService.SetVariableValue(env.DeploymentId("create"), "varbean", setBean);
+                env.RuntimeSetVariable("create", "varbean", setBean);
                 env.SendEventBean(new SupportBean_A("E2"));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("set").AssertOneGetNewAndReset(),
-                    new [] { "varbean.TheString","varbean.IntPrimitive" },
-                    new object[] {"A", 1});
-                EPAssertionUtil.AssertProps(
-                    env.GetEnumerator("set").Advance(),
-                    new [] { "varbean.TheString","varbean.IntPrimitive" },
-                    new object[] {"A", 1});
+                env.AssertPropsNew("set", "varbean.TheString,varbean.IntPrimitive".SplitCsv(), new object[] { "A", 1 });
+                env.AssertIterator(
+                    "s0",
+                    iterator => EPAssertionUtil.AssertProps(
+                        iterator.Advance(),
+                        "varbean.TheString,varbean.IntPrimitive".SplitCsv(),
+                        new object[] { "A", 1 }));
 
                 env.Milestone(1);
 
                 env.SendEventBean(new SupportBean_S0(3));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {"A", 1, "A"});
-                Assert.AreNotSame(
+                env.AssertPropsNew("s0", fields, new object[] { "A", 1, "A" });
+                ClassicAssert.AreNotSame(
                     setBean,
                     env.Runtime.VariableService.GetVariableValue(env.DeploymentId("create"), "varbean"));
-                Assert.AreEqual(
+                ClassicAssert.AreEqual(
                     1,
-                    ((SupportBean) env.Runtime.VariableService.GetVariableValue(env.DeploymentId("create"), "varbean"))
+                    ((SupportBean)env.Runtime.VariableService.GetVariableValue(env.DeploymentId("create"), "varbean"))
                     .IntPrimitive);
 
                 // test self evaluate
                 env.UndeployModuleContaining("set");
                 env.CompileDeploy(
-                    "@Name('set') on SupportBean_A set varbean.TheString = SupportBean_A.Id, varbean.TheString = '>'||varbean.TheString||'<'",
+                    "@name('set') on SupportBean_A set varbean.TheString = SupportBean_A.Id, varbean.TheString = '>'||varbean.TheString||'<'",
                     path);
                 env.AddListener("set");
                 env.SendEventBean(new SupportBean_A("E3"));
-                Assert.AreEqual(
+                ClassicAssert.AreEqual(
                     ">E3<",
-                    ((SupportBean) env.Runtime.VariableService.GetVariableValue(env.DeploymentId("create"), "varbean"))
+                    ((SupportBean)env.Runtime.VariableService.GetVariableValue(env.DeploymentId("create"), "varbean"))
                     .TheString);
                 env.UndeployModuleContaining("set");
 
                 // test widen
-                env.CompileDeploy("@Name('set') on SupportBean_A set varbean.LongPrimitive = 1", path);
+                env.CompileDeploy("@name('set') on SupportBean_A set varbean.LongPrimitive = 1", path);
                 env.AddListener("set");
                 env.SendEventBean(new SupportBean_A("E4"));
-                Assert.AreEqual(
+                ClassicAssert.AreEqual(
                     1,
-                    ((SupportBean) env.Runtime.VariableService.GetVariableValue(env.DeploymentId("create"), "varbean"))
+                    ((SupportBean)env.Runtime.VariableService.GetVariableValue(env.DeploymentId("create"), "varbean"))
                     .LongPrimitive);
 
                 env.UndeployAll();
             }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.RUNTIMEOPS);
+            }
         }
 
-        internal class EPLVariableEventTypedSceneOne : RegressionExecution
+        private class EPLVariableEventTypedSceneOne : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                env.CompileDeploy("@Name('v0') create variable Object varobject = null", path);
+                env.CompileDeploy("@name('v0') @public create variable Object varobject = null", path);
                 env.CompileDeploy(
-                    "@Name('v1') create variable " + typeof(SupportBean_A).FullName + " varbean = null",
+                    "@name('v1') @public create variable " + typeof(SupportBean_A).FullName + " varbean = null",
                     path);
-                env.CompileDeploy("@Name('v2') create variable SupportBean_S0 vartype = null", path);
+                env.CompileDeploy("@name('v2') @public create variable SupportBean_S0 vartype = null", path);
                 var depIdVarobject = env.DeploymentId("v0");
                 var depIdVarbean = env.DeploymentId("v1");
                 var depIdVartype = env.DeploymentId("v2");
 
-                var fields = new [] { "varobject","varbean","varbean.Id","vartype","vartype.Id" };
+                var fields = "varobject,varbean,varbean.Id,vartype,vartype.Id".SplitCsv();
                 env.CompileDeploy(
-                    "@Name('s0') select varobject, varbean, varbean.Id, vartype, vartype.Id from SupportBean",
+                    "@name('s0') select varobject, varbean, varbean.Id, vartype, vartype.Id from SupportBean",
                     path);
                 env.AddListener("s0");
 
                 // test null
                 env.SendEventBean(new SupportBean());
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {null, null, null, null, null});
+                env.AssertPropsNew("s0", fields, new object[] { null, null, null, null, null });
 
                 env.Milestone(0);
 
@@ -317,36 +416,34 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 env.Milestone(1);
 
                 env.SendEventBean(new SupportBean());
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
+                env.AssertPropsNew(
+                    "s0",
                     fields,
-                    new object[] {"abc", a1objectOne, a1objectOne.Id, s0objectOne, s0objectOne.Id});
+                    new object[] { "abc", a1objectOne, a1objectOne.Id, s0objectOne, s0objectOne.Id });
 
                 // test on-set for Object and EventType
-                var fieldsTop = new [] { "varobject","vartype","varbean" };
+                var fieldsTop = "varobject,vartype,varbean".SplitCsv();
                 env.CompileDeploy(
-                    "@Name('set') on SupportBean_S0(P00='X') arrival set varobject=1, vartype=arrival, varbean=null",
+                    "@name('set') on SupportBean_S0(P00='X') arrival set varobject=1, vartype=arrival, varbean=null",
                     path);
                 env.AddListener("set");
 
                 var s0objectTwo = new SupportBean_S0(2, "X");
                 env.SendEventBean(s0objectTwo);
-                Assert.AreEqual(1, env.Runtime.VariableService.GetVariableValue(depIdVarobject, "varobject"));
-                Assert.AreEqual(s0objectTwo, env.Runtime.VariableService.GetVariableValue(depIdVartype, "vartype"));
-                Assert.AreEqual(
+                ClassicAssert.AreEqual(1, env.Runtime.VariableService.GetVariableValue(depIdVarobject, "varobject"));
+                ClassicAssert.AreEqual(s0objectTwo, env.Runtime.VariableService.GetVariableValue(depIdVartype, "vartype"));
+                ClassicAssert.AreEqual(
                     s0objectTwo,
-                    env.Runtime
-                        .VariableService.GetVariableValue(
-                            Collections.SingletonSet(new DeploymentIdNamePair(depIdVartype, "vartype")))
+                    env.Runtime.VariableService
+                        .GetVariableValue(Collections.SingletonSet(new DeploymentIdNamePair(depIdVartype, "vartype")))
                         .Get(new DeploymentIdNamePair(depIdVartype, "vartype")));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("set").AssertOneGetNewAndReset(),
-                    fieldsTop,
-                    new object[] {1, s0objectTwo, null});
-                EPAssertionUtil.AssertProps(
-                    env.GetEnumerator("set").Advance(),
-                    fieldsTop,
-                    new object[] {1, s0objectTwo, null});
+                env.AssertPropsNew("set", fieldsTop, new object[] { 1, s0objectTwo, null });
+                env.AssertIterator(
+                    "set",
+                    iterator => EPAssertionUtil.AssertProps(
+                        iterator.Advance(),
+                        fieldsTop,
+                        new object[] { 1, s0objectTwo, null }));
 
                 // set via API to null
                 IDictionary<DeploymentIdNamePair, object> newValues = new Dictionary<DeploymentIdNamePair, object>();
@@ -355,10 +452,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 newValues.Put(new DeploymentIdNamePair(depIdVarbean, "varbean"), null);
                 env.Runtime.VariableService.SetVariableValue(newValues);
                 env.SendEventBean(new SupportBean());
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {null, null, null, null, null});
+                env.AssertPropsNew("s0", fields, new object[] { null, null, null, null, null });
 
                 // set via API to values
                 newValues.Put(new DeploymentIdNamePair(depIdVarobject, "varobject"), 10L);
@@ -366,66 +460,69 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 newValues.Put(new DeploymentIdNamePair(depIdVarbean, "varbean"), a1objectOne);
                 env.Runtime.VariableService.SetVariableValue(newValues);
                 env.SendEventBean(new SupportBean());
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
+                env.AssertPropsNew(
+                    "s0",
                     fields,
-                    new object[] {10L, a1objectOne, a1objectOne.Id, s0objectTwo, s0objectTwo.Id});
+                    new object[] { 10L, a1objectOne, a1objectOne.Id, s0objectTwo, s0objectTwo.Id });
 
                 // test on-set for Bean class
                 env.CompileDeploy(
-                    "@Name('set-two') on SupportBean_A(Id='Y') arrival set varobject=null, vartype=null, varbean=arrival",
+                    "@name('set-two') on SupportBean_A(Id='Y') arrival set varobject=null, vartype=null, varbean=arrival",
                     path);
                 env.AddListener("set-two");
                 var a1objectTwo = new SupportBean_A("Y");
                 env.SendEventBean(new SupportBean_A("Y"));
-                Assert.AreEqual(null, env.Runtime.VariableService.GetVariableValue(depIdVarobject, "varobject"));
-                Assert.AreEqual(null, env.Runtime.VariableService.GetVariableValue(depIdVartype, "vartype"));
-                Assert.AreEqual(
+                ClassicAssert.AreEqual(null, env.Runtime.VariableService.GetVariableValue(depIdVarobject, "varobject"));
+                ClassicAssert.AreEqual(null, env.Runtime.VariableService.GetVariableValue(depIdVartype, "vartype"));
+                ClassicAssert.AreEqual(
                     a1objectTwo,
-                    env.Runtime
-                        .VariableService.GetVariableValue(
-                            Collections.SingletonSet(new DeploymentIdNamePair(depIdVarbean, "varbean")))
+                    env.Runtime.VariableService
+                        .GetVariableValue(Collections.SingletonSet(new DeploymentIdNamePair(depIdVarbean, "varbean")))
                         .Get(new DeploymentIdNamePair(depIdVarbean, "varbean")));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("set-two").AssertOneGetNewAndReset(),
-                    fieldsTop,
-                    new object[] {null, null, a1objectTwo});
-                EPAssertionUtil.AssertProps(
-                    env.GetEnumerator("set-two").Advance(),
-                    fieldsTop,
-                    new object[] {null, null, a1objectTwo});
+                env.AssertPropsNew("set-two", fieldsTop, new object[] { null, null, a1objectTwo });
+                env.AssertIterator(
+                    "set-two",
+                    iterator => EPAssertionUtil.AssertProps(
+                        iterator.Advance(),
+                        fieldsTop,
+                        new object[] { null, null, a1objectTwo }));
 
                 env.UndeployAll();
+            }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.SERDEREQUIRED);
             }
         }
 
         public class NonSerializable
         {
+            private readonly string myString;
+
             public NonSerializable(string myString)
             {
-                MyString = myString;
+                this.myString = myString;
             }
 
-            public string MyString { get; }
+            public string GetMyString()
+            {
+                return myString;
+            }
 
             public override bool Equals(object o)
             {
-                if (this == o) {
-                    return true;
-                }
+                if (this == o) return true;
+                if (o == null || GetType() != o.GetType()) return false;
 
-                if (o == null || GetType() != o.GetType()) {
-                    return false;
-                }
+                var that = (NonSerializable)o;
 
-                var that = (NonSerializable) o;
-
-                return MyString.Equals(that.MyString);
+                return myString.Equals(that.myString);
             }
 
             public override int GetHashCode()
             {
-                return MyString.GetHashCode();
+                return myString.GetHashCode();
             }
         }
     }

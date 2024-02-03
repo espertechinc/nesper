@@ -1,22 +1,23 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.infra.tbl
 {
     /// <summary>
-    ///     NOTE: More table-related tests in "nwtable"
+    /// NOTE: More table-related tests in "nwtable"
     /// </summary>
     public class InfraTableIterate : RegressionExecution
     {
@@ -25,9 +26,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
         public void Run(RegressionEnvironment env)
         {
             var path = new RegressionPath();
-            env.CompileDeploy("create table MyTable(pKey0 string primary key, pkey1 int primary key, c0 long)", path);
             env.CompileDeploy(
-                "insert into MyTable select TheString as pKey0, IntPrimitive as pkey1, LongPrimitive as c0 from SupportBean",
+                "@public create table MyTable(pkey0 string primary key, pkey1 int primary key, c0 long)",
+                path);
+            env.CompileDeploy(
+                "insert into MyTable select TheString as pkey0, IntPrimitive as pkey1, LongPrimitive as c0 from SupportBean",
                 path);
 
             SendSupportBean(env, "E1", 10, 100);
@@ -57,12 +60,15 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             RegressionPath path,
             bool useTable)
         {
-            var epl = "@Name('s0') select * from " + (useTable ? "MyTable" : METHOD_NAME);
+            var epl = "@name('s0') select * from " + (useTable ? "MyTable" : METHOD_NAME);
             env.CompileDeploy(epl, path);
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(
-                env.GetEnumerator("s0"),
-                new[] {"pKey0", "pkey1", "c0"},
-                new[] {new object[] {"E1", 10, 100L}, new object[] {"E2", 20, 200L}});
+            env.AssertPropsPerRowIteratorAnyOrder(
+                "s0",
+                "pkey0,pkey1,c0".SplitCsv(),
+                new object[][] {
+                    new object[] { "E1", 10, 100L },
+                    new object[] { "E2", 20, 200L }
+                });
             env.UndeployModuleContaining("s0");
         }
 
@@ -71,11 +77,15 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             RegressionPath path,
             bool useTable)
         {
-            var epl = "@Name('s0') select count(*) as thecnt from " + (useTable ? "MyTable" : METHOD_NAME);
+            var epl = "@name('s0') select count(*) as thecnt from " + (useTable ? "MyTable" : METHOD_NAME);
             env.CompileDeploy(epl, path);
             for (var i = 0; i < 2; i++) {
-                var @event = env.GetEnumerator("s0").Advance();
-                Assert.AreEqual(2L, @event.Get("thecnt"));
+                env.AssertIterator(
+                    "s0",
+                    iterator => {
+                        var @event = iterator.Advance();
+                        ClassicAssert.AreEqual(2L, @event.Get("thecnt"));
+                    });
             }
 
             env.UndeployModuleContaining("s0");
@@ -86,13 +96,13 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             RegressionPath path,
             bool useTable)
         {
-            var epl = "@Name('s0') select pKey0, count(*) as thecnt from " + (useTable ? "MyTable" : METHOD_NAME);
+            var epl = "@name('s0') select pkey0, count(*) as thecnt from " + (useTable ? "MyTable" : METHOD_NAME);
             env.CompileDeploy(epl, path);
             for (var i = 0; i < 2; i++) {
-                EPAssertionUtil.AssertPropsPerRowAnyOrder(
-                    env.GetEnumerator("s0"),
-                    new[] {"pKey0", "thecnt"},
-                    new[] {new object[] {"E1", 2L}, new object[] {"E2", 2L}});
+                env.AssertPropsPerRowIteratorAnyOrder(
+                    "s0",
+                    "pkey0,thecnt".SplitCsv(),
+                    new object[][] { new object[] { "E1", 2L }, new object[] { "E2", 2L } });
             }
 
             env.UndeployModuleContaining("s0");
@@ -103,15 +113,15 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             RegressionPath path,
             bool useTable)
         {
-            var epl = "@Name('s0') select pKey0, count(*) as thecnt from " +
+            var epl = "@name('s0') select pkey0, count(*) as thecnt from " +
                       (useTable ? "MyTable" : METHOD_NAME) +
-                      " group by pKey0";
+                      " group by pkey0";
             env.CompileDeploy(epl, path);
             for (var i = 0; i < 2; i++) {
-                EPAssertionUtil.AssertPropsPerRowAnyOrder(
-                    env.GetEnumerator("s0"),
-                    new[] {"pKey0", "thecnt"},
-                    new[] {new object[] {"E1", 1L}, new object[] {"E2", 1L}});
+                env.AssertPropsPerRowIteratorAnyOrder(
+                    "s0",
+                    "pkey0,thecnt".SplitCsv(),
+                    new object[][] { new object[] { "E1", 1L }, new object[] { "E2", 1L } });
             }
 
             env.UndeployModuleContaining("s0");
@@ -122,15 +132,15 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             RegressionPath path,
             bool useTable)
         {
-            var epl = "@Name('s0') select pKey0, pkey1, count(*) as thecnt from " +
+            var epl = "@name('s0') select pkey0, pkey1, count(*) as thecnt from " +
                       (useTable ? "MyTable" : METHOD_NAME) +
-                      " group by pKey0";
+                      " group by pkey0";
             env.CompileDeploy(epl, path);
             for (var i = 0; i < 2; i++) {
-                EPAssertionUtil.AssertPropsPerRowAnyOrder(
-                    env.GetEnumerator("s0"),
-                    new[] {"pKey0", "pkey1", "thecnt"},
-                    new[] {new object[] {"E1", 10, 1L}, new object[] {"E2", 20, 1L}});
+                env.AssertPropsPerRowIteratorAnyOrder(
+                    "s0",
+                    "pkey0,pkey1,thecnt".SplitCsv(),
+                    new object[][] { new object[] { "E1", 10, 1L }, new object[] { "E2", 20, 1L } });
             }
 
             env.UndeployModuleContaining("s0");
@@ -141,20 +151,20 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             RegressionPath path,
             bool useTable)
         {
-            var epl = "@Name('s0') select pKey0, pkey1, count(*) as thecnt from " +
+            var epl = "@name('s0') select pkey0, pkey1, count(*) as thecnt from " +
                       (useTable ? "MyTable" : METHOD_NAME) +
-                      " group by rollup (pKey0, pkey1)";
+                      " group by rollup (pkey0, pkey1)";
             env.CompileDeploy(epl, path);
             for (var i = 0; i < 2; i++) {
-                EPAssertionUtil.AssertPropsPerRowAnyOrder(
-                    env.GetEnumerator("s0"),
-                    new[] {"pKey0", "pkey1", "thecnt"},
-                    new[] {
-                        new object[] {"E1", 10, 1L},
-                        new object[] {"E2", 20, 1L},
-                        new object[] {"E1", null, 1L},
-                        new object[] {"E2", null, 1L},
-                        new object[] {null, null, 2L}
+                env.AssertPropsPerRowIteratorAnyOrder(
+                    "s0",
+                    "pkey0,pkey1,thecnt".SplitCsv(),
+                    new object[][] {
+                        new object[] { "E1", 10, 1L },
+                        new object[] { "E2", 20, 1L },
+                        new object[] { "E1", null, 1L },
+                        new object[] { "E2", null, 1L },
+                        new object[] { null, null, 2L },
                     });
             }
 

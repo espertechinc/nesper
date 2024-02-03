@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -13,7 +13,7 @@ using com.espertech.esper.common.@internal.@event.render;
 namespace com.espertech.esper.common.client.render
 {
     /// <summary>
-    ///     Context for use with the <seealso cref="EventPropertyRenderer" /> interface for use with the JSON or XML event
+    ///     Context for use with the <seealso cref = "EventPropertyRenderer"/> interface for use with the JSON or XML event
     ///     renders to handle custom event property rendering.
     ///     <para>Do not retain a handle to the renderer context as this object changes for each event property.</para>
     /// </summary>
@@ -22,8 +22,8 @@ namespace com.espertech.esper.common.client.render
         /// <summary>
         ///     Ctor.
         /// </summary>
-        /// <param name="eventType">event type</param>
-        /// <param name="jsonFormatted">boolean if JSON formatted</param>
+        /// <param name = "eventType">event type</param>
+        /// <param name = "jsonFormatted">boolean if JSON formatted</param>
         public EventPropertyRendererContext(
             EventType eventType,
             bool jsonFormatted)
@@ -66,10 +66,7 @@ namespace com.espertech.esper.common.client.render
         ///     Returns the index for indexed properties.
         /// </summary>
         /// <returns>property index</returns>
-        public int? IndexedPropertyIndex {
-            get;
-            set;
-        }
+        public int? IndexedPropertyIndex { get; set; }
 
         /// <summary>
         ///     Returns the map key for mapped properties
@@ -84,17 +81,6 @@ namespace com.espertech.esper.common.client.render
         public bool IsJsonFormatted { get; }
 
         /// <summary>
-        ///     Sets the string builer
-        /// </summary>
-        /// <param name="stringBuilder">to set</param>
-        public void SetStringBuilderAndReset(StringBuilder stringBuilder)
-        {
-            StringBuilder = stringBuilder;
-            MappedPropertyKey = null;
-            IndexedPropertyIndex = null;
-        }
-
-        /// <summary>
         ///     Copies context.
         /// </summary>
         /// <returns>copy</returns>
@@ -107,6 +93,13 @@ namespace com.espertech.esper.common.client.render
             copy.PropertyName = PropertyName;
             copy.PropertyValue = PropertyValue;
             return copy;
+        }
+
+        public void SetStringBuilderAndReset(StringBuilder value)
+        {
+            StringBuilder = value;
+            MappedPropertyKey = null;
+            IndexedPropertyIndex = null;
         }
     }
 } // end of namespace

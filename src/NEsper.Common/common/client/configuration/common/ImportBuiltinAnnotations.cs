@@ -1,13 +1,14 @@
 ﻿using System;
+using System.Text.Json.Serialization;
 
 using com.espertech.esper.common.client.annotation;
-using com.espertech.esper.common.client.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.client.configuration.common
 {
     [Serializable]
+    [JsonConverter(typeof(ImportBuiltinAnnotations))]
     public class ImportBuiltinAnnotations : Import
     {
         public static ImportBuiltinAnnotations Instance = new ImportBuiltinAnnotations();

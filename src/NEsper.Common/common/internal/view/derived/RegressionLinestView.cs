@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -35,9 +35,7 @@ namespace com.espertech.esper.common.@internal.view.derived
         {
         }
 
-        public override EventType EventType {
-            get => eventType;
-        }
+        public override EventType EventType => eventType;
 
         protected internal override EventBean PopulateMap(
             BaseStatisticsBean baseStatisticsBean,
@@ -91,10 +89,9 @@ namespace com.espertech.esper.common.@internal.view.derived
 
         protected internal static EventType CreateEventType(
             StatViewAdditionalPropsForge additionalProps,
-            ViewForgeEnv env,
-            int streamNum)
+            ViewForgeEnv env)
         {
-            LinkedHashMap<string, object> eventTypeMap = new LinkedHashMap<string, object>();
+            var eventTypeMap = new LinkedHashMap<string, object>();
             eventTypeMap.Put(ViewFieldEnum.REGRESSION__SLOPE.GetName(), typeof(double?));
             eventTypeMap.Put(ViewFieldEnum.REGRESSION__YINTERCEPT.GetName(), typeof(double?));
             eventTypeMap.Put(ViewFieldEnum.REGRESSION__XAVERAGE.GetName(), typeof(double?));
@@ -119,7 +116,7 @@ namespace com.espertech.esper.common.@internal.view.derived
                 additionalProps,
                 ViewFieldEnum.REGRESSION__SLOPE,
                 ViewFieldEnum.REGRESSION__YINTERCEPT);
-            return DerivedViewTypeUtil.NewType("regview", eventTypeMap, env, streamNum);
+            return DerivedViewTypeUtil.NewType("regview", eventTypeMap, env);
         }
     }
 } // end of namespace

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -39,8 +40,8 @@ namespace com.espertech.esper.common.@internal.epl.output.view
             bool afterConditionSatisfied,
             OutputProcessViewConditionFactory parent,
             AgentInstanceContext agentInstanceContext,
-            bool isJoin,
-            EventType[] eventTypes)
+            EventType[] eventTypes,
+            StateMgmtSetting stateMgmtSettings)
             : base(
                 agentInstanceContext,
                 resultSetProcessor,
@@ -56,7 +57,8 @@ namespace com.espertech.esper.common.@internal.epl.output.view
             OptionalDeltaSet =
                 agentInstanceContext.ResultSetProcessorHelperFactory.MakeOutputConditionChangeSet(
                     eventTypes,
-                    agentInstanceContext);
+                    agentInstanceContext,
+                    stateMgmtSettings);
         }
 
         public override int NumChangesetRows => OptionalDeltaSet.NumChangesetRows;
@@ -80,7 +82,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
             instrumentationCommon.QOutputProcessWCondition(newData, oldData);
 
             // add the incoming events to the event batches
-            if (_parent.IsAfter) {
+            if (_parent.HasAfter) {
                 var afterSatisfied = CheckAfterCondition(newData, _agentInstanceContext.StatementContext);
                 if (!afterSatisfied) {
                     if (!_parent.IsUnaggregatedUngrouped) {
@@ -129,7 +131,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
             instrumentationCommon.QOutputProcessWConditionJoin(newEvents, oldEvents);
 
             // add the incoming events to the event batches
-            if (_parent.IsAfter) {
+            if (_parent.HasAfter) {
                 var afterSatisfied = CheckAfterCondition(newEvents, _agentInstanceContext.StatementContext);
                 if (!afterSatisfied) {
                     if (!_parent.IsUnaggregatedUngrouped) {
@@ -190,7 +192,9 @@ namespace com.espertech.esper.common.@internal.epl.output.view
 
             if (_parent.IsDistinct && newOldEvents != null) {
                 newOldEvents.First = EventBeanUtility.GetDistinctByProp(newOldEvents.First, _parent.DistinctKeyGetter);
-                newOldEvents.Second = EventBeanUtility.GetDistinctByProp(newOldEvents.Second, _parent.DistinctKeyGetter);
+                newOldEvents.Second = EventBeanUtility.GetDistinctByProp(
+                    newOldEvents.Second,
+                    _parent.DistinctKeyGetter);
             }
 
             if (!isGenerateSynthetic && !isGenerateNatural) {
@@ -257,7 +261,9 @@ namespace com.espertech.esper.common.@internal.epl.output.view
 
             if (_parent.IsDistinct && newOldEvents != null) {
                 newOldEvents.First = EventBeanUtility.GetDistinctByProp(newOldEvents.First, _parent.DistinctKeyGetter);
-                newOldEvents.Second = EventBeanUtility.GetDistinctByProp(newOldEvents.Second, _parent.DistinctKeyGetter);
+                newOldEvents.Second = EventBeanUtility.GetDistinctByProp(
+                    newOldEvents.Second,
+                    _parent.DistinctKeyGetter);
             }
 
             if (!isGenerateSynthetic && !isGenerateNatural) {
@@ -283,15 +289,11 @@ namespace com.espertech.esper.common.@internal.epl.output.view
         {
             // single stream means no join
             // multiple streams means a join
-            if (streamCount == 1) {
-                return (
-                    doOutput,
-                    forceUpdate) => ContinueOutputProcessingView(doOutput, forceUpdate);
+            if (streamCount <= 1) {
+                return ContinueOutputProcessingView;
             }
 
-            return (
-                doOutput,
-                forceUpdate) => ContinueOutputProcessingJoin(doOutput, forceUpdate);
+            return ContinueOutputProcessingJoin;
         }
 
         public override IEnumerator<EventBean> GetEnumerator()

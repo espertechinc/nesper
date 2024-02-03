@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -22,7 +22,7 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
         StopCallback
     {
         private readonly AgentInstanceContext agentInstanceContext;
-        private new readonly InfraOnMergeViewFactory parent;
+        private readonly InfraOnMergeViewFactory parent;
         private readonly TableInstance tableInstance;
 
         public OnExprViewTableMergeInsertUnmatched(
@@ -78,13 +78,13 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
                     changeHandlerAdded,
                     null,
                     agentInstanceContext);
+            }
 
-                // The on-delete listeners receive the events deleted, but only if there is interest
-                if (postResultsToListeners) {
-                    var postedNew = changeHandlerAdded.Events;
-                    if (postedNew != null) {
-                        Child.Update(postedNew, null);
-                    }
+            // The on-delete listeners receive the events deleted, but only if there is interest
+            if (postResultsToListeners) {
+                var postedNew = changeHandlerAdded.Events;
+                if (postedNew != null) {
+                    Child.Update(postedNew, null);
                 }
             }
 

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -65,9 +65,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
                 classScope);
 
             method.Block
-                .DeclareVar<PollResultIndexingStrategyHash>(
-                    "strat",
-                    NewInstance(typeof(PollResultIndexingStrategyHash)))
+                .DeclareVarNewInstance<PollResultIndexingStrategyHash>("strat")
                 .SetProperty(Ref("strat"), "StreamNum", Constant(_streamNum))
                 .SetProperty(Ref("strat"), "PropertyNames", Constant(_propertyNames))
                 .SetProperty(Ref("strat"), "ValueGetter", valueGetter)

@@ -1,12 +1,9 @@
-﻿using System;
-
-using com.espertech.esper.compat.collections;
+﻿using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.regressionlib.suite.view
 {
     public partial class ViewMultikeyWArray
     {
-        [Serializable]
         public class EventTwoDimArray
         {
             private readonly string _id;
@@ -43,7 +40,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                     return false;
                 }
 
-                return Equals((EventTwoDimArray) obj);
+                return Equals((EventTwoDimArray)obj);
             }
 
             public override int GetHashCode()

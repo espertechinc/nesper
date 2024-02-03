@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -58,9 +58,12 @@ namespace com.espertech.esper.common.@internal.epl.updatehelper
         {
             var method = parent.MakeChild(ArrayType, GetType(), classScope);
             method.Block
-                .DeclareVar<EventBean>("@event", ArrayAtIndex(symbols.GetAddEPS(method), Constant(0)))
+                .DeclareVar<EventBean>("@event", ArrayAtIndex(symbols.GetAddEps(method), Constant(0)))
                 .IfRefNullReturnNull("@event")
-                .MethodReturn(CodegenLegoCast.CastSafeFromObjectType(ArrayType, Getter.EventBeanGetCodegen(Ref("@event"), method, classScope)));
+                .MethodReturn(
+                    CodegenLegoCast.CastSafeFromObjectType(
+                        ArrayType,
+                        Getter.EventBeanGetCodegen(Ref("@event"), method, classScope)));
             return LocalMethod(method);
         }
     }

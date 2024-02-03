@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -10,14 +10,17 @@ using System;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.hook.expr;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.enummethod.cache;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.epl.expression.time.abacus;
 using com.espertech.esper.common.@internal.epl.prior;
 using com.espertech.esper.common.@internal.epl.script.core;
 using com.espertech.esper.common.@internal.epl.table.core;
+using com.espertech.esper.common.@internal.epl.variable.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.metrics.audit;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
@@ -38,11 +41,13 @@ namespace com.espertech.esper.common.@internal.view.core
             AgentInstanceContext agentInstanceContext,
             bool isRemoveStream,
             PreviousGetterStrategy previousNodeGetter,
+            StateMgmtSetting previousStateSettings,
             ViewUpdatedCollection priorViewUpdatedCollection)
         {
             AgentInstanceContext = agentInstanceContext;
             IsRemoveStream = isRemoveStream;
             PreviousNodeGetter = previousNodeGetter;
+            PreviousStateSettings = previousStateSettings;
             PriorViewUpdatedCollection = priorViewUpdatedCollection;
         }
 
@@ -50,15 +55,19 @@ namespace com.espertech.esper.common.@internal.view.core
 
         public PreviousGetterStrategy PreviousNodeGetter { get; }
 
+        public StateMgmtSetting PreviousStateSettings { get; }
+
         public ViewUpdatedCollection PriorViewUpdatedCollection { get; }
 
         public StatementContext StatementContext => AgentInstanceContext.StatementContext;
 
-        public RuntimeSettingsService RuntimeSettingsService => AgentInstanceContext.StatementContext.RuntimeSettingsService;
+        public RuntimeSettingsService RuntimeSettingsService =>
+            AgentInstanceContext.StatementContext.RuntimeSettingsService;
 
         public Attribute[] Annotations => AgentInstanceContext.StatementContext.Annotations;
 
-        public EPStatementAgentInstanceHandle EpStatementAgentInstanceHandle => AgentInstanceContext.EpStatementAgentInstanceHandle;
+        public EPStatementAgentInstanceHandle EpStatementAgentInstanceHandle =>
+            AgentInstanceContext.EpStatementAgentInstanceHandle;
 
         public bool IsRemoveStream { get; set; }
 
@@ -66,7 +75,8 @@ namespace com.espertech.esper.common.@internal.view.core
 
         public EventBeanTypedEventFactory EventBeanTypedEventFactory => AgentInstanceContext.EventBeanTypedEventFactory;
 
-        public RuntimeExtensionServices RuntimeExtensionServices => AgentInstanceContext.RuntimeExtensionServicesContext;
+        public RuntimeExtensionServices RuntimeExtensionServices =>
+            AgentInstanceContext.RuntimeExtensionServicesContext;
 
         public ImportServiceRuntime ImportService => AgentInstanceContext.ImportServiceRuntime;
 
@@ -92,9 +102,11 @@ namespace com.espertech.esper.common.@internal.view.core
 
         public TableExprEvaluatorContext TableExprEvaluatorContext => AgentInstanceContext.TableExprEvaluatorContext;
 
-        public ExpressionResultCacheService ExpressionResultCacheService => AgentInstanceContext.ExpressionResultCacheService;
+        public ExpressionResultCacheService ExpressionResultCacheService =>
+            AgentInstanceContext.ExpressionResultCacheService;
 
-        public AgentInstanceScriptContext AllocateAgentInstanceScriptContext => AgentInstanceContext.AllocateAgentInstanceScriptContext;
+        public AgentInstanceScriptContext AllocateAgentInstanceScriptContext =>
+            AgentInstanceContext.AllocateAgentInstanceScriptContext;
 
         public AuditProvider AuditProvider => AgentInstanceContext.AuditProvider;
 
@@ -103,6 +115,20 @@ namespace com.espertech.esper.common.@internal.view.core
         public ExceptionHandlingService ExceptionHandlingService => AgentInstanceContext.ExceptionHandlingService;
 
         public TypeResolver TypeResolver => AgentInstanceContext.TypeResolver;
+
+        public string ContextName => AgentInstanceContext.ContextName;
+
+        public string EPLWhenAvailable => AgentInstanceContext.EPLWhenAvailable;
+
+        public TimeZoneInfo TimeZone => AgentInstanceContext.TimeZone;
+
+        public TimeAbacus TimeAbacus => AgentInstanceContext.TimeAbacus;
+
+        public VariableManagementService VariableManagementService => AgentInstanceContext.VariableManagementService;
+
+        public string ModuleName => AgentInstanceContext.ModuleName;
+
+        public bool IsWritesToTables => AgentInstanceContext.IsWritesToTables;
 
         public object FilterReboolConstant {
             get => null;
@@ -144,6 +170,7 @@ namespace com.espertech.esper.common.@internal.view.core
                 agentInstanceContext,
                 removedStream,
                 previousNodeGetter,
+                viewResourceDelegate.PreviousStateSettingsOpt,
                 priorViewUpdatedCollection);
         }
     }

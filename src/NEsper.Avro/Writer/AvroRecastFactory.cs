@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -176,7 +176,7 @@ namespace NEsper.Avro.Writer
                 CodegenClassScope codegenClassScope)
             {
                 var methodNode = codegenMethodScope.MakeChild(typeof(EventBean), GetType(), codegenClassScope);
-                var refEPS = exprSymbol.GetAddEPS(methodNode);
+                var refEPS = exprSymbol.GetAddEps(methodNode);
                 var theEvent = CodegenExpressionBuilder.Cast(
                     typeof(AvroGenericDataBackedEventBean),
                     CodegenExpressionBuilder.ArrayAtIndex(
@@ -192,7 +192,7 @@ namespace NEsper.Avro.Writer
             }
 
             public SelectExprProcessor GetSelectExprProcessor(
-                ImportService classpathImportService,
+                ImportService importService,
                 bool isFireAndForget,
                 string statementName)
             {
@@ -269,7 +269,7 @@ namespace NEsper.Avro.Writer
                         "ResolveRecordSchema",
                         EventTypeUtility.ResolveTypeCodegen(ResultEventType, EPStatementInitServicesConstants.REF)));
                 var methodNode = codegenMethodScope.MakeChild(typeof(EventBean), GetType(), codegenClassScope);
-                var refEPS = exprSymbol.GetAddEPS(methodNode);
+                var refEPS = exprSymbol.GetAddEps(methodNode);
                 var block = methodNode.Block
                     .DeclareVar<AvroGenericDataBackedEventBean>(
                         "theEvent",

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Text.Json.Serialization;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -19,11 +20,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.prior
     /// </summary>
     public class ExprPriorEvalStrategyRandomAccess : PriorEvalStrategy
     {
-        [NonSerialized] private readonly RandomAccessByIndex _randomAccess;
+        [JsonIgnore]
+        [NonSerialized]
+        private readonly RandomAccessByIndex _randomAccess;
 
         public ExprPriorEvalStrategyRandomAccess(RandomAccessByIndex randomAccess)
         {
-            this._randomAccess = randomAccess;
+            _randomAccess = randomAccess;
         }
 
         public EventBean GetSubstituteEvent(

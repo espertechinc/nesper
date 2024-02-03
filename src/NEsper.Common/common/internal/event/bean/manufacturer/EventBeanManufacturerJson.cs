@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -13,29 +13,29 @@ using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
 {
-	/// <summary>
-	///     Factory for Json-underlying events.
-	/// </summary>
-	public class EventBeanManufacturerJson : EventBeanManufacturer
+    /// <summary>
+    ///     Factory for Json-underlying events.
+    /// </summary>
+    public class EventBeanManufacturerJson : EventBeanManufacturer
     {
         private readonly EventBeanTypedEventFactory _eventAdapterService;
         private readonly JsonEventType _jsonEventType;
-        private readonly string[] _nativeKeys;
+        private readonly int[] _nativeNums;
 
         /// <summary>
         ///     Ctor.
         /// </summary>
         /// <param name="jsonEventType">type to create</param>
         /// <param name="eventAdapterService">event factory</param>
-        /// <param name="nativeKeys">native keys</param>
+        /// <param name="nativeNums">native field numbers</param>
         public EventBeanManufacturerJson(
             JsonEventType jsonEventType,
             EventBeanTypedEventFactory eventAdapterService,
-            string[] nativeKeys)
+            int[] nativeNums)
         {
             _eventAdapterService = eventAdapterService;
             _jsonEventType = jsonEventType;
-            _nativeKeys = nativeKeys;
+            _nativeNums = nativeNums;
         }
 
         public EventBean Make(object[] properties)
@@ -49,9 +49,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
             var @delegate = _jsonEventType.Delegate;
             var underlying = @delegate.Allocate();
             for (var i = 0; i < properties.Length; i++) {
-                var propertyName = _nativeKeys[i];
-                var propertyValue = properties[i];
-                @delegate.TrySetProperty(propertyName, underlying, propertyValue);
+                @delegate.TrySetProperty(_nativeNums[i], properties[i], underlying);
             }
 
             return underlying;

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -48,8 +48,8 @@ namespace com.espertech.esper.common.@internal.epl.join.strategy
         /// <returns>readable text with execution nodes constructed for actual streams</returns>
         public static string Print(ExecNode execNode)
         {
-            StringWriter writer = new StringWriter();
-            IndentWriter indentWriter = new IndentWriter(writer, 4, 2);
+            var writer = new StringWriter();
+            var indentWriter = new IndentWriter(writer, 4, 2);
             execNode.Print(indentWriter);
 
             return writer.ToString();

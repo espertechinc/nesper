@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -15,7 +15,6 @@ using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 
 namespace com.espertech.esper.common.@internal.view.groupwin
 {
@@ -25,8 +24,6 @@ namespace com.espertech.esper.common.@internal.view.groupwin
     public class AddPropertyValueOptionalView : ViewSupport,
         AgentInstanceMgmtCallback
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(AddPropertyValueOptionalView));
-
         private readonly AgentInstanceViewFactoryChainContext agentInstanceContext;
         private readonly GroupByViewFactory groupByViewFactory;
         private readonly object propertyValues;
@@ -145,13 +142,15 @@ namespace com.espertech.esper.common.@internal.view.groupwin
         {
             var values = new Dictionary<string, object>();
             if (propertyValues is MultiKey props) {
-                for (int i = 0; i < propertyNames.Length; i++) {
+                for (var i = 0; i < propertyNames.Length; i++) {
                     values.Put(propertyNames[i], props.GetKey(i));
                 }
-            } else {
+            }
+            else {
                 if (propertyValues is MultiKeyArrayWrap multiKeyArrayWrap) {
                     propertyValues = multiKeyArrayWrap.Array;
                 }
+
                 values.Put(propertyNames[0], propertyValues);
             }
 
@@ -162,7 +161,7 @@ namespace com.espertech.esper.common.@internal.view.groupwin
         {
             return GetType().Name + " propertyValue=" + propertyValues;
         }
-        
+
         public void Transfer(AgentInstanceTransferServices services)
         {
         }

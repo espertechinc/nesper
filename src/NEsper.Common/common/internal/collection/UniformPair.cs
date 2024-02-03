@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -15,10 +15,9 @@ namespace com.espertech.esper.common.@internal.collection
     /// the objects that form the pair equal, ie. first pair first object equals (.equals) the second pair first object,
     /// and the first pair second object equals the second pair second object.
     /// </summary>
-    [Serializable]
     public sealed class UniformPair<T>
     {
-        public static UniformPair<T> EMPTY_PAIR = new UniformPair<T>(default(T), default(T));
+        public static UniformPair<T> EMPTY_PAIR = new UniformPair<T>(default, default);
 
         /// <summary>
         /// Gets or sets the first value within pair.
@@ -41,8 +40,8 @@ namespace com.espertech.esper.common.@internal.collection
             T first,
             T second)
         {
-            this.First = first;
-            this.Second = second;
+            First = first;
+            Second = second;
         }
 
         /// <summary>
@@ -58,11 +57,9 @@ namespace com.espertech.esper.common.@internal.collection
                 return true;
             }
 
-            if (!(obj is UniformPair<T>)) {
+            if (!(obj is UniformPair<T> other)) {
                 return false;
             }
-
-            UniformPair<T> other = (UniformPair<T>) obj;
 
             return
                 (First == null ? other.First == null : First.Equals(other.First)) &&

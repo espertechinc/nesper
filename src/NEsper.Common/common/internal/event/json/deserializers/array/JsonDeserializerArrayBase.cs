@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -17,7 +17,7 @@ namespace com.espertech.esper.common.@internal.@event.json.deserializers.array
     public abstract class JsonDeserializerArrayBase<T> : JsonDeserializerBase
     {
         private readonly Func<JsonElement, object> _itemDeserializer;
-        private T[] _result = new T[0];
+        private T[] _result = Array.Empty<T>();
 
         public JsonDeserializerArrayBase(Func<JsonElement, object> itemDeserializer) : base()
         {
@@ -26,10 +26,10 @@ namespace com.espertech.esper.common.@internal.@event.json.deserializers.array
 
         public override object Deserialize(JsonElement element)
         {
-            _result = JsonElementExtensions.ElementToArray<object>(element, _itemDeserializer)
+            _result = element.ElementToArray<object>(_itemDeserializer)
                 .Cast<T>()
                 .ToArray();
-            
+
             return _result;
         }
     }

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -169,12 +169,14 @@ namespace com.espertech.esper.common.@internal.supportunit.@event
 
         public EventType CreateMapType(IDictionary<string, object> map)
         {
-            var metadata = new EventTypeMetadata(
-                UuidGenerator.Generate(), null,
+            EventTypeMetadata metadata = new EventTypeMetadata(
+                UuidGenerator.Generate(),
+                null,
                 EventTypeTypeClass.STREAM,
                 EventTypeApplicationType.MAP,
                 NameAccessModifier.INTERNAL,
-                EventTypeBusModifier.NONBUS, false,
+                EventTypeBusModifier.NONBUS,
+                false,
                 EventTypeIdPair.Unassigned());
             return new MapEventType(metadata, map, null, null, null, null, BEAN_EVENT_TYPE_FACTORY);
         }

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -18,13 +18,13 @@ namespace com.espertech.esper.runtime.@internal.kernel.thread
     /// </summary>
     public class TimerUnitMultiple : TimerUnit
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(TimerUnitMultiple));
+        private static readonly ILog Log = LogManager.GetLogger(typeof(TimerUnitMultiple));
 
-        private readonly object callbackObject;
-        private readonly EPStatementAgentInstanceHandle handle;
-        private readonly EPEventServiceImpl runtime;
+        private readonly object _callbackObject;
+        private readonly EPStatementAgentInstanceHandle _handle;
+        private readonly EPEventServiceImpl _runtime;
 
-        private readonly EPServicesContext services;
+        private readonly EPServicesContext _services;
 
         /// <summary>
         ///     Ctor.
@@ -39,25 +39,25 @@ namespace com.espertech.esper.runtime.@internal.kernel.thread
             EPStatementAgentInstanceHandle handle,
             object callbackObject)
         {
-            this.services = services;
-            this.handle = handle;
-            this.runtime = runtime;
-            this.callbackObject = callbackObject;
+            this._services = services;
+            this._handle = handle;
+            this._runtime = runtime;
+            this._callbackObject = callbackObject;
         }
 
         public void Run()
         {
             try {
-                EPEventServiceHelper.ProcessStatementScheduleMultiple(handle, callbackObject, services);
+                EPEventServiceHelper.ProcessStatementScheduleMultiple(_handle, _callbackObject, _services);
 
                 // Let listeners know of results
-                runtime.Dispatch();
+                _runtime.Dispatch();
 
                 // Work off the event queue if any events accumulated in there via a route()
-                runtime.ProcessThreadWorkQueue();
+                _runtime.ProcessThreadWorkQueue();
             }
             catch (Exception e) {
-                log.Error("Unexpected error processing multiple timer execution: " + e.Message, e);
+                Log.Error("Unexpected error processing multiple timer execution: " + e.Message, e);
             }
         }
     }

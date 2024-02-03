@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -16,10 +16,12 @@ using com.espertech.esper.common.client.meta;
 using com.espertech.esper.common.client.metric;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.@event.bean.core;
+using com.espertech.esper.common.@internal.@event.bean.introspect;
 using com.espertech.esper.common.@internal.@event.eventtyperepo;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 
 namespace com.espertech.esper.common.@internal.@event.bean.service
 {
@@ -39,15 +41,17 @@ namespace com.espertech.esper.common.@internal.@event.bean.service
             AddPredefinedBeanEventTypes(beanTypes);
 
             foreach (var beanType in beanTypes) {
-                if (repo.GetTypeByName(beanType.Key) == null) {
-                    BuildPublicBeanType(
-                        beanEventTypeStemService,
-                        repo,
-                        beanType.Key,
-                        beanType.Value,
-                        privateFactory,
-                        configs);
+                if (repo.GetTypeByName(beanType.Key) != null) {
+                    continue;
                 }
+
+                BuildPublicBeanType(
+                    beanEventTypeStemService,
+                    repo,
+                    beanType.Key,
+                    beanType.Value,
+                    privateFactory,
+                    configs);
             }
         }
 
@@ -67,18 +71,18 @@ namespace com.espertech.esper.common.@internal.@event.bean.service
                         "Event type named '" +
                         eventTypeName +
                         "' has already been declared with differing underlying type information: Class " +
-                        existingType.UnderlyingType.FullName +
+                        existingType.UnderlyingType.Name +
                         " versus " +
-                        clazz.Name);
+                        clazz.CleanName());
                 }
 
-                var beanEventType = (BeanEventType) existingType;
+                var beanEventType = (BeanEventType)existingType;
                 if (beanEventType.UnderlyingType != clazz) {
                     throw new ConfigurationException(
                         "Event type named '" +
                         eventTypeName +
                         "' has already been declared with differing underlying type information: Class " +
-                        existingType.UnderlyingType.FullName +
+                        existingType.UnderlyingType.Name +
                         " versus " +
                         beanEventType.UnderlyingType);
                 }
@@ -93,7 +97,6 @@ namespace com.espertech.esper.common.@internal.@event.bean.service
 
             // metadata
             var publicId = CRC32Util.ComputeCRC32(eventTypeName);
-
             var metadata = new EventTypeMetadata(
                 eventTypeName,
                 null,
@@ -114,8 +117,8 @@ namespace com.espertech.esper.common.@internal.@event.bean.service
                 configs);
 
             // bean type
-            var startTS = optionalConfig == null ? null : optionalConfig.StartTimestampPropertyName;
-            var endTS = optionalConfig == null ? null : optionalConfig.EndTimestampPropertyName;
+            var startTS = optionalConfig?.StartTimestampPropertyName;
+            var endTS = optionalConfig?.EndTimestampPropertyName;
             var eventType = privateFactory.EventTypeFactory.CreateBeanType(
                 stem,
                 metadata,
@@ -155,7 +158,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.service
             IDictionary<string, ConfigurationCommonEventTypeBean> configs)
         {
             if (superTypes == null || superTypes.IsEmpty()) {
-                return new EmptySet<EventType>();
+                return EmptySet<EventType>.Instance;
             }
 
             var supers = new LinkedHashSet<EventType>();
@@ -195,19 +198,18 @@ namespace com.espertech.esper.common.@internal.@event.bean.service
             Type clazz,
             IDictionary<string, Type> resolvedBeanEventTypes)
         {
-            var clazzFullName = clazz.FullName;
-            var existing = resolvedBeanEventTypes.Get(clazzFullName);
-            if (existing != null && existing != clazz) {
+            var existing = resolvedBeanEventTypes.Get(clazz.FullName);
+            if (existing != null && !existing.Equals(clazz)) {
                 throw new ConfigurationException(
                     "Predefined event type " +
-                    clazzFullName +
+                    clazz.CleanName() +
                     " expected class " +
                     clazz.CleanName() +
                     " but is already defined to another class " +
-                    existing.CleanName());
+                    existing);
             }
 
-            resolvedBeanEventTypes.Put(clazzFullName, clazz);
+            resolvedBeanEventTypes.Put(clazz.FullName, clazz);
         }
     }
 } // end of namespace

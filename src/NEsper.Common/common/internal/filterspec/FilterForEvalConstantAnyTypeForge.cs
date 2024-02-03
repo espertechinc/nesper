@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.@internal.filterspec
         /// <returns>constant</returns>
         public object Constant { get; }
 
-        public Type ReturnType => Constant == null ? null : Constant.GetType();
+        public Type ReturnType => Constant?.GetType();
 
         public bool IsConstant => true;
 
@@ -65,9 +65,9 @@ namespace com.espertech.esper.common.@internal.filterspec
                 return false;
             }
 
-            var that = (FilterForEvalConstantAnyTypeForge) o;
+            var that = (FilterForEvalConstantAnyTypeForge)o;
 
-            if (Constant != null ? !Constant.Equals(that.Constant) : that.Constant != null) {
+            if (!Constant?.Equals(that.Constant) ?? that.Constant != null) {
                 return false;
             }
 

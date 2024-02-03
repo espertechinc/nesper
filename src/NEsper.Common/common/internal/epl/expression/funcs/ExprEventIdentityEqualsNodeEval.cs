@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -18,15 +18,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 {
     public class ExprEventIdentityEqualsNodeEval : ExprEvaluator
     {
-        private readonly int streamLeft;
-        private readonly int streamRight;
+        private readonly int _streamLeft;
+        private readonly int _streamRight;
 
         public ExprEventIdentityEqualsNodeEval(
             int streamLeft,
             int streamRight)
         {
-            this.streamLeft = streamLeft;
-            this.streamRight = streamRight;
+            _streamLeft = streamLeft;
+            _streamRight = streamRight;
         }
 
         public object Evaluate(
@@ -34,8 +34,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            var left = eventsPerStream[streamLeft];
-            var right = eventsPerStream[streamRight];
+            var left = eventsPerStream[_streamLeft];
+            var right = eventsPerStream[_streamRight];
             if (left == null || right == null) {
                 return null;
             }
@@ -51,8 +51,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         {
             var method = parent.MakeChild(typeof(bool?), typeof(ExprEventIdentityEqualsNodeEval), classScope);
             method.Block
-                .DeclareVar<EventBean>("left", ArrayAtIndex(symbols.GetAddEPS(method), Constant(forge.UndLeft.StreamId)))
-                .DeclareVar<EventBean>("right", ArrayAtIndex(symbols.GetAddEPS(method), Constant(forge.UndRight.StreamId)))
+                .DeclareVar<EventBean>(
+                    "left",
+                    ArrayAtIndex(symbols.GetAddEps(method), Constant(forge.UndLeft.StreamId)))
+                .DeclareVar<EventBean>(
+                    "right",
+                    ArrayAtIndex(symbols.GetAddEps(method), Constant(forge.UndRight.StreamId)))
                 .IfCondition(Or(EqualsNull(Ref("left")), EqualsNull(Ref("right"))))
                 .BlockReturn(ConstantNull())
                 .MethodReturn(StaticMethod<object>("Equals", Ref("left"), Ref("right")));

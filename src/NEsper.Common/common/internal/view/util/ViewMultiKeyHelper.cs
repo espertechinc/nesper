@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -16,21 +16,29 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
 namespace com.espertech.esper.common.@internal.view.util
 {
-	public class ViewMultiKeyHelper
-	{
-		public static void Assign(
-			ExprNode[] criteriaExpressions,
-			MultiKeyClassRef multiKeyClassNames,
-			CodegenMethod method,
-			CodegenExpressionRef factory,
-			SAIFFInitializeSymbol symbols,
-			CodegenClassScope classScope)
-		{
-			CodegenExpression criteriaEval = MultiKeyCodegen.CodegenExprEvaluatorMayMultikey(criteriaExpressions, null, multiKeyClassNames, method, classScope);
-			method.Block
-				.SetProperty(factory, "CriteriaEval", criteriaEval)
-				.SetProperty(factory, "CriteriaTypes", Constant(ExprNodeUtilityQuery.GetExprResultTypes(criteriaExpressions)))
-				.SetProperty(factory, "KeySerde", multiKeyClassNames.GetExprMKSerde(method, classScope));
-		}
-	}
+    public class ViewMultiKeyHelper
+    {
+        public static void Assign(
+            ExprNode[] criteriaExpressions,
+            MultiKeyClassRef multiKeyClassNames,
+            CodegenMethod method,
+            CodegenExpressionRef factory,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
+        {
+            var criteriaEval = MultiKeyCodegen.CodegenExprEvaluatorMayMultikey(
+                criteriaExpressions,
+                null,
+                multiKeyClassNames,
+                method,
+                classScope);
+            method.Block
+                .SetProperty(factory, "CriteriaEval", criteriaEval)
+                .SetProperty(
+                    factory,
+                    "CriteriaTypes",
+                    Constant(ExprNodeUtilityQuery.GetExprResultTypes(criteriaExpressions)))
+                .SetProperty(factory, "KeySerde", multiKeyClassNames.GetExprMKSerde(method, classScope));
+        }
+    }
 } // end of namespace

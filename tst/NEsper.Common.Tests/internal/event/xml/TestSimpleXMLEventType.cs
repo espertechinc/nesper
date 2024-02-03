@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -11,6 +11,7 @@ using System.Xml.XPath;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration.common;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.@event.xml
 {
@@ -63,34 +64,34 @@ namespace com.espertech.esper.common.@internal.@event.xml
         [Test]
         public void TestCustomProperty()
         {
-            Assert.AreEqual(typeof(double?), theEvent.EventType.GetPropertyType("customProp"));
-            Assert.AreEqual(3.0d, theEvent.Get("customProp"));
+            ClassicAssert.AreEqual(typeof(double?), theEvent.EventType.GetPropertyType("customProp"));
+            ClassicAssert.AreEqual(3.0d, theEvent.Get("customProp"));
         }
 
         [Test]
         public void TestIndexedProperties()
         {
-            Assert.AreEqual("5", theEvent.Get("nested1.nested2.prop3[2]"));
-            Assert.AreEqual(typeof(string), theEvent.EventType.GetPropertyType("nested1.nested2.prop3[2]"));
+            ClassicAssert.AreEqual("5", theEvent.Get("nested1.nested2.prop3[2]"));
+            ClassicAssert.AreEqual(typeof(string), theEvent.EventType.GetPropertyType("nested1.nested2.prop3[2]"));
         }
 
         [Test]
         public void TestMappedProperties()
         {
-            Assert.AreEqual("SAMPLE_V8", theEvent.Get("nested3.nested4('a').prop5[1]"));
-            Assert.AreEqual("SAMPLE_V10", theEvent.Get("nested3.nested4('c').prop5[0]"));
+            ClassicAssert.AreEqual("SAMPLE_V8", theEvent.Get("nested3.nested4('a').prop5[1]"));
+            ClassicAssert.AreEqual("SAMPLE_V10", theEvent.Get("nested3.nested4('c').prop5[0]"));
         }
 
         [Test]
         public void TestNestedProperties()
         {
-            Assert.AreEqual("true", theEvent.Get("nested1.prop2"));
+            ClassicAssert.AreEqual("true", theEvent.Get("nested1.prop2"));
         }
 
         [Test]
         public void TestSimpleProperties()
         {
-            Assert.AreEqual("SAMPLE_V6", theEvent.Get("prop4"));
+            ClassicAssert.AreEqual("SAMPLE_V6", theEvent.Get("prop4"));
         }
     }
 } // end of namespace

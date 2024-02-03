@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -49,7 +49,7 @@ namespace com.espertech.esper.common.@internal.context.controller.condition
         {
             ScheduleHandleCallback scheduleCallback = new ProxyScheduleHandleCallback() {
                 ProcScheduledTrigger = () => {
-                    AgentInstanceContext agentInstanceContextX = controller.Realization.AgentInstanceContextCreate;
+                    var agentInstanceContextX = controller.Realization.AgentInstanceContextCreate;
                     agentInstanceContextX.InstrumentationProvider.QContextScheduledEval(
                         agentInstanceContextX.StatementContext.ContextRuntimeDescriptor);
 
@@ -58,16 +58,16 @@ namespace com.espertech.esper.common.@internal.context.controller.condition
                         agentInstanceContextX,
                         ScheduleObjectType.context,
                         NAME_AUDITPROVIDER_SCHEDULE);
-                    callback.RangeNotification(conditionPath, this, null, null, null, null);
+                    callback.RangeNotification(conditionPath, this, null, null, null, null, null);
 
                     agentInstanceContextX.InstrumentationProvider.AContextScheduledEval();
-                },
+                }
             };
-            AgentInstanceContext agentInstanceContext = controller.Realization.AgentInstanceContextCreate;
+            var agentInstanceContext = controller.Realization.AgentInstanceContextCreate;
             scheduleHandle = new EPStatementHandleCallbackSchedule(
                 agentInstanceContext.EpStatementAgentInstanceHandle,
                 scheduleCallback);
-            long timeDelta = timePeriod.TimePeriodCompute.DeltaUseRuntimeTime(
+            var timeDelta = timePeriod.TimePeriodCompute.DeltaUseRuntimeTime(
                 null,
                 agentInstanceContext,
                 agentInstanceContext.TimeProvider);
@@ -84,7 +84,7 @@ namespace com.espertech.esper.common.@internal.context.controller.condition
         public void Deactivate()
         {
             if (scheduleHandle != null) {
-                AgentInstanceContext agentInstanceContext = controller.Realization.AgentInstanceContextCreate;
+                var agentInstanceContext = controller.Realization.AgentInstanceContextCreate;
                 agentInstanceContext.AuditProvider.ScheduleRemove(
                     agentInstanceContext,
                     scheduleHandle,
@@ -100,20 +100,12 @@ namespace com.espertech.esper.common.@internal.context.controller.condition
         {
         }
 
-        public bool IsImmediate {
-            get => timePeriod.IsImmediate;
-        }
+        public bool IsImmediate => timePeriod.IsImmediate;
 
-        public bool IsRunning {
-            get => scheduleHandle != null;
-        }
+        public bool IsRunning => scheduleHandle != null;
 
-        public long? ExpectedEndTime {
-            get => timePeriod.GetExpectedEndTime(controller.Realization);
-        }
+        public long? ExpectedEndTime => timePeriod.GetExpectedEndTime(controller.Realization);
 
-        public ContextConditionDescriptor Descriptor {
-            get => timePeriod;
-        }
+        public ContextConditionDescriptor Descriptor => timePeriod;
     }
 } // end of namespace

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -68,11 +68,9 @@ namespace com.espertech.esper.common.@internal.filterspec
                 return false;
             }
 
-            var that = (FilterForEvalConstantStringForge) o;
+            var that = (FilterForEvalConstantStringForge)o;
 
-            if (_theStringValue != null
-                ? !_theStringValue.Equals(that._theStringValue)
-                : that._theStringValue != null) {
+            if (!_theStringValue?.Equals(that._theStringValue) ?? that._theStringValue != null) {
                 return false;
             }
 

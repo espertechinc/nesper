@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -168,12 +168,10 @@ namespace com.espertech.esper.common.client.soda
         {
             ToEPLProjectedStreamType(writer);
 
-            if (Views != null && Views.Count != 0)
-            {
+            if (Views != null && Views.Count != 0) {
                 writer.Write('.');
                 var delimiter = "";
-                foreach (var view in Views)
-                {
+                foreach (var view in Views) {
                     writer.Write(delimiter);
                     writer.Write(view.Namespace);
                     writer.Write(".");
@@ -204,25 +202,20 @@ namespace com.espertech.esper.common.client.soda
             TextWriter writer,
             IList<View> views)
         {
-            if (views != null && views.Count != 0)
-            {
-                if (views.First().Namespace == null)
-                {
+            if (views != null && views.Count != 0) {
+                if (views.First().Namespace == null) {
                     writer.Write('#');
                     var delimiter = "";
-                    foreach (var view in views)
-                    {
+                    foreach (var view in views) {
                         writer.Write(delimiter);
                         view.ToEPLWithHash(writer);
                         delimiter = "#";
                     }
                 }
-                else
-                {
+                else {
                     writer.Write('.');
                     var delimiter = "";
-                    foreach (var view in views)
-                    {
+                    foreach (var view in views) {
                         writer.Write(delimiter);
                         view.ToEPL(writer);
                         delimiter = ".";
@@ -233,16 +226,13 @@ namespace com.espertech.esper.common.client.soda
 
         public override void ToEPLStreamOptions(TextWriter writer)
         {
-            if (IsUnidirectional)
-            {
+            if (IsUnidirectional) {
                 writer.Write(" unidirectional");
             }
-            else if (IsRetainUnion)
-            {
+            else if (IsRetainUnion) {
                 writer.Write(" retain-union");
             }
-            else if (IsRetainIntersection)
-            {
+            else if (IsRetainIntersection) {
                 writer.Write(" retain-intersection");
             }
         }

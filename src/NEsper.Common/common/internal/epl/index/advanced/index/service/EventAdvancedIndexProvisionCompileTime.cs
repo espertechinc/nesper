@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -50,9 +50,7 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.service
                 ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceAsArray(IndexDesc.IndexedExpressions);
             var indexProperties = GetPropertiesPerExpressionExpectSingle(IndexDesc.IndexedExpressions);
             method.Block
-                .DeclareVar<EventAdvancedIndexProvisionRuntime>(
-                    "desc",
-                    NewInstance(typeof(EventAdvancedIndexProvisionRuntime)))
+                .DeclareVarNewInstance<EventAdvancedIndexProvisionRuntime>("desc")
                 .SetProperty(Ref("desc"), "IndexExpressionTexts", Constant(indexExpressions))
                 .SetProperty(Ref("desc"), "IndexProperties", Constant(indexProperties))
                 .SetProperty(

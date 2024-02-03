@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -17,7 +17,6 @@ namespace com.espertech.esper.common.client.soda
     /// <para />The form "x =&gt; x * x" reads as "x goes to x times x", for an example expression that yields x multiplied by x.
     /// <para />Used with expression declaration and with enumeration methods, for example, to parameterize by an expression.
     /// </summary>
-    [Serializable]
     public class LambdaExpression : ExpressionBase
     {
         private IList<string> parameters;
@@ -42,25 +41,19 @@ namespace com.espertech.esper.common.client.soda
         /// Returns the lambda expression parameters.
         /// </summary>
         /// <returns>lambda expression parameters</returns>
-        public IList<string> Parameters
-        {
+        public IList<string> Parameters {
             get => parameters;
-            set { parameters = value; }
+            set => parameters = value;
         }
 
-        public override ExpressionPrecedenceEnum Precedence
-        {
-            get => ExpressionPrecedenceEnum.MINIMUM;
-        }
+        public override ExpressionPrecedenceEnum Precedence => ExpressionPrecedenceEnum.MINIMUM;
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
-            if (parameters.Count > 1)
-            {
+            if (parameters.Count > 1) {
                 writer.Write("(");
-                string delimiter = "";
-                foreach (string parameter in parameters)
-                {
+                var delimiter = "";
+                foreach (var parameter in parameters) {
                     writer.Write(delimiter);
                     writer.Write(parameter);
                     delimiter = ",";
@@ -68,8 +61,7 @@ namespace com.espertech.esper.common.client.soda
 
                 writer.Write(")");
             }
-            else
-            {
+            else {
                 writer.Write(parameters[0]);
             }
 

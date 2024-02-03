@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -124,15 +124,15 @@ namespace com.espertech.esper.common.@internal.epl.contained
                 var lastLevel = fragmentEventTypeIsIndexed.Length - 1;
 
                 if (fragmentEventTypeIsIndexed[level]) {
-                    var fragments = (EventBean[]) result;
+                    var fragments = (EventBean[])result;
                     if (level == lastLevel) {
                         if (whereClauses[level] != null) {
                             foreach (var theEvent in fragments) {
                                 eventsPerStream[level + 1] = theEvent;
                                 if (ExprNodeUtilityEvaluate.ApplyFilterExpression(
-                                    whereClauses[level],
-                                    eventsPerStream,
-                                    exprEvaluatorContext)) {
+                                        whereClauses[level],
+                                        eventsPerStream,
+                                        exprEvaluatorContext)) {
                                     events.Add(theEvent);
                                 }
                             }
@@ -146,9 +146,9 @@ namespace com.espertech.esper.common.@internal.epl.contained
                             foreach (var next in fragments) {
                                 eventsPerStream[level + 1] = next;
                                 if (ExprNodeUtilityEvaluate.ApplyFilterExpression(
-                                    whereClauses[level],
-                                    eventsPerStream,
-                                    exprEvaluatorContext)) {
+                                        whereClauses[level],
+                                        eventsPerStream,
+                                        exprEvaluatorContext)) {
                                     PopulateEvents(next, level + 1, events, exprEvaluatorContext);
                                 }
                             }
@@ -162,14 +162,14 @@ namespace com.espertech.esper.common.@internal.epl.contained
                     }
                 }
                 else {
-                    var fragment = (EventBean) result;
+                    var fragment = (EventBean)result;
                     if (level == lastLevel) {
                         if (whereClauses[level] != null) {
                             eventsPerStream[level + 1] = fragment;
                             if (ExprNodeUtilityEvaluate.ApplyFilterExpression(
-                                whereClauses[level],
-                                eventsPerStream,
-                                exprEvaluatorContext)) {
+                                    whereClauses[level],
+                                    eventsPerStream,
+                                    exprEvaluatorContext)) {
                                 events.Add(fragment);
                             }
                         }
@@ -181,9 +181,9 @@ namespace com.espertech.esper.common.@internal.epl.contained
                         if (whereClauses[level] != null) {
                             eventsPerStream[level + 1] = fragment;
                             if (ExprNodeUtilityEvaluate.ApplyFilterExpression(
-                                whereClauses[level],
-                                eventsPerStream,
-                                exprEvaluatorContext)) {
+                                    whereClauses[level],
+                                    eventsPerStream,
+                                    exprEvaluatorContext)) {
                                 PopulateEvents(fragment, level + 1, events, exprEvaluatorContext);
                             }
                         }

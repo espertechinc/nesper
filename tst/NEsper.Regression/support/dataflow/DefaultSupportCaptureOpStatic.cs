@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -19,6 +19,8 @@ namespace com.espertech.esper.regressionlib.support.dataflow
         private static readonly IList<DefaultSupportCaptureOpStatic<T>> instances =
             new List<DefaultSupportCaptureOpStatic<T>>();
 
+        public static IList<DefaultSupportCaptureOpStatic<T>> Instances => instances;
+
         public DefaultSupportCaptureOpStatic()
         {
             instances.Add(this);
@@ -36,11 +38,6 @@ namespace com.espertech.esper.regressionlib.support.dataflow
             lock (this) {
                 Current.Add(@event);
             }
-        }
-
-        public static IList<DefaultSupportCaptureOpStatic<T>> GetInstances()
-        {
-            return instances;
         }
     }
 } // end of namespace

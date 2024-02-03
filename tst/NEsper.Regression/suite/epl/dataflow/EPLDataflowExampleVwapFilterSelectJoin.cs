@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.dataflow.core;
@@ -20,6 +21,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.dataflow;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 {
@@ -31,7 +33,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 return;
             }
 
-            var epl = "@Name('flow')create dataflow VWAPSample\r\n" +
+            var epl = "@name('flow')create dataflow VWAPSample\r\n" +
                       "create objectarray schema TradeQuoteType as (type string, ticker string, Price double, Volume long, askPrice double, asksize long),\n" +
                       "MyObjectArrayGraphSource -> TradeQuoteStream<TradeQuoteType> {}\r\n" +
                       "filter(TradeQuoteStream) -> TradeStream {\r\n" +
@@ -57,7 +59,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             env.UndeployAll();
             var model = env.EplToModel(epl);
             var text = model.ToEPL(new EPStatementFormatter(true));
-            Assert.AreEqual(RemoveNewlines(epl), RemoveNewlines(text));
+            ClassicAssert.AreEqual(RemoveNewlines(epl), RemoveNewlines(text));
             env.CompileDeploy(model);
 
             RunAssertion(env);
@@ -69,8 +71,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             var future = new DefaultSupportCaptureOp(1, env.Container.LockManager());
             var source = new MyObjectArrayGraphSource(
                 Arrays.AsList(
-                        new object[] {"trade", "GE", 100d, 1000L, null, null}, // vwap = 100, minPrice=100
-                        new object[] {"quote", "GE", null, null, 99.5d, 2000L} //
+                        new object[] { "trade", "GE", 100d, 1000L, null, null }, // vwap = 100, minPrice=100
+                        new object[] { "quote", "GE", null, null, 99.5d, 2000L } //
                     )
                     .GetEnumerator());
 
@@ -87,7 +89,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 throw new EPException(t);
             }
 
-            Assert.AreEqual(1, received.Length);
+            ClassicAssert.AreEqual(1, received.Length);
 
             var receivedArray = received[0].UnwrapIntoArray<object>();
             EPAssertionUtil.AssertProps(
@@ -97,6 +99,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 new object[] { 2000 * Math.Exp(100 - 99.5) });
 
             env.UndeployAll();
+        }
+
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.DATAFLOW);
         }
 
         private string RemoveNewlines(string text)

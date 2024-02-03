@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -23,9 +23,7 @@ namespace com.espertech.esper.common.@internal.collection
         /// <returns> key value array
         /// </returns>
 
-        public T[] Array {
-            get { return _keys; }
-        }
+        public T[] Array => _keys;
 
         private readonly T[] _keys;
         private readonly int _hashCode;
@@ -39,8 +37,8 @@ namespace com.espertech.esper.common.@internal.collection
                 throw new ArgumentException("The array of keys must not be null");
             }
 
-            int total = 0;
-            for (int i = 0; i < keys.Length; i++) {
+            var total = 0;
+            for (var i = 0; i < keys.Length; i++) {
                 if (keys[i] != null) {
                     total = (total * 397) ^ keys[i].GetHashCode();
                 }
@@ -54,9 +52,7 @@ namespace com.espertech.esper.common.@internal.collection
         /// <returns> size of key object array
         /// </returns>
 
-        public int Count {
-            get { return _keys.Length; }
-        }
+        public int Count => _keys.Length;
 
         /// <summary> Returns the key object at the specified position.</summary>
         /// <param name="index">is the array position
@@ -64,9 +60,7 @@ namespace com.espertech.esper.common.@internal.collection
         /// <returns> key object at position
         /// </returns>
 
-        public T this[int index] {
-            get { return _keys[index]; }
-        }
+        public T this[int index] => _keys[index];
 
         /// <summary>
         /// Determines whether the specified <see cref="T:System.Object"></see> is equal to the current <see cref="T:System.Object"></see>.
@@ -81,8 +75,7 @@ namespace com.espertech.esper.common.@internal.collection
                 return true;
             }
 
-            if (other is MultiKeyObsolete<T>) {
-                MultiKeyObsolete<T> otherKeys = (MultiKeyObsolete<T>) other;
+            if (other is MultiKeyObsolete<T> otherKeys) {
                 return Arrays.AreEqual(_keys, otherKeys._keys);
             }
 

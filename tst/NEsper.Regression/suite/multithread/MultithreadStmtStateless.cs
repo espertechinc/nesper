@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -7,17 +7,19 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.wordexample;
 using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esper.regressionlib.support.client.SupportCompileDeployUtil;
 using static com.espertech.esper.regressionlib.support.util.SupportAdminUtil;
 
@@ -25,7 +27,12 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 {
     public class MultithreadStmtStateless : RegressionExecution
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
+        }
 
         public void Run(RegressionEnvironment env)
         {
@@ -37,7 +44,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             int numThreads,
             int numRepeats)
         {
-            env.CompileDeploy("@Name('s0') select * from SentenceEvent[Words]");
+            env.CompileDeploy("@name('s0') select * from SentenceEvent[Words]");
             AssertStatelessStmt(env, "s0", true);
 
             var runnables = new StatelessRunnable[numThreads];
@@ -62,10 +69,10 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             }
 
             var delta = PerformanceObserver.MilliTime - start;
-            log.Info("Delta=" + delta + " for " + numThreads * numRepeats + " events");
+            Log.Info("Delta=" + delta + " for " + numThreads * numRepeats + " events");
 
             foreach (var r in runnables) {
-                Assert.IsNull(r.Exception);
+                ClassicAssert.IsNull(r.Exception);
             }
 
             env.UndeployAll();
@@ -96,7 +103,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                             "SentenceEvent");
 
                         if (i % 10000 == 0) {
-                            log.Info("Thread " + Thread.CurrentThread.ManagedThreadId + " sending event " + i);
+                            Log.Info("Thread " + Thread.CurrentThread.ManagedThreadId + " sending event " + i);
                         }
                     }
                 }

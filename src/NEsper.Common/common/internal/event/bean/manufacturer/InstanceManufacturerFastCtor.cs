@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -15,22 +15,21 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
 {
     public class InstanceManufacturerFastCtor : InstanceManufacturer
     {
-        private readonly ExprEvaluator[] evaluators;
-        private readonly InstanceManufacturerFactoryFastCtor factory;
+        private readonly ExprEvaluator[] _evaluators;
+        private readonly InstanceManufacturerFactoryFastCtor _factory;
 
         public InstanceManufacturerFastCtor(
             InstanceManufacturerFactoryFastCtor factory,
             ExprEvaluator[] evaluators)
         {
-            this.factory = factory;
-            this.evaluators = evaluators;
+            _factory = factory;
+            _evaluators = evaluators;
         }
 
         public object Make(
@@ -38,12 +37,12 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            var row = new object[evaluators.Length];
+            var row = new object[_evaluators.Length];
             for (var i = 0; i < row.Length; i++) {
-                row[i] = evaluators[i].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+                row[i] = _evaluators[i].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
             }
 
-            return MakeUnderlyingFromFastCtor(row, factory.Ctor, factory.TargetClass);
+            return MakeUnderlyingFromFastCtor(row, _factory.Ctor, _factory.TargetClass);
         }
 
         public static object MakeUnderlyingFromFastCtor(
@@ -66,7 +65,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
         }
 
         /// <summary>
-        ///     NOTE: Code-generation-invoked method, method name and parameter order matters
+        /// NOTE: Code-generation-invoked method, method name and parameter order matters
         /// </summary>
         /// <param name="targetClassName">name</param>
         /// <param name="thrown">ex</param>
@@ -104,7 +103,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
                 var targetCtorParamType = targetCtorParam.ParameterType;
                 var currentForge = forges[i];
                 var currentForgeEvaluationType = currentForge.EvaluationType;
-
+                
                 if (targetCtorParamType.IsAssignableFrom(currentForgeEvaluationType)) {
                     paramList[i] = currentForge
                         .EvaluateCodegen(
@@ -140,17 +139,17 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
                     throw new IllegalStateException("mismatch between constructor and forge");
                 }
             }
-
+            
             methodNode.Block
                 .TryCatch()
                 .TryReturn(NewInstance(targetClass, paramList))
-                .AddCatch(typeof(Exception), "t")
+                .AddCatch(typeof(Exception), "ex")
                 .BlockThrow(
                     StaticMethod(
                         typeof(InstanceManufacturerFastCtor),
                         "GetTargetExceptionAsEPException",
-                        Constant(targetClass.Name),
-                        Ref("t")))
+                        Constant(targetClass.FullName),
+                        Ref("ex")))
                 .MethodEnd();
             return LocalMethod(methodNode);
         }

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.epl.table.core
             string tableName)
         {
             var deployment = deployments.Get(deploymentId);
-            return deployment == null ? null : deployment.GetTable(tableName);
+            return deployment?.GetTable(tableName);
         }
 
         public void DestroyTable(

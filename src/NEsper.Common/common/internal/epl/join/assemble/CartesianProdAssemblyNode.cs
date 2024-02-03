@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -27,7 +27,7 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
         private int[][] _combinedSubStreams; // for any cartesian product past 2 streams
 
         // For tracking when we have multiple events for this stream
-        private IDictionary<EventBean, CartesianProdAssemblyNode.ChildStreamResults> _completedEvents;
+        private IDictionary<EventBean, ChildStreamResults> _completedEvents;
         private bool _haveChildResults;
 
         // keep a reference to results for processing optional child nodes not generating results
@@ -59,8 +59,8 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
                 streamNum,
                 numStreams)
         {
-            this._childStreamIndex = childStreamIndex;
-            this._allSubStreamsOptional = allSubStreamsOptional;
+            _childStreamIndex = childStreamIndex;
+            _allSubStreamsOptional = allSubStreamsOptional;
         }
 
         public override void Init(IList<Node>[] result)

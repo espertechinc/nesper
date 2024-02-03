@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -7,7 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
+using System.Collections.Generic;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -22,7 +22,8 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
 namespace com.espertech.esper.common.@internal.epl.expression.etc
 {
-    public class ExprEvalEnumerationCollForge : ExprForge, SelectExprProcessorTypableForge
+    public class ExprEvalEnumerationCollForge : ExprForge,
+        SelectExprProcessorTypableForge
     {
         private readonly ExprEnumerationForge _enumerationForge;
         private readonly EventType _targetType;
@@ -33,14 +34,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             EventType targetType,
             bool firstRowOnly)
         {
-            this._enumerationForge = enumerationForge;
-            this._targetType = targetType;
-            this._firstRowOnly = firstRowOnly;
+            _enumerationForge = enumerationForge;
+            _targetType = targetType;
+            _firstRowOnly = firstRowOnly;
         }
 
-        public ExprEvaluator ExprEvaluator {
-            get { throw ExprNodeUtilityMake.MakeUnsupportedCompileTime(); }
-        }
+        public ExprEvaluator ExprEvaluator => throw ExprNodeUtilityMake.MakeUnsupportedCompileTime();
 
         public CodegenExpression EvaluateCodegen(
             Type requiredType,
@@ -48,11 +47,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            if (_firstRowOnly) {
-                CodegenMethod firstMethodNode = codegenMethodScope
+            if (_firstRowOnly)
+            {
+                var firstMethodNode = codegenMethodScope
                     .MakeChild(typeof(EventBean), typeof(ExprEvalEnumerationCollForge), codegenClassScope);
                 firstMethodNode.Block
-                    .DeclareVar<FlexCollection>(
+                    .DeclareVar<ICollection<EventBean>>(
                         "events",
                         _enumerationForge.EvaluateGetROCollectionEventsCodegen(
                             firstMethodNode,
@@ -65,41 +65,34 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
                 return LocalMethod(firstMethodNode);
             }
 
-            CodegenMethod methodNode = codegenMethodScope.MakeChild(
+            var methodNode = codegenMethodScope.MakeChild(
                 typeof(EventBean[]),
                 typeof(ExprEvalEnumerationCollForge),
                 codegenClassScope);
             methodNode.Block
-                .DeclareVar<FlexCollection>(
+                .DeclareVar<ICollection<EventBean>>(
                     "events",
-                    FlexWrap(_enumerationForge.EvaluateGetROCollectionEventsCodegen(methodNode, exprSymbol, codegenClassScope)))
+                    _enumerationForge.EvaluateGetROCollectionEventsCodegen(
+                        methodNode,
+                        exprSymbol,
+                        codegenClassScope))
                 .IfRefNullReturnNull("events")
-                .MethodReturn(ExprDotMethod(ExprDotName(Ref("events"), "EventBeanCollection"), "ToArray"));
+                .MethodReturn(UnwrapIntoArray<EventBean>(Ref("events")));
             return LocalMethod(methodNode);
         }
 
-        public Type UnderlyingEvaluationType {
-            get {
-                return _firstRowOnly
-                    ? _targetType.UnderlyingType 
-                    : TypeHelper.GetArrayType(_targetType.UnderlyingType);
-            }
-        }
+        public Type UnderlyingEvaluationType =>
+            _firstRowOnly
+                ? _targetType.UnderlyingType
+                : TypeHelper.GetArrayType(_targetType.UnderlyingType);
 
-        public Type EvaluationType {
-            get {
-                return _firstRowOnly 
-                    ? typeof(EventBean)
-                    : typeof(EventBean[]);
-            }
-        }
+        public Type EvaluationType =>
+            _firstRowOnly
+                ? typeof(EventBean)
+                : typeof(EventBean[]);
 
-        public ExprNodeRenderable ExprForgeRenderable {
-            get => _enumerationForge.EnumForgeRenderable;
-        }
+        public ExprNodeRenderable ExprForgeRenderable => _enumerationForge.EnumForgeRenderable;
 
-        public ExprForgeConstantType ForgeConstantType {
-            get => ExprForgeConstantType.NONCONST;
-        }
+        public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
     }
 } // end of namespace

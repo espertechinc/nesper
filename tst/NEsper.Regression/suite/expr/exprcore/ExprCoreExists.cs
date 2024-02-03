@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -11,7 +11,6 @@ using System.Collections.Generic;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.soda;
 using com.espertech.esper.common.@internal.support;
-using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
@@ -19,163 +18,209 @@ using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.expreval;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A;
 using SupportBeanComplexProps = com.espertech.esper.regressionlib.support.bean.SupportBeanComplexProps;
-using SupportMarkerInterface = com.espertech.esper.regressionlib.support.bean.SupportMarkerInterface;
+using SupportMarkerInterface = com.espertech.esper.regressionlib.support.bean.SupportMarkerInterface; // assertEquals
 
 namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 {
-	public class ExprCoreExists
-	{
+    public class ExprCoreExists
+    {
+        public static ICollection<RegressionExecution> Executions()
+        {
+            IList<RegressionExecution> execs = new List<RegressionExecution>();
+            WithExistsSimple(execs);
+            WithExistsInner(execs);
+            WithCastDoubleAndNullOM(execs);
+            WithCastStringAndNullCompile(execs);
+            return execs;
+        }
 
-		public static ICollection<RegressionExecution> Executions()
-		{
-			IList<RegressionExecution> executions = new List<RegressionExecution>();
-			executions.Add(new ExprCoreExistsSimple());
-			executions.Add(new ExprCoreExistsInner());
-			executions.Add(new ExprCoreCastDoubleAndNullOM());
-			executions.Add(new ExprCoreCastStringAndNullCompile());
-			return executions;
-		}
+        public static IList<RegressionExecution> WithCastStringAndNullCompile(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprCoreCastStringAndNullCompile());
+            return execs;
+        }
 
-		private class ExprCoreExistsSimple : RegressionExecution
-		{
+        public static IList<RegressionExecution> WithCastDoubleAndNullOM(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprCoreCastDoubleAndNullOM());
+            return execs;
+        }
 
-			public void Run(RegressionEnvironment env)
-			{
-				var fields = "c0,c1,c2,c3,c4".SplitCsv();
-				var builder = new SupportEvalBuilder("SupportBean")
-					.WithExpressions(
-						fields,
-						"exists(TheString)",
-						"exists(IntBoxed?)",
-						"exists(dummy?)",
-						"exists(IntPrimitive?)",
-						"exists(IntPrimitive)");
-				builder.WithStatementConsumer(
-					stmt => {
-						for (var i = 0; i < 5; i++) {
-							Assert.AreEqual(typeof(bool?), stmt.EventType.GetPropertyType("c" + i));
-						}
-					});
+        public static IList<RegressionExecution> WithExistsInner(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprCoreExistsInner());
+            return execs;
+        }
 
-				var bean = new SupportBean("abc", 100);
-				bean.FloatBoxed = 9.5f;
-				bean.IntBoxed = 3;
-				builder.WithAssertion(bean).Expect(fields, true, true, false, true, true);
+        public static IList<RegressionExecution> WithExistsSimple(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprCoreExistsSimple());
+            return execs;
+        }
 
-				builder.Run(env);
-				env.UndeployAll();
-			}
-		}
+        private class ExprCoreExistsSimple : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var fields = "c0,c1,c2,c3,c4".SplitCsv();
+                var builder = new SupportEvalBuilder("SupportBean")
+                    .WithExpressions(
+                        fields,
+                        "exists(TheString)",
+                        "exists(IntBoxed?)",
+                        "exists(dummy?)",
+                        "exists(IntPrimitive?)",
+                        "exists(IntPrimitive)");
+                builder.WithStatementConsumer(
+                    stmt => {
+                        for (var i = 0; i < 5; i++) {
+                            ClassicAssert.AreEqual(typeof(bool?), stmt.EventType.GetPropertyType("c" + i));
+                        }
+                    });
 
-		private class ExprCoreExistsInner : RegressionExecution
-		{
+                var bean = new SupportBean("abc", 100);
+                bean.FloatBoxed = 9.5f;
+                bean.IntBoxed = 3;
+                builder.WithAssertion(bean).Expect(fields, true, true, false, true, true);
 
-			public void Run(RegressionEnvironment env)
-			{
-				var epl = "@Name('s0') select exists(item?.id) as t0, " +
-				          " exists(item?.Id?) as t1, " +
-				          " exists(item?.Item.IntBoxed) as t2, " +
-				          " exists(item?.Indexed[0]?) as t3, " +
-				          " exists(item?.Mapped('keyOne')?) as t4, " +
-				          " exists(item?.Nested?) as t5, " +
-				          " exists(item?.Nested.NestedValue?) as t6, " +
-				          " exists(item?.Nested.NestedNested?) as t7, " +
-				          " exists(item?.Nested.NestedNested.NestedNestedValue?) as t8, " +
-				          " exists(item?.Nested.NestedNested.NestedNestedValue.Dummy?) as t9, " +
-				          " exists(item?.Nested.NestedNested.Dummy?) as t10 " +
-				          " from SupportMarkerInterface";
-				env.CompileDeploy(epl).AddListener("s0");
+                builder.Run(env);
+                env.UndeployAll();
+            }
+        }
 
-				for (var i = 0; i < 11; i++) {
-					Assert.AreEqual(typeof(bool?), env.Statement("s0").EventType.GetPropertyType("t" + i));
-				}
+        private class ExprCoreExistsInner : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var epl = "@name('s0') select exists(Item?.Id) as t0, " +
+                          " exists(Item?.Id?) as t1, " +
+                          " exists(Item?.Item.IntBoxed) as t2, " +
+                          " exists(Item?.indexed[0]?) as t3, " +
+                          " exists(Item?.mapped('keyOne')?) as t4, " +
+                          " exists(Item?.Nested?) as t5, " +
+                          " exists(Item?.Nested.NestedValue?) as t6, " +
+                          " exists(Item?.Nested.NestedNested?) as t7, " +
+                          " exists(Item?.Nested.NestedNested.NestedNestedValue?) as t8, " +
+                          " exists(Item?.Nested.NestedNested.NestedNestedValue.dummy?) as t9, " +
+                          " exists(Item?.Nested.NestedNested.dummy?) as t10 " +
+                          " from SupportMarkerInterface";
+                env.CompileDeploy(epl).AddListener("s0");
 
-				// cannot exists if the inner is null
-				env.SendEventBean(new SupportBeanDynRoot(null));
-				var theEvent = env.Listener("s0").AssertOneGetNewAndReset();
-				AssertResults(theEvent, new[] {false, false, false, false, false, false, false, false, false, false, false});
+                env.AssertStatement(
+                    "s0",
+                    statement => {
+                        for (var i = 0; i < 11; i++) {
+                            ClassicAssert.AreEqual(typeof(bool?), statement.EventType.GetPropertyType("t" + i));
+                        }
+                    });
 
-				// try nested, indexed and mapped
-				env.SendEventBean(new SupportBeanDynRoot(SupportBeanComplexProps.MakeDefaultBean()));
-				theEvent = env.Listener("s0").AssertOneGetNewAndReset();
-				AssertResults(theEvent, new[] {false, false, false, true, true, true, true, true, true, false, false});
+                // cannot exists if the inner is null
+                env.SendEventBean(new SupportBeanDynRoot(null));
+                env.AssertEventNew(
+                    "s0",
+                    @event => AssertResults(
+                        @event,
+                        new bool[] { false, false, false, false, false, false, false, false, false, false, false }));
 
-				// try nested, indexed and mapped
-				env.SendEventBean(new SupportBeanDynRoot(SupportBeanComplexProps.MakeDefaultBean()));
-				theEvent = env.Listener("s0").AssertOneGetNewAndReset();
-				AssertResults(theEvent, new[] {false, false, false, true, true, true, true, true, true, false, false});
+                // try nested, indexed and mapped
+                env.SendEventBean(new SupportBeanDynRoot(SupportBeanComplexProps.MakeDefaultBean()));
+                env.AssertEventNew(
+                    "s0",
+                    @event => AssertResults(
+                        @event,
+                        new bool[] { false, false, false, true, true, true, true, true, true, false, false }));
 
-				// try a boxed that returns null but does exists
-				env.SendEventBean(new SupportBeanDynRoot(new SupportBeanDynRoot(new SupportBean())));
-				theEvent = env.Listener("s0").AssertOneGetNewAndReset();
-				AssertResults(theEvent, new[] {false, false, true, false, false, false, false, false, false, false, false});
+                // try nested, indexed and mapped
+                env.SendEventBean(new SupportBeanDynRoot(SupportBeanComplexProps.MakeDefaultBean()));
+                env.AssertEventNew(
+                    "s0",
+                    @event => AssertResults(
+                        @event,
+                        new bool[] { false, false, false, true, true, true, true, true, true, false, false }));
 
-				env.SendEventBean(new SupportBeanDynRoot(new SupportBean_A("10")));
-				theEvent = env.Listener("s0").AssertOneGetNewAndReset();
-				AssertResults(theEvent, new[] {true, true, false, false, false, false, false, false, false, false, false});
+                // try a boxed that returns null but does exists
+                env.SendEventBean(new SupportBeanDynRoot(new SupportBeanDynRoot(new SupportBean())));
+                env.AssertEventNew(
+                    "s0",
+                    @event => AssertResults(
+                        @event,
+                        new bool[] { false, false, true, false, false, false, false, false, false, false, false }));
 
-				env.UndeployAll();
-			}
-		}
+                env.SendEventBean(new SupportBeanDynRoot(new SupportBean_A("10")));
+                env.AssertEventNew(
+                    "s0",
+                    @event => AssertResults(
+                        @event,
+                        new bool[] { true, true, false, false, false, false, false, false, false, false, false }));
 
-		private class ExprCoreCastDoubleAndNullOM : RegressionExecution
-		{
-			public void Run(RegressionEnvironment env)
-			{
-				var stmtText = "select exists(item?.IntBoxed) as t0 from SupportMarkerInterface";
+                env.UndeployAll();
+            }
+        }
 
-				var model = new EPStatementObjectModel();
-				model.SelectClause = SelectClause.Create().Add(Expressions.ExistsProperty("item?.IntBoxed"), "t0");
-				model.FromClause = FromClause.Create(FilterStream.Create(nameof(SupportMarkerInterface)));
-				model = SerializableObjectCopier.GetInstance(env.Container).Copy(model);
-				Assert.AreEqual(stmtText, model.ToEPL());
-				model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
+        private class ExprCoreCastDoubleAndNullOM : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var stmtText = "select exists(Item?.IntBoxed) as t0 from SupportMarkerInterface";
 
-				env.CompileDeploy(model).AddListener("s0");
+                var model = new EPStatementObjectModel();
+                model.SelectClause = SelectClause.Create().Add(Expressions.ExistsProperty("Item?.IntBoxed"), "t0");
+                model.FromClause = FromClause.Create(FilterStream.Create(nameof(SupportMarkerInterface)));
+                model = env.CopyMayFail(model);
+                ClassicAssert.AreEqual(stmtText, model.ToEPL());
+                model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
 
-				AssertStringAndNull(env);
+                env.CompileDeploy(model).AddListener("s0");
 
-				env.UndeployAll();
-			}
-		}
+                AssertStringAndNull(env);
 
-		private class ExprCoreCastStringAndNullCompile : RegressionExecution
-		{
-			public void Run(RegressionEnvironment env)
-			{
-				var epl = "@Name('s0') select exists(item?.IntBoxed) as t0 from SupportMarkerInterface";
-				env.EplToModelCompileDeploy(epl).AddListener("s0").Milestone(0);
+                env.UndeployAll();
+            }
+        }
 
-				AssertStringAndNull(env);
+        private class ExprCoreCastStringAndNullCompile : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var epl = "@name('s0') select exists(Item?.IntBoxed) as t0 from SupportMarkerInterface";
+                env.EplToModelCompileDeploy(epl).AddListener("s0").Milestone(0);
 
-				env.UndeployAll();
-			}
-		}
+                AssertStringAndNull(env);
 
-		private static void AssertStringAndNull(RegressionEnvironment env)
-		{
-			Assert.AreEqual(typeof(bool?), env.Statement("s0").EventType.GetPropertyType("t0"));
+                env.UndeployAll();
+            }
+        }
 
-			env.SendEventBean(new SupportBeanDynRoot(new SupportBean()));
-			Assert.AreEqual(true, env.Listener("s0").AssertOneGetNewAndReset().Get("t0"));
+        private static void AssertStringAndNull(RegressionEnvironment env)
+        {
+            env.AssertStatement(
+                "s0",
+                statement => ClassicAssert.AreEqual(typeof(bool?), statement.EventType.GetPropertyType("t0")));
 
-			env.SendEventBean(new SupportBeanDynRoot(null));
-			Assert.AreEqual(false, env.Listener("s0").AssertOneGetNewAndReset().Get("t0"));
+            env.SendEventBean(new SupportBeanDynRoot(new SupportBean()));
+            env.AssertEqualsNew("s0", "t0", true);
 
-			env.SendEventBean(new SupportBeanDynRoot("abc"));
-			Assert.AreEqual(false, env.Listener("s0").AssertOneGetNewAndReset().Get("t0"));
-		}
+            env.SendEventBean(new SupportBeanDynRoot(null));
+            env.AssertEqualsNew("s0", "t0", false);
 
-		private static void AssertResults(
-			EventBean theEvent,
-			bool[] result)
-		{
-			for (var i = 0; i < result.Length; i++) {
-				Assert.AreEqual(result[i], theEvent.Get("t" + i), "failed for index " + i);
-			}
-		}
-	}
+            env.SendEventBean(new SupportBeanDynRoot("abc"));
+            env.AssertEqualsNew("s0", "t0", false);
+        }
+
+        private static void AssertResults(
+            EventBean theEvent,
+            bool[] result)
+        {
+            for (var i = 0; i < result.Length; i++) {
+                ClassicAssert.AreEqual(result[i], theEvent.Get("t" + i), "failed for index " + i);
+            }
+        }
+    }
 } // end of namespace

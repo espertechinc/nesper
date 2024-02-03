@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -34,8 +34,8 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 
         public static StatementInformationalsCompileTime GetInformationals(
             StatementBaseInfo @base,
-            IList<FilterSpecCompiled> filterSpecCompileds,
-            IList<ScheduleHandleCallbackProvider> schedules,
+            IList<FilterSpecTracked> filterSpecCompileds,
+            IList<ScheduleHandleTracked> schedules,
             IList<NamedWindowConsumerStreamSpec> namedWindowConsumers,
             bool allowContext,
             SelectSubscriberDescriptor selectSubscriberDescriptor,
@@ -44,13 +44,13 @@ namespace com.espertech.esper.common.@internal.compile.stage3
         {
             var specCompiled = @base.StatementSpec;
 
-            bool alwaysSynthesizeOutputEvents =
+            var alwaysSynthesizeOutputEvents =
                 specCompiled.Raw.InsertIntoDesc != null ||
                 specCompiled.Raw.ForClauseSpec != null ||
                 specCompiled.SelectClauseCompiled.IsDistinct ||
                 specCompiled.Raw.CreateDataFlowDesc != null;
             var needDedup = IsNeedDedup(filterSpecCompileds);
-            bool hasSubquery = !@base.StatementSpec.SubselectNodes.IsEmpty();
+            var hasSubquery = !@base.StatementSpec.SubselectNodes.IsEmpty();
             var canSelfJoin = StatementSpecWalkUtil.IsPotentialSelfJoin(specCompiled) || needDedup;
 
             // Determine stateless statement
@@ -63,7 +63,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             string contextModuleName = null;
             NameAccessModifier? contextVisibility = null;
             if (allowContext) {
-                ContextCompileTimeDescriptor descriptor = @base.StatementRawInfo.OptionalContextDescriptor;
+                var descriptor = @base.StatementRawInfo.OptionalContextDescriptor;
                 if (descriptor != null) {
                     contextName = descriptor.ContextName;
                     contextModuleName = descriptor.ContextModuleName;
@@ -75,7 +75,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             // Hint annotations are often driven by variables
             var hasHint = false;
             if (@base.StatementSpec.Raw.Annotations != null) {
-                foreach (Attribute annotation in @base.StatementRawInfo.Annotations) {
+                foreach (var annotation in @base.StatementRawInfo.Annotations) {
                     if (annotation is HintAttribute) {
                         hasHint = true;
                     }
@@ -88,7 +88,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             var writesToTables = StatementLifecycleSvcUtil.IsWritesToTables(
                 @base.StatementSpec.Raw,
                 services.TableCompileTimeResolver);
-            bool hasTableAccess = StatementLifecycleSvcUtil.DetermineHasTableAccess(
+            var hasTableAccess = StatementLifecycleSvcUtil.DetermineHasTableAccess(
                 @base.StatementSpec.SubselectNodes,
                 @base.StatementSpec.Raw,
                 services.TableCompileTimeResolver);
@@ -109,12 +109,12 @@ namespace com.espertech.esper.common.@internal.compile.stage3
                 }
             }
 
-            bool allowSubscriber = services.Configuration.Compiler.ByteCode.IsAllowSubscriber;
-            
-            IList<ExpressionScriptProvided> statementScripts = @base.StatementSpec.Raw.ScriptExpressions;
+            var allowSubscriber = services.Configuration.Compiler.ByteCode.IsAllowSubscriber;
+
+            var statementScripts = @base.StatementSpec.Raw.ScriptExpressions;
             IList<ExpressionScriptProvided> onScripts = new List<ExpressionScriptProvided>();
             if (statementScripts != null) {
-                foreach (ExpressionScriptProvided script in statementScripts) {
+                foreach (var script in statementScripts) {
                     if (script.Name.Equals(EPL_ONLISTENERUPDATE_SCRIPT_NAME) ||
                         script.Name.Equals(EPL_ONSTART_SCRIPT_NAME) ||
                         script.Name.Equals(EPL_ONSTOP_SCRIPT_NAME)) {
@@ -124,6 +124,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             }
 
             return new StatementInformationalsCompileTime(
+                services.Container,
                 @base.StatementName,
                 alwaysSynthesizeOutputEvents,
                 contextName,
@@ -158,10 +159,10 @@ namespace com.espertech.esper.common.@internal.compile.stage3
                 onScripts.ToArray());
         }
 
-        private static bool IsNeedDedup(IList<FilterSpecCompiled> filterSpecCompileds)
+        private static bool IsNeedDedup(IList<FilterSpecTracked> filterSpecCompileds)
         {
             foreach (var provider in filterSpecCompileds) {
-                if (provider.Parameters.Paths.Length > 1) {
+                if (provider.FilterSpecCompiled.Parameters.Paths.Length > 1) {
                     return true;
                 }
             }
@@ -186,7 +187,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
                 return false;
             }
 
-            StreamSpecRaw singleStream = spec.StreamSpecs[0];
+            var singleStream = spec.StreamSpecs[0];
             if (!(singleStream is FilterStreamSpecRaw) && !(singleStream is NamedWindowConsumerStreamSpec)) {
                 return false;
             }
@@ -203,7 +204,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
                 return false;
             }
 
-            IList<ExprNode> expressions = StatementSpecRawWalkerExpr.CollectExpressionsShallow(spec);
+            var expressions = StatementSpecRawWalkerExpr.CollectExpressionsShallow(spec);
             if (expressions.IsEmpty()) {
                 return true;
             }

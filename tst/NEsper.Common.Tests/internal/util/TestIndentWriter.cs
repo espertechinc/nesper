@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -10,6 +10,7 @@ using System;
 using System.IO;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.util
 {
@@ -30,7 +31,7 @@ namespace com.espertech.esper.common.@internal.util
 
         private void AssertWritten(string text)
         {
-            Assert.AreEqual(text + NEWLINE, stringWriter.ToString());
+            ClassicAssert.AreEqual(text + NEWLINE, stringWriter.ToString());
             var buffer = stringWriter.GetStringBuilder();
             stringWriter.GetStringBuilder().Remove(0, buffer.Length);
         }

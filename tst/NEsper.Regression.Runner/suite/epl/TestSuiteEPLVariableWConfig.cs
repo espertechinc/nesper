@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -65,16 +65,23 @@ namespace com.espertech.esper.regressionrun.suite.epl
             TryInvalidConfigurationCompiler(
                 SupportConfigFactory.GetConfiguration(Container),
                 config => config.Common.AddVariable("invalidvar1", typeof(int?), "abc"),
-                "Failed compiler startup: Error configuring variable 'invalidvar1': Variable 'invalidvar1' of declared type " +
-                typeof(int?).CleanName() +
-                " cannot be initialized by value 'abc': System.FormatException: Input string was not in a correct format.");
+#if NET7_0_OR_GREATER
+                $"Failed compiler startup: Error configuring variable 'invalidvar1': Variable 'invalidvar1' of declared type {typeof(int?).CleanName()} cannot be initialized by value 'abc': System.FormatException: The input string 'abc' was not in a correct format."
+#else
+                $"Failed compiler startup: Error configuring variable 'invalidvar1': Variable 'invalidvar1' of declared type {typeof(int?).CleanName()} cannot be initialized by value 'abc': System.FormatException: Input string was not in a correct format."
+#endif
+            );
+            
             TryInvalidConfigurationRuntime(
                 runtimeProvider,
                 SupportConfigFactory.GetConfiguration(Container),
                 config => config.Common.AddVariable("invalidvar1", typeof(int?), "abc"),
-                "Failed runtime startup: Error configuring variable 'invalidvar1': Variable 'invalidvar1' of declared type " +
-                typeof(int?).CleanName() +
-                " cannot be initialized by value 'abc': System.FormatException: Input string was not in a correct format.");
+#if NET7_0_OR_GREATER
+                $"Failed runtime startup: Error configuring variable 'invalidvar1': Variable 'invalidvar1' of declared type {typeof(int?).CleanName()} cannot be initialized by value 'abc': System.FormatException: The input string 'abc' was not in a correct format."
+#else
+                $"Failed runtime startup: Error configuring variable 'invalidvar1': Variable 'invalidvar1' of declared type {typeof(int?).CleanName()} cannot be initialized by value 'abc': System.FormatException: Input string was not in a correct format."
+#endif
+                );
 
             TryInvalidConfigurationCompiler(
                 SupportConfigFactory.GetConfiguration(Container),

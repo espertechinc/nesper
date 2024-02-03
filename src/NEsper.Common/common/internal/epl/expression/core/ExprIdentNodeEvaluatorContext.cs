@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -44,9 +44,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             return true;
         }
 
-        public int StreamNum {
-            get => _streamNum;
-        }
+        public int StreamNum => _streamNum;
 
         public object Evaluate(
             EventBean[] eventsPerStream,
@@ -66,8 +64,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenMethod methodNode = codegenMethodScope.MakeChild(_resultType, GetType(), codegenClassScope);
-            CodegenExpressionRef refExprEvalCtx = exprSymbol.GetAddExprEvalCtx(methodNode);
+            if (_resultType == null) {
+                return ConstantNull();
+            }
+
+            var methodNode = codegenMethodScope.MakeChild(_resultType, GetType(), codegenClassScope);
+            var refExprEvalCtx = exprSymbol.GetAddExprEvalCtx(methodNode);
 
             methodNode.Block
                 .IfCondition(NotEqualsNull(refExprEvalCtx))
@@ -89,6 +91,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         public bool IsContextEvaluated => true;
 
         public bool OptionalEvent {
+            get => throw new NotImplementedException();
             set { }
         }
 

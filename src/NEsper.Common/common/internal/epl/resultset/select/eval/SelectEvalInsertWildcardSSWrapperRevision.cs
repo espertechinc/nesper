@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             CodegenClassScope codegenClassScope)
         {
             var type = VariantEventTypeUtil.GetField(variantEventType, codegenClassScope);
-            var refEPS = exprSymbol.GetAddEPS(methodNode);
+            var refEPS = exprSymbol.GetAddEps(methodNode);
             return StaticMethod(
                 typeof(SelectEvalInsertWildcardSSWrapperRevision),
                 "SelectExprInsertWildcardSSWrapRevision",
@@ -69,10 +69,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             IDictionary<string, object> props,
             VariantEventType variantEventType)
         {
-            DecoratingEventBean wrapper = (DecoratingEventBean) eventsPerStream[0];
+            var wrapper = (DecoratingEventBean)eventsPerStream[0];
             if (wrapper != null) {
-                IDictionary<string, object> map = wrapper.DecoratingProperties;
-                if ((numEvaluators == 0) && (!map.IsEmpty())) {
+                var map = wrapper.DecoratingProperties;
+                if (numEvaluators == 0 && !map.IsEmpty()) {
                     // no action
                 }
                 else {
@@ -80,7 +80,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                 }
             }
 
-            EventBean theEvent = eventsPerStream[0];
+            var theEvent = eventsPerStream[0];
             return variantEventType.GetValueAddEventBean(theEvent);
         }
     }

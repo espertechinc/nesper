@@ -1,21 +1,17 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-using System.IO;
-
-using com.espertech.esper.common.client;
-
 namespace com.espertech.esper.common.@internal.type
 {
     // Why do we need this? ... .NET types are fully qualified and include the dimensionality
     // and types of all the items we need...
 
+#if OBSOLETE
     public class ClassIdentifierWArray
     {
         public const string PRIMITIVE_KEYWORD = "primitive";
@@ -105,4 +101,5 @@ namespace com.espertech.esper.common.@internal.type
             }
         }
     }
+#endif
 } // end of namespace

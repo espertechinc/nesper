@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -17,7 +17,6 @@ namespace com.espertech.esper.common.@internal.type
 {
     public partial class MathArithType
     {
-        [Serializable]
         public class DivideDecimalConvComputerWithMathCtx : DivideDecimalConvComputerBase
         {
             private readonly MathContext _mathContext;
@@ -47,9 +46,12 @@ namespace com.espertech.esper.common.@internal.type
                 CodegenExpressionRef s2,
                 CodegenClassScope codegenClassScope)
             {
-                CodegenExpression math = codegenClassScope.AddOrGetDefaultFieldSharable(new MathContextCodegenField(_mathContext));
+                CodegenExpression math =
+                    codegenClassScope.AddOrGetDefaultFieldSharable(new MathContextCodegenField(_mathContext));
                 return CodegenExpressionBuilder.ExprDotMethod(
-                    math, "Apply", CodegenExpressionBuilder.Op(s1, "/", s2));
+                    math,
+                    "Apply",
+                    CodegenExpressionBuilder.Op(s1, "/", s2));
             }
         }
     }

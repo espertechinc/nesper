@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -8,18 +8,18 @@
 
 namespace com.espertech.esper.common.client.json.util
 {
-	/// <summary>
-	///     Event sender for JSON documents and pre-parsed event objects.
-	///     <para />
-	///     Allows parsing a JSON document returning the event object.
-	/// </summary>
-	public interface EventSenderJson : EventSender
+    /// <summary>
+    ///     Event sender for JSON documents and pre-parsed event objects.
+    ///     <para />
+    ///     Allows parsing a JSON document returning the event object.
+    /// </summary>
+    public interface EventSenderJson : EventSender
     {
-	    /// <summary>
-	    /// </summary>
-	    /// <param name="json">to parse</param>
-	    /// <returns>event object</returns>
-	    /// <throws>com.espertech.esper.common.client.EPException when parsing the document failed</throws>
-	    object Parse(string json);
+        /// <summary>
+        /// </summary>
+        /// <param name="json">to parse</param>
+        /// <returns>event object</returns>
+        /// <throws>com.espertech.esper.common.client.EPException when parsing the document failed</throws>
+        object Parse(string json);
     }
 } // end of namespace

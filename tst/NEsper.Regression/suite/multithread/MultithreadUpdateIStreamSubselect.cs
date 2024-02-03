@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -10,21 +10,27 @@ using System.Collections.Generic;
 using System.Threading;
 
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.runtime.client.scopetest;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esper.regressionlib.support.client.SupportCompileDeployUtil;
 
 namespace com.espertech.esper.regressionlib.suite.multithread
 {
     public class MultithreadUpdateIStreamSubselect : RegressionExecution
     {
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
+        }
+
         public void Run(RegressionEnvironment env)
         {
             env.CompileDeploy(
-                "@Name('s0') update istream SupportBean as sb set LongPrimitive = (select count(*) from SupportBean_S0#keepall as S0 where S0.P00 = sb.TheString)");
+                "@name('s0') update istream SupportBean as sb set LongPrimitive = (select count(*) from SupportBean_S0#keepall as S0 where S0.P00 = sb.TheString)");
             var listener = new SupportUpdateListener();
             env.Statement("s0").AddListener(listener);
 
@@ -52,10 +58,10 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             }
 
             // validate results, price must be 5 for each symbol
-            Assert.AreEqual(numGroups, listener.NewDataList.Count);
+            ClassicAssert.AreEqual(numGroups, listener.NewDataList.Count);
             foreach (var newData in listener.NewDataList) {
-                var result = (SupportBean) newData[0].Underlying;
-                Assert.AreEqual(numRepeats, result.LongPrimitive);
+                var result = (SupportBean)newData[0].Underlying;
+                ClassicAssert.AreEqual(numRepeats, result.LongPrimitive);
             }
 
             env.UndeployAll();

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -13,7 +13,6 @@ using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.@event.core;
-using com.espertech.esper.compat;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -32,9 +31,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
             this.bindProcessorForge = bindProcessorForge;
         }
 
-        public EventType ResultEventType {
-            get => syntheticProcessorForge.ResultEventType;
-        }
+        public EventType ResultEventType => syntheticProcessorForge.ResultEventType;
 
         public CodegenMethod ProcessCodegen(
             CodegenExpression resultEventType,
@@ -44,21 +41,21 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenMethod processMethod = codegenMethodScope.MakeChild(
+            var processMethod = codegenMethodScope.MakeChild(
                 typeof(EventBean),
-                this.GetType(),
+                GetType(),
                 codegenClassScope);
 
-            CodegenExpressionRef isSynthesize = selectSymbol.GetAddSynthesize(processMethod);
-            CodegenMethod syntheticMethod = syntheticProcessorForge.ProcessCodegen(
+            var isSynthesize = selectSymbol.GetAddSynthesize(processMethod);
+            var syntheticMethod = syntheticProcessorForge.ProcessCodegen(
                 resultEventType,
                 eventBeanFactory,
                 processMethod,
                 selectSymbol,
                 exprSymbol,
                 codegenClassScope);
-            CodegenMethod bindMethod = bindProcessorForge.ProcessCodegen(processMethod, exprSymbol, codegenClassScope);
-            CodegenExpression isNewData = exprSymbol.GetAddIsNewData(processMethod);
+            var bindMethod = bindProcessorForge.ProcessCodegen(processMethod, exprSymbol, codegenClassScope);
+            var isNewData = exprSymbol.GetAddIsNewData(processMethod);
             CodegenExpression exprCtx = exprSymbol.GetAddExprEvalCtx(processMethod);
 
             var stmtResultSvc = codegenClassScope.AddDefaultFieldUnshared(

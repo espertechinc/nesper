@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -28,278 +28,304 @@ using com.espertech.esper.compat.function;
 
 namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
 {
-	public class ClassProvidedCompileTimeResolverImpl : ClassProvidedCompileTimeResolver
-	{
-		private readonly string _moduleName;
-		private readonly ICollection<string> _moduleUses;
-		private readonly ClassProvidedCompileTimeRegistry _locals;
-		private readonly PathRegistry<string, ClassProvided> _path;
-		private readonly ModuleDependenciesCompileTime _moduleDependencies;
-		private readonly bool _isFireAndForget;
+    public class ClassProvidedCompileTimeResolverImpl : ClassProvidedCompileTimeResolver
+    {
+        private readonly string _moduleName;
+        private readonly ICollection<string> _moduleUses;
+        private readonly ClassProvidedCompileTimeRegistry _locals;
+        private readonly PathRegistry<string, ClassProvided> _path;
+        private readonly ModuleDependenciesCompileTime _moduleDependencies;
+        private readonly bool _isFireAndForget;
 
-		public ClassProvidedCompileTimeResolverImpl(
-			string moduleName,
-			ICollection<string> moduleUses,
-			ClassProvidedCompileTimeRegistry locals,
-			PathRegistry<string, ClassProvided> path,
-			ModuleDependenciesCompileTime moduleDependencies,
-			bool isFireAndForget)
-		{
-			this._moduleName = moduleName;
-			this._moduleUses = moduleUses;
-			this._locals = locals;
-			this._path = path;
-			this._moduleDependencies = moduleDependencies;
-			this._isFireAndForget = isFireAndForget;
-		}
+        public ClassProvidedCompileTimeResolverImpl(
+            string moduleName,
+            ICollection<string> moduleUses,
+            ClassProvidedCompileTimeRegistry locals,
+            PathRegistry<string, ClassProvided> path,
+            ModuleDependenciesCompileTime moduleDependencies,
+            bool isFireAndForget)
+        {
+            _moduleName = moduleName;
+            _moduleUses = moduleUses;
+            _locals = locals;
+            _path = path;
+            _moduleDependencies = moduleDependencies;
+            _isFireAndForget = isFireAndForget;
+        }
 
-		public ClassProvided ResolveClass(string name)
-		{
-			// try self-originated protected types first
-			var localExpr = _locals.Classes.Get(name);
-			if (localExpr != null) {
-				return localExpr;
-			}
+        public ClassProvided ResolveClass(string name)
+        {
+            // try self-originated protected types first
+            var localExpr = _locals.Classes.Get(name);
+            if (localExpr != null) {
+                return localExpr;
+            }
 
-			try {
-				var expression = _path.GetAnyModuleExpectSingle(name, _moduleUses);
-				if (expression != null) {
-					if (!_isFireAndForget && !NameAccessModifierExtensions.Visible(expression.First.Visibility, expression.First.ModuleName, _moduleName)) {
-						return null;
-					}
+            try {
+                var expression = _path.GetAnyModuleExpectSingle(name, _moduleUses);
+                if (expression != null) {
+                    if (!_isFireAndForget &&
+                        !NameAccessModifierExtensions.Visible(
+                            expression.First.Visibility,
+                            expression.First.ModuleName,
+                            _moduleName)) {
+                        return null;
+                    }
 
-					_moduleDependencies.AddPathClass(name, expression.Second);
-					return expression.First;
-				}
-			}
-			catch (PathException e) {
-				throw CompileTimeResolverUtil.MakePathAmbiguous(PathRegistryObjectType.CLASSPROVIDED, name, e);
-			}
+                    _moduleDependencies.AddPathClass(name, expression.Second);
+                    return expression.First;
+                }
+            }
+            catch (PathException e) {
+                throw CompileTimeResolverUtil.MakePathAmbiguous(PathRegistryObjectType.CLASSPROVIDED, name, e);
+            }
 
-			return null;
-		}
+            return null;
+        }
 
-		public Pair<Type, ImportSingleRowDesc> ResolveSingleRow(string name)
-		{
-			Pair<Type, ExtensionSingleRowFunctionAttribute> pair = ResolveFromLocalAndPath<ExtensionSingleRowFunctionAttribute>(
-				name,
-				_locals,
-				_path,
-				"single-row function",
-				_moduleUses,
-				_moduleDependencies,
-				anno => Collections.SingletonSet(anno.Name));
-			return pair == null ? null : new Pair<Type, ImportSingleRowDesc>(
-				pair.First, new ImportSingleRowDesc(pair.First, pair.Second));
-		}
+        public Pair<Type, ImportSingleRowDesc> ResolveSingleRow(string name)
+        {
+            var pair = ResolveFromLocalAndPath<ExtensionSingleRowFunctionAttribute>(
+                name,
+                _locals,
+                _path,
+                "single-row function",
+                _moduleUses,
+                _moduleDependencies,
+                anno => Collections.SingletonSet(anno.Name));
+            return pair == null
+                ? null
+                : new Pair<Type, ImportSingleRowDesc>(
+                    pair.First,
+                    new ImportSingleRowDesc(pair.First, pair.Second));
+        }
 
-		public Type ResolveAggregationFunction(string name)
-		{
-			Pair<Type, ExtensionAggregationFunctionAttribute> pair = ResolveFromLocalAndPath<ExtensionAggregationFunctionAttribute>(
-				name,
-				_locals,
-				_path,
-				"aggregation function",
-				_moduleUses,
-				_moduleDependencies,
-				anno => Collections.SingletonSet(anno.Name));
-			return pair?.First;
-		}
+        public Type ResolveAggregationFunction(string name)
+        {
+            var pair = ResolveFromLocalAndPath<ExtensionAggregationFunctionAttribute>(
+                name,
+                _locals,
+                _path,
+                "aggregation function",
+                _moduleUses,
+                _moduleDependencies,
+                anno => Collections.SingletonSet(anno.Name));
+            return pair?.First;
+        }
 
-		public Pair<Type, string[]> ResolveAggregationMultiFunction(string name)
-		{
-			Func<ExtensionAggregationMultiFunctionAttribute, ISet<string>> nameProvision = anno => {
-				ISet<string> names = new HashSet<string>();
-				string[] split = anno.Names.SplitCsv();
-				foreach (var nameprovided in split) {
-					names.Add(nameprovided.Trim());
-				}
+        public Pair<Type, string[]> ResolveAggregationMultiFunction(string name)
+        {
+            Func<ExtensionAggregationMultiFunctionAttribute, ISet<string>> nameProvision = anno => {
+                ISet<string> names = new HashSet<string>();
+                var split = anno.Names.SplitCsv();
+                foreach (var nameprovided in split) {
+                    names.Add(nameprovided.Trim());
+                }
 
-				return names;
-			};
-			var pair = ResolveFromLocalAndPath(
-				name,
-				_locals,
-				_path,
-				"aggregation multi-function",
-				_moduleUses,
-				_moduleDependencies,
-				nameProvision);
-			return pair == null ? null : new Pair<Type, string[]>(pair.First, pair.Second.Names.SplitCsv());
-		}
+                return names;
+            };
+            var pair = ResolveFromLocalAndPath(
+                name,
+                _locals,
+                _path,
+                "aggregation multi-function",
+                _moduleUses,
+                _moduleDependencies,
+                nameProvision);
+            return pair == null ? null : new Pair<Type, string[]>(pair.First, pair.Second.Names.SplitCsv());
+        }
 
-		public bool IsEmpty()
-		{
-			return _path.IsEmpty() && _locals.Classes.IsEmpty();
-		}
+        public bool IsEmpty()
+        {
+            return _path.IsEmpty() && _locals.Classes.IsEmpty();
+        }
 
-		public void AddTo(ICollection<IArtifact> artifacts)
-		{
-			_path.Traverse(cp => artifacts.Add(cp.Artifact));
-		}
+        public void AddTo(ICollection<IArtifact> artifacts)
+        {
+            _path.Traverse(cp => artifacts.Add(cp.Artifact));
+        }
 
-		public void RemoveFrom(ICollection<IArtifact> artifacts)
-		{
-			Consumer<ClassProvided> classProvidedByteCodeRemover = item => {
-				artifacts.Remove(item.Artifact);
-			};
-			_path.Traverse(classProvidedByteCodeRemover);
-		}
+        public void AddTo(ClassProvidedClassesAdd additionalClasses)
+        {
+            _path.Traverse(cp => additionalClasses.Invoke(cp.Artifact));
+        }
 
-		internal static Pair<Type, T> ResolveFromLocalAndPath<T>(
-			string soughtName,
-			ClassProvidedCompileTimeRegistry locals,
-			PathRegistry<string, ClassProvided> path,
-			string objectName,
-			ICollection<string> moduleUses,
-			ModuleDependenciesCompileTime moduleDependencies,
-			Func<T, ISet<string>> namesProvider)
-			where T : Attribute
-		{
-			if (locals.Classes.IsEmpty() && path.IsEmpty()) {
-				return null;
-			}
+        public void RemoveFrom(ICollection<IArtifact> artifacts)
+        {
+			_path.Traverse(item => artifacts.Remove(item.Artifact));
+        }
 
-			var annotationType = typeof(T);
-			try {
-				// try resolve from local
-				var localPair = ResolveFromLocal(soughtName, locals, annotationType, objectName, namesProvider);
-				if (localPair != null) {
-					return localPair;
-				}
+        public void RemoveFrom(ClassProvidedClassRemove removeClasses)
+        {
+            _path.Traverse(item => removeClasses.Invoke(item.Artifact));
+        }
 
-				// try resolve from path, using module-uses when necessary
-				return ResolveFromPath(soughtName, path, annotationType, objectName, moduleUses, moduleDependencies, namesProvider);
-			}
-			catch (ExprValidationException ex) {
-				throw new EPException(ex.Message, ex);
-			}
-		}
+        internal static Pair<Type, T> ResolveFromLocalAndPath<T>(
+            string soughtName,
+            ClassProvidedCompileTimeRegistry locals,
+            PathRegistry<string, ClassProvided> path,
+            string objectName,
+            ICollection<string> moduleUses,
+            ModuleDependenciesCompileTime moduleDependencies,
+            Func<T, ISet<string>> namesProvider)
+            where T : Attribute
+        {
+            if (locals.Classes.IsEmpty() && path.IsEmpty()) {
+                return null;
+            }
 
-		private static Pair<Type, T> ResolveFromLocal<T>(
-			string soughtName,
-			ClassProvidedCompileTimeRegistry locals,
-			Type annotationType,
-			string objectName,
-			Func<T, ISet<string>> namesProvider)
-			where T : Attribute
-		{
-			var foundLocal = new List<Pair<Type, T>>();
-			foreach (var entry in locals.Classes) {
-				EPTypeHelper.TraverseAnnotations<T>(
-					entry.Value.ClassesMayNull,
-					(clazz, annotation) => {
-						var t = (T) annotation;
-						var names = namesProvider.Invoke(t);
-						foreach (var name in names) {
-							if (soughtName.Equals(name)) {
-								foundLocal.Add(new Pair<Type, T>(clazz, t));
-							}
-						}
-					});
-			}
+            var annotationType = typeof(T);
+            try {
+                // try resolve from local
+                var localPair = ResolveFromLocal(soughtName, locals, annotationType, objectName, namesProvider);
+                if (localPair != null) {
+                    return localPair;
+                }
 
-			if (foundLocal.Count > 1) {
-				throw GetDuplicateSingleRow(soughtName, objectName);
-			}
+                // try resolve from path, using module-uses when necessary
+                return ResolveFromPath(
+                    soughtName,
+                    path,
+                    annotationType,
+                    objectName,
+                    moduleUses,
+                    moduleDependencies,
+                    namesProvider);
+            }
+            catch (ExprValidationException ex) {
+                throw new EPException(ex.Message, ex);
+            }
+        }
 
-			if (foundLocal.Count == 1) {
-				return foundLocal[0];
-			}
+        private static Pair<Type, T> ResolveFromLocal<T>(
+            string soughtName,
+            ClassProvidedCompileTimeRegistry locals,
+            Type annotationType,
+            string objectName,
+            Func<T, ISet<string>> namesProvider)
+            where T : Attribute
+        {
+            var foundLocal = new List<Pair<Type, T>>();
+            foreach (var entry in locals.Classes) {
+                EPChainableTypeHelper.TraverseAnnotations<T>(
+                    entry.Value.ClassesMayNull,
+                    (
+                        clazz,
+                        annotation) => {
+                        var t = annotation;
+                        var names = namesProvider.Invoke(t);
+                        foreach (var name in names) {
+                            if (soughtName.Equals(name)) {
+                                foundLocal.Add(new Pair<Type, T>(clazz, t));
+                            }
+                        }
+                    });
+            }
 
-			return null;
-		}
+            if (foundLocal.Count > 1) {
+                throw GetDuplicateSingleRow(soughtName, objectName);
+            }
 
-		private static Pair<Type, T> ResolveFromPath<T>(
-			string soughtName,
-			PathRegistry<string, ClassProvided> path,
-			Type annotationType,
-			string objectName,
-			ICollection<string> moduleUses,
-			ModuleDependenciesCompileTime moduleDependencies,
-			Func<T, ISet<string>> namesProvider)
-			where T : Attribute
-		{
-			// TBD: Verify that annotationType is derived from T
-			if (!typeof(T).IsAssignableFrom(annotationType)) {
-				throw new ArgumentException("cannot assign annotationType from " + typeof(T).FullName);
-			}
-		
-			IList<PathFunc<T>> foundPath = new List<PathFunc<T>>();
-			path.TraverseWithModule((moduleName, classProvided) => {
-				EPTypeHelper.TraverseAnnotations<T>(
-					classProvided.ClassesMayNull,
-					(
-						clazz,
-						annotation) => {
-						var t = annotation;
-						var names = namesProvider.Invoke(t);
-						foreach (var name in names) {
-							if (soughtName.Equals(name)) {
-								foundPath.Add(new PathFunc<T>(moduleName, clazz, t));
-							}
-						}
-					});
-				});
+            if (foundLocal.Count == 1) {
+                return foundLocal[0];
+            }
 
-			PathFunc<T> foundPathFunc;
-			if (foundPath.IsEmpty()) {
-				return null;
-			}
-			else if (foundPath.Count == 1) {
-				foundPathFunc = foundPath[0];
-			}
-			else {
-				if (moduleUses == null || moduleUses.IsEmpty()) {
-					throw GetDuplicateSingleRow(soughtName, objectName);
-				}
+            return null;
+        }
 
-				IList<PathFunc<T>> matchesUses = new List<PathFunc<T>>(2);
-				foreach (var func in foundPath) {
-					if (moduleUses.Contains(func.OptionalModuleName)) {
-						matchesUses.Add(func);
-					}
-				}
+        private static Pair<Type, T> ResolveFromPath<T>(
+            string soughtName,
+            PathRegistry<string, ClassProvided> path,
+            Type annotationType,
+            string objectName,
+            ICollection<string> moduleUses,
+            ModuleDependenciesCompileTime moduleDependencies,
+            Func<T, ISet<string>> namesProvider)
+            where T : Attribute
+        {
+            // TODO: Verify that annotationType is derived from T
+            if (!typeof(T).IsAssignableFrom(annotationType)) {
+                throw new ArgumentException("cannot assign annotationType from " + typeof(T).FullName);
+            }
 
-				if (matchesUses.Count > 1) {
-					throw GetDuplicateSingleRow(soughtName, objectName);
-				}
+            IList<PathFunc<T>> foundPath = new List<PathFunc<T>>();
+            path.TraverseWithModule(
+                (
+                    moduleName,
+                    classProvided) => {
+                    EPChainableTypeHelper.TraverseAnnotations<T>(
+                        classProvided.ClassesMayNull,
+                        (
+                            clazz,
+                            annotation) => {
+                            var t = annotation;
+                            var names = namesProvider.Invoke(t);
+                            foreach (var name in names) {
+                                if (soughtName.Equals(name)) {
+                                    foundPath.Add(new PathFunc<T>(moduleName, clazz, t));
+                                }
+                            }
+                        });
+                });
 
-				if (matchesUses.IsEmpty()) {
-					return null;
-				}
+            PathFunc<T> foundPathFunc;
+            if (foundPath.IsEmpty()) {
+                return null;
+            }
+            else if (foundPath.Count == 1) {
+                foundPathFunc = foundPath[0];
+            }
+            else {
+                if (moduleUses == null || moduleUses.IsEmpty()) {
+                    throw GetDuplicateSingleRow(soughtName, objectName);
+                }
 
-				foundPathFunc = matchesUses[0];
-			}
+                IList<PathFunc<T>> matchesUses = new List<PathFunc<T>>(2);
+                foreach (var func in foundPath) {
+                    if (moduleUses.Contains(func.OptionalModuleName)) {
+                        matchesUses.Add(func);
+                    }
+                }
 
-			moduleDependencies.AddPathClass(foundPathFunc.Clazz.FullName, foundPathFunc.OptionalModuleName);
-			return new Pair<Type, T>(foundPathFunc.Clazz, foundPathFunc.Annotation);
-		}
+                if (matchesUses.Count > 1) {
+                    throw GetDuplicateSingleRow(soughtName, objectName);
+                }
 
-		private static ExprValidationException GetDuplicateSingleRow(
-			string name,
-			string objectName)
-		{
-			return new ExprValidationException("The plug-in " + objectName + " '" + name + "' occurs multiple times");
-		}
+                if (matchesUses.IsEmpty()) {
+                    return null;
+                }
 
-		private class PathFunc<T>
-		{
-			public PathFunc(
-				string optionalModuleName,
-				Type clazz,
-				T annotation)
-			{
-				this.OptionalModuleName = optionalModuleName;
-				this.Clazz = clazz;
-				this.Annotation = annotation;
-			}
+                foundPathFunc = matchesUses[0];
+            }
 
-			public string OptionalModuleName { get; }
+            moduleDependencies.AddPathClass(foundPathFunc.Clazz.FullName, foundPathFunc.OptionalModuleName);
+            return new Pair<Type, T>(foundPathFunc.Clazz, foundPathFunc.Annotation);
+        }
 
-			public Type Clazz { get; }
+        private static ExprValidationException GetDuplicateSingleRow(
+            string name,
+            string objectName)
+        {
+            return new ExprValidationException("The plug-in " + objectName + " '" + name + "' occurs multiple times");
+        }
 
-			public T Annotation { get; }
-		}
-	}
+        private class PathFunc<T>
+        {
+            public PathFunc(
+                string optionalModuleName,
+                Type clazz,
+                T annotation)
+            {
+                OptionalModuleName = optionalModuleName;
+                Clazz = clazz;
+                Annotation = annotation;
+            }
+
+            public string OptionalModuleName { get; }
+
+            public Type Clazz { get; }
+
+            public T Annotation { get; }
+        }
+    }
 } // end of namespace

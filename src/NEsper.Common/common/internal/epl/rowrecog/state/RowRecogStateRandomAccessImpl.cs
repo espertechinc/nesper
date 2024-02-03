@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -35,7 +35,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.state
 
             // Construct a rolling buffer of new data for holding max index + 1 (position 1 requires 2 events to keep)
             newEvents = new RollingEventBuffer(getter.MaxPriorIndex + 1);
-            if (!getter.IsUnbound()) {
+            if (!getter.IsUnbound) {
                 priorEventMap = new Dictionary<EventBean, EventBean[]>();
             }
             else {
@@ -55,7 +55,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.state
             // Save prior index events in array
             var priorEvents = new EventBean[getter.IndexesRequestedLen];
             for (var j = 0; j < priorEvents.Length; j++) {
-                int priorIndex = getter.IndexesRequested[j];
+                var priorIndex = getter.IndexesRequested[j];
                 priorEvents[j] = newEvents.Get(priorIndex);
             }
 

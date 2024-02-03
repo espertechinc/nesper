@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -11,6 +11,7 @@ using System;
 using com.espertech.esper.compat.collections;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.collection
 {
@@ -25,7 +26,7 @@ namespace com.espertech.esper.common.@internal.collection
             var count = 0;
             while (count < expected.Length)
             {
-                Assert.IsTrue(e.MoveNext());
+                ClassicAssert.IsTrue(e.MoveNext());
                 int[] next = e.Current;
                 var expectedArr = expected[count];
 
@@ -36,7 +37,7 @@ namespace com.espertech.esper.common.@internal.collection
                 count++;
             }
 
-            Assert.IsFalse(e.MoveNext());
+            ClassicAssert.IsFalse(e.MoveNext());
             Assert.That(() => e.Current, Throws.InstanceOf<InvalidOperationException>());
         }
 

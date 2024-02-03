@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -8,7 +8,7 @@
 
 using System.Collections.Generic;
 
-using com.espertech.esper.common.@internal.context.util;
+using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.table.strategy
@@ -17,18 +17,19 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
     {
         public static IDictionary<int, ExprTableEvalStrategy> StartTableAccess(
             IDictionary<int, ExprTableEvalStrategyFactory> tableAccesses,
-            AgentInstanceContext agentInstanceContext)
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             if (tableAccesses == null || tableAccesses.IsEmpty()) {
                 return EmptyDictionary<int, ExprTableEvalStrategy>.Instance;
             }
 
-            var writesToTables = agentInstanceContext.StatementContext.StatementInformationals.IsWritesToTables;
             IDictionary<int, ExprTableEvalStrategy> evals =
                 new Dictionary<int, ExprTableEvalStrategy>(tableAccesses.Count);
             foreach (var entry in tableAccesses) {
                 var table = entry.Value.Table;
-                var provider = table.GetStateProvider(agentInstanceContext.AgentInstanceId, writesToTables);
+                var provider = table.GetStateProvider(
+                    exprEvaluatorContext.AgentInstanceId,
+                    exprEvaluatorContext.IsWritesToTables);
                 var strategy = entry.Value.MakeStrategy(provider);
                 evals.Put(entry.Key, strategy);
             }

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -7,19 +7,18 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.collection;
-using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.agg.method.core;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.fabric;
 using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 using com.espertech.esper.common.@internal.util;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.io;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.agg.method.core.AggregatorCodegenUtil;
@@ -28,29 +27,22 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avedev
 {
     public class AggregatorAvedev : AggregatorMethodWDistinctWFilterWValueBase
     {
-        private readonly CodegenExpressionMember sum;
-        private readonly CodegenExpressionMember valueSet;
+        private CodegenExpressionMember valueSet;
+        private CodegenExpressionMember sum;
 
         public AggregatorAvedev(
-            AggregationForgeFactory factory,
-            int col,
-            CodegenCtor rowCtor,
-            CodegenMemberCol membersColumnized,
-            CodegenClassScope classScope,
             Type optionalDistinctValueType,
             DataInputOutputSerdeForge optionalDistinctSerde,
             bool hasFilter,
-            ExprNode optionalFilter)
-            : base(
-                factory,
-                col,
-                rowCtor,
-                membersColumnized,
-                classScope,
-                optionalDistinctValueType,
-                optionalDistinctSerde,
-                hasFilter,
-                optionalFilter)
+            ExprNode optionalFilter) : base(optionalDistinctValueType, optionalDistinctSerde, hasFilter, optionalFilter)
+        {
+        }
+
+        public override void InitForgeFiltered(
+            int col,
+            CodegenCtor rowCtor,
+            CodegenMemberCol membersColumnized,
+            CodegenClassScope classScope)
         {
             valueSet = membersColumnized.AddMember(col, typeof(RefCountedSet<double>), "valueSet");
             sum = membersColumnized.AddMember(col, typeof(double), "sum");
@@ -123,7 +115,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avedev
         {
             method.Block
                 .Apply(WriteDouble(output, row, sum))
-                .StaticMethod(GetType(), "WritePoints", output, RowDotMember(row, valueSet));
+                .StaticMethod(typeof(RefCountedSet<double>), "WritePointsDouble", output, RowDotMember(row, valueSet));
         }
 
         protected override void ReadWODistinct(
@@ -136,51 +128,18 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avedev
         {
             method.Block
                 .Apply(ReadDouble(row, sum, input))
-                .AssignRef(RowDotMember(row, valueSet), StaticMethod(GetType(), "ReadPoints", input));
+                .AssignRef(RowDotMember(row, valueSet),
+                    StaticMethod(typeof(RefCountedSet<double>), "ReadPointsDouble", input));
         }
 
-        /// <summary>
-        ///     NOTE: Code-generation-invoked method, method name and parameter order matters
-        /// </summary>
-        /// <param name="output">output</param>
-        /// <param name="valueSet">values</param>
-        /// <throws>IOException io error</throws>
-        public static void WritePoints(
-            DataOutput output,
-            RefCountedSet<double> valueSet)
+        protected override void AppendFormatWODistinct(FabricTypeCollector collector)
         {
-            var refSet = valueSet.RefSet;
-            output.WriteInt(refSet.Count);
-            output.WriteInt(valueSet.NumValues);
-            foreach (var entry in valueSet.RefSet) {
-                output.WriteDouble(entry.Key);
-                output.WriteInt(entry.Value);
-            }
+            collector.Builtin(typeof(double));
+            collector.RefCountedSetOfDouble();
         }
 
         /// <summary>
-        ///     NOTE: Code-generation-invoked method, method name and parameter order matters
-        /// </summary>
-        /// <param name="input">input</param>
-        /// <returns>values</returns>
-        /// <throws>IOException io error</throws>
-        public static RefCountedSet<double> ReadPoints(DataInput input)
-        {
-            var valueSet = new RefCountedSet<double>();
-            var und = valueSet.RefSet;
-            var size = input.ReadInt();
-            valueSet.NumValues = input.ReadInt();
-            for (var i = 0; i < size; i++) {
-                var key = input.ReadDouble();
-                var val = input.ReadInt();
-                und.Put(key, val);
-            }
-
-            return valueSet;
-        }
-
-        /// <summary>
-        ///     NOTE: Code-generation-invoked method, method name and parameter order matters
+        /// NOTE: Code-generation-invoked method, method name and parameter order matters
         /// </summary>
         /// <param name="valueSet">values</param>
         /// <param name="sum">sum</param>
@@ -212,8 +171,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avedev
             CodegenMethod method)
         {
             method.Block
-                .DeclareVar<double>(
-                    "d",
+                .DeclareVar<double>("d",
                     SimpleNumberCoercerFactory.CoercerDouble.CodegenDouble(value, valueType))
                 .ExprDotMethod(valueSet, enter ? "Add" : "Remove", Ref("d"))
                 .AssignCompound(sum, enter ? "+" : "-", Ref("d"));

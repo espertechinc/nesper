@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -121,23 +121,10 @@ namespace com.espertech.esper.runtime.client.scopetest
         UniformPair<EventBean[]> GetAndResetDataListsFlattened();
 
         /// <summary>
-        /// Asserts name-value pairs of insert and remove stream events
-        /// </summary>
-        /// <param name="nameAndValuePairsIStream">insert-stream assertions</param>
-        /// <param name="nameAndValuePairsRStream">remove-stream assertions</param>
-        void AssertNewOldData(object[][] nameAndValuePairsIStream, object[][] nameAndValuePairsRStream);
-
-        /// <summary>
         /// Asserts that exactly one remove stream event was received and no insert stream events, resets the listener clearing all state and returns the received event.
         /// </summary>
         /// <returns>single remove-stream event</returns>
         EventBean AssertOneGetOldAndReset();
-
-        /// <summary>
-        /// Asserts that there is exactly one insert-stream event and one remove-stream event available and resets.
-        /// </summary>
-        /// <returns>pair of insert-stream event and remove-stream event</returns>
-        UniformPair<EventBean> AssertGetAndResetIRPair();
 
         /// <summary>
         /// Returns a pair of last-invocation insert and remove stream events and resets

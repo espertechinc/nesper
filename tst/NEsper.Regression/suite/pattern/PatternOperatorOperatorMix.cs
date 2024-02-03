@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -11,6 +11,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.patternassert;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.pattern
 {
@@ -51,7 +52,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             model.FromClause = FromClause.Create(PatternStream.Create(pattern));
             model = env.CopyMayFail(model);
             var text = "select * from pattern [b=SupportBean_B -> d=SupportBean_D or a=SupportBean_A]";
-            Assert.AreEqual(text, model.ToEPL());
+            ClassicAssert.AreEqual(text, model.ToEPL());
             testCase = new EventExpressionCase(model);
             testCase.Add("A2", "b", events.GetEvent("B1"), "a", events.GetEvent("A2"));
             testCaseList.AddTest(testCase);
@@ -80,7 +81,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             testCase.Add("A1", "a", events.GetEvent("A1"));
             testCaseList.AddTest(testCase);
 
-            var util = new PatternTestHarness(events, testCaseList, GetType());
+            var util = new PatternTestHarness(events, testCaseList);
             util.RunTest(env);
         }
     }

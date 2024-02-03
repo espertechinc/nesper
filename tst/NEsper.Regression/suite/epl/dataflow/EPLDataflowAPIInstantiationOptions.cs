@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -20,6 +20,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 {
@@ -28,29 +29,35 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-WithParameterInjectionCallback(execs);
-WithOperatorInjectionCallback(execs);
+#if REGRESSION_EXECUTIONS
+            WithParameterInjectionCallback(execs);
+            With(OperatorInjectionCallback)(execs);
+#endif
             return execs;
         }
-public static IList<RegressionExecution> WithOperatorInjectionCallback(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new EPLDataflowOperatorInjectionCallback());
-    return execs;
-}public static IList<RegressionExecution> WithParameterInjectionCallback(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new EPLDataflowParameterInjectionCallback());
-    return execs;
-}
+
+        public static IList<RegressionExecution> WithOperatorInjectionCallback(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDataflowOperatorInjectionCallback());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithParameterInjectionCallback(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDataflowParameterInjectionCallback());
+            return execs;
+        }
+
         internal class EPLDataflowParameterInjectionCallback : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                env.CompileDeploy("create schema SomeType ()", path);
+                env.CompileDeploy("@public create schema SomeType ()", path);
                 env.CompileDeploy(
-                    "@Name('flow') create dataflow MyDataFlowOne MyOp -> outstream<SomeType> {propOne:'abc', propThree:'xyz'}",
+                    "@name('flow') create dataflow MyDataFlowOne MyOp -> outstream<SomeType> {propOne:'abc', propThree:'xyz'}",
                     path);
 
                 var options = new EPDataFlowInstantiationOptions();
@@ -59,26 +66,31 @@ public static IList<RegressionExecution> WithOperatorInjectionCallback(IList<Reg
 
                 env.Runtime.DataFlowService.Instantiate(env.DeploymentId("flow"), "MyDataFlowOne", options);
                 var myOp = MyOp.GetAndClearInstances()[0];
-                Assert.AreEqual("abc", myOp.PropOne);
-                Assert.AreEqual("def", myOp.PropTwo);
+                ClassicAssert.AreEqual("abc", myOp.PropOne);
+                ClassicAssert.AreEqual("def", myOp.PropTwo);
 
-                Assert.AreEqual(3, myParameterProvider.contextMap.Count);
-                Assert.IsNotNull(myParameterProvider.contextMap.Get("propOne"));
+                ClassicAssert.AreEqual(3, myParameterProvider.contextMap.Count);
+                ClassicAssert.IsNotNull(myParameterProvider.contextMap.Get("propOne"));
 
                 var context = myParameterProvider.contextMap.Get("propTwo");
-                Assert.AreEqual("propTwo", context.ParameterName);
-                Assert.AreEqual("MyOp", context.OperatorName);
-                Assert.AreSame(myOp.Factory, context.Factory);
-                Assert.AreEqual(0, context.OperatorNum);
-                Assert.AreEqual("MyDataFlowOne", context.DataFlowName);
+                ClassicAssert.AreEqual("propTwo", context.ParameterName);
+                ClassicAssert.AreEqual("MyOp", context.OperatorName);
+                ClassicAssert.AreSame(myOp.Factory, context.Factory);
+                ClassicAssert.AreEqual(0, context.OperatorNum);
+                ClassicAssert.AreEqual("MyDataFlowOne", context.DataFlowName);
 
                 context = myParameterProvider.contextMap.Get("propThree");
-                Assert.AreEqual("propThree", context.ParameterName);
-                Assert.AreEqual("MyOp", context.OperatorName);
-                Assert.AreSame(myOp.Factory, context.Factory);
-                Assert.AreEqual(0, context.OperatorNum);
+                ClassicAssert.AreEqual("propThree", context.ParameterName);
+                ClassicAssert.AreEqual("MyOp", context.OperatorName);
+                ClassicAssert.AreSame(myOp.Factory, context.Factory);
+                ClassicAssert.AreEqual(0, context.OperatorNum);
 
                 env.UndeployAll();
+            }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.DATAFLOW);
             }
         }
 
@@ -87,9 +99,9 @@ public static IList<RegressionExecution> WithOperatorInjectionCallback(IList<Reg
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                env.CompileDeploy("create schema SomeType ()", path);
+                env.CompileDeploy("@public create schema SomeType ()", path);
                 env.CompileDeploy(
-                    "@Name('flow') create dataflow MyDataFlowOne MyOp -> outstream<SomeType> {propOne:'abc', propThree:'xyz'}",
+                    "@name('flow') create dataflow MyDataFlowOne MyOp -> outstream<SomeType> {propOne:'abc', propThree:'xyz'}",
                     path);
 
                 var myOperatorProvider = new MyOperatorProvider();
@@ -98,12 +110,17 @@ public static IList<RegressionExecution> WithOperatorInjectionCallback(IList<Reg
 
                 env.Runtime.DataFlowService.Instantiate(env.DeploymentId("flow"), "MyDataFlowOne", options);
 
-                Assert.AreEqual(1, myOperatorProvider.contextMap.Count);
+                ClassicAssert.AreEqual(1, myOperatorProvider.contextMap.Count);
                 var context = myOperatorProvider.contextMap.Get("MyOp");
-                Assert.AreEqual("MyOp", context.OperatorName);
-                Assert.AreEqual("MyDataFlowOne", context.DataFlowName);
+                ClassicAssert.AreEqual("MyOp", context.OperatorName);
+                ClassicAssert.AreEqual("MyDataFlowOne", context.DataFlowName);
 
                 env.UndeployAll();
+            }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.DATAFLOW);
             }
         }
 

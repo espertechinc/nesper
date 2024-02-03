@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -55,7 +55,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
                     "Both 'statementDeploymentId' and 'statementName' are required when either of these are specified");
             }
 
-            DataFlowOpOutputPort portZero = context.OutputPorts[0];
+            var portZero = context.OutputPorts[0];
             if (portZero != null && portZero.OptionalDeclaredType != null && portZero.OptionalDeclaredType.IsWildcard) {
                 submitEventBean = true;
             }
@@ -70,7 +70,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
         {
             return new SAIFFInitializeBuilder(
                     OP_PACKAGE_NAME + ".epstatementsource.EPStatementSourceFactory",
-                    this.GetType(),
+                    GetType(),
                     "stmtSrc",
                     parent,
                     symbols,

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -18,15 +18,18 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
 namespace com.espertech.esper.common.@internal.@event.json.getter.provided
 {
-	/// <summary>
-	///     Property getter for Json underlying fields.
-	/// </summary>
-	public class JsonGetterSimpleProvidedWFragmentArray : JsonGetterSimpleProvidedBase
+    /// <summary>
+    ///     Property getter for Json underlying fields.
+    /// </summary>
+    public class JsonGetterSimpleProvidedWFragmentArray : JsonGetterSimpleProvidedBase
     {
         public JsonGetterSimpleProvidedWFragmentArray(
             FieldInfo field,
             EventType fragmentType,
-            EventBeanTypedEventFactory eventBeanTypedEventFactory) : base(field, fragmentType, eventBeanTypedEventFactory)
+            EventBeanTypedEventFactory eventBeanTypedEventFactory) : base(
+            field,
+            fragmentType,
+            eventBeanTypedEventFactory)
         {
         }
 
@@ -35,7 +38,10 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return UnderlyingFragmentCodegen(CastUnderlying(Field.DeclaringType, beanExpression), codegenMethodScope, codegenClassScope);
+            return UnderlyingFragmentCodegen(
+                CastUnderlying(Field.DeclaringType, beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
         public override CodegenExpression UnderlyingFragmentCodegen(
@@ -57,14 +63,18 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
             }
 
             var value = JsonFieldGetterHelperProvided.GetJsonProvidedSimpleProp(@object, Field);
-            return JsonFieldGetterHelperProvided.HandleJsonProvidedCreateFragmentArray(value, FragmentType, EventBeanTypedEventFactory);
+            return JsonFieldGetterHelperProvided.HandleJsonProvidedCreateFragmentArray(
+                value,
+                FragmentType,
+                EventBeanTypedEventFactory);
         }
 
         private CodegenMethod GetFragmentCodegen(
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            var factory = codegenClassScope.AddOrGetDefaultFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
+            var factory =
+                codegenClassScope.AddOrGetDefaultFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
             var eventType = codegenClassScope.AddDefaultFieldUnshared(
                 true,
                 typeof(EventType),
@@ -73,7 +83,13 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
                 .AddParam(Field.DeclaringType, "record")
                 .Block
                 .DeclareVar<object>("value", UnderlyingGetCodegen(Ref("record"), codegenMethodScope, codegenClassScope))
-                .MethodReturn(StaticMethod(typeof(JsonFieldGetterHelperProvided), "HandleJsonProvidedCreateFragmentArray", Ref("value"), eventType, factory));
+                .MethodReturn(
+                    StaticMethod(
+                        typeof(JsonFieldGetterHelperProvided),
+                        "HandleJsonProvidedCreateFragmentArray",
+                        Ref("value"),
+                        eventType,
+                        factory));
         }
     }
 } // end of namespace

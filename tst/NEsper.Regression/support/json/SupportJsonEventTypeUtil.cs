@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -14,7 +14,6 @@ using System.Text.Json;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.json.util;
-using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.json.core;
 using com.espertech.esper.common.@internal.@event.json.serde;
 using com.espertech.esper.compat.collections;
@@ -24,6 +23,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.support.json
 {
@@ -34,12 +34,12 @@ namespace com.espertech.esper.regressionlib.support.json
 			string statementNameOfDeployment,
 			string typeName)
 		{
-			string deploymentId = env.DeploymentId(statementNameOfDeployment);
+			var deploymentId = env.DeploymentId(statementNameOfDeployment);
 			if (deploymentId == null) {
 				throw new ArgumentException("Failed to find deployment id for statement '" + statementNameOfDeployment + "'");
 			}
 
-			EventType eventType = env.Runtime.EventTypeService.GetEventType(deploymentId, typeName);
+			var eventType = env.Runtime.EventTypeService.GetEventType(deploymentId, typeName);
 			if (eventType == null) {
 				throw new ArgumentException("Failed to find event type '" + typeName + "' for deployment '" + deploymentId + "'");
 			}
@@ -47,11 +47,12 @@ namespace com.espertech.esper.regressionlib.support.json
 			return eventType.UnderlyingType;
 		}
 
+#if OBSOLETE
 		public static Type GetNestedUnderlyingType(
 			JsonEventType eventType,
 			string propertyName)
 		{
-			object type = eventType.Types.Get(propertyName);
+			var type = eventType.Types.Get(propertyName);
 			EventType innerType;
 			if (type is TypeBeanOrUnderlying) {
 				innerType = ((TypeBeanOrUnderlying) type).EventType;
@@ -62,7 +63,8 @@ namespace com.espertech.esper.regressionlib.support.json
 
 			return innerType.UnderlyingType;
 		}
-
+#endif
+		
 		public static void AssertJsonWrite(
 			string jsonExpected,
 			EventBean eventBean)
@@ -84,8 +86,8 @@ namespace com.espertech.esper.regressionlib.support.json
 			var optionsIndent = new JsonWriterOptions() { Indented = true };
 			
 			var und = (JsonEventObject) eventBean.Underlying;
-			Assert.AreEqual(expectedMinimalJson, und.ToString(optionsMinimal));
-			Assert.AreEqual(expectedPrettyJson, und.ToString(optionsIndent));
+			ClassicAssert.AreEqual(expectedMinimalJson, und.ToString(optionsMinimal));
+			ClassicAssert.AreEqual(expectedPrettyJson, und.ToString(optionsIndent));
 
 			var stream = new MemoryStream();
 			var writer = new Utf8JsonWriter(stream, optionsMinimal);
@@ -93,15 +95,15 @@ namespace com.espertech.esper.regressionlib.support.json
 			
 			und.WriteTo(context);
 
-			Assert.AreEqual(expectedMinimalJson, Encoding.UTF8.GetString(stream.ToArray()));
+			ClassicAssert.AreEqual(expectedMinimalJson, Encoding.UTF8.GetString(stream.ToArray()));
 		}
 
 		public static void CompareDictionaries(
 			IDictionary<string, object> expected,
 			IDictionary<string, object> actual)
 		{
-			Assert.AreEqual(expected.Count, actual.Count);
-			Assert.AreEqual(expected.IsEmpty(), actual.IsEmpty());
+			ClassicAssert.AreEqual(expected.Count, actual.Count);
+			ClassicAssert.AreEqual(expected.IsEmpty(), actual.IsEmpty());
 
 			CompareCollection(expected.Keys, actual.Keys, "DUMMY", false);
 			CompareCollection(expected.Values, actual.Values, "DUMMY", false);
@@ -129,14 +131,14 @@ namespace com.espertech.esper.regressionlib.support.json
 			// Collection may return mutable or immutable.  If it reports readonly, it must
 			// adhere to strict immutability.
 			if (!allowMutability) {
-				Assert.IsTrue(actual.IsReadOnly);
+				ClassicAssert.IsTrue(actual.IsReadOnly);
 			}
 
 			// Assert containment
-			Assert.IsTrue(actual.ContainsAll(expected));
+			ClassicAssert.IsTrue(actual.ContainsAll(expected));
 			// Assert non-containment for something that should not be there.
-			Assert.IsFalse(actual.Contains(dummyValue));
-			Assert.IsFalse(actual.ContainsAll(Arrays.AsList(dummyValue)));
+			ClassicAssert.IsFalse(actual.Contains(dummyValue));
+			ClassicAssert.IsFalse(actual.ContainsAll(Arrays.AsList(dummyValue)));
 			// these operations should be fail due to immutability of the keyset
 			if (actual.IsReadOnly) {
 				Assert.Throws<NotSupportedException>(actual.Clear);

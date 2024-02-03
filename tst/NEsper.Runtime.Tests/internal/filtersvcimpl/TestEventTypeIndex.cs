@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -17,6 +17,7 @@ using com.espertech.esper.container;
 using com.espertech.esper.runtime.@internal.support;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 {
@@ -57,8 +58,8 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             // Invoke match
             testIndex.MatchEvent(testEventBean, matchesList, null);
 
-            Assert.AreEqual(1, matchesList.Count);
-            Assert.AreEqual(filterCallback, matchesList[0]);
+            ClassicAssert.AreEqual(1, matchesList.Count);
+            ClassicAssert.AreEqual(filterCallback, matchesList[0]);
         }
 
         [Test, RunInApplicationDomain]
@@ -67,7 +68,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             try
             {
                 testIndex.Add(testEventType, handleSetNode);
-                Assert.IsTrue(false);
+                ClassicAssert.IsTrue(false);
             }
             catch (IllegalStateException)
             {
@@ -78,7 +79,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
         [Test, RunInApplicationDomain]
         public void TestGet()
         {
-            Assert.AreEqual(handleSetNode, testIndex.Get(testEventType));
+            ClassicAssert.AreEqual(handleSetNode, testIndex.Get(testEventType));
         }
     }
 } // end of namespace

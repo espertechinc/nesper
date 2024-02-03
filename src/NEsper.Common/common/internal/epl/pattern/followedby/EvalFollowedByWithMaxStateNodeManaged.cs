@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -66,9 +66,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.followedby
             bool isQuitted,
             EventBean optionalTriggeringEvent)
         {
-            bool hasIndex = nodes.TryGetValue(fromNode, out var index);
+            var hasIndex = nodes.TryGetValue(fromNode, out var index);
 
-            AgentInstanceContext agentInstanceContext = evalFollowedByNode.Context.AgentInstanceContext;
+            var agentInstanceContext = evalFollowedByNode.Context.AgentInstanceContext;
             agentInstanceContext.InstrumentationProvider.QPatternFollowedByEvaluateTrue(
                 evalFollowedByNode.factoryNode,
                 matchEvent,
@@ -82,7 +82,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.followedby
                     }
 
                     if (evalFollowedByNode.IsTrackWithPool) {
-                        PatternSubexpressionPoolStmtSvc poolSvc =
+                        var poolSvc =
                             evalFollowedByNode.Context.StatementContext.PatternSubexpressionPoolSvc;
                         poolSvc.RuntimeSvc.DecreaseCount(
                             evalFollowedByNode,
@@ -117,7 +117,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.followedby
                     matchEvent,
                     isFollowedByQuitted,
                     agentInstanceContext);
-                this.ParentEvaluator.EvaluateTrue(matchEvent, this, isFollowedByQuitted, optionalTriggeringEvent);
+                ParentEvaluator.EvaluateTrue(matchEvent, this, isFollowedByQuitted, optionalTriggeringEvent);
             }
             else {
                 // Else start a new sub-expression for the next-in-line filter
@@ -135,9 +135,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.followedby
                 }
 
                 if (evalFollowedByNode.IsTrackWithPool) {
-                    PatternSubexpressionPoolStmtSvc poolSvc =
+                    var poolSvc =
                         evalFollowedByNode.Context.StatementContext.PatternSubexpressionPoolSvc;
-                    bool allow = poolSvc.RuntimeSvc.TryIncreaseCount(
+                    var allow = poolSvc.RuntimeSvc.TryIncreaseCount(
                         evalFollowedByNode,
                         evalFollowedByNode.Context.AgentInstanceContext);
                     if (!allow) {
@@ -164,11 +164,11 @@ namespace com.espertech.esper.common.@internal.epl.pattern.followedby
             EvalStateNode fromNode,
             bool restartable)
         {
-            AgentInstanceContext agentInstanceContext = evalFollowedByNode.Context.AgentInstanceContext;
+            var agentInstanceContext = evalFollowedByNode.Context.AgentInstanceContext;
             agentInstanceContext.InstrumentationProvider.QPatternFollowedByEvalFalse(evalFollowedByNode.factoryNode);
 
             fromNode.Quit();
-            bool hasIndex = nodes.TryGetValue(fromNode, out var index);
+            var hasIndex = nodes.TryGetValue(fromNode, out var index);
             if (hasIndex) {
                 nodes.Remove(fromNode);
             }
@@ -179,7 +179,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.followedby
                 }
 
                 if (evalFollowedByNode.IsTrackWithPool) {
-                    PatternSubexpressionPoolStmtSvc poolSvc =
+                    var poolSvc =
                         evalFollowedByNode.Context.StatementContext.PatternSubexpressionPoolSvc;
                     poolSvc.RuntimeSvc.DecreaseCount(
                         evalFollowedByNode,
@@ -193,7 +193,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.followedby
                     evalFollowedByNode.FactoryNode,
                     this,
                     agentInstanceContext);
-                this.ParentEvaluator.EvaluateFalse(this, true);
+                ParentEvaluator.EvaluateFalse(this, true);
                 Quit();
             }
 
@@ -207,7 +207,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.followedby
 
         public override void Start(MatchedEventMap beginState)
         {
-            AgentInstanceContext agentInstanceContext = evalFollowedByNode.Context.AgentInstanceContext;
+            var agentInstanceContext = evalFollowedByNode.Context.AgentInstanceContext;
             agentInstanceContext.InstrumentationProvider.QPatternFollowedByStart(
                 evalFollowedByNode.factoryNode,
                 beginState);
@@ -226,7 +226,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.followedby
 
         public override void Quit()
         {
-            AgentInstanceContext agentInstanceContext = evalFollowedByNode.Context.AgentInstanceContext;
+            var agentInstanceContext = evalFollowedByNode.Context.AgentInstanceContext;
             agentInstanceContext.InstrumentationProvider.QPatternFollowedByQuit(evalFollowedByNode.factoryNode);
             agentInstanceContext.AuditProvider.PatternInstance(
                 false,
@@ -237,7 +237,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.followedby
                 entry.Key.Quit();
                 if (evalFollowedByNode.IsTrackWithPool) {
                     if (entry.Value > 0) {
-                        PatternSubexpressionPoolStmtSvc poolSvc =
+                        var poolSvc =
                             evalFollowedByNode.Context.StatementContext.PatternSubexpressionPoolSvc;
                         poolSvc.RuntimeSvc.DecreaseCount(
                             evalFollowedByNode,

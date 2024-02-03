@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -17,7 +17,8 @@ using com.espertech.esper.common.@internal.epl.resultset.select.typable;
 
 namespace com.espertech.esper.common.@internal.epl.expression.etc
 {
-    public class ExprEvalEnumerationAtBeanSingleForge : ExprForge, SelectExprProcessorTypableForge
+    public class ExprEvalEnumerationAtBeanSingleForge : ExprForge,
+        SelectExprProcessorTypableForge
     {
         private readonly ExprEnumerationForge _enumerationForge;
         private readonly EventType _eventTypeSingle;
@@ -26,13 +27,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             ExprEnumerationForge enumerationForge,
             EventType eventTypeSingle)
         {
-            this._enumerationForge = enumerationForge;
-            this._eventTypeSingle = eventTypeSingle;
+            _enumerationForge = enumerationForge;
+            _eventTypeSingle = eventTypeSingle;
         }
 
-        public ExprEvaluator ExprEvaluator {
-            get { throw ExprNodeUtilityMake.MakeUnsupportedCompileTime(); }
-        }
+        public ExprEvaluator ExprEvaluator => throw ExprNodeUtilityMake.MakeUnsupportedCompileTime();
 
         public CodegenExpression EvaluateCodegen(
             Type requiredType,
@@ -44,20 +43,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
         }
 
 
-        public Type EvaluationType {
-            get => typeof(EventBean);
-        }
+        public Type EvaluationType => typeof(EventBean);
 
-        public Type  UnderlyingEvaluationType {
-            get => _eventTypeSingle.UnderlyingType;
-        }
+        public Type UnderlyingEvaluationType => _eventTypeSingle.UnderlyingType;
 
-        public ExprNodeRenderable ExprForgeRenderable {
-            get => _enumerationForge.EnumForgeRenderable;
-        }
+        public ExprNodeRenderable ExprForgeRenderable => _enumerationForge.EnumForgeRenderable;
 
-        public ExprForgeConstantType ForgeConstantType {
-            get => ExprForgeConstantType.NONCONST;
-        }
+        public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
     }
 } // end of namespace

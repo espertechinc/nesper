@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -22,7 +22,10 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
     public class ProxyFAFQueryMethodAssignerSetter : FAFQueryMethodAssignerSetter
     {
         public delegate void AssignFunc(StatementAIFactoryAssignments assignments);
-        public delegate void SetValueFunc(int number, object value);
+
+        public delegate void SetValueFunc(
+            int number,
+            object value);
 
         public AssignFunc ProcAssign { get; set; }
         public SetValueFunc ProcSetValue { get; set; }

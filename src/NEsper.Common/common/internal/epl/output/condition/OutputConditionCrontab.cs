@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -23,14 +23,12 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
         private const bool DO_OUTPUT = true;
         private const bool FORCE_UPDATE = true;
 
-        private static readonly ILog log = LogManager.GetLogger(typeof(OutputConditionCrontab));
+        private readonly AgentInstanceContext _context;
 
-        private readonly AgentInstanceContext context;
-
-        private readonly long scheduleSlot;
-        private readonly ScheduleSpec scheduleSpec;
-        private long? currentReferencePoint;
-        private bool isCallbackScheduled;
+        private readonly long _scheduleSlot;
+        private readonly ScheduleSpec _scheduleSpec;
+        private long? _currentReferencePoint;
+        private bool _isCallbackScheduled;
 
         public OutputConditionCrontab(
             OutputCallback outputCallback,
@@ -39,9 +37,9 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
             ScheduleSpec scheduleSpec)
             : base(outputCallback)
         {
-            this.context = context;
-            this.scheduleSpec = scheduleSpec;
-            scheduleSlot = context.StatementContext.ScheduleBucket.AllocateSlot();
+            _context = context;
+            _scheduleSpec = scheduleSpec;
+            _scheduleSlot = context.StatementContext.ScheduleBucket.AllocateSlot();
             if (isStartConditionOnCreation) {
                 UpdateOutputCondition(0, 0);
             }
@@ -51,12 +49,12 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
             int newEventsCount,
             int oldEventsCount)
         {
-            if (currentReferencePoint == null) {
-                currentReferencePoint = context.StatementContext.SchedulingService.Time;
+            if (_currentReferencePoint == null) {
+                _currentReferencePoint = _context.StatementContext.SchedulingService.Time;
             }
 
             // Schedule the next callback if there is none currently scheduled
-            if (!isCallbackScheduled) {
+            if (!_isCallbackScheduled) {
                 ScheduleCallback();
             }
         }
@@ -75,41 +73,41 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
         {
             return GetType().Name +
                    " spec=" +
-                   scheduleSpec;
+                   _scheduleSpec;
         }
 
         private void ScheduleCallback()
         {
-            isCallbackScheduled = true;
+            _isCallbackScheduled = true;
 
             ScheduleHandleCallback callback = new ProxyScheduleHandleCallback {
                 ProcScheduledTrigger = () => {
-                    context.InstrumentationProvider.QOutputRateConditionScheduledEval();
-                    context.AuditProvider.ScheduleFire(
-                        context,
+                    _context.InstrumentationProvider.QOutputRateConditionScheduledEval();
+                    _context.AuditProvider.ScheduleFire(
+                        _context,
                         ScheduleObjectType.outputratelimiting,
                         NAME_AUDITPROVIDER_SCHEDULE);
-                    isCallbackScheduled = false;
+                    _isCallbackScheduled = false;
                     outputCallback.Invoke(DO_OUTPUT, FORCE_UPDATE);
                     ScheduleCallback();
-                    context.InstrumentationProvider.AOutputRateConditionScheduledEval();
+                    _context.InstrumentationProvider.AOutputRateConditionScheduledEval();
                 }
             };
-            var handle = new EPStatementHandleCallbackSchedule(context.EpStatementAgentInstanceHandle, callback);
-            var schedulingService = context.StatementContext.SchedulingService;
-            var classpathImportService = context.StatementContext.ImportServiceRuntime;
-            long nextScheduledTime = ScheduleComputeHelper.ComputeDeltaNextOccurance(
-                scheduleSpec,
+            var handle = new EPStatementHandleCallbackSchedule(_context.EpStatementAgentInstanceHandle, callback);
+            var schedulingService = _context.StatementContext.SchedulingService;
+            var importService = _context.StatementContext.ImportServiceRuntime;
+            var nextScheduledTime = ScheduleComputeHelper.ComputeDeltaNextOccurance(
+                _scheduleSpec,
                 schedulingService.Time,
-                classpathImportService.TimeZone,
-                classpathImportService.TimeAbacus);
-            context.AuditProvider.ScheduleAdd(
+                importService.TimeZone,
+                importService.TimeAbacus);
+            _context.AuditProvider.ScheduleAdd(
                 nextScheduledTime,
-                context,
+                _context,
                 handle,
                 ScheduleObjectType.outputratelimiting,
                 NAME_AUDITPROVIDER_SCHEDULE);
-            schedulingService.Add(nextScheduledTime, handle, scheduleSlot);
+            schedulingService.Add(nextScheduledTime, handle, _scheduleSlot);
         }
     }
 } // end of namespace

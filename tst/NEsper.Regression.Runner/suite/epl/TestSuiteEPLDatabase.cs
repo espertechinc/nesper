@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -67,7 +67,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
                 SupportDatabaseService.DRIVER,
                 SupportDatabaseService.DefaultProperties);
             configDBWithPooledWithLRU100.ConnectionLifecycleEnum = ConnectionLifecycleEnum.POOLED;
-            configDBWithPooledWithLRU100.SetLRUCache(100);
+            configDBWithPooledWithLRU100.LRUCache = 100;
             configuration.Common.AddDatabaseReference("MyDBWithPooledWithLRU100", configDBWithPooledWithLRU100);
 
             var configDBWithTxnIso1WithReadOnly = new ConfigurationCommonDBRef();
@@ -76,7 +76,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
                 SupportDatabaseService.DefaultProperties);
 
             configDBWithTxnIso1WithReadOnly.ConnectionLifecycleEnum = ConnectionLifecycleEnum.RETAIN;
-            configDBWithTxnIso1WithReadOnly.ConnectionCatalog = "test";
+            configDBWithTxnIso1WithReadOnly.ConnectionCatalog = "esper";
             configDBWithTxnIso1WithReadOnly.ConnectionReadOnly = true;
             configDBWithTxnIso1WithReadOnly.ConnectionTransactionIsolation = IsolationLevel.ReadCommitted;
             configDBWithTxnIso1WithReadOnly.ConnectionAutoCommit = true;
@@ -106,14 +106,14 @@ namespace com.espertech.esper.regressionrun.suite.epl
                 SupportDatabaseService.DRIVER,
                 SupportDatabaseService.DefaultProperties);
             configDBWithLRU100000.ConnectionLifecycleEnum = ConnectionLifecycleEnum.RETAIN;
-            configDBWithLRU100000.SetLRUCache(100000);
+            configDBWithLRU100000.LRUCache = 100000;
             configuration.Common.AddDatabaseReference("MyDBWithLRU100000", configDBWithLRU100000);
 
             var configDBWithExpiryTime = new ConfigurationCommonDBRef();
             configDBWithExpiryTime.SetDatabaseDriver(
                 SupportDatabaseService.DRIVER,
                 SupportDatabaseService.DefaultProperties);
-            configDBWithExpiryTime.ConnectionCatalog = "test";
+            configDBWithExpiryTime.ConnectionCatalog = "esper";
             configDBWithExpiryTime.SetExpiryTimeCache(60, 120);
             configuration.Common.AddDatabaseReference("MyDBWithExpiryTime", configDBWithExpiryTime);
 
@@ -128,7 +128,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
                 SupportDatabaseService.DRIVER,
                 SupportDatabaseService.DefaultProperties);
             configDB.ConnectionLifecycleEnum = ConnectionLifecycleEnum.RETAIN;
-            configDB.ConnectionCatalog = "test";
+            configDB.ConnectionCatalog = "esper";
             configDB.ConnectionReadOnly = true;
             configDB.ConnectionAutoCommit = true;
             return configDB;

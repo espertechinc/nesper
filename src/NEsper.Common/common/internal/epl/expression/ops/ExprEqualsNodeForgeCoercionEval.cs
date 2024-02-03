@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -44,8 +44,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            var result = EvaluateInternal(eventsPerStream, isNewData, context);
-            return result;
+            return EvaluateInternal(eventsPerStream, isNewData, context);
         }
 
         private bool? EvaluateInternal(
@@ -96,7 +95,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
             block
                 .DeclareVar(lhsType, "l", lhs.Forge.EvaluateCodegen(lhsType, methodNode, exprSymbol, codegenClassScope))
-                .DeclareVar(rhsType, "r", rhs.Forge.EvaluateCodegen(rhsType, methodNode, exprSymbol, codegenClassScope));
+                .DeclareVar(
+                    rhsType,
+                    "r",
+                    rhs.Forge.EvaluateCodegen(rhsType, methodNode, exprSymbol, codegenClassScope));
 
             if (!forge.ForgeRenderable.IsIs) {
                 if (lhsType.CanBeNull()) {
@@ -118,16 +120,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             }
 
             block.DeclareVar(
-                forge.CoercerLHS.ReturnType,
+                forge.CoercerLHS.GetReturnType(lhsType),
                 "left",
-                forge.CoercerLHS.CoerceCodegen(Ref("l"), lhsType));
+                forge.CoercerLHS.CoerceCodegen(Ref("l"), lhsType, codegenMethodScope, codegenClassScope));
             block.DeclareVar(
-                forge.CoercerRHS.ReturnType,
+                forge.CoercerRHS.GetReturnType(rhsType),
                 "right",
-                forge.CoercerRHS.CoerceCodegen(Ref("r"), rhsType));
+                forge.CoercerRHS.CoerceCodegen(Ref("r"), rhsType, codegenMethodScope, codegenClassScope));
 
             //var compare = StaticMethod(typeof(DebugExtensions), "DebugEquals", Ref("left"), Ref("right"));
-            
+
             var compare = StaticMethod(typeof(object), "Equals", Ref("left"), Ref("right"));
             if (!forge.ForgeRenderable.IsNotEquals) {
                 block.MethodReturn(compare);

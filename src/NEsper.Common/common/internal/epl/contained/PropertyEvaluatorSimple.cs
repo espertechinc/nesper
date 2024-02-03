@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -47,14 +47,14 @@ namespace com.espertech.esper.common.@internal.epl.contained
             ExprEvaluatorContext exprEvaluatorContext)
         {
             try {
-                var result = containedEventEval.GetFragment(theEvent, new[] {theEvent}, exprEvaluatorContext);
+                var result = containedEventEval.GetFragment(theEvent, new[] { theEvent }, exprEvaluatorContext);
 
                 EventBean[] rows;
                 if (fragmentIsIndexed) {
-                    rows = (EventBean[]) result;
+                    rows = (EventBean[])result;
                 }
                 else {
-                    rows = new[] {(EventBean) result};
+                    rows = new[] { (EventBean)result };
                 }
 
                 if (Filter == null) {
@@ -64,7 +64,7 @@ namespace com.espertech.esper.common.@internal.epl.contained
                 return ExprNodeUtilityEvaluate.ApplyFilterExpression(
                     Filter,
                     theEvent,
-                    (EventBean[]) result,
+                    (EventBean[])result,
                     exprEvaluatorContext);
             }
             catch (EPException) {
@@ -88,11 +88,10 @@ namespace com.espertech.esper.common.@internal.epl.contained
 
         public bool CompareTo(PropertyEvaluator otherEval)
         {
-            if (!(otherEval is PropertyEvaluatorSimple)) {
+            if (!(otherEval is PropertyEvaluatorSimple other)) {
                 return false;
             }
 
-            var other = (PropertyEvaluatorSimple) otherEval;
             if (!other.ExpressionText.Equals(ExpressionText)) {
                 return false;
             }

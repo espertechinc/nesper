@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -42,7 +42,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             CodegenClassScope codegenClassScope)
         {
             var type = VariantEventTypeUtil.GetField(variantEventType, codegenClassScope);
-            var method = codegenMethodScope.MakeChild(typeof(EventBean), this.GetType(), codegenClassScope)
+            var method = codegenMethodScope.MakeChild(typeof(EventBean), GetType(), codegenClassScope)
                 .AddParam(evaluationType, "result")
                 .Block
                 .DeclareVar<EventType>("beanEventType", ExprDotMethod(type, "EventTypeForNativeObject", Ref("result")))

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -16,15 +16,10 @@ using com.espertech.esper.common.client.collection;
 
 namespace com.espertech.esper.common.@internal.collection
 {
-    public class EventUnderlyingCollection : ICollection<EventBean>, ICollection<object>
+    public class EventUnderlyingCollection<T> : ICollection<T>
     {
-        private ICollection<EventBean> _underlyingCollection;
+        private readonly ICollection<EventBean> _underlyingCollection;
 
-        public EventUnderlyingCollection(FlexCollection flexCollection)
-        {
-            _underlyingCollection = flexCollection.EventBeanCollection;
-        }
-        
         public EventUnderlyingCollection(ICollection<EventBean> events)
         {
             _underlyingCollection = events;
@@ -42,66 +37,26 @@ namespace com.espertech.esper.common.@internal.collection
                 .GetEnumerator();
         }
 
-        #region ICollection<EventBean>
-        
-        IEnumerator<EventBean> IEnumerable<EventBean>.GetEnumerator()
-        {
-            return _underlyingCollection.GetEnumerator();
-        }
+        #region ICollection<T>
 
-        public void Add(EventBean item)
-        {
-            throw new NotSupportedException();
-        }
-
-        void ICollection<EventBean>.Clear()
-        {
-            throw new NotSupportedException();
-        }
-
-        public bool Contains(EventBean item)
-        {
-            return _underlyingCollection.Contains(item);
-        }
-
-        public void CopyTo(
-            EventBean[] array,
-            int arrayIndex)
-        {
-            _underlyingCollection.CopyTo(array, arrayIndex);
-        }
-
-        public bool Remove(EventBean item)
-        {
-            throw new NotSupportedException();
-        }
-
-        int ICollection<EventBean>.Count => _underlyingCollection.Count();
-
-        bool ICollection<EventBean>.IsReadOnly => true;
-        
-        #endregion
-        
-        #region ICollection<object>
-
-        IEnumerator<object> IEnumerable<object>.GetEnumerator()
+        IEnumerator<T> IEnumerable<T>.GetEnumerator()
         {
             return _underlyingCollection
-                .Select(i => i.Underlying)
+                .Select(i => (T) i.Underlying)
                 .GetEnumerator();
         }
 
-        public void Add(object item)
+        public void Add(T item)
         {
             throw new NotSupportedException();
         }
 
-        void ICollection<object>.Clear()
+        void ICollection<T>.Clear()
         {
             throw new NotSupportedException();
         }
 
-        public bool Contains(object item)
+        public bool Contains(T item)
         {
             return _underlyingCollection
                 .Select(i => i.Underlying)
@@ -109,22 +64,22 @@ namespace com.espertech.esper.common.@internal.collection
         }
 
         public void CopyTo(
-            object[] array,
+            T[] array,
             int arrayIndex)
         {
             var tempArray = _underlyingCollection.Select(i => i.Underlying).ToArray();
             tempArray.CopyTo(array, arrayIndex);
         }
 
-        public bool Remove(object item)
+        public bool Remove(T item)
         {
             throw new NotSupportedException();
         }
 
-        int ICollection<object>.Count => _underlyingCollection.Count;
+        int ICollection<T>.Count => _underlyingCollection.Count;
 
-        bool ICollection<object>.IsReadOnly => true;
-        
+        bool ICollection<T>.IsReadOnly => true;
+
         #endregion
     }
 } // end of namespace

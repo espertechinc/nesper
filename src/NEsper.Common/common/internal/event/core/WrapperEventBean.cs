@@ -1,12 +1,11 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
@@ -26,9 +25,8 @@ namespace com.espertech.esper.common.@internal.@event.core
     ///         Map.
     ///     </para>
     /// </summary>
-    public class WrapperEventBean
-        : EventBean,
-            DecoratingEventBean
+    public class WrapperEventBean : EventBeanSPI,
+        DecoratingEventBean
     {
         /// <summary>Ctor.</summary>
         /// <param name="theEvent">is the wrapped event</param>
@@ -50,7 +48,7 @@ namespace com.espertech.esper.common.@internal.@event.core
         ///     Returns the underlying map storing the additional properties, if any.
         /// </summary>
         /// <returns>event property IDictionary</returns>
-        public DataMap UnderlyingMap { get; }
+        public DataMap UnderlyingMap { get; private set; }
 
         /// <summary>
         ///     Returns decorating properties.
@@ -61,7 +59,7 @@ namespace com.espertech.esper.common.@internal.@event.core
 
         /// <summary>Returns the wrapped event.</summary>
         /// <returns>wrapped event</returns>
-        public EventBean UnderlyingEvent { get; }
+        public EventBean UnderlyingEvent { get; private set; }
 
         /// <summary>
         ///     Returns the value of an event property.
@@ -111,9 +109,19 @@ namespace com.espertech.esper.common.@internal.@event.core
 
                 return new Pair<object, DataMap>(UnderlyingEvent.Underlying, UnderlyingMap);
             }
-            set => throw new NotSupportedException();
+            set {
+                var type = (WrapperEventType)EventType;
+                UnderlyingEvent = EventTypeUtility.GetShellForType(type.UnderlyingEventType);
+                if (value is Pair<object, IDictionary<string, object>> pair) {
+                    ((EventBeanSPI) UnderlyingEvent).Underlying = pair.First;
+                    UnderlyingMap = pair.Second;
+                }
+                else {
+                    ((EventBeanSPI) UnderlyingEvent).Underlying = value;
+                    UnderlyingMap = Collections.GetEmptyDataMap();
+                }
+            }
         }
-
 
         public object GetFragment(string propertyExpression)
         {

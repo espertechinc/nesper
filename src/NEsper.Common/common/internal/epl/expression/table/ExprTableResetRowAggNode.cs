@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -53,7 +53,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
             CodegenClassScope codegenClassScope)
         {
             var method = parent.MakeChild(typeof(void), GetType(), codegenClassScope);
-            method.Block.Expression(StaticMethod(typeof(ExprTableResetRowAggNode), "TableAggReset", Constant(StreamNum), symbols.GetAddEPS(method)));
+            method.Block.Expression(
+                StaticMethod(
+                    typeof(ExprTableResetRowAggNode),
+                    "TableAggReset",
+                    Constant(StreamNum),
+                    symbols.GetAddEps(method)));
             return LocalMethod(method);
         }
 
@@ -111,7 +116,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
             int streamNum,
             EventBean[] eventsPerStream)
         {
-            var oa = (ObjectArrayBackedEventBean) eventsPerStream[streamNum];
+            var oa = (ObjectArrayBackedEventBean)eventsPerStream[streamNum];
             var row = ExprTableEvalStrategyUtil.GetRow(oa);
             row.Clear();
         }

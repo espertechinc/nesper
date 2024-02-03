@@ -1,5 +1,5 @@
 ﻿///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -127,6 +127,7 @@ namespace NEsper.Scripting.ClearScript
                 engine.AddHostObject("__variables", primitives);
                 engine.AddHostObject("host", new XHostFunctions(typeResolver));
                 engine.AddHostObject("debug", new DebugFunctions(this));
+                engine.AddHostObject("epl", args.Context.AllocateAgentInstanceScriptContext);
 
                 var writer = new StringWriter();
                 WritePolyfills(writer);
@@ -152,12 +153,12 @@ namespace NEsper.Scripting.ClearScript
             }
         }
 
-        private void WritePolyfills(StringWriter writer)
+        private void WritePolyfills(TextWriter writer)
         {
             WriteStartsWithPolyfill(writer);
         }
 
-        private void WriteStartsWithPolyfill(StringWriter writer)
+        private void WriteStartsWithPolyfill(TextWriter writer)
         {
             writer.WriteLine("if (!String.prototype.startsWith) {");
             writer.WriteLine("    String.prototype.startsWith = function(searchString, position) {");

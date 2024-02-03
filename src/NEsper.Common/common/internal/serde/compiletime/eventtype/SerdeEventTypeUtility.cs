@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -21,6 +21,7 @@ using com.espertech.esper.common.@internal.@event.json.core;
 using com.espertech.esper.common.@internal.@event.variant;
 using com.espertech.esper.common.@internal.@event.xml;
 using com.espertech.esper.common.@internal.serde.compiletime.resolve;
+using com.espertech.esper.common.@internal.statemgmtsettings;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
@@ -31,27 +32,31 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.eventtype
 {
 	public class SerdeEventTypeUtility
 	{
+
 		public static IList<StmtClassForgeableFactory> Plan(
 			EventType eventType,
 			StatementRawInfo raw,
 			SerdeEventTypeCompileTimeRegistry registry,
-			SerdeCompileTimeResolver resolver)
+			SerdeCompileTimeResolver resolver,
+			StateMgmtSettingsProvider stateMgmtSettingsProvider)
 		{
 			// there is no need to register a serde when not using HA, or when it is already registered, or for table-internal type
 			var typeClass = eventType.Metadata.TypeClass;
-			if (!registry.IsTargetHA || registry.EventTypes.ContainsKey(eventType) || typeClass == EventTypeTypeClass.TABLE_INTERNAL) {
+			if (!registry.IsTargetHA ||
+			    registry.EventTypes.ContainsKey(eventType) ||
+			    typeClass == EventTypeTypeClass.TABLE_INTERNAL) {
 				return EmptyList<StmtClassForgeableFactory>.Instance;
 			}
 
 			// there is also no need to register a serde when using a public object
 			var statementType = raw.StatementType;
 			if ((typeClass == EventTypeTypeClass.NAMED_WINDOW && statementType != StatementType.CREATE_WINDOW) ||
-			    (typeClass == EventTypeTypeClass.TABLE_PUBLIC && statementType != StatementType.CREATE_TABLE)) {
+			    typeClass.IsTable()) {
 				return EmptyList<StmtClassForgeableFactory>.Instance;
 			}
 
 			IList<StmtClassForgeableFactory> forgeables = new List<StmtClassForgeableFactory>(2);
-			PlanRecursive(forgeables, eventType, raw, registry, resolver);
+			PlanRecursive(forgeables, eventType, raw, registry, resolver, stateMgmtSettingsProvider);
 			return forgeables;
 		}
 
@@ -60,7 +65,8 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.eventtype
 			EventType eventType,
 			StatementRawInfo raw,
 			SerdeEventTypeCompileTimeRegistry registry,
-			SerdeCompileTimeResolver resolver)
+			SerdeCompileTimeResolver resolver,
+			StateMgmtSettingsProvider stateMgmtSettingsProvider)
 		{
 			if (!registry.IsTargetHA) {
 				return;
@@ -72,18 +78,32 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.eventtype
 
 			SerdeAndForgeables pair;
 			if (eventType is BeanEventType) {
-				pair = PlanBean((BeanEventType) eventType, raw, resolver);
+				pair = PlanBean((BeanEventType)eventType, raw, resolver, stateMgmtSettingsProvider);
 			}
 			else if (eventType is BaseNestableEventType) {
-				pair = PlanBaseNestable((BaseNestableEventType) eventType, raw, resolver);
-				PlanPropertiesMayRecurse(eventType, additionalForgeables, raw, registry, resolver);
+				pair = PlanBaseNestable((BaseNestableEventType)eventType, raw, resolver);
+				PlanPropertiesMayRecurse(
+					eventType,
+					additionalForgeables,
+					raw,
+					registry,
+					resolver,
+					stateMgmtSettingsProvider);
 			}
 			else if (eventType is WrapperEventType) {
-				var wrapperEventType = (WrapperEventType) eventType;
-				PlanRecursive(additionalForgeables, wrapperEventType.UnderlyingEventType, raw, registry, resolver);
+				var wrapperEventType = (WrapperEventType)eventType;
+				PlanRecursive(
+					additionalForgeables,
+					wrapperEventType.UnderlyingEventType,
+					raw,
+					registry,
+					resolver,
+					stateMgmtSettingsProvider);
 				pair = PlanBaseNestable(wrapperEventType.UnderlyingMapType, raw, resolver);
 			}
-			else if (eventType is VariantEventType || eventType is AvroSchemaEventType || eventType is BaseXMLEventType) {
+			else if (eventType is VariantEventType ||
+			         eventType is AvroSchemaEventType ||
+			         eventType is BaseXMLEventType) {
 				// no serde generation
 				pair = null;
 			}
@@ -102,7 +122,8 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.eventtype
 			IList<StmtClassForgeableFactory> additionalForgeables,
 			StatementRawInfo raw,
 			SerdeEventTypeCompileTimeRegistry registry,
-			SerdeCompileTimeResolver resolver)
+			SerdeCompileTimeResolver resolver,
+			StateMgmtSettingsProvider stateMgmtSettingsProvider)
 		{
 			foreach (var desc in eventType.PropertyDescriptors) {
 				if (!desc.IsFragment) {
@@ -114,7 +135,13 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.eventtype
 					continue;
 				}
 
-				PlanRecursive(additionalForgeables, fragmentEventType.FragmentType, raw, registry, resolver);
+				PlanRecursive(
+					additionalForgeables,
+					fragmentEventType.FragmentType,
+					raw,
+					registry,
+					resolver,
+					stateMgmtSettingsProvider);
 			}
 		}
 
@@ -125,10 +152,9 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.eventtype
 		{
 			string className;
 			if (eventType is JsonEventType) {
-				var classNameFull = ((JsonEventType) eventType).Detail.SerdeClassName;
+				var classNameFull = ((JsonEventType)eventType).Detail.SerdeClassName;
 				var lastDotIndex = classNameFull.LastIndexOf('.');
 				className = lastDotIndex == -1 ? classNameFull : classNameFull.Substring(lastDotIndex + 1);
-
 			}
 			else {
 				var uuid = GenerateClassNameUUID();
@@ -152,21 +178,29 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.eventtype
 				ProcMake = (
 					namespaceScope,
 					classPostfix) => {
-					return new StmtClassForgeableBaseNestableEventTypeSerde(className, namespaceScope, eventType, forges);
+					return new StmtClassForgeableBaseNestableEventTypeSerde(
+						className,
+						namespaceScope,
+						eventType,
+						forges);
 				},
 			};
 
-			var forge = new DataInputOutputSerdeForgeForClassName(className);
-
+			var forge = new DataInputOutputSerdeForgeOfForges(className, forges);
 			return new SerdeAndForgeables(forge, Collections.SingletonList(forgeable));
 		}
 
 		private static SerdeAndForgeables PlanBean(
 			BeanEventType eventType,
 			StatementRawInfo raw,
-			SerdeCompileTimeResolver resolver)
+			SerdeCompileTimeResolver resolver,
+			StateMgmtSettingsProvider stateMgmtSettingsProvider)
 		{
-			var forge = resolver.SerdeForBeanEventType(raw, eventType.UnderlyingType, eventType.Name, eventType.SuperTypes);
+			var forge = resolver.SerdeForBeanEventType(
+				raw,
+				eventType.UnderlyingType,
+				eventType.Name,
+				eventType.SuperTypes);
 			return new SerdeAndForgeables(forge, EmptyList<StmtClassForgeableFactory>.Instance);
 		}
 

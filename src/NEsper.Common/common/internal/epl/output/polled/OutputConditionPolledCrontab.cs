@@ -1,14 +1,15 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using com.espertech.esper.common.@internal.context.util;
+using System.Reflection;
+
+using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.schedule;
-using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.logging;
 
@@ -17,29 +18,27 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
     /// <summary>
     /// Output condition handling crontab-at schedule output.
     /// </summary>
-    public sealed class OutputConditionPolledCrontab : OutputConditionPolled
+    public class OutputConditionPolledCrontab : OutputConditionPolled
     {
-        private readonly AgentInstanceContext _agentInstanceContext;
-        private readonly OutputConditionPolledCrontabState _state;
+        private readonly ExprEvaluatorContext exprEvaluatorContext;
+        private readonly OutputConditionPolledCrontabState state;
 
         public OutputConditionPolledCrontab(
-            AgentInstanceContext agentInstanceContext,
+            ExprEvaluatorContext exprEvaluatorContext,
             OutputConditionPolledCrontabState state)
         {
-            this._agentInstanceContext = agentInstanceContext;
-            this._state = state;
+            this.exprEvaluatorContext = exprEvaluatorContext;
+            this.state = state;
         }
 
-        public OutputConditionPolledState State {
-            get => _state;
-        }
+        public OutputConditionPolledState State => state;
 
         public bool UpdateOutputCondition(
             int newEventsCount,
             int oldEventsCount)
         {
-            if ((ExecutionPathDebugLog.IsDebugEnabled) && (log.IsDebugEnabled)) {
-                log.Debug(
+            if (ExecutionPathDebugLog.IsDebugEnabled && Log.IsDebugEnabled) {
+                Log.Debug(
                     ".updateOutputCondition, " +
                     "  newEventsCount==" +
                     newEventsCount +
@@ -47,31 +46,30 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
                     oldEventsCount);
             }
 
-            bool output = false;
-            long currentTime = _agentInstanceContext.StatementContext.SchedulingService.Time;
-            ImportServiceRuntime importService = _agentInstanceContext.ImportServiceRuntime;
-            if (_state.CurrentReferencePoint == null) {
-                _state.CurrentReferencePoint = currentTime;
-                _state.NextScheduledTime = ScheduleComputeHelper.ComputeNextOccurance(
-                    _state.ScheduleSpec,
+            var output = false;
+            var currentTime = exprEvaluatorContext.TimeProvider.Time;
+            if (state.CurrentReferencePoint == null) {
+                state.CurrentReferencePoint = currentTime;
+                state.NextScheduledTime = ScheduleComputeHelper.ComputeNextOccurance(
+                    state.ScheduleSpec,
                     currentTime,
-                    importService.TimeZone,
-                    importService.TimeAbacus);
+                    exprEvaluatorContext.TimeZone,
+                    exprEvaluatorContext.TimeAbacus);
                 output = true;
             }
 
-            if (_state.NextScheduledTime <= currentTime) {
-                _state.NextScheduledTime = ScheduleComputeHelper.ComputeNextOccurance(
-                    _state.ScheduleSpec,
+            if (state.NextScheduledTime <= currentTime) {
+                state.NextScheduledTime = ScheduleComputeHelper.ComputeNextOccurance(
+                    state.ScheduleSpec,
                     currentTime,
-                    importService.TimeZone,
-                    importService.TimeAbacus);
+                    exprEvaluatorContext.TimeZone,
+                    exprEvaluatorContext.TimeAbacus);
                 output = true;
             }
 
             return output;
         }
 
-        private static readonly ILog log = LogManager.GetLogger(typeof(OutputConditionPolledCrontab));
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
     }
 } // end of namespace

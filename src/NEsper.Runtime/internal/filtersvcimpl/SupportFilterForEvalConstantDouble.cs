@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -16,7 +16,6 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
     /// <summary>
     ///     A Double-typed value as a filter parameter representing a range.
     /// </summary>
-    [Serializable]
     public class SupportFilterForEvalConstantDouble : FilterSpecParamFilterForEvalDouble
     {
         /// <summary>

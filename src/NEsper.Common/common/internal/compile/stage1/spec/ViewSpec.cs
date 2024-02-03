@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -18,10 +18,9 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
     /// <summary>
     ///     Specification for a view object consists of a namespace, name and view object parameters.
     /// </summary>
-    [Serializable]
     public class ViewSpec : ObjectSpec
     {
-        public static readonly ViewSpec[] EMPTY_VIEWSPEC_ARRAY = new ViewSpec[0];
+        public static readonly ViewSpec[] EMPTY_VIEWSPEC_ARRAY = Array.Empty<ViewSpec>();
 
         /// <summary>
         ///     Constructor.

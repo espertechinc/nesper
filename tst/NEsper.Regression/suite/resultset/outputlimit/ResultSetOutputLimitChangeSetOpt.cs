@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -14,6 +14,7 @@ using com.espertech.esper.regressionlib.support.epl;
 using com.espertech.esper.runtime.@internal.kernel.statement;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
 {
@@ -331,8 +332,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 "first",
                 null);
 
-            SupportMessageAssertUtil.TryInvalidCompile(
-                env,
+            env.TryInvalidCompile(
                 SupportOutputLimitOpt.ENABLED.GetHint() +
                 " select sum(IntPrimitive) " +
                 "from SupportBean output last every 4 events order by TheString",
@@ -351,7 +351,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             string orderBy)
         {
             var epl = hint.GetHint() +
-                      "@Name('s0') select irstream " +
+                      "@name('s0') select irstream " +
                       selectClause +
                       " " +
                       "from SupportBean#length(2) " +
@@ -379,19 +379,23 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             RegressionEnvironment env,
             int numExpectedChangeset)
         {
-            var spi = (EPStatementSPI) env.Statement("s0");
-            var resources = spi.StatementContext.StatementCPCacheService.StatementResourceService
-                .ResourcesUnpartitioned;
-            var outputProcessView = (OutputProcessView) resources.FinalView;
-            try {
-                Assert.AreEqual(
-                    numExpectedChangeset,
-                    outputProcessView.NumChangesetRows,
-                    "enableOutputLimitOpt=" + enableOutputLimitOpt);
-            }
-            catch (UnsupportedOperationException) {
-                // allowed
-            }
+            env.AssertStatement(
+                "s0",
+                statement => {
+                    var spi = (EPStatementSPI)statement;
+                    var resources = spi.StatementContext.StatementCPCacheService.StatementResourceService
+                        .ResourcesUnpartitioned;
+                    var outputProcessView = (OutputProcessView)resources.FinalView;
+                    try {
+                        ClassicAssert.AreEqual(
+                            numExpectedChangeset,
+                            outputProcessView.NumChangesetRows,
+                            "enableOutputLimitOpt=" + enableOutputLimitOpt);
+                    }
+                    catch (UnsupportedOperationException) {
+                        // allowed
+                    }
+                });
         }
 
         private static void SendTime(

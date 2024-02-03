@@ -1,5 +1,5 @@
 ﻿///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -125,6 +125,7 @@ namespace NEsper.Scripting.ClearScript
                 engine.AddHostObject("__variables", primitives);
                 engine.AddHostObject("host", new XHostFunctions(args.Context.TypeResolver));
                 engine.AddHostObject("debug", new DebugFunctions(this));
+                engine.AddHostObject("epl", args.Context.AllocateAgentInstanceScriptContext);
 
                 var writer = new StringWriter();
                 WritePolyfills(writer);
@@ -150,12 +151,12 @@ namespace NEsper.Scripting.ClearScript
             }
         }
 
-        private void WritePolyfills(StringWriter writer)
+        private void WritePolyfills(TextWriter writer)
         {
             WriteStartsWithPolyfill(writer);
         }
 
-        private void WriteStartsWithPolyfill(StringWriter writer)
+        private void WriteStartsWithPolyfill(TextWriter writer)
         {
             writer.WriteLine("if (!String.prototype.startsWith) {");
             writer.WriteLine("    String.prototype.startsWith = function(searchString, position) {");
@@ -183,22 +184,22 @@ namespace NEsper.Scripting.ClearScript
 
         public class XHostFunctions : ExtendedHostFunctions
         {
-            private readonly TypeResolver typeResolver;
+            private readonly TypeResolver _typeResolver;
 
             public XHostFunctions(TypeResolver typeResolver)
             {
-                this.typeResolver = typeResolver;
+                this._typeResolver = typeResolver;
             }
 
             public object resolveType(string typeName)
             {
-                return type(typeResolver.ResolveType(typeName, false));
+                return type(_typeResolver.ResolveType(typeName, false));
             }
 
             public void throwException(string exceptionTypeName, string message)
             {
-                var exceptionType = typeResolver.ResolveType(exceptionTypeName, true);
-                if (exceptionType.IsInstanceOfType(typeof(Exception)))
+                var exceptionType = _typeResolver.ResolveType(exceptionTypeName, true);
+                if ((exceptionType == typeof(Exception)) || (exceptionType.IsSubclassOf(typeof(Exception))))
                 {
                     // attempt to find a constructor with a single argument
                     var ctor = exceptionType.GetConstructor(new Type[] { typeof(string) });

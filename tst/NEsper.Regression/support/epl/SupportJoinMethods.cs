@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -16,7 +16,7 @@ namespace com.espertech.esper.regressionlib.support.epl
     public class SupportJoinMethods
     {
         private static readonly IDictionary<string, object>[] Empty = 
-            new IDictionary<string, object>[0];
+            Array.Empty<IDictionary<string, object>>();
         public static IDictionary<string, object>[] FetchVal(
             string prefix,
             int? number)
@@ -42,7 +42,7 @@ namespace com.espertech.esper.regressionlib.support.epl
             int? numRowsPerIndex)
         {
             if (number == null || number == 0) {
-                return new IDictionary<string, object>[0];
+                return Array.Empty<IDictionary<string, object>>();
             }
 
             var rows = number.Value;

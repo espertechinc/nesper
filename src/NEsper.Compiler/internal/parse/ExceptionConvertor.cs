@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -27,7 +27,7 @@ namespace com.espertech.esper.compiler.@internal.parse
     {
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        protected const string END_OF_INPUT_TEXT = "end-of-input";
+        internal const string END_OF_INPUT_TEXT = "end-of-input";
 
         /// <summary>
         /// Converts from a syntax error to a nice statement exception.

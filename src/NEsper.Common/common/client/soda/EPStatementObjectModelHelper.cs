@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -18,66 +18,50 @@ namespace com.espertech.esper.common.client.soda
     {
         public static string RenderValue(this object constant)
         {
-            if (constant == null)
-            {
-                return ("null");
+            if (constant == null) {
+                return "null";
             }
 
-            if ((constant is string) ||
-                (constant is char))
-            {
+            if (constant is string ||
+                constant is char) {
                 return '\"' + constant.ToString() + '\"';
             }
-            else if (constant is long)
-            {
+            else if (constant is long) {
                 return $"{constant}L";
             }
-            else if (constant is double)
-            {
-                double dvalue = (double) constant;
-                double scrubbed = Math.Floor(dvalue);
-                if (dvalue == scrubbed)
-                {
-                    return $"{dvalue:F1}d";
+            else if (constant is double d) {
+                var scrubbed = Math.Floor(d);
+                if (d == scrubbed) {
+                    return $"{d:F1}d";
                 }
-                else
-                {
-                    return $"{dvalue}";
+                else {
+                    return $"{d}";
                 }
             }
-            else if (constant is float)
-            {
-                double dvalue = (float) constant;
-                double scrubbed = Math.Floor(dvalue);
-                if (dvalue == scrubbed)
-                {
+            else if (constant is float f) {
+                double dvalue = f;
+                var scrubbed = Math.Floor(dvalue);
+                if (dvalue == scrubbed) {
                     return $"{dvalue:F1}f";
                 }
-                else
-                {
+                else {
                     return $"{dvalue}f";
                 }
             }
-            else if (constant is decimal)
-            {
-                decimal dvalue = (decimal) constant;
-                decimal scrubbed = Math.Floor(dvalue);
-                if (dvalue == scrubbed)
-                {
+            else if (constant is decimal dvalue) {
+                var scrubbed = Math.Floor(dvalue);
+                if (dvalue == scrubbed) {
                     return $"{dvalue:F1}m";
                 }
-                else
-                {
+                else {
                     return $"{dvalue}m";
                 }
             }
-            else if (constant is bool)
-            {
-                return (constant.ToString().ToLower());
+            else if (constant is bool) {
+                return constant.ToString().ToLower();
             }
-            else
-            {
-                return (constant.ToString());
+            else {
+                return constant.ToString();
             }
         }
 
@@ -88,68 +72,52 @@ namespace com.espertech.esper.common.client.soda
             TextWriter writer,
             object constant)
         {
-            if (constant == null)
-            {
+            if (constant == null) {
                 writer.Write("null");
                 return;
             }
 
-            if ((constant is string) ||
-                (constant is char))
-            {
+            if (constant is string ||
+                constant is char) {
                 writer.Write('\"');
                 writer.Write(constant.ToString());
                 writer.Write('\"');
             }
-            else if (constant is long)
-            {
+            else if (constant is long) {
                 writer.Write("{0}L", constant);
             }
-            else if (constant is double)
-            {
-                double dvalue = (double) constant;
-                double scrubbed = Math.Floor(dvalue);
-                if (dvalue == scrubbed)
-                {
-                    writer.Write("{0:F1}d", dvalue);
+            else if (constant is double d) {
+                var scrubbed = Math.Floor(d);
+                if (d == scrubbed) {
+                    writer.Write("{0:F1}d", d);
                 }
-                else
-                {
-                    writer.Write("{0}", dvalue);
+                else {
+                    writer.Write("{0}", d);
                 }
             }
-            else if (constant is float)
-            {
-                double dvalue = (float) constant;
-                double scrubbed = Math.Floor(dvalue);
-                if (dvalue == scrubbed)
-                {
+            else if (constant is float f) {
+                double dvalue = f;
+                var scrubbed = Math.Floor(dvalue);
+                if (dvalue == scrubbed) {
                     writer.Write("{0:F1}f", dvalue);
                 }
-                else
-                {
+                else {
                     writer.Write("{0}f", dvalue);
                 }
             }
-            else if (constant is decimal)
-            {
-                decimal dvalue = (decimal) constant;
-                decimal scrubbed = Math.Floor(dvalue);
-                if (dvalue == scrubbed)
-                {
+            else if (constant is decimal dvalue) {
+                var scrubbed = Math.Floor(dvalue);
+                if (dvalue == scrubbed) {
                     writer.Write("{0:F1}m", dvalue);
                 }
-                else
-                {
+                else {
                     writer.Write("{0}m", dvalue);
                 }
             }
-            else if (constant is bool)
-            {
+            else if (constant is bool) {
                 writer.Write(constant.ToString().ToLower());
             }
-            else
-            {
+            else {
                 writer.Write(constant.ToString());
             }
         }

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -49,9 +49,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                 true,
                 typeof(EventType),
                 EventTypeUtility.ResolveTypeCodegen(innerWrapperType, EPStatementInitServicesConstants.REF));
-            var refEPS = exprSymbol.GetAddEPS(methodNode);
+            var refEPS = exprSymbol.GetAddEps(methodNode);
             return StaticMethod(
-                this.GetType(),
+                GetType(),
                 "WildcardNestedWrapper",
                 ArrayAtIndex(refEPS, Constant(0)),
                 innerType,
@@ -67,7 +67,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             EventBeanTypedEventFactory factory,
             IDictionary<string, object> props)
         {
-            EventBean inner = factory.AdapterForTypedWrapper(
+            var inner = factory.AdapterForTypedWrapper(
                 @event,
                 EmptyDictionary<string, object>.Instance,
                 innerWrapperType);

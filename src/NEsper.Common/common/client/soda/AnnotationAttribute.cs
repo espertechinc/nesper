@@ -1,5 +1,5 @@
 ﻿///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -7,15 +7,14 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Text.Json.Serialization;
+
+using com.espertech.esper.common.@internal.util.serde;
 
 namespace com.espertech.esper.common.client.soda
 {
-    [Serializable]
     public class AnnotationAttribute
     {
-        private string name;
-        private object value;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="AnnotationAttribute"/> class.
         /// </summary>
@@ -34,20 +33,13 @@ namespace com.espertech.esper.common.client.soda
             string name,
             object value)
         {
-            this.name = name;
-            this.value = value;
+            Name = name;
+            Value = value;
         }
 
-        public string Name
-        {
-            get => name;
-            set => name = value;
-        }
+        public string Name { get; set; }
 
-        public object Value
-        {
-            get => value;
-            set => this.value = value;
-        }
+        [JsonConverter(typeof(JsonConverterAbstract<object>))]
+        public object Value { get; set; }
     }
 }

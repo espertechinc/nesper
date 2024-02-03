@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -30,7 +30,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
             EventBean[] oldData,
             bool isGenerateSynthetic)
         {
-            UniformPair<EventBean[]> pair = processor.ProcessViewResult(newData, oldData, isGenerateSynthetic);
+            var pair = processor.ProcessViewResult(newData, oldData, isGenerateSynthetic);
             Apply(pair);
         }
 
@@ -39,7 +39,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
             ISet<MultiKeyArrayOfKeys<EventBean>> oldEvents,
             bool isGenerateSynthetic)
         {
-            UniformPair<EventBean[]> pair = processor.ProcessJoinResult(newEvents, oldEvents, isGenerateSynthetic);
+            var pair = processor.ProcessJoinResult(newEvents, oldEvents, isGenerateSynthetic);
             Apply(pair);
         }
 
@@ -47,12 +47,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
         {
             UniformPair<EventBean[]> newOldEvents = null;
             if (lastEventIStreamForOutputLast != null) {
-                EventBean[] istream = new EventBean[] {lastEventIStreamForOutputLast};
+                var istream = new EventBean[] { lastEventIStreamForOutputLast };
                 newOldEvents = new UniformPair<EventBean[]>(istream, null);
             }
 
             if (lastEventRStreamForOutputLast != null) {
-                EventBean[] rstream = new EventBean[] {lastEventRStreamForOutputLast};
+                var rstream = new EventBean[] { lastEventRStreamForOutputLast };
                 if (newOldEvents == null) {
                     newOldEvents = new UniformPair<EventBean[]>(null, rstream);
                 }
@@ -78,11 +78,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
             }
 
             if (pair.First != null && pair.First.Length > 0) {
-                lastEventIStreamForOutputLast = pair.First[pair.First.Length - 1];
+                lastEventIStreamForOutputLast = pair.First[^1];
             }
 
             if (pair.Second != null && pair.Second.Length > 0) {
-                lastEventRStreamForOutputLast = pair.Second[pair.Second.Length - 1];
+                lastEventRStreamForOutputLast = pair.Second[^1];
             }
         }
     }

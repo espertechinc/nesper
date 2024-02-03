@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.concurrency;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.client;
@@ -17,11 +18,17 @@ using com.espertech.esper.regressionlib.support.util;
 using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.multithread
 {
     public class MultithreadStmtNamedWindowJoinUniqueView : RegressionExecution
     {
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
+        }
+
         public void Run(RegressionEnvironment env)
         {
             var epl = "create window A#unique(Key) as MyEventA;\n" +
@@ -29,7 +36,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                       "insert into A select * from MyEventA;\n" +
                       "insert into B select * from MyEventB;\n" +
                       "\n" +
-                      "@Name('stmt') select sum(A.Data) as aTotal,sum(B.Data) as bTotal " +
+                      "@name('stmt') select sum(A.Data) as aTotal,sum(B.Data) as bTotal " +
                       "from A unidirectional, B where A.Key = B.Key;\n";
             env.CompileDeploy(epl);
 
@@ -54,7 +61,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             SupportCompileDeployUtil.ExecutorAwait(es, 20, TimeUnit.SECONDS);
 
             foreach (var runnable in runnables) {
-                Assert.IsNull(runnable.Exception);
+                ClassicAssert.IsNull(runnable.Exception);
             }
 
             env.UndeployAll();

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -13,16 +13,12 @@ using com.espertech.esper.common.client;
 namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
 {
     /// <summary>
-    /// Selected properties for a create-window expression in the model-after syntax.
+    ///     Selected properties for a create-window expression in the model-after syntax.
     /// </summary>
     public class NamedWindowSelectedProps
     {
-        private Type selectExpressionType;
-        private string assignedName;
-        private EventType fragmentType;
-
         /// <summary>
-        /// Ctor.
+        ///     Ctor.
         /// </summary>
         /// <param name="selectExpressionType">expression result type</param>
         /// <param name="assignedName">name of column</param>
@@ -32,33 +28,27 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
             string assignedName,
             EventType fragmentType)
         {
-            this.selectExpressionType = selectExpressionType;
-            this.assignedName = assignedName;
-            this.fragmentType = fragmentType;
+            SelectExpressionType = selectExpressionType;
+            AssignedName = assignedName;
+            FragmentType = fragmentType;
         }
 
         /// <summary>
-        /// Returns the type of the expression result.
+        ///     Returns the type of the expression result.
         /// </summary>
-        /// <returns>type</returns>
-        public Type SelectExpressionType {
-            get => selectExpressionType;
-        }
+        /// <value>type</value>
+        public Type SelectExpressionType { get; }
 
         /// <summary>
-        /// Returns the assigned column name.
+        ///     Returns the assigned column name.
         /// </summary>
-        /// <returns>name</returns>
-        public string AssignedName {
-            get => assignedName;
-        }
+        /// <value>name</value>
+        public string AssignedName { get; }
 
         /// <summary>
-        /// Returns the fragment type or null if not a fragment type.
+        ///     Returns the fragment type or null if not a fragment type.
         /// </summary>
-        /// <returns>type</returns>
-        public EventType FragmentType {
-            get => fragmentType;
-        }
+        /// <value>type</value>
+        public EventType FragmentType { get; }
     }
 } // end of namespace

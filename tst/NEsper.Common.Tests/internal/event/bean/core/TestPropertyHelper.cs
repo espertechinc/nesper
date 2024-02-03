@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -19,6 +19,7 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.magic;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.@event.bean.core
 {
@@ -31,12 +32,12 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             IList<PropertyStem> result = new List<PropertyStem>();
             PropertyHelper.AddMappedProperties(
                 MagicType.GetCachedType<SupportBeanPropertyNames>(), result);
-            Assert.AreEqual(6, result.Count);
+            ClassicAssert.AreEqual(6, result.Count);
 
             IList<string> propertyNames = new List<string>();
             foreach (PropertyStem desc in result)
             {
-                log.Debug("desc=" + desc.PropertyName);
+                Log.Debug("desc=" + desc.PropertyName);
                 propertyNames.Add(desc.PropertyName);
             }
             EPAssertionUtil.AssertEqualsAnyOrder(new object[] { "a", "AB", "ABC", "ab", "abc", "fooBah" }, propertyNames.ToArray());
@@ -51,10 +52,10 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
 
             foreach (PropertyStem desc in result)
             {
-                log.Debug("desc=" + desc.PropertyName);
+                Log.Debug("desc=" + desc.PropertyName);
             }
 
-            Assert.AreEqual(11, result.Count); // for "class" is also in there
+            ClassicAssert.AreEqual(11, result.Count); // for "class" is also in there
 
             var indexedProperty = result.FirstOrDefault(p => p.PropertyName == "Indexed");
             Assert.That(indexedProperty, Is.Not.Null);
@@ -73,9 +74,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
 
             PropertyHelper.RemoveDuplicateProperties(result);
 
-            Assert.AreEqual(2, result.Count);
-            Assert.AreEqual("x", result[0].PropertyName);
-            Assert.AreEqual("y", result[1].PropertyName);
+            ClassicAssert.AreEqual(2, result.Count);
+            ClassicAssert.AreEqual("x", result[0].PropertyName);
+            ClassicAssert.AreEqual("y", result[1].PropertyName);
         }
 
         [Test]
@@ -99,8 +100,8 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
 
             PropertyHelper.RemovePlatformProperties(result);
 
-            Assert.AreEqual(1, result.Count);
-            Assert.AreEqual("x", result[0].PropertyName);
+            ClassicAssert.AreEqual(1, result.Count);
+            ClassicAssert.AreEqual("x", result[0].PropertyName);
         }
 
         [Test]
@@ -111,9 +112,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             var property = typeof(SupportBeanPropertyNames).GetProperty("A");
             var getter = PropertyHelper.GetGetter(property, EventBeanTypedEventFactoryCompileTime.INSTANCE,
                 supportEventTypeFactory.BEAN_EVENT_TYPE_FACTORY);
-            Assert.AreEqual("", getter.Get(bean));
+            ClassicAssert.AreEqual("", getter.Get(bean));
         }
 
-        private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 } // end of namespace

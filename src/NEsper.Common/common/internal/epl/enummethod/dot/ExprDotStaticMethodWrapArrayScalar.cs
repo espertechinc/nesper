@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -20,24 +20,28 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
 {
     public class ExprDotStaticMethodWrapArrayScalar : ExprDotStaticMethodWrap
     {
-        private readonly Type arrayType;
-        private readonly string methodName;
+        private readonly Type _arrayType;
+        private readonly string _methodName;
 
         public ExprDotStaticMethodWrapArrayScalar(
             string methodName,
             Type arrayType)
         {
-            this.methodName = methodName;
-            this.arrayType = arrayType;
+            _methodName = methodName;
+            _arrayType = arrayType;
         }
 
-        public EPType TypeInfo => EPTypeHelper.CollectionOfSingleValue(
-            arrayType.GetElementType(),
-            arrayType);
+        public EPChainableType TypeInfo => EPChainableTypeHelper.CollectionOfSingleValue(
+            _arrayType.GetElementType());
 
-        public ICollection<EventBean> ConvertNonNull(object result)
+        public object ConvertNonNull(object result)
         {
-            return result.Unwrap<EventBean>(false);
+            if (result == null)
+                return null;
+            if (result.GetType().IsGenericCollection())
+                return result;
+
+            return result.Unwrap<object>(false);
         }
 
         public CodegenExpression CodegenConvertNonNull(
@@ -47,7 +51,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
         {
             return CollectionUtil.ArrayToCollectionAllowNullCodegen(
                 codegenMethodScope,
-                arrayType,
+                _arrayType,
                 result,
                 codegenClassScope);
         }

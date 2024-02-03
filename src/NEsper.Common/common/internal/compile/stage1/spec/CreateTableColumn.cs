@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -14,13 +14,12 @@ using com.espertech.esper.common.@internal.type;
 
 namespace com.espertech.esper.common.@internal.compile.stage1.spec
 {
-    [Serializable]
     public class CreateTableColumn
     {
         public CreateTableColumn(
             string columnName,
             ExprNode optExpression,
-            ClassIdentifierWArray optType,
+            ClassDescriptor optType,
             IList<AnnotationDesc> annotations,
             bool? primaryKey)
         {
@@ -31,7 +30,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
             PrimaryKey = primaryKey;
         }
 
-        public ClassIdentifierWArray OptType { get; set; }
+        public ClassDescriptor OptType { get; set; }
 
         public string ColumnName { get; private set; }
 

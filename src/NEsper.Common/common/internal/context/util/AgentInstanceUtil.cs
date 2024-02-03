@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -46,14 +46,13 @@ namespace com.espertech.esper.common.@internal.context.util
             if (optionalTriggeringPattern != null) {
                 // evaluation order definition is up to the originator of the triggering pattern
                 foreach (var entry in optionalTriggeringPattern) {
-                    if (entry.Value is EventBean) {
+                    if (entry.Value is EventBean bean) {
                         evaluator.EvaluateEventForStatement(
-                            (EventBean) entry.Value,
+                            bean,
                             agentInstances,
                             agentInstanceContextCreate);
                     }
-                    else if (entry.Value is EventBean[]) {
-                        var eventsArray = (EventBean[]) entry.Value;
+                    else if (entry.Value is EventBean[] eventsArray) {
                         foreach (var eventElement in eventsArray) {
                             evaluator.EvaluateEventForStatement(
                                 eventElement,
@@ -78,14 +77,14 @@ namespace com.espertech.esper.common.@internal.context.util
                 statementContext.StatementCPCacheService.MakeOrGetEntryCanNull(agentInstanceId, statementContext);
 
             if (terminationProperties != null) {
-                var mappedEventBean = (MappedEventBean) holder.AgentInstanceContext.ContextProperties;
+                var mappedEventBean = (MappedEventBean)holder.AgentInstanceContext.ContextProperties;
                 if (contextControllers.Length == 1) {
                     mappedEventBean.Properties.PutAll(terminationProperties);
                 }
                 else {
-                    var lastController = contextControllers[contextControllers.Length - 1];
+                    var lastController = contextControllers[^1];
                     var lastContextName = lastController.Factory.FactoryEnv.ContextName;
-                    var inner = (IDictionary<string, object>) mappedEventBean.Properties.Get(lastContextName);
+                    var inner = (IDictionary<string, object>)mappedEventBean.Properties.Get(lastContextName);
                     inner?.PutAll(terminationProperties);
                 }
             }
@@ -131,7 +130,7 @@ namespace com.espertech.esper.common.@internal.context.util
 
                 // cause any filters, that may concide with the caller's filters, to be ignored
                 agentInstanceContext.EpStatementAgentInstanceHandle.StatementFilterVersion.StmtFilterVersion =
-                    Int64.MaxValue;
+                    long.MaxValue;
 
                 if (agentInstanceContext.AgentInstanceId != -1) {
                     agentInstanceContext.AuditProvider.ContextPartition(false, agentInstanceContext);
@@ -205,7 +204,7 @@ namespace com.espertech.esper.common.@internal.context.util
             MappedEventBean contextBean,
             AgentInstanceFilterProxy proxy)
         {
-            var result = AgentInstanceUtil.Start(
+            var result = Start(
                 services,
                 statementDesc,
                 assignedContextId,
@@ -281,7 +280,7 @@ namespace com.espertech.esper.common.@internal.context.util
                             preload.ExecutePreload();
                         }
                     }
-                    
+
                     // handle any pattern-match-event that was produced during startup, relevant for "timer:interval(0)" in conjunction with contexts
                     startResult.PostContextMergeRunnable?.Invoke();
 
@@ -343,10 +342,13 @@ namespace com.espertech.esper.common.@internal.context.util
             return false;
         }
 
-        public static IReaderWriterLock NewLock(StatementContext statementContext)
+        public static IReaderWriterLock NewLock(
+            StatementContext statementContext,
+            int cpid)
         {
             return statementContext.StatementAgentInstanceLockFactory.GetStatementLock(
                 statementContext.StatementName,
+                cpid,
                 statementContext.Annotations,
                 statementContext.IsStatelessSelect,
                 statementContext.StatementType);
@@ -358,12 +360,12 @@ namespace com.espertech.esper.common.@internal.context.util
 
             internal AgentInstanceFinalizedMgmtCallback(AgentInstanceMgmtCallback[] mgmtCallbackArray)
             {
-                this._mgmtCallbackArray = mgmtCallbackArray;
+                _mgmtCallbackArray = mgmtCallbackArray;
             }
 
             public void Stop(AgentInstanceStopServices services)
             {
-                foreach (AgentInstanceMgmtCallback callback in _mgmtCallbackArray) {
+                foreach (var callback in _mgmtCallbackArray) {
                     try {
                         callback.Stop(services);
                     }
@@ -378,7 +380,7 @@ namespace com.espertech.esper.common.@internal.context.util
 
             public void Transfer(AgentInstanceTransferServices services)
             {
-                foreach (AgentInstanceMgmtCallback callback in _mgmtCallbackArray) {
+                foreach (var callback in _mgmtCallbackArray) {
                     try {
                         callback.Transfer(services);
                     }

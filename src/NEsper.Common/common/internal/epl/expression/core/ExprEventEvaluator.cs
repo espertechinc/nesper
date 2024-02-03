@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -12,28 +12,31 @@ using com.espertech.esper.common.client;
 
 namespace com.espertech.esper.common.@internal.epl.expression.core
 {
-	public interface ExprEventEvaluator {
-	    object Eval(EventBean @event, ExprEvaluatorContext ctx);
-	}
+    public interface ExprEventEvaluator
+    {
+        object Eval(
+            EventBean @event,
+            ExprEvaluatorContext ctx);
+    }
 
-	public class ProxyExprEventEvaluator : ExprEventEvaluator
-	{
-		public Func<EventBean, ExprEvaluatorContext, object> ProcEval { get; set; }
+    public class ProxyExprEventEvaluator : ExprEventEvaluator
+    {
+        public Func<EventBean, ExprEvaluatorContext, object> ProcEval { get; set; }
 
-		public ProxyExprEventEvaluator()
-		{
-		}
+        public ProxyExprEventEvaluator()
+        {
+        }
 
-		public ProxyExprEventEvaluator(Func<EventBean, ExprEvaluatorContext, object> procEval)
-		{
-			ProcEval = procEval;
-		}
+        public ProxyExprEventEvaluator(Func<EventBean, ExprEvaluatorContext, object> procEval)
+        {
+            ProcEval = procEval;
+        }
 
-		public object Eval(
-			EventBean @event,
-			ExprEvaluatorContext ctx)
-		{
-			return ProcEval.Invoke(@event, ctx);
-		}
-	}
+        public object Eval(
+            EventBean @event,
+            ExprEvaluatorContext ctx)
+        {
+            return ProcEval.Invoke(@event, ctx);
+        }
+    }
 } // end of namespace

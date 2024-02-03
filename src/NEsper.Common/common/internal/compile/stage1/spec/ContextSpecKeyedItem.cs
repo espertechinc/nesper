@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -26,7 +26,6 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
 namespace com.espertech.esper.common.@internal.compile.stage1.spec
 {
-    [Serializable]
     public class ContextSpecKeyedItem
     {
         private FilterSpecCompiled filterSpecCompiled;
@@ -57,7 +56,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         }
 
         public MultiKeyClassRef KeyMultiKey { get; set; }
-        
+
         public DataInputOutputSerdeForge[] LookupableSerdes { get; set; }
 
         public string AliasName { get; }
@@ -80,15 +79,15 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
                     "lookupables",
                     NewArrayByLength(typeof(ExprFilterSpecLookupable), Constant(getters.Length)));
             for (var i = 0; i < getters.Length; i++) {
-                CodegenExpression getterX = EventTypeUtility.CodegenGetterWCoerceWArray(
-                    typeof(ExprEventEvaluator), 
+                var getterX = EventTypeUtility.CodegenGetterWCoerceWArray(
+                    typeof(ExprEventEvaluator),
                     getters[i],
                     types[i],
                     types[i],
                     method,
                     GetType(),
                     classScope);
-                CodegenExpression lookupable = NewInstance<ExprFilterSpecLookupable>(
+                var lookupable = NewInstance<ExprFilterSpecLookupable>(
                     Constant(PropertyNames[i]),
                     getterX,
                     ConstantNull(),
@@ -108,7 +107,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
                                 ArrayAtIndex(Ref("lookupables"), Constant(i))));
             }
 
-            CodegenExpression getter = MultiKeyCodegen.CodegenGetterMayMultiKey(
+            var getter = MultiKeyCodegen.CodegenGetterMayMultiKey(
                 filterSpecCompiled.FilterForEventType,
                 getters,
                 types,
@@ -118,9 +117,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
                 classScope);
 
             method.Block
-                .DeclareVar<ContextControllerDetailKeyedItem>(
-                    "item",
-                    NewInstance(typeof(ContextControllerDetailKeyedItem)))
+                .DeclareVarNewInstance<ContextControllerDetailKeyedItem>("item")
                 .SetProperty(Ref("item"), "Getter", getter)
                 .SetProperty(Ref("item"), "Lookupables", Ref("lookupables"))
                 .SetProperty(Ref("item"), "PropertyTypes", Constant(types))

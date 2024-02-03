@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -9,6 +9,7 @@
 using com.espertech.esper.compat.collections;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.collection
 {
@@ -24,22 +25,22 @@ namespace com.espertech.esper.common.@internal.collection
         [Test]
         public void TestHashCode()
         {
-            Assert.IsTrue(pair1.GetHashCode() == CompatExtensions.HashAll<object>("a", "b"));
-            Assert.IsTrue(pair3.GetHashCode() == CompatExtensions.HashAll("a"));
-            Assert.IsTrue(pair4.GetHashCode() == CompatExtensions.HashAll("b"));
-            Assert.IsTrue(pair5.GetHashCode() == 0);
+            ClassicAssert.IsTrue(pair1.GetHashCode() == CompatExtensions.HashAll<object>("a", "b"));
+            ClassicAssert.IsTrue(pair3.GetHashCode() == CompatExtensions.HashAll("a"));
+            ClassicAssert.IsTrue(pair4.GetHashCode() == CompatExtensions.HashAll("b"));
+            ClassicAssert.IsTrue(pair5.GetHashCode() == 0);
 
-            Assert.IsTrue(pair1.GetHashCode() == pair2.GetHashCode());
-            Assert.IsTrue(pair1.GetHashCode() != pair3.GetHashCode());
-            Assert.IsTrue(pair1.GetHashCode() != pair4.GetHashCode());
-            Assert.IsTrue(pair1.GetHashCode() != pair5.GetHashCode());
+            ClassicAssert.IsTrue(pair1.GetHashCode() == pair2.GetHashCode());
+            ClassicAssert.IsTrue(pair1.GetHashCode() != pair3.GetHashCode());
+            ClassicAssert.IsTrue(pair1.GetHashCode() != pair4.GetHashCode());
+            ClassicAssert.IsTrue(pair1.GetHashCode() != pair5.GetHashCode());
         }
 
         [Test]
         public void TestEquals()
         {
-            Assert.AreEqual(pair2, pair1);
-            Assert.AreEqual(pair1, pair2);
+            ClassicAssert.AreEqual(pair2, pair1);
+            ClassicAssert.AreEqual(pair1, pair2);
 
             Assert.That(pair1, Is.Not.SameAs(pair3));
             Assert.That(pair3, Is.Not.SameAs(pair1));

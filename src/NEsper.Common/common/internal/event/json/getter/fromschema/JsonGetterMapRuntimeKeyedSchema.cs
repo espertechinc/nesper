@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -25,7 +25,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
 
         public JsonGetterMapRuntimeKeyedSchema(JsonUnderlyingField field)
         {
-            this._field = field;
+            _field = field;
         }
 
         public CodegenExpression EventBeanGetMappedCodegen(
@@ -38,7 +38,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
                 typeof(JsonFieldGetterHelperSchema),
                 "GetJsonMappedProp",
                 ExprDotName(beanExpression, "Underlying"),
-                Constant(_field.PropertyName),
+                Constant(_field.PropertyNumber),
                 key);
         }
 
@@ -48,7 +48,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
         {
             return JsonFieldGetterHelperSchema.GetJsonMappedProp(
                 eventBean.Underlying,
-                _field.PropertyName,
+                _field.PropertyNumber,
                 mapKey);
         }
     }

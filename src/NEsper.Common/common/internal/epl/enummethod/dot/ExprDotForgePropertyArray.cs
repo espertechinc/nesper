@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -23,74 +23,106 @@ using static com.espertech.esper.common.@internal.epl.expression.codegen.Codegen
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.dot
 {
-	public class ExprDotForgePropertyArray : ExprDotEval, ExprDotForge {
+    public class ExprDotForgePropertyArray : ExprDotEval,
+        ExprDotForge
+    {
+        private readonly EventPropertyGetterSPI _getter;
+        private readonly EPChainableType _returnType;
+        private readonly ExprNode _indexExpression;
+        private readonly Type _arrayType;
+        private readonly string _propertyName;
 
-	    private readonly EventPropertyGetterSPI _getter;
-	    private readonly EPType _returnType;
-	    private readonly ExprNode _indexExpression;
-	    private readonly Type _arrayType;
-	    private readonly string _propertyName;
+        public ExprDotForgePropertyArray(
+            EventPropertyGetterSPI getter,
+            EPChainableType returnType,
+            ExprNode indexExpression,
+            Type arrayType,
+            string propertyName)
+        {
+            _getter = getter;
+            _returnType = returnType;
+            _indexExpression = indexExpression;
+            _arrayType = arrayType;
+            _propertyName = propertyName;
+        }
 
-	    public ExprDotForgePropertyArray(EventPropertyGetterSPI getter, EPType returnType, ExprNode indexExpression, Type arrayType, string propertyName) {
-	        _getter = getter;
-	        _returnType = returnType;
-	        _indexExpression = indexExpression;
-	        _arrayType = arrayType;
-	        _propertyName = propertyName;
-	    }
+        public object Evaluate(
+            object target,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
+        {
+            if (!(target is EventBean eventBean)) {
+                return null;
+            }
 
-	    public object Evaluate(object target, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext) {
-	        if (!(target is EventBean eventBean)) {
-	            return null;
-	        }
-	        var array = _getter.Get(eventBean) as Array;
-	        if (array == null) {
-	            return null;
-	        }
+            var array = _getter.Get(eventBean) as Array;
+            if (array == null) {
+                return null;
+            }
 
-	        var index = _indexExpression.Forge.ExprEvaluator.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext).AsBoxedInt32();
-	        if (index == null) {
-	            return null;
-	        }
+            var index = _indexExpression.Forge.ExprEvaluator.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext)
+                .AsBoxedInt32();
+            if (index == null) {
+                return null;
+            }
 
-	        return array.GetValue(index.Value);
-	    }
+            return array.GetValue(index.Value);
+        }
 
-	    public EPType TypeInfo => _returnType;
+        public EPChainableType TypeInfo => _returnType;
 
-	    public void Visit(ExprDotEvalVisitor visitor) {
-	        visitor.VisitPropertySource();
-	    }
+        public void Visit(ExprDotEvalVisitor visitor)
+        {
+            visitor.VisitPropertySource();
+        }
 
-	    public ExprDotEval DotEvaluator => this;
+        public ExprDotEval DotEvaluator => this;
 
-	    public ExprDotForge DotForge => this;
+        public ExprDotForge DotForge => this;
 
-	    public CodegenExpression Codegen(CodegenExpression inner, Type innerType, CodegenMethodScope parent, ExprForgeCodegenSymbol symbols, CodegenClassScope classScope) {
-	        Type type = EPTypeHelper.GetCodegenReturnType(_returnType);
-	        CodegenMethod method = parent
-		        .MakeChild(type, typeof(ExprDotForgeProperty), classScope)
-		        .AddParam(innerType, "target").AddParam(typeof(int?), "index");
+        public CodegenExpression Codegen(
+            CodegenExpression inner,
+            Type innerType,
+            CodegenMethodScope parent,
+            ExprForgeCodegenSymbol symbols,
+            CodegenClassScope classScope)
+        {
+            var type = _returnType.GetCodegenReturnType();
+            var method = parent
+                .MakeChild(type, typeof(ExprDotForgeProperty), classScope)
+                .AddParam(innerType, "target")
+                .AddParam(typeof(int?), "index");
 
-	        var arrayExpr = CastSafeFromObjectType(_arrayType, _getter.EventBeanGetCodegen(Cast(typeof(EventBean), Ref("target")), method, classScope));
+            var arrayExpr = CastSafeFromObjectType(
+                _arrayType,
+                _getter.EventBeanGetCodegen(Cast(typeof(EventBean), Ref("target")), method, classScope));
 
-	        method.Block
-		        .IfNotInstanceOf("target", typeof(EventBean))
-		        .BlockReturn(ConstantNull())
-		        .DeclareVar(_arrayType, "array", arrayExpr)
-		        .IfRefNullReturnNull("index")
-		        .IfCondition(Relational(Ref("index"), CodegenExpressionRelational.CodegenRelational.GE, ArrayLength(Ref("array"))))
-		        .BlockThrow(
-			        NewInstance<EPException>(
-				        Concat(
-					        Constant("Array length "),
-					        ArrayLength(Ref("array")),
-					        Constant(" less than index "),
-					        Ref("index"),
-					        Constant(" for property '" + _propertyName + "'"))))
-		        .MethodReturn(CastSafeFromObjectType(type, ArrayAtIndex(Ref("array"), ExprDotMethod(Ref("index"), "AsInt32"))));
+            method.Block
+                .IfNotInstanceOf("target", typeof(EventBean))
+                .BlockReturn(ConstantNull())
+                .DeclareVar(_arrayType, "array", arrayExpr)
+                .IfRefNullReturnNull("index")
+                .IfCondition(
+                    Relational(
+                        Ref("index"),
+                        CodegenExpressionRelational.CodegenRelational.GE,
+                        ArrayLength(Ref("array"))))
+                .BlockThrow(
+                    NewInstance<EPException>(
+                        Concat(
+                            Constant("Array length "),
+                            ArrayLength(Ref("array")),
+                            Constant(" less than index "),
+                            Ref("index"),
+                            Constant(" for property '" + _propertyName + "'"))))
+                .MethodReturn(
+                    CastSafeFromObjectType(type, ArrayAtIndex(Ref("array"), ExprDotMethod(Ref("index"), "AsInt32"))));
 
-	        return LocalMethod(method, inner, _indexExpression.Forge.EvaluateCodegen(typeof(int?), method, symbols, classScope));
-	    }
-	}
+            return LocalMethod(
+                method,
+                inner,
+                _indexExpression.Forge.EvaluateCodegen(typeof(int?), method, symbols, classScope));
+        }
+    }
 } // end of namespace

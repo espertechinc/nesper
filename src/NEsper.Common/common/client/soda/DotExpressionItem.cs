@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -9,6 +9,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.Json.Serialization;
+
+using com.espertech.esper.common.@internal.util.serde;
 
 namespace com.espertech.esper.common.client.soda
 {
@@ -24,19 +27,20 @@ namespace com.espertech.esper.common.client.soda
     /// </para>
     /// </summary>
     [Serializable]
+    [JsonConverter(typeof(JsonConverterAbstract<DotExpressionItem>))]
     public abstract class DotExpressionItem
     {
         /// <summary>Ctor. </summary>
         public DotExpressionItem()
         {
         }
-        
+
         /// <summary>
         /// Render to EPL.
         /// </summary>
         /// <param name="writer">writer to output to</param>
         public abstract void RenderItem(TextWriter writer);
-        
+
         /// <summary>RenderAny to EPL. </summary>
         /// <param name="chain">chain to render</param>
         /// <param name="writer">writer to output to</param>
@@ -47,8 +51,7 @@ namespace com.espertech.esper.common.client.soda
             bool prefixDot)
         {
             var delimiterOuter = prefixDot ? "." : "";
-            foreach (var item in chain)
-            {
+            foreach (var item in chain) {
                 if (!(item is DotExpressionItemArray)) {
                     writer.Write(delimiterOuter);
                 }

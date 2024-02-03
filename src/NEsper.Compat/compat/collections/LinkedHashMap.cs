@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -137,7 +137,7 @@ namespace com.espertech.esper.compat.collections
             info.AddValue("Count", _hashList.Count);
         }
 
-        #region IDictionary<K,V> Members
+        #region IDictionary<TK, TV> Members
 
         /// <summary>
         /// Fetches the value associated with the specified key.
@@ -255,7 +255,7 @@ namespace com.espertech.esper.compat.collections
 
         public event EntryEventHandler RemoveEldest;
 
-        #region IDictionary<K,V> Members
+        #region IDictionary<TK, TV> Members
 
         /// <summary>
         /// Adds an element with the provided key and value to the <see cref="T:System.Collections.Generic.IDictionary`2"></see>.
@@ -486,7 +486,7 @@ namespace com.espertech.esper.compat.collections
 
         #endregion
 
-        #region ICollection<KeyValuePair<K,V>> Members
+        #region ICollection<KeyValuePair<TK, TV>> Members
 
         /// <summary>
         /// Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1"></see>.
@@ -599,7 +599,7 @@ namespace com.espertech.esper.compat.collections
 
         #endregion
 
-        #region IEnumerable<KeyValuePair<K,V>> Members
+        #region IEnumerable<KeyValuePair<TK, TV>> Members
 
         /// <summary>
         /// Returns an enumerator that iterates through the collection.

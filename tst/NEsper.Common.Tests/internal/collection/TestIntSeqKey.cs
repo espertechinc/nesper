@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -13,6 +13,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.io;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.collection
 {
@@ -49,7 +50,7 @@ namespace com.espertech.esper.common.@internal.collection
             using (var memoryStream = new MemoryStream(bytes)) {
                 using (var dataInput = new BinaryDataInput(memoryStream)) {
                     IntSeqKey deserialized = read.Invoke(dataInput);
-                    Assert.AreEqual(key, deserialized);
+                    ClassicAssert.AreEqual(key, deserialized);
                 }
             }
         }
@@ -58,7 +59,7 @@ namespace com.espertech.esper.common.@internal.collection
             int[] result,
             params int[] expected)
         {
-            Assert.IsTrue(Arrays.AreEqual(expected, result));
+            ClassicAssert.IsTrue(Arrays.AreEqual(expected, result));
         }
 
         [Test]
@@ -92,122 +93,122 @@ namespace com.espertech.esper.common.@internal.collection
         [Test]
         public void TestIsParent()
         {
-            Assert.IsTrue(_zero.IsParentTo(_one));
-            Assert.IsTrue(_zero.IsParentTo(new IntSeqKeyOne(99)));
-            Assert.IsFalse(_zero.IsParentTo(_zero));
-            Assert.IsFalse(_zero.IsParentTo(_two));
+            ClassicAssert.IsTrue(_zero.IsParentTo(_one));
+            ClassicAssert.IsTrue(_zero.IsParentTo(new IntSeqKeyOne(99)));
+            ClassicAssert.IsFalse(_zero.IsParentTo(_zero));
+            ClassicAssert.IsFalse(_zero.IsParentTo(_two));
 
-            Assert.IsTrue(_one.IsParentTo(_one.AddToEnd(99)));
-            Assert.IsTrue(_one.IsParentTo(new IntSeqKeyTwo(1, 2)));
-            Assert.IsFalse(_one.IsParentTo(new IntSeqKeyTwo(2, 2)));
-            Assert.IsFalse(_one.IsParentTo(_zero));
-            Assert.IsFalse(_one.IsParentTo(_one));
-            Assert.IsFalse(_one.IsParentTo(_two));
-            Assert.IsFalse(_one.IsParentTo(new IntSeqKeyThree(1, 2, 3)));
+            ClassicAssert.IsTrue(_one.IsParentTo(_one.AddToEnd(99)));
+            ClassicAssert.IsTrue(_one.IsParentTo(new IntSeqKeyTwo(1, 2)));
+            ClassicAssert.IsFalse(_one.IsParentTo(new IntSeqKeyTwo(2, 2)));
+            ClassicAssert.IsFalse(_one.IsParentTo(_zero));
+            ClassicAssert.IsFalse(_one.IsParentTo(_one));
+            ClassicAssert.IsFalse(_one.IsParentTo(_two));
+            ClassicAssert.IsFalse(_one.IsParentTo(new IntSeqKeyThree(1, 2, 3)));
 
-            Assert.IsTrue(_two.IsParentTo(_two.AddToEnd(99)));
-            Assert.IsTrue(_two.IsParentTo(new IntSeqKeyThree(2, 3, 5)));
-            Assert.IsFalse(_two.IsParentTo(new IntSeqKeyThree(1, 3, 5)));
-            Assert.IsFalse(_two.IsParentTo(new IntSeqKeyThree(2, 4, 5)));
-            Assert.IsFalse(_two.IsParentTo(_zero));
-            Assert.IsFalse(_two.IsParentTo(_one));
-            Assert.IsFalse(_two.IsParentTo(_two));
-            Assert.IsFalse(_two.IsParentTo(_three));
-            Assert.IsFalse(_two.IsParentTo(new IntSeqKeyFour(2, 3, 4, 5)));
+            ClassicAssert.IsTrue(_two.IsParentTo(_two.AddToEnd(99)));
+            ClassicAssert.IsTrue(_two.IsParentTo(new IntSeqKeyThree(2, 3, 5)));
+            ClassicAssert.IsFalse(_two.IsParentTo(new IntSeqKeyThree(1, 3, 5)));
+            ClassicAssert.IsFalse(_two.IsParentTo(new IntSeqKeyThree(2, 4, 5)));
+            ClassicAssert.IsFalse(_two.IsParentTo(_zero));
+            ClassicAssert.IsFalse(_two.IsParentTo(_one));
+            ClassicAssert.IsFalse(_two.IsParentTo(_two));
+            ClassicAssert.IsFalse(_two.IsParentTo(_three));
+            ClassicAssert.IsFalse(_two.IsParentTo(new IntSeqKeyFour(2, 3, 4, 5)));
 
-            Assert.IsTrue(_three.IsParentTo(_three.AddToEnd(99)));
-            Assert.IsTrue(_three.IsParentTo(new IntSeqKeyFour(4, 5, 6, 0)));
-            Assert.IsFalse(_three.IsParentTo(new IntSeqKeyFour(3, 5, 6, 0)));
-            Assert.IsFalse(_three.IsParentTo(new IntSeqKeyFour(4, 4, 6, 0)));
-            Assert.IsFalse(_three.IsParentTo(new IntSeqKeyFour(4, 5, 5, 0)));
-            Assert.IsFalse(_three.IsParentTo(_zero));
-            Assert.IsFalse(_three.IsParentTo(_one));
-            Assert.IsFalse(_three.IsParentTo(_two));
-            Assert.IsFalse(_three.IsParentTo(_four));
-            Assert.IsFalse(_three.IsParentTo(new IntSeqKeyFive(4, 5, 6, 7, 5)));
+            ClassicAssert.IsTrue(_three.IsParentTo(_three.AddToEnd(99)));
+            ClassicAssert.IsTrue(_three.IsParentTo(new IntSeqKeyFour(4, 5, 6, 0)));
+            ClassicAssert.IsFalse(_three.IsParentTo(new IntSeqKeyFour(3, 5, 6, 0)));
+            ClassicAssert.IsFalse(_three.IsParentTo(new IntSeqKeyFour(4, 4, 6, 0)));
+            ClassicAssert.IsFalse(_three.IsParentTo(new IntSeqKeyFour(4, 5, 5, 0)));
+            ClassicAssert.IsFalse(_three.IsParentTo(_zero));
+            ClassicAssert.IsFalse(_three.IsParentTo(_one));
+            ClassicAssert.IsFalse(_three.IsParentTo(_two));
+            ClassicAssert.IsFalse(_three.IsParentTo(_four));
+            ClassicAssert.IsFalse(_three.IsParentTo(new IntSeqKeyFive(4, 5, 6, 7, 5)));
 
-            Assert.IsTrue(_four.IsParentTo(_four.AddToEnd(99)));
-            Assert.IsTrue(_four.IsParentTo(new IntSeqKeyFive(7, 8, 9, 10, 0)));
-            Assert.IsFalse(_four.IsParentTo(new IntSeqKeyFive(6, 8, 9, 10, 0)));
-            Assert.IsFalse(_four.IsParentTo(new IntSeqKeyFive(7, 7, 9, 10, 0)));
-            Assert.IsFalse(_four.IsParentTo(new IntSeqKeyFive(7, 8, 8, 10, 0)));
-            Assert.IsFalse(_four.IsParentTo(new IntSeqKeyFive(7, 8, 9, 9, 0)));
-            Assert.IsFalse(_four.IsParentTo(_zero));
-            Assert.IsFalse(_four.IsParentTo(_one));
-            Assert.IsFalse(_four.IsParentTo(_two));
-            Assert.IsFalse(_four.IsParentTo(_four));
-            Assert.IsFalse(_four.IsParentTo(_five));
-            Assert.IsFalse(_four.IsParentTo(_six));
-            Assert.IsFalse(_four.IsParentTo(new IntSeqKeySix(7, 8, 9, 10, 11, 12)));
+            ClassicAssert.IsTrue(_four.IsParentTo(_four.AddToEnd(99)));
+            ClassicAssert.IsTrue(_four.IsParentTo(new IntSeqKeyFive(7, 8, 9, 10, 0)));
+            ClassicAssert.IsFalse(_four.IsParentTo(new IntSeqKeyFive(6, 8, 9, 10, 0)));
+            ClassicAssert.IsFalse(_four.IsParentTo(new IntSeqKeyFive(7, 7, 9, 10, 0)));
+            ClassicAssert.IsFalse(_four.IsParentTo(new IntSeqKeyFive(7, 8, 8, 10, 0)));
+            ClassicAssert.IsFalse(_four.IsParentTo(new IntSeqKeyFive(7, 8, 9, 9, 0)));
+            ClassicAssert.IsFalse(_four.IsParentTo(_zero));
+            ClassicAssert.IsFalse(_four.IsParentTo(_one));
+            ClassicAssert.IsFalse(_four.IsParentTo(_two));
+            ClassicAssert.IsFalse(_four.IsParentTo(_four));
+            ClassicAssert.IsFalse(_four.IsParentTo(_five));
+            ClassicAssert.IsFalse(_four.IsParentTo(_six));
+            ClassicAssert.IsFalse(_four.IsParentTo(new IntSeqKeySix(7, 8, 9, 10, 11, 12)));
 
-            Assert.IsTrue(_five.IsParentTo(_five.AddToEnd(99)));
-            Assert.IsTrue(_five.IsParentTo(new IntSeqKeySix(11, 12, 13, 14, 15, 0)));
-            Assert.IsFalse(_five.IsParentTo(new IntSeqKeySix(0, 12, 13, 14, 15, 0)));
-            Assert.IsFalse(_five.IsParentTo(new IntSeqKeySix(11, 0, 13, 14, 15, 0)));
-            Assert.IsFalse(_five.IsParentTo(new IntSeqKeySix(11, 12, 0, 14, 15, 0)));
-            Assert.IsFalse(_five.IsParentTo(new IntSeqKeySix(11, 12, 13, 0, 15, 0)));
-            Assert.IsFalse(_five.IsParentTo(new IntSeqKeySix(11, 12, 13, 14, 0, 0)));
-            Assert.IsFalse(_five.IsParentTo(_five));
-            Assert.IsFalse(_five.IsParentTo(_six));
-            Assert.IsFalse(_five.IsParentTo(_seven));
-            Assert.IsFalse(_five.IsParentTo(new IntSeqKeyMany(new[] { 11, 12, 13, 14, 15, 0, 0 })));
+            ClassicAssert.IsTrue(_five.IsParentTo(_five.AddToEnd(99)));
+            ClassicAssert.IsTrue(_five.IsParentTo(new IntSeqKeySix(11, 12, 13, 14, 15, 0)));
+            ClassicAssert.IsFalse(_five.IsParentTo(new IntSeqKeySix(0, 12, 13, 14, 15, 0)));
+            ClassicAssert.IsFalse(_five.IsParentTo(new IntSeqKeySix(11, 0, 13, 14, 15, 0)));
+            ClassicAssert.IsFalse(_five.IsParentTo(new IntSeqKeySix(11, 12, 0, 14, 15, 0)));
+            ClassicAssert.IsFalse(_five.IsParentTo(new IntSeqKeySix(11, 12, 13, 0, 15, 0)));
+            ClassicAssert.IsFalse(_five.IsParentTo(new IntSeqKeySix(11, 12, 13, 14, 0, 0)));
+            ClassicAssert.IsFalse(_five.IsParentTo(_five));
+            ClassicAssert.IsFalse(_five.IsParentTo(_six));
+            ClassicAssert.IsFalse(_five.IsParentTo(_seven));
+            ClassicAssert.IsFalse(_five.IsParentTo(new IntSeqKeyMany(new[] { 11, 12, 13, 14, 15, 0, 0 })));
 
-            Assert.IsTrue(_six.IsParentTo(_six.AddToEnd(99)));
-            Assert.IsTrue(_six.IsParentTo(new IntSeqKeyMany(new[] { 16, 17, 18, 19, 20, 21, 0 })));
-            Assert.IsFalse(_six.IsParentTo(new IntSeqKeyMany(new[] { 0, 17, 18, 19, 20, 21, 0 })));
-            Assert.IsFalse(_six.IsParentTo(new IntSeqKeyMany(new[] { 16, 0, 18, 19, 20, 21, 0 })));
-            Assert.IsFalse(_six.IsParentTo(new IntSeqKeyMany(new[] { 16, 17, 0, 19, 20, 21, 0 })));
-            Assert.IsFalse(_six.IsParentTo(new IntSeqKeyMany(new[] { 16, 17, 18, 0, 20, 21, 0 })));
-            Assert.IsFalse(_six.IsParentTo(new IntSeqKeyMany(new[] { 16, 17, 18, 19, 0, 21, 0 })));
-            Assert.IsFalse(_six.IsParentTo(new IntSeqKeyMany(new[] { 16, 17, 18, 19, 20, 0, 0 })));
-            Assert.IsFalse(_six.IsParentTo(_five));
-            Assert.IsFalse(_six.IsParentTo(_six));
-            Assert.IsFalse(_six.IsParentTo(_seven));
-            Assert.IsFalse(_six.IsParentTo(_eight));
-            Assert.IsFalse(_six.IsParentTo(new IntSeqKeyMany(new[] { 16, 17, 18, 19, 20, 21, 0, 0 })));
+            ClassicAssert.IsTrue(_six.IsParentTo(_six.AddToEnd(99)));
+            ClassicAssert.IsTrue(_six.IsParentTo(new IntSeqKeyMany(new[] { 16, 17, 18, 19, 20, 21, 0 })));
+            ClassicAssert.IsFalse(_six.IsParentTo(new IntSeqKeyMany(new[] { 0, 17, 18, 19, 20, 21, 0 })));
+            ClassicAssert.IsFalse(_six.IsParentTo(new IntSeqKeyMany(new[] { 16, 0, 18, 19, 20, 21, 0 })));
+            ClassicAssert.IsFalse(_six.IsParentTo(new IntSeqKeyMany(new[] { 16, 17, 0, 19, 20, 21, 0 })));
+            ClassicAssert.IsFalse(_six.IsParentTo(new IntSeqKeyMany(new[] { 16, 17, 18, 0, 20, 21, 0 })));
+            ClassicAssert.IsFalse(_six.IsParentTo(new IntSeqKeyMany(new[] { 16, 17, 18, 19, 0, 21, 0 })));
+            ClassicAssert.IsFalse(_six.IsParentTo(new IntSeqKeyMany(new[] { 16, 17, 18, 19, 20, 0, 0 })));
+            ClassicAssert.IsFalse(_six.IsParentTo(_five));
+            ClassicAssert.IsFalse(_six.IsParentTo(_six));
+            ClassicAssert.IsFalse(_six.IsParentTo(_seven));
+            ClassicAssert.IsFalse(_six.IsParentTo(_eight));
+            ClassicAssert.IsFalse(_six.IsParentTo(new IntSeqKeyMany(new[] { 16, 17, 18, 19, 20, 21, 0, 0 })));
 
-            Assert.IsTrue(_seven.IsParentTo(_seven.AddToEnd(99)));
-            Assert.IsTrue(_seven.IsParentTo(new IntSeqKeyMany(new[] { 22, 23, 24, 25, 26, 27, 28, 0 })));
-            Assert.IsFalse(_seven.IsParentTo(new IntSeqKeyMany(new[] { 0, 23, 24, 25, 26, 27, 28, 0 })));
-            Assert.IsFalse(_seven.IsParentTo(new IntSeqKeyMany(new[] { 22, 0, 24, 25, 26, 27, 28, 0 })));
-            Assert.IsFalse(_seven.IsParentTo(new IntSeqKeyMany(new[] { 22, 23, 0, 25, 26, 27, 28, 0 })));
-            Assert.IsFalse(_seven.IsParentTo(new IntSeqKeyMany(new[] { 22, 23, 24, 0, 26, 27, 28, 0 })));
-            Assert.IsFalse(_seven.IsParentTo(new IntSeqKeyMany(new[] { 22, 23, 24, 25, 0, 27, 28, 0 })));
-            Assert.IsFalse(_seven.IsParentTo(new IntSeqKeyMany(new[] { 22, 23, 24, 25, 26, 0, 28, 0 })));
-            Assert.IsFalse(_seven.IsParentTo(new IntSeqKeyMany(new[] { 22, 23, 24, 25, 26, 27, 0, 0 })));
-            Assert.IsFalse(_seven.IsParentTo(_five));
-            Assert.IsFalse(_seven.IsParentTo(_six));
-            Assert.IsFalse(_seven.IsParentTo(_seven));
-            Assert.IsFalse(_seven.IsParentTo(_eight));
-            Assert.IsFalse(_seven.IsParentTo(new IntSeqKeyMany(new[] { 22, 23, 24, 25, 26, 27, 28, 0, 0 })));
+            ClassicAssert.IsTrue(_seven.IsParentTo(_seven.AddToEnd(99)));
+            ClassicAssert.IsTrue(_seven.IsParentTo(new IntSeqKeyMany(new[] { 22, 23, 24, 25, 26, 27, 28, 0 })));
+            ClassicAssert.IsFalse(_seven.IsParentTo(new IntSeqKeyMany(new[] { 0, 23, 24, 25, 26, 27, 28, 0 })));
+            ClassicAssert.IsFalse(_seven.IsParentTo(new IntSeqKeyMany(new[] { 22, 0, 24, 25, 26, 27, 28, 0 })));
+            ClassicAssert.IsFalse(_seven.IsParentTo(new IntSeqKeyMany(new[] { 22, 23, 0, 25, 26, 27, 28, 0 })));
+            ClassicAssert.IsFalse(_seven.IsParentTo(new IntSeqKeyMany(new[] { 22, 23, 24, 0, 26, 27, 28, 0 })));
+            ClassicAssert.IsFalse(_seven.IsParentTo(new IntSeqKeyMany(new[] { 22, 23, 24, 25, 0, 27, 28, 0 })));
+            ClassicAssert.IsFalse(_seven.IsParentTo(new IntSeqKeyMany(new[] { 22, 23, 24, 25, 26, 0, 28, 0 })));
+            ClassicAssert.IsFalse(_seven.IsParentTo(new IntSeqKeyMany(new[] { 22, 23, 24, 25, 26, 27, 0, 0 })));
+            ClassicAssert.IsFalse(_seven.IsParentTo(_five));
+            ClassicAssert.IsFalse(_seven.IsParentTo(_six));
+            ClassicAssert.IsFalse(_seven.IsParentTo(_seven));
+            ClassicAssert.IsFalse(_seven.IsParentTo(_eight));
+            ClassicAssert.IsFalse(_seven.IsParentTo(new IntSeqKeyMany(new[] { 22, 23, 24, 25, 26, 27, 28, 0, 0 })));
         }
 
         [Test]
         public void TestLast()
         {
-            Assert.AreEqual(36, _eight.Last);
-            Assert.AreEqual(28, _seven.Last);
-            Assert.AreEqual(21, _six.Last);
-            Assert.AreEqual(15, _five.Last);
-            Assert.AreEqual(10, _four.Last);
-            Assert.AreEqual(6, _three.Last);
-            Assert.AreEqual(3, _two.Last);
-            Assert.AreEqual(1, _one.Last);
+            ClassicAssert.AreEqual(36, _eight.Last);
+            ClassicAssert.AreEqual(28, _seven.Last);
+            ClassicAssert.AreEqual(21, _six.Last);
+            ClassicAssert.AreEqual(15, _five.Last);
+            ClassicAssert.AreEqual(10, _four.Last);
+            ClassicAssert.AreEqual(6, _three.Last);
+            ClassicAssert.AreEqual(3, _two.Last);
+            ClassicAssert.AreEqual(1, _one.Last);
             Assert.That(() => _zero.Last, Throws.InstanceOf<UnsupportedOperationException>());
         }
 
         [Test]
         public void TestLength()
         {
-            Assert.AreEqual(8, _eight.Length);
-            Assert.AreEqual(7, _seven.Length);
-            Assert.AreEqual(6, _six.Length);
-            Assert.AreEqual(5, _five.Length);
-            Assert.AreEqual(4, _four.Length);
-            Assert.AreEqual(3, _three.Length);
-            Assert.AreEqual(2, _two.Length);
-            Assert.AreEqual(1, _one.Length);
-            Assert.AreEqual(0, _zero.Length);
+            ClassicAssert.AreEqual(8, _eight.Length);
+            ClassicAssert.AreEqual(7, _seven.Length);
+            ClassicAssert.AreEqual(6, _six.Length);
+            ClassicAssert.AreEqual(5, _five.Length);
+            ClassicAssert.AreEqual(4, _four.Length);
+            ClassicAssert.AreEqual(3, _three.Length);
+            ClassicAssert.AreEqual(2, _two.Length);
+            ClassicAssert.AreEqual(1, _one.Length);
+            ClassicAssert.AreEqual(0, _zero.Length);
         }
 
         [Test]

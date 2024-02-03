@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -15,7 +15,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Represents the "grouping sets" keywords.
     /// </summary>
-    [Serializable]
     public class GroupByClauseExpressionGroupingSet : GroupByClauseExpression
     {
         private IList<GroupByClauseExpression> _expressions;
@@ -34,18 +33,16 @@ namespace com.espertech.esper.common.client.soda
 
         /// <summary>Returns list of expressions in grouping set. </summary>
         /// <value>group-by expressions</value>
-        public IList<GroupByClauseExpression> Expressions
-        {
-            get { return _expressions; }
-            set { _expressions = value; }
+        public IList<GroupByClauseExpression> Expressions {
+            get => _expressions;
+            set => _expressions = value;
         }
 
         public void ToEPL(TextWriter writer)
         {
             writer.Write("grouping sets(");
-            string delimiter = "";
-            foreach (GroupByClauseExpression child in _expressions)
-            {
+            var delimiter = "";
+            foreach (var child in _expressions) {
                 writer.Write(delimiter);
                 child.ToEPL(writer);
                 delimiter = ", ";

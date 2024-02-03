@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -14,6 +14,7 @@ using com.espertech.esper.compat.function;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.support.context
 {
@@ -31,7 +32,7 @@ namespace com.espertech.esper.regressionlib.support.context
         public void OnContextPartitionAllocated(ContextStateEventContextPartitionAllocated @event)
         {
             events.Add(@event);
-            Assert.IsNotNull(
+            ClassicAssert.IsNotNull(
                 env.Runtime.ContextPartitionService.GetContextProperties(
                     @event.ContextDeploymentId,
                     @event.ContextName,
@@ -87,29 +88,30 @@ namespace com.espertech.esper.regressionlib.support.context
         public void AssertAndReset(params Consumer<ContextStateEvent>[] consumers)
         {
             var events = GetAndReset();
-            Assert.AreEqual(consumers.Length, events.Count);
+            ClassicAssert.AreEqual(consumers.Length, events.Count);
             var count = 0;
             foreach (var consumer in consumers) {
                 consumer.Invoke(events[count++]);
             }
         }
 
-        public IList<ContextStateEventContextPartitionAllocated> GetAllocatedEvents()
-        {
-            IList<ContextStateEventContextPartitionAllocated> allocateds =
-                new List<ContextStateEventContextPartitionAllocated>();
-            foreach (var @event in events) {
-                if (@event is ContextStateEventContextPartitionAllocated) {
-                    allocateds.Add((ContextStateEventContextPartitionAllocated) @event);
+        public IList<ContextStateEventContextPartitionAllocated> AllocatedEvents {
+            get {
+                IList<ContextStateEventContextPartitionAllocated> allocateds =
+                    new List<ContextStateEventContextPartitionAllocated>();
+                foreach (var @event in events) {
+                    if (@event is ContextStateEventContextPartitionAllocated) {
+                        allocateds.Add((ContextStateEventContextPartitionAllocated)@event);
+                    }
                 }
-            }
 
-            return allocateds;
+                return allocateds;
+            }
         }
 
         public void AssertNotInvoked()
         {
-            Assert.IsTrue(events.IsEmpty());
+            ClassicAssert.IsTrue(events.IsEmpty());
         }
     }
 } // end of namespace

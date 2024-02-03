@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -34,16 +34,22 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.inner
             this.componentType = componentType;
         }
 
-        public ExprDotEvalRootChildInnerEval InnerEvaluator {
-            get => new InnerDotEnumerableScalarCollectionEval(rootLambdaForge.ExprEvaluatorEnumeration);
-        }
+        public ExprDotEvalRootChildInnerEval InnerEvaluator =>
+            new InnerDotEnumerableScalarCollectionEval(rootLambdaForge.ExprEvaluatorEnumeration);
 
         public CodegenExpression CodegenEvaluate(
             CodegenMethod parentMethod,
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            return rootLambdaForge.EvaluateGetROCollectionScalarCodegen(parentMethod, exprSymbol, codegenClassScope);
+            var collectionScalarCodegen = rootLambdaForge.EvaluateGetROCollectionScalarCodegen(
+                parentMethod,
+                exprSymbol,
+                codegenClassScope);
+            
+            //var collectionType = typeof(ICollection<>).MakeGenericType(componentType);
+            //return Cast(collectionType, collectionScalarCodegen);
+            return Unwrap(componentType, collectionScalarCodegen);
         }
 
         public CodegenExpression EvaluateGetROCollectionEventsCodegen(
@@ -70,22 +76,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.inner
             return ConstantNull();
         }
 
-        public EventType EventTypeCollection {
-            get => null;
-        }
+        public EventType EventTypeCollection => null;
 
-        public Type ComponentTypeCollection {
-            get => componentType;
-        }
+        public Type ComponentTypeCollection => componentType;
 
-        public EventType EventTypeSingle {
-            get => null;
-        }
+        public EventType EventTypeSingle => null;
 
-        public EPType TypeInfo {
-            get => EPTypeHelper.CollectionOfSingleValue(
-                componentType,
-                typeof(ICollection<>).MakeGenericType(componentType));
-        }
+        public EPChainableType TypeInfo =>
+            EPChainableTypeHelper.CollectionOfSingleValue(
+                componentType);
     }
 } // end of namespace

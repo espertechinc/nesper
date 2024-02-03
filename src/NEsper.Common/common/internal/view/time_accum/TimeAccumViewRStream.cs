@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -61,7 +61,7 @@ namespace com.espertech.esper.common.@internal.view.time_accum
                     agentInstanceContext.InstrumentationProvider.QViewScheduledEval(_factory);
                     SendRemoveStream();
                     agentInstanceContext.InstrumentationProvider.AViewScheduledEval();
-                },
+                }
             };
             _handle = new EPStatementHandleCallbackSchedule(
                 agentInstanceContext.EpStatementAgentInstanceHandle,
@@ -77,16 +77,16 @@ namespace com.espertech.esper.common.@internal.view.time_accum
             _agentInstanceContext.AuditProvider.View(newData, oldData, _agentInstanceContext, _factory);
             _agentInstanceContext.InstrumentationProvider.QViewProcessIRStream(_factory, newData, oldData);
 
-            if ((newData != null) && (newData.Length > 0)) {
+            if (newData != null && newData.Length > 0) {
                 // If we have an empty window about to be filled for the first time, add a callback
-                bool removeSchedule = false;
-                bool addSchedule = false;
-                long timestamp = _agentInstanceContext.StatementContext.SchedulingService.Time;
+                var removeSchedule = false;
+                var addSchedule = false;
+                var timestamp = _agentInstanceContext.StatementContext.SchedulingService.Time;
 
                 // if the window is already filled, then we may need to reschedule
                 if (!_currentBatch.IsEmpty()) {
                     // check if we need to reschedule
-                    long callbackTime =
+                    var callbackTime =
                         timestamp + _timePeriodProvide.DeltaAdd(timestamp, null, true, _agentInstanceContext);
                     if (callbackTime != _callbackScheduledTime) {
                         removeSchedule = true;
@@ -108,7 +108,7 @@ namespace com.espertech.esper.common.@internal.view.time_accum
                 }
 
                 if (addSchedule) {
-                    long timeIntervalSize = _timePeriodProvide.DeltaAdd(timestamp, null, true, _agentInstanceContext);
+                    var timeIntervalSize = _timePeriodProvide.DeltaAdd(timestamp, null, true, _agentInstanceContext);
                     _agentInstanceContext.AuditProvider.ScheduleAdd(
                         timeIntervalSize,
                         _agentInstanceContext,
@@ -123,15 +123,15 @@ namespace com.espertech.esper.common.@internal.view.time_accum
                 }
 
                 // add data points to the window
-                for (int i = 0; i < newData.Length; i++) {
+                for (var i = 0; i < newData.Length; i++) {
                     _currentBatch.Put(newData[i], timestamp);
                     _lastEvent = newData[i];
                 }
             }
 
-            if ((oldData != null) && (oldData.Length > 0)) {
-                bool removedLastEvent = false;
-                foreach (EventBean anOldData in oldData) {
+            if (oldData != null && oldData.Length > 0) {
+                var removedLastEvent = false;
+                foreach (var anOldData in oldData) {
                     _currentBatch.Remove(anOldData);
                     if (anOldData == _lastEvent) {
                         removedLastEvent = true;
@@ -152,19 +152,19 @@ namespace com.espertech.esper.common.@internal.view.time_accum
                 else {
                     // reschedule if the last event was removed
                     if (removedLastEvent) {
-                        EventBean[] events = _currentBatch.Keys.ToArray();
-                        _lastEvent = events[events.Length - 1];
-                        long lastTimestamp = _currentBatch.Get(_lastEvent);
+                        var events = _currentBatch.Keys.ToArray();
+                        _lastEvent = events[^1];
+                        var lastTimestamp = _currentBatch.Get(_lastEvent);
 
                         // reschedule, newest event deleted
-                        long timestamp = _agentInstanceContext.StatementContext.SchedulingService.Time;
-                        long callbackTime = lastTimestamp +
-                                            _timePeriodProvide.DeltaAdd(
-                                                lastTimestamp,
-                                                null,
-                                                true,
-                                                _agentInstanceContext);
-                        long deltaFromNow = callbackTime - timestamp;
+                        var timestamp = _agentInstanceContext.StatementContext.SchedulingService.Time;
+                        var callbackTime = lastTimestamp +
+                                           _timePeriodProvide.DeltaAdd(
+                                               lastTimestamp,
+                                               null,
+                                               true,
+                                               _agentInstanceContext);
+                        var deltaFromNow = callbackTime - timestamp;
                         if (callbackTime != _callbackScheduledTime) {
                             _agentInstanceContext.AuditProvider.ScheduleRemove(
                                 _agentInstanceContext,

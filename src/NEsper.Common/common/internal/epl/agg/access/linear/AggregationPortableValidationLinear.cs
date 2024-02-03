@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
             AggregationForgeFactory factory)
         {
             AggregationValidationUtil.ValidateAggregationType(this, tableExpression, intoTableAgg, intoExpression);
-            var other = (AggregationPortableValidationLinear) intoTableAgg;
+            var other = (AggregationPortableValidationLinear)intoTableAgg;
             AggregationValidationUtil.ValidateEventType(ContainedEventType, other.ContainedEventType);
         }
 
@@ -57,9 +57,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
         {
             var method = parent.MakeChild(typeof(AggregationPortableValidationLinear), GetType(), classScope);
             method.Block
-                .DeclareVar<AggregationPortableValidationLinear>(
-                    "v",
-                    NewInstance(typeof(AggregationPortableValidationLinear)))
+                .DeclareVarNewInstance<AggregationPortableValidationLinear>("v")
                 .SetProperty(
                     Ref("v"),
                     "ContainedEventType",
@@ -75,17 +73,17 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
         {
             name = name.ToLowerInvariant();
             return AggregationAccessorLinearTypeExtensions.FromString(name) != null ||
-                   (name == "countevents") || 
-                   (name == "listreference");
+                   name == "countevents" ||
+                   name == "listreference";
         }
 
         public AggregationMultiFunctionMethodDesc ValidateAggregationMethod(
             ExprValidationContext validationContext,
-            String aggMethodName,
+            string aggMethodName,
             ExprNode[] @params)
         {
             aggMethodName = aggMethodName.ToLowerInvariant();
-            if ((aggMethodName == "countevents") || (aggMethodName == "listreference")) {
+            if (aggMethodName == "countevents" || aggMethodName == "listreference") {
                 if (@params.Length > 0) {
                     throw new ExprValidationException("Invalid number of parameters");
                 }
@@ -97,7 +95,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                     result = typeof(IList<EventBean>);
                 }
 
-                return new AggregationMultiFunctionMethodDesc(new AggregationMethodLinearNoParamForge(provider, result), null, null, null);
+                return new AggregationMultiFunctionMethodDesc(
+                    new AggregationMethodLinearNoParamForge(provider, result),
+                    null,
+                    null,
+                    null);
             }
 
             var methodType = AggregationAccessorLinearTypeExtensions.FromString(aggMethodName);
@@ -115,9 +117,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
         {
             if (childNodes.Length == 0 || (childNodes.Length == 1 && childNodes[0] is ExprWildcard)) {
                 var componentType = ContainedEventType.UnderlyingType;
-                var forge = new AggregationMethodLinearWindowForge(
-                    TypeHelper.GetArrayType(componentType),
-                    null);
+                var arrayType = TypeHelper.GetArrayType(componentType);
+                var forge = new AggregationMethodLinearWindowForge(arrayType, null);
                 return new AggregationMultiFunctionMethodDesc(forge, ContainedEventType, null, null);
             }
 
@@ -126,9 +127,17 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                 var paramNode = childNodes[0];
                 var streams = TableCompileTimeUtil.StreamTypeFromTableColumn(ContainedEventType);
                 var localValidationContext = new ExprValidationContext(streams, validationContext);
-                paramNode = ExprNodeUtilityValidate.GetValidatedSubtree(ExprNodeOrigin.AGGPARAM, paramNode, localValidationContext);
+                paramNode = ExprNodeUtilityValidate.GetValidatedSubtree(
+                    ExprNodeOrigin.AGGPARAM,
+                    paramNode,
+                    localValidationContext);
                 var paramNodeType = paramNode.Forge.EvaluationType.GetBoxedType();
-                var forge = new AggregationMethodLinearWindowForge(TypeHelper.GetArrayType(paramNodeType), paramNode);
+                if (paramNodeType == null) {
+                    throw new ExprValidationException("Null-type value expression is not allowed");
+                }
+
+                var arrayType = TypeHelper.GetArrayType(paramNodeType);
+                var forge = new AggregationMethodLinearWindowForge(arrayType, paramNode);
                 return new AggregationMultiFunctionMethodDesc(forge, null, paramNodeType, null);
             }
 
@@ -160,17 +169,25 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                 var paramNode = childNodes[0];
                 var streams = TableCompileTimeUtil.StreamTypeFromTableColumn(ContainedEventType);
                 var localValidationContext = new ExprValidationContext(streams, validationContext);
-                paramNode = ExprNodeUtilityValidate.GetValidatedSubtree(ExprNodeOrigin.AGGPARAM, paramNode, localValidationContext);
-                var forge = new AggregationMethodLinearFirstLastForge(paramNode.Forge.EvaluationType, methodType, paramNode);
+                paramNode = ExprNodeUtilityValidate.GetValidatedSubtree(
+                    ExprNodeOrigin.AGGPARAM,
+                    paramNode,
+                    localValidationContext);
+                var forge = new AggregationMethodLinearFirstLastForge(
+                    paramNode.Forge.EvaluationType,
+                    methodType,
+                    paramNode);
                 return new AggregationMultiFunctionMethodDesc(forge, null, null, null);
             }
 
             if (childNodes.Length == 2) {
                 int? constant = null;
                 var indexEvalNode = childNodes[1];
-                var indexEvalType = indexEvalNode.Forge.EvaluationType;
-                if (indexEvalType != typeof(int?) && indexEvalType != typeof(int)) {
-                    throw new ExprValidationException(GetErrorPrefix(methodType) + " requires a constant index expression that returns an integer value");
+                var indexEvalType = indexEvalNode.Forge.EvaluationType.GetBoxedType();
+                if (indexEvalType == null || !indexEvalType.IsTypeInt32()) {
+                    throw new ExprValidationException(
+                        GetErrorPrefix(methodType) +
+                        " requires a constant index expression that returns an integer value");
                 }
 
                 ExprNode indexExpr;
@@ -193,7 +210,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
             throw new ExprValidationException("Invalid number of parameters");
         }
 
-        private static String GetErrorPrefix(AggregationAccessorLinearType stateType)
+        private static string GetErrorPrefix(AggregationAccessorLinearType stateType)
         {
             return ExprAggMultiFunctionUtil.GetErrorPrefix(stateType.ToString().ToLowerInvariant());
         }

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -117,6 +117,15 @@ namespace com.espertech.esper.common.@internal.@event.render
 
             var renderActions = new SortedList<string, Action>();
 
+            void RenderAll()
+            {
+                foreach (var entry in renderActions) {
+                    entry.Value.Invoke();
+                }
+
+                renderActions.Clear();
+            }
+
             // simple properties
             var simpleProps = meta.SimpleProperties;
             if (rendererOptions.Renderer == null) {
@@ -131,6 +140,8 @@ namespace com.espertech.esper.common.@internal.@event.render
                             delimiter = COMMA_DELIMITER_NEWLINE;
                         });
                 }
+
+                RenderAll();
             }
             else {
                 var context = rendererOptions.RendererContext;
@@ -149,6 +160,8 @@ namespace com.espertech.esper.common.@internal.@event.render
                             delimiter = COMMA_DELIMITER_NEWLINE;
                         });
                 }
+                
+                RenderAll();
             }
 
             var indexProps = meta.IndexProperties;
@@ -216,6 +229,8 @@ namespace com.espertech.esper.common.@internal.@event.render
 
                         delimiter = COMMA_DELIMITER_NEWLINE;
                     });
+
+                RenderAll();
             }
 
             var mappedProps = meta.MappedProperties;
@@ -296,6 +311,8 @@ namespace com.espertech.esper.common.@internal.@event.render
 
                         delimiter = COMMA_DELIMITER_NEWLINE;
                     });
+                
+                RenderAll();
             }
 
             var nestedProps = meta.NestedProperties;
@@ -312,7 +329,7 @@ namespace com.espertech.esper.common.@internal.@event.render
                             buf.Append("null");
                         }
                         else if (!nestedProp.IsArray) {
-                            if (!(value is EventBean)) {
+                            if (!(value is EventBean nestedEventBean)) {
                                 Log.Warn(
                                     "Property '" +
                                     nestedProp.Name +
@@ -323,7 +340,6 @@ namespace com.espertech.esper.common.@internal.@event.render
                                 return;
                             }
 
-                            var nestedEventBean = (EventBean) value;
                             buf.Append('{');
                             buf.Append(NEWLINE);
 
@@ -333,7 +349,7 @@ namespace com.espertech.esper.common.@internal.@event.render
                             buf.Append('}');
                         }
                         else {
-                            if (!(value is EventBean[])) {
+                            if (!(value is EventBean[] nestedEventArray)) {
                                 Log.Warn(
                                     "Property '" +
                                     nestedProp.Name +
@@ -349,7 +365,6 @@ namespace com.espertech.esper.common.@internal.@event.render
                             arrayDelimiterBuf.Append(NEWLINE);
                             Ident(arrayDelimiterBuf, level + 1);
 
-                            var nestedEventArray = (EventBean[]) value;
                             var arrayDelimiter = "";
                             buf.Append('[');
 
@@ -372,10 +387,8 @@ namespace com.espertech.esper.common.@internal.@event.render
 
                         delimiter = COMMA_DELIMITER_NEWLINE;
                     });
-            }
-
-            foreach (var entry in renderActions) {
-                entry.Value.Invoke();
+                
+                RenderAll();
             }
 
             buf.Append(NEWLINE);

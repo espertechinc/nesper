@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -20,58 +20,68 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
 namespace com.espertech.esper.common.@internal.epl.expression.etc
 {
-	public class ExprEvalStreamInsertBean : ExprForgeInstrumentable
-	{
-		private readonly ExprStreamUnderlyingNode _undNode;
-		private readonly int _streamNum;
-		private readonly Type _returnType;
+    public class ExprEvalStreamInsertBean : ExprForgeInstrumentable
+    {
+        private readonly ExprStreamUnderlyingNode _undNode;
+        private readonly int _streamNum;
+        private readonly Type _returnType;
 
-		public ExprEvalStreamInsertBean(
-			ExprStreamUnderlyingNode undNode,
-			int streamNum,
-			Type returnType)
-		{
-			_undNode = undNode;
-			_streamNum = streamNum;
-			_returnType = returnType;
-		}
+        public ExprEvalStreamInsertBean(
+            ExprStreamUnderlyingNode undNode,
+            int streamNum,
+            Type returnType)
+        {
+            _undNode = undNode;
+            _streamNum = streamNum;
+            _returnType = returnType;
+        }
 
-		public CodegenExpression EvaluateCodegen(
-			Type requiredType,
-			CodegenMethodScope codegenMethodScope,
-			ExprForgeCodegenSymbol exprSymbol,
-			CodegenClassScope codegenClassScope)
-		{
-			return new InstrumentationBuilderExpr(GetType(), this, "ExprStreamUndSelectClause", requiredType, codegenMethodScope, exprSymbol, codegenClassScope)
-				.Build();
-		}
+        public CodegenExpression EvaluateCodegen(
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
+        {
+            return new InstrumentationBuilderExpr(
+                    GetType(),
+                    this,
+                    "ExprStreamUndSelectClause",
+                    requiredType,
+                    codegenMethodScope,
+                    exprSymbol,
+                    codegenClassScope)
+                .Build();
+        }
 
-		public CodegenExpression EvaluateCodegenUninstrumented(
-			Type requiredType,
-			CodegenMethodScope codegenMethodScope,
-			ExprForgeCodegenSymbol exprSymbol,
-			CodegenClassScope codegenClassScope)
-		{
-			CodegenMethod methodNode = codegenMethodScope.MakeChild(typeof(EventBean), typeof(ExprEvalStreamInsertBean), codegenClassScope);
+        public CodegenExpression EvaluateCodegenUninstrumented(
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
+        {
+            var methodNode = codegenMethodScope.MakeChild(
+                typeof(EventBean),
+                typeof(ExprEvalStreamInsertBean),
+                codegenClassScope);
 
-			CodegenExpressionRef refEps = exprSymbol.GetAddEPS(methodNode);
-			methodNode.Block
-				.IfCondition(EqualsNull(refEps))
-				.BlockReturn(ConstantNull())
-				.MethodReturn(ArrayAtIndex(refEps, Constant(_streamNum)));
-			return LocalMethod(methodNode);
-		}
+            var refEps = exprSymbol.GetAddEps(methodNode);
+            methodNode.Block
+                .IfCondition(EqualsNull(refEps))
+                .BlockReturn(ConstantNull())
+                .MethodReturn(ArrayAtIndex(refEps, Constant(_streamNum)));
+            return LocalMethod(methodNode);
+        }
 
-		public int StreamNum => _streamNum;
+        public int StreamNum => _streamNum;
 
-		public ExprEvaluator ExprEvaluator => throw new IllegalStateException("Evaluator not available");
+        public ExprEvaluator ExprEvaluator => throw new IllegalStateException("Evaluator not available");
 
-		public Type EvaluationType => typeof(EventBean);
+        public Type EvaluationType => typeof(EventBean);
 
-		public Type UnderlyingReturnType => _returnType;
+        public Type UnderlyingReturnType => _returnType;
 
-		public ExprNodeRenderable ExprForgeRenderable => _undNode;
+        public ExprNodeRenderable ExprForgeRenderable => _undNode;
 
-		public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
-	}
+        public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
+    }
 } // end of namespace

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -20,7 +20,6 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
     ///     <para />
     ///     Compare to <seealso cref="SelectClauseExprCompiledSpec" /> which carries a determined name.
     /// </summary>
-    [Serializable]
     public class SelectClauseExprRawSpec : SelectClauseElementRaw
     {
         /// <summary>

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -77,7 +77,8 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
         /// <param name="accessorField">The accessor field.</param>
         /// <param name="accessorProp">The accessor property.</param>
         /// <param name="propertyType">Type of the property.</param>
-        public PropertyStem(string propertyName,
+        public PropertyStem(
+            string propertyName,
             MethodInfo readMethod,
             FieldInfo accessorField,
             PropertyInfo accessorProp,
@@ -140,7 +141,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
 
                 var parameters = ReadMethod.GetParameters();
                 return parameters.Length == 1 &&
-                       parameters[0].ParameterType.IsInt32();
+                       parameters[0].ParameterType.IsTypeInt32();
             }
         }
 
@@ -150,11 +151,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
         /// <value>
         ///   <c>true</c> if this instance is mapped read method; otherwise, <c>false</c>.
         /// </value>
-        public bool IsMappedReadMethod
-        {
+        public bool IsMappedReadMethod {
             get {
-                if (ReadMethod == null)
-                {
+                if (ReadMethod == null) {
                     return false;
                 }
 
@@ -246,11 +245,11 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
 
         protected bool Equals(PropertyStem other)
         {
-            return string.Equals(PropertyName, other.PropertyName)
-                   && PropertyType == other.PropertyType 
-                   && Equals(ReadMethod, other.ReadMethod) 
-                   && Equals(AccessorField, other.AccessorField) 
-                   && Equals(AccessorProp, other.AccessorProp);
+            return string.Equals(PropertyName, other.PropertyName) &&
+                   PropertyType == other.PropertyType &&
+                   Equals(ReadMethod, other.ReadMethod) &&
+                   Equals(AccessorField, other.AccessorField) &&
+                   Equals(AccessorProp, other.AccessorProp);
         }
 
         public override bool Equals(object obj)
@@ -263,17 +262,17 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
                 return true;
             }
 
-            if (obj.GetType() != this.GetType()) {
+            if (obj.GetType() != GetType()) {
                 return false;
             }
 
-            return Equals((PropertyStem) obj);
+            return Equals((PropertyStem)obj);
         }
 
         public override int GetHashCode()
         {
             unchecked {
-                var hashCode = (PropertyName != null ? PropertyName.GetHashCode() : 0);
+                var hashCode = PropertyName != null ? PropertyName.GetHashCode() : 0;
                 hashCode = (hashCode * 397) ^ PropertyType.GetHashCode();
                 hashCode = (hashCode * 397) ^ (ReadMethod != null ? ReadMethod.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (AccessorField != null ? AccessorField.GetHashCode() : 0);

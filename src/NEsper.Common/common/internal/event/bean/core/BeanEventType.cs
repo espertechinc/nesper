@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -23,23 +23,27 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.container;
 
-using PropertyInfo = com.espertech.esper.common.@internal.@event.bean.introspect.PropertyInfo;
+using PropertyInfo = System.Reflection.PropertyInfo;
 
 namespace com.espertech.esper.common.@internal.@event.bean.core
 {
     /// <summary>
-    ///     Implementation of the EventType interface for handling classes.
+    /// Implementation of the EventType interface for handling JavaBean-type classes.
     /// </summary>
     public class BeanEventType : EventTypeSPI,
         NativeEventType
     {
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-        private readonly BeanEventTypeFactory _beanEventTypeFactory;
-
         private readonly IContainer _container;
+        private readonly BeanEventTypeStem _stem;
+        private EventTypeMetadata _metadata;
+        private readonly BeanEventTypeFactory _beanEventTypeFactory;
+        private readonly EventType[] _superTypes;
+        private readonly ICollection<EventType> _deepSuperTypes;
+        private readonly string _startTimestampPropertyName;
+        private readonly string _endTimestampPropertyName;
 
         private readonly IDictionary<string, EventPropertyGetterSPI> _propertyGetterCache =
-            new Dictionary<string, EventPropertyGetterSPI>(4);
+            new Dictionary<string, EventPropertyGetterSPI>();
 
         private EventPropertyDescriptor[] _writeablePropertyDescriptors;
         private IDictionary<string, Pair<EventPropertyDescriptor, BeanEventPropertyWriter>> _writerMap;
@@ -55,64 +59,53 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             string endTimestampPropertyName)
         {
             _container = container;
-            Stem = stem;
-            Metadata = metadata;
+            _stem = stem;
+            _metadata = metadata;
             _beanEventTypeFactory = beanEventTypeFactory;
-            SuperTypes = superTypes;
-            DeepSuperTypesCollection = deepSuperTypes;
-
+            _superTypes = superTypes;
+            _deepSuperTypes = deepSuperTypes;
             var desc = EventTypeUtility.ValidatedDetermineTimestampProps(
                 this,
                 startTimestampPropertyName,
                 endTimestampPropertyName,
                 superTypes);
-            StartTimestampPropertyName = desc.Start;
-            EndTimestampPropertyName = desc.End;
+            _startTimestampPropertyName = desc.Start;
+            _endTimestampPropertyName = desc.End;
         }
-
-        /// <summary>
-        ///     Returns the factory methods name, or null if none defined.
-        /// </summary>
-        /// <returns>factory methods name</returns>
-        public string FactoryMethodName => Stem.OptionalLegacyDef?.FactoryMethod;
-
-        /// <summary>
-        ///     Returns the property resolution style.
-        /// </summary>
-        /// <returns>property resolution style</returns>
-        public PropertyResolutionStyle PropertyResolutionStyle => Stem.PropertyResolutionStyle;
-
-        public BeanEventTypeStem Stem { get; }
 
         public void SetMetadataId(
             long publicId,
             long protectedId)
         {
-            Metadata = Metadata.WithIds(publicId, protectedId);
+            _metadata = _metadata.WithIds(publicId, protectedId);
         }
 
-        public string StartTimestampPropertyName { get; }
-
-        public string EndTimestampPropertyName { get; }
-
-        public string Name => Metadata.Name;
+        public string StartTimestampPropertyName => _startTimestampPropertyName;
+        public string EndTimestampPropertyName => _endTimestampPropertyName;
+        public string Name => _metadata.Name;
 
         public EventPropertyDescriptor GetPropertyDescriptor(string propertyName)
         {
-            return Stem.PropertyDescriptorMap.Get(propertyName);
+            return _stem.PropertyDescriptorMap.Get(propertyName);
         }
+
+        /// <summary>
+        /// Returns the factory methods name, or null if none defined.
+        /// </summary>
+        /// <value>factory methods name</value>
+        public string FactoryMethodName => _stem.OptionalLegacyDef?.FactoryMethod;
 
         public Type GetPropertyType(string propertyName)
         {
-            var simpleProp = GetSimplePropertyInfo(propertyName);
-            if (simpleProp != null && simpleProp.Clazz != null) {
-                return simpleProp.Clazz;
+            var type = SimplePropertyType(propertyName);
+            if (type != null) {
+                return type;
             }
 
             var prop = PropertyParser.ParseAndWalkLaxToSimple(propertyName);
             if (prop is SimpleProperty) {
-                // there is no such property since it wasn't in simplePropertyTypes
-                return null;
+                // unescaped lookup
+                return SimplePropertyType(prop.PropertyNameAtomic);
             }
 
             return prop.GetPropertyType(this, _beanEventTypeFactory);
@@ -127,33 +120,28 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             return true;
         }
 
-        public Type UnderlyingType => Stem.Clazz;
+        public Type UnderlyingType => _stem.Clazz;
 
         public EventPropertyGetterSPI GetGetterSPI(string propertyName)
         {
-            if (_propertyGetterCache.TryGetValue(propertyName, out var cachedGetter))
-            { 
+            var cachedGetter = _propertyGetterCache.Get(propertyName);
+            if (cachedGetter != null) {
                 return cachedGetter;
             }
 
-            var simpleProp = GetSimplePropertyInfo(propertyName);
-            if (simpleProp != null && simpleProp.GetterFactory != null) {
-                var getterX = simpleProp.GetterFactory.Make(
-                    _beanEventTypeFactory.EventBeanTypedEventFactory,
-                    _beanEventTypeFactory);
-                _propertyGetterCache.Put(propertyName, getterX);
-                return getterX;
+            var getter = SimplePropertyGetter(propertyName);
+            if (getter != null) {
+                return getter;
             }
 
             var prop = PropertyParser.ParseAndWalkLaxToSimple(propertyName);
             if (prop is SimpleProperty) {
-                // there is no such property since it wasn't in simplePropertyGetters
-                return null;
+                // unescpaped lookup
+                return SimplePropertyGetter(prop.PropertyNameAtomic);
             }
 
-            var getter = prop.GetGetter(this, _beanEventTypeFactory.EventBeanTypedEventFactory, _beanEventTypeFactory);
-            _propertyGetterCache[propertyName] = getter;
-
+            getter = prop.GetGetter(this, _beanEventTypeFactory.EventBeanTypedEventFactory, _beanEventTypeFactory);
+            _propertyGetterCache.Put(propertyName, getter);
             return getter;
         }
 
@@ -169,7 +157,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
 
         public EventPropertyGetterMappedSPI GetGetterMappedSPI(string propertyName)
         {
-            var desc = Stem.PropertyDescriptorMap.Get(propertyName);
+            var desc = _stem.PropertyDescriptorMap.Get(propertyName);
             if (desc == null || !desc.IsMapped) {
                 return null;
             }
@@ -188,7 +176,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
 
         public EventPropertyGetterIndexedSPI GetGetterIndexedSPI(string indexedPropertyName)
         {
-            var desc = Stem.PropertyDescriptorMap.Get(indexedPropertyName);
+            var desc = _stem.PropertyDescriptorMap.Get(indexedPropertyName);
             if (desc == null || !desc.IsIndexed) {
                 return null;
             }
@@ -200,44 +188,228 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
                 _beanEventTypeFactory);
         }
 
-        public string[] PropertyNames => Stem.PropertyNames;
+        /// <summary>
+        /// Looks up and returns a cached simple property's descriptor.
+        /// </summary>
+        /// <param name = "propertyName">to look up</param>
+        /// <returns>property descriptor</returns>
+        public PropertyStem GetSimpleProperty(string propertyName)
+        {
+            var simpleProp = GetSimplePropertyInfo(propertyName);
+            if (simpleProp != null) {
+                return simpleProp.Descriptor;
+            }
 
-        public IList<EventType> SuperTypes { get; }
+            return null;
+        }
 
-        public IEnumerable<EventType> DeepSuperTypes => DeepSuperTypesCollection;
+        /// <summary>
+        /// Looks up and returns a cached mapped property's descriptor.
+        /// </summary>
+        /// <param name = "propertyName">to look up</param>
+        /// <returns>property descriptor</returns>
+        public PropertyStem GetMappedProperty(string propertyName)
+        {
+            if (PropertyResolutionStyle.Equals(PropertyResolutionStyle.CASE_SENSITIVE)) {
+                return _stem.MappedPropertyDescriptors.Get(propertyName);
+            }
 
-        public EventTypeMetadata Metadata { get; private set; }
+            if (PropertyResolutionStyle.Equals(PropertyResolutionStyle.CASE_INSENSITIVE)) {
+                var propertyInfos = _stem.MappedSmartPropertyTable.Get(propertyName.ToLowerInvariant());
+                return propertyInfos?[0].Descriptor;
+            }
 
-        public IList<EventPropertyDescriptor> PropertyDescriptors => Stem.PropertyDescriptors;
+            if (PropertyResolutionStyle.Equals(PropertyResolutionStyle.DISTINCT_CASE_INSENSITIVE)) {
+                var propertyInfos = _stem.MappedSmartPropertyTable.Get(propertyName.ToLowerInvariant());
+                if (propertyInfos != null) {
+                    if (propertyInfos.Count != 1) {
+                        throw new EPException(
+                            "Unable to determine which property to use for \"" +
+                            propertyName +
+                            "\" because more than one property matched");
+                    }
+
+                    return propertyInfos[0].Descriptor;
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Looks up and returns a cached indexed property's descriptor.
+        /// </summary>
+        /// <param name = "propertyName">to look up</param>
+        /// <returns>property descriptor</returns>
+        public PropertyStem GetIndexedProperty(string propertyName)
+        {
+            if (PropertyResolutionStyle.Equals(PropertyResolutionStyle.CASE_SENSITIVE)) {
+                return _stem.IndexedPropertyDescriptors.Get(propertyName);
+            }
+
+            if (PropertyResolutionStyle.Equals(PropertyResolutionStyle.CASE_INSENSITIVE)) {
+                var propertyInfos = _stem.IndexedSmartPropertyTable.Get(propertyName.ToLowerInvariant());
+                return propertyInfos?[0].Descriptor;
+            }
+
+            if (PropertyResolutionStyle.Equals(PropertyResolutionStyle.DISTINCT_CASE_INSENSITIVE)) {
+                var propertyInfos = _stem.IndexedSmartPropertyTable.Get(propertyName.ToLowerInvariant());
+                if (propertyInfos != null) {
+                    if (propertyInfos.Count != 1) {
+                        throw new EPException(
+                            "Unable to determine which property to use for \"" +
+                            propertyName +
+                            "\" because more than one property matched");
+                    }
+
+                    return propertyInfos[0].Descriptor;
+                }
+            }
+
+            return null;
+        }
+
+        public string[] PropertyNames => _stem.PropertyNames;
+        public IList<EventType> SuperTypes => _superTypes;
+        public IEnumerable<EventType> DeepSuperTypes => _deepSuperTypes;
+
+        public override string ToString()
+        {
+            return "BeanEventType" + " name=" + Name + " clazz=" + _stem.Clazz.CleanName();
+        }
+
+        private introspect.PropertyInfo GetSimplePropertyInfo(string propertyName)
+        {
+            introspect.PropertyInfo propertyInfo;
+            IList<introspect.PropertyInfo> simplePropertyInfoList;
+            if (PropertyResolutionStyle.Equals(PropertyResolutionStyle.CASE_SENSITIVE)) {
+                return _stem.SimpleProperties.Get(propertyName);
+            }
+
+            if (PropertyResolutionStyle.Equals(PropertyResolutionStyle.CASE_INSENSITIVE)) {
+                propertyInfo = _stem.SimpleProperties.Get(propertyName);
+                if (propertyInfo != null) {
+                    return propertyInfo;
+                }
+
+                simplePropertyInfoList = _stem.SimpleSmartPropertyTable.Get(propertyName.ToLowerInvariant());
+                return simplePropertyInfoList?[0];
+            }
+
+            if (PropertyResolutionStyle.Equals(PropertyResolutionStyle.DISTINCT_CASE_INSENSITIVE)) {
+                propertyInfo = _stem.SimpleProperties.Get(propertyName);
+                if (propertyInfo != null) {
+                    return propertyInfo;
+                }
+
+                simplePropertyInfoList = _stem.SimpleSmartPropertyTable.Get(propertyName.ToLowerInvariant());
+                if (simplePropertyInfoList != null) {
+                    if (simplePropertyInfoList.Count != 1) {
+                        throw new EPException(
+                            "Unable to determine which property to use for \"" +
+                            propertyName +
+                            "\" because more than one property matched");
+                    }
+
+                    return simplePropertyInfoList[0];
+                }
+            }
+
+            return null;
+        }
+
+        public EventTypeMetadata Metadata => _metadata;
+        public IList<EventPropertyDescriptor> PropertyDescriptors => _stem.PropertyDescriptors;
 
         public FragmentEventType GetFragmentType(string propertyExpression)
         {
-            var simpleProp = GetSimplePropertyInfo(propertyExpression);
-            if (simpleProp != null && simpleProp.Clazz != null) {
-                var genericPropX = simpleProp.Descriptor.ReturnTypeGeneric;
-                return EventBeanUtility.CreateNativeFragmentType(
-                    genericPropX.GenericType,
-                    genericPropX.Generic,
-                    _beanEventTypeFactory,
-                    Stem.IsPublicFields);
+            var fragmentEventType = SimplePropertyFragmentType(propertyExpression);
+            if (fragmentEventType != null) {
+                return fragmentEventType;
             }
 
             var prop = PropertyParser.ParseAndWalkLaxToSimple(propertyExpression);
             if (prop is SimpleProperty) {
-                // there is no such property since it wasn't in simplePropertyTypes
+                // unescaped lookup
+                return SimplePropertyFragmentType(prop.PropertyNameAtomic);
+            }
+
+            var type = prop.GetPropertyType(this, _beanEventTypeFactory);
+            if (type == null) {
                 return null;
             }
 
-            var genericProp = prop.GetPropertyTypeGeneric(this, _beanEventTypeFactory);
-            if (genericProp == null) {
-                return null;
+            return EventBeanUtility.CreateNativeFragmentType(type, _beanEventTypeFactory, _stem.IsPublicFields);
+        }
+
+        public EventPropertyWriterSPI GetWriter(string propertyName)
+        {
+            if (_writeablePropertyDescriptors == null) {
+                InitializeWriters();
             }
 
-            return EventBeanUtility.CreateNativeFragmentType(
-                genericProp.GenericType,
-                genericProp.Generic,
-                _beanEventTypeFactory,
-                Stem.IsPublicFields);
+            var writer = SimplePropertyWriter(propertyName);
+            if (writer != null) {
+                return writer;
+            }
+
+            var property = PropertyParser.ParseAndWalkLaxToSimple(propertyName);
+            if (property is SimpleProperty) {
+                // unescaped lookup
+                return SimplePropertyWriter(property.PropertyNameAtomic);
+            }
+
+            if (property is MappedProperty mapProp) {
+                var methodName = PropertyHelper.GetSetterMethodName(mapProp.PropertyNameAtomic);
+                MethodInfo setterMethod;
+                try {
+                    setterMethod = MethodResolver.ResolveMethod(
+                        _stem.Clazz,
+                        methodName,
+                        new Type[] { typeof(string), typeof(object) },
+                        true,
+                        new bool[2],
+                        new bool[2]);
+                }
+                catch (MethodResolverNoSuchMethodException) {
+                    Log.Info(
+                        "Failed to find mapped property setter method '" +
+                        methodName +
+                        "' for writing to property '" +
+                        propertyName +
+                        "' taking {String, Object} as parameters");
+                    return null;
+                }
+
+                return new BeanEventPropertyWriterMapProp(_stem.Clazz, setterMethod, mapProp.Key);
+            }
+
+            if (property is IndexedProperty indexedProp) {
+                var methodName = PropertyHelper.GetSetterMethodName(indexedProp.PropertyNameAtomic);
+                MethodInfo setterMethod;
+                try {
+                    setterMethod = MethodResolver.ResolveMethod(
+                        _stem.Clazz,
+                        methodName,
+                        new Type[] { typeof(int), typeof(object) },
+                        true,
+                        new bool[2],
+                        new bool[2]);
+                }
+                catch (MethodResolverNoSuchMethodException) {
+                    Log.Info(
+                        "Failed to find indexed property setter method '" +
+                        methodName +
+                        "' for writing to property '" +
+                        propertyName +
+                        "' taking {int, Object} as parameters");
+                    return null;
+                }
+
+                return new BeanEventPropertyWriterIndexedProp(_stem.Clazz, setterMethod, indexedProp.Index);
+            }
+
+            return null;
         }
 
         public EventPropertyDescriptor GetWritableProperty(string propertyName)
@@ -261,7 +433,6 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
                 return new EventPropertyDescriptor(
                     mapProp.PropertyNameAtomic,
                     typeof(object),
-                    null,
                     false,
                     true,
                     false,
@@ -278,7 +449,6 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
                 return new EventPropertyDescriptor(
                     indexedProp.PropertyNameAtomic,
                     typeof(object),
-                    null,
                     true,
                     false,
                     true,
@@ -289,11 +459,21 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             return null;
         }
 
-        public ICollection<EventType> DeepSuperTypesCollection { get; }
+        public EventPropertyDescriptor[] WriteableProperties {
+            get {
+                if (_writeablePropertyDescriptors == null) {
+                    InitializeWriters();
+                }
+
+                return _writeablePropertyDescriptors;
+            }
+        }
+
+        public ICollection<EventType> DeepSuperTypesCollection => _deepSuperTypes;
 
         public EventBeanCopyMethodForge GetCopyMethodForge(string[] properties)
         {
-            var copyMethodName = Stem.OptionalLegacyDef?.CopyMethod;
+            var copyMethodName = _stem.OptionalLegacyDef?.CopyMethod;
             if (copyMethodName == null) {
                 var objectCopier = _container.Resolve<IObjectCopier>();
                 if (objectCopier.IsSupported(Stem.Clazz))
@@ -307,13 +487,13 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
 
             MethodInfo method = null;
             try {
-                method = Stem.Clazz.GetMethod(copyMethodName);
+                method = _stem.Clazz.GetMethod(copyMethodName);
             }
             catch (Exception e)
                 when (e is AmbiguousMatchException || e is ArgumentNullException) {
                 Log.Error(
                     "Configured copy-method for class '" +
-                    Stem.Clazz.Name +
+                    _stem.Clazz.CleanName() +
                     " not found by name '" +
                     copyMethodName +
                     "': " +
@@ -329,7 +509,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
 
                 throw new EPException(
                     "Configured copy-method for class '" +
-                    Stem.Clazz.Name +
+                    _stem.Clazz.CleanName() +
                     " not found by name '" +
                     copyMethodName +
                     "' and class does not implement Serializable");
@@ -358,222 +538,12 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             return new BeanEventBeanWriter(writers);
         }
 
+        public BeanEventTypeStem Stem => _stem;
+
         public ExprValidationException EqualsCompareType(EventType eventType)
         {
-            if (!Equals(this, eventType)) {
+            if (this != eventType) {
                 return new ExprValidationException("Bean event types mismatch");
-            }
-
-            return null;
-        }
-
-        public EventPropertyWriterSPI GetWriter(string propertyName)
-        {
-            if (_writeablePropertyDescriptors == null) {
-                InitializeWriters();
-            }
-
-            var pair = _writerMap.Get(propertyName);
-            if (pair != null) {
-                return pair.Second;
-            }
-
-            var property = PropertyParser.ParseAndWalkLaxToSimple(propertyName);
-            if (property is MappedProperty) {
-                var mapProp = (MappedProperty) property;
-                var methodName = PropertyHelper.GetSetterMethodName(mapProp.PropertyNameAtomic);
-                MethodInfo setterMethod;
-                try {
-                    setterMethod = MethodResolver.ResolveMethod(
-                        Stem.Clazz,
-                        methodName,
-                        new[] {typeof(string), typeof(object)},
-                        true,
-                        new bool[2],
-                        new bool[2]);
-                }
-                catch (MethodResolverNoSuchMethodException) {
-                    Log.Info(
-                        "Failed to find mapped property setter method '" +
-                        methodName +
-                        "' for writing to property '" +
-                        propertyName +
-                        "' taking {String, Object} as parameters");
-                    return null;
-                }
-
-                if (setterMethod == null) {
-                    return null;
-                }
-
-                return new BeanEventPropertyWriterMapProp(Stem.Clazz, setterMethod, mapProp.Key);
-            }
-
-            if (property is IndexedProperty) {
-                var indexedProp = (IndexedProperty) property;
-                var methodName = PropertyHelper.GetSetterMethodName(indexedProp.PropertyNameAtomic);
-                MethodInfo setterMethod;
-                try {
-                    setterMethod = MethodResolver.ResolveMethod(
-                        Stem.Clazz,
-                        methodName,
-                        new[] {typeof(int), typeof(object)},
-                        true,
-                        new bool[2],
-                        new bool[2]);
-                }
-                catch (MethodResolverNoSuchMethodException) {
-                    Log.Info(
-                        "Failed to find indexed property setter method '" +
-                        methodName +
-                        "' for writing to property '" +
-                        propertyName +
-                        "' taking {int, Object} as parameters");
-                    return null;
-                }
-
-                if (setterMethod == null) {
-                    return null;
-                }
-
-                return new BeanEventPropertyWriterIndexedProp(Stem.Clazz, setterMethod, indexedProp.Index);
-            }
-
-            return null;
-        }
-
-        public EventPropertyDescriptor[] WriteableProperties {
-            get {
-                if (_writeablePropertyDescriptors == null) {
-                    InitializeWriters();
-                }
-
-                return _writeablePropertyDescriptors;
-            }
-        }
-
-        /// <summary>
-        ///     Looks up and returns a cached simple property's descriptor.
-        /// </summary>
-        /// <param name="propertyName">to look up</param>
-        /// <returns>property descriptor</returns>
-        public PropertyStem GetSimpleProperty(string propertyName)
-        {
-            var simpleProp = GetSimplePropertyInfo(propertyName);
-            return simpleProp?.Descriptor;
-        }
-
-        /// <summary>
-        ///     Looks up and returns a cached mapped property's descriptor.
-        /// </summary>
-        /// <param name="propertyName">to look up</param>
-        /// <returns>property descriptor</returns>
-        public PropertyStem GetMappedProperty(string propertyName)
-        {
-            if (PropertyResolutionStyle.Equals(PropertyResolutionStyle.CASE_SENSITIVE)) {
-                return Stem.MappedPropertyDescriptors.Get(propertyName);
-            }
-
-            if (PropertyResolutionStyle.Equals(PropertyResolutionStyle.CASE_INSENSITIVE)) {
-                var propertyInfos = Stem.MappedSmartPropertyTable.Get(propertyName.ToLowerInvariant());
-                return propertyInfos?[0].Descriptor;
-            }
-
-            if (PropertyResolutionStyle.Equals(PropertyResolutionStyle.DISTINCT_CASE_INSENSITIVE)) {
-                var propertyInfos = Stem.MappedSmartPropertyTable.Get(propertyName.ToLowerInvariant());
-                if (propertyInfos != null) {
-                    if (propertyInfos.Count != 1) {
-                        throw new EPException(
-                            "Unable to determine which property to use for \"" +
-                            propertyName +
-                            "\" because more than one property matched");
-                    }
-
-                    return propertyInfos[0].Descriptor;
-                }
-            }
-
-            return null;
-        }
-
-        /// <summary>
-        ///     Looks up and returns a cached indexed property's descriptor.
-        /// </summary>
-        /// <param name="propertyName">to look up</param>
-        /// <returns>property descriptor</returns>
-        public PropertyStem GetIndexedProperty(string propertyName)
-        {
-            if (PropertyResolutionStyle.Equals(PropertyResolutionStyle.CASE_SENSITIVE)) {
-                return Stem.IndexedPropertyDescriptors.Get(propertyName);
-            }
-
-            if (PropertyResolutionStyle.Equals(PropertyResolutionStyle.CASE_INSENSITIVE)) {
-                var propertyInfos = Stem.IndexedSmartPropertyTable.Get(propertyName.ToLowerInvariant());
-                return propertyInfos?[0].Descriptor;
-            }
-
-            if (PropertyResolutionStyle.Equals(PropertyResolutionStyle.DISTINCT_CASE_INSENSITIVE)) {
-                var propertyInfos = Stem.IndexedSmartPropertyTable.Get(propertyName.ToLowerInvariant());
-                if (propertyInfos != null) {
-                    if (propertyInfos.Count != 1) {
-                        throw new EPException(
-                            "Unable to determine which property to use for \"" +
-                            propertyName +
-                            "\" because more than one property matched");
-                    }
-
-                    return propertyInfos[0].Descriptor;
-                }
-            }
-
-            return null;
-        }
-
-        public override string ToString()
-        {
-            return "BeanEventType" +
-                   " name=" +
-                   Name +
-                   " clazz=" +
-                   Stem.Clazz.CleanName();
-        }
-
-        private PropertyInfo GetSimplePropertyInfo(string propertyName)
-        {
-            PropertyInfo propertyInfo;
-            IList<PropertyInfo> simplePropertyInfoList;
-
-            if (PropertyResolutionStyle.Equals(PropertyResolutionStyle.CASE_SENSITIVE)) {
-                return Stem.SimpleProperties.Get(propertyName);
-            }
-
-            if (PropertyResolutionStyle.Equals(PropertyResolutionStyle.CASE_INSENSITIVE)) {
-                propertyInfo = Stem.SimpleProperties.Get(propertyName);
-                if (propertyInfo != null) {
-                    return propertyInfo;
-                }
-
-                simplePropertyInfoList = Stem.SimpleSmartPropertyTable.Get(propertyName.ToLowerInvariant());
-                return simplePropertyInfoList?[0];
-            }
-
-            if (PropertyResolutionStyle.Equals(PropertyResolutionStyle.DISTINCT_CASE_INSENSITIVE)) {
-                propertyInfo = Stem.SimpleProperties.Get(propertyName);
-                if (propertyInfo != null) {
-                    return propertyInfo;
-                }
-
-                simplePropertyInfoList = Stem.SimpleSmartPropertyTable.Get(propertyName.ToLowerInvariant());
-                if (simplePropertyInfoList != null) {
-                    if (simplePropertyInfoList.Count != 1) {
-                        throw new EPException(
-                            "Unable to determine which property to use for \"" +
-                            propertyName +
-                            "\" because more than one property matched");
-                    }
-
-                    return simplePropertyInfoList[0];
-                }
             }
 
             return null;
@@ -581,17 +551,15 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
 
         private void InitializeWriters()
         {
-            var writables = PropertyHelper.GetWritableProperties(Stem.Clazz);
+            var writables = PropertyHelper.GetWritableProperties(_stem.Clazz);
             var desc = new EventPropertyDescriptor[writables.Count];
             IDictionary<string, Pair<EventPropertyDescriptor, BeanEventPropertyWriter>> writers =
                 new Dictionary<string, Pair<EventPropertyDescriptor, BeanEventPropertyWriter>>();
-
             var count = 0;
             foreach (var writable in writables) {
                 var propertyDesc = new EventPropertyDescriptor(
                     writable.PropertyName,
                     writable.PropertyType,
-                    null,
                     false,
                     false,
                     false,
@@ -602,13 +570,60 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
                     writable.PropertyName,
                     new Pair<EventPropertyDescriptor, BeanEventPropertyWriter>(
                         propertyDesc,
-                        new BeanEventPropertyWriter(
-                            Stem.Clazz,
-                            writable.WriteMember)));
+                        new BeanEventPropertyWriter(_stem.Clazz, writable.WriteMember)));
             }
 
             _writerMap = writers;
             _writeablePropertyDescriptors = desc;
         }
+
+        private Type SimplePropertyType(string propertyName)
+        {
+            var simpleProp = GetSimplePropertyInfo(propertyName);
+            if (simpleProp != null) {
+                return simpleProp.Clazz;
+            }
+
+            return null;
+        }
+
+        private EventPropertyGetterSPI SimplePropertyGetter(string propertyName)
+        {
+            var simpleProp = GetSimplePropertyInfo(propertyName);
+            if (simpleProp != null && simpleProp.GetterFactory != null) {
+                var getter = simpleProp.GetterFactory.Make(
+                    _beanEventTypeFactory.EventBeanTypedEventFactory,
+                    _beanEventTypeFactory);
+                _propertyGetterCache.Put(propertyName, getter);
+                return getter;
+            }
+
+            return null;
+        }
+
+        private FragmentEventType SimplePropertyFragmentType(string propertyName)
+        {
+            var simpleProp = GetSimplePropertyInfo(propertyName);
+            if (simpleProp != null) {
+                Type type = simpleProp.Descriptor.ReturnType;
+                return EventBeanUtility.CreateNativeFragmentType(type, _beanEventTypeFactory, _stem.IsPublicFields);
+            }
+
+            return null;
+        }
+
+        private BeanEventPropertyWriter SimplePropertyWriter(string propertyName)
+        {
+            var pair = _writerMap.Get(propertyName);
+            if (pair != null) {
+                return pair.Second;
+            }
+
+            return null;
+        }
+
+        public PropertyResolutionStyle PropertyResolutionStyle => _stem.PropertyResolutionStyle;
+
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
     }
 } // end of namespace

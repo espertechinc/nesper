@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -28,7 +28,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 
         public void GetEnumerableEventsCodegen(AggregationAccessorForgeGetCodegenContext context)
         {
-            var forge = (AggregatorAccessSorted) context.AccessStateForge.Aggregator;
+            var forge = (AggregatorAccessSorted)context.AccessStateForge.Aggregator;
             context.Method.Block
                 .DeclareVar<EventBean>(
                     "bean",
@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 
         public void GetEnumerableEventCodegen(AggregationAccessorForgeGetCodegenContext context)
         {
-            var sorted = (AggregatorAccessSorted) context.AccessStateForge.Aggregator;
+            var sorted = (AggregatorAccessSorted)context.AccessStateForge.Aggregator;
             if (max) {
                 context.Method.Block.MethodReturn(sorted.GetLastValueCodegen(context.ClassScope, context.Method));
             }

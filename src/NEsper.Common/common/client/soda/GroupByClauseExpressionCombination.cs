@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -16,7 +16,6 @@ namespace com.espertech.esper.common.client.soda
     /// A combination of expressions is for example "(a, b)", wherein the list of expressions
     /// provided together logically make up a grouping level.
     /// </summary>
-    [Serializable]
     public class GroupByClauseExpressionCombination : GroupByClauseExpression
     {
         private IList<Expression> _expressions;
@@ -41,18 +40,16 @@ namespace com.espertech.esper.common.client.soda
         /// Returns the combined expressions.
         /// </summary>
         /// <value>expressions</value>
-        public IList<Expression> Expressions
-        {
-            get { return _expressions; }
-            set { _expressions = value; }
+        public IList<Expression> Expressions {
+            get => _expressions;
+            set => _expressions = value;
         }
 
         public void ToEPL(TextWriter writer)
         {
             writer.Write("(");
-            string delimiter = "";
-            foreach (Expression e in _expressions)
-            {
+            var delimiter = "";
+            foreach (var e in _expressions) {
                 writer.Write(delimiter);
                 e.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                 delimiter = ", ";

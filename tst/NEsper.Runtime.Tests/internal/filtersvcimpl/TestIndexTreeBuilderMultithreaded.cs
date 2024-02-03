@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -22,6 +22,7 @@ using com.espertech.esper.container;
 using com.espertech.esper.runtime.@internal.support;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 {
@@ -128,7 +129,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             int numberOfRunnables,
             int numberOfSecondsSleep)
         {
-            log.Info(".PerformMultithreadedTest Loading thread pool work queue,numberOfRunnables={0}", numberOfRunnables);
+            Log.Info(".PerformMultithreadedTest Loading thread pool work queue,numberOfRunnables={0}", numberOfRunnables);
 
             var pool = Executors.NewMultiThreadedExecutor(numberOfThreads);
             //var pool = new ThreadPoolExecutor(0, numberOfThreads, 99999,
@@ -147,13 +148,13 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
                 pool.Submit(() => runnable.Run());
             }
 
-            log.Info(".PerformMultithreadedTest Starting thread pool, threads={0}", numberOfThreads);
+            Log.Info(".PerformMultithreadedTest Starting thread pool, threads={0}", numberOfThreads);
             //pool.CorePoolSize = numberOfThreads;
 
             // Sleep X seconds
             Sleep(numberOfSecondsSleep);
 
-            log.Info(".PerformMultithreadedTest Completed, numberOfRunnables={0}  numberOfThreads={1}  completed={2}",
+            Log.Info(".PerformMultithreadedTest Completed, numberOfRunnables={0}  numberOfThreads={1}  completed={2}",
                     numberOfRunnables,
                     numberOfThreads,
                     pool.NumExecuted);
@@ -161,7 +162,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             pool.Shutdown();
             pool.AwaitTermination(1, TimeUnit.SECONDS);
 
-            Assert.IsTrue(pool.NumExecuted == numberOfRunnables);
+            ClassicAssert.IsTrue(pool.NumExecuted == numberOfRunnables);
         }
 
         private void Sleep(int sec)
@@ -172,7 +173,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             }
             catch (ThreadInterruptedException e)
             {
-                log.Warn("Interrupted: {}", e.Message, e);
+                Log.Warn("Interrupted: {}", e.Message, e);
             }
         }
 
@@ -193,7 +194,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
                 .CreateObject(bean);
         }
 
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         [Test, RunInApplicationDomain]
         public void TestMultithreaded()
@@ -226,7 +227,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             {
                 IList<FilterHandle> matches = new List<FilterHandle>();
                 topNode.MatchEvent(theEvent, matches, null);
-                Assert.IsTrue(matches.Count == 0);
+                ClassicAssert.IsTrue(matches.Count == 0);
             }
 
             // All of the matching events should cause exactly one match
@@ -234,7 +235,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             {
                 IList<FilterHandle> matches = new List<FilterHandle>();
                 topNode.MatchEvent(theEvent, matches, null);
-                Assert.IsTrue(matches.Count == 1);
+                ClassicAssert.IsTrue(matches.Count == 1);
             }
 
             // Remove all expressions previously added
@@ -251,7 +252,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             {
                 IList<FilterHandle> matches = new List<FilterHandle>();
                 topNode.MatchEvent(theEvent, matches, null);
-                Assert.IsTrue(matches.Count == 0);
+                ClassicAssert.IsTrue(matches.Count == 0);
             }
         }
     }

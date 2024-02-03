@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -35,9 +35,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             TableMetaData tableMetadata,
             Type returnType)
         {
-            this._streamNum = streamNum;
-            this._tableMetadata = tableMetadata;
-            this._returnType = returnType;
+            _streamNum = streamNum;
+            _tableMetadata = tableMetadata;
+            _returnType = returnType;
         }
 
         public object Evaluate(
@@ -54,11 +54,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenExpressionRef refEps = exprSymbol.GetAddEPS(codegenMethodScope);
-            CodegenExpression refIsNewData = exprSymbol.GetAddIsNewData(codegenMethodScope);
-            CodegenExpressionRef refExprEvalCtx = exprSymbol.GetAddExprEvalCtx(codegenMethodScope);
-            CodegenExpressionInstanceField eventToPublic =
-                TableDeployTimeResolver.MakeTableEventToPublicField(_tableMetadata, codegenClassScope, this.GetType());
+            var refEps = exprSymbol.GetAddEps(codegenMethodScope);
+            var refIsNewData = exprSymbol.GetAddIsNewData(codegenMethodScope);
+            var refExprEvalCtx = exprSymbol.GetAddExprEvalCtx(codegenMethodScope);
+            var eventToPublic =
+                TableDeployTimeResolver.MakeTableEventToPublicField(_tableMetadata, codegenClassScope, GetType());
             return StaticMethod(
                 typeof(ExprEvalStreamInsertTable),
                 "ConvertToTableEvent",
@@ -76,7 +76,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             CodegenClassScope codegenClassScope)
         {
             return new InstrumentationBuilderExpr(
-                this.GetType(),
+                GetType(),
                 this,
                 "ExprStreamUndSelectClause",
                 requiredType,
@@ -85,9 +85,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
                 codegenClassScope).Build();
         }
 
-        public ExprForgeConstantType ForgeConstantType {
-            get => ExprForgeConstantType.NONCONST;
-        }
+        public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
 
         /// <summary>
         /// NOTE: Code-generation-invoked method, method name and parameter order matters
@@ -105,7 +103,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            EventBean @event = eventsPerStream == null ? null : eventsPerStream[streamNum];
+            var @event = eventsPerStream?[streamNum];
             if (@event != null) {
                 @event = eventToPublic.Convert(@event, eventsPerStream, isNewData, exprEvaluatorContext);
             }
@@ -113,23 +111,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             return @event;
         }
 
-        public ExprEvaluator ExprEvaluator {
-            get => this;
-        }
+        public ExprEvaluator ExprEvaluator => this;
 
-        public Type EvaluationType {
-            get => _returnType;
-        }
+        public Type EvaluationType => _returnType;
 
-        public ExprNodeRenderable ExprForgeRenderable {
-            get => this;
-        }
+        public ExprNodeRenderable ExprForgeRenderable => this;
 
-        public void ToEPL(TextWriter writer,
+        public void ToEPL(
+            TextWriter writer,
             ExprPrecedenceEnum parentPrecedence,
             ExprNodeRenderableFlags flags)
         {
-            writer.Write(this.GetType().Name);
+            writer.Write(GetType().Name);
         }
     }
 } // end of namespace

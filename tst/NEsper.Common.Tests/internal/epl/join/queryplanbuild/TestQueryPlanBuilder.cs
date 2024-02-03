@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -19,6 +19,7 @@ using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.common.@internal.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
 {
@@ -40,8 +41,8 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
 
         private void AssertPlan(QueryPlanForge plan)
         {
-            Assert.AreEqual(2, plan.ExecNodeSpecs.Length);
-            Assert.AreEqual(2, plan.ExecNodeSpecs.Length);
+            ClassicAssert.AreEqual(2, plan.ExecNodeSpecs.Length);
+            ClassicAssert.AreEqual(2, plan.ExecNodeSpecs.Length);
         }
 
         [Test]

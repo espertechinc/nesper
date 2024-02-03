@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -20,7 +20,6 @@ namespace com.espertech.esper.common.@internal.type
         /// <summary>
         ///     Computer for math op.
         /// </summary>
-        [Serializable]
         public class AddDecimalConvComputer : Computer
         {
             private readonly Coercer _convOne;
@@ -35,16 +34,16 @@ namespace com.espertech.esper.common.@internal.type
                 Coercer convOne,
                 Coercer convTwo)
             {
-                this._convOne = convOne;
-                this._convTwo = convTwo;
+                _convOne = convOne;
+                _convTwo = convTwo;
             }
 
             public object Compute(
                 object d1,
                 object d2)
             {
-                decimal s1 = _convOne.CoerceBoxed(d1).AsDecimal();
-                decimal s2 = _convTwo.CoerceBoxed(d2).AsDecimal();
+                var s1 = _convOne.CoerceBoxed(d1).AsDecimal();
+                var s2 = _convTwo.CoerceBoxed(d2).AsDecimal();
                 return s1 + s2;
             }
 
@@ -56,8 +55,8 @@ namespace com.espertech.esper.common.@internal.type
                 Type ltype,
                 Type rtype)
             {
-                var leftValue = _convOne.CoerceCodegen(left, ltype);
-                var rightValue = _convTwo.CoerceCodegen(right, rtype);
+                var leftValue = _convOne.CoerceCodegen(left, ltype, codegenMethodScope, codegenClassScope);
+                var rightValue = _convTwo.CoerceCodegen(right, rtype, codegenMethodScope, codegenClassScope);
                 return CodegenExpressionBuilder.Op(leftValue, "+", rightValue);
             }
         }

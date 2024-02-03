@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -43,7 +43,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval.deltaexpr
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            double sec = timePeriod.EvaluateAsSeconds(eventsPerStream, isNewData, context);
+            var sec = timePeriod.EvaluateAsSeconds(eventsPerStream, isNewData, context);
             return timeAbacus.DeltaForSecondsDouble(sec);
         }
 
@@ -53,11 +53,11 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval.deltaexpr
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenMethod methodNode = codegenMethodScope.MakeChild(
+            var methodNode = codegenMethodScope.MakeChild(
                     typeof(long),
                     typeof(IntervalDeltaExprTimePeriodNonConstForge),
                     codegenClassScope)
-                .AddParam(typeof(long), "reference");
+                .AddParam<long>("reference");
 
             methodNode.Block
                 .DeclareVar<double>(
@@ -65,7 +65,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval.deltaexpr
                     timePeriod.EvaluateAsSecondsCodegen(methodNode, exprSymbol, codegenClassScope))
                 .MethodReturn(
                     timeAbacus.DeltaForSecondsDoubleCodegen(
-                        Ref("sec"), codegenClassScope));
+                        Ref("sec"),
+                        codegenClassScope));
             return LocalMethod(methodNode, reference);
         }
     }

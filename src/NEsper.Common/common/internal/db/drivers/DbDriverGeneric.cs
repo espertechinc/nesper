@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -20,7 +20,6 @@ namespace com.espertech.esper.common.@internal.db.drivers
     /// <summary>
     ///     A generic database driver.
     /// </summary>
-    [Serializable]
     public class DbDriverGeneric : BaseDbDriver,
         ISerializable
     {
@@ -80,7 +79,7 @@ namespace com.espertech.esper.common.@internal.db.drivers
             StreamingContext context)
             : base(info, context)
         {
-            var container = (IContainer) context.Context;
+            var container = (IContainer)context.Context;
             if (container == null) {
                 throw new IllegalStateException("context is not set to container");
             }
@@ -107,7 +106,6 @@ namespace com.espertech.esper.common.@internal.db.drivers
         /// <value>The param prefix.</value>
         protected override string ParamPrefix => _paramPrefix;
 
-        [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
         public override void GetObjectData(
             SerializationInfo info,
             StreamingContext context)

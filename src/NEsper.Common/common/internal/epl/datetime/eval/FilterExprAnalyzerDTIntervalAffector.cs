@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -113,7 +113,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
                         parameterStartProp,
                         parameterStartExpr);
 
-                    var noDuration = parameterEndProp.Equals(parameterStartProp) && targetEndProp.Equals(targetStartProp);
+                    var noDuration = parameterEndProp.Equals(parameterStartProp) &&
+                                     targetEndProp.Equals(targetStartProp);
                     if (!noDuration) {
                         var leftEndExpr = ExprNodeUtilityMake.MakeExprIdentNode(
                             typesPerStream,
@@ -160,7 +161,9 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
                 case DateTimeMethodEnum.FINISHEDBY: {
                     // FINISHES:   b.startTimestamp < a.startTimestamp and a.endTimestamp = b.endTimestamp
                     // FINISHEDBY: a.startTimestamp < b.startTimestamp and a.endTimestamp = b.endTimestamp
-                    var relop = dateTimeMethod == DateTimeMethodEnum.FINISHES ? RelationalOpEnum.LT : RelationalOpEnum.GT;
+                    var relop = dateTimeMethod == DateTimeMethodEnum.FINISHES
+                        ? RelationalOpEnum.LT
+                        : RelationalOpEnum.GT;
                     filterQueryGraph.AddRelationalOpStrict(
                         parameterStreamNum,
                         parameterStartExpr,
@@ -204,7 +207,9 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
                 case DateTimeMethodEnum.OVERLAPPEDBY: {
                     // OVERLAPS:     a.startTimestamp < b.startTimestamp < a.endTimestamp < b.endTimestamp
                     // OVERLAPPEDBY: b.startTimestamp < a.startTimestamp < b.endTimestamp < a.endTimestamp
-                    var relop = dateTimeMethod == DateTimeMethodEnum.OVERLAPS ? RelationalOpEnum.LT : RelationalOpEnum.GT;
+                    var relop = dateTimeMethod == DateTimeMethodEnum.OVERLAPS
+                        ? RelationalOpEnum.LT
+                        : RelationalOpEnum.GT;
                     filterQueryGraph.AddRelationalOpStrict(
                         targetStreamNum,
                         targetStartExpr,

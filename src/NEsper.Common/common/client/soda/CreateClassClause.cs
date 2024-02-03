@@ -1,5 +1,5 @@
 ﻿///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Clause for creating an application-provided class for use across one or more statements.
     /// </summary>
-    [Serializable]
     public class CreateClassClause
     {
         private ClassProvidedExpression _classProvidedExpression;
@@ -38,12 +37,13 @@ namespace com.espertech.esper.common.client.soda
         {
             _classProvidedExpression = new ClassProvidedExpression(classText);
         }
-        
+
         /// <summary>
         /// EPL output
         /// </summary>
         /// <param name="writer">writer to write to</param>
-        public void ToEPL(TextWriter writer) {
+        public void ToEPL(TextWriter writer)
+        {
             writer.Write("create ");
             _classProvidedExpression.ToEPL(writer);
         }

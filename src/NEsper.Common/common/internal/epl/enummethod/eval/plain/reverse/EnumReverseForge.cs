@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -9,16 +9,16 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
-using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.enummethod.codegen;
+using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
-namespace com.espertech.esper.common.@internal.epl.enummethod.eval
+namespace com.espertech.esper.common.@internal.epl.enummethod.eval.plain.reverse
 {
     public class EnumReverseForge : EnumEval,
         EnumForge
@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             result.Reverse();
             return result;
         }
-        
+
         public virtual EnumEval EnumEvaluator => this;
 
         public int StreamNumSize { get; }
@@ -57,43 +57,24 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            var returnType = typeof(FlexCollection);
-            var namedParams = EnumForgeCodegenNames.PARAMS;
-            var collectionType = IsScalar
-                ? typeof(List<object>)
-                : typeof(List<EventBean>);
-            
+            var returnType = args.EnumcollType;
+            var elementType = returnType.GetComponentType();
+            var listType = typeof(List<>).MakeGenericType(elementType);
+
             var method = codegenMethodScope
                 .MakeChild(returnType, typeof(EnumReverseForge), codegenClassScope)
-                .AddParam(namedParams);
-                
-            var block = method.Block
+                .AddParam(ExprForgeCodegenNames.FP_EPS)
+                .AddParam(args.EnumcollType, EnumForgeCodegenNames.REF_ENUMCOLL.Ref)
+                .AddParam(ExprForgeCodegenNames.FP_ISNEWDATA)
+                .AddParam(ExprForgeCodegenNames.FP_EXPREVALCONTEXT);
+
+            method.Block
                 .IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "IsEmpty"))
-                .BlockReturn(EnumForgeCodegenNames.REF_ENUMCOLL);
-
-            if (IsScalar) {
-                var listType = typeof(List<object>);
-                block.DeclareVar(
-                    listType, 
-                    "result",
-                    NewInstance(
-                        listType,
-                        ExprDotName(EnumForgeCodegenNames.REF_ENUMCOLL, "ObjectCollection")));
-            }
-            else {
-                var listType = typeof(List<EventBean>);
-                block.DeclareVar(
-                    listType, 
-                    "result",
-                    NewInstance(
-                        listType,
-                        ExprDotName(EnumForgeCodegenNames.REF_ENUMCOLL, "EventBeanCollection")));
-            }
-
-            block
+                .BlockReturn(StaticMethod(typeof(Collections), "GetEmptyList", new[] { elementType }))
+                .DeclareVar(listType, "result", NewInstance(listType, EnumForgeCodegenNames.REF_ENUMCOLL))
                 .ExprDotMethod(Ref("result"), "Reverse")
-                .MethodReturn(FlexWrap(Ref("result")));
-            
+                .MethodReturn(Ref("result"));
+
             return LocalMethod(method, args.Expressions);
         }
     }

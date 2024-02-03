@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -17,15 +17,16 @@ using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.property;
 using com.espertech.esper.compat.collections;
 
+
 namespace com.espertech.esper.common.@internal.@event.map
 {
     /// <summary>
-    ///     Implementation of the <seealso cref="EventType" /> interface for handling plain Maps containing name value pairs.
+    /// Implementation of the <seealso cref = "EventType"/> interface for handling plain Maps containing name value pairs.
     /// </summary>
     public class MapEventType : BaseNestableEventType
     {
         private static readonly EventTypeNestableGetterFactory GETTER_FACTORY = new EventTypeNestableGetterFactoryMap();
-
+        
         private IDictionary<string, Pair<EventPropertyDescriptor, MapEventBeanPropertyWriter>> _propertyWriters;
         private EventPropertyDescriptor[] _writablePropertyDescriptors;
 
@@ -33,59 +34,42 @@ namespace com.espertech.esper.common.@internal.@event.map
             EventTypeMetadata metadata,
             IDictionary<string, object> propertyTypes,
             EventType[] optionalSuperTypes,
-            ISet<EventType> optionalDeepSuperTypes,
+            ISet<EventType> optionalDeepSupertypes,
             string startTimestampPropertyName,
             string endTimestampPropertyName,
-            BeanEventTypeFactory beanEventTypeFactory)
-            : base(
-                metadata,
-                propertyTypes,
-                optionalSuperTypes,
-                optionalDeepSuperTypes,
-                startTimestampPropertyName,
-                endTimestampPropertyName,
-                GETTER_FACTORY,
-                beanEventTypeFactory,
-                false)
-        {
-        }
-
-        public override Type UnderlyingType => typeof(IDictionary<string, object>);
-
-        public override EventPropertyDescriptor[] WriteableProperties {
-            get {
-                if (_writablePropertyDescriptors == null) {
-                    InitializeWriters();
-                }
-
-                return _writablePropertyDescriptors;
-            }
-        }
-
-        internal void PostUpdateNestableTypes()
+            BeanEventTypeFactory beanEventTypeFactory) : base(
+            metadata,
+            propertyTypes,
+            optionalSuperTypes,
+            optionalDeepSupertypes,
+            startTimestampPropertyName,
+            endTimestampPropertyName,
+            GETTER_FACTORY,
+            beanEventTypeFactory,
+            false)
         {
         }
 
         public override EventBeanCopyMethodForge GetCopyMethodForge(string[] properties)
         {
             var pair = BaseNestableEventUtil.GetIndexedAndMappedProps(properties);
-
             if (pair.MapProperties.IsEmpty() && pair.ArrayProperties.IsEmpty()) {
                 return new MapEventBeanCopyMethodForge(this, BeanEventTypeFactory.EventBeanTypedEventFactory);
             }
-
-            return new MapEventBeanCopyMethodWithArrayMapForge(
-                this,
-                BeanEventTypeFactory.EventBeanTypedEventFactory,
-                pair.MapProperties,
-                pair.ArrayProperties);
+            else {
+                return new MapEventBeanCopyMethodWithArrayMapForge(
+                    this,
+                    BeanEventTypeFactory.EventBeanTypedEventFactory,
+                    pair.MapProperties,
+                    pair.ArrayProperties);
+            }
         }
 
         public object GetValue(
             string propertyName,
             IDictionary<string, object> values)
         {
-            var getter = (MapEventPropertyGetter) GetGetter(propertyName);
+            var getter = (MapEventPropertyGetter)GetGetter(propertyName);
             return getter.GetMap(values);
         }
 
@@ -105,6 +89,7 @@ namespace com.espertech.esper.common.@internal.@event.map
                 if (!PropertyItems.ContainsKey(mapProp.PropertyNameAtomic)) {
                     return null;
                 }
+
                 return new MapEventBeanPropertyWriterMapProp(mapProp.PropertyNameAtomic, mapProp.Key);
             }
 
@@ -112,6 +97,7 @@ namespace com.espertech.esper.common.@internal.@event.map
                 if (!PropertyItems.ContainsKey(indexedProp.PropertyNameAtomic)) {
                     return null;
                 }
+
                 return new MapEventBeanPropertyWriterIndexedProp(indexedProp.PropertyNameAtomic, indexedProp.Index);
             }
 
@@ -139,7 +125,6 @@ namespace com.espertech.esper.common.@internal.@event.map
                 return new EventPropertyDescriptor(
                     mapProp.PropertyNameAtomic,
                     typeof(object),
-                    null,
                     false,
                     true,
                     false,
@@ -156,7 +141,6 @@ namespace com.espertech.esper.common.@internal.@event.map
                 return new EventPropertyDescriptor(
                     indexedProp.PropertyNameAtomic,
                     typeof(object),
-                    null,
                     true,
                     false,
                     true,
@@ -165,6 +149,16 @@ namespace com.espertech.esper.common.@internal.@event.map
             }
 
             return null;
+        }
+
+        public override EventPropertyDescriptor[] WriteableProperties {
+            get {
+                if (_writablePropertyDescriptors == null) {
+                    InitializeWriters();
+                }
+
+                return _writablePropertyDescriptors;
+            }
         }
 
         public override EventBeanWriter GetWriter(string[] properties)
@@ -193,15 +187,15 @@ namespace com.espertech.esper.common.@internal.@event.map
             if (allSimpleProps) {
                 return new MapEventBeanWriterSimpleProps(properties);
             }
-
-            return new MapEventBeanWriterPerProp(writers);
+            else {
+                return new MapEventBeanWriterPerProp(writers);
+            }
         }
 
         private void InitializeWriters()
         {
-            IList<EventPropertyDescriptor> writeableProps = new List<EventPropertyDescriptor>();
-            IDictionary<string, Pair<EventPropertyDescriptor, MapEventBeanPropertyWriter>> propertWritersMap =
-                new Dictionary<string, Pair<EventPropertyDescriptor, MapEventBeanPropertyWriter>>();
+            var writeableProps = new List<EventPropertyDescriptor>();
+            var propertWritersMap = new Dictionary<string, Pair<EventPropertyDescriptor, MapEventBeanPropertyWriter>>();
             foreach (var prop in PropertyDescriptors) {
                 writeableProps.Add(prop);
                 var propertyName = prop.PropertyName;
@@ -214,5 +208,7 @@ namespace com.espertech.esper.common.@internal.@event.map
             _propertyWriters = propertWritersMap;
             _writablePropertyDescriptors = writeableProps.ToArray();
         }
+
+        public override Type UnderlyingType => typeof(IDictionary<string, object>);
     }
 } // end of namespace

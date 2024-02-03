@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -15,6 +15,7 @@ using com.espertech.esper.common.@internal.supportunit.util;
 using com.espertech.esper.compat;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.epl.join.assemble
 {
@@ -39,8 +40,8 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
 
             leafNode.Process(result, new List<EventBean[]>(), null);
 
-            Assert.AreEqual(4, parentNode.RowsList.Count);
-            Assert.AreEqual(result[1][0].Events.First(), parentNode.RowsList[0][1]);   // compare event
+            ClassicAssert.AreEqual(4, parentNode.RowsList.Count);
+            ClassicAssert.AreEqual(result[1][0].Events.First(), parentNode.RowsList[0][1]);   // compare event
         }
 
         [Test]

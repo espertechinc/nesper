@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -26,7 +26,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             TableCompileTimeResolver tableCompileTimeResolver)
         {
             var hasTableAccess =
-                statementSpecRaw.TableExpressions != null && !statementSpecRaw.TableExpressions.IsEmpty() ||
+                (statementSpecRaw.TableExpressions != null && !statementSpecRaw.TableExpressions.IsEmpty()) ||
                 statementSpecRaw.IntoTableSpec != null;
             hasTableAccess = hasTableAccess ||
                              IsJoinWithTable(statementSpecRaw, tableCompileTimeResolver) ||
@@ -51,7 +51,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             TableCompileTimeResolver tableCompileTimeResolver)
         {
             foreach (var node in subselectNodes) {
-                var spec = (FilterStreamSpecRaw) node.StatementSpecRaw.StreamSpecs[0];
+                var spec = (FilterStreamSpecRaw)node.StatementSpecRaw.StreamSpecs[0];
                 if (tableCompileTimeResolver.Resolve(spec.RawFilterSpec.EventTypeName) != null) {
                     return true;
                 }
@@ -65,8 +65,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             TableCompileTimeResolver tableCompileTimeResolver)
         {
             foreach (var stream in statementSpecRaw.StreamSpecs) {
-                if (stream is FilterStreamSpecRaw) {
-                    var filter = (FilterStreamSpecRaw) stream;
+                if (stream is FilterStreamSpecRaw filter) {
                     if (tableCompileTimeResolver.Resolve(filter.RawFilterSpec.EventTypeName) != null) {
                         return true;
                     }
@@ -80,21 +79,18 @@ namespace com.espertech.esper.common.@internal.compile.stage2
         {
             IList<SelectClauseElementCompiled> selectElements = new List<SelectClauseElementCompiled>();
             foreach (var raw in spec.SelectExprList) {
-                if (raw is SelectClauseExprRawSpec) {
-                    var rawExpr = (SelectClauseExprRawSpec) raw;
+                if (raw is SelectClauseExprRawSpec expr) {
                     selectElements.Add(
                         new SelectClauseExprCompiledSpec(
-                            rawExpr.SelectExpression,
-                            rawExpr.OptionalAsName,
-                            rawExpr.OptionalAsName,
-                            rawExpr.IsEvents));
+                            expr.SelectExpression,
+                            expr.OptionalAsName,
+                            expr.OptionalAsName,
+                            expr.IsEvents));
                 }
-                else if (raw is SelectClauseStreamRawSpec) {
-                    var rawExpr = (SelectClauseStreamRawSpec) raw;
+                else if (raw is SelectClauseStreamRawSpec rawExpr) {
                     selectElements.Add(new SelectClauseStreamCompiledSpec(rawExpr.StreamName, rawExpr.OptionalAsName));
                 }
-                else if (raw is SelectClauseElementWildcard) {
-                    var wildcard = (SelectClauseElementWildcard) raw;
+                else if (raw is SelectClauseElementWildcard wildcard) {
                     selectElements.Add(wildcard);
                 }
                 else {
@@ -129,7 +125,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 
                 // split-stream insert-into
                 if (onTriggerDesc.OnTriggerType == OnTriggerType.ON_SPLITSTREAM) {
-                    var split = (OnTriggerSplitStreamDesc) onTriggerDesc;
+                    var split = (OnTriggerSplitStreamDesc)onTriggerDesc;
                     foreach (var stream in split.SplitStreams) {
                         if (stream.InsertInto != null &&
                             IsTable(stream.InsertInto.EventTypeName, tableCompileTimeResolver)) {
@@ -139,11 +135,10 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 }
 
                 // on-delete/update/merge/on-selectdelete
-                if (onTriggerDesc is OnTriggerWindowDesc) {
-                    var window = (OnTriggerWindowDesc) onTriggerDesc;
-                    if (onTriggerDesc.OnTriggerType == OnTriggerType.ON_DELETE ||
-                        onTriggerDesc.OnTriggerType == OnTriggerType.ON_UPDATE ||
-                        onTriggerDesc.OnTriggerType == OnTriggerType.ON_MERGE ||
+                if (onTriggerDesc is OnTriggerWindowDesc window) {
+                    if (window.OnTriggerType == OnTriggerType.ON_DELETE ||
+                        window.OnTriggerType == OnTriggerType.ON_UPDATE ||
+                        window.OnTriggerType == OnTriggerType.ON_MERGE ||
                         window.IsDeleteAndSelect) {
                         if (IsTable(window.WindowName, tableCompileTimeResolver)) {
                             return true;
@@ -152,8 +147,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 }
 
                 // on-merge with insert-action
-                if (onTriggerDesc is OnTriggerMergeDesc) {
-                    var merge = (OnTriggerMergeDesc) onTriggerDesc;
+                if (onTriggerDesc is OnTriggerMergeDesc merge) {
                     foreach (var item in merge.Items) {
                         foreach (var action in item.Actions) {
                             if (CheckOnTriggerMergeAction(action, tableCompileTimeResolver)) {
@@ -177,7 +171,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                     faf is FireAndForgetSpecUpdate) {
                     if (statementSpec.StreamSpecs.Count == 1) {
                         return IsTable(
-                            ((FilterStreamSpecRaw) statementSpec.StreamSpecs[0]).RawFilterSpec.EventTypeName,
+                            ((FilterStreamSpecRaw)statementSpec.StreamSpecs[0]).RawFilterSpec.EventTypeName,
                             tableCompileTimeResolver);
                     }
                 }

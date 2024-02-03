@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compiler.client;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.extend.aggfunc;
@@ -19,6 +20,7 @@ using com.espertech.esper.regressionlib.support.util;
 using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.client.runtime
 {
@@ -27,7 +29,9 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            WithRuntimeExHandlerInvalidAgg(execs);
+#if REGRESSION_EXECUTIONS
+            With(RuntimeExHandlerInvalidAgg)(execs);
+#endif
             return execs;
         }
 
@@ -42,7 +46,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('ABCName') select myinvalidagg() from SupportBean";
+                var epl = "@name('ABCName') select myinvalidagg() from SupportBean";
                 env.CompileDeploy(epl);
 
                 try {
@@ -54,6 +58,11 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 }
 
                 env.UndeployAll();
+            }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.RUNTIMEOPS);
             }
         }
 
@@ -80,7 +89,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 SupportExceptionHandlerFactory.Handlers.Clear();
                 runtime.Initialize();
 
-                var epl = "@Name('ABCName') select myinvalidagg() from SupportBean";
+                var epl = "@name('ABCName') select myinvalidagg() from SupportBean";
                 EPDeployment deployment;
                 try {
                     var compiled = EPCompilerProvider.Compiler.Compile(epl, new CompilerArguments(configuration));
@@ -91,23 +100,23 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 }
 
                 var contexts = SupportExceptionHandlerFactory.FactoryContexts;
-                Assert.AreEqual(2, contexts.Count);
-                Assert.AreEqual(runtime.URI, contexts[0].RuntimeURI);
-                Assert.AreEqual(runtime.URI, contexts[1].RuntimeURI);
+                ClassicAssert.AreEqual(2, contexts.Count);
+                ClassicAssert.AreEqual(runtime.URI, contexts[0].RuntimeURI);
+                ClassicAssert.AreEqual(runtime.URI, contexts[1].RuntimeURI);
 
                 var handlerOne = SupportExceptionHandlerFactory.Handlers[0];
                 var handlerTwo = SupportExceptionHandlerFactory.Handlers[1];
                 runtime.EventService.SendEventBean(new SupportBean(), "SupportBean");
 
-                Assert.AreEqual(1, handlerOne.Contexts.Count);
-                Assert.AreEqual(1, handlerTwo.Contexts.Count);
+                ClassicAssert.AreEqual(1, handlerOne.Contexts.Count);
+                ClassicAssert.AreEqual(1, handlerTwo.Contexts.Count);
                 var ehc = handlerOne.Contexts[0];
-                Assert.AreEqual(runtime.URI, ehc.RuntimeURI);
-                Assert.AreEqual(epl, ehc.Epl);
-                Assert.AreEqual(deployment.DeploymentId, ehc.DeploymentId);
-                Assert.AreEqual("ABCName", ehc.StatementName);
-                Assert.AreEqual("Sample exception", ehc.Exception.Message);
-                Assert.IsNotNull(ehc.CurrentEvent);
+                ClassicAssert.AreEqual(runtime.URI, ehc.RuntimeURI);
+                ClassicAssert.AreEqual(epl, ehc.Epl);
+                ClassicAssert.AreEqual(deployment.DeploymentId, ehc.DeploymentId);
+                ClassicAssert.AreEqual("ABCName", ehc.StatementName);
+                ClassicAssert.AreEqual("Sample exception", ehc.Exception.Message);
+                ClassicAssert.IsNotNull(ehc.CurrentEvent);
 
                 runtime.Destroy();
             }
@@ -128,7 +137,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                     nameof(ClientRuntimeExceptionHandlerNoHandler),
                     configuration);
 
-                var epl = "@Name('ABCName') select myinvalidagg() from SupportBean";
+                var epl = "@name('ABCName') select myinvalidagg() from SupportBean";
                 EPDeployment deployment;
                 try {
                     var compiled = EPCompilerProvider.Compiler.Compile(epl, new CompilerArguments(configuration));

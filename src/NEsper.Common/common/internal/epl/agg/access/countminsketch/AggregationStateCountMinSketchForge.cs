@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
-using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.approx.countminsketch;
@@ -28,16 +27,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
         {
             this.parent = parent;
             this.specification = specification;
-        }
-
-        public void InitAccessForge(
-            int col,
-            bool join,
-            CodegenCtor rowCtor,
-            CodegenMemberCol membersColumnized,
-            CodegenClassScope classScope)
-        {
-            aggregator = new AggregatorAccessCountMinSketch(this, col, rowCtor, membersColumnized, classScope);
+            aggregator = new AggregatorAccessCountMinSketch(this);
         }
 
         public AggregatorAccess Aggregator => aggregator;

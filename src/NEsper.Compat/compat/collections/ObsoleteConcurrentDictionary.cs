@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -13,9 +13,9 @@ using com.espertech.esper.compat.threading.locks;
 
 namespace com.espertech.esper.compat.collections
 {
-    public class ObsoleteConcurrentDictionary<K, V> : IDictionary<K, V>
+    public class ObsoleteConcurrentDictionary<TK, TV> : IDictionary<TK, TV>
     {
-        private readonly IDictionary<K, V> _subDictionary;
+        private readonly IDictionary<TK, TV> _subDictionary;
         private readonly IReaderWriterLock _rwLock;
         private readonly ILockable _rLock;
         private readonly ILockable _wLock;
@@ -25,7 +25,7 @@ namespace com.espertech.esper.compat.collections
         /// </summary>
         public ObsoleteConcurrentDictionary(IReaderWriterLockManager rwLockManager)
         {
-            _subDictionary = new Dictionary<K, V>();
+            _subDictionary = new Dictionary<TK, TV>();
             _rwLock = rwLockManager.CreateLock(GetType());
             _rLock = _rwLock.ReadLock;
             _wLock = _rwLock.WriteLock;
@@ -36,7 +36,7 @@ namespace com.espertech.esper.compat.collections
         /// </summary>
         /// <param name="subDictionary">The sub dictionary.</param>
         /// <param name="rwLockManager">The rw lock manager.</param>
-        public ObsoleteConcurrentDictionary(IDictionary<K, V> subDictionary, IReaderWriterLockManager rwLockManager)
+        public ObsoleteConcurrentDictionary(IDictionary<TK, TV> subDictionary, IReaderWriterLockManager rwLockManager)
         {
             _subDictionary = subDictionary;
             _rwLock = rwLockManager.CreateLock(GetType());
@@ -61,7 +61,7 @@ namespace com.espertech.esper.compat.collections
         /// <returns>
         /// A <see cref="T:System.Collections.Generic.IEnumerator`1"/> that can be used to iterate through the collection.
         /// </returns>
-        public IEnumerator<KeyValuePair<K, V>> GetEnumerator()
+        public IEnumerator<KeyValuePair<TK, TV>> GetEnumerator()
         {
             // Iteration over the dictionary causes a read lock to be acquired
             // for the duration of the life of the enumeration.  Use with care
@@ -82,11 +82,11 @@ namespace com.espertech.esper.compat.collections
         /// <exception cref="T:System.NotSupportedException">
         /// The <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only.
         /// </exception>
-        public void Add(KeyValuePair<K, V> item)
+        public void Add(KeyValuePair<TK, TV> item)
         {
             using (_wLock.Acquire()) 
             {
-                ICollection<KeyValuePair<K, V>> asCollection = _subDictionary;
+                ICollection<KeyValuePair<TK, TV>> asCollection = _subDictionary;
                 asCollection.Add(item);
             }
         }
@@ -114,7 +114,7 @@ namespace com.espertech.esper.compat.collections
         /// <param name="item">
         ///                     The object to locate in the <see cref="T:System.Collections.Generic.ICollection`1" />.
         ///                 </param>
-        public bool Contains(KeyValuePair<K, V> item)
+        public bool Contains(KeyValuePair<TK, TV> item)
         {
             using (_rLock.Acquire())
             {
@@ -127,11 +127,11 @@ namespace com.espertech.esper.compat.collections
         /// </summary>
         /// <param name="array">The one-dimensional <see cref="T:System.Array" /> that is the destination of the elements copied from <see cref="T:System.Collections.Generic.ICollection`1" />. The <see cref="T:System.Array" /> must have zero-based indexing.</param>
         /// <param name="arrayIndex">The zero-based index in <paramref name="array" /> at which copying begins.</param>
-        public void CopyTo(KeyValuePair<K, V>[] array, int arrayIndex)
+        public void CopyTo(KeyValuePair<TK, TV>[] array, int arrayIndex)
         {
             using (_rLock.Acquire())
             {
-                ICollection<KeyValuePair<K, V>> asCollection = _subDictionary;
+                ICollection<KeyValuePair<TK, TV>> asCollection = _subDictionary;
                 asCollection.CopyTo(array, arrayIndex);
             }
         }
@@ -148,7 +148,7 @@ namespace com.espertech.esper.compat.collections
         /// <exception cref="T:System.NotSupportedException">
         ///                     The <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.
         ///                 </exception>
-        public bool Remove(KeyValuePair<K, V> item)
+        public bool Remove(KeyValuePair<TK, TV> item)
         {
             using (_wLock.Acquire())
             {
@@ -189,7 +189,7 @@ namespace com.espertech.esper.compat.collections
         /// </returns>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="key"/> is null.
         /// </exception>
-        public bool ContainsKey(K key)
+        public bool ContainsKey(TK key)
         {
             using (_rLock.Acquire())
             {
@@ -210,7 +210,7 @@ namespace com.espertech.esper.compat.collections
         /// <exception cref="T:System.NotSupportedException">
         /// The <see cref="T:System.Collections.Generic.IDictionary`2"/> is read-only.
         /// </exception>
-        public void Add(K key, V value)
+        public void Add(TK key, TV value)
         {
             using (_wLock.Acquire())
             {
@@ -230,7 +230,7 @@ namespace com.espertech.esper.compat.collections
         /// <exception cref="T:System.NotSupportedException">
         /// The <see cref="T:System.Collections.Generic.IDictionary`2"/> is read-only.
         /// </exception>
-        public bool Remove(K key)
+        public bool Remove(TK key)
         {
             using (_wLock.Acquire())
             {
@@ -248,7 +248,7 @@ namespace com.espertech.esper.compat.collections
         /// </returns>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="key"/> is null.
         /// </exception>
-        public bool TryGetValue(K key, out V value)
+        public bool TryGetValue(TK key, out TV value)
         {
             using (_rLock.Acquire())
             {
@@ -271,7 +271,7 @@ namespace com.espertech.esper.compat.collections
         /// <exception cref="T:System.NotSupportedException">
         /// The property is set and the <see cref="T:System.Collections.Generic.IDictionary`2"/> is read-only.
         /// </exception>
-        public V this[K key]
+        public TV this[TK key]
         {
             get
             {
@@ -296,7 +296,7 @@ namespace com.espertech.esper.compat.collections
         /// <returns>
         /// An <see cref="T:System.Collections.Generic.ICollection`1"/> containing the keys of the object that : <see cref="T:System.Collections.Generic.IDictionary`2"/>.
         /// </returns>
-        public ICollection<K> Keys
+        public ICollection<TK> Keys
         {
             get
             {
@@ -314,7 +314,7 @@ namespace com.espertech.esper.compat.collections
         /// <returns>
         /// An <see cref="T:System.Collections.Generic.ICollection`1"/> containing the values in the object that : <see cref="T:System.Collections.Generic.IDictionary`2"/>.
         /// </returns>
-        public ICollection<V> Values
+        public ICollection<TV> Values
         {
             get
             {

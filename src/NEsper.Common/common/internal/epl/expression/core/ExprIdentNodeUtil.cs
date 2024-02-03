@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -235,10 +235,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         {
             var suggestion = GetSuggestion(ex);
             if (suggestion != null) {
-                return new ExprValidationPropertyException(ex.Message + suggestion);
+                return new ExprValidationPropertyException(ex.Message + suggestion, ex);
             }
 
-            return new ExprValidationPropertyException(ex.Message);
+            return new ExprValidationPropertyException(ex.Message, ex);
         }
 
         private static string GetSuggestion(StreamTypesException ex)

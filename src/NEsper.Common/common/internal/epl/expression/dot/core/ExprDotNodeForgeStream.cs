@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -18,12 +18,18 @@ using com.espertech.esper.common.@internal.metrics.instrumentation;
 using com.espertech.esper.common.@internal.rettype;
 using com.espertech.esper.compat;
 
+
 namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 {
     public class ExprDotNodeForgeStream : ExprDotNodeForge
     {
-        private readonly bool method;
-        private readonly ExprDotNodeImpl parent;
+        private readonly ExprDotNodeImpl _parent;
+        private readonly FilterExprAnalyzerAffector _filterExprAnalyzerAffector;
+        private readonly int _streamNumber;
+        private readonly EventType _eventType;
+        private readonly ExprDotForge[] _evaluators;
+        private readonly bool _method;
+        private readonly Type _evaluationType;
 
         public ExprDotNodeForgeStream(
             ExprDotNodeImpl parent,
@@ -33,54 +39,19 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             ExprDotForge[] evaluators,
             bool method)
         {
-            this.parent = parent;
-            FilterExprAnalyzerAffector = filterExprAnalyzerAffector;
-            StreamNumber = streamNumber;
-            EventType = eventType;
-            Evaluators = evaluators;
-            this.method = method;
+            _parent = parent;
+            _filterExprAnalyzerAffector = filterExprAnalyzerAffector;
+            _streamNumber = streamNumber;
+            _eventType = eventType;
+            _evaluators = evaluators;
+            _method = method;
+            
+            var last = evaluators[^1];
+            var lastType = last.TypeInfo;
+            var evaluationTypeUnboxed = !method ? ((EPChainableTypeClass)lastType).Clazz : lastType.GetNormalizedType();
 
-            var last = evaluators[evaluators.Length - 1];
-            if (!method) {
-                if (last.TypeInfo is ClassMultiValuedEPType) {
-                    EvaluationType = EPTypeHelper.GetClassMultiValuedContainer(last.TypeInfo).GetBoxedType();
-                }
-                else {
-                    EvaluationType = EPTypeHelper.GetClassSingleValued(last.TypeInfo).GetBoxedType();
-                }
-            }
-            else {
-                EvaluationType = EPTypeHelper.GetNormalizedClass(last.TypeInfo).GetBoxedType();
-            }
+            _evaluationType = evaluationTypeUnboxed.GetBoxedType();
         }
-
-        public override ExprEvaluator ExprEvaluator {
-            get {
-                if (!method) {
-                    return new ExprDotNodeForgeStreamEvalEventBean(this, ExprDotNodeUtility.GetEvaluators(Evaluators));
-                }
-
-                return new ExprDotNodeForgeStreamEvalMethod(this, ExprDotNodeUtility.GetEvaluators(Evaluators));
-            }
-        }
-
-        public override Type EvaluationType { get; }
-
-        public int StreamNumber { get; }
-
-        public override bool IsReturnsConstantResult => false;
-
-        public override FilterExprAnalyzerAffector FilterExprAnalyzerAffector { get; }
-
-        public override int? StreamNumReferenced => StreamNumber;
-
-        public override string RootPropertyName => null;
-
-        public override ExprNodeRenderable ExprForgeRenderable => parent;
-
-        public ExprDotForge[] Evaluators { get; }
-
-        public EventType EventType { get; }
 
         public override CodegenExpression EvaluateCodegenUninstrumented(
             Type requiredType,
@@ -88,7 +59,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            if (!method) {
+            if (!_method) {
                 return ExprDotNodeForgeStreamEvalEventBean.Codegen(
                     this,
                     codegenMethodScope,
@@ -115,6 +86,36 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                 codegenClassScope).Build();
         }
 
+        public override bool IsReturnsConstantResult => false;
+
+        public EventType EventType => _eventType;
+
         public override bool IsLocalInlinedClass => false;
+
+        public override ExprEvaluator ExprEvaluator {
+            get {
+                if (!_method) {
+                    return new ExprDotNodeForgeStreamEvalEventBean(this, ExprDotNodeUtility.GetEvaluators(_evaluators));
+                }
+
+                return new ExprDotNodeForgeStreamEvalMethod(this, ExprDotNodeUtility.GetEvaluators(_evaluators));
+            }
+        }
+
+        public override Type EvaluationType => _evaluationType;
+
+        public int StreamNumber => _streamNumber;
+
+        public override FilterExprAnalyzerAffector FilterExprAnalyzerAffector => _filterExprAnalyzerAffector;
+
+        public override int? StreamNumReferenced => _streamNumber;
+
+        public override string RootPropertyName => null;
+
+        public ExprDotNodeImpl ForgeRenderable => _parent;
+
+        public override ExprNodeRenderable ExprForgeRenderable => ForgeRenderable;
+
+        public ExprDotForge[] Evaluators => _evaluators;
     }
 } // end of namespace

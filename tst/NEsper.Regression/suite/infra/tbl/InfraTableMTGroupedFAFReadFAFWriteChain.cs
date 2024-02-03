@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -18,6 +18,7 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.infra.tbl
 {
@@ -26,7 +27,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
     /// </summary>
     public class InfraTableMTGroupedFAFReadFAFWriteChain : RegressionExecution
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
+        }
 
         /// <summary>
         ///     Tests fire-and-forget lock cleanup:
@@ -51,7 +57,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             int numInserted)
         {
             var path = new RegressionPath();
-            var epl = "create table MyTable (key int primary key, p0 int);";
+            var epl = "@public create table MyTable (key int primary key, p0 int);";
             env.CompileDeploy(epl, path);
 
             IList<BaseRunnable> runnables = new List<BaseRunnable>();
@@ -89,8 +95,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
             // assert
             foreach (var runnable in runnables) {
-                Assert.IsNull(runnable.Exception);
-                Assert.AreEqual(
+                ClassicAssert.IsNull(runnable.Exception);
+                ClassicAssert.AreEqual(
                     numInserted + 1,
                     runnable.NumberOfOperations,
                     "failed for " + runnable); // account for -1 indicator
@@ -122,16 +128,16 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
             public void Run()
             {
-                log.Info("Starting " + workName);
+                Log.Info("Starting " + workName);
                 try {
                     RunWork();
                 }
                 catch (Exception ex) {
-                    log.Error("Exception encountered: " + ex.Message, ex);
+                    Log.Error("Exception encountered: " + ex.Message, ex);
                     Exception = ex;
                 }
 
-                log.Info("Completed " + workName);
+                Log.Info("Completed " + workName);
             }
         }
 
@@ -210,8 +216,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             {
                 q.SetObject(1, id);
                 var result = env.Runtime.FireAndForgetService.ExecuteQuery(q);
-                Assert.AreEqual(1, result.Array.Length, "failed for Id " + id);
-                Assert.AreEqual(id, result.Array[0].Get("p0"));
+                ClassicAssert.AreEqual(1, result.Array.Length, "failed for Id " + id);
+                ClassicAssert.AreEqual(id, result.Array[0].Get("p0"));
                 stageOutput.Push(id);
                 numberOfOperations++;
             }

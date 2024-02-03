@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -18,7 +18,6 @@ using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.compile.stage3.StmtClassForgeableAIFactoryProviderBase;
@@ -26,8 +25,8 @@ using static com.espertech.esper.common.@internal.compile.stage3.StmtClassForgea
 namespace com.espertech.esper.common.@internal.epl.expression.core
 {
     /// <summary>
-    ///     Represents a substitution value to be substituted in an expression tree, not valid for any purpose of use
-    ///     as an expression, however can take a place in an expression tree.
+    /// Represents a substitution value to be substituted in an expression tree, not valid for any purpose of use
+    /// as an expression, however can take a place in an expression tree.
     /// </summary>
     public class ExprSubstitutionNode : ExprNodeBase,
         ExprForge,
@@ -37,52 +36,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
         public ExprSubstitutionNode(
             string optionalName,
-            ClassIdentifierWArray optionalType)
+            ClassDescriptor optionalType)
         {
             OptionalName = optionalName;
             OptionalType = optionalType;
-        }
-
-        /// <summary>
-        ///     Returns the substitution parameter name (or null if by-index).
-        /// </summary>
-        /// <returns>name</returns>
-        public string OptionalName { get; }
-
-        public override ExprForge Forge => this;
-
-        public override ExprPrecedenceEnum Precedence => ExprPrecedenceEnum.UNARY;
-
-        public ClassIdentifierWArray OptionalType { get; }
-
-        public Type ResolvedType { get; private set; } = typeof(object);
-
-        public ExprEvaluator ExprEvaluator => throw ExprNodeUtilityMake.MakeUnsupportedCompileTime();
-
-        public CodegenExpression EvaluateCodegen(
-            Type requiredType,
-            CodegenMethodScope codegenMethodScope,
-            ExprForgeCodegenSymbol exprSymbol,
-            CodegenClassScope codegenClassScope)
-        {
-            return InstanceField(Ref(MEMBERNAME_STATEMENT_FIELDS), AsField(codegenClassScope).Field);
-        }
-
-        public Type EvaluationType => ResolvedType;
-
-        public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.DEPLOYCONST;
-
-        public ExprNodeRenderable ExprForgeRenderable {
-            get {
-                return new ProxyExprNodeRenderable {
-                    ProcToEPL = (writer, _, flags) => writer.Write("?")
-                };
-            }
-        }
-
-        public CodegenExpression CodegenGetDeployTimeConstValue(CodegenClassScope classScope)
-        {
-            return InstanceField(Ref(MEMBERNAME_STATEMENT_FIELDS), AsField(classScope).Field);
         }
 
         public override ExprNode Validate(ExprValidationContext validationContext)
@@ -90,7 +47,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             if (OptionalType != null) {
                 Type clazz = null;
                 try {
-                    clazz = TypeHelper.GetClassForName(
+                    clazz = TypeHelper.GetTypeForName(
                         OptionalType.ClassIdentifier,
                         validationContext.ImportService.TypeResolver);
                 }
@@ -103,12 +60,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                         validationContext.ImportService.TypeResolver);
                 }
 
-                if (clazz != null) {
-                    ResolvedType = clazz;
-                }
-                else {
+                if (clazz == null) {
                     try {
-                        ResolvedType = validationContext.ImportService.ResolveType(
+                        clazz = validationContext.ImportService.ResolveType(
                             OptionalType.ClassIdentifier,
                             false,
                             validationContext.ClassProvidedExtension);
@@ -120,20 +74,26 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                     }
                 }
 
-                if (ResolvedType != null && OptionalType.IsArrayOfPrimitive && ResolvedType.CanBeNull()) {
-                    throw new ExprValidationException(
-                        "Invalid use of the '" +
-                        ClassIdentifierWArray.PRIMITIVE_KEYWORD +
-                        "' keyword for non-primitive type '" +
-                        ResolvedType.Name +
-                        "'");
-                }
-
                 if (!OptionalType.IsArrayOfPrimitive) {
-                    ResolvedType = ResolvedType.GetBoxedType();
+                    clazz = clazz.GetBoxedType();
+                }
+                else {
+                    if (!clazz.IsPrimitive) {
+                        throw new ExprValidationException(
+                            "Invalid use of the '" +
+                            ClassDescriptor.PRIMITIVE_KEYWORD +
+                            "' keyword for non-primitive type '" +
+                            clazz.CleanName() +
+                            "'");
+                    }
                 }
 
-                ResolvedType = TypeHelper.GetArrayType(ResolvedType, OptionalType.ArrayDimensions);
+                ResolvedType = ImportTypeUtil.ParameterizeType(
+                    true,
+                    clazz,
+                    OptionalType,
+                    validationContext.ImportService,
+                    validationContext.ClassProvidedExtension);
             }
 
             return null;
@@ -154,6 +114,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             writer.Write("?");
         }
 
+        public override ExprPrecedenceEnum Precedence => ExprPrecedenceEnum.UNARY;
+
         public override bool EqualsNode(
             ExprNode node,
             bool ignoreStreamPrefix)
@@ -161,30 +123,62 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             return node is ExprSubstitutionNode;
         }
 
-        private CodegenExpressionField AsField(CodegenClassScope classScope)
+        public CodegenExpression EvaluateCodegen(
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
         {
-            if (_field == null) {
-                _field = Field(classScope.AddSubstitutionParameter(OptionalName, ResolvedType));
-            }
-
-            return _field;
+            return InstanceField(Ref(MEMBERNAME_STATEMENT_FIELDS), AsField(codegenClassScope).Field);
         }
 
-        public void RenderForFilterPlan(StringBuilder stringBuilder)
+        public CodegenExpression CodegenGetDeployTimeConstValue(CodegenClassScope classScope)
         {
-            stringBuilder.Append("substitution parameter");
+            return InstanceField(Ref(MEMBERNAME_STATEMENT_FIELDS), AsField(classScope).Field);
+        }
+
+        public void RenderForFilterPlan(StringBuilder @out)
+        {
+            @out.Append("substitution parameter");
             if (OptionalName != null) {
-                stringBuilder
-                    .Append(" name '")
-                    .Append(OptionalName)
-                    .Append("'");
+                @out.Append(" name '").Append(OptionalName).Append("'");
             }
 
             if (OptionalType != null) {
-                stringBuilder
-                    .Append(" type '")
-                    .Append(OptionalType.ToEPL())
-                    .Append("'");
+                @out.Append(" type '").Append(OptionalType.ToEPL()).Append("'");
+            }
+        }
+
+        private CodegenExpressionField AsField(CodegenClassScope classScope)
+        {
+            _field ??= Field(classScope.AddSubstitutionParameter(OptionalName, ResolvedType));
+            return _field;
+        }
+
+        public string OptionalName { get; }
+
+        public ExprEvaluator ExprEvaluator => throw ExprNodeUtilityMake.MakeUnsupportedCompileTime();
+
+        public override ExprForge Forge => this;
+
+        public Type EvaluationType => ResolvedType;
+
+        public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.DEPLOYCONST;
+
+        public ClassDescriptor OptionalType { get; }
+
+        public Type ResolvedType { get; private set; } = typeof(object);
+
+        public ExprNodeRenderable ExprForgeRenderable {
+            get {
+                return new ProxyExprNodeRenderable() {
+                    ProcToEPL = (
+                        writer,
+                        parentPrecedence,
+                        flags) => {
+                        writer.Write("?");
+                    }
+                };
             }
         }
     }

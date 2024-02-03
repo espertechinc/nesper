@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace com.espertech.esper.compat.collections
 {
@@ -126,9 +127,9 @@ namespace com.espertech.esper.compat.collections
         /// Returns an empty IDictionary for type K,V
         /// </summary>
         /// <returns></returns>
-        public static IDictionary<K,V> GetEmptyMap<K,V>()
+        public static IDictionary<TK,TV> GetEmptyMap<TK,TV>()
         {
-            return EmptyDictionary<K, V>.Instance;
+            return EmptyDictionary<TK, TV>.Instance;
         }
 
         /// <summary>
@@ -149,6 +150,11 @@ namespace com.espertech.esper.compat.collections
         public static ISet<T> GetEmptySet<T>()
         {
             return EmptySet<T>.Instance;
+        }
+
+        public static SortedSet<T> GetEmptySortedSet<T>()
+        {
+            return new SortedSet<T>();
         }
 
         /// <summary>
@@ -374,20 +380,6 @@ namespace com.espertech.esper.compat.collections
             return enumerable.Aggregate(0, (current, temp) => current ^ (temp != null ? temp.GetHashCode() : 0));
         }
 
-#if false
-        public static int GetHashCode( Array a )
-        {
-            int hashCode = 0;
-            for( int ii = a.Length - 1 ; ii >= 0 ; ii-- ) {
-                Object temp = a.GetValue(ii);
-                int tempHash = temp != null ? temp.GetHashCode() : 0;
-                hashCode = 31*hashCode + tempHash;
-            }
-
-            return hashCode;
-        }
-#endif
-
         public static IDictionary<string, object> SingletonDataMap(string key, object value)
         {
             return SingletonMap(key, value);
@@ -451,6 +443,16 @@ namespace com.espertech.esper.compat.collections
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// Returns a collection type with the given collection type.
+        /// </summary>
+        /// <param name="collectionType"></param>
+        /// <returns></returns>
+        public static Type CollectionOf(Type collectionType)
+        {
+            return typeof(ICollection<>).MakeGenericType(collectionType);
         }
     }
 }

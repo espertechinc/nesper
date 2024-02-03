@@ -1,16 +1,13 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.regressionlib.framework;
-
-using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.rowrecog
 {
@@ -18,8 +15,8 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
     {
         public void Run(RegressionEnvironment env)
         {
-            var fields = new [] { "c0", "c1" };
-            var epl = "@Name('s0') select * from SupportBean match_recognize (" +
+            var fields = new[] { "c0", "c1" };
+            var epl = "@name('s0') select * from SupportBean match_recognize (" +
                       "partition by TheString " +
                       "measures A.TheString as c0, C.IntPrimitive as c1 " +
                       "pattern (A B+ C) " +
@@ -32,7 +29,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             SendEvent(env, "E1", 10, 0);
             SendEvent(env, "E1", 11, 50);
             SendEvent(env, "E1", 12, 11);
-            Assert.IsFalse(env.Listener("s0").IsInvoked);
+            env.AssertListenerNotInvoked("s0");
 
             env.Milestone(0);
 
@@ -42,10 +39,10 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             env.Milestone(1);
 
             SendEvent(env, "E2", 12, 12);
-            EPAssertionUtil.AssertProps(
-                env.Listener("s0").AssertOneGetNewAndReset(),
+            env.AssertPropsNew(
+                "s0",
                 fields,
-                new object[] {"E2", 12});
+                new object[] { "E2", 12 });
 
             env.UndeployAll();
         }

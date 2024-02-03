@@ -24,7 +24,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
 
         public ReformatToDateTimeForge(TimeAbacus timeAbacus)
         {
-            this._timeAbacus = timeAbacus;
+            _timeAbacus = timeAbacus;
         }
 
         public ReformatOp Op => this;
@@ -49,8 +49,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             var timeZoneField = codegenClassScope.AddOrGetDefaultFieldSharable(RuntimeSettingsTimeZoneField.INSTANCE);
             var methodNode = codegenMethodScope
                 .MakeChild(typeof(DateTime), typeof(ReformatToDateTimeForge), codegenClassScope)
-                .AddParam(typeof(long), "ts");
-                
+                .AddParam<long>("ts");
+
             methodNode
                 .Block
                 .DeclareVar<DateTimeEx>("dtx", StaticMethod(typeof(DateTimeEx), "GetInstance", timeZoneField))
@@ -61,7 +61,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
                             Ref("dtx"),
                             "DateTime"),
                         "DateTime"));
-            
+
             return LocalMethod(methodNode, inner);
         }
 
@@ -82,7 +82,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
         {
             var method = codegenMethodScope
                 .MakeChild(typeof(DateTime), typeof(ReformatToDateTimeForge), codegenClassScope)
-                .AddParam(typeof(DateTimeOffset), "input")
+                .AddParam<DateTimeOffset>("input")
                 .Block
                 .MethodReturn(
                     GetProperty(
@@ -99,7 +99,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
         {
             var method = codegenMethodScope
                 .MakeChild(typeof(DateTime), typeof(ReformatToDateTimeForge), codegenClassScope)
-                .AddParam(typeof(DateTimeEx), "input")
+                .AddParam<DateTimeEx>("input")
                 .Block
                 .MethodReturn(
                     GetProperty(
@@ -116,7 +116,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             bool newData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            return DateTimeHelper.UtcFromMillis(ts);
+            return ts.UtcFromMillis();
         }
 
         public object Evaluate(

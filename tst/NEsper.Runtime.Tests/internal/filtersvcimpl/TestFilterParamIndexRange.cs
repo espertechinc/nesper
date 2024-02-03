@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -18,6 +18,7 @@ using com.espertech.esper.compat.threading.locks;
 using com.espertech.esper.runtime.@internal.support;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 {
@@ -64,11 +65,11 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             VerifyLongPrimitive(index, 11, 1);
 
             index.Put(testRange, testEvaluator);
-            Assert.AreEqual(testEvaluator, index.Get(testRange));
-            Assert.IsTrue(index.ReadWriteLock != null);
+            ClassicAssert.AreEqual(testEvaluator, index.Get(testRange));
+            ClassicAssert.IsTrue(index.ReadWriteLock != null);
             index.Remove(testRange);
             index.Remove(testRange);
-            Assert.AreEqual(null, index.Get(testRange));
+            ClassicAssert.AreEqual(null, index.Get(testRange));
             Assert.That(() => index.Put("a", testEvaluator), Throws.ArgumentException);
         }
 
@@ -232,14 +233,14 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
         {
             testBean.DoublePrimitive = testValue;
             index.MatchEvent(testEventBean, matchesList, null);
-            Assert.AreEqual(numExpected, testEvaluator.GetAndResetCountInvoked());
+            ClassicAssert.AreEqual(numExpected, testEvaluator.GetAndResetCountInvoked());
         }
 
         private void VerifyLongPrimitive(FilterParamIndexBase index, long testValue, int numExpected)
         {
             testBean.LongPrimitive = testValue;
             index.MatchEvent(testEventBean, matchesList, null);
-            Assert.AreEqual(numExpected, testEvaluator.GetAndResetCountInvoked());
+            ClassicAssert.AreEqual(numExpected, testEvaluator.GetAndResetCountInvoked());
         }
 
         private void AddToIndex(FilterParamIndexDoubleRange index, double min, double max)

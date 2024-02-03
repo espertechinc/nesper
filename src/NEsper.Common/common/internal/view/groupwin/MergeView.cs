@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.@internal.view.groupwin
         public override IEnumerator<EventBean> GetEnumerator()
         {
             // The merge data view has multiple parent views which are AddPropertyValueView
-            ArrayDeque<IEnumerable<EventBean>> iterables = new ArrayDeque<IEnumerable<EventBean>>();
+            var iterables = new ArrayDeque<IEnumerable<EventBean>>();
 
             foreach (var dataView in parentViews) {
                 iterables.Add(dataView);

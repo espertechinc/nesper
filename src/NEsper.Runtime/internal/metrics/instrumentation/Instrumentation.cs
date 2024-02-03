@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -52,14 +52,6 @@ namespace com.espertech.esper.runtime.@internal.metrics.instrumentation
 	    void QExprEquals(string text);
 
 	    void AExprEquals(Boolean result);
-
-	    void QOutputProcessNonBuffered(EventBean[] newData, EventBean[] oldData);
-
-	    void AOutputProcessNonBuffered();
-
-	    void QOutputProcessNonBufferedJoin(ISet<MultiKeyArrayOfKeys<EventBean>> newEvents, ISet<MultiKeyArrayOfKeys<EventBean>> oldEvents);
-
-	    void AOutputProcessNonBufferedJoin();
 
 	    void QSelectClause(EventBean[] eventsPerStream, bool newData, bool synthesize, ExprEvaluatorContext exprEvaluatorContext);
 
@@ -181,7 +173,7 @@ namespace com.espertech.esper.runtime.@internal.metrics.instrumentation
 
 	    void AExprPlugInSingleRow(object result);
 
-	    void QExprDotChain(EPType targetTypeInfo, object target, int numUnpacking);
+	    void QExprDotChain(EPChainableType targetTypeInfo, object target, int numUnpacking);
 
 	    void AExprDotChain();
 
@@ -195,7 +187,7 @@ namespace com.espertech.esper.runtime.@internal.metrics.instrumentation
 
 	    void QExprDotChainElement(int num, string methodType, string methodName);
 
-	    void AExprDotChainElement(EPType typeInfo, object result);
+	    void AExprDotChainElement(EPChainableType typeInfo, object result);
 
 	    void QExprPrev(string text, bool newData);
 
@@ -328,6 +320,10 @@ namespace com.espertech.esper.runtime.@internal.metrics.instrumentation
 	    void QExprTableTop(string text, string tableName);
 
 	    void AExprTableTop(object result);
+	    
+	    void QRuntimeManagementDeploy(string runtimeURI, string deploymentId, int size);
+	    
+	    void ARuntimeManagementDeploy(string runtimeURI);
 
 	    void QaEngineManagementStmtStarted(string runtimeURI, string deploymentId, int statementId, string statementName, string epl, long runtimeTime);
 

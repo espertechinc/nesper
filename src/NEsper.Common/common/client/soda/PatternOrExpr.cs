@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -12,7 +12,6 @@ using System.IO;
 namespace com.espertech.esper.common.client.soda
 {
     /// <summary>Logical OR for use in pattern expressions. </summary>
-    [Serializable]
     public class PatternOrExpr : PatternExprBase
     {
         /// <summary>Ctor - for use to create a pattern expression tree, without pattern child expression. </summary>
@@ -31,8 +30,7 @@ namespace com.espertech.esper.common.client.soda
         {
             AddChild(first);
             AddChild(second);
-            for (int i = 0; i < patternExprs.Length; i++)
-            {
+            for (var i = 0; i < patternExprs.Length; i++) {
                 AddChild(patternExprs[i]);
             }
         }
@@ -46,18 +44,14 @@ namespace com.espertech.esper.common.client.soda
             return this;
         }
 
-        public override PatternExprPrecedenceEnum Precedence
-        {
-            get { return PatternExprPrecedenceEnum.OR; }
-        }
+        public override PatternExprPrecedenceEnum Precedence => PatternExprPrecedenceEnum.OR;
 
         public override void ToPrecedenceFreeEPL(
             TextWriter writer,
             EPStatementFormatter formatter)
         {
-            string delimiter = "";
-            foreach (PatternExpr child in Children)
-            {
+            var delimiter = "";
+            foreach (var child in Children) {
                 writer.Write(delimiter);
                 child.ToEPL(writer, Precedence, formatter);
                 delimiter = " or ";

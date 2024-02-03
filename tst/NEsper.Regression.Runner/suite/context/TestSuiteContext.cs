@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -45,7 +45,9 @@ namespace com.espertech.esper.regressionrun.suite.context
                      }) {
                 configuration.Common.AddEventType(clazz.Name, clazz);
             }
-
+            
+            configuration.Common.EventMeta.AvroSettings.IsEnableAvro = true;
+            
             configuration.Common.AddEventType(typeof(ContextDocExamples.BankTxn));
             configuration.Common.AddEventType(typeof(ContextDocExamples.LoginEvent));
             configuration.Common.AddEventType(typeof(ContextDocExamples.LogoutEvent));
@@ -103,7 +105,7 @@ namespace com.espertech.esper.regressionrun.suite.context
                 SupportDatabaseService.DefaultProperties);
             configuration.Common.AddDatabaseReference("MyDB", configDB);
 
-            configuration.Compiler.ByteCode.AllowSubscriber = true;
+            configuration.Compiler.ByteCode.IsAllowSubscriber =true;
             configuration.Compiler.AddPlugInVirtualDataWindow(
                 "test",
                 "vdw",

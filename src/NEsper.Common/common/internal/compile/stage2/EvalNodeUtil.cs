@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 evalNodeAnalysisResult.AddNode(currentNode);
             }
 
-            foreach (EvalForgeNode node in currentNode.ChildNodes) {
+            foreach (var node in currentNode.ChildNodes) {
                 RecursiveAnalyzeChildNodes(evalNodeAnalysisResult, node);
             }
         }
@@ -97,7 +97,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             EvalRootFactoryNode rootFactoryNode,
             PatternAgentInstanceContext patternAgentInstanceContext)
         {
-            return (EvalRootNode) rootFactoryNode.MakeEvalNode(patternAgentInstanceContext, null);
+            return (EvalRootNode)rootFactoryNode.MakeEvalNode(patternAgentInstanceContext, null);
         }
 
         public static EvalNode[] MakeEvalNodeChildren(

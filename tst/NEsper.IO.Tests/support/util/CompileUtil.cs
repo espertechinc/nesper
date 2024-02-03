@@ -1,5 +1,5 @@
 ﻿///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -13,6 +13,7 @@ using com.espertech.esper.compiler.client;
 using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esperio.support.util
 {
@@ -46,7 +47,7 @@ namespace com.espertech.esperio.support.util
             }
             catch (EPCompileException ex) {
                 if (!ex.Message.StartsWith(expected)) {
-                    Assert.AreEqual(expected, ex.Message);
+                    ClassicAssert.AreEqual(expected, ex.Message);
                 }
             }
         }

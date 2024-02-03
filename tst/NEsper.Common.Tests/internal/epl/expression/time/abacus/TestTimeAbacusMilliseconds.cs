@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.epl.expression.time.abacus
 {
@@ -18,23 +19,23 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.abacus
         [Test]
         public void TestDeltaFor()
         {
-            Assert.AreEqual(0, abacus.DeltaForSecondsNumber(0));
-            Assert.AreEqual(1000, abacus.DeltaForSecondsNumber(1));
-            Assert.AreEqual(5000, abacus.DeltaForSecondsNumber(5));
-            Assert.AreEqual(123, abacus.DeltaForSecondsNumber(0.123));
-            Assert.AreEqual(1, abacus.DeltaForSecondsNumber(0.001));
-            Assert.AreEqual(10, abacus.DeltaForSecondsNumber(0.01));
+            ClassicAssert.AreEqual(0, abacus.DeltaForSecondsNumber(0));
+            ClassicAssert.AreEqual(1000, abacus.DeltaForSecondsNumber(1));
+            ClassicAssert.AreEqual(5000, abacus.DeltaForSecondsNumber(5));
+            ClassicAssert.AreEqual(123, abacus.DeltaForSecondsNumber(0.123));
+            ClassicAssert.AreEqual(1, abacus.DeltaForSecondsNumber(0.001));
+            ClassicAssert.AreEqual(10, abacus.DeltaForSecondsNumber(0.01));
 
-            Assert.AreEqual(0, abacus.DeltaForSecondsNumber(0.0001));
-            Assert.AreEqual(1, abacus.DeltaForSecondsNumber(0.000999999));
-            Assert.AreEqual(5000, abacus.DeltaForSecondsNumber(5.0001));
-            Assert.AreEqual(5001, abacus.DeltaForSecondsNumber(5.000999999));
+            ClassicAssert.AreEqual(0, abacus.DeltaForSecondsNumber(0.0001));
+            ClassicAssert.AreEqual(1, abacus.DeltaForSecondsNumber(0.000999999));
+            ClassicAssert.AreEqual(5000, abacus.DeltaForSecondsNumber(5.0001));
+            ClassicAssert.AreEqual(5001, abacus.DeltaForSecondsNumber(5.000999999));
 
             for (int i = 1; i < 1000; i++)
             {
                 double d = ((double) i) / 1000;
-                Assert.AreEqual((long) i, abacus.DeltaForSecondsNumber(d));
-                Assert.AreEqual((long) i, abacus.DeltaForSecondsDouble(d));
+                ClassicAssert.AreEqual((long) i, abacus.DeltaForSecondsNumber(d));
+                ClassicAssert.AreEqual((long) i, abacus.DeltaForSecondsDouble(d));
             }
         }
     }

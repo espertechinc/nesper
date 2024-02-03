@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -28,16 +28,15 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
     public class ExprDotForgeUnpackCollEventBeanTable : ExprDotForge,
         ExprDotEval
     {
-        private readonly EPType typeInfo;
+        private readonly EPChainableType typeInfo;
         private readonly TableMetaData table;
 
         public ExprDotForgeUnpackCollEventBeanTable(
             EventType type,
             TableMetaData table)
         {
-            this.typeInfo = EPTypeHelper.CollectionOfSingleValue(
-                table.PublicEventType.UnderlyingType,
-                null);
+            typeInfo = EPChainableTypeHelper.CollectionOfSingleValue(
+                table.PublicEventType.UnderlyingType);
             this.table = table;
         }
 
@@ -58,8 +57,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             CodegenClassScope classScope)
         {
             var eventToPublic =
-                TableDeployTimeResolver.MakeTableEventToPublicField(table, classScope, this.GetType());
-            var refEPS = symbols.GetAddEPS(parent);
+                TableDeployTimeResolver.MakeTableEventToPublicField(table, classScope, GetType());
+            var refEPS = symbols.GetAddEps(parent);
             var refIsNewData = symbols.GetAddIsNewData(parent);
             var refExprEvalCtx = symbols.GetAddExprEvalCtx(parent);
             return StaticMethod(
@@ -92,7 +91,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                 return null;
             }
 
-            var events = ((FlexCollection) target).EventBeanCollection;
+            var events = target.Unwrap<EventBean>();
             var underlyings = new ArrayDeque<object[]>(events.Count);
             foreach (var @event in events) {
                 underlyings.Add(eventToPublic.ConvertToUnd(@event, eventsPerStream, isNewData, exprEvaluatorContext));
@@ -101,21 +100,15 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             return underlyings;
         }
 
-        public EPType TypeInfo {
-            get => typeInfo;
-        }
+        public EPChainableType TypeInfo => typeInfo;
 
         public void Visit(ExprDotEvalVisitor visitor)
         {
             visitor.VisitUnderlyingEventColl();
         }
 
-        public ExprDotEval DotEvaluator {
-            get => this;
-        }
+        public ExprDotEval DotEvaluator => this;
 
-        public ExprDotForge DotForge {
-            get => this;
-        }
+        public ExprDotForge DotForge => this;
     }
 } // end of namespace

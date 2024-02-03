@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -24,7 +24,8 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
 namespace com.espertech.esper.common.@internal.epl.expression.etc
 {
-    public class ExprEvalEnumerationAtBeanCollTable : ExprForge, SelectExprProcessorTypableForge
+    public class ExprEvalEnumerationAtBeanCollTable : ExprForge,
+        SelectExprProcessorTypableForge
     {
         private readonly ExprEnumerationForge _enumerationForge;
         private readonly TableMetaData _table;
@@ -33,8 +34,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             ExprEnumerationForge enumerationForge,
             TableMetaData table)
         {
-            this._enumerationForge = enumerationForge;
-            this._table = table;
+            _enumerationForge = enumerationForge;
+            _table = table;
         }
 
         public ExprEvaluator ExprEvaluator {
@@ -45,14 +46,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
                         isNewData,
                         context) => {
                         throw ExprNodeUtilityMake.MakeUnsupportedCompileTime();
-                    },
+                    }
                 };
             }
         }
 
-        public ExprForgeConstantType ForgeConstantType {
-            get => ExprForgeConstantType.NONCONST;
-        }
+        public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
 
         public CodegenExpression EvaluateCodegen(
             Type requiredType,
@@ -61,13 +60,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             CodegenClassScope codegenClassScope)
         {
             var eventToPublic =
-                TableDeployTimeResolver.MakeTableEventToPublicField(_table, codegenClassScope, this.GetType());
+                TableDeployTimeResolver.MakeTableEventToPublicField(_table, codegenClassScope, GetType());
             var methodNode = codegenMethodScope.MakeChild(
                 typeof(EventBean[]),
-                this.GetType(),
+                GetType(),
                 codegenClassScope);
 
-            var refEPS = exprSymbol.GetAddEPS(methodNode);
+            var refEPS = exprSymbol.GetAddEps(methodNode);
             var refIsNewData = exprSymbol.GetAddIsNewData(methodNode);
             var refExprEvalCtx = exprSymbol.GetAddExprEvalCtx(methodNode);
 
@@ -88,17 +87,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             return LocalMethod(methodNode);
         }
 
-        public Type EvaluationType {
-            get => typeof(EventBean[]);
-        }
+        public Type EvaluationType => typeof(EventBean[]);
 
-        public Type UnderlyingEvaluationType {
-            get => TypeHelper.GetArrayType(_table.PublicEventType.UnderlyingType);
-        }
+        public Type UnderlyingEvaluationType => TypeHelper.GetArrayType(_table.PublicEventType.UnderlyingType);
 
-        public ExprNodeRenderable ExprForgeRenderable {
-            get => _enumerationForge.EnumForgeRenderable;
-        }
+        public ExprNodeRenderable ExprForgeRenderable => _enumerationForge.EnumForgeRenderable;
 
         public static EventBean[] ConvertToTableTypeImpl(
             ICollection<EventBean> eventBeanCollection,
@@ -139,7 +132,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
                     eventsPerStream,
                     isNewData,
                     exprEvaluatorContext);
-            } else if (result is ICollection<EventBean> eventsDowncast) {
+            }
+            else if (result is ICollection<EventBean> eventsDowncast) {
                 return ConvertToTableTypeImpl(
                     eventsDowncast,
                     eventToPublic,
@@ -148,7 +142,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
                     exprEvaluatorContext);
             }
 
-            var events = (EventBean[]) result;
+            var events = (EventBean[])result;
             for (var i = 0; i < events.Length; i++) {
                 events[i] = eventToPublic.Convert(events[i], eventsPerStream, isNewData, exprEvaluatorContext);
             }

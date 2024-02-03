@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -18,6 +18,7 @@ using com.espertech.esper.regressionlib.support.multithread;
 using com.espertech.esper.regressionlib.support.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.multithread
 {
@@ -26,6 +27,11 @@ namespace com.espertech.esper.regressionlib.suite.multithread
     /// </summary>
     public class MultithreadStmtListenerRoute : RegressionExecution
     {
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
+        }
+
         public void Run(RegressionEnvironment env)
         {
             TryListener(env, 4, 500);
@@ -36,8 +42,8 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             int numThreads,
             int numRoutes)
         {
-            env.CompileDeploy("@Name('trigger') select * from SupportBean");
-            env.CompileDeploy("@Name('s0') select * from SupportMarketDataBean");
+            env.CompileDeploy("@name('trigger') select * from SupportBean");
+            env.CompileDeploy("@name('s0') select * from SupportMarketDataBean");
             var listener = new SupportMTUpdateListener();
             env.Statement("s0").AddListener(listener);
 
@@ -63,8 +69,8 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             SupportCompileDeployUtil.AssertFutures(future);
 
             // assert
-            var results = listener.GetNewDataListFlattened();
-            Assert.IsTrue(results.Length >= numThreads * numRoutes);
+            var results = listener.NewDataListFlattened;
+            ClassicAssert.IsTrue(results.Length >= numThreads * numRoutes);
 
             foreach (var routedEvent in routed) {
                 var found = false;
@@ -74,7 +80,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                     }
                 }
 
-                Assert.IsTrue(found);
+                ClassicAssert.IsTrue(found);
             }
 
             env.UndeployAll();

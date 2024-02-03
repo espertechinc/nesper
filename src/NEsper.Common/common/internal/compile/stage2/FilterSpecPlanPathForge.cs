@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -20,7 +20,8 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 {
     public class FilterSpecPlanPathForge
     {
-        public FilterSpecPlanPathForge(FilterSpecPlanPathTripletForge[] triplets,
+        public FilterSpecPlanPathForge(
+            FilterSpecPlanPathTripletForge[] triplets,
             ExprNode pathNegate)
         {
             Triplets = triplets;
@@ -58,8 +59,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(FilterSpecPlanPath), typeof(FilterSpecParamForge), classScope);
-            method.Block.DeclareVar(
-                typeof(FilterSpecPlanPathTriplet[]),
+            method.Block.DeclareVar<FilterSpecPlanPathTriplet[]>(
                 "triplets",
                 NewArrayByLength(typeof(FilterSpecPlanPathTriplet), Constant(Triplets.Length)));
             for (var i = 0; i < Triplets.Length; i++) {
@@ -86,7 +86,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 .Append(Triplets.Length)
                 .Append(" triplets")
                 .Append(FilterSpecCompiler.NEWLINE);
-            
+
             if (PathNegate != null) {
                 stringBuilder
                     .Append("    -path-negate-expression: ")

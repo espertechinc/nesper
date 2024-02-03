@@ -1,11 +1,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -27,9 +28,15 @@ namespace com.espertech.esper.common.@internal.filterspec
     public abstract class FilterSpecParam
     {
         public static readonly CodegenExpressionRef REF_MATCHEDEVENTMAP = new CodegenExpressionRef("matchedEvents");
-        public static readonly CodegenExpressionRef REF_STMTCTXFILTEREVALENV = new CodegenExpressionRef("stmtCtxFilterEnv");
-        public static readonly CodegenExpressionRef REF_LOOKUPABLE = new CodegenExpressionRef("lookupable"); // see name below
-        public static readonly CodegenExpressionRef REF_FILTEROPERATOR = new CodegenExpressionRef("filterOperator"); // see name below
+
+        public static readonly CodegenExpressionRef REF_STMTCTXFILTEREVALENV =
+            new CodegenExpressionRef("stmtCtxFilterEnv");
+
+        public static readonly CodegenExpressionRef
+            REF_LOOKUPABLE = new CodegenExpressionRef("lookupable"); // see name below
+
+        public static readonly CodegenExpressionRef
+            REF_FILTEROPERATOR = new CodegenExpressionRef("filterOperator"); // see name below
 
         public static readonly IList<CodegenNamedParam> GET_FILTER_VALUE_FP = CodegenNamedParam.From(
             typeof(MatchedEventMap),
@@ -45,8 +52,8 @@ namespace com.espertech.esper.common.@internal.filterspec
             REF_STMTCTXFILTEREVALENV
         };
 
-        public static readonly FilterSpecParam[] EMPTY_PARAM_ARRAY = new FilterSpecParam[0];
-        public static readonly FilterValueSetParam[] EMPTY_VALUE_ARRAY = new FilterValueSetParam[0];
+        public static readonly FilterSpecParam[] EMPTY_PARAM_ARRAY = Array.Empty<FilterSpecParam>();
+        public static readonly FilterValueSetParam[] EMPTY_VALUE_ARRAY = Array.Empty<FilterValueSetParam>();
 
         internal readonly ExprFilterSpecLookupable lkupable;
 
@@ -54,7 +61,7 @@ namespace com.espertech.esper.common.@internal.filterspec
             ExprFilterSpecLookupable lookupable,
             FilterOperator filterOperator)
         {
-            this.lkupable = lookupable;
+            lkupable = lookupable;
             FilterOperator = filterOperator;
         }
 

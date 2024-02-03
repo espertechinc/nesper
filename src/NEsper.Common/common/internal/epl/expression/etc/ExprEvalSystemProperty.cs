@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
 
         public ExprEvalSystemProperty(string systemPropertyName)
         {
-            this._systemPropertyName = systemPropertyName;
+            _systemPropertyName = systemPropertyName;
         }
 
         public override ExprForge Forge => this;
@@ -99,7 +99,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
                 return false;
             }
 
-            var that = (ExprEvalSystemProperty) other;
+            var that = (ExprEvalSystemProperty)other;
 
             return _systemPropertyName.Equals(that._systemPropertyName);
         }

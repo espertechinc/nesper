@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -9,7 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-
+using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
@@ -234,10 +234,12 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             return new CodegenExpressionDefault();
         }
 
-        public static CodegenExpression MapOfConstant(IDictionary<string, object> constants) {
+        public static CodegenExpression MapOfConstant(IDictionary<string, object> constants)
+        {
             if (constants == null) {
                 return ConstantNull();
             }
+
             var expressions = new CodegenExpression[constants.Count * 2];
             var count = 0;
             foreach (var entry in constants) {
@@ -245,6 +247,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
                 expressions[count + 1] = Constant(entry.Value);
                 count += 2;
             }
+
             return StaticMethod(typeof(CollectionUtil), "BuildMap", expressions);
         }
 
@@ -252,26 +255,6 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
         {
             return new CodegenExpressionField(field);
         }
-
-#if DEPRECATED
-        public static CodegenExpressionNewAnonymousClass NewAnonymousClass(
-            CodegenBlock parentBlock,
-            Type interfaceOrSuperClass,
-            IList<CodegenExpression> ctorParams)
-        {
-            return new CodegenExpressionNewAnonymousClass(parentBlock, interfaceOrSuperClass, ctorParams);
-        }
-
-        public static CodegenExpressionNewAnonymousClass NewAnonymousClass(
-            CodegenBlock parentBlock,
-            Type interfaceOrSuperClass)
-        {
-            return new CodegenExpressionNewAnonymousClass(
-                parentBlock,
-                interfaceOrSuperClass,
-                Collections.GetEmptyList<CodegenExpression>());
-        }
-#endif
 
         public static CodegenExpression Noop()
         {
@@ -436,34 +419,21 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             return new CodegenExpressionStaticMethod(clazz, method, @params);
         }
 
-        public static CodegenExpression FlexCast(Type expectedType, CodegenExpression expression)
+        public static CodegenExpression FlexCast(
+            Type expectedType,
+            CodegenExpression expression)
         {
-            return expectedType == typeof(FlexCollection) 
-                ? FlexWrap(expression)
-                : Cast(expectedType, expression);
+            throw new NotSupportedException("use of obsolete code");
+            //return expectedType == typeof(FlexCollection)
+            //    ? FlexWrap(expression)
+            //    : Cast(expectedType, expression);
         }
 
         public static CodegenExpression FlexWrap(
             CodegenExpression expression)
         {
-            return StaticMethod(typeof(FlexCollection), "Of", expression);
-        }
-
-        public static CodegenExpression FlexEvent(
-            CodegenExpression expression)
-        {
-            return StaticMethod(typeof(FlexCollection), "OfEvent", expression);
-        }
-
-        public static CodegenExpression FlexValue(
-            CodegenExpression expression)
-        {
-            return StaticMethod(typeof(FlexCollection), "OfObject", expression);
-        }
-
-        public static CodegenExpression FlexEmpty()
-        {
-            return EnumValue(typeof(FlexCollection), "Empty");
+            throw new NotSupportedException("use of obsolete code");
+            //return StaticMethod(typeof(FlexCollection), "Of", expression);
         }
 
         public static CodegenExpression Unwrap<T>(
@@ -471,7 +441,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
         {
             return Unwrap(typeof(T), expression);
         }
-        
+
         public static CodegenExpression Unwrap(
             Type elementType,
             CodegenExpression expression)
@@ -479,17 +449,27 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             return StaticMethod(
                 typeof(CompatExtensions),
                 "Unwrap",
-                new[] {elementType},
+                new[] { elementType },
                 expression,
                 ConstantTrue());
         }
 
-        
-        public static CodegenExpression ClassMethod(
-            string method,
-            params CodegenExpression[] @params)
+        public static CodegenExpression UnwrapIntoArray<T>(
+            CodegenExpression expression)
         {
-            return new CodegenExpressionClassMethod(method, @params);
+            return UnwrapIntoArray(typeof(T), expression);
+        }
+
+        public static CodegenExpression UnwrapIntoArray(
+            Type elementType,
+            CodegenExpression expression)
+        {
+            return StaticMethod(
+                typeof(CompatExtensions),
+                "UnwrapIntoArray",
+                new[] { elementType },
+                expression,
+                ConstantTrue());
         }
 
         public static CodegenExpression Clazz(Type clazz)
@@ -526,6 +506,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             Type clazz,
             params CodegenExpression[] @params)
         {
+            if (clazz.IsInterface) {
+                throw new ArgumentException($"invalid attempt to instantiate interface {clazz.CleanName()}", nameof(clazz));
+            }
             return new CodegenExpressionNewInstance(clazz, @params);
         }
 

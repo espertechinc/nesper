@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -18,10 +18,10 @@ namespace com.espertech.esper.common.@internal.settings
         public static ValueAndFieldDesc ResolveIdentAsEnumConst(
             string constant,
             ImportServiceCompileTime importService,
-            ExtensionClass classpathExtension, 
+            ExtensionClass classpathExtension,
             bool isAnnotation)
         {
-            EnumValue enumValue = ResolveIdentAsEnum(constant, importService, classpathExtension, isAnnotation);
+            var enumValue = ResolveIdentAsEnum(constant, importService, classpathExtension, isAnnotation);
             if (enumValue == null) {
                 return null;
             }

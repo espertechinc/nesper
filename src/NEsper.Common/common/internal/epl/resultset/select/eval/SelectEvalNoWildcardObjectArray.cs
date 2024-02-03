@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -9,6 +9,7 @@
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.common.@internal.bytecodemodel.util;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.resultset.select.core;
 
@@ -37,31 +38,35 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenMethod methodNode = codegenMethodScope.MakeChild(
+            var method = codegenMethodScope.MakeChild(
                 typeof(EventBean),
-                this.GetType(),
+                GetType(),
                 codegenClassScope);
-            CodegenBlock block = methodNode.Block
+            method.Block
                 .DeclareVar<object[]>(
                     "props",
-                    NewArrayByLength(typeof(object), Constant(this.context.ExprForges.Length)));
-            for (int i = 0; i < this.context.ExprForges.Length; i++) {
-                CodegenExpression expression = CodegenLegoMayVoid.ExpressionMayVoid(
-                    typeof(object),
-                    this.context.ExprForges[i],
-                    methodNode,
-                    exprSymbol,
-                    codegenClassScope);
-                block.AssignArrayElement("props", Constant(i), expression);
-            }
+                    NewArrayByLength(typeof(object), Constant(context.ExprForges.Length)));
+            new CodegenRepetitiveLengthBuilder(context.ExprForges.Length, method, codegenClassScope, GetType())
+                .AddParam<object[]>("props")
+                .SetConsumer(
+                    (
+                        index,
+                        leaf) => {
+                        var expression = CodegenLegoMayVoid.ExpressionMayVoid(
+                            typeof(object),
+                            context.ExprForges[index],
+                            leaf,
+                            exprSymbol,
+                            codegenClassScope);
+                        leaf.Block.AssignArrayElement("props", Constant(index), expression);
+                    })
+                .Build();
 
-            block.MethodReturn(
+            method.Block.MethodReturn(
                 ExprDotMethod(eventBeanFactory, "AdapterForTypedObjectArray", Ref("props"), resultEventType));
-            return methodNode;
+            return method;
         }
 
-        public EventType ResultEventType {
-            get => resultEventType;
-        }
+        public EventType ResultEventType => resultEventType;
     }
 } // end of namespace

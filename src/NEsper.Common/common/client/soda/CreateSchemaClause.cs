@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -15,7 +15,6 @@ using com.espertech.esper.compat.collections;
 namespace com.espertech.esper.common.client.soda
 {
     /// <summary>Represents a create-schema syntax for creating a new event type. </summary>
-    [Serializable]
     public class CreateSchemaClause
     {
         /// <summary>Ctor. </summary>
@@ -121,22 +120,18 @@ namespace com.espertech.esper.common.client.soda
             writer.Write(" schema ");
             writer.Write(SchemaName);
             writer.Write(" as ");
-            if ((Types != null) && (Types.IsNotEmpty()))
-            {
-                string delimiter = "";
-                foreach (string type in Types)
-                {
+            if (Types != null && Types.IsNotEmpty()) {
+                var delimiter = "";
+                foreach (var type in Types) {
                     writer.Write(delimiter);
                     writer.Write(type);
                     delimiter = ", ";
                 }
             }
-            else
-            {
+            else {
                 writer.Write("(");
-                string delimiter = "";
-                foreach (SchemaColumnDesc col in Columns)
-                {
+                var delimiter = "";
+                foreach (var col in Columns) {
                     writer.Write(delimiter);
                     col.ToEPL(writer);
                     delimiter = ", ";
@@ -145,36 +140,30 @@ namespace com.espertech.esper.common.client.soda
                 writer.Write(")");
             }
 
-            if ((Inherits != null) && (Inherits.IsNotEmpty()))
-            {
+            if (Inherits != null && Inherits.IsNotEmpty()) {
                 writer.Write(" inherits ");
-                string delimiter = "";
-                foreach (string name in Inherits)
-                {
+                var delimiter = "";
+                foreach (var name in Inherits) {
                     writer.Write(delimiter);
                     writer.Write(name);
                     delimiter = ", ";
                 }
             }
 
-            if (StartTimestampPropertyName != null)
-            {
+            if (StartTimestampPropertyName != null) {
                 writer.Write(" starttimestamp ");
                 writer.Write(StartTimestampPropertyName);
             }
 
-            if (EndTimestampPropertyName != null)
-            {
+            if (EndTimestampPropertyName != null) {
                 writer.Write(" endtimestamp ");
                 writer.Write(EndTimestampPropertyName);
             }
 
-            if ((CopyFrom != null) && (CopyFrom.IsNotEmpty()))
-            {
+            if (CopyFrom != null && CopyFrom.IsNotEmpty()) {
                 writer.Write(" copyFrom ");
-                string delimiter = "";
-                foreach (string name in CopyFrom)
-                {
+                var delimiter = "";
+                foreach (var name in CopyFrom) {
                     writer.Write(delimiter);
                     writer.Write(name);
                     delimiter = ", ";

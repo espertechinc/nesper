@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -14,7 +14,6 @@ namespace com.espertech.esper.runtime.client
     /// <summary>
     /// Deploy exception to indicate that substitution parameter values have not been provided
     /// </summary>
-    [Serializable]
     public class EPDeploySubstitutionParameterException : EPDeployException
     {
         /// <summary>

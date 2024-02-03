@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -27,40 +27,30 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.processor
             this.namedWindow = namedWindow;
         }
 
-        public string NamedWindowOrTableName {
-            get => namedWindow.EventType.Name;
-        }
+        public string ProcessorName => namedWindow.EventType.Name;
 
-        public EventType EventTypeRspInputEvents {
-            get => namedWindow.EventType;
-        }
+        public EventType EventTypeRSPInputEvents => namedWindow.EventType;
 
-        public EventType EventTypePublic {
-            get => namedWindow.EventType;
-        }
+        public EventType EventTypePublic => namedWindow.EventType;
 
-        public string ContextName {
-            get => namedWindow.ContextName;
-        }
+        public string ContextName => namedWindow.ContextName;
 
-        public string[][] UniqueIndexes {
-            get => EventTableIndexMetadataUtil.GetUniqueness(namedWindow.IndexMetadata, namedWindow.Uniqueness);
-        }
+        public string[][] UniqueIndexes => EventTableIndexMetadataUtil.GetUniqueness(
+            namedWindow.IndexMetadata,
+            namedWindow.Uniqueness);
 
         public CodegenExpression Make(
             CodegenMethodScope parent,
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            CodegenMethod method = parent.MakeChild(
+            var method = parent.MakeChild(
                 typeof(FireAndForgetProcessorNamedWindow),
-                this.GetType(),
+                GetType(),
                 classScope);
-            CodegenExpressionRef nw = Ref("nw");
+            var nw = Ref("nw");
             method.Block
-                .DeclareVar<FireAndForgetProcessorNamedWindow>(
-                    nw.Ref,
-                    NewInstance(typeof(FireAndForgetProcessorNamedWindow)))
+                .DeclareVarNewInstance<FireAndForgetProcessorNamedWindow>(nw.Ref)
                 .SetProperty(
                     nw,
                     "NamedWindow",

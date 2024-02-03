@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -8,6 +8,9 @@
 
 using System;
 using System.IO;
+using System.Text.Json.Serialization;
+
+using com.espertech.esper.common.@internal.util.serde;
 
 namespace com.espertech.esper.common.client.soda
 {
@@ -17,10 +20,10 @@ namespace com.espertech.esper.common.client.soda
     ///     Named streams provide an as-name for the stream, for example "select * from MyEvents(id=10) as StreamZero".
     ///     Unnamed streams provide no as-name for the stream, for example "select * from MyEvents(id=10)".
     /// </summary>
-    [Serializable]
+    [JsonConverter(typeof(JsonConverterAbstract<Stream>))]
     public abstract class Stream
     {
-        private string streamName;
+        private string _streamName;
 
         /// <summary>
         ///     Ctor.
@@ -35,17 +38,16 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="streamName">is null for unnamed streams, or a stream name for named streams.</param>
         protected Stream(string streamName)
         {
-            this.streamName = streamName;
+            _streamName = streamName;
         }
 
         /// <summary>
         ///     Returns the stream name.
         /// </summary>
         /// <returns>name of stream, or null if unnamed.</returns>
-        public string StreamName
-        {
-            get => streamName;
-            set => streamName = value;
+        public string StreamName {
+            get => _streamName;
+            set => _streamName = value;
         }
 
         /// <summary>
@@ -80,10 +82,9 @@ namespace com.espertech.esper.common.client.soda
         {
             ToEPLStream(writer, formatter);
 
-            if (streamName != null)
-            {
+            if (_streamName != null) {
                 writer.Write(" as ");
-                writer.Write(streamName);
+                writer.Write(_streamName);
             }
 
             ToEPLStreamOptions(writer);

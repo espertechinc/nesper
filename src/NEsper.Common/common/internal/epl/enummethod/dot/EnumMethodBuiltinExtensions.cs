@@ -3,6 +3,10 @@
 using com.espertech.esper.common.@internal.epl.enummethod.eval;
 using com.espertech.esper.common.@internal.epl.enummethod.eval.aggregate;
 using com.espertech.esper.common.@internal.epl.enummethod.eval.plain.exceptintersectunion;
+using com.espertech.esper.common.@internal.epl.enummethod.eval.plain.noop;
+using com.espertech.esper.common.@internal.epl.enummethod.eval.plain.reverse;
+using com.espertech.esper.common.@internal.epl.enummethod.eval.plain.sequenceequal;
+using com.espertech.esper.common.@internal.epl.enummethod.eval.plain.take;
 using com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.allofanyof;
 using com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.arrayOf;
 using com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.average;
@@ -27,7 +31,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
 {
     public static class EnumMethodBuiltinExtensions
     {
-        public static  string GetNameCamel(this EnumMethodBuiltin value)
+        public static string GetNameCamel(this EnumMethodBuiltin value)
         {
             return value switch {
                 EnumMethodBuiltin.AGGREGATE => "aggregate",

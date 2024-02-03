@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -304,6 +304,8 @@ namespace com.espertech.esper.compat.collections
                 return null;
             if (t.IsGenericCollection())
                 return FindGenericCollectionInterface(t).GetGenericArguments()[0];
+            if (t.IsGenericEnumerable())
+                return FindGenericEnumerationInterface(t).GetGenericArguments()[0];
             return null;
         }
         
@@ -367,7 +369,7 @@ namespace com.espertech.esper.compat.collections
             return false;
         }
 
-        public static Type GetComponentType(Type type)
+        public static Type GetComponentType(this Type type)
         {
             if (type == null)
                 return null;
@@ -393,6 +395,17 @@ namespace com.espertech.esper.compat.collections
         {
             return (t.IsGenericType) &&
                    (t.GetGenericTypeDefinition() == typeof(KeyValuePair<,>).GetGenericTypeDefinition());
+        }
+
+        public static string GetBaseName(this Type t)
+        {
+            var baseName = t.Name;
+            if (t.IsGenericType) {
+                var baseIndex = baseName.IndexOf('`');
+                baseName = baseName.Substring(0, baseIndex);
+            }
+
+            return baseName;
         }
     }
 }

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -7,10 +7,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.compile.stage3;
+using com.espertech.esper.common.@internal.context.controller.core;
 using com.espertech.esper.common.@internal.context.mgr;
 using com.espertech.esper.common.@internal.epl.expression.chain;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -35,17 +37,17 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
             }
 
             foreach (var item in hashedSpec.Items) {
-                Chainable chainable = item.Function;
-
+                var chainable = item.Function;
                 // determine type of hash to use
-                var hashFuncName = chainable.GetRootNameOrEmptyString();
-                var hashFuncParams = chainable.GetParametersOrEmpty();
+                var hashFuncName = chainable.RootNameOrEmptyString;
+                var @params = chainable.ParametersOrEmpty;
                 var hashFunction = HashFunctionEnumExtensions.Determine(contextName, hashFuncName);
                 Pair<Type, ImportSingleRowDesc> hashSingleRowFunction = null;
                 if (hashFunction == null) {
                     try {
                         hashSingleRowFunction = services.ImportServiceCompileTime.ResolveSingleRow(
-                            hashFuncName, services.ClassProvidedExtension);
+                            hashFuncName,
+                            services.ClassProvidedExtension);
                     }
                     catch (Exception) {
                         // expected
@@ -63,32 +65,34 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
                     }
                 }
 
-                if (hashFuncParams.IsEmpty()) {
+                if (@params.IsEmpty()) {
                     throw new ExprValidationException(
-                        $"For context '{contextName}' expected one or more parameters to the hash function, but found no parameter list");
+                        "For context '" +
+                        contextName +
+                        "' expected one or more parameters to the hash function, but found no parameter list");
                 }
 
                 // get first parameter
-                var paramExpr = hashFuncParams[0];
+                var paramExpr = @params[0];
                 var paramType = paramExpr.Forge.EvaluationType;
                 EventPropertyValueGetterForge getter;
+                if (paramType == null) {
+                    throw new ExprValidationException("Expression returns a null-type value");
+                }
+
+                var paramClass = paramType;
 
                 if (hashFunction == HashFunctionEnum.CONSISTENT_HASH_CRC32) {
-                    if (hashFuncParams.Count > 1 || paramType != typeof(string)) {
-                        getter = new ContextControllerHashedGetterCRC32SerializedForge(
-                            hashFuncParams,
-                            hashedSpec.Granularity);
+                    if (@params.Count > 1 || paramClass != typeof(string)) {
+                        getter = new ContextControllerHashedGetterCRC32SerializedForge(@params, hashedSpec.Granularity);
                     }
                     else {
-                        getter = new ContextControllerHashedGetterCRC32SingleForge(
-                            paramExpr, hashedSpec.Granularity);
+                        getter = new ContextControllerHashedGetterCRC32SingleForge(paramExpr, hashedSpec.Granularity);
                     }
                 }
                 else if (hashFunction == HashFunctionEnum.HASH_CODE) {
-                    if (hashFuncParams.Count > 1) {
-                        getter = new ContextControllerHashedGetterHashMultiple(
-                            hashFuncParams,
-                            hashedSpec.Granularity);
+                    if (@params.Count > 1) {
+                        getter = new ContextControllerHashedGetterHashMultiple(@params, hashedSpec.Granularity);
                     }
                     else {
                         getter = new ContextControllerHashedGetterHashSingleForge(paramExpr, hashedSpec.Granularity);
@@ -97,7 +101,7 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
                 else if (hashSingleRowFunction != null) {
                     getter = new ContextControllerHashedGetterSingleRowForge(
                         hashSingleRowFunction,
-                        hashFuncParams,
+                        @params,
                         hashedSpec.Granularity,
                         item.FilterSpecCompiled.FilterForEventType,
                         statementRawInfo,
@@ -108,10 +112,20 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
                 }
 
                 // create and register expression
-                var expression = hashFuncName + "(" + ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(paramExpr) + ")";
-                var valueSerde = new DataInputOutputSerdeForgeSingleton(typeof(DIONullableIntegerSerde));
+                var expression = hashFuncName +
+                                 "(" +
+                                 ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(paramExpr) +
+                                 ")";
+                DataInputOutputSerdeForge valueSerde =
+                    new DataInputOutputSerdeForgeSingletonBasicBuiltin(typeof(DIONullableIntegerSerde), typeof(int?));
                 var eval = new ExprEventEvaluatorForgeFromProp(getter);
-                var lookupable = new ExprFilterSpecLookupableForge(expression, eval, null, typeof(int), true, valueSerde);
+                var lookupable = new ExprFilterSpecLookupableForge(
+                    expression,
+                    eval,
+                    null,
+                    typeof(int?),
+                    true,
+                    valueSerde);
                 item.Lookupable = lookupable;
             }
         }

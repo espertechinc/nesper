@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -25,17 +25,17 @@ namespace com.espertech.esper.common.@internal.epl.output.view
             bool distinct,
             EventPropertyValueGetter distinctKeyGetter,
             TimePeriodCompute afterTimePeriod,
-            int? afterConditionNumberOfEvents,
-            EventType resultEventType)
+            int? afterConditionNumberOfEvents)
             : base(postProcessFactory)
         {
             IsDistinct = distinct;
             DistinctKeyGetter = distinctKeyGetter;
-            this.AfterTimePeriod = afterTimePeriod;
-            this.AfterConditionNumberOfEvents = afterConditionNumberOfEvents;
+            AfterTimePeriod = afterTimePeriod;
+            AfterConditionNumberOfEvents = afterConditionNumberOfEvents;
         }
+
         public EventPropertyValueGetter DistinctKeyGetter { get; set; }
-        
+
         public bool IsDistinct { get; }
 
         public int? AfterConditionNumberOfEvents { get; }

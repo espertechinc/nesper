@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -9,6 +9,7 @@
 using System;
 using System.IO;
 using System.Reflection;
+using System.Text.Json.Serialization;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -33,7 +34,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        [NonSerialized] private ExprEvaluator evaluator;
+        [JsonIgnore]
+        [NonSerialized]
+        private ExprEvaluator evaluator;
 
         public override ExprForge Forge => this;
 
@@ -111,7 +114,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
             var forge = ChildNodes[0].Forge;
-            if (!forge.EvaluationType.IsNumericNonFP()) {
+            if (!forge.EvaluationType.IsTypeNumericNonFP()) {
                 throw new ExprValidationException("Frequency operator requires an integer-type parameter");
             }
 

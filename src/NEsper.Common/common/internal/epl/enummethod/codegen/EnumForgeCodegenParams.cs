@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -19,13 +19,15 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.codegen
             CodegenExpression enumcoll,
             Type enumcollType,
             CodegenExpression isNewData,
-            CodegenExpression exprCtx)
+            CodegenExpression exprCtx,
+            Type desiredReturnType)
         {
             Eps = eps;
             Enumcoll = enumcoll;
             EnumcollType = enumcollType;
             IsNewData = isNewData;
             ExprCtx = exprCtx;
+            DesiredReturnType = desiredReturnType;
         }
 
         public CodegenExpression Eps { get; }
@@ -33,6 +35,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.codegen
         public CodegenExpression Enumcoll { get; }
 
         public Type EnumcollType { get; }
+        
+        public Type DesiredReturnType { get; set; }
 
         public CodegenExpression IsNewData { get; }
 

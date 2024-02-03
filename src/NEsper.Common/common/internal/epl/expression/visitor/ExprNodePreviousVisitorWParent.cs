@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -32,19 +32,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.visitor
             ExprNode exprNode,
             ExprNode parentExprNode)
         {
-            if (exprNode is ExprPreviousNode) {
+            if (exprNode is ExprPreviousNode node) {
                 if (_previous == null) {
                     _previous = new List<Pair<ExprNode, ExprPreviousNode>>();
                 }
 
-                _previous.Add(new Pair<ExprNode, ExprPreviousNode>(parentExprNode, (ExprPreviousNode) exprNode));
+                _previous.Add(new Pair<ExprNode, ExprPreviousNode>(parentExprNode, node));
             }
         }
 
         /// <summary>Returns the pair of previous nodes and their parent expression. </summary>
         /// <value>nodes</value>
-        public IList<Pair<ExprNode, ExprPreviousNode>> Previous {
-            get { return _previous; }
-        }
+        public IList<Pair<ExprNode, ExprPreviousNode>> Previous => _previous;
     }
 }

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -10,11 +10,14 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.annotation;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.view.core;
+using com.espertech.esper.compat;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -23,13 +26,16 @@ namespace com.espertech.esper.common.@internal.view.prior
     public class PriorEventViewForge : ViewFactoryForgeBase
     {
         private readonly bool unbound;
+        private readonly StateMgmtSetting stateMgmtSettings;
 
         public PriorEventViewForge(
             bool unbound,
-            EventType eventType)
+            EventType eventType,
+            StateMgmtSetting stateMgmtSettings)
         {
             this.unbound = unbound;
             this.eventType = eventType;
+            this.stateMgmtSettings = stateMgmtSettings;
         }
 
         public override void SetViewParameters(
@@ -39,22 +45,16 @@ namespace com.espertech.esper.common.@internal.view.prior
         {
         }
 
-        public override void Attach(
+        public override void AttachValidate(
             EventType parentEventType,
-            int streamNumber,
             ViewForgeEnv viewForgeEnv)
         {
+            throw new IllegalStateException("Should not be called for 'prior'");
         }
 
-        internal override Type TypeOfFactory()
-        {
-            return typeof(PriorEventViewFactory);
-        }
+        internal override Type TypeOfFactory => typeof(PriorEventViewFactory);
 
-        internal override string FactoryMethod()
-        {
-            return "Prior";
-        }
+        internal override string FactoryMethod => "Prior";
 
         internal override void Assign(
             CodegenMethod method,
@@ -65,8 +65,16 @@ namespace com.espertech.esper.common.@internal.view.prior
             method.Block.SetProperty(factory, "IsUnbound", Constant(unbound));
         }
 
-        public override string ViewName {
-            get => "prior";
+        public override string ViewName => "prior";
+
+        public override AppliesTo AppliesTo()
+        {
+            return client.annotation.AppliesTo.PRIOR;
+        }
+
+        public override T Accept<T>(ViewFactoryForgeVisitor<T> visitor)
+        {
+            return visitor.Visit(this);
         }
     }
 } // end of namespace

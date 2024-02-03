@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -19,25 +19,29 @@ using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
+
 namespace com.espertech.esper.common.@internal.@event.xml
 {
     public class XMLFragmentEventTypeFactory
     {
         private readonly BeanEventTypeFactory eventTypeFactory;
-        private readonly EventTypeNameResolver eventTypeNameResolver;
         private readonly EventTypeCompileTimeRegistry optionalCompileTimeRegistry;
-        private IDictionary<string, SchemaXMLEventType> derivedTypes;
+        private readonly EventTypeNameResolver eventTypeNameResolver;
+        private readonly EventTypeXMLXSDHandler eventTypeXMLXSDHandler;
 
         private IDictionary<string, SchemaXMLEventType> rootTypes;
+        private IDictionary<string, SchemaXMLEventType> derivedTypes;
 
         public XMLFragmentEventTypeFactory(
             BeanEventTypeFactory eventTypeFactory,
             EventTypeCompileTimeRegistry optionalCompileTimeRegistry,
-            EventTypeNameResolver eventTypeNameResolver)
+            EventTypeNameResolver eventTypeNameResolver,
+            EventTypeXMLXSDHandler eventTypeXMLXSDHandler)
         {
             this.eventTypeFactory = eventTypeFactory;
             this.optionalCompileTimeRegistry = optionalCompileTimeRegistry;
             this.eventTypeNameResolver = eventTypeNameResolver;
+            this.eventTypeXMLXSDHandler = eventTypeXMLXSDHandler;
         }
 
         public void AddRootType(SchemaXMLEventType type)
@@ -108,7 +112,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
                 EventTypeBusModifier.BUS,
                 false,
                 new EventTypeIdPair(CRC32Util.ComputeCRC32(derivedEventTypeName), -1));
-            var eventType = (SchemaXMLEventType) eventTypeFactory.EventTypeFactory.CreateXMLType(
+            var eventType = (SchemaXMLEventType)eventTypeFactory.EventTypeFactory.CreateXMLType(
                 metadata,
                 xmlDom,
                 type.SchemaModel,
@@ -116,17 +120,20 @@ namespace com.espertech.esper.common.@internal.@event.xml
                 rootTypeName,
                 eventTypeFactory,
                 this,
-                eventTypeNameResolver);
+                eventTypeNameResolver,
+                eventTypeXMLXSDHandler);
             derivedTypes.Put(derivedEventTypeName, eventType);
 
-            optionalCompileTimeRegistry?.NewType(eventType);
+            if (optionalCompileTimeRegistry != null) {
+                optionalCompileTimeRegistry.NewType(eventType);
+            }
 
             return eventType;
         }
 
         public SchemaXMLEventType GetRootTypeByName(string representsOriginalTypeName)
         {
-            return rootTypes == null ? null : rootTypes.Get(representsOriginalTypeName);
+            return rootTypes?.Get(representsOriginalTypeName);
         }
     }
 } // end of namespace

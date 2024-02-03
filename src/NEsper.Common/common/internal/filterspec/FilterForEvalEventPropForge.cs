@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -61,7 +61,7 @@ namespace com.espertech.esper.common.@internal.filterspec
             CodegenMethodScope parent)
         {
             var method = parent.MakeChild(typeof(object), GetType(), classScope)
-				.AddParam(GET_FILTER_VALUE_FP);
+                .AddParam(GET_FILTER_VALUE_FP);
             var get = _exprIdentNodeEvaluator.Getter.EventBeanGetCodegen(Ref("@event"), method, classScope);
 
             method.Block
@@ -98,11 +98,10 @@ namespace com.espertech.esper.common.@internal.filterspec
                 return true;
             }
 
-            if (!(obj is FilterForEvalEventPropForge)) {
+            if (!(obj is FilterForEvalEventPropForge other)) {
                 return false;
             }
 
-            var other = (FilterForEvalEventPropForge) obj;
             if (other._resultEventAsName.Equals(_resultEventAsName) &&
                 other._resultEventProperty.Equals(_resultEventProperty)) {
                 return true;
@@ -115,7 +114,7 @@ namespace com.espertech.esper.common.@internal.filterspec
         {
             return _resultEventProperty.GetHashCode();
         }
-        
+
         public void ValueToString(StringBuilder @out)
         {
             @out.Append("property '")

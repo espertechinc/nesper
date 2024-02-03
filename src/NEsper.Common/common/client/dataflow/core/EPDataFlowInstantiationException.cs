@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -12,7 +12,6 @@ using System.Runtime.Serialization;
 namespace com.espertech.esper.common.client.dataflow.core
 {
     /// <summary>Indicates an exception instantiating a data flow. </summary>
-    [Serializable]
     public class EPDataFlowInstantiationException : EPException
     {
         /// <summary>Ctor. </summary>
@@ -39,7 +38,8 @@ namespace com.espertech.esper.common.client.dataflow.core
         {
         }
 
-        protected EPDataFlowInstantiationException(SerializationInfo info,
+        protected EPDataFlowInstantiationException(
+            SerializationInfo info,
             StreamingContext context) : base(info, context)
         {
         }

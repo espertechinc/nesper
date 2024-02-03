@@ -1,19 +1,17 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
-using System.Reflection;
+using System.Linq;
 
-using com.espertech.esper.common.client;
-using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.compiler.client;
 using com.espertech.esper.regressionlib.framework;
@@ -21,19 +19,20 @@ using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.util;
 
 using NUnit.Framework;
-
-using static com.espertech.esper.common.@internal.util.CollectionUtil;
+using NUnit.Framework.Legacy;
+using static com.espertech.esper.common.@internal.util.CollectionUtil; // appendArrayConditional
+using static com.espertech.esper.regressionlib.support.util.IndexBackingTableInfo;
 
 namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 {
     public class InfraNWTableSubqCorrelIndex : IndexBackingTableInfo
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(typeof(InfraNWTableSubqCorrelIndex));
 
-        public static IList<RegressionExecution> Executions()
+        public static ICollection<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            WithCorrelIndexAssertion(execs);
+            WithCorrelIndexAssertion(execs); // testNoShare
             WithCorrelIndexMultipleIndexHints(execs);
             WithCorrelIndexShareIndexChoice(execs);
             WithCorrelIndexNoIndexShareIndexChoice(execs);
@@ -42,7 +41,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             return execs;
         }
 
-        public static IList<RegressionExecution> WithIndexShareMultikeyWArrayTwoArray(IList<RegressionExecution> execs = null)
+        public static IList<RegressionExecution> WithIndexShareMultikeyWArrayTwoArray(
+            IList<RegressionExecution> execs = null)
         {
             execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraNWTableSubqIndexShareMultikeyWArrayTwoArray(true));
@@ -50,7 +50,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             return execs;
         }
 
-        public static IList<RegressionExecution> WithIndexShareMultikeyWArraySingleArray(IList<RegressionExecution> execs = null)
+        public static IList<RegressionExecution> WithIndexShareMultikeyWArraySingleArray(
+            IList<RegressionExecution> execs = null)
         {
             execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraNWTableSubqIndexShareMultikeyWArraySingleArray(true));
@@ -58,7 +59,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             return execs;
         }
 
-        public static IList<RegressionExecution> WithCorrelIndexNoIndexShareIndexChoice(IList<RegressionExecution> execs = null)
+        public static IList<RegressionExecution> WithCorrelIndexNoIndexShareIndexChoice(
+            IList<RegressionExecution> execs = null)
         {
             execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraNWTableSubqCorrelIndexNoIndexShareIndexChoice(true));
@@ -66,7 +68,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             return execs;
         }
 
-        public static IList<RegressionExecution> WithCorrelIndexShareIndexChoice(IList<RegressionExecution> execs = null)
+        public static IList<RegressionExecution> WithCorrelIndexShareIndexChoice(
+            IList<RegressionExecution> execs = null)
         {
             execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraNWTableSubqCorrelIndexShareIndexChoice(true));
@@ -74,7 +77,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             return execs;
         }
 
-        public static IList<RegressionExecution> WithCorrelIndexMultipleIndexHints(IList<RegressionExecution> execs = null)
+        public static IList<RegressionExecution> WithCorrelIndexMultipleIndexHints(
+            IList<RegressionExecution> execs = null)
         {
             execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraNWTableSubqCorrelIndexMultipleIndexHints(true));
@@ -85,92 +89,22 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
         public static IList<RegressionExecution> WithCorrelIndexAssertion(IList<RegressionExecution> execs = null)
         {
             execs = execs ?? new List<RegressionExecution>();
-            
             // named window tests
-            execs.Add(new InfraNWTableSubqCorrelIndexAssertion(true, false, false, false, false)); // testNoShare
-            execs.Add(new InfraNWTableSubqCorrelIndexAssertion(true, false, false, false, true)); // testNoShareSetnoindex
-            execs.Add(new InfraNWTableSubqCorrelIndexAssertion(true, false, false, true, false)); // testNoShareCreate
-            execs.Add(new InfraNWTableSubqCorrelIndexAssertion(true, true, false, false, false)); // testShare
-            execs.Add(new InfraNWTableSubqCorrelIndexAssertion(true, true, false, true, false)); // testShareCreate
-            execs.Add(new InfraNWTableSubqCorrelIndexAssertion(true, true, false, true, true)); // testShareCreateSetnoindex
-            execs.Add(new InfraNWTableSubqCorrelIndexAssertion(true, true, true, false, false)); // testDisableShare
-            execs.Add(new InfraNWTableSubqCorrelIndexAssertion(true, true, true, true, false)); // testDisableShareCreate
-
+            execs.Add(new InfraNWTableSubqCorrelIndexAssertion(true, false, false, false, false));
+            execs.Add(new InfraNWTableSubqCorrelIndexAssertion(true, false, false, false, true));
+            execs.Add(new InfraNWTableSubqCorrelIndexAssertion(true, false, false, true, false));
+            execs.Add(new InfraNWTableSubqCorrelIndexAssertion(true, true, false, false, false));
+            execs.Add(new InfraNWTableSubqCorrelIndexAssertion(true, true, false, true, false));
+            execs.Add(new InfraNWTableSubqCorrelIndexAssertion(true, true, false, true, true));
+            execs.Add(new InfraNWTableSubqCorrelIndexAssertion(true, true, true, false, false));
+            execs.Add(new InfraNWTableSubqCorrelIndexAssertion(true, true, true, true, false));
             // table tests
-            execs.Add(new InfraNWTableSubqCorrelIndexAssertion(false, false, false, false, false)); // table no-index
-            execs.Add(new InfraNWTableSubqCorrelIndexAssertion(false, false, false, true, false)); // table yes-index
-            
+            execs.Add(new InfraNWTableSubqCorrelIndexAssertion(false, false, false, false, false));
+            execs.Add(new InfraNWTableSubqCorrelIndexAssertion(false, false, false, true, false));
             return execs;
         }
 
-        private static void AssertIndexChoice(
-            RegressionEnvironment env,
-            bool namedWindow,
-            bool indexShare,
-            string[] indexes,
-            object[] preloadedEvents,
-            string datawindow,
-            IndexAssertion[] assertions)
-        {
-            var path = new RegressionPath();
-            var epl = namedWindow
-                ? "create window MyInfra." + datawindow + " as select * from SupportSimpleBeanOne"
-                : "create table MyInfra(S1 string primary key, I1 int, D1 double, L1 long)";
-            if (indexShare) {
-                epl = "@Hint('enable_window_subquery_indexshare') " + epl;
-            }
-
-            env.CompileDeploy(epl, path);
-            env.CompileDeploy("insert into MyInfra select * from SupportSimpleBeanOne", path);
-            foreach (var index in indexes) {
-                env.CompileDeploy(index, path);
-            }
-
-            foreach (var @event in preloadedEvents) {
-                env.SendEventBean(@event);
-            }
-
-            var count = 0;
-            foreach (var assertion in assertions) {
-                log.Info("======= Testing #" + count++);
-                var consumeEpl = INDEX_CALLBACK_HOOK +
-                                 "@Name('s0') " +
-                                 (assertion.Hint ?? "") +
-                                 "select *, " +
-                                 "(select * from MyInfra where " +
-                                 assertion.WhereClause +
-                                 ") @eventbean as ssb1 from SupportSimpleBeanTwo as ssb2";
-
-                EPCompiled compiled;
-                try {
-                    compiled = env.CompileWCheckedEx(consumeEpl, path);
-                }
-                catch (EPCompileException ex) {
-                    if (assertion.EventSendAssertion == null) {
-                        // no assertion, expected
-                        Assert.IsTrue(ex.Message.Contains("index hint busted"));
-                        continue;
-                    }
-
-                    throw new EPException("Unexpected statement exception: " + ex.Message, ex);
-                }
-
-                env.Deploy(compiled);
-
-                // assert index and access
-                SupportQueryPlanIndexHook.AssertSubqueryBackingAndReset(
-                    0,
-                    assertion.ExpectedIndexName,
-                    assertion.IndexBackingClass);
-                env.AddListener("s0");
-                assertion.EventSendAssertion.Invoke();
-                env.UndeployModuleContaining("s0");
-            }
-
-            env.UndeployAll();
-        }
-
-        internal class InfraNWTableSubqIndexShareMultikeyWArraySingleArray : RegressionExecution
+        private class InfraNWTableSubqIndexShareMultikeyWArraySingleArray : RegressionExecution
         {
             private readonly bool namedWindow;
 
@@ -182,13 +116,14 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             public void Run(RegressionEnvironment env)
             {
                 string infra;
-                RegressionPath path = new RegressionPath();
+                var path = new RegressionPath();
                 if (namedWindow) {
-                    infra = "@Hint('enable_window_subquery_indexshare') create window MyInfra#keepall as (k string[], v int);\n" +
-                            "create index MyInfraIndex on MyInfra(k);\n";
+                    infra =
+                        "@Hint('enable_window_subquery_indexshare') @public create window MyInfra#keepall as (k string[], v int);\n" +
+                        "create index MyInfraIndex on MyInfra(k);\n";
                 }
                 else {
-                    infra = "create table MyInfra(k string[] primary key, v int);\n";
+                    infra = "@public create table MyInfra(k string[] primary key, v int);\n";
                 }
 
                 env.CompileDeploy(infra, path);
@@ -197,7 +132,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 Insert(env, path, "{'a', 'c'}", 20);
                 Insert(env, path, "{'a'}", 30);
 
-                string epl = "@Name('s0') select (select v from MyInfra as mi where mi.k = ma.StringOne) as v from SupportEventWithManyArray as ma";
+                var epl =
+                    "@name('s0') select (select v from MyInfra as mi where mi.k = ma.StringOne) as v from SupportEventWithManyArray as ma";
                 epl = namedWindow ? "@Hint('index(MyInfraIndex, bust)')" + epl : epl;
                 env.CompileDeploy(epl, path).AddListener("s0");
 
@@ -214,8 +150,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 string stringOne,
                 int? expected)
             {
-                env.SendEventBean(new SupportEventWithManyArray("id").WithStringOne(stringOne.SplitCsv()));
-                Assert.AreEqual(expected, env.Listener("s0").AssertOneGetNewAndReset().Get("v"));
+                env.SendEventBean(new SupportEventWithManyArray("Id").WithStringOne(stringOne.SplitCsv()));
+                env.AssertEqualsNew("s0", "v", expected);
             }
 
             private void Insert(
@@ -224,11 +160,16 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 string k,
                 int v)
             {
-                env.CompileExecuteFAF("insert into MyInfra(k,v) values (" + k + "," + v + ")", path);
+                env.CompileExecuteFAFNoResult("insert into MyInfra(k,v) values (" + k + "," + v + ")", path);
+            }
+
+            public string Name()
+            {
+                return $"{this.GetType().Name}{{namedWindow={namedWindow}}}";
             }
         }
 
-        internal class InfraNWTableSubqIndexShareMultikeyWArrayTwoArray : RegressionExecution
+        private class InfraNWTableSubqIndexShareMultikeyWArrayTwoArray : RegressionExecution
         {
             private readonly bool namedWindow;
 
@@ -240,13 +181,14 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             public void Run(RegressionEnvironment env)
             {
                 string infra;
-                RegressionPath path = new RegressionPath();
+                var path = new RegressionPath();
                 if (namedWindow) {
-                    infra = "@Hint('enable_window_subquery_indexshare') create window MyInfra#keepall as (k1 string[], k2 string[], v int);\n" +
-                            "create index MyInfraIndex on MyInfra(k1, k2);\n";
+                    infra =
+                        "@Hint('enable_window_subquery_indexshare') @public create window MyInfra#keepall as (k1 string[], k2 string[], v int);\n" +
+                        "create index MyInfraIndex on MyInfra(k1, k2);\n";
                 }
                 else {
-                    infra = "create table MyInfra(k1 string[] primary key, k2 string[] primary key, v int);\n";
+                    infra = "@public create table MyInfra(k1 string[] primary key, k2 string[] primary key, v int);\n";
                 }
 
                 env.CompileDeploy(infra, path);
@@ -255,9 +197,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 Insert(env, path, "{'a'}", "{'b'}", 20);
                 Insert(env, path, "{'a'}", "{'c', 'd'}", 30);
 
-                string epl =
-                    "@Name('s0') select (select v from MyInfra as mi where mi.k1 = ma.StringOne and mi.k2 = ma.StringTwo) as v " +
-                    "from SupportEventWithManyArray as ma";
+                var epl =
+                    "@name('s0') select (select v from MyInfra as mi where mi.k1 = ma.StringOne and mi.k2 = ma.StringTwo) as v from SupportEventWithManyArray as ma";
                 epl = namedWindow ? "@Hint('index(MyInfraIndex, bust)')" + epl : epl;
                 env.CompileDeploy(epl, path).AddListener("s0");
 
@@ -270,14 +211,21 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 env.UndeployAll();
             }
 
+            public string Name()
+            {
+                return $"{this.GetType().Name}{{namedWindow={namedWindow}}}";
+            }
+
             private void SendAssertManyArray(
                 RegressionEnvironment env,
                 string stringOne,
                 string stringTwo,
                 int? expected)
             {
-                env.SendEventBean(new SupportEventWithManyArray("id").WithStringOne(stringOne.SplitCsv()).WithStringTwo(stringTwo.SplitCsv()));
-                Assert.AreEqual(expected, env.Listener("s0").AssertOneGetNewAndReset().Get("v"));
+                env.SendEventBean(
+                    new SupportEventWithManyArray("Id").WithStringOne(stringOne.SplitCsv())
+                        .WithStringTwo(stringTwo.SplitCsv()));
+                env.AssertEqualsNew("s0", "v", expected);
             }
 
             private void Insert(
@@ -287,11 +235,13 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 string k2,
                 int v)
             {
-                env.CompileExecuteFAF("insert into MyInfra(k1,k2,v) values (" + k1 + "," + k2 + "," + v + ")", path);
+                env.CompileExecuteFAFNoResult(
+                    "insert into MyInfra(k1,k2,v) values (" + k1 + "," + k2 + "," + v + ")",
+                    path);
             }
         }
 
-        internal class InfraNWTableSubqCorrelIndexNoIndexShareIndexChoice : RegressionExecution
+        private class InfraNWTableSubqCorrelIndexNoIndexShareIndexChoice : RegressionExecution
         {
             private readonly bool namedWindow;
 
@@ -304,20 +254,14 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             {
                 var backingUniqueS1 = "unique hash={S1(string)} btree={} advanced={}";
 
-                object[] preloadedEventsOne =
-                    {new SupportSimpleBeanOne("E1", 10, 11, 12), new SupportSimpleBeanOne("E2", 20, 21, 22)};
+                var preloadedEventsOne = new object[]
+                    { new SupportSimpleBeanOne("E1", 10, 11, 12), new SupportSimpleBeanOne("E2", 20, 21, 22) };
                 IndexAssertionEventSend eventSendAssertion = () => {
-                    var fields = new[] {"S2", "ssb1[0].S1", "ssb1[0].I1"};
+                    var fields = "S2,ssb1[0].S1,ssb1[0].I1".SplitCsv();
                     env.SendEventBean(new SupportSimpleBeanTwo("E2", 50, 21, 22));
-                    EPAssertionUtil.AssertProps(
-                        env.Listener("s0").AssertOneGetNewAndReset(),
-                        fields,
-                        new object[] {"E2", "E2", 20});
+                    env.AssertPropsNew("s0", fields, new object[] { "E2", "E2", 20 });
                     env.SendEventBean(new SupportSimpleBeanTwo("E1", 60, 11, 12));
-                    EPAssertionUtil.AssertProps(
-                        env.Listener("s0").AssertOneGetNewAndReset(),
-                        fields,
-                        new object[] {"E1", "E1", 10});
+                    env.AssertPropsNew("s0", fields, new object[] { "E1", "E1", 10 });
                 };
                 IndexAssertionEventSend noAssertion = () => { };
 
@@ -326,10 +270,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     env,
                     namedWindow,
                     false,
-                    new string[0],
+                    Array.Empty<string>(),
                     preloadedEventsOne,
                     "std:unique(S1)",
-                    new[] {
+                    new IndexAssertion[] {
                         new IndexAssertion(
                             null,
                             "S1 = ssb2.S2",
@@ -353,7 +297,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                             "L1 = ssb2.L2",
                             null,
                             namedWindow ? BACKING_SINGLE_DUPS : null,
-                            eventSendAssertion)
+                            eventSendAssertion),
                     });
 
                 // unique-S1+I1
@@ -362,10 +306,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                         env,
                         namedWindow,
                         false,
-                        new string[0],
+                        Array.Empty<string>(),
                         preloadedEventsOne,
                         "std:unique(S1, D1)",
-                        new[] {
+                        new IndexAssertion[] {
                             new IndexAssertion(null, "S1 = ssb2.S2", null, BACKING_SINGLE_DUPS, eventSendAssertion),
                             new IndexAssertion(
                                 null,
@@ -396,13 +340,18 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                                 "L1 = ssb2.L2 and S1 = ssb2.S2 and D1 = ssb2.D2",
                                 null,
                                 BACKING_MULTI_UNIQUE,
-                                eventSendAssertion)
+                                eventSendAssertion),
                         });
                 }
             }
+
+            public string Name()
+            {
+                return $"{this.GetType().Name}{{namedWindow={namedWindow}}}";
+            }
         }
 
-        internal class InfraNWTableSubqCorrelIndexShareIndexChoice : RegressionExecution
+        private class InfraNWTableSubqCorrelIndexShareIndexChoice : RegressionExecution
         {
             private readonly bool namedWindow;
 
@@ -413,7 +362,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
             public void Run(RegressionEnvironment env)
             {
-                string[] noindexes = { };
+                var noindexes = new string[] { };
                 var backingUniqueS1 = "unique hash={S1(string)} btree={} advanced={}";
                 var backingUniqueS1L1 = "unique hash={S1(string),L1(long)} btree={} advanced={}";
                 var backingUniqueS1D1 = "unique hash={S1(string),D1(double)} btree={} advanced={}";
@@ -424,20 +373,14 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 var primaryIndexTable = namedWindow ? "MyNWIndex" : "MyInfra";
                 var primaryIndexEPL = "create unique index MyNWIndex on MyInfra(S1)";
 
-                object[] preloadedEventsOne =
-                    {new SupportSimpleBeanOne("E1", 10, 11, 12), new SupportSimpleBeanOne("E2", 20, 21, 22)};
+                var preloadedEventsOne = new object[]
+                    { new SupportSimpleBeanOne("E1", 10, 11, 12), new SupportSimpleBeanOne("E2", 20, 21, 22) };
                 IndexAssertionEventSend eventSendAssertion = () => {
-                    var fields = new[] {"S2", "ssb1[0].S1", "ssb1[0].I1"};
+                    var fields = "S2,ssb1[0].S1,ssb1[0].I1".SplitCsv();
                     env.SendEventBean(new SupportSimpleBeanTwo("E2", 50, 21, 22));
-                    EPAssertionUtil.AssertProps(
-                        env.Listener("s0").AssertOneGetNewAndReset(),
-                        fields,
-                        new object[] {"E2", "E2", 20});
+                    env.AssertPropsNew("s0", fields, new object[] { "E2", "E2", 20 });
                     env.SendEventBean(new SupportSimpleBeanTwo("E1", 60, 11, 12));
-                    EPAssertionUtil.AssertProps(
-                        env.Listener("s0").AssertOneGetNewAndReset(),
-                        fields,
-                        new object[] {"E1", "E1", 10});
+                    env.AssertPropsNew("s0", fields, new object[] { "E1", "E1", 10 });
                 };
 
                 // no index one field (essentially duplicated since declared std:unique)
@@ -449,7 +392,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     primaryIndex,
                     preloadedEventsOne,
                     "std:unique(S1)",
-                    new[] {
+                    new IndexAssertion[] {
                         new IndexAssertion(
                             null,
                             "S1 = ssb2.S2",
@@ -467,12 +410,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                             "S1 = ssb2.S2 and L1 = ssb2.L2",
                             primaryIndexTable,
                             backingUniqueS1,
-                            eventSendAssertion)
+                            eventSendAssertion),
                     });
 
                 // single index one field (essentially duplicated since declared std:unique)
                 if (namedWindow) {
-                    string[] indexOneField = {"create unique index One on MyInfra (S1)"};
+                    var indexOneField = new string[] { "create unique index One on MyInfra (S1)" };
                     AssertIndexChoice(
                         env,
                         namedWindow,
@@ -480,7 +423,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                         indexOneField,
                         preloadedEventsOne,
                         "std:unique(S1)",
-                        new[] {
+                        new IndexAssertion[] {
                             new IndexAssertion(null, "S1 = ssb2.S2", "One", backingUniqueS1, eventSendAssertion),
                             new IndexAssertion(
                                 null,
@@ -493,7 +436,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                                 "S1 = ssb2.S2 and L1 = ssb2.L2",
                                 "One",
                                 backingUniqueS1,
-                                eventSendAssertion)
+                                eventSendAssertion),
                         });
                 }
 
@@ -507,7 +450,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     indexTwoField,
                     preloadedEventsOne,
                     "std:unique(S1)",
-                    new[] {
+                    new IndexAssertion[] {
                         new IndexAssertion(
                             null,
                             "S1 = ssb2.S2",
@@ -519,11 +462,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                             "S1 = ssb2.S2 and L1 = ssb2.L2",
                             "One",
                             backingUniqueS1L1,
-                            eventSendAssertion)
+                            eventSendAssertion),
                     });
 
                 // two index one unique with std:unique(S1)
-                string[] indexSetTwo = {
+                var indexSetTwo = new string[] {
                     "create index One on MyInfra (S1)",
                     "create unique index Two on MyInfra (S1, D1)"
                 };
@@ -534,7 +477,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     indexSetTwo,
                     preloadedEventsOne,
                     "std:unique(S1)",
-                    new[] {
+                    new IndexAssertion[] {
                         new IndexAssertion(null, "D1 = ssb2.D2", null, null, eventSendAssertion),
                         new IndexAssertion(
                             null,
@@ -584,7 +527,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     indexSetTwo,
                     preloadedEventsOne,
                     "win:keepall()",
-                    new[] {
+                    new IndexAssertion[] {
                         new IndexAssertion(null, "D1 = ssb2.D2", null, null, eventSendAssertion),
                         new IndexAssertion(
                             null,
@@ -628,7 +571,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 // range
                 IndexAssertionEventSend noAssertion = () => { };
-                string[] indexSetThree = {
+
+                var indexSetThree = new string[] {
                     "create index One on MyInfra (I1 btree)",
                     "create index Two on MyInfra (D1 btree)"
                 };
@@ -639,17 +583,22 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     indexSetThree,
                     preloadedEventsOne,
                     "std:unique(S1)",
-                    new[] {
+                    new IndexAssertion[] {
                         new IndexAssertion(null, "I1 between 1 and 10", "One", backingBtreeI1, noAssertion),
                         new IndexAssertion(null, "D1 between 1 and 10", "Two", backingBtreeD1, noAssertion),
-                        new IndexAssertion("@Hint('index(One, bust)')", "D1 between 1 and 10") // busted
+                        new IndexAssertion("@Hint('index(One, bust)')", "D1 between 1 and 10"), // busted
                     });
 
                 env.UndeployAll();
             }
+
+            public string Name()
+            {
+                return $"{this.GetType().Name}{{namedWindow={namedWindow}}}";
+            }
         }
 
-        internal class InfraNWTableSubqCorrelIndexMultipleIndexHints : RegressionExecution
+        private class InfraNWTableSubqCorrelIndexMultipleIndexHints : RegressionExecution
         {
             private readonly bool namedWindow;
 
@@ -662,8 +611,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             {
                 var path = new RegressionPath();
                 var eplCreate = namedWindow
-                    ? "@Hint('enable_window_subquery_indexshare') create window MyInfraMIH#keepall as select * from SupportSimpleBeanOne"
-                    : "create table MyInfraMIH(S1 String primary key, I1 int primary key, D1 double primary key, L1 long primary key)";
+                    ? "@Hint('enable_window_subquery_indexshare') @public create window MyInfraMIH#keepall as select * from SupportSimpleBeanOne"
+                    : "@public create table MyInfraMIH(S1 String primary key, I1 int  primary key, D1 double primary key, L1 long primary key)";
                 env.CompileDeploy(eplCreate, path);
                 env.CompileDeploy("create unique index I1 on MyInfraMIH (S1)", path);
                 env.CompileDeploy("create unique index I2 on MyInfraMIH (I1)", path);
@@ -677,34 +626,107 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     "(select * from MyInfraMIH where I1 = ssb2.I2 and S1 = ssb2.S2) as sub2 " +
                     "from SupportSimpleBeanTwo ssb2",
                     path);
-                var subqueries = SupportQueryPlanIndexHook.GetAndResetSubqueries();
-                subqueries.SortInPlace(
-                    (
-                        o1,
-                        o2) => {
-                        return o1.Tables[0].IndexName.CompareTo(o2.Tables[0].IndexName);
+                var subqueries = SupportQueryPlanIndexHook.GetAndResetSubqueries()
+                    .OrderBy(_ => _.Tables[0].IndexName)
+                    .ToList();
+                env.AssertThat(
+                    () => {
+                        SupportQueryPlanIndexHook.AssertSubquery(
+                            subqueries[0],
+                            1,
+                            "I1",
+                            "unique hash={S1(string)} btree={} advanced={}");
+                        SupportQueryPlanIndexHook.AssertSubquery(
+                            subqueries[1],
+                            0,
+                            "I2",
+                            "unique hash={I1(int)} btree={} advanced={}");
                     });
-                SupportQueryPlanIndexHook.AssertSubquery(
-                    subqueries[0],
-                    1,
-                    "I1",
-                    "unique hash={S1(string)} btree={} advanced={}");
-                SupportQueryPlanIndexHook.AssertSubquery(
-                    subqueries[1],
-                    0,
-                    "I2",
-                    "unique hash={I1(int)} btree={} advanced={}");
 
                 env.UndeployAll();
             }
+
+            public string Name()
+            {
+                return $"{this.GetType().Name}{{namedWindow={namedWindow}}}";
+            }
         }
 
-        internal class InfraNWTableSubqCorrelIndexAssertion : RegressionExecution
+        private static void AssertIndexChoice(
+            RegressionEnvironment env,
+            bool namedWindow,
+            bool indexShare,
+            string[] indexes,
+            object[] preloadedEvents,
+            string datawindow,
+            IndexAssertion[] assertions)
         {
-            private readonly bool createExplicitIndex;
-            private readonly bool disableIndexShareConsumer;
-            private readonly bool enableIndexShareCreate;
+            var path = new RegressionPath();
+            var epl = namedWindow
+                ? "@public create window MyInfra." + datawindow + " as select * from SupportSimpleBeanOne"
+                : "@public create table MyInfra(S1 string primary key, I1 int, D1 double, L1 long)";
+            if (indexShare) {
+                epl = "@Hint('enable_window_subquery_indexshare') " + epl;
+            }
+
+            env.CompileDeploy(epl, path);
+            env.CompileDeploy("insert into MyInfra select * from SupportSimpleBeanOne", path);
+            foreach (var index in indexes) {
+                env.CompileDeploy(index, path);
+            }
+
+            foreach (var @event in preloadedEvents) {
+                env.SendEventBean(@event);
+            }
+
+            var count = 0;
+            foreach (var assertion in assertions) {
+                Log.Info("======= Testing #" + count++);
+                var consumeEpl = INDEX_CALLBACK_HOOK +
+                                 "@name('s0') " +
+                                 (assertion.Hint == null ? "" : assertion.Hint) +
+                                 "select *, " +
+                                 "(select * from MyInfra where " +
+                                 assertion.WhereClause +
+                                 ") @eventbean as ssb1 from SupportSimpleBeanTwo as ssb2";
+
+                if (assertion.EventSendAssertion == null) {
+                    env.AssertThat(
+                        () => {
+                            try {
+                                env.CompileWCheckedEx(consumeEpl, path);
+                                Assert.Fail();
+                            }
+                            catch (EPCompileException ex) {
+                                // no assertion, expected
+                                ClassicAssert.IsTrue(ex.Message.Contains("index hint busted"));
+                            }
+                        });
+                    continue;
+                }
+
+                env.CompileDeploy(consumeEpl, path);
+
+                // assert index and access
+                env.AssertThat(
+                    () => SupportQueryPlanIndexHook.AssertSubqueryBackingAndReset(
+                        0,
+                        assertion.ExpectedIndexName,
+                        assertion.IndexBackingClass));
+                env.AddListener("s0");
+                assertion.EventSendAssertion.Invoke();
+                env.UndeployModuleContaining("s0");
+            }
+
+            env.UndeployAll();
+        }
+
+        private class InfraNWTableSubqCorrelIndexAssertion : RegressionExecution
+        {
             private readonly bool namedWindow;
+            private readonly bool enableIndexShareCreate;
+            private readonly bool disableIndexShareConsumer;
+            private readonly bool createExplicitIndex;
             private readonly bool setNoindex;
 
             public InfraNWTableSubqCorrelIndexAssertion(
@@ -725,8 +747,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             {
                 var path = new RegressionPath();
                 var createEpl = namedWindow
-                    ? "create window MyInfraNWT#unique(TheString) as (TheString string, IntPrimitive int)"
-                    : "create table MyInfraNWT(TheString string primary key, IntPrimitive int)";
+                    ? "@public create window MyInfraNWT#unique(TheString) as (TheString string, IntPrimitive int)"
+                    : "@public create table MyInfraNWT(TheString string primary key, IntPrimitive int)";
                 if (enableIndexShareCreate) {
                     createEpl = "@Hint('enable_window_subquery_indexshare') " + createEpl;
                 }
@@ -735,11 +757,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 env.CompileDeploy("insert into MyInfraNWT select TheString, IntPrimitive from SupportBean", path);
 
                 if (createExplicitIndex) {
-                    env.CompileDeploy("@Name('index') create index MyIndex on MyInfraNWT (TheString)", path);
+                    env.CompileDeploy("@name('index') create index MyIndex on MyInfraNWT (TheString)", path);
                 }
 
                 var consumeEpl =
-                    "@Name('s0') select status.*, (select * from MyInfraNWT where TheString = SupportBean_S0.P00) @eventbean as details from SupportBean_S0 as status";
+                    "@name('s0') select status.*, (select * from MyInfraNWT where TheString = SupportBean_S0.P00) @eventbean as details from SupportBean_S0 as status";
                 if (disableIndexShareConsumer) {
                     consumeEpl = "@Hint('disable_window_subquery_indexshare') " + consumeEpl;
                 }
@@ -750,46 +772,51 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 env.CompileDeploy(consumeEpl, path).AddListener("s0");
 
-                var fields = new[] {"Id", "details[0].TheString", "details[0].IntPrimitive"};
+                var fields = "Id,details[0].TheString,details[0].IntPrimitive".SplitCsv();
 
                 env.SendEventBean(new SupportBean("E1", 10));
                 env.SendEventBean(new SupportBean("E2", 20));
                 env.SendEventBean(new SupportBean("E3", 30));
 
                 env.SendEventBean(new SupportBean_S0(1, "E1"));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {1, "E1", 10});
+                env.AssertPropsNew("s0", fields, new object[] { 1, "E1", 10 });
 
                 env.SendEventBean(new SupportBean_S0(2, "E2"));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {2, "E2", 20});
+                env.AssertPropsNew("s0", fields, new object[] { 2, "E2", 20 });
 
                 // test late start
                 env.UndeployModuleContaining("s0");
                 env.CompileDeploy(consumeEpl, path).AddListener("s0");
 
                 env.SendEventBean(new SupportBean_S0(1, "E1"));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {1, "E1", 10});
+                env.AssertPropsNew("s0", fields, new object[] { 1, "E1", 10 });
 
                 env.SendEventBean(new SupportBean_S0(2, "E2"));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {2, "E2", 20});
+                env.AssertPropsNew("s0", fields, new object[] { 2, "E2", 20 });
 
                 env.UndeployModuleContaining("s0");
-                if (env.Statement("index") != null) {
+                if (createExplicitIndex) {
                     env.UndeployModuleContaining("index");
                 }
 
                 env.UndeployAll();
+            }
+
+            public string Name()
+            {
+                return this.GetType().Name +
+                       "{" +
+                       "namedWindow=" +
+                       namedWindow +
+                       ", enableIndexShareCreate=" +
+                       enableIndexShareCreate +
+                       ", disableIndexShareConsumer=" +
+                       disableIndexShareConsumer +
+                       ", createExplicitIndex=" +
+                       createExplicitIndex +
+                       ", setNoindex=" +
+                       setNoindex +
+                       '}';
             }
         }
     }

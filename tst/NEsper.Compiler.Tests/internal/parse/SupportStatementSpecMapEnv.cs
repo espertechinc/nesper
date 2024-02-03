@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -25,6 +25,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 		public static StatementSpecMapEnv Make(ImportServiceCompileTime engineImportService)
 		{
 			return new StatementSpecMapEnv(
+				engineImportService.Container,
 				engineImportService,
 				VariableCompileTimeResolverEmpty.INSTANCE,
 				new Configuration(),
@@ -38,7 +39,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 
 		public static StatementSpecMapEnv Make(IContainer container)
 		{
-			return Make(SupportClasspathImport.GetInstance(container));
+			return Make(SupportImport.GetInstance(container));
 		}
 	}
 } // end of namespace

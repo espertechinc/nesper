@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -24,11 +24,9 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
             string contextName,
             string name)
         {
-            string nameTrim = name.ToLowerInvariant().Trim();
-            foreach (HashFunctionEnum val in EnumHelper.GetValues<HashFunctionEnum>())
-            {
-                if (val.GetName().ToLowerInvariant().Trim() == nameTrim)
-                {
+            var nameTrim = name.ToLowerInvariant().Trim();
+            foreach (var val in EnumHelper.GetValues<HashFunctionEnum>()) {
+                if (val.GetName().ToLowerInvariant().Trim() == nameTrim) {
                     return val;
                 }
             }
@@ -38,10 +36,9 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
 
         public static string GetStringList()
         {
-            StringWriter message = new StringWriter();
-            string delimiter = "";
-            foreach (HashFunctionEnum val in EnumHelper.GetValues<HashFunctionEnum>())
-            {
+            var message = new StringWriter();
+            var delimiter = "";
+            foreach (var val in EnumHelper.GetValues<HashFunctionEnum>()) {
                 message.Write(delimiter);
                 message.Write(val.GetName().ToLowerInvariant().Trim());
                 delimiter = ", ";

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -24,21 +24,21 @@ namespace com.espertech.esper.runtime.@internal.dataflow.op.beaconsource
 {
     public class BeaconSourceOp : DataFlowSourceOperator
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private readonly Pair<EventPropertyWriter, object>[] additionalProperties;
-        private readonly BeaconSourceFactory factory;
-        private readonly long initialDelayMSec;
-        private readonly long iterations;
-        private readonly long periodDelayMSec;
+        private readonly Pair<EventPropertyWriter, object>[] _additionalProperties;
+        private readonly BeaconSourceFactory _factory;
+        private readonly long _initialDelayMSec;
+        private readonly long _iterations;
+        private readonly long _periodDelayMSec;
 
 #pragma warning disable 649
-        [DataFlowContext] private EPDataFlowEmitter graphContext;
+        [DataFlowContext] private EPDataFlowEmitter _graphContext;
 #pragma warning restore 649
 
-        private long iterationNumber;
+        private long _iterationNumber;
 
-        private long lastSendTime;
+        private long _lastSendTime;
 
         public BeaconSourceOp(
             BeaconSourceFactory factory,
@@ -47,13 +47,13 @@ namespace com.espertech.esper.runtime.@internal.dataflow.op.beaconsource
             long periodDelayMSec,
             IDictionary<string, object> additionalParameters)
         {
-            this.factory = factory;
-            this.iterations = iterations;
-            this.initialDelayMSec = initialDelayMSec;
-            this.periodDelayMSec = periodDelayMSec;
+            this._factory = factory;
+            this._iterations = iterations;
+            this._initialDelayMSec = initialDelayMSec;
+            this._periodDelayMSec = periodDelayMSec;
 
             if (additionalParameters != null) {
-                additionalProperties = new Pair<EventPropertyWriter, object>[additionalParameters.Count];
+                _additionalProperties = new Pair<EventPropertyWriter, object>[additionalParameters.Count];
                 var count = 0;
                 foreach (var param in additionalParameters) {
                     EventPropertyWriter writer = ((EventTypeSPI) factory.OutputEventType).GetWriter(param.Key);
@@ -62,41 +62,41 @@ namespace com.espertech.esper.runtime.@internal.dataflow.op.beaconsource
                             "Failed to find writer for property '" + param.Key + "' for event type '" + factory.OutputEventType.Name + "'");
                     }
 
-                    additionalProperties[count++] = new Pair<EventPropertyWriter, object>(writer, param.Value);
+                    _additionalProperties[count++] = new Pair<EventPropertyWriter, object>(writer, param.Value);
                 }
             }
         }
 
         public void Next()
         {
-            if (iterationNumber == 0 && initialDelayMSec > 0) {
+            if (_iterationNumber == 0 && _initialDelayMSec > 0) {
                 try {
-                    Thread.Sleep((int) initialDelayMSec);
+                    Thread.Sleep((int) _initialDelayMSec);
                 }
                 catch (ThreadInterruptedException) {
-                    graphContext.SubmitSignal(new EPDataFlowSignalFinalMarkerImpl());
+                    _graphContext.SubmitSignal(new EPDataFlowSignalFinalMarkerImpl());
                 }
             }
 
-            if (iterationNumber > 0 && periodDelayMSec > 0) {
-                var nsecDelta = lastSendTime - PerformanceObserver.NanoTime;
-                var sleepTime = periodDelayMSec - nsecDelta / 1000000;
+            if (_iterationNumber > 0 && _periodDelayMSec > 0) {
+                var nsecDelta = _lastSendTime - PerformanceObserver.NanoTime;
+                var sleepTime = _periodDelayMSec - nsecDelta / 1000000;
                 if (sleepTime > 0) {
                     try {
                         Thread.Sleep((int) sleepTime);
                     }
                     catch (ThreadInterruptedException) {
-                        graphContext.SubmitSignal(new EPDataFlowSignalFinalMarkerImpl());
+                        _graphContext.SubmitSignal(new EPDataFlowSignalFinalMarkerImpl());
                     }
                 }
             }
 
-            if (iterations > 0 && iterationNumber >= iterations) {
-                graphContext.SubmitSignal(new EPDataFlowSignalFinalMarkerImpl());
+            if (_iterations > 0 && _iterationNumber >= _iterations) {
+                _graphContext.SubmitSignal(new EPDataFlowSignalFinalMarkerImpl());
             }
             else {
-                iterationNumber++;
-                ExprEvaluator[] evaluators = factory.PropertyEvaluators;
+                _iterationNumber++;
+                ExprEvaluator[] evaluators = _factory.PropertyEvaluators;
                 if (evaluators != null) {
                     var row = new object[evaluators.Length];
                     for (var i = 0; i < row.Length; i++) {
@@ -105,30 +105,30 @@ namespace com.espertech.esper.runtime.@internal.dataflow.op.beaconsource
                         }
                     }
 
-                    if (log.IsDebugEnabled) {
-                        log.Debug("BeaconSource submitting row " + row.RenderAny());
+                    if (Log.IsDebugEnabled) {
+                        Log.Debug("BeaconSource submitting row " + row.RenderAny());
                     }
 
-                    EventBeanManufacturer manufacturer = factory.Manufacturer;
+                    EventBeanManufacturer manufacturer = _factory.Manufacturer;
                     if (manufacturer == null) {
                         SubmitAndDone(row);
                         return;
                     }
 
-                    if (!factory.IsProduceEventBean && additionalProperties == null) {
+                    if (!_factory.IsProduceEventBean && _additionalProperties == null) {
                         var outputEvent = manufacturer.MakeUnderlying(row);
                         SubmitAndDone(outputEvent);
                         return;
                     }
 
                     var @event = manufacturer.Make(row);
-                    if (additionalProperties != null) {
-                        foreach (var pair in additionalProperties) {
+                    if (_additionalProperties != null) {
+                        foreach (var pair in _additionalProperties) {
                             pair.First.Write(pair.Second, @event);
                         }
                     }
 
-                    if (!factory.IsProduceEventBean) {
+                    if (!_factory.IsProduceEventBean) {
                         SubmitAndDone(@event.Underlying);
                         return;
                     }
@@ -136,8 +136,8 @@ namespace com.espertech.esper.runtime.@internal.dataflow.op.beaconsource
                     SubmitAndDone(@event);
                 }
                 else {
-                    if (log.IsDebugEnabled) {
-                        log.Debug("BeaconSource submitting empty row");
+                    if (Log.IsDebugEnabled) {
+                        Log.Debug("BeaconSource submitting empty row");
                     }
 
                     SubmitAndDone(new object[0]);
@@ -148,10 +148,10 @@ namespace com.espertech.esper.runtime.@internal.dataflow.op.beaconsource
 
         private void SubmitAndDone(object row)
         {
-            graphContext.Submit(row);
-            if (periodDelayMSec > 0)
+            _graphContext.Submit(row);
+            if (_periodDelayMSec > 0)
             {
-                lastSendTime = PerformanceObserver.NanoTime;
+                _lastSendTime = PerformanceObserver.NanoTime;
             }
         }
 

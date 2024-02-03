@@ -1,28 +1,27 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-
 namespace com.espertech.esper.compat
 {
-    public class NoCache<K,V> : ICache<K,V> where K : class
+    public class NoCache<TK,TV> : ICache<TK,TV> where TK : class
     {
-        public bool TryGet(K key, out V value)
+        public bool TryGet(TK key, out TV value)
         {
-            value = default(V);
+            value = default(TV);
             return false;
         }
 
-        public V Get(K key)
+        public TV Get(TK key)
         {
-            return default(V);
+            return default(TV);
         }
 
-        public V Put(K key, V value)
+        public TV Put(TK key, TV value)
         {
             return value;
         }

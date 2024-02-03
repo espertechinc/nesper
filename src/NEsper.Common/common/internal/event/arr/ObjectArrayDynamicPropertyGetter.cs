@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -110,12 +110,12 @@ namespace com.espertech.esper.common.@internal.@event.arr
             EventBean eventBean,
             string propertyName)
         {
-            var objectArrayEventType = (ObjectArrayEventType) eventBean.EventType;
+            var objectArrayEventType = (ObjectArrayEventType)eventBean.EventType;
             if (!objectArrayEventType.PropertiesIndexes.TryGetValue(propertyName, out var index)) {
                 return null;
             }
 
-            var theEvent = (object[]) eventBean.Underlying;
+            var theEvent = (object[])eventBean.Underlying;
             return theEvent[index];
         }
 
@@ -129,7 +129,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
             EventBean eventBean,
             string propertyName)
         {
-            var objectArrayEventType = (ObjectArrayEventType) eventBean.EventType;
+            var objectArrayEventType = (ObjectArrayEventType)eventBean.EventType;
             return objectArrayEventType.PropertiesIndexes.TryGetValue(propertyName, out var index);
         }
     }

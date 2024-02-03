@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -15,7 +15,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// A for-clause is a means to specify listener and observer delivery.
     /// </summary>
-    [Serializable]
     public class ForClause
     {
         /// <summary>
@@ -41,9 +40,8 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="writer">to output to</param>
         public void ToEPL(TextWriter writer)
         {
-            string delimiter = "";
-            foreach (ForClauseItem child in Items)
-            {
+            var delimiter = "";
+            foreach (var child in Items) {
                 writer.Write(delimiter);
                 child.ToEPL(writer);
                 delimiter = " ";

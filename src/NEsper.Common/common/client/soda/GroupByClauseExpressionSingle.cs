@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -15,7 +15,6 @@ namespace com.espertech.esper.common.client.soda
     /// Represents a single expression (non-combined, rollup/cube or grouping set) as part
     /// of a group-by expression.
     /// </summary>
-    [Serializable]
     public class GroupByClauseExpressionSingle : GroupByClauseExpression
     {
         private Expression _expression;
@@ -34,10 +33,9 @@ namespace com.espertech.esper.common.client.soda
 
         /// <summary>Returns the expression. </summary>
         /// <value>expressions</value>
-        public Expression Expression
-        {
-            get { return _expression; }
-            set { _expression = value; }
+        public Expression Expression {
+            get => _expression;
+            set => _expression = value;
         }
 
         public void ToEPL(TextWriter writer)

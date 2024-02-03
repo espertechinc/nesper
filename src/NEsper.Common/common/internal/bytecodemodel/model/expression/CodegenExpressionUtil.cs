@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -28,7 +28,8 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        public static bool CanRenderConstant(object constant) {
+        public static bool CanRenderConstant(object constant)
+        {
             switch (constant) {
                 case string _:
                 case char _:
@@ -44,7 +45,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
                 case BigInteger _:
                 case Array _:
                 case Type _:
+                case StringBuilder _:
                     return true;
+
                 default:
                     return constant.GetType().IsEnum;
             }
@@ -62,43 +65,49 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
                 // StringEscapeUtils.EscapeJava((string) constant));
                 builder.Append(Literal(stringConstant).ToFullString());
             }
-            else if (constant is char) {
-                builder.Append(Literal((char) constant).ToFullString());
+            else if (constant is char c) {
+                builder.Append(Literal(c).ToFullString());
             }
             else if (constant == null) {
                 builder.Append("null");
             }
-            else if (constant is int) {
-                builder.Append(Literal((int) constant).ToFullString());
+            else if (constant is int i) {
+                builder.Append(Literal(i).ToFullString());
             }
-            else if (constant is long) {
-                builder.Append(Literal((long) constant).ToFullString());
+            else if (constant is long l) {
+                builder.Append(Literal(l).ToFullString());
             }
-            else if (constant is float) {
-                builder.Append(Literal((float) constant).ToFullString());
+            else if (constant is float f) {
+                var literal = Literal(f).ToFullString();
+                if (!literal.EndsWith("f") && !literal.EndsWith("F")) {
+                    literal += "f";
+                }
+
+                builder.Append(literal);
             }
-            else if (constant is double) {
-                var literal = Literal((double) constant).ToFullString();
+            else if (constant is double d) {
+                var literal = Literal(d).ToFullString();
                 if (!literal.EndsWith("d")) {
                     literal += "d";
                 }
+
                 builder.Append(literal);
             }
-            else if (constant is decimal) {
-                var literal = Literal((decimal) constant).ToFullString();
+            else if (constant is decimal constant1) {
+                var literal = Literal(constant1).ToFullString();
                 if (!literal.EndsWith("m") && !literal.EndsWith("M")) {
                     literal += "m";
                 }
 
                 builder.Append(literal);
             }
-            else if (constant is short) {
+            else if (constant is short s) {
                 builder.Append("(short) ");
-                builder.Append(Literal((short) constant).ToFullString());
+                builder.Append(Literal(s).ToFullString());
             }
-            else if (constant is byte) {
+            else if (constant is byte b) {
                 builder.Append("(byte)");
-                builder.Append(Literal((byte) constant).ToFullString());
+                builder.Append(Literal(b).ToFullString());
             }
             else if (constant is bool booleanConstant) {
                 builder.Append(booleanConstant ? "true" : "false");
@@ -106,11 +115,11 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             else if (constant is Array asArray) {
                 RenderArray(builder, asArray);
             }
-            else if (constant is Type) {
-                CodegenExpressionClass.RenderClass((Type) constant, builder);
+            else if (constant is Type type) {
+                CodegenExpressionClass.RenderClass(type, builder);
             }
-            else if (constant is BigInteger) {
-                RenderBigInteger((BigInteger) constant, builder);
+            else if (constant is BigInteger integer) {
+                RenderBigInteger(integer, builder);
             }
             else if (constant.GetType().IsEnum) {
                 AppendClassName(builder, constant.GetType());
@@ -159,7 +168,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
         {
             return SeparatedList<ExpressionSyntax>(
                 byteArray
-                    .Select(b => (SyntaxNodeOrToken) ToSyntax(b))
+                    .Select(b => (SyntaxNodeOrToken)ToSyntax(b))
                     .ToArray());
         }
 

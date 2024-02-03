@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -38,11 +38,11 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             ExprEvaluator evalIncludeLow,
             ExprEvaluator evalIncludeHigh)
         {
-            this._forge = forge;
-            this._startEval = startEval;
-            this._endEval = endEval;
-            this._evalIncludeLow = evalIncludeLow;
-            this._evalIncludeHigh = evalIncludeHigh;
+            _forge = forge;
+            _startEval = startEval;
+            _endEval = endEval;
+            _evalIncludeLow = evalIncludeLow;
+            _evalIncludeHigh = evalIncludeHigh;
         }
 
         public object Evaluate(

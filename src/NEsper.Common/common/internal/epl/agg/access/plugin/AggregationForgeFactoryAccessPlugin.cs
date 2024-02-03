@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -22,28 +22,29 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.plugin
 {
     public class AggregationForgeFactoryAccessPlugin : AggregationForgeFactoryAccessBase
     {
-        private readonly ExprPlugInMultiFunctionAggNode parent;
-        private readonly AggregationMultiFunctionHandler handler;
-        private EPType returnType;
+        private readonly ExprPlugInMultiFunctionAggNode _parent;
+        private readonly AggregationMultiFunctionHandler _handler;
+        private EPChainableType _returnType;
 
         public AggregationForgeFactoryAccessPlugin(
             ExprPlugInMultiFunctionAggNode parent,
             AggregationMultiFunctionHandler handler)
         {
-            this.parent = parent;
-            this.handler = handler;
+            _parent = parent;
+            _handler = handler;
         }
 
         public override AggregationMultiFunctionStateKey GetAggregationStateKey(bool isMatchRecognize)
         {
-            return handler.AggregationStateUniqueKey;
+            return _handler.AggregationStateUniqueKey;
         }
 
-        public override AggregationStateFactoryForge GetAggregationStateFactory(bool isMatchRecognize)
+        public override AggregationStateFactoryForge GetAggregationStateFactory(
+            bool isMatchRecognize,
+            bool isJoin)
         {
-            AggregationMultiFunctionStateMode stateMode = handler.StateMode;
-            if (stateMode is AggregationMultiFunctionStateModeManaged) {
-                AggregationMultiFunctionStateModeManaged managed = (AggregationMultiFunctionStateModeManaged) stateMode;
+            var stateMode = _handler.StateMode;
+            if (stateMode is AggregationMultiFunctionStateModeManaged managed) {
                 return new AggregationStateFactoryForgePlugin(this, managed);
             }
             else {
@@ -53,10 +54,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.plugin
 
         public override AggregationAccessorForge AccessorForge {
             get {
-                AggregationMultiFunctionAccessorMode accessorMode = handler.AccessorMode;
-                if (accessorMode is AggregationMultiFunctionAccessorModeManaged) {
-                    AggregationMultiFunctionAccessorModeManaged managed =
-                        (AggregationMultiFunctionAccessorModeManaged) accessorMode;
+                var accessorMode = _handler.AccessorMode;
+                if (accessorMode is AggregationMultiFunctionAccessorModeManaged managed) {
                     return new AggregationAccessorForgePlugin(this, managed);
                 }
                 else {
@@ -69,13 +68,12 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.plugin
             ImportService importService,
             string statementName)
         {
-            AggregationMultiFunctionAgentMode agentMode = handler.AgentMode;
-            if (agentMode is AggregationMultiFunctionAgentModeManaged) {
-                AggregationMultiFunctionAgentModeManaged managed = (AggregationMultiFunctionAgentModeManaged) agentMode;
+            var agentMode = _handler.AgentMode;
+            if (agentMode is AggregationMultiFunctionAgentModeManaged managed) {
                 return new AggregationAgentForgePlugin(
                     this,
                     managed,
-                    parent.OptionalFilter == null ? null : parent.OptionalFilter.Forge);
+                    _parent.OptionalFilter?.Forge);
             }
             else {
                 throw new IllegalStateException("Unrecognized accessor mode " + agentMode);
@@ -85,19 +83,17 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.plugin
         public override Type ResultType {
             get {
                 ObtainReturnType();
-                return EPTypeHelper.GetNormalizedClass(returnType);
+                return _returnType.GetNormalizedType();
             }
         }
 
-        public override ExprAggregateNodeBase AggregationExpression {
-            get => parent;
-        }
+        public override ExprAggregateNodeBase AggregationExpression => _parent;
 
         public override AggregationPortableValidation AggregationPortableValidation {
             get {
                 var portable = new AggregationPortableValidationPluginMultiFunc();
-                portable.Handler = handler;
-                portable.AggregationFunctionName = parent.AggregationFunctionName;
+                portable.Handler = _handler;
+                portable.AggregationFunctionName = _parent.AggregationFunctionName;
                 return portable;
             }
         }
@@ -105,28 +101,28 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.plugin
         public EventType EventTypeCollection {
             get {
                 ObtainReturnType();
-                return EPTypeHelper.GetEventTypeMultiValued(returnType);
+                return EPChainableTypeHelper.GetEventTypeMultiValued(_returnType);
             }
         }
 
         public EventType EventTypeSingle {
             get {
                 ObtainReturnType();
-                return EPTypeHelper.GetEventTypeSingleValued(returnType);
+                return EPChainableTypeEventSingle.FromInputOrNull(_returnType);
             }
         }
 
         public Type ComponentTypeCollection {
             get {
                 ObtainReturnType();
-                return EPTypeHelper.GetClassMultiValued(returnType);
+                return EPChainableTypeHelper.GetCollectionOrArrayComponentTypeOrNull(_returnType);
             }
         }
 
         private void ObtainReturnType()
         {
-            if (returnType == null) {
-                returnType = handler.ReturnType;
+            if (_returnType == null) {
+                _returnType = _handler.ReturnType;
             }
         }
     }

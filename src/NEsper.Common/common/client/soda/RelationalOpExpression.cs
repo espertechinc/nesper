@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     ///     Comparison using one of the relational operators (=, !=, &lt;, &lt;=, &gt;, &gt;=, is, is not).
     /// </summary>
-    [Serializable]
     public class RelationalOpExpression : ExpressionBase
     {
         private string @operator;
@@ -49,12 +48,10 @@ namespace com.espertech.esper.common.client.soda
             this.@operator = @operator.Trim();
             AddChild(left);
 
-            if (right != null)
-            {
+            if (right != null) {
                 AddChild(right);
             }
-            else
-            {
+            else {
                 AddChild(new ConstantExpression(null));
             }
         }
@@ -63,17 +60,14 @@ namespace com.espertech.esper.common.client.soda
         ///     Returns the operator to use.
         /// </summary>
         /// <returns>operator.</returns>
-        public string Operator
-        {
+        public string Operator {
             get => @operator;
             set => @operator = value;
         }
 
-        public override ExpressionPrecedenceEnum Precedence
-        {
+        public override ExpressionPrecedenceEnum Precedence {
             get {
-                if (@operator.Equals("="))
-                {
+                if (@operator.Equals("=")) {
                     return ExpressionPrecedenceEnum.EQUALS;
                 }
 
@@ -85,14 +79,12 @@ namespace com.espertech.esper.common.client.soda
         {
             Children[0].ToEPL(writer, Precedence);
             if (@operator.ToLowerInvariant().Trim().Equals("is") ||
-                @operator.ToLowerInvariant().Trim().Equals("is not"))
-            {
+                @operator.ToLowerInvariant().Trim().Equals("is not")) {
                 writer.Write(' ');
                 writer.Write(@operator);
                 writer.Write(' ');
             }
-            else
-            {
+            else {
                 writer.Write(@operator);
             }
 

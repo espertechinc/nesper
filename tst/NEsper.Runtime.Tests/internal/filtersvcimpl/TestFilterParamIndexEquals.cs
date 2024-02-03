@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -16,6 +16,7 @@ using com.espertech.esper.compat.threading.locks;
 using com.espertech.esper.runtime.@internal.support;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 {
@@ -47,7 +48,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
         {
             testBean.ShortBoxed = testValue;
             index.MatchEvent(testEventBean, matchesList, null);
-            Assert.AreEqual(numExpected, testEvaluator.GetAndResetCountInvoked());
+            ClassicAssert.AreEqual(numExpected, testEvaluator.GetAndResetCountInvoked());
         }
 
         private void VerifyBooleanPrimitive(
@@ -57,7 +58,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
         {
             testBean.BoolPrimitive = testValue;
             index.MatchEvent(testEventBean, matchesList, null);
-            Assert.AreEqual(numExpected, testEvaluator.GetAndResetCountInvoked());
+            ClassicAssert.AreEqual(numExpected, testEvaluator.GetAndResetCountInvoked());
         }
 
         private void VerifyString(
@@ -67,7 +68,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
         {
             testBean.TheString = testValue;
             index.MatchEvent(testEventBean, matchesList, null);
-            Assert.AreEqual(numExpected, testEvaluator.GetAndResetCountInvoked());
+            ClassicAssert.AreEqual(numExpected, testEvaluator.GetAndResetCountInvoked());
         }
 
         private void VerifyFloatPrimitive(
@@ -77,7 +78,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
         {
             testBean.FloatPrimitive = testValue;
             index.MatchEvent(testEventBean, matchesList, null);
-            Assert.AreEqual(numExpected, testEvaluator.GetAndResetCountInvoked());
+            ClassicAssert.AreEqual(numExpected, testEvaluator.GetAndResetCountInvoked());
         }
 
         private FilterParamIndexEquals MakeOne(
@@ -129,11 +130,11 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             VerifyShortBoxed(index, 20, 1);
             VerifyShortBoxed(index, null, 0);
 
-            Assert.AreEqual(testEvaluator, index.Get((short) 1));
-            Assert.IsTrue(index.ReadWriteLock != null);
+            ClassicAssert.AreEqual(testEvaluator, index.Get((short) 1));
+            ClassicAssert.IsTrue(index.ReadWriteLock != null);
             index.Remove((short) 1);
             index.Remove((short) 1);
-            Assert.AreEqual(null, index.Get((short) 1));
+            ClassicAssert.AreEqual(null, index.Get((short) 1));
         }
 
         [Test, RunInApplicationDomain]

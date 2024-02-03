@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -14,7 +14,7 @@ using com.espertech.esper.runtime.client;
 using com.espertech.esper.runtime.client.scopetest;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using Configuration = com.espertech.esper.common.client.configuration.Configuration;
 
 namespace NEsper.Examples.MarketDataFeed
@@ -64,7 +64,7 @@ namespace NEsper.Examples.MarketDataFeed
 	        sendEvents(5000, 50, 150);
 	        sendEvents(5500, 50, 50);
 	        sendEvents(6000, 50, 24);
-            Assert.IsFalse(_listener.IsInvoked);
+            ClassicAssert.IsFalse(_listener.IsInvoked);
 	        sendEvents(6500, 50, 50);
 	        sendEvents(7000, 50, 150);
 	        assertReceived(FeedEnum.FEED_B, (200 * 5 + 74) / 6, 74);
@@ -78,7 +78,7 @@ namespace NEsper.Examples.MarketDataFeed
 	        sendEvents(11000, 30, 150);
 	        sendEvents(11500, 50, 50);
 	        sendEvents(12000, 40, 150);
-            Assert.IsFalse(_listener.IsInvoked);
+            ClassicAssert.IsFalse(_listener.IsInvoked);
 	        sendEvents(12500, 30, 150);
 	        sendEvents(13000, 50, 150);
 	        assertReceived(FeedEnum.FEED_A, (100 * 9 + 70) / 10, 70);
@@ -86,12 +86,12 @@ namespace NEsper.Examples.MarketDataFeed
 	
 	    private void assertReceived(FeedEnum feedEnum, double average, long count)
 	    {
-            Assert.IsTrue(_listener.IsInvoked);
-	        Assert.AreEqual(1, _listener.LastNewData.Length);
+            ClassicAssert.IsTrue(_listener.IsInvoked);
+	        ClassicAssert.AreEqual(1, _listener.LastNewData.Length);
 	        var eventBean = _listener.LastNewData[0];
-	        Assert.AreEqual(feedEnum, eventBean["feed"]);
-	        Assert.AreEqual(average, eventBean["avgCnt"]);
-	        Assert.AreEqual(count, eventBean["feedCnt"]);
+	        ClassicAssert.AreEqual(feedEnum, eventBean["feed"]);
+	        ClassicAssert.AreEqual(average, eventBean["avgCnt"]);
+	        ClassicAssert.AreEqual(count, eventBean["feedCnt"]);
 	        _listener.Reset();
 	    }
 	

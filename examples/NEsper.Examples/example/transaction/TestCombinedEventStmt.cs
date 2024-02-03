@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -10,6 +10,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.runtime.client.scopetest;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace NEsper.Examples.Transaction
 {
@@ -38,7 +39,7 @@ namespace NEsper.Examples.Transaction
 	        // send 3 events with C last
 	        SendEvent(a);
 	        SendEvent(b);
-	        Assert.IsFalse(listener.IsInvoked);
+	        ClassicAssert.IsFalse(listener.IsInvoked);
 	        SendEvent(c);
 	        AssertCombinedEvent(a, b, c);
 
@@ -48,14 +49,14 @@ namespace NEsper.Examples.Transaction
 	        c = new TxnEventC("id3", 6, "s2");
 	        SendEvent(a);
 	        SendEvent(b);
-	        Assert.IsFalse(listener.IsInvoked);
+	        ClassicAssert.IsFalse(listener.IsInvoked);
 	        SendEvent(c);
 
 	        // send events with B last
 	        a = new TxnEventA("id3", 7, "c2");
 	        b = new TxnEventB("id3", 8);
 	        SendEvent(a);
-            Assert.IsFalse(listener.IsInvoked);
+            ClassicAssert.IsFalse(listener.IsInvoked);
 	        SendEvent(b);
 	        AssertCombinedEvent(a, b, c);
 
@@ -65,24 +66,24 @@ namespace NEsper.Examples.Transaction
 	        c = new TxnEventC("id6", 11, "s2");
 	        SendEvent(b);
 	        SendEvent(c);
-            Assert.IsFalse(listener.IsInvoked);
+            ClassicAssert.IsFalse(listener.IsInvoked);
 	        SendEvent(a);
 	        AssertCombinedEvent(a, b, c);
 	    }
 
 	    private void AssertCombinedEvent(TxnEventA expectedA, TxnEventB expectedB, TxnEventC expectedC)
 	    {
-            Assert.AreEqual(1, listener.NewDataList.Count);
-	        Assert.AreEqual(1, listener.LastNewData.Length);
+            ClassicAssert.AreEqual(1, listener.NewDataList.Count);
+	        ClassicAssert.AreEqual(1, listener.LastNewData.Length);
 	        EventBean combinedEvent = listener.LastNewData[0];
-	        Assert.AreSame(expectedC.TransactionId, combinedEvent.Get("transactionId"));
-            Assert.AreSame(expectedB.TransactionId, combinedEvent.Get("transactionId"));
-            Assert.AreSame(expectedA.TransactionId, combinedEvent.Get("transactionId"));
-            Assert.AreSame(expectedA.CustomerId, combinedEvent.Get("customerId"));
-            Assert.AreSame(expectedC.SupplierId, combinedEvent.Get("supplierId"));
-            Assert.AreEqual(expectedC.Timestamp - expectedA.Timestamp, combinedEvent.Get("latencyAC"));
-            Assert.AreEqual(expectedB.Timestamp - expectedA.Timestamp, combinedEvent.Get("latencyAB"));
-            Assert.AreEqual(expectedC.Timestamp - expectedB.Timestamp, combinedEvent.Get("latencyBC"));
+	        ClassicAssert.AreSame(expectedC.TransactionId, combinedEvent.Get("transactionId"));
+            ClassicAssert.AreSame(expectedB.TransactionId, combinedEvent.Get("transactionId"));
+            ClassicAssert.AreSame(expectedA.TransactionId, combinedEvent.Get("transactionId"));
+            ClassicAssert.AreSame(expectedA.CustomerId, combinedEvent.Get("customerId"));
+            ClassicAssert.AreSame(expectedC.SupplierId, combinedEvent.Get("supplierId"));
+            ClassicAssert.AreEqual(expectedC.Timestamp - expectedA.Timestamp, combinedEvent.Get("latencyAC"));
+            ClassicAssert.AreEqual(expectedB.Timestamp - expectedA.Timestamp, combinedEvent.Get("latencyAB"));
+            ClassicAssert.AreEqual(expectedC.Timestamp - expectedB.Timestamp, combinedEvent.Get("latencyBC"));
 	        listener.Reset();
 	    }
 	}

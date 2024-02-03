@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -17,7 +17,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     ///     Create a named window, defining the parameter of the named window such as window name and data window view name(s).
     /// </summary>
-    [Serializable]
     public class CreateWindowClause
     {
         private string asEventTypeName;
@@ -46,8 +45,7 @@ namespace com.espertech.esper.common.client.soda
         {
             this.windowName = windowName;
             views = new List<View>();
-            if (viewArr != null)
-            {
+            if (viewArr != null) {
                 views.AddAll(viewArr);
             }
         }
@@ -69,8 +67,7 @@ namespace com.espertech.esper.common.client.soda
         ///     Returns the window name.
         /// </summary>
         /// <returns>window name</returns>
-        public string WindowName
-        {
+        public string WindowName {
             get => windowName;
             set => windowName = value;
         }
@@ -79,8 +76,7 @@ namespace com.espertech.esper.common.client.soda
         ///     Returns the views onto the named window.
         /// </summary>
         /// <returns>named window data views</returns>
-        public IList<View> Views
-        {
+        public IList<View> Views {
             get => views;
             set => views = value;
         }
@@ -89,8 +85,7 @@ namespace com.espertech.esper.common.client.soda
         ///     Returns true if inserting from another named window, false if not.
         /// </summary>
         /// <returns>insert from named window</returns>
-        public bool IsInsert
-        {
+        public bool IsInsert {
             get => insert;
             set => insert = value;
         }
@@ -99,8 +94,7 @@ namespace com.espertech.esper.common.client.soda
         ///     Returns true if inserting from another named window, false if not.
         /// </summary>
         /// <returns>insert from named window</returns>
-        public bool Insert
-        {
+        public bool Insert {
             get => insert;
             set => insert = value;
         }
@@ -109,8 +103,7 @@ namespace com.espertech.esper.common.client.soda
         ///     Filter expression for inserting from another named window, or null if not inserting from another named window.
         /// </summary>
         /// <returns>filter expression</returns>
-        public Expression InsertWhereClause
-        {
+        public Expression InsertWhereClause {
             get => insertWhereClause;
             set => insertWhereClause = value;
         }
@@ -119,8 +112,7 @@ namespace com.espertech.esper.common.client.soda
         ///     Returns all columns for use when create-table syntax is used to define the named window type.
         /// </summary>
         /// <returns>columns</returns>
-        public IList<SchemaColumnDesc> Columns
-        {
+        public IList<SchemaColumnDesc> Columns {
             get => columns;
             set => columns = value;
         }
@@ -129,8 +121,7 @@ namespace com.espertech.esper.common.client.soda
         ///     Returns the as-name.
         /// </summary>
         /// <returns>as-name</returns>
-        public string AsEventTypeName
-        {
+        public string AsEventTypeName {
             get => asEventTypeName;
             set => asEventTypeName = value;
         }
@@ -139,8 +130,7 @@ namespace com.espertech.esper.common.client.soda
         ///     Returns the retain-union flag
         /// </summary>
         /// <returns>indicator</returns>
-        public bool IsRetainUnion
-        {
+        public bool IsRetainUnion {
             get => retainUnion;
             set => retainUnion = value;
         }
@@ -265,8 +255,7 @@ namespace com.espertech.esper.common.client.soda
             writer.Write("create window ");
             writer.Write(windowName);
             ProjectedStream.ToEPLViews(writer, views);
-            if (retainUnion)
-            {
+            if (retainUnion) {
                 writer.Write(" retain-union");
             }
         }
@@ -277,11 +266,9 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="writer">to output to</param>
         public void ToEPLInsertPart(TextWriter writer)
         {
-            if (insert)
-            {
+            if (insert) {
                 writer.Write(" insert");
-                if (insertWhereClause != null)
-                {
+                if (insertWhereClause != null) {
                     writer.Write(" where ");
                     insertWhereClause.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                 }
@@ -378,8 +365,7 @@ namespace com.espertech.esper.common.client.soda
         {
             var delimiter = "";
             writer.Write('(');
-            foreach (var col in columns)
-            {
+            foreach (var col in columns) {
                 writer.Write(delimiter);
                 col.ToEPL(writer);
                 delimiter = ", ";

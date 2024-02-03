@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -15,35 +15,42 @@ using com.espertech.esper.runtime.client;
 using com.espertech.esper.runtime.client.scopetest;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esper.regressionlib.support.client.SupportCompileDeployUtil;
 
 namespace com.espertech.esper.regressionlib.suite.multithread
 {
-    public class MultithreadContextNestedNonOverlapAtNow
+    public class MultithreadContextNestedNonOverlapAtNow : RegressionExecutionPreConfigured
     {
-        public void Run(Configuration configuration)
+        private readonly Configuration _configuration;
+
+        public MultithreadContextNestedNonOverlapAtNow(Configuration configuration)
         {
-            configuration.Runtime.Threading.IsInternalTimerEnabled = true;
-            configuration.Common.AddEventType(typeof(TestEvent));
+            _configuration = configuration;
+        }
+
+        public void Run()
+        {
+            _configuration.Runtime.Threading.IsInternalTimerEnabled = true;
+            _configuration.Common.AddEventType(typeof(TestEvent));
 
             var runtimeProvider = new EPRuntimeProvider();
-            var runtime = runtimeProvider.GetRuntimeInstance(GetType().Name, configuration);
+            var runtime = runtimeProvider.GetRuntimeInstance(GetType().Name, _configuration);
             runtime.Initialize();
             ThreadSleep(100); // allow time for start up
 
             var path = new RegressionPath();
-            var eplContext = "create context theContext " +
+            var eplContext = "@public create context theContext " +
                              "context perPartition partition by PartitionKey from TestEvent," +
                              "context per10Seconds start @now end after 100 milliseconds";
-            var compiledContext = Compile(eplContext, configuration, path);
+            var compiledContext = Compile(eplContext, _configuration, path);
             path.Add(compiledContext);
             Deploy(compiledContext, runtime);
 
             var eplStmt = "context theContext " +
                           "select sum(Value) as thesum, count(*) as thecnt, context.perPartition.key1 as thekey " +
                           "from TestEvent output snapshot when terminated";
-            var compiledStmt = Compile(eplStmt, configuration, path);
+            var compiledStmt = Compile(eplStmt, _configuration, path);
             var listener = new SupportUpdateListener();
             DeployAddListener(compiledStmt, "s0", listener, runtime);
 
@@ -63,7 +70,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             ThreadSleep(250);
 
             var numDeliveries = listener.NewDataList.Count;
-            Assert.IsTrue(numDeliveries >= 2, "Done " + numLoops + " loops, have " + numDeliveries + " deliveries");
+            ClassicAssert.IsTrue(numDeliveries >= 2, "Done " + numLoops + " loops, have " + numDeliveries + " deliveries");
 
             var sum = 0;
             long count = 0;
@@ -75,8 +82,8 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                 }
             }
 
-            Assert.AreEqual(0, sum);
-            Assert.AreEqual(numEvents, count);
+            ClassicAssert.AreEqual(0, sum);
+            ClassicAssert.AreEqual(numEvents, count);
             runtime.Destroy();
         }
 

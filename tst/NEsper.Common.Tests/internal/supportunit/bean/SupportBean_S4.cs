@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -10,11 +10,8 @@ using System;
 
 namespace com.espertech.esper.common.@internal.supportunit.bean
 {
-    [Serializable]
     public class SupportBean_S4
     {
-        private static int idCounter;
-
         public SupportBean_S4(int id)
         {
             Id = id;
@@ -52,12 +49,10 @@ namespace com.espertech.esper.common.@internal.supportunit.bean
             string propOne,
             string[] propTwo)
         {
-            idCounter++;
-
             var events = new object[propTwo.Length];
             for (var i = 0; i < propTwo.Length; i++)
             {
-                events[i] = new SupportBean_S4(idCounter, propOne, propTwo[i]);
+                events[i] = new SupportBean_S4(-1, propOne, propTwo[i]);
             }
 
             return events;

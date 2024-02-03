@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Array expression forms array results, similar to the syntax of "{element 1, element 2, ... element n}".
     /// </summary>
-    [Serializable]
     public class ArrayExpression : ExpressionBase
     {
         /// <summary>
@@ -57,19 +56,14 @@ namespace com.espertech.esper.common.client.soda
             return this;
         }
 
-        public override ExpressionPrecedenceEnum Precedence
-        {
-            get => ExpressionPrecedenceEnum.UNARY;
-        }
+        public override ExpressionPrecedenceEnum Precedence => ExpressionPrecedenceEnum.UNARY;
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             writer.Write("{");
-            bool isFirst = true;
-            foreach (Expression child in Children)
-            {
-                if (!isFirst)
-                {
+            var isFirst = true;
+            foreach (var child in Children) {
+                if (!isFirst) {
                     writer.Write(",");
                 }
 

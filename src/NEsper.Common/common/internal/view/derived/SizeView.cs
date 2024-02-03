@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -56,7 +56,7 @@ namespace com.espertech.esper.common.@internal.view.derived
             // If we have child views, keep a reference to the old values, so we can update them as old data event.
             EventBean oldDataMap = null;
             if (lastSizeEvent == null) {
-                if (child != null) {
+                if (Child != null) {
                     IDictionary<string, object> postOldData = new Dictionary<string, object>();
                     postOldData.Put(ViewFieldEnum.SIZE_VIEW__SIZE.GetName(), priorSize);
                     AddProperties(postOldData);
@@ -78,7 +78,7 @@ namespace com.espertech.esper.common.@internal.view.derived
                     for (var val = 0; val < additionalEvals.Length; val++) {
                         lastValuesEventNew[val] = additionalEvals[val]
                             .Evaluate(
-                                new[] {newData[newData.Length - 1]},
+                                new[] { newData[^1] },
                                 true,
                                 agentInstanceContext);
                     }
@@ -90,7 +90,7 @@ namespace com.espertech.esper.common.@internal.view.derived
             }
 
             // If there are child views, fireStatementStopped update method
-            if (child != null && priorSize != size) {
+            if (Child != null && priorSize != size) {
                 IDictionary<string, object> postNewData = new Dictionary<string, object>();
                 postNewData.Put(ViewFieldEnum.SIZE_VIEW__SIZE.GetName(), size);
                 AddProperties(postNewData);
@@ -99,16 +99,16 @@ namespace com.espertech.esper.common.@internal.view.derived
 
                 EventBean[] oldEvents;
                 if (lastSizeEvent != null) {
-                    oldEvents = new[] {lastSizeEvent};
+                    oldEvents = new[] { lastSizeEvent };
                 }
                 else {
-                    oldEvents = new[] {oldDataMap};
+                    oldEvents = new[] { oldDataMap };
                 }
 
-                EventBean[] newEvents = {newEvent};
+                EventBean[] newEvents = { newEvent };
 
                 agentInstanceContext.InstrumentationProvider.QViewIndicate(sizeViewFactory, newEvents, oldEvents);
-                child.Update(newEvents, oldEvents);
+                Child.Update(newEvents, oldEvents);
                 agentInstanceContext.InstrumentationProvider.AViewIndicate();
 
                 lastSizeEvent = newEvent;
@@ -135,8 +135,7 @@ namespace com.espertech.esper.common.@internal.view.derived
 
         public static EventType CreateEventType(
             ViewForgeEnv env,
-            StatViewAdditionalPropsForge additionalProps,
-            int streamNum)
+            StatViewAdditionalPropsForge additionalProps)
         {
             var schemaMap = new LinkedHashMap<string, object>();
             schemaMap.Put(ViewFieldEnum.SIZE_VIEW__SIZE.GetName(), typeof(long));
@@ -144,7 +143,7 @@ namespace com.espertech.esper.common.@internal.view.derived
                 schemaMap,
                 additionalProps,
                 ViewFieldEnum.SIZE_VIEW__SIZE);
-            return DerivedViewTypeUtil.NewType("sizeview", schemaMap, env, streamNum);
+            return DerivedViewTypeUtil.NewType("sizeview", schemaMap, env);
         }
 
         private void AddProperties(IDictionary<string, object> newDataMap)

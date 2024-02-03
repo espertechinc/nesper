@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -62,9 +62,7 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
             Func<ExprForge, CodegenExpression> toExpr = forge =>
                 ExprNodeUtilityCodegen.CodegenEvaluator(forge, methodNode, GetType(), classScope);
             methodNode.Block
-                .DeclareVar<SubordTableLookupStrategyFactoryQuadTree>(
-                    "sts",
-                    NewInstance(typeof(SubordTableLookupStrategyFactoryQuadTree)))
+                .DeclareVarNewInstance<SubordTableLookupStrategyFactoryQuadTree>("sts")
                 .SetProperty(Ref("sts"), "X", toExpr.Invoke(x))
                 .SetProperty(Ref("sts"), "Y", toExpr.Invoke(y))
                 .SetProperty(Ref("sts"), "Width", toExpr.Invoke(width))

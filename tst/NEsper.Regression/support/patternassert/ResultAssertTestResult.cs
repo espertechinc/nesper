@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -74,9 +74,6 @@ namespace com.espertech.esper.regressionlib.support.patternassert
             stepMap.Put(step, new StepDesc(step, newDataPerRow, oldDataPerRow));
         }
 
-        public SortedDictionary<long, IDictionary<int, StepDesc>> GetAssertions()
-        {
-            return assertions;
-        }
+        public SortedDictionary<long, IDictionary<int, StepDesc>> Assertions => assertions;
     }
 } // end of namespace

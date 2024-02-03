@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -8,13 +8,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace com.espertech.esper.common.client.configuration.common
 {
     /// <summary>
     ///     Configures a variant stream.
     /// </summary>
-    [Serializable]
     public class ConfigurationCommonVariantStream
     {
         /// <summary>
@@ -24,6 +24,15 @@ namespace com.espertech.esper.common.client.configuration.common
         {
             VariantTypeNames = new List<string>();
             TypeVariance = TypeVariance.PREDEFINED;
+        }
+
+        [JsonConstructor]
+        public ConfigurationCommonVariantStream(
+            TypeVariance typeVariance,
+            IList<string> variantTypeNames)
+        {
+            TypeVariance = typeVariance;
+            VariantTypeNames = variantTypeNames;
         }
 
         /// <summary>

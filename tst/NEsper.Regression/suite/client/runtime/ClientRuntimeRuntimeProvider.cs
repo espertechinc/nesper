@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -20,6 +20,7 @@ using com.espertech.esper.regressionlib.support.client;
 using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.client.runtime
 {
@@ -28,7 +29,9 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            Withk(execs);
+#if REGRESSION_EXECUTIONS
+            With(k)(execs);
+#endif
             return execs;
         }
 
@@ -47,6 +50,11 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                     // some action here
                 }
             }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.RUNTIMEOPS);
+            }
         }
 
         public class ClientRuntimeRuntimeStateChange
@@ -59,26 +67,26 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 var runtime = runtimeProvider.GetRuntimeInstance(GetType().Name + "__listenerstatechange", config);
                 runtime.AddRuntimeStateListener(listener);
                 runtime.Destroy();
-                Assert.AreSame(runtime, listener.AssertOneGetAndResetDestroyedEvents());
+                ClassicAssert.AreSame(runtime, listener.AssertOneGetAndResetDestroyedEvents());
 
                 runtime.Initialize();
-                Assert.AreSame(runtime, listener.AssertOneGetAndResetInitializedEvents());
+                ClassicAssert.AreSame(runtime, listener.AssertOneGetAndResetInitializedEvents());
 
                 runtime.RemoveAllRuntimeStateListeners();
                 runtime.Initialize();
-                Assert.IsTrue(listener.InitializedEvents.IsEmpty());
+                ClassicAssert.IsTrue(listener.InitializedEvents.IsEmpty());
 
                 runtime.AddRuntimeStateListener(listener);
                 var listenerTwo = new SupportRuntimeStateListener();
                 runtime.AddRuntimeStateListener(listenerTwo);
                 runtime.Initialize();
-                Assert.AreSame(runtime, listener.AssertOneGetAndResetInitializedEvents());
-                Assert.AreSame(runtime, listenerTwo.AssertOneGetAndResetInitializedEvents());
+                ClassicAssert.AreSame(runtime, listener.AssertOneGetAndResetInitializedEvents());
+                ClassicAssert.AreSame(runtime, listenerTwo.AssertOneGetAndResetInitializedEvents());
 
-                Assert.IsTrue(runtime.RemoveRuntimeStateListener(listener));
+                ClassicAssert.IsTrue(runtime.RemoveRuntimeStateListener(listener));
                 runtime.Initialize();
-                Assert.AreSame(runtime, listenerTwo.AssertOneGetAndResetInitializedEvents());
-                Assert.IsTrue(listener.InitializedEvents.IsEmpty());
+                ClassicAssert.AreSame(runtime, listenerTwo.AssertOneGetAndResetInitializedEvents());
+                ClassicAssert.IsTrue(listener.InitializedEvents.IsEmpty());
 
                 runtime.Destroy();
             }
@@ -95,8 +103,8 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 var uriTwo = GetType().Name + "_2";
                 var runtimeTwo = runtimeProvider.GetRuntimeInstance(uriTwo, config);
                 EPAssertionUtil.AssertContains(runtimeProvider.RuntimeURIs, uriOne, uriTwo);
-                Assert.IsNotNull(runtimeProvider.GetExistingRuntime(uriOne));
-                Assert.IsNotNull(runtimeProvider.GetExistingRuntime(uriTwo));
+                ClassicAssert.IsNotNull(runtimeProvider.GetExistingRuntime(uriOne));
+                ClassicAssert.IsNotNull(runtimeProvider.GetExistingRuntime(uriTwo));
 
                 config.Common.AddEventType(typeof(SupportBean));
                 EPCompiled compiled;
@@ -113,16 +121,16 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 runtimeOne.Destroy();
                 EPAssertionUtil.AssertNotContains(runtimeProvider.RuntimeURIs, uriOne);
                 EPAssertionUtil.AssertContains(runtimeProvider.RuntimeURIs, uriTwo);
-                Assert.IsNull(runtimeProvider.GetExistingRuntime(uriOne));
-                Assert.IsTrue(runtimeOne.IsDestroyed);
-                Assert.IsFalse(runtimeTwo.IsDestroyed);
+                ClassicAssert.IsNull(runtimeProvider.GetExistingRuntime(uriOne));
+                ClassicAssert.IsTrue(runtimeOne.IsDestroyed);
+                ClassicAssert.IsFalse(runtimeTwo.IsDestroyed);
 
                 var stageTwo = runtimeTwo.StageService;
                 runtimeTwo.Destroy();
                 EPAssertionUtil.AssertNotContains(runtimeProvider.RuntimeURIs, uriOne, uriTwo);
-                Assert.IsNull(runtimeProvider.GetExistingRuntime(uriTwo));
-                Assert.IsTrue(runtimeOne.IsDestroyed);
-                Assert.IsTrue(runtimeTwo.IsDestroyed);
+                ClassicAssert.IsNull(runtimeProvider.GetExistingRuntime(uriTwo));
+                ClassicAssert.IsTrue(runtimeOne.IsDestroyed);
+                ClassicAssert.IsTrue(runtimeTwo.IsDestroyed);
 
                 Assert.That(
                     () => adminOne.Rollout(Collections.SingletonList(new EPDeploymentRolloutCompiled(compiled))),

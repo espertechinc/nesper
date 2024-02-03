@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.support.client
 {
@@ -32,7 +33,7 @@ namespace com.espertech.esper.regressionlib.support.client
 
         public EPRuntime AssertOneGetAndResetDestroyedEvents()
         {
-            Assert.AreEqual(1, DestroyedEvents.Count);
+            ClassicAssert.AreEqual(1, DestroyedEvents.Count);
             var item = DestroyedEvents[0];
             DestroyedEvents.Clear();
             return item;
@@ -40,7 +41,7 @@ namespace com.espertech.esper.regressionlib.support.client
 
         public EPRuntime AssertOneGetAndResetInitializedEvents()
         {
-            Assert.AreEqual(1, InitializedEvents.Count);
+            ClassicAssert.AreEqual(1, InitializedEvents.Count);
             var item = InitializedEvents[0];
             InitializedEvents.Clear();
             return item;

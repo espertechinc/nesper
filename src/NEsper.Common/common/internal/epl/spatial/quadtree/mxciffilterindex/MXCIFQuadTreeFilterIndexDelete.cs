@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -49,7 +49,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
                 return leaf;
             }
 
-            var branch = (MXCIFQuadTreeNodeBranch) node;
+            var branch = (MXCIFQuadTreeNodeBranch)node;
             var quadrant = node.Bb.GetQuadrantApplies(x, y, width, height);
             if (quadrant == QuadrantAppliesEnum.NW) {
                 branch.Nw = DeleteFromNode(x, y, width, height, branch.Nw, tree);
@@ -105,12 +105,11 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
                 return false;
             }
 
-            if (!(data is ICollection<XYWHRectangleWValue>)) {
-                var rectangle = (XYWHRectangleWValue) data;
+            if (!(data is ICollection<XYWHRectangleWValue> collection)) {
+                var rectangle = (XYWHRectangleWValue)data;
                 return rectangle.CoordinateEquals(x, y, width, height);
             }
 
-            var collection = (ICollection<XYWHRectangleWValue>) data;
             foreach (var rectangles in collection) {
                 if (rectangles.CoordinateEquals(x, y, width, height)) {
                     collection.Remove(rectangles);
@@ -134,7 +133,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
                 return 1;
             }
 
-            var coll = (ICollection<XYWHRectangleWValue>) data;
+            var coll = (ICollection<XYWHRectangleWValue>)data;
             target.AddAll(coll);
             return coll.Count;
         }

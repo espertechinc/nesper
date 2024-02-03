@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -19,101 +19,96 @@ using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 
+using static com.espertech.esper.common.@internal.@event.core.EventTypeUtility;
+
 namespace com.espertech.esper.common.@internal.@event.variant
 {
     /// <summary>
-    ///     Event type for variant event streams.
-    ///     <para />
-    ///     Caches properties after having resolved a property via a resolution strategy.
+    /// Event type for variant event streams.
+    /// <para>
+    /// Caches properties after having resolved a property via a resolution strategy.
+    /// </para>
     /// </summary>
     public class VariantEventType : EventTypeSPI
     {
-        private readonly IDictionary<string, VariantPropertyDesc> propertyDesc;
-        private readonly IDictionary<string, EventPropertyDescriptor> propertyDescriptorMap;
-        private readonly VariantPropResolutionStrategy propertyResStrategy;
-        private IDictionary<string, EventPropertyGetter> propertyGetterCodegeneratedCache;
+        private EventTypeMetadata _metadata;
+        private readonly EventType[] _variants;
+        private readonly bool _variantAny;
+        private readonly VariantPropResolutionStrategy _propertyResStrategy;
+        private readonly IDictionary<string, VariantPropertyDesc> _propertyDesc;
+        private readonly string[] _propertyNames;
+        private readonly EventPropertyDescriptor[] _propertyDescriptors;
+        private readonly IDictionary<string, EventPropertyDescriptor> _propertyDescriptorMap;
+        private readonly VariantPropertyGetterCache _variantPropertyGetterCache;
+        private IDictionary<string, EventPropertyGetter> _propertyGetterCodegeneratedCache;
 
         /// <summary>
-        ///     Ctor.
+        /// Ctor.
         /// </summary>
-        /// <param name="variantSpec">the variant specification</param>
-        /// <param name="metadata">event type metadata</param>
+        /// <param name = "variantSpec">the variant specification</param>
+        /// <param name = "metadata">event type metadata</param>
         public VariantEventType(
             EventTypeMetadata metadata,
             VariantSpec variantSpec)
         {
-            Metadata = metadata;
-            Variants = variantSpec.EventTypes;
-            IsVariantAny = variantSpec.TypeVariance == TypeVariance.ANY;
-            VariantPropertyGetterCache = new VariantPropertyGetterCache(variantSpec.EventTypes);
-            if (IsVariantAny) {
-                propertyResStrategy = new VariantPropResolutionStrategyAny(this);
+            _metadata = metadata;
+            _variants = variantSpec.EventTypes;
+            _variantAny = variantSpec.TypeVariance == TypeVariance.ANY;
+            _variantPropertyGetterCache = new VariantPropertyGetterCache(variantSpec.EventTypes);
+            if (_variantAny) {
+                _propertyResStrategy = new VariantPropResolutionStrategyAny(this);
             }
             else {
-                propertyResStrategy = new VariantPropResolutionStrategyDefault(this);
+                _propertyResStrategy = new VariantPropResolutionStrategyDefault(this);
             }
 
-            propertyDesc = new Dictionary<string, VariantPropertyDesc>();
-
-            foreach (var type in Variants) {
-                foreach (var property in CollectionUtil.CopyAndSort(type.PropertyNames)) {
-                    if (!propertyDesc.ContainsKey(property)) {
+            _propertyDesc = new Dictionary<string, VariantPropertyDesc>();
+            foreach (var type in _variants) {
+                var properties = type.PropertyNames;
+                properties = CollectionUtil.CopyAndSort(properties);
+                foreach (var property in properties) {
+                    if (!_propertyDesc.ContainsKey(property)) {
                         FindProperty(property);
                     }
                 }
             }
 
-            var propertyNameKeySet = propertyDesc.Keys;
-            PropertyNames = propertyNameKeySet.ToArray();
-
+            var propertyNameKeySet = _propertyDesc.Keys;
+            _propertyNames = propertyNameKeySet.ToArray();
+            
             // for each of the properties in each type, attempt to load the property to build a property list
-            PropertyDescriptors = new EventPropertyDescriptor[propertyDesc.Count];
-            propertyDescriptorMap = new Dictionary<string, EventPropertyDescriptor>();
+            _propertyDescriptors = new EventPropertyDescriptor[_propertyDesc.Count];
+            _propertyDescriptorMap = new Dictionary<string, EventPropertyDescriptor>();
             var count = 0;
-            foreach (var desc in propertyDesc) {
+            foreach (var desc in _propertyDesc) {
                 var type = desc.Value.PropertyType;
                 var descriptor = new EventPropertyDescriptor(
                     desc.Key,
                     type,
-                    type.GetIndexType(),
                     false,
                     false,
-                    type.IsIndexed(),
                     false,
-                    desc.Value.PropertyType.IsFragmentableType());
-                PropertyDescriptors[count++] = descriptor;
-                propertyDescriptorMap.Put(desc.Key, descriptor);
+                    false,
+                    type.IsFragmentableType());
+                _propertyDescriptors[count++] = descriptor;
+                _propertyDescriptorMap.Put(desc.Key, descriptor);
             }
         }
 
-        public EventType[] Variants { get; }
-
-        public VariantPropertyGetterCache VariantPropertyGetterCache { get; }
-
-        public bool IsVariantAny { get; }
-
-        public string StartTimestampPropertyName => null;
-
-        public string EndTimestampPropertyName => null;
-
-        public Type GetPropertyType(string property)
+        public Type GetPropertyType(string propertyName)
         {
-            var entry = propertyDesc.Get(property);
+            var entry = _propertyDesc.Get(propertyName);
             if (entry != null) {
                 return entry.PropertyType;
             }
 
-            entry = FindProperty(property);
+            entry = FindProperty(propertyName);
             return entry?.PropertyType;
         }
 
-        public Type UnderlyingType => typeof(object);
-
-        public string Name => Metadata.Name;
-
         public EventPropertyGetterSPI GetGetterSPI(string property)
         {
-            var entry = propertyDesc.Get(property);
+            var entry = _propertyDesc.Get(property);
             if (entry != null) {
                 return entry.Getter;
             }
@@ -124,11 +119,11 @@ namespace com.espertech.esper.common.@internal.@event.variant
 
         public EventPropertyGetter GetGetter(string propertyName)
         {
-            if (propertyGetterCodegeneratedCache == null) {
-                propertyGetterCodegeneratedCache = new Dictionary<string, EventPropertyGetter>();
+            if (_propertyGetterCodegeneratedCache == null) {
+                _propertyGetterCodegeneratedCache = new Dictionary<string, EventPropertyGetter>();
             }
 
-            var getter = propertyGetterCodegeneratedCache.Get(propertyName);
+            var getter = _propertyGetterCodegeneratedCache.Get(propertyName);
             if (getter != null) {
                 return getter;
             }
@@ -138,15 +133,13 @@ namespace com.espertech.esper.common.@internal.@event.variant
                 return null;
             }
 
-            propertyGetterCodegeneratedCache.Put(propertyName, getterSPI);
+            _propertyGetterCodegeneratedCache.Put(propertyName, getterSPI);
             return getterSPI;
         }
 
-        public string[] PropertyNames { get; }
-
         public bool IsProperty(string property)
         {
-            var entry = propertyDesc.Get(property);
+            var entry = _propertyDesc.Get(property);
             if (entry != null) {
                 return entry.IsProperty;
             }
@@ -159,17 +152,19 @@ namespace com.espertech.esper.common.@internal.@event.variant
             return false;
         }
 
-        public IList<EventType> SuperTypes => null;
+        private VariantPropertyDesc FindProperty(string propertyName)
+        {
+            var desc = _propertyResStrategy.ResolveProperty(propertyName, _variants);
+            if (desc != null) {
+                _propertyDesc.Put(propertyName, desc);
+            }
 
-        public IEnumerable<EventType> DeepSuperTypes => EmptySet<EventType>.Instance;
-
-        public EventTypeMetadata Metadata { get; private set; }
-
-        public IList<EventPropertyDescriptor> PropertyDescriptors { get; }
+            return desc;
+        }
 
         public EventPropertyDescriptor GetPropertyDescriptor(string propertyName)
         {
-            return propertyDescriptorMap.Get(propertyName);
+            return _propertyDescriptorMap.Get(propertyName);
         }
 
         public FragmentEventType GetFragmentType(string property)
@@ -187,7 +182,10 @@ namespace com.espertech.esper.common.@internal.@event.variant
             return null;
         }
 
-        public EventPropertyDescriptor[] WriteableProperties => new EventPropertyDescriptor[0];
+        public EventBeanCopyMethod GetCopyMethod(string[] properties)
+        {
+            return null;
+        }
 
         public EventBeanWriter GetWriter(string[] properties)
         {
@@ -228,25 +226,10 @@ namespace com.espertech.esper.common.@internal.@event.variant
             long publicId,
             long protectedId)
         {
-            Metadata = Metadata.WithIds(publicId, protectedId);
+            _metadata = _metadata.WithIds(publicId, protectedId);
         }
 
-        public ICollection<EventType> DeepSuperTypesCollection => Collections.GetEmptySet<EventType>();
-
-        private VariantPropertyDesc FindProperty(string propertyName)
-        {
-            var desc = propertyResStrategy.ResolveProperty(propertyName, Variants);
-            if (desc != null) {
-                propertyDesc.Put(propertyName, desc);
-            }
-
-            return desc;
-        }
-
-        public EventBeanCopyMethod GetCopyMethod(string[] properties)
-        {
-            return null;
-        }
+        public bool IsVariantAny => _variantAny;
 
         public void ValidateInsertedIntoEventType(EventType eventType)
         {
@@ -254,9 +237,9 @@ namespace com.espertech.esper.common.@internal.@event.variant
         }
 
         /// <summary>
-        ///     NOTE: Code-generation-invoked method, method name and parameter order matters
+        /// NOTE: Code-generation-invoked method, method name and parameter order matters
         /// </summary>
-        /// <param name="theEvent">event</param>
+        /// <param name = "theEvent">event</param>
         /// <returns>event</returns>
         public EventBean GetValueAddEventBean(EventBean theEvent)
         {
@@ -264,9 +247,9 @@ namespace com.espertech.esper.common.@internal.@event.variant
         }
 
         /// <summary>
-        ///     NOTE: Code-generation-invoked method, method name and parameter order matters
+        /// NOTE: Code-generation-invoked method, method name and parameter order matters
         /// </summary>
-        /// <param name="event">event</param>
+        /// <param name = "event">event</param>
         /// <returns>event type</returns>
         public EventType EventTypeForNativeObject(object @event)
         {
@@ -274,11 +257,10 @@ namespace com.espertech.esper.common.@internal.@event.variant
                 throw new EPException("Null event object returned");
             }
 
-            foreach (var variant in Variants) {
-                if (variant is BeanEventType) {
-                    var beanEventType = (BeanEventType) variant;
+            foreach (var variant in _variants) {
+                if (variant is BeanEventType beanEventType) {
                     if (TypeHelper.IsSubclassOrImplementsInterface(@event.GetType(), beanEventType.UnderlyingType)) {
-                        return variant;
+                        return beanEventType;
                     }
                 }
             }
@@ -290,5 +272,31 @@ namespace com.espertech.esper.common.@internal.@event.variant
                 Name +
                 "'");
         }
+
+        public string StartTimestampPropertyName => null;
+
+        public string EndTimestampPropertyName => null;
+
+        public EventType[] Variants => _variants;
+
+        public Type UnderlyingType => typeof(object);
+
+        public string Name => _metadata.Name;
+
+        public VariantPropertyGetterCache VariantPropertyGetterCache => _variantPropertyGetterCache;
+
+        public string[] PropertyNames => _propertyNames;
+
+        public IList<EventType> SuperTypes => null;
+
+        public IEnumerable<EventType> DeepSuperTypes => null;
+
+        public EventTypeMetadata Metadata => _metadata;
+
+        public IList<EventPropertyDescriptor> PropertyDescriptors => _propertyDescriptors;
+
+        public EventPropertyDescriptor[] WriteableProperties => Array.Empty<EventPropertyDescriptor>();
+
+        public ICollection<EventType> DeepSuperTypesCollection => EmptySet<EventType>.Instance;
     }
 } // end of namespace

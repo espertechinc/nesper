@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -19,16 +19,22 @@ namespace com.espertech.esper.regressionlib.support.extend.aggmultifunc
         private static readonly AggregationMultiFunctionStateKey AGGREGATION_STATE_KEY =
             new InertAggregationMultiFunctionStateKey();
 
-        public EPType ReturnType => EPTypeHelper.CollectionOfSingleValue(typeof(SupportBean), null);
+        public EPChainableType ReturnType => EPChainableTypeHelper.CollectionOfSingleValue(typeof(SupportBean));
 
         public AggregationMultiFunctionStateKey AggregationStateUniqueKey => AGGREGATION_STATE_KEY;
 
-        public AggregationMultiFunctionStateMode StateMode =>
-            new AggregationMultiFunctionStateModeManaged().SetInjectionStrategyAggregationStateFactory(
-                new InjectionStrategyClassNewInstance(typeof(SupportAggMFEventsAsListStateFactory)));
+        public AggregationMultiFunctionStateMode StateMode {
+            get {
+                var mode = new AggregationMultiFunctionStateModeManaged();
+                mode.HasHA = true;
+                mode.Serde = typeof(SupportAggMFEventsAsListStateSerde);
+                mode.InjectionStrategyAggregationStateFactory = new InjectionStrategyClassNewInstance(typeof(SupportAggMFEventsAsListStateFactory));
+                return mode;
+            }
+        }
 
         public AggregationMultiFunctionAccessorMode AccessorMode =>
-            new AggregationMultiFunctionAccessorModeManaged().SetInjectionStrategyAggregationAccessorFactory(
+            new AggregationMultiFunctionAccessorModeManaged().WithInjectionStrategyAggregationAccessorFactory(
                 new InjectionStrategyClassNewInstance(typeof(SupportAggMFEventsAsListAccessorFactory)));
 
         public AggregationMultiFunctionAgentMode AgentMode =>

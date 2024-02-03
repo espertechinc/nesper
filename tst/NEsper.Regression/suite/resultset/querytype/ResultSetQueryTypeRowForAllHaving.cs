@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -13,6 +13,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.resultset.querytype
 {
@@ -20,40 +21,136 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
     {
         private const string JOIN_KEY = "KEY";
 
-        public static IList<RegressionExecution> Executions()
+        public static ICollection<RegressionExecution> Executions()
         {
-            var execs = new List<RegressionExecution>();
-            execs.Add(new ResultSetQueryTypeSumOneView());
-            execs.Add(new ResultSetQueryTypeSumJoin());
-            execs.Add(new ResultSetQueryTypeAvgGroupWindow());
+            IList<RegressionExecution> execs = new List<RegressionExecution>();
+            WithRowForAllWHavingSumOneView(execs);
+            WithRowForAllWHavingSumJoin(execs);
+            WithAvgRowForAllWHavingGroupWindow(execs);
             return execs;
+        }
+
+        public static IList<RegressionExecution> WithAvgRowForAllWHavingGroupWindow(
+            IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetQueryTypeAvgRowForAllWHavingGroupWindow());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithRowForAllWHavingSumJoin(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetQueryTypeRowForAllWHavingSumJoin());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithRowForAllWHavingSumOneView(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetQueryTypeRowForAllWHavingSumOneView());
+            return execs;
+        }
+
+        private class ResultSetQueryTypeRowForAllWHavingSumOneView : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var epl = "@name('s0') select irstream sum(LongBoxed) as mySum " +
+                          "from SupportBean#time(10 seconds) " +
+                          "having sum(LongBoxed) > 10";
+                env.CompileDeploy(epl).AddListener("s0");
+
+                TryAssert(env);
+
+                env.UndeployAll();
+            }
+        }
+
+        private class ResultSetQueryTypeRowForAllWHavingSumJoin : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var epl = "@name('s0') select irstream sum(LongBoxed) as mySum " +
+                          "from SupportBeanString#time(10 seconds) as one, " +
+                          "SupportBean#time(10 seconds) as two " +
+                          "where one.TheString = two.TheString " +
+                          "having sum(LongBoxed) > 10";
+                env.CompileDeploy(epl).AddListener("s0");
+                env.SendEventBean(new SupportBeanString(JOIN_KEY));
+
+                TryAssert(env);
+
+                env.UndeployAll();
+            }
+        }
+
+        private class ResultSetQueryTypeAvgRowForAllWHavingGroupWindow : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var stmtText =
+                    "@name('s0') select istream avg(Price) as aprice from SupportMarketDataBean#unique(Symbol) having avg(Price) <= 0";
+                env.CompileDeploy(stmtText).AddListener("s0");
+
+                SendEvent(env, "A", -1);
+                env.AssertEqualsNew("s0", "aprice", -1.0);
+
+                SendEvent(env, "A", 5);
+                env.AssertListenerNotInvoked("s0");
+
+                SendEvent(env, "B", -6);
+                env.AssertEqualsNew("s0", "aprice", -.5d);
+
+                env.Milestone(0);
+
+                SendEvent(env, "C", 2);
+                env.AssertListenerNotInvoked("s0");
+
+                SendEvent(env, "C", 3);
+                env.AssertListenerNotInvoked("s0");
+
+                env.Milestone(1);
+
+                SendEvent(env, "C", -2);
+                env.AssertEqualsNew("s0", "aprice", -1d);
+
+                env.UndeployAll();
+            }
         }
 
         private static void TryAssert(RegressionEnvironment env)
         {
             // assert select result type
-            Assert.AreEqual(typeof(long?), env.Statement("s0").EventType.GetPropertyType("mySum"));
+            env.AssertStatement(
+                "s0",
+                statement => ClassicAssert.AreEqual(typeof(long?), statement.EventType.GetPropertyType("mySum")));
 
             SendTimerEvent(env, 0);
             SendEvent(env, 10);
-            Assert.IsFalse(env.Listener("s0").IsInvoked);
+            env.AssertListenerNotInvoked("s0");
 
             env.Milestone(0);
 
             SendTimerEvent(env, 5000);
             SendEvent(env, 15);
-            Assert.AreEqual(25L, env.Listener("s0").GetAndResetLastNewData()[0].Get("mySum"));
+            env.AssertEqualsNew("s0", "mySum", 25L);
 
             SendTimerEvent(env, 8000);
             SendEvent(env, -5);
-            Assert.AreEqual(20L, env.Listener("s0").GetAndResetLastNewData()[0].Get("mySum"));
-            Assert.IsNull(env.Listener("s0").LastOldData);
+            env.AssertListener(
+                "s0",
+                listener => ClassicAssert.AreEqual(20L, listener.GetAndResetLastNewData()[0].Get("mySum")));
 
             env.Milestone(1);
 
             SendTimerEvent(env, 10000);
-            Assert.AreEqual(20L, env.Listener("s0").LastOldData[0].Get("mySum"));
-            Assert.IsNull(env.Listener("s0").GetAndResetLastNewData());
+            env.AssertListener(
+                "s0",
+                listener => {
+                    ClassicAssert.AreEqual(20L, listener.LastOldData[0].Get("mySum"));
+                    ClassicAssert.IsNull(listener.GetAndResetLastNewData());
+                });
         }
 
         private static object SendEvent(
@@ -92,76 +189,6 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             long msec)
         {
             env.AdvanceTime(msec);
-        }
-
-        internal class ResultSetQueryTypeSumOneView : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var epl = "@Name('s0') select irstream sum(LongBoxed) as mySum " +
-                          "from SupportBean#time(10 seconds) " +
-                          "having sum(LongBoxed) > 10";
-                env.CompileDeploy(epl).AddListener("s0");
-
-                TryAssert(env);
-
-                env.UndeployAll();
-            }
-        }
-
-        internal class ResultSetQueryTypeSumJoin : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var epl = "@Name('s0') select irstream sum(LongBoxed) as mySum " +
-                          "from SupportBeanString#time(10 seconds) as one, " +
-                          "SupportBean#time(10 seconds) as two " +
-                          "where one.TheString = two.TheString " +
-                          "having sum(LongBoxed) > 10";
-                env.CompileDeploy(epl).AddListener("s0");
-                env.SendEventBean(new SupportBeanString(JOIN_KEY));
-
-                TryAssert(env);
-
-                env.UndeployAll();
-            }
-        }
-
-        internal class ResultSetQueryTypeAvgGroupWindow : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var stmtText =
-                    "@Name('s0') select istream avg(Price) as aPrice from SupportMarketDataBean#unique(Symbol) having avg(Price) <= 0";
-                env.CompileDeploy(stmtText).AddListener("s0");
-
-                SendEvent(env, "A", -1);
-                Assert.AreEqual(-1.0d, env.Listener("s0").LastNewData[0].Get("aPrice"));
-                env.Listener("s0").Reset();
-
-                SendEvent(env, "A", 5);
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
-
-                SendEvent(env, "B", -6);
-                Assert.AreEqual(-.5d, env.Listener("s0").LastNewData[0].Get("aPrice"));
-                env.Listener("s0").Reset();
-
-                env.Milestone(0);
-
-                SendEvent(env, "C", 2);
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
-
-                SendEvent(env, "C", 3);
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
-
-                env.Milestone(1);
-
-                SendEvent(env, "C", -2);
-                Assert.AreEqual(-1d, env.Listener("s0").LastNewData[0].Get("aPrice"));
-                env.Listener("s0").Reset();
-
-                env.UndeployAll();
-            }
         }
     }
 } // end of namespace

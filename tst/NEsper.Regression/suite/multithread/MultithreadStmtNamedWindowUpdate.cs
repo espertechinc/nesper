@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -20,6 +20,7 @@ using com.espertech.esper.regressionlib.support.multithread;
 using com.espertech.esper.regressionlib.support.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.multithread
 {
@@ -30,6 +31,11 @@ namespace com.espertech.esper.regressionlib.suite.multithread
     {
         public const int NUM_STRINGS = 100;
         public const int NUM_INTS = 10;
+
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
+        }
 
         public void Run(RegressionEnvironment env)
         {
@@ -44,7 +50,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             // setup statements
             var path = new RegressionPath();
             env.CompileDeploy(
-                "create window MyWindow#unique(TheString, IntPrimitive) as select * from SupportBean",
+                "@public create window MyWindow#unique(TheString, IntPrimitive) as select * from SupportBean",
                 path);
             env.CompileDeploy("insert into MyWindow select * from SupportBean(BoolPrimitive = true)", path);
             env.CompileDeploy(
@@ -109,19 +115,19 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 
             // compare
             var rows = env.CompileExecuteFAF("select * from MyWindow", path).Array;
-            Assert.AreEqual(rows.Length, totals.Count);
+            ClassicAssert.AreEqual(rows.Length, totals.Count);
             long totalUpdates = 0;
             foreach (var row in rows) {
-                var key = new Pair<string, int>((string) row.Get("TheString"), row.Get("IntPrimitive").AsInt32());
+                var key = new Pair<string, int>((string)row.Get("TheString"), row.Get("IntPrimitive").AsInt32());
                 var total = totals.Get(key);
-                Assert.AreEqual(total.Num, row.Get("IntBoxed"));
-                Assert.AreEqual(total.Sum, row.Get("DoublePrimitive"));
+                ClassicAssert.AreEqual(total.Num, row.Get("IntBoxed"));
+                ClassicAssert.AreEqual(total.Sum, row.Get("DoublePrimitive"));
                 totalUpdates += total.Num;
             }
 
-            Assert.AreEqual(totalUpdates, numThreads * numEventsPerThread);
+            ClassicAssert.AreEqual(totalUpdates, numThreads * numEventsPerThread);
             //long deltaTime = endTime - startTime;
-            //System.out.println("Totals updated: " + totalUpdates + "  Delta cumu: " + deltaCumulative + "  Delta pooled: " + deltaTime);
+            //Console.WriteLine("Totals updated: " + totalUpdates + "  Delta cumu: " + deltaCumulative + "  Delta pooled: " + deltaTime);
 
             env.UndeployAll();
         }

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     ///     SQL-Like expression for matching '%' and '_' wildcard strings following SQL standards.
     /// </summary>
-    [Serializable]
     public class LikeExpression : ExpressionBase
     {
         /// <summary>
@@ -63,8 +62,7 @@ namespace com.espertech.esper.common.client.soda
         {
             Children.Add(left);
             Children.Add(right);
-            if (escape != null)
-            {
+            if (escape != null) {
                 Children.Add(escape);
             }
 
@@ -100,8 +98,7 @@ namespace com.espertech.esper.common.client.soda
         {
             Children.Add(left);
             Children.Add(right);
-            if (escape != null)
-            {
+            if (escape != null) {
                 Children.Add(escape);
             }
 
@@ -120,8 +117,7 @@ namespace com.espertech.esper.common.client.soda
         ///     Returns true if this is a "not like", or false if just a like
         /// </summary>
         /// <returns>indicator whether negated or not</returns>
-        public bool Not
-        {
+        public bool Not {
             get => IsNot;
             set => IsNot = value;
         }
@@ -129,16 +125,14 @@ namespace com.espertech.esper.common.client.soda
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             Children[0].ToEPL(writer, Precedence);
-            if (IsNot)
-            {
+            if (IsNot) {
                 writer.Write(" not");
             }
 
             writer.Write(" like ");
             Children[1].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
 
-            if (Children.Count > 2)
-            {
+            if (Children.Count > 2) {
                 writer.Write(" escape ");
                 Children[2].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
             }

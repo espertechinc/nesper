@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -18,10 +18,10 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
 namespace com.espertech.esper.common.@internal.@event.json.writer
 {
-	/// <summary>
-	///     Copy method for Json-underlying events.
-	/// </summary>
-	public class JsonEventBeanCopyMethodForge : EventBeanCopyMethodForge
+    /// <summary>
+    ///     Copy method for Json-underlying events.
+    /// </summary>
+    public class JsonEventBeanCopyMethodForge : EventBeanCopyMethodForge
     {
         private readonly JsonEventType _eventType;
 
@@ -35,7 +35,9 @@ namespace com.espertech.esper.common.@internal.@event.json.writer
             var factory = classScope.AddOrGetDefaultFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
             return NewInstance(
                 typeof(JsonEventBeanCopyMethod),
-                Cast(typeof(JsonEventType), EventTypeUtility.ResolveTypeCodegen(_eventType, EPStatementInitServicesConstants.REF)),
+                Cast(
+                    typeof(JsonEventType),
+                    EventTypeUtility.ResolveTypeCodegen(_eventType, EPStatementInitServicesConstants.REF)),
                 factory);
         }
 

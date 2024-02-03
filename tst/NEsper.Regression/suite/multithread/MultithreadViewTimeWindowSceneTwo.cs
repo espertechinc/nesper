@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -7,10 +7,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.threading.locks;
 using com.espertech.esper.regressionlib.framework;
@@ -18,6 +20,7 @@ using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.multithread
 {
@@ -36,9 +39,14 @@ namespace com.espertech.esper.regressionlib.suite.multithread
     /// </summary>
     public class MultithreadViewTimeWindowSceneTwo : RegressionExecution
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private ResultUpdateListener[] listeners;
         private Thread[] threads;
+
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
+        }
 
         public void Run(RegressionEnvironment env)
         {
@@ -67,12 +75,12 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             long totalReceived = 0;
             foreach (var listener in listeners) {
                 totalReceived += listener.NumReceived;
-                Assert.IsFalse(listener.IsCaughtException);
+                ClassicAssert.IsFalse(listener.IsCaughtException);
             }
 
             var numTimeWindowAdvancements = (endTime - startTime) / 1000 / timeWindowSize;
 
-            log.Info(
+            Log.Info(
                 "Completed, expected=" +
                 numEventsPerThread * numThreads +
                 " numTimeWindowAdvancements=" +
@@ -102,13 +110,17 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             var symbols = new string[numSymbols];
             listeners = new ResultUpdateListener[symbols.Length];
             for (var i = 0; i < symbols.Length; i++) {
-                var annotation = $"@Name('stmt_{i}')";
+                var annotation = $"@name('stmt_{i}')";
                 symbols[i] = "S" + i;
                 var epl = annotation +
-                          "select Symbol, sum(Volume) as sumVol " + 
+                          "select Symbol, sum(Volume) as sumVol " +
                           " from SupportMarketDataBean" +
-                          "(Symbol='" + symbols[i] + "')" +
-                          "#time(" + timeWindowSize + ")";
+                          "(Symbol='" +
+                          symbols[i] +
+                          "')" +
+                          "#time(" +
+                          timeWindowSize +
+                          ")";
                 env.CompileDeploy(epl);
                 var testStmt = env.Statement("stmt_" + i);
                 listeners[i] = new ResultUpdateListener();
@@ -194,16 +206,16 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                 try {
                     NumReceived += newEvents.Length;
 
-                    var symbol = (string) newEvents[0].Get("Symbol");
+                    var symbol = (string)newEvents[0].Get("Symbol");
                     if (lastSymbol != null) {
-                        Assert.AreEqual(lastSymbol, symbol);
+                        ClassicAssert.AreEqual(lastSymbol, symbol);
                     }
                     else {
                         lastSymbol = symbol;
                     }
                 }
                 catch (Exception ex) {
-                    log.Error("Unexpected exception querying results", ex);
+                    Log.Error("Unexpected exception querying results", ex);
                     IsCaughtException = true;
                     throw;
                 }

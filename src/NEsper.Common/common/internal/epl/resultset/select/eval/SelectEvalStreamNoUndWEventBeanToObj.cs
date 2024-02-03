@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -70,8 +70,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
         {
             foreach (var property in eventBeanToObjectProps) {
                 var value = props.Get(property);
-                if (value is EventBean) {
-                    props.Put(property, ((EventBean) value).Underlying);
+                if (value is EventBean bean) {
+                    props.Put(property, bean.Underlying);
                 }
             }
 

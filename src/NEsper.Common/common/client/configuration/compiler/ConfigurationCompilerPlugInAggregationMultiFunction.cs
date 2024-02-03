@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -16,7 +16,6 @@ namespace com.espertech.esper.common.client.configuration.compiler
     /// <summary>
     ///     Configuration information for plugging in a custom aggregation multi-function.
     /// </summary>
-    [Serializable]
     public class ConfigurationCompilerPlugInAggregationMultiFunction
     {
         /// <summary>
@@ -35,16 +34,16 @@ namespace com.espertech.esper.common.client.configuration.compiler
             string[] functionNames,
             string multiFunctionForgeClassName)
         {
-            this.FunctionNames = functionNames;
-            this.MultiFunctionForgeClassName = multiFunctionForgeClassName;
+            FunctionNames = functionNames;
+            MultiFunctionForgeClassName = multiFunctionForgeClassName;
         }
 
         public ConfigurationCompilerPlugInAggregationMultiFunction(
             string[] functionNames,
             Type multiFunctionForgeClass)
         {
-            this.FunctionNames = functionNames;
-            this.MultiFunctionForgeClassName = multiFunctionForgeClass.FullName;
+            FunctionNames = functionNames;
+            MultiFunctionForgeClassName = multiFunctionForgeClass.FullName;
         }
 
         /// <summary>
@@ -64,8 +63,9 @@ namespace com.espertech.esper.common.client.configuration.compiler
         /// </summary>
         /// <value>additional optional properties</value>
         public IDictionary<string, object> AdditionalConfiguredProperties { get; set; }
-        
-        public CodegenExpression ToExpression() {
+
+        public CodegenExpression ToExpression()
+        {
             return CodegenExpressionBuilder.NewInstance(
                 typeof(ConfigurationCompilerPlugInAggregationMultiFunction),
                 CodegenExpressionBuilder.Constant(FunctionNames),

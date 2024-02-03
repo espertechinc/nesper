@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
 
         public EventBean Copy(EventBean theEvent)
         {
-            var array = ((ObjectArrayBackedEventBean) theEvent).Properties;
+            var array = ((ObjectArrayBackedEventBean)theEvent).Properties;
             var copy = new object[array.Length];
             Array.Copy(array, 0, copy, 0, copy.Length);
             return eventAdapterService.AdapterForTypedObjectArray(copy, objectArrayEventType);

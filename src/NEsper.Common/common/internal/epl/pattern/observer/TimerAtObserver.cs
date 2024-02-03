@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -43,12 +43,10 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
             this.scheduleSpec = scheduleSpec;
             this.beginState = beginState;
             this.observerEventEvaluator = observerEventEvaluator;
-            this.scheduleSlot = observerEventEvaluator.Context.AgentInstanceContext.ScheduleBucket.AllocateSlot();
+            scheduleSlot = observerEventEvaluator.Context.AgentInstanceContext.ScheduleBucket.AllocateSlot();
         }
 
-        public MatchedEventMap BeginState {
-            get => beginState;
-        }
+        public MatchedEventMap BeginState => beginState;
 
         public void ScheduledTrigger()
         {

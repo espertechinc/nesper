@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -61,7 +61,7 @@ namespace com.espertech.esper.common.@internal.view.firstlength
 
         public ViewFactory ViewFactory => lengthFirstFactory;
 
-        public override EventType EventType => parent.EventType;
+        public override EventType EventType => Parent.EventType;
 
         public override void Update(
             EventBean[] newData,
@@ -101,11 +101,11 @@ namespace com.espertech.esper.common.@internal.view.firstlength
             }
 
             // If there are child views, call update method
-            if (child != null && (newDataToPost != null || oldDataToPost != null)) {
-                var nd = newDataToPost != null ? newDataToPost.ToArray() : null;
-                var od = oldDataToPost != null ? oldDataToPost.ToArray() : null;
+            if (Child != null && (newDataToPost != null || oldDataToPost != null)) {
+                var nd = newDataToPost?.ToArray();
+                var od = oldDataToPost?.ToArray();
                 agentInstanceContext.InstrumentationProvider.QViewIndicate(lengthFirstFactory, nd, od);
-                child.Update(nd, od);
+                Child.Update(nd, od);
                 agentInstanceContext.InstrumentationProvider.AViewIndicate();
             }
 

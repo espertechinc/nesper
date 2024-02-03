@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -10,11 +10,13 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.supportunit.bean;
 using com.espertech.esper.compat;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.@event.bean.core
 {
@@ -53,7 +55,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             BeanEventType type,
             string property)
         {
-            Assert.IsNull(type.GetPropertyType(property));
+            ClassicAssert.IsNull(type.GetPropertyType(property));
         }
 
         private static void RunTest(
@@ -85,11 +87,11 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
         {
             var propertyName = test.PropertyName;
 
-            Assert.AreEqual(
+            ClassicAssert.AreEqual(
                 test.IsProperty,
                 eventType.IsProperty(propertyName),
                 "IsProperty mismatch on '" + propertyName + "',");
-            Assert.AreEqual(
+            ClassicAssert.AreEqual(
                 test.Clazz,
                 eventType.GetPropertyType(propertyName),
                 "GetPropertyType mismatch on '" + propertyName + "',");
@@ -97,11 +99,11 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             var getter = eventType.GetGetter(propertyName);
             if (getter == null)
             {
-                Assert.IsFalse(test.IsHasGetter, "getGetter null on '" + propertyName + "',");
+                ClassicAssert.IsFalse(test.IsHasGetter, "getGetter null on '" + propertyName + "',");
             }
             else
             {
-                Assert.IsTrue(test.IsHasGetter, "getGetter not null on '" + propertyName + "',");
+                ClassicAssert.IsTrue(test.IsHasGetter, "getGetter not null on '" + propertyName + "',");
                 if (ReferenceEquals(test.GetterReturnValue, typeof(NullReferenceException)))
                 {
                     try
@@ -117,7 +119,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
                 else
                 {
                     var value = getter.Get(eventBean);
-                    Assert.AreEqual(
+                    ClassicAssert.AreEqual(
                         test.GetterReturnValue,
                         value,
                         "getter value mismatch on '" + propertyName + "',");
@@ -157,16 +159,16 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
         {
             var nestedTypeFragment = eventTypeComplex.GetFragmentType("Nested");
             var nestedType = nestedTypeFragment.FragmentType;
-            Assert.AreEqual(typeof(SupportBeanComplexProps.SupportBeanSpecialGetterNested).FullName, nestedType.Name);
-            Assert.AreEqual(typeof(SupportBeanComplexProps.SupportBeanSpecialGetterNested), nestedType.UnderlyingType);
-            Assert.AreEqual(typeof(string), nestedType.GetPropertyType("NestedValue"));
-            Assert.IsNull(eventTypeComplex.GetFragmentType("Indexed[0]"));
+            ClassicAssert.AreEqual(typeof(SupportBeanComplexProps.SupportBeanSpecialGetterNested).FullName, nestedType.Name);
+            ClassicAssert.AreEqual(typeof(SupportBeanComplexProps.SupportBeanSpecialGetterNested), nestedType.UnderlyingType);
+            ClassicAssert.AreEqual(typeof(string), nestedType.GetPropertyType("NestedValue"));
+            ClassicAssert.IsNull(eventTypeComplex.GetFragmentType("Indexed[0]"));
 
             nestedTypeFragment = eventTypeNested.GetFragmentType("Indexed[0]");
             nestedType = nestedTypeFragment.FragmentType;
-            Assert.IsFalse(nestedTypeFragment.IsIndexed);
-            Assert.AreEqual(typeof(SupportBeanCombinedProps.NestedLevOne).FullName, nestedType.Name);
-            Assert.AreEqual(typeof(IDictionary<string, SupportBeanCombinedProps.NestedLevTwo>), nestedType.GetPropertyType("Mapprop"));
+            ClassicAssert.IsFalse(nestedTypeFragment.IsIndexed);
+            ClassicAssert.AreEqual(typeof(SupportBeanCombinedProps.NestedLevOne).FullName, nestedType.Name);
+            ClassicAssert.AreEqual(typeof(IDictionary<string, SupportBeanCombinedProps.NestedLevTwo>), nestedType.GetPropertyType("Mapprop"));
 
             SupportEventTypeAssertionUtil.AssertConsistency(eventTypeComplex);
             SupportEventTypeAssertionUtil.AssertConsistency(eventTypeNested);
@@ -175,141 +177,75 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
         [Test]
         public void TestGetGetter()
         {
-            Assert.AreEqual(null, eventTypeSimple.GetGetter("dummy"));
+            ClassicAssert.AreEqual(null, eventTypeSimple.GetGetter("dummy"));
 
             var getter = eventTypeSimple.GetGetter("MyInt");
-            Assert.AreEqual(20, getter.Get(eventSimple));
+            ClassicAssert.AreEqual(20, getter.Get(eventSimple));
             getter = eventTypeSimple.GetGetter("MyString");
-            Assert.AreEqual("a", getter.Get(eventSimple));
+            ClassicAssert.AreEqual("a", getter.Get(eventSimple));
         }
 
         [Test]
         public void TestGetPropertyNames()
         {
             var properties = eventTypeSimple.PropertyNames;
-            Assert.IsTrue(properties.Length == 2);
+            ClassicAssert.IsTrue(properties.Length == 2);
             CollectionAssert.Contains(properties, "MyInt");
             CollectionAssert.Contains(properties, "MyString");
 
-            CollectionAssert.Contains(
+            SupportEventPropUtil.AssertPropsEquals(
                 eventTypeSimple.PropertyDescriptors,
-                new EventPropertyDescriptor("MyInt", typeof(int), null, false, false, false, false, false));
-
-            CollectionAssert.Contains(
-                eventTypeSimple.PropertyDescriptors,
-                new EventPropertyDescriptor("MyString", typeof(string), typeof(char), false, false, true, false, false));
+                new SupportEventPropDesc("MyInt", typeof(int)),
+                new SupportEventPropDesc("MyString", typeof(string)));
 
             properties = eventTypeComplex.PropertyNames;
 
-            CollectionAssert.AreEquivalent(SupportBeanComplexProps.PROPERTIES, properties);
-            CollectionAssert.AreEquivalent(
-                new[] {
-                    new EventPropertyDescriptor(
-                        "SimpleProperty",
-                        typeof(string),
-                        typeof(char),
-                        false,
-                        false,
-                        true,
-                        false,
-                        false),
-                    new EventPropertyDescriptor(
-                        "MapProperty",
-                        typeof(IDictionary<string, string>),
-                        typeof(string),
-                        false,
-                        false,
-                        false,
-                        true,
-                        false),
-                    new EventPropertyDescriptor(
-                        "MappedProps",
-                        typeof(Properties),
-                        typeof(string),
-                        false,
-                        false,
-                        false,
-                        true,
-                        false),
-                    new EventPropertyDescriptor(
-                        "Mapped",
-                        typeof(string),
-                        typeof(string),
-                        false,
-                        true,
-                        false,
-                        true,
-                        false),
-                    new EventPropertyDescriptor(
-                        "Indexed", 
-                        typeof(int), 
-                        null,
-                        true,
-                        false,
-                        true,
-                        false,
-                        false),
-                    new EventPropertyDescriptor(
-                        "IndexedProps",
-                        typeof(int[]),
-                        typeof(int),
-                        false,
-                        false,
-                        true,
-                        false,
-                        false),
-                    new EventPropertyDescriptor(
-                        "Nested",
-                        typeof(SupportBeanComplexProps.SupportBeanSpecialGetterNested),
-                        null,
-                        false,
-                        false,
-                        false,
-                        false,
-                        true),
-                    new EventPropertyDescriptor(
-                        "ArrayProperty",
-                        typeof(int[]),
-                        typeof(int),
-                        false,
-                        false,
-                        true,
-                        false,
-                        false),
-                    new EventPropertyDescriptor(
-                        "ObjectArray",
-                        typeof(object[]),
-                        typeof(object),
-                        false,
-                        false,
-                        true,
-                        false,
-                        false)
-                },
-                eventTypeComplex.PropertyDescriptors);
+            EPAssertionUtil.AssertEqualsAnyOrder(SupportBeanComplexProps.PROPERTIES, properties);
+
+            SupportEventPropUtil.AssertPropsEquals(
+                eventTypeComplex.PropertyDescriptors,
+                new SupportEventPropDesc("SimpleProperty", typeof(string)),
+                new SupportEventPropDesc("MapProperty", typeof(IDictionary<string, string>))
+                    .WithMapped(),
+                new SupportEventPropDesc("MappedProps", typeof(Properties))
+                    .WithMappedRequiresKey(),
+                new SupportEventPropDesc("Mapped", typeof(string))
+                    .WithMappedRequiresKey(),
+                new SupportEventPropDesc("Indexed", typeof(int))
+                    .WithIndexedRequiresIndex(),
+                new SupportEventPropDesc("IndexedProps", typeof(int[]))
+                    .WithIndexedRequiresIndex(),
+                new SupportEventPropDesc("Nested", typeof(SupportBeanComplexProps.SupportBeanSpecialGetterNested))
+                    .WithFragment(),
+                new SupportEventPropDesc("ArrayProperty", typeof(int[]))
+                    .WithIndexed(),
+                new SupportEventPropDesc("ObjectArray", typeof(object[]))
+                    .WithIndexed()
+            );
 
             properties = eventTypeNested.PropertyNames;
-            CollectionAssert.AreEquivalent(SupportBeanCombinedProps.PROPERTIES, properties);
+
+            EPAssertionUtil.AssertEqualsAnyOrder(SupportBeanCombinedProps.PROPERTIES, properties);
         }
 
         [Test]
         public void TestGetPropertyType()
         {
-            Assert.AreEqual(typeof(string), eventTypeSimple.GetPropertyType("MyString"));
-            Assert.IsNull(eventTypeSimple.GetPropertyType("dummy"));
+            ClassicAssert.AreEqual(typeof(string), eventTypeSimple.GetPropertyType("MyString"));
+            ClassicAssert.IsNull(eventTypeSimple.GetPropertyType("dummy"));
         }
 
         [Test]
         public void TestGetUnderlyingType()
         {
-            Assert.AreEqual(typeof(SupportBeanSimple), eventTypeSimple.UnderlyingType);
+            ClassicAssert.AreEqual(typeof(SupportBeanSimple), eventTypeSimple.UnderlyingType);
         }
 
         [Test]
         public void TestIsValidProperty()
         {
-            Assert.IsTrue(eventTypeSimple.IsProperty("MyString"));
-            Assert.IsFalse(eventTypeSimple.IsProperty("dummy"));
+            ClassicAssert.IsTrue(eventTypeSimple.IsProperty("MyString"));
+            ClassicAssert.IsFalse(eventTypeSimple.IsProperty("dummy"));
         }
 
         [Test]

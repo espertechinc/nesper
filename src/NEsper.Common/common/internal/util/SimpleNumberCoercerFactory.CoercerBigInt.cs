@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -29,9 +29,11 @@ namespace com.espertech.esper.common.@internal.util
 
             public CodegenExpression CoerceBoxedBigIntCodegen(
                 CodegenExpression expr,
-                Type type)
+                Type type,
+                CodegenMethodScope codegenMethodScope,
+                CodegenClassScope codegenClassScope)
             {
-                return CoerceCodegen(expr, type);
+                return CoerceCodegen(expr, type, codegenMethodScope, codegenClassScope);
             }
 
             public BigInteger CoerceBoxedBigInt(object numToCoerce)
@@ -44,13 +46,17 @@ namespace com.espertech.esper.common.@internal.util
                 return value.AsBigInteger();
             }
 
-            public Type ReturnType => typeof(BigInteger);
+            public Type GetReturnType(Type valueType) => typeof(BigInteger?);
 
             public CodegenExpression CoerceCodegen(
                 CodegenExpression value,
-                Type valueType)
+                Type valueType,
+                CodegenMethodScope codegenMethodScope,
+                CodegenClassScope codegenClassScope)
             {
-                return CodegenBigInt(value, valueType);
+                return valueType.CanBeNull() 
+                    ? CoerceCodegenMayNullBoxed(value, valueType, codegenMethodScope, codegenClassScope)
+                    : CodegenBigInt(value, valueType);
             }
 
             public CodegenExpression CoerceCodegenMayNullBoxed(
@@ -67,12 +73,12 @@ namespace com.espertech.esper.common.@internal.util
                     return CodegenBigInt(value, valueType);
                 }
 
-                if (valueType.IsBigInteger()) {
+                if (valueType.IsTypeBigInteger()) {
                     return value;
                 }
 
                 var method = codegenMethodScope
-                    .MakeChild(typeof(BigInteger), typeof(CoercerBigInt), codegenClassScope)
+                    .MakeChild(typeof(BigInteger?), typeof(CoercerBigInt), codegenClassScope)
                     .AddParam(valueType, "value")
                     .Block
                     .IfRefNullReturnNull("value")
@@ -84,7 +90,7 @@ namespace com.espertech.esper.common.@internal.util
                 CodegenExpression value,
                 Type valueType)
             {
-                if (valueType.IsBigInteger()) {
+                if (valueType.IsTypeBigInteger()) {
                     return value;
                 }
 

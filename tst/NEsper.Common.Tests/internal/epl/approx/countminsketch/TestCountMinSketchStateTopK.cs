@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -16,6 +16,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.io;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.epl.approx.countminsketch
 {
@@ -45,13 +46,13 @@ namespace com.espertech.esper.common.@internal.epl.approx.countminsketch
             IList<Pair<long, object>> asList)
         {
             var pairs = pairText.Split(',');
-            Assert.AreEqual(pairs.Length, asList.Count, "received " + asList);
+            ClassicAssert.AreEqual(pairs.Length, asList.Count, "received " + asList);
             foreach (var pair in pairs)
             {
                 var pairArr = pair.Split('=');
                 var pairExpected = new Pair<long, object>(long.Parse(pairArr[1]), pairArr[0]);
                 var found = asList.Remove(pairExpected);
-                Assert.IsTrue(found, "failed to find " + pairExpected + " among remaining " + asList);
+                ClassicAssert.IsTrue(found, "failed to find " + pairExpected + " among remaining " + asList);
             }
         }
 
@@ -136,18 +137,18 @@ namespace com.espertech.esper.common.@internal.epl.approx.countminsketch
             // assert filled
             if (sent.Count < topkMax)
             {
-                Assert.AreEqual(sent.Count, top.Count);
+                ClassicAssert.AreEqual(sent.Count, top.Count);
             }
             else
             {
-                Assert.AreEqual(topkMax, top.Count);
+                ClassicAssert.AreEqual(topkMax, top.Count);
             }
 
             // assert no duplicate values
             ISet<ByteBuffer> set = new HashSet<ByteBuffer>();
             foreach (var topBytes in top)
             {
-                Assert.IsTrue(set.Add(topBytes));
+                ClassicAssert.IsTrue(set.Add(topBytes));
             }
 
             // assert order descending
@@ -157,7 +158,7 @@ namespace com.espertech.esper.common.@internal.epl.approx.countminsketch
                 var freq = sent.Get(topBytes);
                 if (lastFreq != null)
                 {
-                    Assert.IsTrue(freq <= lastFreq);
+                    ClassicAssert.IsTrue(freq <= lastFreq);
                 }
 
                 lastFreq = freq;

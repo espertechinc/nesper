@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -11,62 +11,59 @@ using System.Collections.Generic;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.epl.enummethod.dot;
-using com.espertech.esper.common.@internal.epl.enummethod.eval;
 using com.espertech.esper.common.@internal.@event.arr;
-using com.espertech.esper.common.@internal.rettype;
 
-namespace com.espertech.esper.common.@internal.epl.enummethodeval.twolambda.@base
+namespace com.espertech.esper.common.@internal.epl.enummethod.eval.twolambda.@base
 {
-	public class TwoLambdaThreeFormScalarFactory : EnumForgeDescFactory
-	{
-		private readonly ObjectArrayEventType _typeFirst;
-		private readonly ObjectArrayEventType _typeSecond;
-		private readonly int _numParams;
-		private readonly EPType _returnType;
-		private readonly TwoLambdaThreeFormScalarFactory.ForgeFunction _function;
+    public class TwoLambdaThreeFormScalarFactory : EnumForgeDescFactory
+    {
+        private readonly ObjectArrayEventType typeFirst;
+        private readonly ObjectArrayEventType typeSecond;
+        private readonly int numParams;
+        private readonly ForgeFunction function;
 
-		public TwoLambdaThreeFormScalarFactory(
-			ObjectArrayEventType typeFirst,
-			ObjectArrayEventType typeSecond,
-			int numParams,
-			EPType returnType,
-			TwoLambdaThreeFormScalarFactory.ForgeFunction function)
-		{
-			this._typeFirst = typeFirst;
-			this._typeSecond = typeSecond;
-			this._numParams = numParams;
-			this._returnType = returnType;
-			this._function = function;
-		}
+        public TwoLambdaThreeFormScalarFactory(
+            ObjectArrayEventType typeFirst,
+            ObjectArrayEventType typeSecond,
+            int numParams,
+            ForgeFunction function)
+        {
+            this.typeFirst = typeFirst;
+            this.typeSecond = typeSecond;
+            this.numParams = numParams;
+            this.function = function;
+        }
 
-		public EnumForgeLambdaDesc GetLambdaStreamTypesForParameter(int parameterNum)
-		{
-			return parameterNum == 0 ? MakeDesc(_typeFirst) : MakeDesc(_typeSecond);
-		}
+        public EnumForgeLambdaDesc GetLambdaStreamTypesForParameter(int parameterNum)
+        {
+            return parameterNum == 0 ? MakeDesc(typeFirst) : MakeDesc(typeSecond);
+        }
 
-		public EnumForgeDesc MakeEnumForgeDesc(
-			IList<ExprDotEvalParam> bodiesAndParameters,
-			int streamCountIncoming,
-			StatementCompileTimeServices services)
-		{
-			ExprDotEvalParamLambda first = (ExprDotEvalParamLambda) bodiesAndParameters[0];
-			ExprDotEvalParamLambda second = (ExprDotEvalParamLambda) bodiesAndParameters[1];
-			EnumForge forge = _function.Invoke(first, second, _typeFirst, _typeSecond, streamCountIncoming, _numParams, _returnType);
-			return new EnumForgeDesc(_returnType, forge);
-		}
+        public EnumForgeDesc MakeEnumForgeDesc(
+            IList<ExprDotEvalParam> bodiesAndParameters,
+            int streamCountIncoming,
+            StatementCompileTimeServices services)
+        {
+            var first = (ExprDotEvalParamLambda)bodiesAndParameters[0];
+            var second = (ExprDotEvalParamLambda)bodiesAndParameters[1];
+            return function.Invoke(first, second, typeFirst, typeSecond, streamCountIncoming, numParams);
+        }
 
-		private static EnumForgeLambdaDesc MakeDesc(ObjectArrayEventType type)
-		{
-			return new EnumForgeLambdaDesc(new EventType[] {type}, new string[] {type.Name});
-		}
+        private static EnumForgeLambdaDesc MakeDesc(ObjectArrayEventType type)
+        {
+            return new EnumForgeLambdaDesc(
+                new EventType[] { type },
+                new string[] {
+                    type.Name
+                });
+        }
 
-		public delegate EnumForge ForgeFunction(
-			ExprDotEvalParamLambda first,
-			ExprDotEvalParamLambda second,
-			ObjectArrayEventType eventTypeFirst,
-			ObjectArrayEventType eventTypeSecond,
-			int streamCountIncoming,
-			int numParams,
-			EPType typeInfo);
-	}
+        public delegate EnumForgeDesc ForgeFunction(
+            ExprDotEvalParamLambda first,
+            ExprDotEvalParamLambda second,
+            ObjectArrayEventType eventTypeFirst,
+            ObjectArrayEventType eventTypeSecond,
+            int streamCountIncoming,
+            int numParams);
+    }
 } // end of namespace

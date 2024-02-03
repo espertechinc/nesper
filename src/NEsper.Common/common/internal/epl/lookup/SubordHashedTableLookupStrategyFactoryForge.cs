@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+using System.Linq;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -75,7 +76,7 @@ namespace com.espertech.esper.common.@internal.epl.lookup
 
         public string ToQueryPlan()
         {
-            return GetType().Name + " expressions " + CompatExtensions.Render(Expressions);
+            return GetType().Name + " expressions " + Expressions.Render();
         }
 
         public CodegenExpression Make(
@@ -85,17 +86,19 @@ namespace com.espertech.esper.common.@internal.epl.lookup
         {
             var methodNode = parent.MakeChild(typeof(SubordTableLookupStrategyFactory), GetType(), classScope);
             if (_isStrictKeys) {
-                int[] keyStreamNums = IntArrayUtil.Copy(_keyStreamNumbers);
+                var keyStreamNums = IntArrayUtil.Copy(_keyStreamNumbers);
                 var keyStreamTypes = _outerStreamTypesZeroIndexed;
                 if (isNWOnTrigger) {
-                    keyStreamTypes = EventTypeUtility.ShiftRight(_outerStreamTypesZeroIndexed);
+                    keyStreamTypes = EventTypeUtility.ShiftRight(_outerStreamTypesZeroIndexed.ToArray());
                     for (var i = 0; i < keyStreamNums.Length; i++) {
                         keyStreamNums[i] = keyStreamNums[i] + 1;
                     }
                 }
 
                 var forges = ExprNodeUtilityQuery.ForgesForProperties(
-                    keyStreamTypes, _hashStrictKeys, keyStreamNums);
+                    keyStreamTypes,
+                    _hashStrictKeys,
+                    keyStreamNums);
                 var eval = MultiKeyCodegen.CodegenExprEvaluatorMayMultikey(
                     forges,
                     _hashKeyCoercionTypes.CoercionTypes,
@@ -123,7 +126,7 @@ namespace com.espertech.esper.common.@internal.epl.lookup
                     _hashMultikeyClasses,
                     methodNode,
                     classScope);
-                
+
                 methodNode.Block.MethodReturn(
                     NewInstance<SubordHashedTableLookupStrategyExprFactory>(
                         Constant(expressions),

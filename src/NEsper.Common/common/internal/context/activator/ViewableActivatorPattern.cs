@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -86,9 +86,9 @@ namespace com.espertech.esper.common.@internal.context.activator
                 null);
             var rootNode = EvalNodeUtil.MakeRootNodeFromFactory(rootFactoryNode, patternAgentInstanceContext);
 
-            EventStream sourceEventStream = isCanIterate
-                ? (EventStream) new ZeroDepthStreamIterable(eventType)
-                : (EventStream) new ZeroDepthStreamNoIterate(eventType);
+            var sourceEventStream = isCanIterate
+                ? new ZeroDepthStreamIterable(eventType)
+                : (EventStream)new ZeroDepthStreamNoIterate(eventType);
 
             // we set a child now in case the start itself indicates results
             sourceEventStream.Child = ViewNoop.INSTANCE;
@@ -107,19 +107,24 @@ namespace com.espertech.esper.common.@internal.context.activator
             Runnable optPostContextMergeRunnable = null;
             if (!hasContext) {
                 rootState = rootNode.Start(callback, patternContext, isRecoveringResilient);
-            } else {
+            }
+            else {
                 // handle any pattern-match-event that was produced during startup, relevant for "timer:interval(0)" and only in conjunction with contexts
                 var startMatchEvent = new Atomic<IList<IDictionary<string, object>>>();
-                var callbackStartup = new ProxyPatternMatchCallback((matchEvent, optionalTriggeringEvent) => {
-                    var received = startMatchEvent.Get();
-                    if (received != null) {
-                        received.Add(matchEvent);
-                    } else {
-                        received = new List<IDictionary<string, object>>();
-                        received.Add(matchEvent);
-                        startMatchEvent.Set(received);
-                    }
-                });
+                var callbackStartup = new ProxyPatternMatchCallback(
+                    (
+                        matchEvent,
+                        optionalTriggeringEvent) => {
+                        var received = startMatchEvent.Get();
+                        if (received != null) {
+                            received.Add(matchEvent);
+                        }
+                        else {
+                            received = new List<IDictionary<string, object>>();
+                            received.Add(matchEvent);
+                            startMatchEvent.Set(received);
+                        }
+                    });
 
                 rootState = rootNode.Start(callbackStartup, patternContext, isRecoveringResilient);
                 rootState.Callback = callback;
@@ -132,7 +137,7 @@ namespace com.espertech.esper.common.@internal.context.activator
                 }
             }
 
-            ViewableActivatorPatternMgmt mgmt = new ViewableActivatorPatternMgmt(rootState);
+            var mgmt = new ViewableActivatorPatternMgmt(rootState);
             return new ViewableActivationResult(
                 sourceEventStream,
                 mgmt,

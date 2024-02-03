@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -17,10 +17,11 @@ using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
+
 namespace com.espertech.esper.common.@internal.epl.expression.subquery
 {
     /// <summary>
-    ///     Factory for subselect evaluation strategies.
+    /// Factory for subselect evaluation strategies.
     /// </summary>
     public class SubselectNRForgeFactory
     {
@@ -29,24 +30,24 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             var aggregated = Aggregated(subselectExpression.SubselectAggregationType);
             var grouped = Grouped(subselectExpression.StatementSpecCompiled.Raw.GroupByExpressions);
             if (grouped) {
-                if (subselectExpression.HavingExpr != null) {
+                if (subselectExpression.havingExpr != null) {
                     return new SubselectForgeNRExistsWGroupByWHaving(
                         subselectExpression,
-                        subselectExpression.HavingExpr);
+                        subselectExpression.havingExpr);
                 }
 
                 return new SubselectForgeNRExistsWGroupBy(subselectExpression);
             }
 
             if (aggregated) {
-                if (subselectExpression.HavingExpr != null) {
-                    return new SubselectForgeNRExistsAggregated(subselectExpression.HavingExpr);
+                if (subselectExpression.havingExpr != null) {
+                    return new SubselectForgeNRExistsAggregated(subselectExpression.havingExpr);
                 }
 
                 return SubselectForgeNRExistsAlwaysTrue.INSTANCE;
             }
 
-            return new SubselectForgeNRExistsDefault(subselectExpression.FilterExpr, subselectExpression.HavingExpr);
+            return new SubselectForgeNRExistsDefault(subselectExpression.filterExpr, subselectExpression.havingExpr);
         }
 
         public static SubselectForgeNR CreateStrategyAnyAllIn(
@@ -63,53 +64,49 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
 
             var valueExpr = subselectExpression.ChildNodes[0];
 
-            // Must be the same boxed type returned by expressions under this
             var typeOne = subselectExpression.ChildNodes[0].Forge.EvaluationType.GetBoxedType();
+            var typeOneClass = ExprNodeUtilityValidate.ValidateLHSTypeAnyAllSomeIn(typeOne);
 
-            // collections, array or map not supported
-            if (typeOne.IsArray ||
-                typeOne.IsGenericCollection() ||
-                typeOne.IsGenericDictionary()) {
-                throw new ExprValidationException(
-                    "Collection or array comparison is not allowed for the IN, ANY, SOME or ALL keywords");
-            }
-
-            Type typeTwo;
+            Type typeTwoClass;
             if (subselectExpression.SelectClause != null) {
-                typeTwo = subselectExpression.SelectClause[0].Forge.EvaluationType;
+                var selectType = subselectExpression.SelectClause[0].Forge.EvaluationType;
+                if (selectType == null) {
+                    throw new ExprValidationException(
+                        "Null-type value not allowed for the IN, ANY, SOME or ALL keywords");
+                }
+
+                typeTwoClass = selectType;
             }
             else {
-                typeTwo = subselectExpression.RawEventType.UnderlyingType;
+                typeTwoClass = subselectExpression.RawEventType.UnderlyingType;
             }
 
             var aggregated = Aggregated(subselectExpression.SubselectAggregationType);
             var grouped = Grouped(subselectExpression.StatementSpecCompiled.Raw.GroupByExpressions);
-            var selectEval = subselectExpression.SelectClause == null
-                ? null
-                : subselectExpression.SelectClause[0].Forge;
+            var selectEval = subselectExpression.SelectClause?[0].Forge;
             var valueEval = valueExpr.Forge;
-            var filterEval = subselectExpression.FilterExpr;
-            var havingEval = subselectExpression.HavingExpr;
+            var filterEval = subselectExpression.filterExpr;
+            var havingEval = subselectExpression.havingExpr;
 
             if (relationalOp != null) {
-                if (typeOne != typeof(string) || typeTwo != typeof(string)) {
-                    if (!typeOne.IsNumeric()) {
+                if ((typeOne != typeof(string)) || (typeTwoClass != typeof(string))) {
+                    if (!typeOne.IsTypeNumeric()) {
                         throw new ExprValidationException(
                             "Implicit conversion from datatype '" +
                             typeOne.CleanName() +
                             "' to numeric is not allowed");
                     }
 
-                    if (!typeTwo.IsNumeric()) {
+                    if (!typeTwoClass.IsTypeNumeric()) {
                         throw new ExprValidationException(
                             "Implicit conversion from datatype '" +
-                            typeTwo.CleanName() +
+                            typeTwoClass.CleanName() +
                             "' to numeric is not allowed");
                     }
                 }
 
-                var compareType = typeOne.GetCompareToCoercionType(typeTwo);
-                var computer = relationalOp.Value.GetComputer(compareType, typeOne, typeTwo);
+                var compareType = typeOneClass.GetCompareToCoercionType(typeTwoClass);
+                var computer = relationalOp.Value.GetComputer(compareType, typeOneClass, typeTwoClass);
 
                 if (isAny) {
                     if (grouped) {
@@ -171,7 +168,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                     filterEval);
             }
 
-            var coercer = GetCoercer(typeOne, typeTwo);
+            var coercer = GetCoercer(typeOneClass, typeTwoClass);
             if (isAll) {
                 if (grouped) {
                     return new SubselectForgeNREqualsAllAnyWGroupBy(
@@ -206,8 +203,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                     filterEval,
                     true);
             }
-
-            if (isAny) {
+            else if (isAny) {
                 if (grouped) {
                     return new SubselectForgeNREqualsAllAnyWGroupBy(
                         subselectExpression,
@@ -241,37 +237,38 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                     filterEval,
                     false);
             }
+            else {
+                if (grouped) {
+                    return new SubselectForgeNREqualsInWGroupBy(
+                        subselectExpression,
+                        valueEval,
+                        selectEval,
+                        isNot,
+                        isNot,
+                        coercer,
+                        havingEval);
+                }
 
-            if (grouped) {
-                return new SubselectForgeNREqualsInWGroupBy(
+                if (aggregated) {
+                    return new SubselectForgeNREqualsInAggregated(
+                        subselectExpression,
+                        valueEval,
+                        selectEval,
+                        isNot,
+                        isNot,
+                        coercer,
+                        havingEval);
+                }
+
+                return new SubselectForgeNREqualsIn(
                     subselectExpression,
                     valueEval,
                     selectEval,
                     isNot,
                     isNot,
                     coercer,
-                    havingEval);
+                    filterEval);
             }
-
-            if (aggregated) {
-                return new SubselectForgeNREqualsInAggregated(
-                    subselectExpression,
-                    valueEval,
-                    selectEval,
-                    isNot,
-                    isNot,
-                    coercer,
-                    havingEval);
-            }
-
-            return new SubselectForgeNREqualsIn(
-                subselectExpression,
-                valueEval,
-                selectEval,
-                isNot,
-                isNot,
-                coercer,
-                filterEval);
         }
 
         private static Coercer GetCoercer(
@@ -295,9 +292,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
 
             // Check if we need to coerce
             mustCoerce = false;
-            if (coercionType != typeOne.GetBoxedType() ||
-                coercionType != typeTwo.GetBoxedType()) {
-                if (coercionType.IsNumeric()) {
+            if (!coercionType.Equals(typeOne.GetBoxedType()) ||
+                !coercionType.Equals(typeTwo.GetBoxedType())) {
+                if (coercionType.IsTypeNumeric()) {
                     mustCoerce = true;
                 }
             }
@@ -313,7 +310,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
         private static bool Aggregated(ExprSubselectNode.SubqueryAggregationType? subqueryAggregationType)
         {
             return subqueryAggregationType != null &&
-                   subqueryAggregationType != ExprSubselectNode.SubqueryAggregationType.NONE;
+                   subqueryAggregationType.Value != ExprSubselectNode.SubqueryAggregationType.NONE;
         }
     }
 } // end of namespace

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -7,17 +7,20 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.runtime.client.scopetest;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.infra.tbl
 {
@@ -26,9 +29,15 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
     /// </summary>
     public class InfraTableMTGroupedJoinReadMergeWriteSecondaryIndexUpd : RegressionExecution
     {
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         private const int NUM_KEYS = 10;
         private const int OFFSET_ADDED = 100000000;
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
+        }
 
         /// <summary>
         ///     Tests concurrent updates on a secondary index also read by a join:
@@ -63,7 +72,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 "create table MyTable (key1 string primary key, value int);\n" +
                 "create index MyIndex on MyTable (value);\n" +
                 "on SupportBean merge MyTable where TheString = key1 when not matched then insert select TheString as key1, IntPrimitive as value;\n" +
-                "@Name('out') select * from SupportBean_S0, MyTable where value = Id;\n" +
+                "@name('out') select * from SupportBean_S0, MyTable where value = Id;\n" +
                 "on SupportBean_S1 delete from MyTable where key1 like 'B%';\n";
             env.CompileDeploy(epl).AddListener("out");
 
@@ -93,18 +102,18 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             readRunnable.Shutdown = true;
 
             // join
-            log.Info("Waiting for completion");
+            Log.Info("Waiting for completion");
             threadWrite.Join();
             threadRead.Join();
 
             env.UndeployAll();
 
-            Assert.IsNull(writeRunnable.Exception);
-            Assert.IsNull(readRunnable.Exception);
+            ClassicAssert.IsNull(writeRunnable.Exception);
+            ClassicAssert.IsNull(readRunnable.Exception);
             Console.Out.WriteLine(
                 "Write loops " + writeRunnable.numLoops + " and performed " + readRunnable.numQueries + " reads");
-            Assert.IsTrue(writeRunnable.numLoops > 1);
-            Assert.IsTrue(readRunnable.numQueries > 100);
+            ClassicAssert.IsTrue(writeRunnable.numLoops > 1);
+            ClassicAssert.IsTrue(readRunnable.numQueries > 100);
         }
 
         public class WriteRunnable : IRunnable
@@ -128,7 +137,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
             public void Run()
             {
-                log.Info("Started event send for write");
+                Log.Info("Started event send for write");
 
                 try {
                     while (!shutdown) {
@@ -143,11 +152,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     }
                 }
                 catch (Exception ex) {
-                    log.Error("Exception encountered: " + ex.Message, ex);
+                    Log.Error("Exception encountered: " + ex.Message, ex);
                     exception = ex;
                 }
 
-                log.Info("Completed event send for write");
+                Log.Info("Completed event send for write");
             }
         }
 
@@ -174,25 +183,25 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
             public void Run()
             {
-                log.Info("Started event send for read");
+                Log.Info("Started event send for read");
 
                 try {
                     while (!shutdown) {
                         for (var i = 0; i < NUM_KEYS; i++) {
                             env.SendEventBean(new SupportBean_S0(i));
                             var events = listener.GetAndResetLastNewData();
-                            Assert.IsTrue(events.Length > 0);
+                            ClassicAssert.IsTrue(events.Length > 0);
                         }
 
                         numQueries++;
                     }
                 }
                 catch (Exception ex) {
-                    log.Error("Exception encountered: " + ex.Message, ex);
+                    Log.Error("Exception encountered: " + ex.Message, ex);
                     exception = ex;
                 }
 
-                log.Info("Completed event send for read");
+                Log.Info("Completed event send for read");
             }
         }
     }

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -8,7 +8,6 @@
 
 using System;
 
-using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.index.@base;
 using com.espertech.esper.common.@internal.epl.join.lookup;
@@ -41,10 +40,10 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
 
         public SubordTableLookupStrategy MakeStrategy(
             EventTable[] eventTable,
-            AgentInstanceContext agentInstanceContext,
+            ExprEvaluatorContext exprEvaluatorContext,
             VirtualDWView vdw)
         {
-            return vdw.GetSubordinateLookupStrategy(this, agentInstanceContext);
+            return vdw.GetSubordinateLookupStrategy(this, exprEvaluatorContext);
         }
 
         public LookupStrategyDesc LookupStrategyDesc => new LookupStrategyDesc(LookupStrategyType.VDW);

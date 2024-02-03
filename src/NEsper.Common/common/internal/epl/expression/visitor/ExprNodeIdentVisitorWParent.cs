@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -17,7 +17,6 @@ namespace com.espertech.esper.common.@internal.epl.expression.visitor
     /// <summary>
     /// Visitor for getting a list of identifier nodes with their parent node, which can be null if there is no parent node.
     /// </summary>
-    [Serializable]
     public class ExprNodeIdentVisitorWParent : ExprNodeVisitorWithParent
     {
         private readonly IList<Pair<ExprNode, ExprIdentNode>> _identNodes = new List<Pair<ExprNode, ExprIdentNode>>();
@@ -33,13 +32,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.visitor
             ExprNode exprNode,
             ExprNode parentExprNode)
         {
-            if (exprNode is ExprIdentNode) {
-                _identNodes.Add(new Pair<ExprNode, ExprIdentNode>(parentExprNode, (ExprIdentNode) exprNode));
+            if (exprNode is ExprIdentNode node) {
+                _identNodes.Add(new Pair<ExprNode, ExprIdentNode>(parentExprNode, node));
             }
         }
 
-        public IList<Pair<ExprNode, ExprIdentNode>> IdentNodes {
-            get { return _identNodes; }
-        }
+        public IList<Pair<ExprNode, ExprIdentNode>> IdentNodes => _identNodes;
     }
 }

@@ -1,5 +1,5 @@
 ﻿///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Data;
 using System.Data.Common;
 using System.Linq;
 
@@ -56,11 +55,9 @@ namespace com.espertech.esper.common.@internal.db.drivers
             var candidateTypes = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(assembly => assembly.GetTypes())
                 .Where(type => type.IsSubclassOf(typeof(DbProviderFactory)));
-            foreach (var candidate in candidateTypes)
-            {
+            foreach (var candidate in candidateTypes) {
                 var dataProviderTypeName = candidate.FullName;
-                if (!container.Has(dataProviderTypeName))
-                {
+                if (!container.Has(dataProviderTypeName)) {
                     container.Register<DbProviderFactory>(
                         xx => CreateDataProvider(candidate),
                         Lifespan.Singleton,
@@ -77,8 +74,8 @@ namespace com.espertech.esper.common.@internal.db.drivers
         /// <returns></returns>
         private static DbProviderFactory CreateDataProvider(Type candidate)
         {
-            var constructor = candidate.GetConstructor(new Type[0]);
-            var factory = (DbProviderFactory) constructor.Invoke(null);
+            var constructor = candidate.GetConstructor(Type.EmptyTypes);
+            var factory = (DbProviderFactory)constructor.Invoke(null);
             return factory;
         }
 

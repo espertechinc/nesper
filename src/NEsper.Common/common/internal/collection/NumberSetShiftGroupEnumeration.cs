@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -32,10 +32,10 @@ namespace com.espertech.esper.common.@internal.collection
         protected internal static IEnumerable<int[]> CreateInternal(int[] numberSet)
         {
             for (var shiftCount = 0; shiftCount < numberSet.Length; shiftCount++) {
-                int[] result = new int[numberSet.Length];
-                int count = shiftCount;
-                for (int i = 0; i < numberSet.Length; i++) {
-                    int index = count + i;
+                var result = new int[numberSet.Length];
+                var count = shiftCount;
+                for (var i = 0; i < numberSet.Length; i++) {
+                    var index = count + i;
                     if (index >= numberSet.Length) {
                         index -= numberSet.Length;
                     }
@@ -49,9 +49,9 @@ namespace com.espertech.esper.common.@internal.collection
             // Initialize the permutation
             // simply always make 4 buckets
             var buckets = new Dictionary<int, List<int>>();
-            for (int i = 0; i < numberSet.Length; i++) {
-                int bucketNum = i % 4;
-                List<int> bucket = buckets.Get(bucketNum);
+            for (var i = 0; i < numberSet.Length; i++) {
+                var bucketNum = i % 4;
+                var bucket = buckets.Get(bucketNum);
                 if (bucket == null) {
                     bucket = new List<int>();
                     buckets[bucketNum] = bucket;
@@ -74,11 +74,11 @@ namespace com.espertech.esper.common.@internal.collection
             IDictionary<int, List<int>> buckets,
             int[] bucketsPermuted)
         {
-            int[] result = new int[numberSet.Length];
-            int count = 0;
-            for (int i = 0; i < bucketsPermuted.Length; i++) {
-                List<int> bucket = buckets.Get(bucketsPermuted[i]);
-                foreach (int j in bucket) {
+            var result = new int[numberSet.Length];
+            var count = 0;
+            for (var i = 0; i < bucketsPermuted.Length; i++) {
+                var bucket = buckets.Get(bucketsPermuted[i]);
+                foreach (var j in bucket) {
                     result[count++] = j;
                 }
             }

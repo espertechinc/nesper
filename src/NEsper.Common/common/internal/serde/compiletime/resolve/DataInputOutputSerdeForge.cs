@@ -1,12 +1,10 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
-
-using System;
 
 using com.espertech.esper.common.client.serde;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -22,7 +20,7 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.resolve
     /// </summary>
     public interface DataInputOutputSerdeForge
     {
-        String ForgeClassName();
+        string ForgeClassName { get; }
 
         CodegenExpression Codegen(
             CodegenMethod method,
@@ -43,7 +41,7 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.resolve
             }
 
             var expressions = new CodegenExpression[serdes.Length];
-            for (int i = 0; i < serdes.Length; i++) {
+            for (var i = 0; i < serdes.Length; i++) {
                 expressions[i] = serdes[i].Codegen(method, classScope, optionalEventTypeResolver);
             }
 

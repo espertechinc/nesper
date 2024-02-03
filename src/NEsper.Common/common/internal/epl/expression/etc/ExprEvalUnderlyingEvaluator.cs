@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -28,8 +28,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             int streamNum,
             Type resultType)
         {
-            this._streamNum = streamNum;
-            this._resultType = resultType;
+            _streamNum = streamNum;
+            _resultType = resultType;
         }
 
         public object Evaluate(
@@ -37,18 +37,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            EventBean @event = eventsPerStream?[_streamNum];
+            var @event = eventsPerStream?[_streamNum];
 
             return @event?.Underlying;
         }
 
-        public ExprForgeConstantType ForgeConstantType {
-            get => ExprForgeConstantType.NONCONST;
-        }
+        public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
 
-        public ExprEvaluator ExprEvaluator {
-            get => this;
-        }
+        public ExprEvaluator ExprEvaluator => this;
 
         public CodegenExpression EvaluateCodegen(
             Type requiredType,
@@ -56,25 +52,27 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenMethod methodNode = codegenMethodScope.MakeChild(_resultType, this.GetType(), codegenClassScope);
-            CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(methodNode);
+            var methodNode = codegenMethodScope.MakeChild(_resultType, GetType(), codegenClassScope);
+            var refEPS = exprSymbol.GetAddEps(methodNode);
             methodNode.Block
                 .IfNullReturnNull(refEPS)
                 .DeclareVar<EventBean>("@event", ArrayAtIndex(refEPS, Constant(_streamNum)))
                 .IfRefNullReturnNull("@event")
-                .MethodReturn(FlexCast(requiredType, ExprDotName(Ref("@event"), "Underlying")));
+                .MethodReturn(Cast(requiredType, ExprDotName(Ref("@event"), "Underlying")));
             return LocalMethod(methodNode);
         }
 
-        public Type EvaluationType {
-            get => _resultType;
-        }
+        public Type EvaluationType => _resultType;
 
         public ExprNodeRenderable ExprForgeRenderable {
             get {
-                return new ProxyExprNodeRenderable((writer, parentPrecedence, flags) => {
-                    writer.Write(this.GetType().Name);
-                });
+                return new ProxyExprNodeRenderable(
+                    (
+                        writer,
+                        parentPrecedence,
+                        flags) => {
+                        writer.Write(GetType().Name);
+                    });
             }
         }
     }

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -18,12 +18,13 @@ using com.espertech.esper.regressionlib.support.util;
 using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.support.multithread
 {
     public class StmtListenerAddRemoveCallable : ICallable<object>
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private readonly bool isEPL;
         private readonly int numRepeats;
         private readonly EPRuntime runtime;
@@ -65,7 +66,7 @@ namespace com.espertech.esper.regressionlib.support.multithread
                     runtime.EventService.SendEventBean(theEvent, theEvent.GetType().Name);
 
                     // Should have received one or more events, one of them must be mine
-                    var newEvents = assertListener.GetNewDataListFlattened();
+                    var newEvents = assertListener.NewDataListFlattened;
                     ThreadLogUtil.Trace("assert received, size is", newEvents.Length);
                     var found = false;
                     for (var i = 0; i < newEvents.Length; i++) {
@@ -79,7 +80,7 @@ namespace com.espertech.esper.regressionlib.support.multithread
                         }
                     }
 
-                    Assert.IsTrue(found);
+                    ClassicAssert.IsTrue(found);
                     assertListener.Reset();
 
                     // Remove assertListener
@@ -93,7 +94,7 @@ namespace com.espertech.esper.regressionlib.support.multithread
                     runtime.EventService.SendEventBean(theEvent, theEvent.GetType().Name);
 
                     // Make sure the event was not received
-                    newEvents = assertListener.GetNewDataListFlattened();
+                    newEvents = assertListener.NewDataListFlattened;
                     found = false;
                     for (var i = 0; i < newEvents.Length; i++) {
                         var underlying = newEvents[i].Underlying;
@@ -106,15 +107,15 @@ namespace com.espertech.esper.regressionlib.support.multithread
                         }
                     }
 
-                    Assert.IsFalse(found);
+                    ClassicAssert.IsFalse(found);
                 }
             }
             catch (AssertionException ex) {
-                log.Error("Assertion error in thread " + Thread.CurrentThread.ManagedThreadId, ex);
+                Log.Error("Assertion error in thread " + Thread.CurrentThread.ManagedThreadId, ex);
                 return false;
             }
             catch (Exception ex) {
-                log.Error("Error in thread " + Thread.CurrentThread.ManagedThreadId, ex);
+                Log.Error("Error in thread " + Thread.CurrentThread.ManagedThreadId, ex);
                 return false;
             }
 

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -20,15 +20,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 {
     public class ExprDotNodeForgeStreamEvalEventBean : ExprEvaluator
     {
-        private readonly ExprDotNodeForgeStream forge;
-        private readonly ExprDotEval[] evaluators;
+        private readonly ExprDotNodeForgeStream _forge;
+        private readonly ExprDotEval[] _evaluators;
 
         public ExprDotNodeForgeStreamEvalEventBean(
             ExprDotNodeForgeStream forge,
             ExprDotEval[] evaluators)
         {
-            this.forge = forge;
-            this.evaluators = evaluators;
+            _forge = forge;
+            _evaluators = evaluators;
         }
 
         public object Evaluate(
@@ -36,14 +36,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            var theEvent = eventsPerStream[forge.StreamNumber];
+            var theEvent = eventsPerStream[_forge.StreamNumber];
             if (theEvent == null) {
                 return null;
             }
 
             return ExprDotNodeUtility.EvaluateChain(
-                forge.Evaluators,
-                evaluators,
+                _forge.Evaluators,
+                _evaluators,
                 theEvent,
                 eventsPerStream,
                 isNewData,
@@ -60,13 +60,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                 forge.EvaluationType,
                 typeof(ExprDotNodeForgeStreamEvalEventBean),
                 codegenClassScope);
-            var refEPS = exprSymbol.GetAddEPS(methodNode);
+            var refEPS = exprSymbol.GetAddEps(methodNode);
 
             var typeInformation = ConstantNull();
             if (codegenClassScope.IsInstrumented) {
                 typeInformation =
                     codegenClassScope.AddOrGetDefaultFieldSharable(
-                        new EPTypeCodegenSharable(EPTypeHelper.SingleEvent(forge.EventType), codegenClassScope));
+                        new EPChainableTypeCodegenSharable(
+                            EPChainableTypeHelper.SingleEvent(forge.EventType),
+                            codegenClassScope));
             }
 
             methodNode.Block

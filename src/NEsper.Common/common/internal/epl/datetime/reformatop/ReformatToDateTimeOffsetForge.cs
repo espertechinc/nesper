@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
 
         public ReformatToDateTimeOffsetForge(TimeAbacus timeAbacus)
         {
-            this._timeAbacus = timeAbacus;
+            _timeAbacus = timeAbacus;
         }
 
         public ReformatOp Op => this;
@@ -57,7 +57,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             var timeZoneField = codegenClassScope.AddOrGetDefaultFieldSharable(RuntimeSettingsTimeZoneField.INSTANCE);
             var methodNode = codegenMethodScope
                 .MakeChild(typeof(DateTimeOffset), typeof(ReformatToDateTimeOffsetForge), codegenClassScope)
-                .AddParam(typeof(long), "ts");
+                .AddParam<long>("ts");
 
             methodNode
                 .Block
@@ -78,7 +78,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
                 codegenClassScope.AddOrGetDefaultFieldSharable(RuntimeSettingsTimeZoneField.INSTANCE);
             var method = codegenMethodScope
                 .MakeChild(typeof(DateTimeOffset), typeof(ReformatToDateTimeOffsetForge), codegenClassScope)
-                .AddParam(typeof(DateTime), "input")
+                .AddParam<DateTime>("input")
                 .Block
                 .DeclareVar<DateTimeEx>(
                     "dateTimeEx",
@@ -105,7 +105,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
         {
             var method = codegenMethodScope
                 .MakeChild(typeof(DateTimeOffset), typeof(ReformatToDateTimeOffsetForge), codegenClassScope)
-                .AddParam(typeof(DateTimeEx), "input")
+                .AddParam<DateTimeEx>("input")
                 .Block
                 .MethodReturn(GetProperty(Ref("input"), "DateTime"));
             return LocalMethodBuild(method).Pass(inner).Call();

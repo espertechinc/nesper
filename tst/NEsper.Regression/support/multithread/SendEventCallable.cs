@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -19,7 +19,7 @@ namespace com.espertech.esper.regressionlib.support.multithread
 {
     public class SendEventCallable : ICallable<bool>
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private readonly IEnumerator<object> events;
         private readonly EPRuntime runtime;
         private readonly int threadNum;
@@ -36,7 +36,7 @@ namespace com.espertech.esper.regressionlib.support.multithread
 
         public bool Call()
         {
-            log.Info(".call Thread " + Thread.CurrentThread.ManagedThreadId + " starting");
+            Log.Info(".call Thread " + Thread.CurrentThread.ManagedThreadId + " starting");
             try {
                 while (events.MoveNext()) {
                     var @event = events.Current;
@@ -44,11 +44,11 @@ namespace com.espertech.esper.regressionlib.support.multithread
                 }
             }
             catch (Exception ex) {
-                log.Error("Error in thread " + threadNum, ex);
+                Log.Error("Error in thread " + threadNum, ex);
                 return false;
             }
 
-            log.Info(".call Thread " + Thread.CurrentThread.ManagedThreadId + " done");
+            Log.Info(".call Thread " + Thread.CurrentThread.ManagedThreadId + " done");
             return true;
         }
     }

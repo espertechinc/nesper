@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// An SQL stream that polls via SQL for events via join.
     /// </summary>
-    [Serializable]
     public class SQLStream : Stream
     {
         private string databaseName;
@@ -134,10 +133,9 @@ namespace com.espertech.esper.common.client.soda
         /// Returns the metadata SQL if any.
         /// </summary>
         /// <returns>metadata SQL</returns>
-        public string OptionalMetadataSQL
-        {
+        public string OptionalMetadataSQL {
             get => optionalMetadataSQL;
-            set { optionalMetadataSQL = value; }
+            set => optionalMetadataSQL = value;
         }
 
         public override void ToEPLStream(

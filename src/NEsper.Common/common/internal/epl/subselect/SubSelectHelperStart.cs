@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.@internal.context.util;
+using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.lookup;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
@@ -19,7 +20,8 @@ namespace com.espertech.esper.common.@internal.epl.subselect
     {
         public static IDictionary<int, SubSelectFactoryResult> StartSubselects(
             IDictionary<int, SubSelectFactory> subselects,
-            AgentInstanceContext agentInstanceContext,
+            ExprEvaluatorContext exprEvaluatorContext,
+            AgentInstanceContext agentInstanceContextOpt,
             IList<AgentInstanceMgmtCallback> stopCallbacks,
             bool isRecoveringResilient)
         {
@@ -35,7 +37,7 @@ namespace com.espertech.esper.common.@internal.epl.subselect
 
                 // activate viewable
                 var subselectActivationResult = factory.Activator.Activate(
-                    agentInstanceContext,
+                    agentInstanceContextOpt,
                     true,
                     isRecoveringResilient);
                 stopCallbacks.Add(subselectActivationResult.StopCallback);
@@ -43,7 +45,7 @@ namespace com.espertech.esper.common.@internal.epl.subselect
                 // apply returning the strategy instance
                 var realization = factory.StrategyFactory.Instantiate(
                     subselectActivationResult.Viewable,
-                    agentInstanceContext,
+                    exprEvaluatorContext,
                     stopCallbacks,
                     subselectEntry.Key,
                     isRecoveringResilient);

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -10,92 +10,126 @@ using System;
 
 using com.espertech.esper.common.client.soda;
 
+
 namespace com.espertech.esper.common.client.module
 {
     /// <summary>
-    /// Represents an EPL statement as part of a <see cref="Module" />.
-    /// <para/>
-    /// Character position start and end are only available for non-comment only.
+    /// Represents an EPL statement as part of a <seealso cref = "Module"/>.
+    /// <para/>Character position start and end are only available for non-comment only.
     /// </summary>
-    [Serializable]
     public class ModuleItem
     {
+        private string expression;
+        private EPStatementObjectModel model;
+        private bool commentOnly;
+        private int lineNumber;
+        private int charPosStart;
+        private int charPosEnd;
+        private int lineNumberEnd;
+        private int lineNumberContent;
+        private int lineNumberContentEnd;
+
         /// <summary>
-        /// Initializes a new instance of the <see cref="ModuleItem"/> class.
+        /// Ctor.
         /// </summary>
-        /// <param name="expression">EPL</param>
-        /// <param name="commentOnly">true if the statement consists only of comments or whitespace</param>
-        /// <param name="lineNumber">line number</param>
-        /// <param name="charPosStart">character position of start of segment</param>
-        /// <param name="charPosEnd">character position of end of segment</param>
+        /// <param name = "expression">EPL</param>
+        /// <param name = "commentOnly">true if the statement consists only of comments or whitespace</param>
+        /// <param name = "lineNumber">line number</param>
+        /// <param name = "charPosStart">character position of start of segment</param>
+        /// <param name = "charPosEnd">character position of end of segment</param>
+        /// <param name = "lineNumberEnd">line number of the line that ends the statement</param>
+        /// <param name = "lineNumberContent">line number of the line that starts the statement excluding comments, or -1 if comments-only</param>
+        /// <param name = "lineNumberContentEnd">line number of the line that ends the statement excluding comments, or -1 if comments-only</param>
         public ModuleItem(
             string expression,
             bool commentOnly,
             int lineNumber,
             int charPosStart,
-            int charPosEnd)
+            int charPosEnd,
+            int lineNumberEnd,
+            int lineNumberContent,
+            int lineNumberContentEnd)
         {
-            Expression = expression;
-            IsCommentOnly = commentOnly;
-            LineNumber = lineNumber;
-            CharPosStart = charPosStart;
-            CharPosEnd = charPosEnd;
-        }
-
-        public ModuleItem(
-            EPStatementObjectModel model,
-            bool commentOnly,
-            int lineNumber,
-            int charPosStart,
-            int charPosEnd)
-        {
-            Model = model;
-            IsCommentOnly = commentOnly;
-            LineNumber = lineNumber;
-            CharPosStart = charPosStart;
-            CharPosEnd = charPosEnd;
+            this.expression = expression;
+            this.commentOnly = commentOnly;
+            this.lineNumber = lineNumber;
+            this.charPosStart = charPosStart;
+            this.charPosEnd = charPosEnd;
+            this.lineNumberEnd = lineNumberEnd;
+            this.lineNumberContent = lineNumberContent;
+            this.lineNumberContentEnd = lineNumberContentEnd;
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ModuleItem"/> class.
+        /// Ctor.
         /// </summary>
-        /// <param name="expression">The expression.</param>
+        /// <param name = "expression">expression</param>
         public ModuleItem(string expression)
         {
-            Expression = expression;
+            this.expression = expression;
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ModuleItem"/> class.
+        /// Ctor.
         /// </summary>
-        /// <param name="model">The model.</param>
+        /// <param name = "model">statement object model</param>
         public ModuleItem(EPStatementObjectModel model)
         {
-            Model = model;
+            this.model = model;
         }
 
-        /// <summary>Returns the EPL. </summary>
-        /// <value>expression</value>
-        public string Expression { get; set; }
+        /// <summary>
+        /// Returns true to indicate comments-only expression.
+        /// </summary>
+        /// <returns>comments-only indicator</returns>
+        public bool IsCommentOnly => commentOnly;
 
-        /// <summary>Returns true to indicate comments-only expression. </summary>
-        /// <value>comments-only indicator</value>
-        public bool IsCommentOnly { get; set; }
+        public string Expression {
+            get => expression;
 
-        /// <summary>Returns the line number of item. </summary>
-        /// <value>item line num</value>
-        public int LineNumber { get; set; }
+            set => expression = value;
+        }
 
-        /// <summary>Returns item char position in line. </summary>
-        /// <value>char position</value>
-        public int CharPosStart { get; set; }
+        public bool CommentOnly {
+            set => commentOnly = value;
+        }
 
-        /// <summary>Returns end position of character on line for the item. </summary>
-        /// <value>position</value>
-        public int CharPosEnd { get; set; }
+        public int LineNumber {
+            get => lineNumber;
 
-        /// <summary>Returns the statement object model when provided</summary>
-        /// <value>the statement object model</value>
-        public EPStatementObjectModel Model { get; private set; }
+            set => lineNumber = value;
+        }
+
+        public int LineNumberEnd {
+            get => lineNumberEnd;
+
+            set => lineNumberEnd = value;
+        }
+
+        public int CharPosStart {
+            get => charPosStart;
+
+            set => charPosStart = value;
+        }
+
+        public int CharPosEnd {
+            get => charPosEnd;
+
+            set => charPosEnd = value;
+        }
+
+        public EPStatementObjectModel Model => model;
+
+        public int LineNumberContent {
+            get => lineNumberContent;
+
+            set => lineNumberContent = value;
+        }
+
+        public int LineNumberContentEnd {
+            get => lineNumberContentEnd;
+
+            set => lineNumberContentEnd = value;
+        }
     }
-}
+} // end of namespace

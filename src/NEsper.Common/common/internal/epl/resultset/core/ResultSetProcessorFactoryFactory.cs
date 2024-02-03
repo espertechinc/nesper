@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -49,44 +49,34 @@ using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 
+
 namespace com.espertech.esper.common.@internal.epl.resultset.core
 {
     /// <summary>
-    ///     Factory for output processors. Output processors process the result set of a join or of a view
-    ///     and apply aggregation/grouping, having and some output limiting logic.
-    ///     <para>
-    ///     The instance produced by the factory depends on the presence of aggregation functions in the select list,
-    ///     the presence and nature of the group-by clause.
-    ///     </para>
-    ///     <para>
-    ///     In case (1) and (2) there are no aggregation functions in the select clause.
-    ///     </para>
-    ///     <para>
-    ///     Case (3) is without group-by and with aggregation functions and without non-aggregated properties
-    ///     in the select list: <pre>select sum(volume) </pre>.
-    ///     Always produces one row for new and old data, aggregates without grouping.
-    ///     </para>
-    ///     <para>
-    ///     Case (4) is without group-by and with aggregation functions but with non-aggregated properties
-    ///     in the select list: <pre>select price, sum(volume) </pre>.
-    ///     Produces a row for each event, aggregates without grouping.
-    ///     </para>
-    ///     <para>
-    ///     Case (5) is with group-by and with aggregation functions and all selected properties are grouped-by.
-    ///     in the select list: <pre>select customerId, sum(volume) group by customerId</pre>.
-    ///     Produces a old and new data row for each group changed, aggregates with grouping.
-    ///     </para>
-    ///     <para>
-    ///     Case (6) is with group-by and with aggregation functions and only some selected properties are grouped-by.
-    ///     in the select list: <pre>select customerId, supplierId, sum(volume) group by customerId</pre>.
-    ///     Produces row for each event, aggregates with grouping.
-    ///     </para>
+    /// Factory for output processors. Output processors process the result set of a join or of a view
+    /// and apply aggregation/grouping, having and some output limiting logic.
+    /// <para />The instance produced by the factory depends on the presence of aggregation functions in the select list,
+    /// the presence and nature of the group-by clause.
+    /// <para />In case (1) and (2) there are no aggregation functions in the select clause.
+    /// <para />Case (3) is without group-by and with aggregation functions and without non-aggregated properties
+    /// in the select list: <pre>select sum(volume) </pre>.
+    /// Always produces one row for new and old data, aggregates without grouping.
+    /// <para />Case (4) is without group-by and with aggregation functions but with non-aggregated properties
+    /// in the select list: <pre>select price, sum(volume) </pre>.
+    /// Produces a row for each event, aggregates without grouping.
+    /// <para />Case (5) is with group-by and with aggregation functions and all selected properties are grouped-by.
+    /// in the select list: <pre>select customerId, sum(volume) group by customerId</pre>.
+    /// Produces a old and new data row for each group changed, aggregates with grouping.
+    /// <para />Case (6) is with group-by and with aggregation functions and only some selected properties are grouped-by.
+    /// in the select list: <pre>select customerId, supplierId, sum(volume) group by customerId</pre>.
+    /// Produces row for each event, aggregates with grouping.
     /// </summary>
     public class ResultSetProcessorFactoryFactory
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public static ResultSetProcessorDesc GetProcessorPrototype(
+            ResultSetProcessorAttributionKey attributionKey,
             ResultSetSpec spec,
             StreamTypeService typeService,
             ViewResourceDelegateExpr viewResourceDelegate,
@@ -104,8 +94,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
             var optionalHavingNode = spec.HavingClause;
             var outputLimitSpec = spec.OptionalOutputLimitSpec;
             var groupByClauseExpressions = spec.GroupByClauseExpressions;
-            var declaredNodes = new List<ExprDeclaredNode>();
-            var additionalForgeables = new List<StmtClassForgeableFactory>();
+            IList<ExprDeclaredNode> declaredNodes = new List<ExprDeclaredNode>();
+            IList<StmtClassForgeableFactory> additionalForgeables = new List<StmtClassForgeableFactory>(2);
+            var fabricCharge = services.StateMgmtSettingsProvider.NewCharge();
 
             // validate output limit spec
             ValidateOutputLimit(outputLimitSpec, statementRawInfo, services);
@@ -161,11 +152,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
             // Validate stream selections, if any (such as stream.*)
             var isUsingStreamSelect = false;
             foreach (var compiled in selectClauseSpec.SelectExprList) {
-                if (!(compiled is SelectClauseStreamCompiledSpec)) {
+                if (!(compiled is SelectClauseStreamCompiledSpec streamSelectSpec)) {
                     continue;
                 }
 
-                var streamSelectSpec = (SelectClauseStreamCompiledSpec) compiled;
                 var streamNum = int.MinValue;
                 var isFragmentEvent = false;
                 var isProperty = false;
@@ -180,7 +170,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
 
                     // see if the stream name is known as a nested event type
                     var candidateProviderOfFragments = typeService.EventTypes[i];
-                    // for the native event type we don't need to fragment, we simply use the property itself since all wrappers understand objects
+                    // for the native event type we don't need to fragment, we simply use the property itself since all wrappers understand Java objects
                     if (!(candidateProviderOfFragments is NativeEventType) &&
                         candidateProviderOfFragments.GetFragmentType(streamName) != null) {
                         streamNum = i;
@@ -338,7 +328,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
 
             // Analyze rollup
             var groupByRollupInfo = AnalyzeValidateGroupBy(groupByClauseExpressions, validationContext);
-            
+
             ExprNode[] groupByNodesValidated;
             AggregationGroupByRollupDescForge groupByRollupDesc;
             MultiKeyClassRef groupByMultiKey;
@@ -346,16 +336,18 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                 groupByNodesValidated = ExprNodeUtilityQuery.EMPTY_EXPR_ARRAY;
                 groupByRollupDesc = null;
                 groupByMultiKey = null;
-            } else {
+            }
+            else {
                 groupByNodesValidated = groupByRollupInfo.ExprNodes;
                 groupByRollupDesc = groupByRollupInfo.RollupDesc;
                 groupByMultiKey = groupByRollupInfo.OptionalMultiKey;
-                additionalForgeables.AddRange(groupByRollupInfo.AdditionalForgeables);
+                additionalForgeables.AddAll(groupByRollupInfo.AdditionalForgeables);
             }
-            
+
             // Construct the appropriate aggregation service
             var hasGroupBy = groupByNodesValidated.Length > 0;
-            AggregationServiceForgeDesc aggregationServiceForgeDesc = AggregationServiceFactoryFactory.GetService(
+            var aggregationServiceForgeDesc = AggregationServiceFactoryFactory.GetService(
+                attributionKey.AggregationAttributionKey,
                 selectAggregateExprNodes,
                 selectAggregationNodesNamed,
                 declaredNodes,
@@ -380,8 +372,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                 isOnSelect,
                 services.ImportServiceCompileTime,
                 statementRawInfo,
-                services.SerdeResolver);
-            additionalForgeables.AddRange(aggregationServiceForgeDesc.AdditionalForgeables);
+                services.SerdeResolver,
+                services.StateMgmtSettingsProvider);
+            additionalForgeables.AddAll(aggregationServiceForgeDesc.AdditionalForgeables);
+            fabricCharge.Add(aggregationServiceForgeDesc.FabricCharge);
 
             // Compare local-aggregation versus group-by
             var localGroupByMatchesGroupBy = AnalyzeLocalGroupBy(
@@ -405,7 +399,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                 services);
             var selectExprProcessorDesc = SelectExprProcessorFactory.GetProcessor(args, insertIntoDesc, true);
             var selectExprProcessorForge = selectExprProcessorDesc.Forge;
-            additionalForgeables.AddRange(selectExprProcessorDesc.AdditionalForgeables);
+            additionalForgeables.AddAll(selectExprProcessorDesc.AdditionalForgeables);
             var selectSubscriberDescriptor = selectExprProcessorDesc.SubscriberDescriptor;
             var resultEventType = selectExprProcessorForge.ResultEventType;
 
@@ -433,7 +427,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                 services.VariableCompileTimeResolver,
                 services.Configuration.Compiler.Language.IsSortUsingCollator,
                 spec.ContextName,
-                rollupPerLevelForges == null ? null : rollupPerLevelForges.OptionalOrderByElements);
+                rollupPerLevelForges?.OptionalOrderByElements);
             var hasOrderBy = orderByProcessorFactory != null;
 
             // Get a list of event properties being aggregated in the select clause, if any
@@ -469,16 +463,14 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                 isSelectRStream = true;
             }
 
-            var optionalHavingForge = optionalHavingNode == null ? null : optionalHavingNode.Forge;
-            var hasOutputLimitOpt = ResultSetProcessorOutputConditionTypeExtensions.GetOutputLimitOpt(
+            var optionalHavingForge = optionalHavingNode?.Forge;
+            bool hasOutputLimitOpt = ResultSetProcessorOutputConditionTypeExtensions.GetOutputLimitOpt(
                 statementRawInfo.Annotations,
                 services.Configuration,
                 hasOrderBy);
-            var hasOutputLimitSnapshot =
-                outputLimitSpec != null && outputLimitSpec.DisplayLimit == OutputLimitLimitType.SNAPSHOT;
             var isGrouped = groupByNodesValidated.Length > 0 || groupByRollupDesc != null;
             var outputConditionType = outputLimitSpec != null
-                ? (ResultSetProcessorOutputConditionType?) ResultSetProcessorOutputConditionTypeExtensions
+                ? (ResultSetProcessorOutputConditionType?)ResultSetProcessorOutputConditionTypeExtensions
                     .GetConditionType(
                         outputLimitSpec.DisplayLimit,
                         isAggregated,
@@ -497,8 +489,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                         services);
             }
 
-            var hasOutputLimit = outputLimitSpec != null;
-            if (hasOutputLimitOpt && hasOutputLimit) {
+            var flags = new ResultSetProcessorFlags(join, outputLimitSpec, outputConditionType);
+
+            if (hasOutputLimitOpt && flags.HasOutputLimit) {
                 PlanSerdes(selectExprProcessorForge.ResultEventType, additionalForgeables, statementRawInfo, services);
             }
 
@@ -509,64 +502,59 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                 havingAggregateExprNodes.IsEmpty()) {
                 // Determine if any output rate limiting must be performed early while processing results
                 // Snapshot output does not count in terms of limiting output for grouping/aggregation purposes
-                var isOutputLimitingNoSnapshot = outputLimitSpec != null &&
-                                                 outputLimitSpec.DisplayLimit != OutputLimitLimitType.SNAPSHOT;
 
                 // (1a)
                 // There is no need to perform select expression processing, the single view itself (no join) generates
                 // events in the desired format, therefore there is no output processor. There are no order-by expressions.
                 if (orderByNodes.IsEmpty() &&
                     optionalHavingNode == null &&
-                    !isOutputLimitingNoSnapshot &&
+                    !flags.IsOutputLimitNoSnapshot &&
                     spec.RowLimitSpec == null) {
                     Log.Debug(".getProcessor Using no result processor");
-                    var throughFactoryForge = new ResultSetProcessorHandThroughFactoryForge(
+                    var forgeX2 = new ResultSetProcessorHandThroughFactoryForge(
                         resultEventType,
-                        selectExprProcessorForge,
+                        typeService.EventTypes,
                         isSelectRStream);
                     return new ResultSetProcessorDesc(
-                        throughFactoryForge,
+                        forgeX2,
+                        flags,
                         ResultSetProcessorType.HANDTHROUGH,
-                        new SelectExprProcessorForge[] {selectExprProcessorForge},
-                        join,
-                        hasOutputLimit,
-                        outputConditionType,
-                        hasOutputLimitSnapshot,
+                        new[] { selectExprProcessorForge },
                         resultEventType,
                         false,
                         aggregationServiceForgeDesc,
                         orderByProcessorFactory,
                         selectSubscriberDescriptor,
-                        additionalForgeables);
+                        additionalForgeables,
+                        fabricCharge);
                 }
 
                 // (1b)
                 // We need to process the select expression in a simple fashion, with each event (old and new)
                 // directly generating one row, and no need to update aggregate state since there is no aggregate function.
                 // There might be some order-by expressions.
-                var simpleForge = new ResultSetProcessorSimpleForge(
+                var forgeX = new ResultSetProcessorSimpleForge(
                     resultEventType,
-                    selectExprProcessorForge,
+                    typeService.EventTypes,
                     optionalHavingForge,
                     isSelectRStream,
                     outputLimitSpec,
                     outputConditionType,
                     hasOrderBy,
                     typeService.EventTypes);
+                forgeX.PlanStateSettings(fabricCharge, statementRawInfo, services);
                 return new ResultSetProcessorDesc(
-                    simpleForge,
+                    forgeX,
+                    flags,
                     ResultSetProcessorType.UNAGGREGATED_UNGROUPED,
-                    new SelectExprProcessorForge[] {selectExprProcessorForge},
-                    join,
-                    hasOutputLimit,
-                    outputConditionType,
-                    hasOutputLimitSnapshot,
+                    new[] { selectExprProcessorForge },
                     resultEventType,
                     false,
                     aggregationServiceForgeDesc,
                     orderByProcessorFactory,
                     selectSubscriberDescriptor,
-                    additionalForgeables);
+                    additionalForgeables,
+                    fabricCharge);
             }
 
             // (2)
@@ -578,29 +566,28 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                 havingAggregateExprNodes.IsEmpty() &&
                 !isLast &&
                 !isFirst) {
-                var simpleForge = new ResultSetProcessorSimpleForge(
+                var forgeX = new ResultSetProcessorSimpleForge(
                     resultEventType,
-                    selectExprProcessorForge,
+                    typeService.EventTypes,
                     optionalHavingForge,
                     isSelectRStream,
                     outputLimitSpec,
                     outputConditionType,
                     hasOrderBy,
                     typeService.EventTypes);
+                forgeX.PlanStateSettings(fabricCharge, statementRawInfo, services);
                 return new ResultSetProcessorDesc(
-                    simpleForge,
+                    forgeX,
+                    flags,
                     ResultSetProcessorType.UNAGGREGATED_UNGROUPED,
-                    new SelectExprProcessorForge[] {selectExprProcessorForge},
-                    join,
-                    hasOutputLimit,
-                    outputConditionType,
-                    hasOutputLimitSnapshot,
+                    new[] { selectExprProcessorForge },
                     resultEventType,
                     false,
                     aggregationServiceForgeDesc,
                     orderByProcessorFactory,
                     selectSubscriberDescriptor,
-                    additionalForgeables);
+                    additionalForgeables,
+                    fabricCharge);
             }
 
             if (groupByNodesValidated.Length == 0 && isAggregated) {
@@ -615,60 +602,56 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                     localGroupByMatchesGroupBy &&
                     (viewResourceDelegate == null || viewResourceDelegate.PreviousRequests.IsEmpty())) {
                     Log.Debug(".getProcessor Using ResultSetProcessorRowForAll");
-                    var allForge = new ResultSetProcessorRowForAllForge(
+                    var forgeX = new ResultSetProcessorRowForAllForge(
                         resultEventType,
-                        selectExprProcessorForge,
+                        typeService.EventTypes,
                         optionalHavingForge,
                         isSelectRStream,
                         isUnidirectional,
                         isHistoricalOnly,
                         outputLimitSpec,
-                        hasOrderBy,
-                        outputConditionType);
+                        hasOrderBy);
+                    forgeX.PlanStateSettings(fabricCharge, statementRawInfo, services);
                     return new ResultSetProcessorDesc(
-                        allForge,
+                        forgeX,
+                        flags,
                         ResultSetProcessorType.FULLYAGGREGATED_UNGROUPED,
-                        new SelectExprProcessorForge[] {selectExprProcessorForge},
-                        join,
-                        hasOutputLimit,
-                        outputConditionType,
-                        hasOutputLimitSnapshot,
+                        new[] { selectExprProcessorForge },
                         resultEventType,
                         false,
                         aggregationServiceForgeDesc,
                         orderByProcessorFactory,
                         selectSubscriberDescriptor,
-                        additionalForgeables);
+                        additionalForgeables,
+                        fabricCharge);
                 }
 
                 // (4)
                 // There is no group-by clause but there are aggregate functions with event properties in the select clause (aggregation case)
                 // or having clause and not all event properties are aggregated (some properties are not under aggregation functions).
                 Log.Debug(".getProcessor Using ResultSetProcessorRowPerEventImpl");
-                var eventForge = new ResultSetProcessorRowPerEventForge(
+                var forgeXX = new ResultSetProcessorRowPerEventForge(
                     selectExprProcessorForge.ResultEventType,
-                    selectExprProcessorForge,
+                    typeService.EventTypes,
                     optionalHavingForge,
                     isSelectRStream,
                     isUnidirectional,
                     isHistoricalOnly,
                     outputLimitSpec,
-                    outputConditionType,
                     hasOrderBy);
+                forgeXX.PlanStateSettings(fabricCharge, statementRawInfo, services);
                 return new ResultSetProcessorDesc(
-                    eventForge,
+                    forgeXX,
+                    flags,
                     ResultSetProcessorType.AGGREGATED_UNGROUPED,
-                    new SelectExprProcessorForge[] {selectExprProcessorForge},
-                    join,
-                    hasOutputLimit,
-                    outputConditionType,
-                    hasOutputLimitSnapshot,
+                    new[] { selectExprProcessorForge },
                     resultEventType,
                     false,
                     aggregationServiceForgeDesc,
                     orderByProcessorFactory,
                     selectSubscriberDescriptor,
-                    additionalForgeables);
+                    additionalForgeables,
+                    fabricCharge);
             }
 
             // Handle group-by cases
@@ -718,20 +701,25 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                 var noDataWindowSingleStream = typeService.IStreamOnly[0] && typeService.EventTypes.Length < 2;
                 var iterableUnboundConfig = services.Configuration.Compiler.ViewResources.IsIterableUnbound;
                 var iterateUnbounded = noDataWindowSingleStream &&
-                                       (iterableUnboundConfig || AnnotationUtil.HasAnnotation(statementRawInfo.Annotations, typeof(IterableUnboundAttribute)));
+                                       (iterableUnboundConfig ||
+                                        AnnotationUtil.HasAnnotation(
+                                            statementRawInfo.Annotations,
+                                            typeof(IterableUnboundAttribute)));
 
                 Log.Debug(".getProcessor Using ResultSetProcessorRowPerGroup");
-                ResultSetProcessorFactoryForge factoryForge;
+                ResultSetProcessorFactoryForge forgeX;
                 ResultSetProcessorType type;
                 SelectExprProcessorForge[] selectExprProcessorForges;
                 bool rollup;
+
                 if (groupByRollupDesc != null) {
                     if (outputLimitSpec != null) {
                         PlanSerdes(typeService, additionalForgeables, statementRawInfo, services);
                     }
 
-                    factoryForge = new ResultSetProcessorRowPerGroupRollupForge(
+                    var rollupForge = new ResultSetProcessorRowPerGroupRollupForge(
                         resultEventType,
+                        typeService.EventTypes,
                         rollupPerLevelForges,
                         groupByNodesValidated,
                         isSelectRStream,
@@ -747,19 +735,23 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                         optionalOutputFirstConditionFactoryForge,
                         typeService.EventTypes,
                         groupByMultiKey);
-                    
+                    forgeX = rollupForge;
+                    rollupForge.PlanStateSettings(fabricCharge, statementRawInfo, flags, services);
                     type = ResultSetProcessorType.FULLYAGGREGATED_GROUPED_ROLLUP;
                     selectExprProcessorForges = rollupPerLevelForges.SelectExprProcessorForges;
                     rollup = true;
                 }
                 else {
-                    var noDataWindowSingleSnapshot = iterateUnbounded || (outputLimitSpec != null && outputLimitSpec.DisplayLimit == OutputLimitLimitType.SNAPSHOT && noDataWindowSingleStream);
+                    var noDataWindowSingleSnapshot = iterateUnbounded ||
+                                                     (outputLimitSpec != null &&
+                                                      outputLimitSpec.DisplayLimit == OutputLimitLimitType.SNAPSHOT &&
+                                                      noDataWindowSingleStream);
                     var unboundedProcessor = noDataWindowSingleSnapshot && !isHistoricalOnly;
                     if (unboundedProcessor) {
                         PlanSerdes(typeService, additionalForgeables, statementRawInfo, services);
                     }
 
-                    factoryForge = new ResultSetProcessorRowPerGroupForge(
+                    var groupForge = new ResultSetProcessorRowPerGroupForge(
                         resultEventType,
                         typeService.EventTypes,
                         groupByNodesValidated,
@@ -770,30 +762,28 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                         hasOrderBy,
                         isHistoricalOnly,
                         outputConditionType,
-                        typeService.EventTypes,
                         optionalOutputFirstConditionFactoryForge,
                         groupByMultiKey,
                         unboundedProcessor);
-
+                    forgeX = groupForge;
+                    groupForge.PlanStateSettings(fabricCharge, statementRawInfo, flags, services);
                     type = ResultSetProcessorType.FULLYAGGREGATED_GROUPED;
-                    selectExprProcessorForges = new[] {selectExprProcessorForge};
+                    selectExprProcessorForges = new[] { selectExprProcessorForge };
                     rollup = false;
                 }
 
                 return new ResultSetProcessorDesc(
-                    factoryForge,
+                    forgeX,
+                    flags,
                     type,
                     selectExprProcessorForges,
-                    join,
-                    hasOutputLimit,
-                    outputConditionType,
-                    hasOutputLimitSnapshot,
                     resultEventType,
                     rollup,
                     aggregationServiceForgeDesc,
                     orderByProcessorFactory,
                     selectSubscriberDescriptor,
-                    additionalForgeables);
+                    additionalForgeables,
+                    fabricCharge);
             }
 
             if (groupByRollupDesc != null) {
@@ -805,8 +795,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
             // (6)
             // There is a group-by clause, and one or more event properties in the select clause that are not under an aggregation
             // function are not listed in the group-by clause (output one row per event, not one row per group)
-            ResultSetProcessorAggregateGroupedForge forge = new ResultSetProcessorAggregateGroupedForge(
+            var forge = new ResultSetProcessorAggregateGroupedForge(
                 resultEventType,
+                typeService.EventTypes,
                 groupByNodesValidated,
                 optionalHavingForge,
                 isSelectRStream,
@@ -816,23 +807,20 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                 isHistoricalOnly,
                 outputConditionType,
                 optionalOutputFirstConditionFactoryForge,
-                typeService.EventTypes,
                 groupByMultiKey);
-
+            forge.PlanStateSettings(fabricCharge, statementRawInfo, flags, services);
             return new ResultSetProcessorDesc(
                 forge,
+                flags,
                 ResultSetProcessorType.AGGREGATED_GROUPED,
-                new SelectExprProcessorForge[] {selectExprProcessorForge},
-                join,
-                hasOutputLimit,
-                outputConditionType,
-                hasOutputLimitSnapshot,
+                new[] { selectExprProcessorForge },
                 resultEventType,
                 false,
                 aggregationServiceForgeDesc,
                 orderByProcessorFactory,
                 selectSubscriberDescriptor,
-                additionalForgeables);
+                additionalForgeables,
+                fabricCharge);
         }
 
         private static void PlanSerdes(
@@ -841,12 +829,13 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
             StatementRawInfo raw,
             StatementCompileTimeServices services)
         {
-            foreach (EventType eventType in typeService.EventTypes) {
-                IList<StmtClassForgeableFactory> serdeForgeables = SerdeEventTypeUtility.Plan(
+            foreach (var eventType in typeService.EventTypes) {
+                var serdeForgeables = SerdeEventTypeUtility.Plan(
                     eventType,
                     raw,
                     services.SerdeEventTypeRegistry,
-                    services.SerdeResolver);
+                    services.SerdeResolver,
+                    services.StateMgmtSettingsProvider);
                 additionalForgeables.AddAll(serdeForgeables);
             }
         }
@@ -857,14 +846,15 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
             StatementRawInfo raw,
             StatementCompileTimeServices services)
         {
-            IList<StmtClassForgeableFactory> serdeForgeables = SerdeEventTypeUtility.Plan(
+            var serdeForgeables = SerdeEventTypeUtility.Plan(
                 eventType,
                 raw,
                 services.SerdeEventTypeRegistry,
-                services.SerdeResolver);
+                services.SerdeResolver,
+                services.StateMgmtSettingsProvider);
             additionalForgeables.AddAll(serdeForgeables);
         }
-        
+
         private static void ValidateOutputLimit(
             OutputLimitSpec outputLimitSpec,
             StatementRawInfo statementRawInfo,
@@ -879,7 +869,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                 statementRawInfo,
                 services).Build();
             if (outputLimitSpec.AfterTimePeriodExpr != null) {
-                var timePeriodExpr = (ExprTimePeriod) ExprNodeUtilityValidate.GetValidatedSubtree(
+                var timePeriodExpr = (ExprTimePeriod)ExprNodeUtilityValidate.GetValidatedSubtree(
                     ExprNodeOrigin.OUTPUTLIMIT,
                     outputLimitSpec.AfterTimePeriodExpr,
                     validationContext);
@@ -887,7 +877,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
             }
 
             if (outputLimitSpec.TimePeriodExpr != null) {
-                var timePeriodExpr = (ExprTimePeriod) ExprNodeUtilityValidate.GetValidatedSubtree(
+                var timePeriodExpr = (ExprTimePeriod)ExprNodeUtilityValidate.GetValidatedSubtree(
                     ExprNodeOrigin.OUTPUTLIMIT,
                     outputLimitSpec.TimePeriodExpr,
                     validationContext);
@@ -920,8 +910,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
             foreach (var agg in aggNodes) {
                 if (agg.OptionalLocalGroupBy != null) {
                     if (!ExprNodeUtilityCompare.DeepEqualsIsSubset(
-                        agg.OptionalLocalGroupBy.PartitionExpressions,
-                        groupByNodesValidated)) {
+                            agg.OptionalLocalGroupBy.PartitionExpressions,
+                            groupByNodesValidated)) {
                         return false;
                     }
                 }
@@ -950,32 +940,46 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                     validationContext);
             }
 
-            var groupByMKPLan = MultiKeyPlanner.PlanMultiKey(validated, false, validationContext.StatementRawInfo, validationContext.SerdeResolver);
+            var groupByMKPLan = MultiKeyPlanner.PlanMultiKey(
+                validated,
+                false,
+                validationContext.StatementRawInfo,
+                validationContext.SerdeResolver);
             if (groupBy.GroupByRollupLevels == null) {
                 return new GroupByRollupInfo(validated, null, groupByMKPLan.MultiKeyForgeables, groupByMKPLan.ClassRef);
             }
 
             // make rollup levels
-            List<AggregationGroupByRollupLevelForge> levels = new List<AggregationGroupByRollupLevelForge>();
-            int countOffset = 0;
-            int countNumber = -1;
-            Type[] allGroupKeyTypes = ExprNodeUtilityQuery.GetExprResultTypes(validated);
-            IList<StmtClassForgeableFactory> additionalForgeables = new List<StmtClassForgeableFactory>(groupByMKPLan.MultiKeyForgeables);
-            foreach (int[] mki in groupBy.GroupByRollupLevels) {
+            IList<AggregationGroupByRollupLevelForge> levels = new List<AggregationGroupByRollupLevelForge>();
+            var countOffset = 0;
+            var countNumber = -1;
+            var allGroupKeyTypes = ExprNodeUtilityQuery.GetExprResultTypes(validated);
+            IList<StmtClassForgeableFactory> additionalForgeables =
+                new List<StmtClassForgeableFactory>(groupByMKPLan.MultiKeyForgeables);
+            foreach (var mki in groupBy.GroupByRollupLevels) {
                 countNumber++;
 
                 if (mki.Length == 0) {
-                    levels.Add(new AggregationGroupByRollupLevelForge(countNumber, -1, null, allGroupKeyTypes, groupByMKPLan.ClassRef, null));
-                } else {
-                    ExprNode[] levelExpressions = new ExprNode[mki.Length];
-                    for (int i = 0; i < levelExpressions.Length; i++) {
+                    levels.Add(
+                        new AggregationGroupByRollupLevelForge(
+                            countNumber,
+                            -1,
+                            null,
+                            allGroupKeyTypes,
+                            groupByMKPLan.ClassRef,
+                            null));
+                }
+                else {
+                    var levelExpressions = new ExprNode[mki.Length];
+                    for (var i = 0; i < levelExpressions.Length; i++) {
                         levelExpressions[i] = validated[mki[i]];
                     }
 
                     MultiKeyPlan levelMKPLan;
                     if (SameExpressions(levelExpressions, validated)) {
                         levelMKPLan = groupByMKPLan;
-                    } else {
+                    }
+                    else {
                         levelMKPLan = MultiKeyPlanner.PlanMultiKey(
                             levelExpressions,
                             false,
@@ -992,22 +996,23 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                             allGroupKeyTypes,
                             groupByMKPLan.ClassRef,
                             levelMKPLan.ClassRef));
-                    
                     countOffset++;
                 }
             }
-            
-            AggregationGroupByRollupLevelForge[] levelsarr = levels.ToArray();
-            AggregationGroupByRollupDescForge rollup = new AggregationGroupByRollupDescForge(levelsarr);
+
+            var levelsarr = levels.ToArray();
+            var rollup = new AggregationGroupByRollupDescForge(levelsarr);
 
             // callback when hook reporting enabled
             try {
-                var hook = (GroupByRollupPlanHook) ImportUtil.GetAnnotationHook(
+                var hook = (GroupByRollupPlanHook)ImportUtil.GetAnnotationHook(
                     validationContext.Annotations,
                     HookType.INTERNAL_GROUPROLLUP_PLAN,
                     typeof(GroupByRollupPlanHook),
                     validationContext.ImportService);
-                hook?.Query(new GroupByRollupPlanDesc(validated, rollup));
+                if (hook != null) {
+                    hook.Query(new GroupByRollupPlanDesc(validated, rollup));
+                }
             }
             catch (ExprValidationException) {
                 throw new EPException("Failed to obtain hook for " + HookType.INTERNAL_QUERY_PLAN);
@@ -1047,7 +1052,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
             var propsPerGroupByExpr = new ExprNodePropOrStreamSet[groupByNodesValidated.Length];
             for (var i = 0; i < groupByNodesValidated.Length; i++) {
                 propsPerGroupByExpr[i] =
-                    ExprNodeUtilityAggregation.GetGroupByPropertiesValidateHasOne(new[] {groupByNodesValidated[i]});
+                    ExprNodeUtilityAggregation.GetGroupByPropertiesValidateHasOne(
+                        new[] { groupByNodesValidated[i] });
             }
 
             // for each level obtain a separate select expression processor
@@ -1077,8 +1083,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                     spec.Annotations,
                     statementRawInfo,
                     compileTimeServices);
-                var forge = SelectExprProcessorFactory.GetProcessor(args, insertIntoDesc, false)
-                    .Forge;
+                var forge = SelectExprProcessorFactory.GetProcessor(args, insertIntoDesc, false).Forge;
                 processors[i] = forge;
 
                 if (havingClauses != null) {
@@ -1168,11 +1173,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
             var rewritten = new SelectClauseElementCompiled[selectClauseSpec.SelectExprList.Length];
             for (var i = 0; i < rewritten.Length; i++) {
                 var spec = selectClauseSpec.SelectExprList[i];
-                if (!(spec is SelectClauseExprCompiledSpec)) {
+                if (!(spec is SelectClauseExprCompiledSpec exprSpec)) {
                     throw new ExprValidationException("Group-by clause with roll-up does not allow wildcard");
                 }
 
-                var exprSpec = (SelectClauseExprCompiledSpec) spec;
                 var validated = RewriteRollupValidateExpression(
                     ExprNodeOrigin.SELECT,
                     selectClauseLevel[i],
@@ -1206,7 +1210,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                 var combination = GetGroupExprCombination(groupByNodes, groupingNodePair.Second.ChildNodes);
 
                 var found = false;
-                var rollupIndexes = level.IsAggregationTop ? new int[0] : level.RollupKeys;
+                var rollupIndexes = level.IsAggregationTop ? Array.Empty<int>() : level.RollupKeys;
                 foreach (var index in rollupIndexes) {
                     if (index == combination[0]) {
                         found = true;
@@ -1233,7 +1237,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                     var index = combination[i];
 
                     var found = false;
-                    var rollupIndexes = level.IsAggregationTop ? new int[0] : level.RollupKeys;
+                    var rollupIndexes = level.IsAggregationTop ? Array.Empty<int>() : level.RollupKeys;
                     foreach (var rollupIndex in rollupIndexes) {
                         if (index == rollupIndex) {
                             found = true;
@@ -1270,7 +1274,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                 }
 
                 foreach (ExprNodePropOrStreamDesc rolledupProp in rolledupProps.Properties) {
-                    var prop = (ExprNodePropOrStreamPropDesc) rolledupProp;
+                    var prop = (ExprNodePropOrStreamPropDesc)rolledupProp;
                     if (rolledupProp.StreamNum == node.Second.StreamId &&
                         prop.PropertyName.Equals(node.Second.ResolvedPropertyName)) {
                         rewrite = true;
@@ -1339,8 +1343,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
             for (var i = 0; i < selectClauseSpec.SelectExprList.Length; i++) {
                 // validate element
                 var element = selectClauseSpec.SelectExprList[i];
-                if (element is SelectClauseExprCompiledSpec) {
-                    var expr = (SelectClauseExprCompiledSpec) element;
+                if (element is SelectClauseExprCompiledSpec expr) {
                     var validatedExpression = ExprNodeUtilityValidate.GetValidatedSubtree(
                         ExprNodeOrigin.SELECT,
                         expr.SelectExpression,
@@ -1368,11 +1371,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
 
             // Any non-aggregated properties must occur in the group-by clause (if there is one)
             if (!propertiesGroupedBy.IsEmpty()) {
-                var visitor = new ExprNodeIdentifierAndStreamRefVisitor(true);
+                var visitor = new ExprNodeIdentifierAndStreamRefVisitor(true, true, false);
                 havingNode.Accept(visitor);
                 var allPropertiesHaving = visitor.Refs;
-                var aggPropertiesHaving =
-                    ExprNodeUtilityAggregation.GetAggregatedProperties(aggregateNodesHaving);
+                var aggPropertiesHaving = ExprNodeUtilityAggregation.GetAggregatedProperties(aggregateNodesHaving);
 
                 aggPropertiesHaving.RemoveFromList(allPropertiesHaving);
                 propertiesGroupedBy.RemoveFromList(allPropertiesHaving);
@@ -1404,7 +1406,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
             IList<OrderByItem> orderByUnexpanded)
         {
             if (orderByUnexpanded == null || orderByUnexpanded.IsEmpty()) {
-                return Collections.GetEmptyList<OrderByItem>();
+                return EmptyList<OrderByItem>.Instance;
             }
 
             // copy list to modify
@@ -1416,20 +1418,18 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
             // expand
             foreach (var selectElement in selectionList) {
                 // process only expressions
-                if (!(selectElement is SelectClauseExprCompiledSpec)) {
+                if (!(selectElement is SelectClauseExprCompiledSpec selectExpr)) {
                     continue;
                 }
-
-                var selectExpr = (SelectClauseExprCompiledSpec) selectElement;
 
                 var name = selectExpr.AssignedName;
                 if (name != null) {
                     var fullExpr = selectExpr.SelectExpression;
-
-                    for (var ii = 0; ii < expanded.Count; ii++) {
-                        var orderByElement = expanded[ii];
+                    for (var ii = 0 ; ii < expanded.Count ; ii++) {
+                        OrderByItem orderByElement = expanded[ii];
                         var swapped = ColumnNamedNodeSwapper.Swap(orderByElement.ExprNode, name, fullExpr);
-                        expanded[ii] = new OrderByItem(swapped, orderByElement.IsDescending);
+                        var newOrderByElement = new OrderByItem(swapped, orderByElement.IsDescending);
+                        expanded[ii] = newOrderByElement;
                     }
                 }
             }
@@ -1445,7 +1445,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                 return false;
             }
 
-            for (int i = 0; i < levelExpressions.Length; i++) {
+            for (var i = 0; i < levelExpressions.Length; i++) {
                 if (validated[i] != levelExpressions[i]) {
                     return false;
                 }

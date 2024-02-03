@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -16,7 +16,6 @@ namespace com.espertech.esper.common.client.util
     public class TypeResolverProviderDefault : TypeResolverProvider
     {
         public const string NAME = "ClassLoaderProvider";
-
         private readonly TypeResolver typeResolver;
 
         public TypeResolverProviderDefault(TypeResolver typeResolver)
@@ -24,17 +23,6 @@ namespace com.espertech.esper.common.client.util
             this.typeResolver = typeResolver;
         }
 
-#if FALSE
-        public ClassLoaderProviderDefault(IContainer container)
-        {
-            container.Register<ClassLoader, ClassLoaderDefault>(Lifespan.Singleton);
-            _classLoader = container.Resolve<ClassLoader>();
-        }
-#endif
-
-        public TypeResolver GetTypeResolver()
-        {
-            return typeResolver;
-        }
+        public TypeResolver TypeResolver => typeResolver;
     }
 } // end of namespace

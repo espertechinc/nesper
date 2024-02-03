@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Text.Json.Serialization;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -28,7 +29,6 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
     /// <summary>
     ///     Expression for use within crontab to specify a list of values.
     /// </summary>
-    [Serializable]
     public class ExprNumberSetList : ExprNodeBase,
         ExprForge,
         ExprEvaluator
@@ -38,7 +38,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         private const string METHOD_HANDLEEXPRNUMBERSETLISTADD = "HandleExprNumberSetListAdd";
         private const string METHOD_HANDLEEXPRNUMBERSETLISTEMPTY = "HandleExprNumberSetListEmpty";
 
-        [NonSerialized] private ExprEvaluator[] evaluators;
+        [JsonIgnore]
+        [NonSerialized]
+        private ExprEvaluator[] evaluators;
 
         public override ExprForge Forge => this;
 
@@ -150,7 +152,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                     continue;
                 }
 
-                if (!type.IsNumericNonFP()) {
+                if (!type.IsTypeNumericNonFP()) {
                     throw new ExprValidationException("Frequency operator requires an integer-type parameter");
                 }
             }
@@ -185,11 +187,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             }
 
             if (value is FrequencyParameter || value is RangeParameter) {
-                parameters.Add((NumberSetParameter) value);
+                parameters.Add((NumberSetParameter)value);
                 return;
             }
 
-            int intValue = value.AsInt32();
+            var intValue = value.AsInt32();
             parameters.Add(new IntParameter(intValue));
         }
     }

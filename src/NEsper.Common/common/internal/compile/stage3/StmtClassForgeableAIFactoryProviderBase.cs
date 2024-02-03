@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -28,6 +28,12 @@ namespace com.espertech.esper.common.@internal.compile.stage3
         
         private readonly string _className;
         private readonly CodegenNamespaceScope _namespaceScope;
+        
+        protected abstract Type TypeOfFactory();
+
+        protected abstract CodegenMethod CodegenConstructorInit(
+            CodegenMethodScope parent,
+            CodegenClassScope classScope);
 
         public StmtClassForgeableAIFactoryProviderBase(
             string className,
@@ -42,35 +48,33 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             bool fireAndForget)
         {
             // REGION: Constructor
-            var ctorParams = new List<CodegenTypedParam>() {
+            var ctorParams = new List<CodegenTypedParam> {
                 new CodegenTypedParam(
                     typeof(EPStatementInitServices),
                     EPStatementInitServicesConstants.REF.Ref,
                     false)
             };
-
-            if (_namespaceScope.FieldsClassName != null) {
+            
+            if (_namespaceScope.FieldsClassNameOptional != null) {
                 ctorParams.Add(
                     new CodegenTypedParam(
-                        _namespaceScope.FieldsClassName,
+                        _namespaceScope.FieldsClassNameOptional,
                         MEMBERNAME_STATEMENT_FIELDS));
             }
             
-            var ctor = new CodegenCtor(GetType(), _className, includeDebugSymbols, ctorParams);
-            var classScope = new CodegenClassScope(includeDebugSymbols, _namespaceScope, ClassName);
-
-            if (_namespaceScope.FieldsClassName != null) {
+            var ctor = new CodegenCtor(GetType(), includeDebugSymbols, ctorParams);
+            var classScope = new CodegenClassScope(includeDebugSymbols, _namespaceScope, _className);
+            
+            if (_namespaceScope.FieldsClassNameOptional != null) {
                 ctor.Block.ExprDotMethod(
                     Ref(MEMBERNAME_STATEMENT_FIELDS),
                     "Init",
                     EPStatementInitServicesConstants.REF);
             }
 
-            ctor.Block.AssignRef(
+            ctor.Block.AssignMember(
                 MEMBERNAME_STATEMENTAIFACTORY,
-                LocalMethod(
-                    CodegenConstructorInit(ctor, classScope),
-                    SAIFFInitializeSymbol.REF_STMTINITSVC));
+                LocalMethod(CodegenConstructorInit(ctor, classScope), SAIFFInitializeSymbol.REF_STMTINITSVC));
 
             // REGION: Members
             var members = new List<CodegenTypedParam>();
@@ -85,45 +89,52 @@ namespace com.espertech.esper.common.@internal.compile.stage3
                 CodegenSymbolProviderEmpty.INSTANCE,
                 classScope);
             factoryProp.GetterBlock.BlockReturn(Ref(MEMBERNAME_STATEMENTAIFACTORY));
-
+            
             // REGION: Methods
             var methods = new CodegenClassMethods();
 
-            var assignMethod = CodegenMethod
-                .MakeMethod(typeof(void), GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
-                .AddParam(typeof(StatementAIFactoryAssignments), "assignments");
-            if (_namespaceScope.FieldsClassName != null) {
-                //assignMethod.Block..Debug("Assign", Ref("assignments"))
+            CodegenMethod assignMethod = null;
+            CodegenMethod unassignMethod = null;
+            
+            if (_namespaceScope.FieldsClassNameOptional != null && _namespaceScope.HasAssignableStatementFields) {
+                assignMethod = CodegenMethod
+                    .MakeParentNode(typeof(void), GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+                    .AddParam<StatementAIFactoryAssignments>("assignments");
                 assignMethod.Block.ExprDotMethod(Ref(MEMBERNAME_STATEMENT_FIELDS), "Assign", Ref("assignments"));
                 //assignMethod.Block.StaticMethod(_namespaceScope.FieldsClassNameOptional, "Assign", Ref("assignments"));
-            }
-
-            var unassignMethod = CodegenMethod
-                .MakeMethod(typeof(void), GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope);
-            if (_namespaceScope.FieldsClassName != null) {
+                
+                unassignMethod = CodegenMethod
+                    .MakeParentNode(typeof(void), GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope);
                 unassignMethod.Block.ExprDotMethod(Ref(MEMBERNAME_STATEMENT_FIELDS), "Unassign");
                 //unassignMethod.Block.StaticMethod(_namespaceScope.FieldsClassNameOptional, "Unassign");
             }
 
-            var setValueMethod = CodegenMethod
-                .MakeMethod(typeof(void), typeof(StmtClassForgeableStmtFields), classScope)
-                .AddParam(typeof(int), "index")
-                .AddParam(typeof(object), "value");
-            CodegenSubstitutionParamEntry.CodegenSetterBody(
-                classScope, setValueMethod.Block, Ref(MEMBERNAME_STATEMENT_FIELDS));
-
-            // Assignment, not sure why this is being done... TBD - Burn this
+            CodegenMethod setValueMethod = null;
+            if (classScope.NamespaceScope.HasSubstitution) {
+                setValueMethod = CodegenMethod
+                    .MakeParentNode(typeof(void), typeof(StmtClassForgeableStmtFields), classScope)
+                    .AddParam<int>("index")
+                    .AddParam<object>("value");
+                CodegenSubstitutionParamEntry.CodegenSetterBody(
+                    classScope, setValueMethod, setValueMethod.Block, Ref(MEMBERNAME_STATEMENT_FIELDS));
+            }
 
             CodegenStackGenerator.RecursiveBuildStack(factoryProp, "Factory", methods, properties);
-            CodegenStackGenerator.RecursiveBuildStack(assignMethod, "Assign", methods, properties);
-            CodegenStackGenerator.RecursiveBuildStack(unassignMethod, "Unassign", methods, properties);
-            CodegenStackGenerator.RecursiveBuildStack(setValueMethod, "SetValue", methods, properties);
-            CodegenStackGenerator.RecursiveBuildStack(ctor, "Ctor", methods, properties);
 
+            if (assignMethod != null) {
+                CodegenStackGenerator.RecursiveBuildStack(assignMethod, "Assign", methods, properties);
+                CodegenStackGenerator.RecursiveBuildStack(unassignMethod, "Unassign", methods, properties);
+            }
+
+            if (setValueMethod != null) {
+                CodegenStackGenerator.RecursiveBuildStack(setValueMethod, "SetValue", methods, properties);
+            }
+
+            CodegenStackGenerator.RecursiveBuildStack(ctor, "ctor", methods, properties);
             return new CodegenClass(
                 CodegenClassType.STATEMENTAIFACTORYPROVIDER,
                 typeof(StatementAIFactoryProvider),
-                ClassName,
+                _className,
                 classScope,
                 members,
                 ctor,
@@ -135,11 +146,5 @@ namespace com.espertech.esper.common.@internal.compile.stage3
         public string ClassName => _className;
 
         public StmtClassForgeableType ForgeableType => StmtClassForgeableType.AIFACTORYPROVIDER;
-
-        protected abstract Type TypeOfFactory();
-
-        protected abstract CodegenMethod CodegenConstructorInit(
-            CodegenMethodScope parent,
-            CodegenClassScope classScope);
     }
 } // end of namespace

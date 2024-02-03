@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -47,12 +47,10 @@ namespace com.espertech.esper.common.client.soda
             writer.Write('(');
             var delimiter = "";
             var children = Children;
-            if (children.Count > 0)
-            {
+            if (children.Count > 0) {
                 writer.Write(delimiter);
                 children[0].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
-                for (var i = 1; i < children.Count; i++)
-                {
+                for (var i = 1; i < children.Count; i++) {
                     writer.Write(",");
                     children[i].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                 }

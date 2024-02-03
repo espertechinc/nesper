@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using com.espertech.esper.compat.collections;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.type
 {
@@ -27,12 +28,12 @@ namespace com.espertech.esper.common.@internal.type
 
         private void RunAssertion()
         {
-            Assert.IsTrue(StringPatternSetUtil.Evaluate(false, patterns, "123"));
-            Assert.IsFalse(StringPatternSetUtil.Evaluate(false, patterns, "123abc"));
-            Assert.IsTrue(StringPatternSetUtil.Evaluate(false, patterns, "123abcdef"));
-            Assert.IsFalse(StringPatternSetUtil.Evaluate(false, patterns, "123abcdefxyz"));
-            Assert.IsFalse(StringPatternSetUtil.Evaluate(false, patterns, "456"));
-            Assert.IsTrue(StringPatternSetUtil.Evaluate(true, patterns, "456"));
+            ClassicAssert.IsTrue(StringPatternSetUtil.Evaluate(false, patterns, "123"));
+            ClassicAssert.IsFalse(StringPatternSetUtil.Evaluate(false, patterns, "123abc"));
+            ClassicAssert.IsTrue(StringPatternSetUtil.Evaluate(false, patterns, "123abcdef"));
+            ClassicAssert.IsFalse(StringPatternSetUtil.Evaluate(false, patterns, "123abcdefxyz"));
+            ClassicAssert.IsFalse(StringPatternSetUtil.Evaluate(false, patterns, "456"));
+            ClassicAssert.IsTrue(StringPatternSetUtil.Evaluate(true, patterns, "456"));
         }
 
         [Test]
@@ -60,8 +61,8 @@ namespace com.espertech.esper.common.@internal.type
         [Test]
         public void TestEmpty()
         {
-            Assert.IsTrue(StringPatternSetUtil.Evaluate(true, patterns, "abc"));
-            Assert.IsFalse(StringPatternSetUtil.Evaluate(false, patterns, "abc"));
+            ClassicAssert.IsTrue(StringPatternSetUtil.Evaluate(true, patterns, "abc"));
+            ClassicAssert.IsFalse(StringPatternSetUtil.Evaluate(false, patterns, "abc"));
         }
     }
 } // end of namespace

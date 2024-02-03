@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -27,7 +27,6 @@ using Antlr4.Runtime;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.client.configuration;
-using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.avro;
@@ -80,8 +79,7 @@ namespace com.espertech.esper.common.@internal.util
         static TypeHelper()
         {
             IntegralTable = new Dictionary<Type, int>();
-            for (var ii = 0; ii < IntegralTypes.Length; ii++)
-            {
+            for (var ii = 0; ii < IntegralTypes.Length; ii++) {
                 IntegralTable[IntegralTypes[ii]] = ii;
             }
         }
@@ -127,8 +125,7 @@ namespace com.espertech.esper.common.@internal.util
             var builder = new StringBuilder();
             var delimiterComma = ", ";
             var delimiter = "";
-            foreach (var param in parameters)
-            {
+            foreach (var param in parameters) {
                 builder.Append(delimiter);
                 builder.Append(GetParameterAsString(param, useFullName));
                 delimiter = delimiterComma;
@@ -171,68 +168,55 @@ namespace com.espertech.esper.common.@internal.util
         /// <returns>primitive variant of the same class</returns>
         public static Type GetPrimitiveType(this Type type)
         {
-            if (type == typeof(bool?))
-            {
+            if (type == typeof(bool?)) {
                 return typeof(bool);
             }
 
-            if (type == typeof(char?))
-            {
+            if (type == typeof(char?)) {
                 return typeof(char);
             }
 
-            if (type == typeof(decimal?))
-            {
+            if (type == typeof(decimal?)) {
                 return typeof(decimal);
             }
 
-            if (type == typeof(double?))
-            {
+            if (type == typeof(double?)) {
                 return typeof(double);
             }
 
-            if (type == typeof(float?))
-            {
+            if (type == typeof(float?)) {
                 return typeof(float);
             }
 
-            if (type == typeof(sbyte?))
-            {
+            if (type == typeof(sbyte?)) {
                 return typeof(sbyte);
             }
 
-            if (type == typeof(byte?))
-            {
+            if (type == typeof(byte?)) {
                 return typeof(byte);
             }
 
-            if (type == typeof(short?))
-            {
+            if (type == typeof(short?)) {
                 return typeof(short);
             }
 
-            if (type == typeof(ushort?))
-            {
+            if (type == typeof(ushort?)) {
                 return typeof(ushort);
             }
 
-            if (type == typeof(int?))
-            {
+            if (type == typeof(int?)) {
                 return typeof(int);
             }
 
-            if (type == typeof(uint?))
-            {
+            if (type == typeof(uint?)) {
                 return typeof(uint);
             }
 
-            if (type == typeof(long?))
-            {
+            if (type == typeof(long?)) {
                 return typeof(long);
             }
 
-            if (type == typeof(ulong?))
-            {
+            if (type == typeof(ulong?)) {
                 return typeof(ulong);
             }
 
@@ -247,92 +231,77 @@ namespace com.espertech.esper.common.@internal.util
         /// <returns>boxed type name if CLR primitive type, or just same class name passed in if not a primitive type</returns>
         public static string GetBoxedTypeName(string typeName)
         {
-            if (typeName == typeof(char).FullName)
-            {
+            if (typeName == typeof(char).FullName) {
                 return typeof(char?).FullName;
             }
 
-            if (typeName == typeof(sbyte).FullName)
-            {
+            if (typeName == typeof(sbyte).FullName) {
                 return typeof(sbyte?).FullName;
             }
 
-            if (typeName == typeof(byte).FullName)
-            {
+            if (typeName == typeof(byte).FullName) {
                 return typeof(byte?).FullName;
             }
 
             if (typeName == typeof(short).FullName ||
-                typeName == "short")
-            {
+                typeName == "short") {
                 return typeof(short?).FullName;
             }
 
             if (typeName == typeof(ushort).FullName ||
-                typeName == "ushort")
-            {
+                typeName == "ushort") {
                 return typeof(ushort?).FullName;
             }
 
             if (typeName == typeof(int).FullName ||
-                typeName == "int")
-            {
+                typeName == "int") {
                 return typeof(int?).FullName;
             }
 
             if (typeName == typeof(uint).FullName ||
-                typeName == "uint")
-            {
+                typeName == "uint") {
                 return typeof(uint?).FullName;
             }
 
             if (typeName == typeof(long).FullName ||
-                typeName == "long")
-            {
+                typeName == "long") {
                 return typeof(long?).FullName;
             }
 
             if (typeName == typeof(ulong).FullName ||
-                typeName == "ulong")
-            {
+                typeName == "ulong") {
                 return typeof(ulong?).FullName;
             }
 
             if (typeName == typeof(float).FullName ||
-                typeName == "float")
-            {
+                typeName == "float") {
                 return typeof(float?).FullName;
             }
 
             if (typeName == typeof(double).FullName ||
-                typeName == "double")
-            {
+                typeName == "double") {
                 return typeof(double?).FullName;
             }
 
             if (typeName == typeof(decimal).FullName ||
-                typeName == "decimal")
-            {
+                typeName == "decimal") {
                 return typeof(decimal?).FullName;
             }
 
             if (typeName == typeof(bool).FullName ||
                 typeName == "bool" ||
-                typeName == "bool")
-            {
+                typeName == "bool") {
                 return typeof(bool?).FullName;
             }
 
             if (typeName == typeof(BigInteger).FullName ||
                 typeName == "Biginteger" ||
                 typeName == "BigInteger" ||
-                typeName == "Bigint")
-            {
+                typeName == "Bigint") {
                 return typeof(BigInteger?).FullName;
             }
 
-            if (string.Equals(typeName, "string", StringComparison.OrdinalIgnoreCase))
-            {
+            if (string.Equals(typeName, "string", StringComparison.OrdinalIgnoreCase)) {
                 typeName = typeof(string).FullName;
             }
 
@@ -346,7 +315,7 @@ namespace com.espertech.esper.common.@internal.util
         /// <returns>
         ///     <c>true</c> if the specified type is bool; otherwise, <c>false</c>.
         /// </returns>
-        public static bool IsBoolean(this Type type)
+        public static bool IsTypeBoolean(this Type type)
         {
             return
                 type == typeof(bool) ||
@@ -358,7 +327,7 @@ namespace com.espertech.esper.common.@internal.util
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        public static bool IsCharacter(this Type type)
+        public static bool IsTypeCharacter(this Type type)
         {
             return
                 type == typeof(char) ||
@@ -370,7 +339,7 @@ namespace com.espertech.esper.common.@internal.util
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        public static bool IsFloatingPoint(this Type type)
+        public static bool IsTypeFloatingPoint(this Type type)
         {
             return
                 type == typeof(float) ||
@@ -382,49 +351,49 @@ namespace com.espertech.esper.common.@internal.util
                 ;
         }
 
-        public static bool IsNotInt32(this Type type)
+        public static bool IsNotTypeInt32(this Type type)
         {
             return type != typeof(int) &&
                    type != typeof(int?);
         }
 
-        public static bool IsInt32(this Type type)
+        public static bool IsTypeInt32(this Type type)
         {
             return type == typeof(int) ||
                    type == typeof(int?);
         }
 
-        public static bool IsInt64(this Type type)
+        public static bool IsTypeInt64(this Type type)
         {
             return type == typeof(long) ||
                    type == typeof(long?);
         }
 
-        public static bool IsInt16(this Type type)
+        public static bool IsTypeInt16(this Type type)
         {
             return type == typeof(short) ||
                    type == typeof(short?);
         }
 
-        public static bool IsDecimal(this Type type)
+        public static bool IsTypeDecimal(this Type type)
         {
             return type == typeof(decimal) ||
                    type == typeof(decimal?);
         }
 
-        public static bool IsDouble(this Type type)
+        public static bool IsTypeDouble(this Type type)
         {
             return type == typeof(double) ||
                    type == typeof(double?);
         }
 
-        public static bool IsSingle(this Type type)
+        public static bool IsTypeSingle(this Type type)
         {
             return type == typeof(float) ||
                    type == typeof(float?);
         }
 
-        public static bool IsBigInteger(this Type type)
+        public static bool IsTypeBigInteger(this Type type)
         {
             return type == typeof(BigInteger) ||
                    type == typeof(BigInteger?);
@@ -438,16 +407,14 @@ namespace com.espertech.esper.common.@internal.util
         /// <returns>
         ///     <c>true</c> if the specified type is integral; otherwise, <c>false</c>.
         /// </returns>
-        public static bool IsIntegral(
+        public static bool IsTypeInteger(
             this Type type,
             Type maxIntegralType)
         {
             int intIndex;
-            if (IntegralTable.TryGetValue(type, out intIndex))
-            {
+            if (IntegralTable.TryGetValue(type, out intIndex)) {
                 int maxIndex;
-                if (IntegralTable.TryGetValue(maxIntegralType, out maxIndex))
-                {
+                if (IntegralTable.TryGetValue(maxIntegralType, out maxIndex)) {
                     return intIndex <= maxIndex;
                 }
             }
@@ -457,7 +424,7 @@ namespace com.espertech.esper.common.@internal.util
 
         /// <summary> Determines if the type passed in is one of the integral numeric types.</summary>
         /// <param name="type">to check</param>
-        public static bool IsIntegral(this Type type)
+        public static bool IsTypeInteger(this Type type)
         {
             return
                 type == typeof(int?) ||
@@ -490,14 +457,14 @@ namespace com.espertech.esper.common.@internal.util
             this object value,
             Type maxIntegralType)
         {
-            return value != null && IsIntegral(value.GetType(), maxIntegralType);
+            return value != null && IsTypeInteger(value.GetType(), maxIntegralType);
         }
 
         /// <summary> Determines if the type passed in is one of the integral numeric types.</summary>
         /// <param name="value">to check</param>
         public static bool IsIntegralNumber(this object value)
         {
-            return value != null && IsIntegral(value.GetType());
+            return value != null && IsTypeInteger(value.GetType());
         }
 
         /// <summary> Determines if the type passed in is one of the numeric types.</summary>
@@ -505,10 +472,9 @@ namespace com.espertech.esper.common.@internal.util
         /// <returns>
         ///     true if numeric, false if not
         /// </returns>
-        public static bool IsNumeric(this Type type)
+        public static bool IsTypeNumeric(this Type type)
         {
-            if (type == null)
-            {
+            if (type == null) {
                 return false;
             }
 
@@ -517,13 +483,11 @@ namespace com.espertech.esper.common.@internal.util
                 type == typeof(double) ||
                 type == typeof(float) ||
                 type == typeof(decimal) ||
-                type== typeof(BigInteger))
-            {
+                type == typeof(BigInteger)) {
                 return true;
             }
 
-            if (type.IsGenericType)
-            {
+            if (type.IsGenericType) {
                 return
                     type == typeof(int?) ||
                     type == typeof(long?) ||
@@ -551,9 +515,9 @@ namespace com.espertech.esper.common.@internal.util
         /// <summary>Determines if the class passed in is one of the numeric classes and not a floating point.</summary>
         /// <param name="type">type to check</param>
         /// <returns>true if numeric and not a floating point, false if not</returns>
-        public static bool IsNumericNonFP(this Type type)
+        public static bool IsTypeNumericNonFP(this Type type)
         {
-            return IsNumeric(type) && !IsFloatingPoint(type);
+            return IsTypeNumeric(type) && !IsTypeFloatingPoint(type);
         }
 
         /// <summary> Determines if the value passed in is one of the numeric types.</summary>
@@ -561,7 +525,21 @@ namespace com.espertech.esper.common.@internal.util
         /// <returns> true if numeric, false if not</returns>
         public static bool IsNumber(this object value)
         {
-            return value != null && IsNumeric(value.GetType());
+            return value != null && IsTypeNumeric(value.GetType());
+        }
+
+        /// <summary>
+        ///     Determines whether the specified type is void.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <returns>
+        ///     <c>true</c> if the specified type is void; otherwise, <c>false</c>.
+        /// </returns>
+        public static bool IsTypeVoid(this Type type)
+        {
+            return
+                type == typeof(void) ||
+                type == typeof(void);
         }
 
         /// <summary>
@@ -579,67 +557,56 @@ namespace com.espertech.esper.common.@internal.util
             var boxedOne = typeOne.GetBoxedType();
             var boxedTwo = typeTwo.GetBoxedType();
 
-            if (!IsNumeric(boxedOne) || !IsNumeric(boxedTwo))
-            {
+            if (!IsTypeNumeric(boxedOne) || !IsTypeNumeric(boxedTwo)) {
                 throw new CoercionException(
                     "Cannot coerce types " + typeOne.CleanName() + " and " + typeTwo.CleanName());
             }
 
             if (boxedOne == typeof(decimal?) ||
-                boxedTwo == typeof(decimal?))
-            {
+                boxedTwo == typeof(decimal?)) {
                 return typeof(decimal?);
             }
 
-            if (boxedOne == typeof(BigInteger?) && IsFloatingPointClass(boxedTwo) ||
-                boxedTwo == typeof(BigInteger?) && IsFloatingPointClass(boxedOne))
-            {
+            if ((boxedOne == typeof(BigInteger?) && IsFloatingPointClass(boxedTwo)) ||
+                (boxedTwo == typeof(BigInteger?) && IsFloatingPointClass(boxedOne))) {
                 return typeof(decimal?);
             }
 
             if (boxedOne == typeof(BigInteger?) ||
-                boxedTwo == typeof(BigInteger?))
-            {
+                boxedTwo == typeof(BigInteger?)) {
                 return typeof(BigInteger?);
             }
 
             if (boxedOne == typeof(double?) ||
-                boxedTwo == typeof(double?))
-            {
+                boxedTwo == typeof(double?)) {
                 return typeof(double?);
             }
 
-            if (boxedOne == typeof(float?) && !IsFloatingPointClass(typeTwo))
-            {
+            if (boxedOne == typeof(float?) && !IsFloatingPointClass(typeTwo)) {
                 return typeof(double?);
             }
 
-            if (boxedTwo == typeof(float?) && !IsFloatingPointClass(typeOne))
-            {
+            if (boxedTwo == typeof(float?) && !IsFloatingPointClass(typeOne)) {
                 return typeof(double?);
             }
 
             if (boxedOne == typeof(float?) ||
-                boxedTwo == typeof(float?))
-            {
+                boxedTwo == typeof(float?)) {
                 return typeof(float?);
             }
 
             if (boxedOne == typeof(ulong?) ||
-                boxedTwo == typeof(ulong?))
-            {
+                boxedTwo == typeof(ulong?)) {
                 return typeof(ulong?);
             }
 
             if (boxedOne == typeof(long?) ||
-                boxedTwo == typeof(long?))
-            {
+                boxedTwo == typeof(long?)) {
                 return typeof(long?);
             }
 
             if (boxedOne == typeof(uint?) ||
-                boxedTwo == typeof(uint?))
-            {
+                boxedTwo == typeof(uint?)) {
                 return typeof(uint?);
             }
 
@@ -652,48 +619,39 @@ namespace com.espertech.esper.common.@internal.util
         {
             resultBoxedType = resultBoxedType.GetBoxedType();
 
-            if (numToCoerce.GetType() == resultBoxedType)
-            {
+            if (numToCoerce.GetType() == resultBoxedType) {
                 return numToCoerce;
             }
 
-            if (resultBoxedType == typeof(double?))
-            {
+            if (resultBoxedType == typeof(double?)) {
                 return numToCoerce.AsDouble();
             }
 
-            if (resultBoxedType == typeof(long?))
-            {
+            if (resultBoxedType == typeof(long?)) {
                 return numToCoerce.AsInt64();
             }
 
-            if (resultBoxedType== typeof(BigInteger?))
-            {
+            if (resultBoxedType == typeof(BigInteger?)) {
                 return numToCoerce.AsBigInteger();
             }
 
-            if (resultBoxedType == typeof(decimal?))
-            {
+            if (resultBoxedType == typeof(decimal?)) {
                 return numToCoerce.AsDecimal();
             }
 
-            if (resultBoxedType == typeof(float?))
-            {
+            if (resultBoxedType == typeof(float?)) {
                 return numToCoerce.AsFloat();
             }
 
-            if (resultBoxedType == typeof(int?))
-            {
+            if (resultBoxedType == typeof(int?)) {
                 return numToCoerce.AsInt32();
             }
 
-            if (resultBoxedType == typeof(short?))
-            {
+            if (resultBoxedType == typeof(short?)) {
                 return numToCoerce.AsInt16();
             }
 
-            if (resultBoxedType == typeof(byte?))
-            {
+            if (resultBoxedType == typeof(byte?)) {
                 return numToCoerce.AsByte();
             }
 
@@ -709,12 +667,12 @@ namespace com.espertech.esper.common.@internal.util
                 return exprReturningBoxed;
             }
 
-            if ((exprReturningBoxed is CodegenExpressionConstantNull) ||
+            if (exprReturningBoxed is CodegenExpressionConstantNull ||
                 (exprReturningBoxed is CodegenExpressionConstant exprConstant &&
                  exprConstant.IsNull)) {
                 return exprReturningBoxed;
             }
-            
+
             if (targetTypeBoxed == typeof(double?)) {
                 return StaticMethod(typeof(TypeExtensions), "AsBoxedDouble", exprReturningBoxed);
             }
@@ -753,54 +711,45 @@ namespace com.espertech.esper.common.@internal.util
             Type fromType,
             Type targetTypeBoxed)
         {
-            if (fromType.CanBeNull())
-            {
+            if (fromType.CanBeNull()) {
                 return CoerceNumberBoxedToBoxedCodegen(expr, fromType, targetTypeBoxed);
             }
 
-            if ((expr is CodegenExpressionConstantNull) ||
+            if (expr is CodegenExpressionConstantNull ||
                 (expr is CodegenExpressionConstant exprConstant &&
                  exprConstant.IsNull)) {
                 return expr;
             }
-            
-            if (targetTypeBoxed == typeof(double?))
-            {
+
+            if (targetTypeBoxed == typeof(double?)) {
                 return StaticMethod(typeof(TypeExtensions), "AsBoxedDouble", expr);
             }
 
-            if (targetTypeBoxed == typeof(long?))
-            {
+            if (targetTypeBoxed == typeof(long?)) {
                 return StaticMethod(typeof(TypeExtensions), "AsBoxedInt64", expr);
             }
 
-            if (targetTypeBoxed == typeof(BigInteger?))
-            {
+            if (targetTypeBoxed == typeof(BigInteger?)) {
                 return StaticMethod(typeof(TypeExtensions), "AsBigInteger", expr);
             }
 
-            if (targetTypeBoxed == typeof(decimal?))
-            {
+            if (targetTypeBoxed == typeof(decimal?)) {
                 return StaticMethod(typeof(TypeExtensions), "AsBoxedDecimal", expr);
             }
 
-            if (targetTypeBoxed == typeof(float?))
-            {
+            if (targetTypeBoxed == typeof(float?)) {
                 return StaticMethod(typeof(TypeExtensions), "AsBoxedFloat", expr);
             }
 
-            if (targetTypeBoxed == typeof(int?))
-            {
+            if (targetTypeBoxed == typeof(int?)) {
                 return StaticMethod(typeof(TypeExtensions), "AsBoxedInt32", expr);
             }
 
-            if (targetTypeBoxed == typeof(short?))
-            {
+            if (targetTypeBoxed == typeof(short?)) {
                 return StaticMethod(typeof(TypeExtensions), "AsBoxedInt16", expr);
             }
 
-            if (targetTypeBoxed == typeof(byte?))
-            {
+            if (targetTypeBoxed == typeof(byte?)) {
                 return StaticMethod(typeof(TypeExtensions), "AsBoxedByte", expr);
             }
 
@@ -860,38 +809,31 @@ namespace com.espertech.esper.common.@internal.util
             this Type typeOne,
             Type typeTwo)
         {
-            if (typeOne == typeTwo)
-            {
+            if (typeOne == typeTwo) {
                 return typeOne;
             }
 
-            if (typeOne == null)
-            {
+            if (typeOne == null) {
                 return typeTwo;
             }
 
-            if (typeTwo == null)
-            {
+            if (typeTwo == null) {
                 return typeOne;
             }
 
-            if (typeOne.GetBoxedType() == typeTwo.GetBoxedType())
-            {
+            if (typeOne.GetBoxedType() == typeTwo.GetBoxedType()) {
                 return typeOne.GetBoxedType();
             }
 
-            if (IsNumeric(typeOne) && IsNumeric(typeTwo))
-            {
+            if (IsTypeNumeric(typeOne) && IsTypeNumeric(typeTwo)) {
                 return GetArithmaticCoercionType(typeOne, typeTwo);
             }
 
-            if (IsArray(typeOne) && IsArray(typeTwo))
-            {
+            if (IsArray(typeOne) && IsArray(typeTwo)) {
                 return typeof(Array);
             }
-            
-            if (!IsBuiltinDataType(typeOne) && !IsBuiltinDataType(typeTwo) && typeOne != typeTwo)
-            {
+
+            if (!IsBuiltinDataType(typeOne) && !IsBuiltinDataType(typeTwo) && typeOne != typeTwo) {
                 return typeof(object);
             }
 
@@ -920,13 +862,11 @@ namespace com.espertech.esper.common.@internal.util
             var boxedFrom = numberClassToBeCoerced.GetBoxedType();
             var boxedTo = numberClassToCoerceTo.GetBoxedType();
 
-            if (!IsNumeric(numberClassToBeCoerced))
-            {
+            if (!IsTypeNumeric(numberClassToBeCoerced)) {
                 throw new CoercionException("Type '" + numberClassToBeCoerced + "' is not a numeric type'");
             }
 
-            if (boxedTo == typeof(float?))
-            {
+            if (boxedTo == typeof(float?)) {
                 return boxedFrom == typeof(byte?) ||
                        boxedFrom == typeof(sbyte?) ||
                        boxedFrom == typeof(short?) ||
@@ -938,8 +878,7 @@ namespace com.espertech.esper.common.@internal.util
                        boxedFrom == typeof(float?);
             }
 
-            if (boxedTo == typeof(double?))
-            {
+            if (boxedTo == typeof(double?)) {
                 return boxedFrom == typeof(byte?) ||
                        boxedFrom == typeof(sbyte?) ||
                        boxedFrom == typeof(short?) ||
@@ -952,8 +891,7 @@ namespace com.espertech.esper.common.@internal.util
                        boxedFrom == typeof(double?);
             }
 
-            if (boxedTo == typeof(decimal?))
-            {
+            if (boxedTo == typeof(decimal?)) {
                 return boxedFrom == typeof(byte?) ||
                        boxedFrom == typeof(sbyte?) ||
                        boxedFrom == typeof(short?) ||
@@ -967,8 +905,7 @@ namespace com.espertech.esper.common.@internal.util
                        boxedFrom == typeof(decimal?);
             }
 
-            if (boxedTo == typeof(long?))
-            {
+            if (boxedTo == typeof(long?)) {
                 return boxedFrom == typeof(byte?) ||
                        boxedFrom == typeof(sbyte?) ||
                        boxedFrom == typeof(short?) ||
@@ -982,8 +919,7 @@ namespace com.espertech.esper.common.@internal.util
                 boxedTo == typeof(short?) ||
                 boxedTo == typeof(ushort?) ||
                 boxedTo == typeof(byte?) ||
-                boxedTo == typeof(sbyte?))
-            {
+                boxedTo == typeof(sbyte?)) {
                 return boxedFrom == typeof(byte?) ||
                        boxedFrom == typeof(sbyte?) ||
                        boxedFrom == typeof(short?) ||
@@ -991,8 +927,7 @@ namespace com.espertech.esper.common.@internal.util
                        boxedFrom == typeof(int?);
             }
 
-            if (boxedTo == typeof(BigInteger?))
-            {
+            if (boxedTo == typeof(BigInteger?)) {
                 return boxedFrom == typeof(byte?) ||
                        boxedFrom == typeof(sbyte?) ||
                        boxedFrom == typeof(short?) ||
@@ -1019,18 +954,16 @@ namespace com.espertech.esper.common.@internal.util
         /// </returns>
         public static bool IsBuiltinDataType(this Type type)
         {
-            if (type == null)
-            {
+            if (type == null) {
                 return true;
             }
 
             var typeBoxed = type.GetBoxedType();
 
-            if (IsNumeric(typeBoxed) ||
-                IsBoolean(typeBoxed) ||
-                IsCharacter(typeBoxed) ||
-                type == typeof(string))
-            {
+            if (IsTypeNumeric(typeBoxed) ||
+                IsTypeBoolean(typeBoxed) ||
+                IsTypeCharacter(typeBoxed) ||
+                type == typeof(string)) {
                 return true;
             }
 
@@ -1128,7 +1061,7 @@ namespace com.espertech.esper.common.@internal.util
 
             // Determine if we need boxing escalation
             var boxEscalation = types.Any(t => t == null);
-            
+
             // Reduce to non-null types
             types = types.Where(t => t != null).ToArray();
             if (types.Count == 0) {
@@ -1136,7 +1069,7 @@ namespace com.espertech.esper.common.@internal.util
             }
 
             if (types.Count == 1) {
-                return boxEscalation 
+                return boxEscalation
                     ? types[0].GetBoxedType()
                     : types[0];
             }
@@ -1184,30 +1117,47 @@ namespace com.espertech.esper.common.@internal.util
                 return typeof(char?);
             }
 
+            // handle arrays
+            if (types[0].IsArray) {
+                var componentType = types[0].GetComponentType();
+                var sameComponentType = true;
+                for (int ii = 1; ii < types.Count; ii++) {
+                    if (!types[ii].IsArray) {
+                        throw GetCoercionException(types[0], types[ii]);
+                    }
+                    var otherComponentType = types[ii].GetComponentType();
+                    if (componentType != otherComponentType) {
+                        if (componentType.IsPrimitive || otherComponentType.IsPrimitive) {
+                            throw GetCoercionException(types[0], types[ii]);
+                        }
+                        sameComponentType = false;
+                    }
+                }
+                if (sameComponentType) {
+                    return types[0];
+                }
+
+                return typeof(Array);
+            }
+            
             // Check if all the same builtin type
             var isAllBuiltinTypes = true;
             var isAllNumeric = true;
-            foreach (var type in types)
-            {
-                if (!IsNumeric(type) && !IsBuiltinDataType(type))
-                {
+            foreach (var type in types) {
+                if (!IsTypeNumeric(type) && !IsBuiltinDataType(type)) {
                     isAllBuiltinTypes = false;
                 }
             }
 
             // handle all built-in types
-            if (!isAllBuiltinTypes)
-            {
-                foreach (var type in types)
-                {
+            if (!isAllBuiltinTypes) {
+                foreach (var type in types) {
                     if (IsBuiltinDataType(type))
                     {
-                        throw new CoercionException(
-                            "Cannot coerce to " + types[0].CleanName() + " type " + type.CleanName());
+                        throw GetCoercionException(types[0], type);
                     }
 
-                    if (type != types[0])
-                    {
+                    if (type != types[0]) {
                         return typeof(object);
                     }
                 }
@@ -1216,96 +1166,83 @@ namespace com.espertech.esper.common.@internal.util
             }
 
             // test for numeric
-            if (!isAllNumeric)
-            {
+            if (!isAllNumeric) {
                 throw new CoercionException("Cannot coerce to numeric type " + types[0].CleanName());
             }
 
             // Use arithmetic coercion type as the final authority, considering all types
             var result = GetArithmaticCoercionType(types[0], types[1]);
-            for (var ii = 2; ii < types.Count; ii++)
-            {
+            for (var ii = 2; ii < types.Count; ii++) {
                 result = GetArithmaticCoercionType(result, types[ii]);
             }
 
             return result;
         }
 
+        private static CoercionException GetCoercionException(Type typeA, Type typeB) {
+            throw new CoercionException($"Cannot coerce to {typeA.CleanName()} type {typeB.CleanName()}");
+        }
+
         public static string GetSimpleTypeName(this Type type)
         {
             type = type.GetBoxedType();
-            if (type == typeof(byte?))
-            {
+            if (type == typeof(byte?)) {
                 return "byte";
             }
 
-            if (type == typeof(short?))
-            {
+            if (type == typeof(short?)) {
                 return "short";
             }
 
-            if (type == typeof(int?))
-            {
+            if (type == typeof(int?)) {
                 return "int";
             }
 
-            if (type == typeof(long?))
-            {
+            if (type == typeof(long?)) {
                 return "long";
             }
 
-            if (type == typeof(ushort?))
-            {
+            if (type == typeof(ushort?)) {
                 return "ushort";
             }
 
-            if (type == typeof(uint?))
-            {
+            if (type == typeof(uint?)) {
                 return "uint";
             }
 
-            if (type == typeof(ulong?))
-            {
+            if (type == typeof(ulong?)) {
                 return "ulong";
             }
 
-            if (type == typeof(string))
-            {
+            if (type == typeof(string)) {
                 return "string";
             }
 
-            if (type == typeof(bool?))
-            {
+            if (type == typeof(bool?)) {
                 return "bool";
             }
 
-            if (type == typeof(char?))
-            {
+            if (type == typeof(char?)) {
                 return "char";
             }
 
-            if (type == typeof(float?))
-            {
+            if (type == typeof(float?)) {
                 return "float";
             }
 
-            if (type == typeof(double?))
-            {
+            if (type == typeof(double?)) {
                 return "double";
             }
 
-            if (type == typeof(decimal?))
-            {
+            if (type == typeof(decimal?)) {
                 return "decimal";
             }
 
-            if (type == typeof(Guid?))
-            {
+            if (type == typeof(Guid?)) {
                 return "guid";
             }
 
-            if (type == typeof(BigInteger?))
-            {
+            if (type == typeof(BigInteger?)) {
                 return "Bigint";
             }
 
@@ -1315,78 +1252,63 @@ namespace com.espertech.esper.common.@internal.util
         public static string GetExtendedTypeName(this Type type)
         {
             type = type.GetBoxedType();
-            if (type == typeof(byte?))
-            {
+            if (type == typeof(byte?)) {
                 return "byte";
             }
 
-            if (type == typeof(short?))
-            {
+            if (type == typeof(short?)) {
                 return "short";
             }
 
-            if (type == typeof(int?))
-            {
+            if (type == typeof(int?)) {
                 return "integer";
             }
 
-            if (type == typeof(long?))
-            {
+            if (type == typeof(long?)) {
                 return "long";
             }
 
-            if (type == typeof(ushort?))
-            {
+            if (type == typeof(ushort?)) {
                 return "ushort";
             }
 
-            if (type == typeof(uint?))
-            {
+            if (type == typeof(uint?)) {
                 return "uinteger";
             }
 
-            if (type == typeof(ulong?))
-            {
+            if (type == typeof(ulong?)) {
                 return "ulong";
             }
 
-            if (type == typeof(string))
-            {
+            if (type == typeof(string)) {
                 return "string";
             }
 
-            if (type == typeof(bool?))
-            {
+            if (type == typeof(bool?)) {
                 return "bool";
             }
 
-            if (type == typeof(char?))
-            {
+            if (type == typeof(char?)) {
                 return "char";
             }
 
-            if (type == typeof(float?))
-            {
+            if (type == typeof(float?)) {
                 return "float";
             }
 
-            if (type == typeof(double?))
-            {
+            if (type == typeof(double?)) {
                 return "double";
             }
 
-            if (type == typeof(decimal?))
-            {
+            if (type == typeof(decimal?)) {
                 return "decimal";
             }
 
-            if (type == typeof(Guid?))
-            {
+            if (type == typeof(Guid?)) {
                 return "guid";
             }
 
-            if (type== typeof(BigInteger))
-            {
+            if (type == typeof(BigInteger)) {
                 return "Bigint";
             }
 
@@ -1402,7 +1324,7 @@ namespace com.espertech.esper.common.@internal.util
             switch (typeName.ToLower()) {
                 case "object":
                     return typeof(object);
-                
+
                 case "string":
                 case "varchar":
                 case "varchar2":
@@ -1540,9 +1462,8 @@ namespace com.espertech.esper.common.@internal.util
             if (builtin != null) {
                 return builtin;
             }
-            
-            if (typeResolver != null)
-            {
+
+            if (typeResolver != null) {
                 try {
                     var clazz = typeResolver.ResolveType(typeName, false);
                     if (clazz != null) {
@@ -1557,8 +1478,7 @@ namespace com.espertech.esper.common.@internal.util
             }
 
             var type = ResolveType(typeName, throwOnError);
-            if (type == null)
-            {
+            if (type == null) {
                 return null;
             }
 
@@ -1589,84 +1509,68 @@ namespace com.espertech.esper.common.@internal.util
 
         public static string GetSimpleNameForType(Type clazz)
         {
-            if (clazz == null)
-            {
+            if (clazz == null) {
                 return "(null)";
             }
 
-            if (clazz == typeof(string))
-            {
+            if (clazz == typeof(string)) {
                 return "string";
             }
 
             var boxed = clazz.GetBoxedType();
-            if (boxed == typeof(int?))
-            {
+            if (boxed == typeof(int?)) {
                 return "int";
             }
 
-            if (boxed == typeof(uint?))
-            {
+            if (boxed == typeof(uint?)) {
                 return "uint";
             }
 
-            if (boxed == typeof(bool?))
-            {
+            if (boxed == typeof(bool?)) {
                 return "boolean";
             }
 
-            if (boxed == typeof(char?))
-            {
+            if (boxed == typeof(char?)) {
                 return "character";
             }
 
-            if (boxed == typeof(decimal?))
-            {
+            if (boxed == typeof(decimal?)) {
                 return "decimal";
             }
 
-            if (boxed == typeof(double?))
-            {
+            if (boxed == typeof(double?)) {
                 return "double";
             }
 
-            if (boxed == typeof(float?))
-            {
+            if (boxed == typeof(float?)) {
                 return "float";
             }
 
-            if (boxed == typeof(byte?))
-            {
+            if (boxed == typeof(byte?)) {
                 return "byte";
             }
 
-            if (boxed == typeof(short?))
-            {
+            if (boxed == typeof(short?)) {
                 return "short";
             }
 
-            if (boxed == typeof(ushort?))
-            {
+            if (boxed == typeof(ushort?)) {
                 return "ushort";
             }
 
-            if (boxed == typeof(long?))
-            {
+            if (boxed == typeof(long?)) {
                 return "long";
             }
 
-            if (boxed == typeof(ulong?))
-            {
+            if (boxed == typeof(ulong?)) {
                 return "ulong";
             }
 
-            if (boxed == typeof(Guid?))
-            {
+            if (boxed == typeof(Guid?)) {
                 return "guid";
             }
 
-            if (boxed == typeof(BigInteger?))
-            {
+            if (boxed == typeof(BigInteger?)) {
                 return "Bigint";
             }
 
@@ -1685,17 +1589,17 @@ namespace com.espertech.esper.common.@internal.util
                 var nestedTypeName = typeNameLower.Substring(9, typeNameLower.Length - 10);
                 var nestedType = GetPrimitiveTypeForName(nestedTypeName);
                 return typeof(Nullable<>).MakeGenericType(nestedType);
-            } else if (typeNameLower.StartsWith("system.nullable<") && typeNameLower.EndsWith(">")) {
+            }
+            else if (typeNameLower.StartsWith("system.nullable<") && typeNameLower.EndsWith(">")) {
                 var nestedTypeName = typeNameLower.Substring(16, typeNameLower.Length - 17);
                 var nestedType = GetPrimitiveTypeForName(nestedTypeName);
                 return typeof(Nullable<>).MakeGenericType(nestedType);
             }
 
-            switch (typeNameLower)
-            {
+            switch (typeNameLower) {
                 case "bool":
                 case "boolean":
-                case "system.bool":
+                case "system.boolean":
                     return typeof(bool);
 
                 case "char":
@@ -1748,7 +1652,7 @@ namespace com.espertech.esper.common.@internal.util
                 case "int64":
                 case "system.int64":
                     return typeof(long);
-                
+
                 case "ulong":
                 case "uint64":
                 case "system.uint64":
@@ -1785,68 +1689,55 @@ namespace com.espertech.esper.common.@internal.util
         {
             var classBoxed = clazz.GetBoxedType();
 
-            if (classBoxed == typeof(string))
-            {
+            if (classBoxed == typeof(string)) {
                 return text;
             }
 
-            if (classBoxed == typeof(char?))
-            {
+            if (classBoxed == typeof(char?)) {
                 return text[0];
             }
 
-            if (classBoxed == typeof(bool?))
-            {
+            if (classBoxed == typeof(bool?)) {
                 return SimpleTypeParserFunctions.ParseBoolean(text);
             }
 
-            if (classBoxed == typeof(byte?))
-            {
+            if (classBoxed == typeof(byte?)) {
                 return SimpleTypeParserFunctions.ParseByte(text);
             }
 
-            if (classBoxed == typeof(short?))
-            {
+            if (classBoxed == typeof(short?)) {
                 return SimpleTypeParserFunctions.ParseInt16(text);
             }
 
-            if (classBoxed == typeof(long?))
-            {
+            if (classBoxed == typeof(long?)) {
                 return SimpleTypeParserFunctions.ParseInt64(text);
             }
 
-            if (classBoxed == typeof(float?))
-            {
+            if (classBoxed == typeof(float?)) {
                 return SimpleTypeParserFunctions.ParseFloat(text);
             }
 
-            if (classBoxed == typeof(double?))
-            {
+            if (classBoxed == typeof(double?)) {
                 return SimpleTypeParserFunctions.ParseDouble(text);
             }
 
-            if (classBoxed == typeof(int?))
-            {
+            if (classBoxed == typeof(int?)) {
                 return SimpleTypeParserFunctions.ParseInt32(text);
             }
 
-            if (classBoxed == typeof(BigInteger?))
-            {
+            if (classBoxed == typeof(BigInteger?)) {
                 return SimpleTypeParserFunctions.ParseBigInteger(text);
             }
 
-            if (classBoxed == typeof(DateTime?))
-            {
+            if (classBoxed == typeof(DateTime?)) {
                 return SimpleTypeParserFunctions.ParseDateTime(text);
             }
 
-            if (classBoxed == typeof(DateTimeOffset?))
-            {
+            if (classBoxed == typeof(DateTimeOffset?)) {
                 return SimpleTypeParserFunctions.ParseDateTimeOffset(text);
             }
 
-            if (classBoxed == typeof(Guid?))
-            {
+            if (classBoxed == typeof(Guid?)) {
                 return SimpleTypeParserFunctions.ParseGuid(text);
             }
 
@@ -1877,8 +1768,7 @@ namespace com.espertech.esper.common.@internal.util
         public static string ResolveAbsoluteTypeName(string assemblyQualifiedTypeName)
         {
             var trueTypeName = ResolveType(assemblyQualifiedTypeName, false);
-            if (trueTypeName == null)
-            {
+            if (trueTypeName == null) {
                 throw new EPException("unable to determine assembly qualified class for " + assemblyQualifiedTypeName);
             }
 
@@ -1888,8 +1778,7 @@ namespace com.espertech.esper.common.@internal.util
         public static string TryResolveAbsoluteTypeName(string typeName)
         {
             var trueTypeName = ResolveType(typeName, false);
-            if (trueTypeName == null)
-            {
+            if (trueTypeName == null) {
                 return typeName;
             }
 
@@ -1917,19 +1806,15 @@ namespace com.espertech.esper.common.@internal.util
             // as part of the process, we want to unwind type esperized type names
             typeName = typeName.Replace('$', '+');
 
-            if (TypeResolver != null)
-            {
-                try
-                {
+            if (TypeResolver != null) {
+                try {
                     var typeResolverEventArgs = new TypeResolverEventArgs(typeName);
                     var typeResult = TypeResolver.Invoke(typeResolverEventArgs);
-                    if (typeResult != null || typeResolverEventArgs.Handled)
-                    {
+                    if (typeResult != null || typeResolverEventArgs.Handled) {
                         return typeResult;
                     }
                 }
-                catch (Exception e)
-                {
+                catch (Exception e) {
                     coreException = e;
                     isHandled = true;
                 }
@@ -1943,8 +1828,7 @@ namespace com.espertech.esper.common.@internal.util
             }
 
             // Type was not found in type of our search points
-            if (throwOnError && coreException != null)
-            {
+            if (throwOnError && coreException != null) {
                 throw coreException;
             }
 
@@ -1972,26 +1856,27 @@ namespace com.espertech.esper.common.@internal.util
 
             return null;
         }
+
         private static Type ResolveTypeInternal(
             string typeName,
             IEnumerable<Assembly> assemblySearchPath,
             bool throwOnError)
         {
-            int genericFirst = typeName.IndexOf('<');
+            var genericFirst = typeName.IndexOf('<');
             if (genericFirst != -1) {
-                int genericLast = typeName.LastIndexOf('>');
+                var genericLast = typeName.LastIndexOf('>');
                 if (genericLast > genericFirst) {
                     var genericTypeName = typeName.Substring(0, genericFirst).TrimEnd();
                     var genericTypeList = typeName.Substring(genericFirst + 1, genericLast - genericFirst - 1);
 
                     // We need to know how many generic arguments we are expected to parse, this helps determine
                     // the signature for the generic type we are looking for.
-                    
+
                     var lex = GrammarHelper.CreateLexer(genericTypeList);
                     var parser = GrammarHelper.CreateParser(new CommonTokenStream(lex));
                     var parseResult = parser.classIdentifierGenericArgsList();
                     var identifiers = parseResult.classIdentifier();
-                    
+
                     // The true genericTypeName must include the name, followed by a backtick and the # of generic
                     // arguments we expect.  For example, IDictionary`2 or IList`1.
 
@@ -1999,26 +1884,33 @@ namespace com.espertech.esper.common.@internal.util
 
                     var genericType = ResolveType(genericTypeName, assemblySearchPath, throwOnError);
                     if (genericType == null) {
-                        return ThrowOrReturnNull(new TypeLoadException($"unable to resolve generic type '{genericTypeName}'"), throwOnError);
+                        return ThrowOrReturnNull(
+                            new TypeLoadException($"unable to resolve generic type '{genericTypeName}'"),
+                            throwOnError);
                     }
-                    
+
                     if (!genericType.IsGenericType) {
-                        return ThrowOrReturnNull(new TypeLoadException($"type '{genericTypeName}' is not a generic type"), throwOnError);
+                        return ThrowOrReturnNull(
+                            new TypeLoadException($"type '{genericTypeName}' is not a generic type"),
+                            throwOnError);
                     }
-                    
+
                     // Alright, proceeding to the generic arguments...
-                    
+
                     if (identifiers.Length != genericType.GetGenericArguments().Length) {
-                        return ThrowOrReturnNull($"type '{genericTypeName}' received incorrect number of generic arguments", throwOnError);
+                        return ThrowOrReturnNull(
+                            $"type '{genericTypeName}' received incorrect number of generic arguments",
+                            throwOnError);
                     }
 
                     var genericTypeArgs = identifiers
                         .Select(_ => _.GetText())
-                        .Select(_ => {
-                                // TBD: Consider the need for handling escaped arguments.  In ASTUtil, there is some handling for unescaping these
+                        .Select(
+                            _ => {
+                                // TODO: Consider the need for handling escaped arguments.  In ASTUtil, there is some handling for unescaping these
                                 // values.  We need to move the content into NEsper.Grammar so that it is usable across multiple projects.
                                 var result = GetTypeForBuiltin(_, false);
-                                return result != null ? result : ResolveType(_, assemblySearchPath, throwOnError);
+                                return result ?? ResolveType(_, assemblySearchPath, throwOnError);
                             })
                         .ToArray();
 
@@ -2076,7 +1968,7 @@ namespace com.espertech.esper.common.@internal.util
             string typeName,
             bool throwOnError = true)
         {
-            IEnumerable<Assembly> assemblySearchPath = AssemblySearchPath?.Invoke();
+            var assemblySearchPath = AssemblySearchPath?.Invoke();
             if (assemblySearchPath == null) {
 #if NETCOREAPP3_0_OR_GREATER
                 assemblySearchPath = AssemblyLoadContext.Default.Assemblies.ToList();
@@ -2092,19 +1984,16 @@ namespace com.espertech.esper.common.@internal.util
             string typeName,
             string assemblyName)
         {
-            if (assemblyName == null)
-            {
+            if (assemblyName == null) {
                 return ResolveType(typeName);
             }
 
             var assembly = ResolveAssembly(assemblyName);
-            if (assembly != null)
-            {
+            if (assembly != null) {
                 return assembly.GetType(typeName);
             }
 
-            if (Log.IsWarnEnabled)
-            {
+            if (Log.IsWarnEnabled) {
                 Log.Warn(
                     "Assembly {0} not found while resolving type: {1}",
                     assemblyName,
@@ -2114,7 +2003,7 @@ namespace com.espertech.esper.common.@internal.util
             return null;
         }
 
-        public static Type GetClassForName(
+        public static Type GetTypeForName(
             string typeName,
             TypeResolver typeResolver)
         {
@@ -2125,8 +2014,7 @@ namespace com.espertech.esper.common.@internal.util
             int arrayRank,
             Type typeInstance)
         {
-            for (; arrayRank > 0; arrayRank--)
-            {
+            for (; arrayRank > 0; arrayRank--) {
                 typeInstance = typeInstance.MakeArrayType();
             }
 
@@ -2142,8 +2030,7 @@ namespace com.espertech.esper.common.@internal.util
         /// </returns>
         public static bool IsOpenDictionary(Type t)
         {
-            if (typeof(IDictionary<object, object>).IsAssignableFrom(t))
-            {
+            if (typeof(IDictionary<object, object>).IsAssignableFrom(t)) {
                 return true;
             }
 
@@ -2151,17 +2038,13 @@ namespace com.espertech.esper.common.@internal.util
             // interface.  Once found, we just need to check the key type... the return
             // type is irrelevant.
 
-            foreach (var iface in t.GetInterfaces())
-            {
-                if (iface.IsGenericType)
-                {
+            foreach (var iface in t.GetInterfaces()) {
+                if (iface.IsGenericType) {
                     var baseT1 = iface.GetGenericTypeDefinition();
-                    if (baseT1 == BaseGenericDictionary)
-                    {
+                    if (baseT1 == BaseGenericDictionary) {
                         var genericParameterTypes = iface.GetGenericArguments();
                         if (genericParameterTypes[0] == typeof(string) ||
-                            genericParameterTypes[1] == typeof(object))
-                        {
+                            genericParameterTypes[1] == typeof(object)) {
                             return true;
                         }
                     }
@@ -2200,30 +2083,35 @@ namespace com.espertech.esper.common.@internal.util
         /// <returns></returns>
         public static object Instantiate(Type type)
         {
-            try
+            if (type == null)
             {
+                throw new ArgumentNullException(nameof(type));
+            }
+            
+            try {
                 return Activator.CreateInstance(type);
             }
-            catch (TypeInstantiationException ex)
-            {
+            catch (TypeInstantiationException ex) {
                 throw new TypeInstantiationException(
-                    "Unable to instantiate from class '" + type.CleanName() + "' via default constructor", ex);
+                    "Unable to instantiate from class '" + type.CleanName() + "' via default constructor",
+                    ex);
             }
-            catch (TargetInvocationException ex)
-            {
+            catch (TargetInvocationException ex) {
                 throw new TypeInstantiationException(
-                    "Invocation exception when instantiating class '" + type.CleanName() +
-                    "' via default constructor", ex);
+                    "Invocation exception when instantiating class '" +
+                    type.CleanName() +
+                    "' via default constructor",
+                    ex);
             }
-            catch (MethodAccessException ex)
-            {
+            catch (MethodAccessException ex) {
                 throw new TypeInstantiationException(
-                    "Method access when instantiating class '" + type.CleanName() + "' via default constructor", ex);
+                    "Method access when instantiating class '" + type.CleanName() + "' via default constructor",
+                    ex);
             }
-            catch (MemberAccessException ex)
-            {
+            catch (MemberAccessException ex) {
                 throw new TypeInstantiationException(
-                    "Member access when instantiating class '" + type.CleanName() + "' via default constructor", ex);
+                    "Member access when instantiating class '" + type.CleanName() + "' via default constructor",
+                    ex);
             }
         }
 
@@ -2239,43 +2127,46 @@ namespace com.espertech.esper.common.@internal.util
             var typeName = type.FullName;
             var typeNameClean = type.CleanName();
 
-            if (!IsSubclassOrImplementsInterface(type, implementedOrExtendedType))
-            {
-                if (implementedOrExtendedType.IsInterface)
-                {
+            if (!IsSubclassOrImplementsInterface(type, implementedOrExtendedType)) {
+                if (implementedOrExtendedType.IsInterface) {
                     throw new TypeInstantiationException(
-                        "Type '" + typeNameClean + "' does not implement interface '" +
-                        implementedOrExtendedType.CleanName() + "'");
+                        "Type '" +
+                        typeNameClean +
+                        "' does not implement interface '" +
+                        implementedOrExtendedType.CleanName() +
+                        "'");
                 }
 
                 throw new TypeInstantiationException(
-                    "Type '" + typeNameClean + "' does not extend '" +
-                    implementedOrExtendedType.CleanName() + "'");
+                    "Type '" +
+                    typeNameClean +
+                    "' does not extend '" +
+                    implementedOrExtendedType.CleanName() +
+                    "'");
             }
 
-            try
-            {
-                return (T) Activator.CreateInstance(type);
+            try {
+                return (T)Activator.CreateInstance(type);
             }
-            catch (TypeInstantiationException ex)
-            {
+            catch (TypeInstantiationException ex) {
                 throw new TypeInstantiationException(
-                    "Unable to instantiate from class '" + typeName + "' via default constructor", ex);
+                    "Unable to instantiate from class '" + typeName + "' via default constructor",
+                    ex);
             }
-            catch (TargetInvocationException ex)
-            {
+            catch (TargetInvocationException ex) {
                 throw new TypeInstantiationException(
-                    "Invocation exception when instantiating class '" + typeName + "' via default constructor", ex);
+                    "Invocation exception when instantiating class '" + typeName + "' via default constructor",
+                    ex);
             }
-            catch (MethodAccessException ex)
-            {
+            catch (MethodAccessException ex) {
                 throw new TypeInstantiationException(
-                    "Method access when instantiating class '" + typeName + "' via default constructor", ex);
+                    "Method access when instantiating class '" + typeName + "' via default constructor",
+                    ex);
             }
-            catch (MemberAccessException ex)
-            {
+            catch (MemberAccessException ex) {
                 throw new TypeInstantiationException(
-                    "Member access when instantiating class '" + typeName + "' via default constructor", ex);
+                    "Member access when instantiating class '" + typeName + "' via default constructor",
+                    ex);
             }
         }
 
@@ -2290,52 +2181,53 @@ namespace com.espertech.esper.common.@internal.util
             var implementedOrExtendedType = typeof(T);
 
             Type type;
-            try
-            {
+            try {
                 type = ResolveType(typeName);
             }
-            catch (Exception ex)
-            {
+            catch (Exception ex) {
                 throw new TypeInstantiationException("Unable to load class '" + typeName + "', class not found", ex);
             }
 
-            if (!IsSubclassOrImplementsInterface(type, implementedOrExtendedType))
-            {
-                if (implementedOrExtendedType.IsInterface)
-                {
+            if (!IsSubclassOrImplementsInterface(type, implementedOrExtendedType)) {
+                if (implementedOrExtendedType.IsInterface) {
                     throw new TypeInstantiationException(
-                        "Class '" + typeName + "' does not implement interface '" +
-                        implementedOrExtendedType.CleanName() + "'");
+                        "Class '" +
+                        typeName +
+                        "' does not implement interface '" +
+                        implementedOrExtendedType.CleanName() +
+                        "'");
                 }
 
                 throw new TypeInstantiationException(
-                    "Class '" + typeName + "' does not extend '" +
-                    implementedOrExtendedType.CleanName() + "'");
+                    "Class '" +
+                    typeName +
+                    "' does not extend '" +
+                    implementedOrExtendedType.CleanName() +
+                    "'");
             }
 
-            try
-            {
-                return (T) Activator.CreateInstance(type);
+            try {
+                return (T)Activator.CreateInstance(type);
             }
-            catch (TypeInstantiationException ex)
-            {
+            catch (TypeInstantiationException ex) {
                 throw new TypeInstantiationException(
-                    "Unable to instantiate from class '" + typeName + "' via default constructor", ex);
+                    "Unable to instantiate from class '" + typeName + "' via default constructor",
+                    ex);
             }
-            catch (TargetInvocationException ex)
-            {
+            catch (TargetInvocationException ex) {
                 throw new TypeInstantiationException(
-                    "Invocation exception when instantiating class '" + typeName + "' via default constructor", ex);
+                    "Invocation exception when instantiating class '" + typeName + "' via default constructor",
+                    ex);
             }
-            catch (MethodAccessException ex)
-            {
+            catch (MethodAccessException ex) {
                 throw new TypeInstantiationException(
-                    "Method access when instantiating class '" + typeName + "' via default constructor", ex);
+                    "Method access when instantiating class '" + typeName + "' via default constructor",
+                    ex);
             }
-            catch (MemberAccessException ex)
-            {
+            catch (MemberAccessException ex) {
                 throw new TypeInstantiationException(
-                    "Member access when instantiating class '" + typeName + "' via default constructor", ex);
+                    "Member access when instantiating class '" + typeName + "' via default constructor",
+                    ex);
             }
         }
 
@@ -2355,52 +2247,53 @@ namespace com.espertech.esper.common.@internal.util
             var implementedOrExtendedType = typeof(T);
 
             Type type;
-            try
-            {
+            try {
                 type = typeResolver.ResolveType(typeName, false);
             }
-            catch (Exception ex)
-            {
+            catch (Exception ex) {
                 throw new TypeInstantiationException("Unable to load class '" + typeName + "', class not found", ex);
             }
 
-            if (!IsSubclassOrImplementsInterface(type, implementedOrExtendedType))
-            {
-                if (implementedOrExtendedType.IsInterface)
-                {
+            if (!IsSubclassOrImplementsInterface(type, implementedOrExtendedType)) {
+                if (implementedOrExtendedType.IsInterface) {
                     throw new TypeInstantiationException(
-                        "Type '" + typeName + "' does not implement interface '" +
-                        implementedOrExtendedType.CleanName() + "'");
+                        "Type '" +
+                        typeName +
+                        "' does not implement interface '" +
+                        implementedOrExtendedType.CleanName() +
+                        "'");
                 }
 
                 throw new TypeInstantiationException(
-                    "Type '" + typeName + "' does not extend '" +
-                    implementedOrExtendedType.CleanName() + "'");
+                    "Type '" +
+                    typeName +
+                    "' does not extend '" +
+                    implementedOrExtendedType.CleanName() +
+                    "'");
             }
 
-            try
-            {
-                return (T) Activator.CreateInstance(type);
+            try {
+                return (T)Activator.CreateInstance(type);
             }
-            catch (TypeInstantiationException ex)
-            {
+            catch (TypeInstantiationException ex) {
                 throw new TypeInstantiationException(
-                    "Unable to instantiate from class '" + typeName + "' via default constructor", ex);
+                    "Unable to instantiate from class '" + typeName + "' via default constructor",
+                    ex);
             }
-            catch (TargetInvocationException ex)
-            {
+            catch (TargetInvocationException ex) {
                 throw new TypeInstantiationException(
-                    "Invocation exception when instantiating class '" + typeName + "' via default constructor", ex);
+                    "Invocation exception when instantiating class '" + typeName + "' via default constructor",
+                    ex);
             }
-            catch (MethodAccessException ex)
-            {
+            catch (MethodAccessException ex) {
                 throw new TypeInstantiationException(
-                    "Method access when instantiating class '" + typeName + "' via default constructor", ex);
+                    "Method access when instantiating class '" + typeName + "' via default constructor",
+                    ex);
             }
-            catch (MemberAccessException ex)
-            {
+            catch (MemberAccessException ex) {
                 throw new TypeInstantiationException(
-                    "Member access when instantiating class '" + typeName + "' via default constructor", ex);
+                    "Member access when instantiating class '" + typeName + "' via default constructor",
+                    ex);
             }
         }
 
@@ -2413,11 +2306,9 @@ namespace com.espertech.esper.common.@internal.util
             this Type type,
             Action<Type> visitor)
         {
-            if (type != null)
-            {
+            if (type != null) {
                 var interfaces = type.GetInterfaces();
-                for (var ii = 0; ii < interfaces.Length; ii++)
-                {
+                for (var ii = 0; ii < interfaces.Length; ii++) {
                     visitor.Invoke(interfaces[ii]);
                     VisitBaseInterfaces(interfaces[ii], visitor);
                 }
@@ -2446,11 +2337,9 @@ namespace com.espertech.esper.common.@internal.util
             this Type type,
             Action<Type> visitor)
         {
-            if (type != null)
-            {
+            if (type != null) {
                 var baseType = type.BaseType;
-                if (baseType != null)
-                {
+                if (baseType != null) {
                     visitor.Invoke(baseType);
                     VisitBaseClasses(baseType, visitor);
                 }
@@ -2505,8 +2394,7 @@ namespace com.espertech.esper.common.@internal.util
             this Type type,
             Action<Type> visitor)
         {
-            if (type != null)
-            {
+            if (type != null) {
                 visitor.Invoke(type);
                 VisitBase(type, visitor);
             }
@@ -2517,8 +2405,7 @@ namespace com.espertech.esper.common.@internal.util
             string fullyQualifiedTypename)
         {
             if (fullyQualifiedTypename.EndsWith("." + simpleTypeName) ||
-                fullyQualifiedTypename.Equals(simpleTypeName))
-            {
+                fullyQualifiedTypename.Equals(simpleTypeName)) {
                 return true;
             }
 
@@ -2600,14 +2487,12 @@ namespace com.espertech.esper.common.@internal.util
             MemberInfo memberInfo,
             bool isAllowNull)
         {
-            if (memberInfo is MethodInfo)
-            {
-                return GetGenericReturnType(memberInfo as MethodInfo, isAllowNull);
+            if (memberInfo is MethodInfo methodInfo) {
+                return GetGenericReturnType(methodInfo, isAllowNull);
             }
 
-            if (memberInfo is PropertyInfo)
-            {
-                return GetGenericPropertyType(memberInfo as PropertyInfo, isAllowNull);
+            if (memberInfo is PropertyInfo info) {
+                return GetGenericPropertyType(info, isAllowNull);
             }
 
             return GetGenericFieldType(memberInfo as FieldInfo, isAllowNull);
@@ -2624,14 +2509,12 @@ namespace com.espertech.esper.common.@internal.util
             MemberInfo memberInfo,
             bool isAllowNull)
         {
-            if (memberInfo is MethodInfo)
-            {
-                return GetGenericReturnTypeMap(memberInfo as MethodInfo, isAllowNull);
+            if (memberInfo is MethodInfo methodInfo) {
+                return GetGenericReturnTypeMap(methodInfo, isAllowNull);
             }
 
-            if (memberInfo is PropertyInfo)
-            {
-                return GetGenericPropertyTypeMap(memberInfo as PropertyInfo, isAllowNull);
+            if (memberInfo is PropertyInfo info) {
+                return GetGenericPropertyTypeMap(info, isAllowNull);
             }
 
             return GetGenericFieldTypeMap(memberInfo as FieldInfo, isAllowNull);
@@ -2651,8 +2534,7 @@ namespace com.espertech.esper.common.@internal.util
         {
             var t = method.ReturnType;
             var result = GetGenericType(t, 0);
-            if (!isAllowNull && result == null)
-            {
+            if (!isAllowNull && result == null) {
                 return typeof(object);
             }
 
@@ -2674,8 +2556,7 @@ namespace com.espertech.esper.common.@internal.util
         {
             var t = method.ReturnType;
             var result = GetGenericMapType(t);
-            if (!isAllowNull && result == null)
-            {
+            if (!isAllowNull && result == null) {
                 return typeof(object);
             }
 
@@ -2696,8 +2577,7 @@ namespace com.espertech.esper.common.@internal.util
         {
             var t = property.PropertyType;
             var result = GetGenericType(t, 0);
-            if (!isAllowNull && result == null)
-            {
+            if (!isAllowNull && result == null) {
                 return typeof(object);
             }
 
@@ -2718,8 +2598,7 @@ namespace com.espertech.esper.common.@internal.util
         {
             var t = property.PropertyType;
             var result = GetGenericMapType(t);
-            if (!isAllowNull && result == null)
-            {
+            if (!isAllowNull && result == null) {
                 return typeof(object);
             }
 
@@ -2740,8 +2619,7 @@ namespace com.espertech.esper.common.@internal.util
         {
             var t = field.FieldType;
             var result = GetGenericType(t, 0);
-            if (!isAllowNull && result == null)
-            {
+            if (!isAllowNull && result == null) {
                 return typeof(object);
             }
 
@@ -2762,8 +2640,7 @@ namespace com.espertech.esper.common.@internal.util
         {
             var t = field.FieldType;
             var result = GetGenericMapType(t);
-            if (!isAllowNull && result == null)
-            {
+            if (!isAllowNull && result == null) {
                 return typeof(object);
             }
 
@@ -2795,37 +2672,31 @@ namespace com.espertech.esper.common.@internal.util
 
         private static Type GetGenericMapType(this Type t)
         {
-            if (t == null)
-            {
+            if (t == null) {
                 return null;
             }
 
-            if (!t.IsGenericType)
-            {
+            if (!t.IsGenericType) {
                 // See if we are a dictionary
-                var dictionaryType = GenericExtensions.FindGenericDictionaryInterface(t);
-                if (dictionaryType != null)
-                {
+                var dictionaryType = t.FindGenericDictionaryInterface();
+                if (dictionaryType != null) {
                     t = dictionaryType;
                 }
             }
 
-            if (!t.IsGenericType)
-            {
+            if (!t.IsGenericType) {
                 return null;
             }
 
             // See if we're dealing with a nullable ... nullables register
             // as generics.
-            if (Nullable.GetUnderlyingType(t) != null)
-            {
+            if (Nullable.GetUnderlyingType(t) != null) {
                 return null;
             }
 
             var genericArguments = t.GetGenericArguments();
             if (genericArguments == null ||
-                genericArguments.Length < 2)
-            {
+                genericArguments.Length < 2) {
                 return typeof(object);
             }
 
@@ -2836,36 +2707,30 @@ namespace com.espertech.esper.common.@internal.util
             this Type t,
             int index)
         {
-            if (t == null)
-            {
+            if (t == null) {
                 return null;
             }
 
-            if (!t.IsGenericType)
-            {
-                var enumType = GenericExtensions.FindGenericEnumerationInterface(t);
-                if (enumType != null)
-                {
+            if (!t.IsGenericType) {
+                var enumType = t.FindGenericEnumerationInterface();
+                if (enumType != null) {
                     t = enumType;
                 }
             }
 
-            if (!t.IsGenericType)
-            {
+            if (!t.IsGenericType) {
                 return null;
             }
 
             // See if we're dealing with a nullable ... nullables register
             // as generics.
-            if (Nullable.GetUnderlyingType(t) != null)
-            {
+            if (Nullable.GetUnderlyingType(t) != null) {
                 return null;
             }
 
             var genericArguments = t.GetGenericArguments();
             if (genericArguments == null ||
-                genericArguments.Length < index + 1)
-            {
+                genericArguments.Length < index + 1) {
                 return typeof(object);
             }
 
@@ -2874,27 +2739,21 @@ namespace com.espertech.esper.common.@internal.util
 
         public static Assembly ResolveAssembly(string assemblyNameOrFile)
         {
-            try
-            {
+            try {
                 return Assembly.Load(assemblyNameOrFile);
             }
-            catch (FileNotFoundException)
-            {
+            catch (FileNotFoundException) {
             }
-            catch (FileLoadException)
-            {
+            catch (FileLoadException) {
             }
 
-            try
-            {
+            try {
                 var fileInfo = new FileInfo(assemblyNameOrFile);
-                if (fileInfo.Exists)
-                {
+                if (fileInfo.Exists) {
                     return Assembly.LoadFile(fileInfo.FullName);
                 }
             }
-            catch (FileLoadException)
-            {
+            catch (FileLoadException) {
             }
 
             return null;
@@ -2921,7 +2780,7 @@ namespace com.espertech.esper.common.@internal.util
             // coming from Java are familiar with.  In C#, we can also declare arrays as T[,,] which is a different type.  The goal of this call
             // is to generate the former.  To do that, we must declare each type outward until we have the array of the type we really want.
 
-            for (int ii = 0; ii < arrayDimensions; ii++) {
+            for (var ii = 0; ii < arrayDimensions; ii++) {
                 resultType = resultType.MakeArrayType();
             }
 
@@ -2932,13 +2791,11 @@ namespace com.espertech.esper.common.@internal.util
             object instance,
             bool fullyQualified)
         {
-            if (instance == null)
-            {
+            if (instance == null) {
                 return "(null)";
             }
 
-            using (var writer = new StringWriter())
-            {
+            using (var writer = new StringWriter()) {
                 WriteInstance(writer, instance, fullyQualified);
                 return writer.ToString();
             }
@@ -2949,8 +2806,7 @@ namespace com.espertech.esper.common.@internal.util
             object instance,
             bool fullyQualified)
         {
-            if (instance == null)
-            {
+            if (instance == null) {
                 writer.Write("(null)");
                 return;
             }
@@ -2966,12 +2822,10 @@ namespace com.espertech.esper.common.@internal.util
         {
             writer.Write(title);
             writer.Write("@");
-            if (instance == null)
-            {
+            if (instance == null) {
                 writer.Write("(null)");
             }
-            else
-            {
+            else {
                 writer.Write("{0:X}", RuntimeHelpers.GetHashCode(instance));
             }
         }
@@ -2987,63 +2841,66 @@ namespace com.espertech.esper.common.@internal.util
             HookType hookType,
             Type interfaceExpected)
         {
-            if (annotations == null)
-            {
+            if (annotations == null) {
                 return null;
             }
 
             string hookClass = null;
-            for (var i = 0; i < annotations.Length; i++)
-            {
-                if (!(annotations[i] is HookAttribute))
-                {
+            for (var i = 0; i < annotations.Length; i++) {
+                if (!(annotations[i] is HookAttribute)) {
                     continue;
                 }
 
-                var hook = (HookAttribute) annotations[i];
-                if (hook.HookType != hookType)
-                {
+                var hook = (HookAttribute)annotations[i];
+                if (hook.HookType != hookType) {
                     continue;
                 }
 
                 hookClass = hook.Hook;
             }
 
-            if (hookClass == null)
-            {
+            if (hookClass == null) {
                 return null;
             }
 
             Type clazz;
-            try
-            {
+            try {
                 clazz = ResolveType(hookClass);
             }
-            catch (Exception e)
-            {
+            catch (Exception e) {
                 throw new ExprValidationException(
-                    "Failed to resolve hook provider of hook type '" + hookType +
-                    "' import '" + hookClass + "' :" + e.Message);
+                    "Failed to resolve hook provider of hook type '" +
+                    hookType +
+                    "' import '" +
+                    hookClass +
+                    "' :" +
+                    e.Message);
             }
 
-            if (!IsImplementsInterface(clazz, interfaceExpected))
-            {
+            if (!IsImplementsInterface(clazz, interfaceExpected)) {
                 throw new ExprValidationException(
-                    "Hook provider for hook type '" + hookType + "' " +
-                    "class '" + clazz.CleanName() + "' does not implement the required '" +
+                    "Hook provider for hook type '" +
+                    hookType +
+                    "' " +
+                    "class '" +
+                    clazz.CleanName() +
+                    "' does not implement the required '" +
                     interfaceExpected.CleanName() +
                     "' interface");
             }
 
-            try
-            {
+            try {
                 return Activator.CreateInstance(clazz);
             }
-            catch (Exception e)
-            {
+            catch (Exception e) {
                 throw new ExprValidationException(
-                    "Failed to instantiate hook provider of hook type '" + hookType + "' " +
-                    "class '" + clazz.CleanName() + "' :" + e.Message);
+                    "Failed to instantiate hook provider of hook type '" +
+                    hookType +
+                    "' " +
+                    "class '" +
+                    clazz.CleanName() +
+                    "' :" +
+                    e.Message);
             }
         }
 
@@ -3059,28 +2916,38 @@ namespace com.espertech.esper.common.@internal.util
                 args.Length == 0 ? "[]" :
                 string.Join(" ", args);
 
-            if (args != null)
-            {
+            if (args != null) {
                 var methodParameters = method.GetParameterTypes();
-                for (var i = 0; i < methodParameters.Length; i++)
-                {
-                    if (methodParameters[i].IsValueType && args[i] == null)
-                    {
-                        return "NullPointerException invoking method '" + method.Name +
-                               "' of class '" + classOrPropertyName +
-                               "' in parameter " + i +
-                               " passing parameters " + parameters +
-                               " for statement '" + statementName + "': The method expects a primitive " +
+                for (var i = 0; i < methodParameters.Length; i++) {
+                    if (methodParameters[i].IsValueType && args[i] == null) {
+                        return "NullPointerException invoking method '" +
+                               method.Name +
+                               "' of class '" +
+                               classOrPropertyName +
+                               "' in parameter " +
+                               i +
+                               " passing parameters " +
+                               parameters +
+                               " for statement '" +
+                               statementName +
+                               "': The method expects a primitive " +
                                methodParameters[i].Name +
                                " value but received a null value";
                     }
                 }
             }
 
-            return "Invocation exception when invoking method '" + method.Name +
-                   "' of class '" + classOrPropertyName +
-                   "' passing parameters " + parameters +
-                   " for statement '" + statementName + "': " + e.GetType().CleanName() + " : " +
+            return "Invocation exception when invoking method '" +
+                   method.Name +
+                   "' of class '" +
+                   classOrPropertyName +
+                   "' passing parameters " +
+                   parameters +
+                   " for statement '" +
+                   statementName +
+                   "': " +
+                   e.GetType().CleanName() +
+                   " : " +
                    e.Message;
         }
 
@@ -3108,36 +2975,44 @@ namespace com.espertech.esper.common.@internal.util
             object[] args,
             Exception e)
         {
-            if (e is TargetInvocationException)
-            {
-                if (e.InnerException != null)
-                {
+            if (e is TargetInvocationException) {
+                if (e.InnerException != null) {
                     e = e.InnerException;
                 }
             }
 
             var parameters = args == null ? "null" : args.Render(",", "[]");
-            if (args != null)
-            {
-                for (var i = 0; i < methodParameters.Length; i++)
-                {
-                    if (methodParameters[i].IsValueType && args[i] == null)
-                    {
-                        return "NullPointerException invoking method '" + methodName +
-                               "' of class '" + classOrPropertyName +
-                               "' in parameter " + i +
-                               " passing parameters " + parameters +
-                               " for statement '" + statementName + "': The method expects a primitive " +
+            if (args != null) {
+                for (var i = 0; i < methodParameters.Length; i++) {
+                    if (methodParameters[i].IsValueType && args[i] == null) {
+                        return "NullPointerException invoking method '" +
+                               methodName +
+                               "' of class '" +
+                               classOrPropertyName +
+                               "' in parameter " +
+                               i +
+                               " passing parameters " +
+                               parameters +
+                               " for statement '" +
+                               statementName +
+                               "': The method expects a primitive " +
                                methodParameters[i].Name +
                                " value but received a null value";
                     }
                 }
             }
 
-            return "Invocation exception when invoking method '" + methodName +
-                   "' of class '" + classOrPropertyName +
-                   "' passing parameters " + parameters +
-                   " for statement '" + statementName + "': " + e.GetType().CleanName() + " : " +
+            return "Invocation exception when invoking method '" +
+                   methodName +
+                   "' of class '" +
+                   classOrPropertyName +
+                   "' passing parameters " +
+                   parameters +
+                   " for statement '" +
+                   statementName +
+                   "': " +
+                   e.GetType().CleanName() +
+                   " : " +
                    e.Message;
         }
 
@@ -3146,8 +3021,7 @@ namespace com.espertech.esper.common.@internal.util
             Func<string, Type> typeResolver)
         {
             IDictionary<string, object> propertyTypes = new Dictionary<string, object>();
-            foreach (var entry in properties)
-            {
+            foreach (var entry in properties) {
                 propertyTypes.Put(entry.Key, typeResolver.Invoke(entry.Value));
             }
 
@@ -3159,27 +3033,26 @@ namespace com.espertech.esper.common.@internal.util
             TypeResolver typeResolver)
         {
             return GetClassObjectFromPropertyTypeNames(
-                properties, _ => typeResolver.ResolveType(_, false));
+                properties,
+                _ => typeResolver.ResolveType(_, false));
         }
 
         public static IDictionary<string, object> GetClassObjectFromPropertyTypeNames(Properties properties)
         {
             return GetClassObjectFromPropertyTypeNames(
-                properties, className => {
-                    if (className == "string")
-                    {
+                properties,
+                className => {
+                    if (className == "string") {
                         className = typeof(string).FullName;
                     }
 
                     // use the boxed type for primitives
                     var boxedClassName = GetBoxedTypeName(className);
 
-                    try
-                    {
+                    try {
                         return ResolveType(boxedClassName, true);
                     }
-                    catch (TypeLoadException ex)
-                    {
+                    catch (TypeLoadException ex) {
                         throw new ConfigurationException(
                             "Unable to load class '" + boxedClassName + "', class not found",
                             ex);
@@ -3189,14 +3062,12 @@ namespace com.espertech.esper.common.@internal.util
 
         public static object Boxed(this object value)
         {
-            if (value == null)
-            {
+            if (value == null) {
                 return null;
             }
 
-            if (value is Type)
-            {
-                return ((Type) value).GetBoxedType();
+            if (value is Type type) {
+                return type.GetBoxedType();
             }
 
             return value;
@@ -3225,24 +3096,20 @@ namespace com.espertech.esper.common.@internal.util
 
         public static ICollection<object> AsObjectCollection(this object value)
         {
-            if (value == null)
-            {
+            if (value == null) {
                 return null;
             }
 
-            if (value is ICollection<object>)
-            {
-                return (ICollection<object>) value;
+            if (value is ICollection<object> objects) {
+                return objects;
             }
 
-            if (value.GetType().IsGenericCollection())
-            {
+            if (value.GetType().IsGenericCollection()) {
                 return MagicMarker.SingletonInstance.GetCollectionFactory(value.GetType()).Invoke(value);
             }
 
-            if (value is ICollection)
-            {
-                return ((ICollection) value).Cast<object>().ToList();
+            if (value is ICollection collection) {
+                return collection.Cast<object>().ToList();
             }
 
             throw new ArgumentException("value is not a collection", "value");
@@ -3257,22 +3124,18 @@ namespace com.espertech.esper.common.@internal.util
             Type[] one,
             Type[] two)
         {
-            if (one == two)
-            {
+            if (one == two) {
                 return true;
             }
 
-            if (one.Length != two.Length)
-            {
+            if (one.Length != two.Length) {
                 return false;
             }
 
-            for (var i = 0; i < one.Length; i++)
-            {
+            for (var i = 0; i < one.Length; i++) {
                 var oneClass = one[i];
                 var twoClass = two[i];
-                if (oneClass != twoClass && !oneClass.IsAssignmentCompatible(twoClass))
-                {
+                if (oneClass != twoClass && !oneClass.IsAssignmentCompatible(twoClass)) {
                     return false;
                 }
             }
@@ -3285,8 +3148,7 @@ namespace com.espertech.esper.common.@internal.util
             string methodName)
         {
             var found = clazz.GetMethods().FirstOrDefault(m => m.Name == methodName);
-            if (found == null)
-            {
+            if (found == null) {
                 throw new ArgumentException("Not found method '" + methodName + "'");
             }
 
@@ -3305,7 +3167,7 @@ namespace com.espertech.esper.common.@internal.util
         {
             return annotations
                 .Where(a => a.GetType() == typeof(T))
-                .Select(a => (T) a)
+                .Select(a => (T)a)
                 .ToList();
         }
 
@@ -3334,11 +3196,9 @@ namespace com.espertech.esper.common.@internal.util
 
             // superclass fields
             var clazz = targetClass;
-            while (true)
-            {
+            while (true) {
                 clazz = clazz.BaseType;
-                if (clazz == typeof(object) || clazz == null)
-                {
+                if (clazz == typeof(object) || clazz == null) {
                     break;
                 }
 
@@ -3354,10 +3214,8 @@ namespace com.espertech.esper.common.@internal.util
             ICollection<FieldInfo> fields)
         {
             foreach (var field in currentClass.GetFields(
-                BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance))
-            {
-                if (IsAnnotationListed(annotation, field.GetCustomAttributes(true).OfType<Attribute>().ToArray()))
-                {
+                         BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)) {
+                if (IsAnnotationListed(annotation, field.GetCustomAttributes(true).OfType<Attribute>().ToArray())) {
                     fields.Add(field);
                 }
             }
@@ -3372,11 +3230,9 @@ namespace com.espertech.esper.common.@internal.util
 
             // superclass fields
             var clazz = targetClass;
-            while (true)
-            {
+            while (true) {
                 clazz = clazz.BaseType;
-                if (clazz == typeof(object) || clazz == null)
-                {
+                if (clazz == typeof(object) || clazz == null) {
                     break;
                 }
 
@@ -3392,10 +3248,8 @@ namespace com.espertech.esper.common.@internal.util
             ICollection<MethodInfo> methods)
         {
             foreach (var method in currentClass.GetMethods(
-                BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance))
-            {
-                if (IsAnnotationListed(annotation, method.GetCustomAttributes(true).OfType<Attribute>().ToArray()))
-                {
+                         BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)) {
+                if (IsAnnotationListed(annotation, method.GetCustomAttributes(true).OfType<Attribute>().ToArray())) {
                     methods.Add(method);
                 }
             }
@@ -3407,19 +3261,15 @@ namespace com.espertech.esper.common.@internal.util
             object value)
         {
             var found = SetFieldForAnnotation(target, annotation, value, target.GetType());
-            if (!found)
-            {
+            if (!found) {
                 var superClass = target.GetType().BaseType;
-                while (!found)
-                {
+                while (!found) {
                     found = SetFieldForAnnotation(target, annotation, value, superClass);
-                    if (!found)
-                    {
+                    if (!found) {
                         superClass = superClass.BaseType;
                     }
 
-                    if (superClass == typeof(object) || superClass == null)
-                    {
+                    if (superClass == typeof(object) || superClass == null) {
                         break;
                     }
                 }
@@ -3433,10 +3283,8 @@ namespace com.espertech.esper.common.@internal.util
             Type currentClass)
         {
             foreach (var field in currentClass.GetFields(
-                BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance))
-            {
-                if (IsAnnotationListed(annotation, field.GetCustomAttributes(true).OfType<Attribute>().ToArray()))
-                {
+                         BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance)) {
+                if (IsAnnotationListed(annotation, field.GetCustomAttributes(true).OfType<Attribute>().ToArray())) {
                     field.SetValue(target, value);
                     return true;
                 }
@@ -3448,8 +3296,7 @@ namespace com.espertech.esper.common.@internal.util
         public static Pair<string, bool> IsGetArrayType(string type)
         {
             var index = type.IndexOf("[]", StringComparison.Ordinal);
-            if (index == -1)
-            {
+            if (index == -1) {
                 return new Pair<string, bool>(type, false);
             }
 
@@ -3479,8 +3326,7 @@ namespace com.espertech.esper.common.@internal.util
 
         public static bool IsDateTime(Type clazz)
         {
-            if (clazz == null)
-            {
+            if (clazz == null) {
                 return false;
             }
 
@@ -3494,8 +3340,7 @@ namespace com.espertech.esper.common.@internal.util
 
         private static string Unescape(string name)
         {
-            if (name.StartsWith("`") && name.EndsWith("`"))
-            {
+            if (name.StartsWith("`") && name.EndsWith("`")) {
                 return name.Substring(1, name.Length - 2);
             }
 
@@ -3504,8 +3349,7 @@ namespace com.espertech.esper.common.@internal.util
 
         public static Type GetComponentTypeOutermost(this Type clazz)
         {
-            if (!clazz.IsArray)
-            {
+            if (!clazz.IsArray) {
                 return clazz;
             }
 
@@ -3514,8 +3358,7 @@ namespace com.espertech.esper.common.@internal.util
 
         public static int GetNumberOfDimensions(this Type clazz)
         {
-            if (clazz.GetElementType() == null)
-            {
+            if (clazz.GetElementType() == null) {
                 return 0;
             }
 
@@ -3552,8 +3395,7 @@ namespace com.espertech.esper.common.@internal.util
             this Type target,
             Type provided)
         {
-            if (target == provided || target == typeof(object))
-            {
+            if (target == provided || target == typeof(object)) {
                 return true;
             }
 
@@ -3630,6 +3472,27 @@ namespace com.espertech.esper.common.@internal.util
 #endif
 
             return type.FullName;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static bool IsNullTypeSafe(Type type)
+        {
+            return type == null;
+        }
+
+        public static bool IsTypeOrNull(
+            Type type,
+            Type expected)
+        {
+            if (IsNullTypeSafe(type)) {
+                return true;
+            }
+
+            if (type == expected) {
+                return true;
+            }
+
+            return type.GetBoxedType() == expected;
         }
     }
 

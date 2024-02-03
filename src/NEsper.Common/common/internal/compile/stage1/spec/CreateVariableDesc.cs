@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -14,7 +14,6 @@ using com.espertech.esper.common.@internal.type;
 namespace com.espertech.esper.common.@internal.compile.stage1.spec
 {
     /// <summary>Descriptor for create-variable statements. </summary>
-    [Serializable]
     public class CreateVariableDesc
     {
         /// <summary>
@@ -25,7 +24,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         /// <param name="assignment">expression assigning the initial value, or null if none</param>
         /// <param name="constant">if set to <c>true</c> [constant].</param>
         public CreateVariableDesc(
-            ClassIdentifierWArray variableType,
+            ClassDescriptor variableType,
             string variableName,
             ExprNode assignment,
             bool constant)
@@ -38,7 +37,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
 
         /// <summary>Returns the variable type. </summary>
         /// <value>type of variable</value>
-        public ClassIdentifierWArray VariableType { get; }
+        public ClassDescriptor VariableType { get; }
 
         /// <summary>Returns the variable name </summary>
         /// <value>name</value>

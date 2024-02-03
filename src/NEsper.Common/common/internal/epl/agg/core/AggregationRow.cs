@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -24,47 +24,47 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             ExprEvaluatorContext exprEvaluatorContext);
 
         void EnterAgg(
-            int column,
+            int scol,
             object value);
 
         void LeaveAgg(
-            int column,
+            int scol,
             object value);
 
         void EnterAccess(
-            int column,
+            int scol,
             EventBean[] eventsPerStream,
             ExprEvaluatorContext exprEvaluatorContext);
 
         void LeaveAccess(
-            int column,
+            int scol,
             EventBean[] eventsPerStream,
             ExprEvaluatorContext exprEvaluatorContext);
 
-        object GetAccessState(int column);
+        object GetAccessState(int scol);
 
         void Clear();
 
         object GetValue(
-            int column,
+            int vcol,
             EventBean[] eventsPerStream,
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext);
 
         ICollection<EventBean> GetCollectionOfEvents(
-            int column,
+            int vcol,
             EventBean[] eventsPerStream,
             bool isNewData,
             ExprEvaluatorContext context);
 
         EventBean GetEventBean(
-            int column,
+            int vcol,
             EventBean[] eventsPerStream,
             bool isNewData,
             ExprEvaluatorContext context);
 
         ICollection<object> GetCollectionScalar(
-            int column,
+            int vcol,
             EventBean[] eventsPerStream,
             bool isNewData,
             ExprEvaluatorContext context);
@@ -78,7 +78,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
         long GetLastUpdateTime();
 
         void SetLastUpdateTime(long currentTime);
-        
+
         void Reset(int column);
     }
 } // end of namespace

@@ -1,18 +1,18 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 
 using Antlr4.Runtime.Sharpen;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.compile.stage3;
-using com.espertech.esper.common.@internal.epl.expression.chain;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.filter;
 using com.espertech.esper.common.@internal.epl.expression.visitor;
@@ -21,9 +21,7 @@ using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 using com.espertech.esper.compat.collections;
 
-using static com.espertech.esper.common.@internal.compile.stage2.FilterSpecCompilerIndexPlannerHelper; //getMatchEventConvertor;
-
-//hasLevelOrHint;
+using static com.espertech.esper.common.@internal.compile.stage2.FilterSpecCompilerIndexPlannerHelper;
 
 namespace com.espertech.esper.common.@internal.compile.stage2
 {
@@ -31,6 +29,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
     {
         internal static FilterSpecParamForge HandleBooleanLimited(
             ExprNode constituent,
+            Func<string, bool> limitedExprExists,
             IDictionary<string, Pair<EventType, string>> taggedEventTypes,
             IDictionary<string, Pair<EventType, string>> arrayEventTypes,
             ISet<string> allTagNamesOrdered,
@@ -56,25 +55,63 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 
             // there is no value expression, i.e. "select * from SupportBean(theString = intPrimitive)"
             if (desc is RewriteDescriptorNoValueExpr) {
-                var reboolExpression = ExprNodeUtilityPrint.ToExpressionStringMinPrecedence(constituent, new ExprNodeRenderableFlags(false));
-                var lookupable = new ExprFilterSpecLookupableForge(reboolExpression, null, constituent.Forge, null, true, null);
+                var reboolExpression = ExprNodeUtilityPrint.ToExpressionStringMinPrecedence(
+                    constituent,
+                    new ExprNodeRenderableFlags(false));
+                var lookupable = new ExprFilterSpecLookupableForge(
+                    reboolExpression,
+                    null,
+                    constituent.Forge,
+                    null,
+                    true,
+                    DataInputOutputSerdeForgeSkip.INSTANCE);
                 return new FilterSpecParamValueNullForge(lookupable, FilterOperator.REBOOL);
             }
 
             // there is no value expression, i.e. "select * from SupportBean(theString regexp 'abc')"
-            var withValueExpr = (RewriteDescriptorWithValueExpr) desc;
-            ExprNode valueExpression = withValueExpr.ValueExpression;
+            var withValueExpr = (RewriteDescriptorWithValueExpr)desc;
+            var valueExpression = withValueExpr.ValueExpression;
             var valueExpressionType = valueExpression.Forge.EvaluationType;
             var replacement = new ExprFilterReboolValueNode(valueExpressionType);
             ExprNodeUtilityModify.ReplaceChildNode(withValueExpr.ValueExpressionParent, valueExpression, replacement);
-            var validationContext = new ExprValidationContextBuilder(streamTypeService, raw, services).WithIsFilterExpression(true).Build();
-            var rebool = ExprNodeUtilityValidate.GetValidatedSubtree(ExprNodeOrigin.FILTER, constituent, validationContext);
-            DataInputOutputSerdeForge serde = services.SerdeResolver.SerdeForFilter(valueExpressionType, raw);
-            var convertor = GetMatchEventConvertor(valueExpression, taggedEventTypes, arrayEventTypes, allTagNamesOrdered);
+            var validationContext = new ExprValidationContextBuilder(streamTypeService, raw, services)
+                .WithIsFilterExpression(true)
+                .Build();
+            var rebool = ExprNodeUtilityValidate.GetValidatedSubtree(
+                ExprNodeOrigin.FILTER,
+                constituent,
+                validationContext);
+            var serde = services.SerdeResolver.SerdeForFilter(valueExpressionType, raw);
+            var convertor = GetMatchEventConvertor(
+                valueExpression,
+                taggedEventTypes,
+                arrayEventTypes,
+                allTagNamesOrdered);
 
-            var reboolExpressionX = ExprNodeUtilityPrint.ToExpressionStringMinPrecedence(constituent, new ExprNodeRenderableFlags(false));
-            var lookupableX = new ExprFilterSpecLookupableForge(reboolExpressionX, null, rebool.Forge, valueExpressionType, true, serde);
-            return new FilterSpecParamValueLimitedExprForge(lookupableX, FilterOperator.REBOOL, valueExpression, convertor, null);
+            var reboolExpressionX = ExprNodeUtilityPrint.ToExpressionStringMinPrecedence(
+                constituent,
+                new ExprNodeRenderableFlags(false));
+            if (limitedExprExists.Invoke(reboolExpressionX)) {
+                ExprNodeUtilityModify.ReplaceChildNode(
+                    withValueExpr.ValueExpressionParent,
+                    replacement,
+                    valueExpression);
+                return null;
+            }
+
+            var lookupableX = new ExprFilterSpecLookupableForge(
+                reboolExpressionX,
+                null,
+                rebool.Forge,
+                valueExpressionType,
+                true,
+                serde);
+            return new FilterSpecParamValueLimitedExprForge(
+                lookupableX,
+                FilterOperator.REBOOL,
+                valueExpression,
+                convertor,
+                null);
         }
 
         private static bool Prequalify(ExprNode constituent)
@@ -100,7 +137,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 
         private static RewriteDescriptor FindRewrite(ExprNode parent)
         {
-            IList<ExprNodeWithParentPair> valueExpressions = FindValueExpressionsDeepMayNull(parent);
+            var valueExpressions = FindValueExpressionsDeepMayNull(parent);
             if (valueExpressions == null) {
                 return new RewriteDescriptorNoValueExpr();
             }
@@ -112,7 +149,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 
             // find a single value expression that is non-deploy-time-constant
             IList<ExprNodeWithParentPair> nonConstants = new List<ExprNodeWithParentPair>(valueExpressions.Count);
-            foreach (ExprNodeWithParentPair expr in valueExpressions) {
+            foreach (var expr in valueExpressions) {
                 if (!expr.Node.Forge.ForgeConstantType.IsConstant) {
                     nonConstants.Add(expr);
                 }
@@ -129,7 +166,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 
         private static IList<ExprNodeWithParentPair> FindValueExpressionsDeepMayNull(ExprNode parent)
         {
-            AtomicReference<IList<ExprNodeWithParentPair>> pairs = new AtomicReference<IList<ExprNodeWithParentPair>>();
+            var pairs = new AtomicReference<IList<ExprNodeWithParentPair>>();
             FindValueExpressionsDeepRecursive(parent, pairs);
             return pairs.Get();
         }
@@ -142,10 +179,9 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 FindValueExpr(child, parent, pairsRef);
             }
 
-            if (parent is ExprNodeWithChainSpec) {
-                ExprNodeWithChainSpec chainableNode = (ExprNodeWithChainSpec) parent;
-                foreach (Chainable chainable in chainableNode.ChainSpec) {
-                    foreach (ExprNode param in chainable.GetParametersOrEmpty()) {
+            if (parent is ExprNodeWithChainSpec chainableNode) {
+                foreach (var chainable in chainableNode.ChainSpec) {
+                    foreach (var param in chainable.ParametersOrEmpty) {
                         FindValueExpr(param, parent, pairsRef);
                     }
                 }
@@ -167,7 +203,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             }
 
             // add value expression, don't traverse child
-            IList<ExprNodeWithParentPair> pairs = pairsRef.Get();
+            var pairs = pairsRef.Get();
             if (pairs == null) {
                 pairs = new List<ExprNodeWithParentPair>(2);
                 pairsRef.Set(pairs);
@@ -186,17 +222,20 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 
         private class RewriteDescriptorWithValueExpr : RewriteDescriptor
         {
+            private readonly ExprNode valueExpression;
+            private readonly ExprNode valueExpressionParent;
+
             public RewriteDescriptorWithValueExpr(
                 ExprNode valueExpression,
                 ExprNode valueExpressionParent)
             {
-                ValueExpression = valueExpression;
-                ValueExpressionParent = valueExpressionParent;
+                this.valueExpression = valueExpression;
+                this.valueExpressionParent = valueExpressionParent;
             }
 
-            public ExprNode ValueExpression { get; }
+            public ExprNode ValueExpression => valueExpression;
 
-            public ExprNode ValueExpressionParent { get; }
+            public ExprNode ValueExpressionParent => valueExpressionParent;
         }
     }
 } // end of namespace

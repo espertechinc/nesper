@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -10,13 +10,24 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
+using com.espertech.esper.compat.collections;
+
 namespace com.espertech.esper.common.client.soda
 {
-    /// <summary>For use with on-merge clauses, inserts into a named window if matching rows are not found. </summary>
-    [Serializable]
+    /// <summary>
+    ///     For use with on-merge clauses, inserts into a named window if matching rows are not found.
+    /// </summary>
     public class OnMergeMatchedInsertAction : OnMergeMatchedAction
     {
-        /// <summary>Ctor. </summary>
+        private IList<string> columnNames = EmptyList<string>.Instance;
+        private Expression eventPrecedence;
+        private string optionalStreamName;
+        private IList<SelectClauseElement> selectList = EmptyList<SelectClauseElement>.Instance;
+        private Expression whereClause;
+
+        /// <summary>
+        ///     Ctor.
+        /// </summary>
         /// <param name="columnNames">insert-into column names, or empty list if none provided</param>
         /// <param name="selectList">select expression list</param>
         /// <param name="whereClause">optional condition or null</param>
@@ -26,78 +37,123 @@ namespace com.espertech.esper.common.client.soda
             IList<SelectClauseElement> selectList,
             Expression whereClause,
             string optionalStreamName)
+            : this(columnNames, null, selectList, whereClause, optionalStreamName)
         {
-            ColumnNames = columnNames;
-            SelectList = selectList;
-            WhereClause = whereClause;
-            OptionalStreamName = optionalStreamName;
         }
 
-        /// <summary>Ctor. </summary>
+        /// <summary>
+        ///     Ctor.
+        /// </summary>
+        /// <param name="columnNames">insert-into column names, or empty list if none provided</param>
+        /// <param name="selectList">select expression list</param>
+        /// <param name="whereClause">optional condition or null</param>
+        /// <param name="optionalStreamName">optionally a stream name for insert-into</param>
+        /// <param name="eventPrecedence">event precedence or null</param>
+        public OnMergeMatchedInsertAction(
+            IList<string> columnNames,
+            Expression eventPrecedence,
+            IList<SelectClauseElement> selectList,
+            Expression whereClause,
+            string optionalStreamName)
+        {
+            this.columnNames = columnNames;
+            this.eventPrecedence = eventPrecedence;
+            this.selectList = selectList;
+            this.whereClause = whereClause;
+            this.optionalStreamName = optionalStreamName;
+        }
+
+        /// <summary>
+        ///     Ctor.
+        /// </summary>
         public OnMergeMatchedInsertAction()
         {
-            ColumnNames = new List<string>();
-            SelectList = new List<SelectClauseElement>();
         }
 
-        /// <summary>Returns the action condition, or null if undefined. </summary>
+        /// <summary>
+        ///     Returns the action condition, or null if undefined.
+        /// </summary>
         /// <value>condition</value>
-        public Expression WhereClause { get; set; }
+        public Expression WhereClause {
+            get => whereClause;
+            set => whereClause = value;
+        }
 
-        /// <summary>Returns the insert-into column names, if provided. </summary>
+        /// <summary>
+        ///     Returns the insert-into column names, if provided.
+        /// </summary>
         /// <value>column names</value>
-        public IList<string> ColumnNames { get; set; }
+        public IList<string> ColumnNames {
+            get => columnNames;
+            set => columnNames = value;
+        }
 
-        /// <summary>Returns the select expressions. </summary>
+        /// <summary>
+        ///     Returns the select expressions.
+        /// </summary>
         /// <value>expression list</value>
-        public IList<SelectClauseElement> SelectList { get; set; }
+        public IList<SelectClauseElement> SelectList {
+            get => selectList;
+            set => selectList = value;
+        }
 
-        /// <summary>Returns the insert-into stream name. </summary>
+        /// <summary>
+        ///     Returns the insert-into stream name.
+        /// </summary>
         /// <value>stream name</value>
-        public string OptionalStreamName { get; set; }
+        public string OptionalStreamName {
+            get => optionalStreamName;
+            set => optionalStreamName = value;
+        }
 
-        #region OnMergeMatchedAction Members
+        /// <summary>
+        ///     Returns null when no event-precedence is specified for the insert-into,
+        ///     or returns the expression returning the event-precedence
+        /// </summary>
+        /// <value>event-precedence expression</value>
+        public Expression EventPrecedence {
+            get => eventPrecedence;
+            set => eventPrecedence = value;
+        }
 
         public void ToEPL(TextWriter writer)
         {
-            writer.Write("then insert");
-            if (OptionalStreamName != null)
-            {
+            writer.Write("insert");
+            if (optionalStreamName != null) {
                 writer.Write(" into ");
-                writer.Write(OptionalStreamName);
+                writer.Write(optionalStreamName);
             }
 
-            string delimiter;
-            if (ColumnNames.Count > 0)
-            {
+            if (columnNames.Count > 0) {
                 writer.Write("(");
-                delimiter = "";
-                foreach (string name in ColumnNames)
-                {
-                    writer.Write(delimiter);
+                var delimiterX = "";
+                foreach (var name in columnNames) {
+                    writer.Write(delimiterX);
                     writer.Write(name);
-                    delimiter = ", ";
+                    delimiterX = ", ";
                 }
 
                 writer.Write(")");
             }
 
+            if (eventPrecedence != null) {
+                writer.Write(" event-precedence(");
+                eventPrecedence.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
+                writer.Write(")");
+            }
+
             writer.Write(" select ");
-            delimiter = "";
-            foreach (SelectClauseElement element in SelectList)
-            {
+            var delimiter = "";
+            foreach (var element in selectList) {
                 writer.Write(delimiter);
                 element.ToEPLElement(writer);
                 delimiter = ", ";
             }
 
-            if (WhereClause != null)
-            {
+            if (whereClause != null) {
                 writer.Write(" where ");
-                WhereClause.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
+                whereClause.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
             }
         }
-
-        #endregion OnMergeMatchedAction Members
     }
-}
+} // end of namespace

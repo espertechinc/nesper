@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -32,24 +32,24 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             Type resultType,
             TableMetaData tableMetadata)
         {
-            this._streamNum = streamNum;
-            this._resultType = resultType;
-            this._tableMetadata = tableMetadata;
+            _streamNum = streamNum;
+            _resultType = resultType;
+            _tableMetadata = tableMetadata;
         }
 
-        public ExprEvaluator ExprEvaluator {
-            get => this;
-        }
+        public ExprEvaluator ExprEvaluator => this;
 
-        public Type EvaluationType {
-            get => _resultType;
-        }
+        public Type EvaluationType => _resultType;
 
         public ExprNodeRenderable ExprForgeRenderable {
             get {
-                return new ProxyExprNodeRenderable((writer, parentPrecedence, flags) => {
-                    writer.Write(this.GetType().Name);
-                });
+                return new ProxyExprNodeRenderable(
+                    (
+                        writer,
+                        parentPrecedence,
+                        flags) => {
+                        writer.Write(GetType().Name);
+                    });
             }
         }
 
@@ -67,28 +67,26 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenExpressionInstanceField eventToPublic =
-                TableDeployTimeResolver.MakeTableEventToPublicField(_tableMetadata, codegenClassScope, this.GetType());
-            CodegenMethod method = parent.MakeChild(
+            var eventToPublic =
+                TableDeployTimeResolver.MakeTableEventToPublicField(_tableMetadata, codegenClassScope, GetType());
+            var method = parent.MakeChild(
                 typeof(object[]),
                 typeof(ExprEvalUnderlyingEvaluatorTable),
                 codegenClassScope);
-            method.Block.IfNullReturnNull(exprSymbol.GetAddEPS(method))
-                .DeclareVar<EventBean>("@event", ArrayAtIndex(exprSymbol.GetAddEPS(method), Constant(_streamNum)))
+            method.Block.IfNullReturnNull(exprSymbol.GetAddEps(method))
+                .DeclareVar<EventBean>("@event", ArrayAtIndex(exprSymbol.GetAddEps(method), Constant(_streamNum)))
                 .IfRefNullReturnNull("@event")
                 .MethodReturn(
                     ExprDotMethod(
                         eventToPublic,
                         "ConvertToUnd",
                         Ref("@event"),
-                        exprSymbol.GetAddEPS(method),
+                        exprSymbol.GetAddEps(method),
                         exprSymbol.GetAddIsNewData(method),
                         exprSymbol.GetAddExprEvalCtx(method)));
             return LocalMethod(method);
         }
 
-        public ExprForgeConstantType ForgeConstantType {
-            get => ExprForgeConstantType.NONCONST;
-        }
+        public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
     }
 } // end of namespace

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -9,6 +9,7 @@
 using System;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.compile.stage3;
@@ -25,9 +26,10 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
     public class StmtClassForgeableAIFactoryProviderCreateContext : StmtClassForgeableAIFactoryProviderBase
     {
         private readonly string contextName;
+        private readonly ContextControllerFactoryForge[] forges;
         private readonly EventType eventTypeContextProperties;
         private readonly StatementAgentInstanceFactoryCreateContextForge forge;
-        private readonly ContextControllerFactoryForge[] forges;
+        private readonly StateMgmtSetting partitionIdSvcStateMgmtSettings;
 
         public StmtClassForgeableAIFactoryProviderCreateContext(
             string className,
@@ -35,13 +37,14 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
             string contextName,
             ContextControllerFactoryForge[] forges,
             EventType eventTypeContextProperties,
-            StatementAgentInstanceFactoryCreateContextForge forge)
-            : base(className, namespaceScope)
+            StatementAgentInstanceFactoryCreateContextForge forge,
+            StateMgmtSetting partitionIdSvcStateMgmtSettings) : base(className, namespaceScope)
         {
             this.contextName = contextName;
             this.forges = forges;
             this.eventTypeContextProperties = eventTypeContextProperties;
             this.forge = forge;
+            this.partitionIdSvcStateMgmtSettings = partitionIdSvcStateMgmtSettings;
         }
 
         protected override Type TypeOfFactory()
@@ -54,11 +57,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
             CodegenClassScope classScope)
         {
             var saiffInitializeSymbol = new SAIFFInitializeSymbol();
-            CodegenMethod method = parent
-                .MakeChildWithScope(TypeOfFactory(), GetType(), saiffInitializeSymbol, classScope)
-                .AddParam(
-                    typeof(EPStatementInitServices),
-                    REF_STMTINITSVC.Ref);
+            var method = parent.MakeChildWithScope(TypeOfFactory(), GetType(), saiffInitializeSymbol, classScope)
+                .AddParam<EPStatementInitServices>(REF_STMTINITSVC.Ref);
             method.Block
                 .ExprDotMethod(
                     REF_STMTINITSVC,
@@ -81,27 +81,27 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
                 "controllers",
                 NewArrayByLength(typeof(ContextControllerFactory), Constant(forges.Length)));
             for (var i = 0; i < forges.Length; i++) {
-                method.Block
-                    .AssignArrayElement(
+                method.Block.AssignArrayElement(
                         "controllers",
                         Constant(i),
                         LocalMethod(forges[i].MakeCodegen(classScope, method, symbols)))
-                    .StaticMethod(
-                        typeof(ContextControllerFactoryExtensions),
-                        "WithFactoryEnv",
+                    .SetProperty(
                         ArrayAtIndex(Ref("controllers"), Constant(i)),
+                        "FactoryEnv",
                         forges[i].FactoryEnv.ToExpression());
             }
 
-            method.Block.DeclareVar<ContextDefinition>("def", NewInstance(typeof(ContextDefinition)))
+            method.Block.DeclareVarNewInstance(typeof(ContextDefinition), "def")
                 .SetProperty(Ref("def"), "ContextName", Constant(contextName))
                 .SetProperty(Ref("def"), "ControllerFactories", Ref("controllers"))
                 .SetProperty(
                     Ref("def"),
                     "EventTypeContextProperties",
-                    EventTypeUtility.ResolveTypeCodegen(
-                        eventTypeContextProperties,
-                        EPStatementInitServicesConstants.REF))
+                    EventTypeUtility.ResolveTypeCodegen(eventTypeContextProperties, EPStatementInitServicesConstants.REF))
+                .SetProperty(
+                    Ref("def"),
+                    "PartitionIdSvcStateMgmtSettings",
+                    partitionIdSvcStateMgmtSettings.ToExpression())
                 .MethodReturn(Ref("def"));
             return LocalMethod(method);
         }

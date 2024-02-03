@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -39,7 +39,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(methodNode);
+            var refEPS = exprSymbol.GetAddEps(methodNode);
             return StaticMethod(
                 typeof(SelectEvalInsertWildcardSSWrapper),
                 "ProcessSelectExprSSWrapper",
@@ -67,15 +67,17 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             EventType resultEventType)
         {
             var theEvent = eventsPerStream[0];
-            var wrapper = (DecoratingEventBean) theEvent;
+            var wrapper = (DecoratingEventBean)theEvent;
             if (wrapper != null) {
                 var map = wrapper.DecoratingProperties;
                 if (emptyExpressions && !map.IsEmpty()) {
-                    props = new Dictionary<string, object>(map); 
-                } else {
+                    props = new Dictionary<string, object>(map);
+                }
+                else {
                     props.PutAll(map);
                 }
             }
+
             return eventBeanTypedEventFactory.AdapterForTypedWrapper(theEvent, props, resultEventType);
         }
     }

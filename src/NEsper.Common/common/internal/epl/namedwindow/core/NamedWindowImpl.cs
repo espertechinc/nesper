@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -10,6 +10,7 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.context.util;
+using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.join.lookup;
 using com.espertech.esper.common.@internal.epl.join.queryplan;
 using com.espertech.esper.common.@internal.epl.lookupplansubord;
@@ -39,17 +40,11 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
                 metadata.ContextName);
         }
 
-        public string Name {
-            get => rootView.EventType.Name;
-        }
+        public string Name => rootView.EventType.Name;
 
-        public NamedWindowRootView RootView {
-            get => rootView;
-        }
+        public NamedWindowRootView RootView => rootView;
 
-        public NamedWindowTailView TailView {
-            get => tailView;
-        }
+        public NamedWindowTailView TailView => tailView;
 
         public NamedWindowConsumerView AddConsumer(
             NamedWindowConsumerDesc consumerDesc,
@@ -57,10 +52,10 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
         {
             // handle same-context consumer
             if (rootView.ContextName != null) {
-                ContextRuntimeDescriptor contextDescriptor =
+                var contextDescriptor =
                     consumerDesc.AgentInstanceContext.StatementContext.ContextRuntimeDescriptor;
                 if (contextDescriptor != null && rootView.ContextName.Equals(contextDescriptor.ContextName)) {
-                    StatementResourceHolder holder =
+                    var holder =
                         statementContext.StatementResourceService.GetPartitioned(
                             consumerDesc.AgentInstanceContext.AgentInstanceId);
                     return holder.NamedWindowInstance.TailViewInstance.AddConsumer(consumerDesc, isSubselect);
@@ -72,26 +67,25 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
             }
 
             // handle no context associated
-            StatementResourceService statementResourceService =
+            var statementResourceService =
                 statementContext.StatementCPCacheService.StatementResourceService;
             return statementResourceService.ResourcesUnpartitioned.NamedWindowInstance.TailViewInstance.AddConsumer(
                 consumerDesc,
                 isSubselect);
         }
 
-        public NamedWindowInstance GetNamedWindowInstance(AgentInstanceContext agentInstanceContext)
+        public NamedWindowInstance GetNamedWindowInstance(ExprEvaluatorContext exprEvaluatorContext)
         {
             if (rootView.ContextName == null) {
                 return NamedWindowInstanceNoContext;
             }
 
-            if (agentInstanceContext.StatementContext.ContextRuntimeDescriptor == null) {
+            if (exprEvaluatorContext.ContextName == null) {
                 return null;
             }
 
-            if (this.rootView.ContextName.Equals(
-                agentInstanceContext.StatementContext.ContextRuntimeDescriptor.ContextName)) {
-                return GetNamedWindowInstance(agentInstanceContext.AgentInstanceId);
+            if (rootView.ContextName == exprEvaluatorContext.ContextName) {
+                return GetNamedWindowInstance(exprEvaluatorContext.AgentInstanceId);
             }
 
             return null;
@@ -99,38 +93,46 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
 
         public NamedWindowInstance NamedWindowInstanceNoContext {
             get {
-                StatementResourceService statementResourceService =
+                var statementResourceService =
                     statementContext.StatementCPCacheService.StatementResourceService;
-                StatementResourceHolder holder = statementResourceService.Unpartitioned;
-                return holder == null ? null : holder.NamedWindowInstance;
+                var holder = statementResourceService.Unpartitioned;
+                return holder?.NamedWindowInstance;
             }
         }
 
         public NamedWindowInstance GetNamedWindowInstance(int agentInstanceId)
         {
-            StatementResourceService statementResourceService =
+            var statementResourceService =
                 statementContext.StatementCPCacheService.StatementResourceService;
-            StatementResourceHolder holder = statementResourceService.GetPartitioned(agentInstanceId);
-            return holder == null ? null : holder.NamedWindowInstance;
+            var holder = statementResourceService.GetPartitioned(agentInstanceId);
+            return holder?.NamedWindowInstance;
         }
 
-        public EventTableIndexMetadata EventTableIndexMetadata {
-            get => eventTableIndexMetadataRepo;
-        }
+        public EventTableIndexMetadata EventTableIndexMetadata => eventTableIndexMetadataRepo;
 
         public void RemoveAllInstanceIndexes(IndexMultiKey index)
         {
-            StatementResourceService statementResourceService =
+            var statementResourceService =
                 statementContext.StatementCPCacheService.StatementResourceService;
             if (rootView.ContextName == null) {
-                StatementResourceHolder holder = statementResourceService.Unpartitioned;
+                var holder = statementResourceService.Unpartitioned;
                 holder?.NamedWindowInstance?.RemoveIndex(index);
             }
             else {
-                foreach (KeyValuePair<int, StatementResourceHolder> entry in statementResourceService
-                    .ResourcesPartitioned) {
+                foreach (var entry in statementResourceService
+                             .ResourcesPartitioned) {
                     entry.Value.NamedWindowInstance?.RemoveIndex(index);
                 }
+            }
+        }
+
+        public void RemoveIndexInstance(
+            IndexMultiKey indexMultiKey,
+            int agentInstanceId)
+        {
+            var statementResourceService = statementContext.StatementCPCacheService.StatementResourceService;
+            if (statementResourceService.ResourcesPartitioned.TryGetValue(agentInstanceId, out var holder)) {
+                holder.NamedWindowInstance?.RemoveIndex(indexMultiKey);
             }
         }
 
@@ -139,7 +141,7 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
             string referringDeploymentId,
             string referringStatementName)
         {
-            bool last = eventTableIndexMetadataRepo.RemoveIndexReference(imk, referringDeploymentId);
+            var last = eventTableIndexMetadataRepo.RemoveIndexReference(imk, referringDeploymentId);
             if (last) {
                 eventTableIndexMetadataRepo.RemoveIndex(imk);
                 RemoveAllInstanceIndexes(imk);
@@ -165,7 +167,7 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
 
         public StatementContext StatementContext {
             get => statementContext;
-            set { this.statementContext = value; }
+            set => statementContext = value;
         }
     }
 } // end of namespace

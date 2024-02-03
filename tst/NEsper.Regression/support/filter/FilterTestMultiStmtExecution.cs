@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -18,12 +18,13 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.runtime.client.scopetest;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.support.filter
 {
     public class FilterTestMultiStmtExecution : RegressionExecution
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         private readonly FilterTestMultiStmtCase _theCase;
         private readonly string _testCaseName;
@@ -36,8 +37,12 @@ namespace com.espertech.esper.regressionlib.support.filter
         {
             _theCase = theCase;
             _testCaseName = originator.Name + " permutation " + theCase.Filters.RenderAny();
-            _stats = withStats ? new String[] { theCase.Stats } : null;
+            _stats = withStats ? new string[] { theCase.Stats } : null;
+        }
 
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.OBSERVEROPS);
         }
 
         public void Run(RegressionEnvironment env)
@@ -51,7 +56,7 @@ namespace com.espertech.esper.regressionlib.support.filter
             for (var i = 0; i < _theCase.Filters.Length; i++) {
                 var filter = _theCase.Filters[i];
                 var stmtName = "s" + i;
-                var epl = "@Name('" + stmtName + "') select * from SupportBean(" + filter + ")";
+                var epl = "@name('" + stmtName + "') select * from SupportBean(" + filter + ")";
                 env.CompileDeploy(epl).AddListener(stmtName);
                 existingStatements[i] = true;
                 startedStatements[i] = true;
@@ -62,8 +67,8 @@ namespace com.espertech.esper.regressionlib.support.filter
                 }
                 catch (AssertionException ex) {
                     var message = "Failed after create stmt " + i + " and before milestone P" + milestone.Get();
-                    log.Error(message, ex);
-                    Assert.Fail(message, ex);
+                    Log.Error(message, ex);
+                    Assert.Fail(message);
                 }
 
                 env.Milestone(milestone.GetAndIncrement());
@@ -72,7 +77,7 @@ namespace com.espertech.esper.regressionlib.support.filter
                     AssertSendEvents(existingStatements, startedStatements, initialListeners, env, _theCase.Items);
                 }
                 catch (AssertionException ex) {
-                    Assert.Fail("Failed after create stmt " + i + " and after milestone P" + milestone.Get(), ex);
+                    Assert.Fail("Failed after create stmt " + i + " and after milestone P" + milestone.Get());
                 }
             }
 
@@ -139,27 +144,27 @@ namespace com.espertech.esper.regressionlib.support.filter
 
                 if (item.ExpectedPerStmt.Length != startedStatements.Length) {
                     Assert.Fail(
-                        "Number of boolean expected-values not matching number of statements for item " + eventNum);
+"Number of boolean expected-values not matching number of statements for Item "+ eventNum);
                 }
 
                 for (var i = 0; i < startedStatements.Length; i++) {
                     var stmtName = "s" + i;
                     if (!existingStatements[i]) {
-                        Assert.IsNull(env.Statement(stmtName), message);
+                        ClassicAssert.IsNull(env.Statement(stmtName), message);
                     }
                     else if (!startedStatements[i]) {
-                        Assert.IsNull(env.Statement(stmtName));
-                        Assert.IsFalse(initialListeners[i].GetAndClearIsInvoked());
+                        ClassicAssert.IsNull(env.Statement(stmtName));
+                        ClassicAssert.IsFalse(initialListeners[i].GetAndClearIsInvoked());
                     }
                     else if (!item.ExpectedPerStmt[i]) {
                         var listener = env.Listener(stmtName);
                         var isInvoked = listener.GetAndClearIsInvoked();
-                        Assert.IsFalse(isInvoked, message);
+                        ClassicAssert.IsFalse(isInvoked, message);
                     }
                     else {
                         var listener = env.Listener(stmtName);
-                        Assert.IsTrue(listener.IsInvoked, message);
-                        Assert.AreSame(item.Bean, listener.AssertOneGetNewAndReset().Underlying, message);
+                        ClassicAssert.IsTrue(listener.IsInvoked, message);
+                        ClassicAssert.AreSame(item.Bean, listener.AssertOneGetNewAndReset().Underlying, message);
                     }
                 }
             }

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -54,7 +54,7 @@ namespace com.espertech.esper.regressionlib.support.expreval
 				throw new ArgumentException("Names length and results length differ");
 			}
 
-			for (int i = 0; i < names.Length; i++) {
+			for (var i = 0; i < names.Length; i++) {
 				Expect(names[i], results[i]);
 			}
 

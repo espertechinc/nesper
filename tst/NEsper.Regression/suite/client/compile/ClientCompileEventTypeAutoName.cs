@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -8,13 +8,8 @@
 
 using System.Collections.Generic;
 
-using com.espertech.esper.common.client;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.autoname.two;
-
-using NUnit.Framework;
-
-using static com.espertech.esper.regressionlib.framework.SupportMessageAssertUtil;
 
 namespace com.espertech.esper.regressionlib.suite.client.compile
 {
@@ -23,8 +18,10 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
+#if REGRESSION_EXECUTIONS
             WithResolve(execs);
-            WithAmbiguous(execs);
+            With(Ambiguous)(execs);
+#endif
             return execs;
         }
 
@@ -46,13 +43,13 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
         {
             public void Run(RegressionEnvironment env)
             {
-                string epl = "create schema MANE as MyAutoNameEvent;\n" +
-                             "@Name('s0') select P0 from MANE;\n";
-                EPCompiled compiled = env.CompileWBusPublicType(epl);
+                var epl = "@public @buseventtype create schema MANE as MyAutoNameEvent;\n" +
+                          "@name('s0') select P0 from MANE;\n";
+                var compiled = env.Compile(epl);
                 env.Deploy(compiled).AddListener("s0");
 
                 env.SendEventBean(new MyAutoNameEvent("test"), "MANE");
-                Assert.AreEqual("test", env.Listener("s0").AssertOneGetNewAndReset().Get("P0"));
+                env.AssertEqualsNew("s0", "P0", "test");
 
                 env.UndeployAll();
             }
@@ -62,8 +59,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
         {
             public void Run(RegressionEnvironment env)
             {
-                TryInvalidCompile(
-                    env,
+                env.TryInvalidCompile(
                     "create schema SupportAmbiguousEventType as SupportAmbiguousEventType",
                     "Failed to resolve name 'SupportAmbiguousEventType', the class was ambiguously found both in namespace 'com.espertech.esper.regressionlib.support.autoname.one' and in namespace 'com.espertech.esper.regressionlib.support.autoname.two'");
             }

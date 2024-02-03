@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -10,8 +10,9 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
-using com.espertech.esper.common.@internal.context.util;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.epl.agg.core;
+using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.output.polled;
 using com.espertech.esper.common.@internal.epl.resultset.core;
 using com.espertech.esper.common.@internal.epl.resultset.grouped;
@@ -103,27 +104,29 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
         ///     NOTE: Code-generation-invoked method, method name and parameter order matters
         /// </summary>
         /// <param name="resultSetProcessorHelperFactory">helper factory</param>
-        /// <param name="agentInstanceContext">context</param>
+        /// <param name="exprEvaluatorContext">context</param>
         /// <param name="groupKeyTypes">types</param>
         /// <param name="groupByRollupDesc">rollup into</param>
         /// <param name="outputConditionPolledFactory">condition factory</param>
         /// <returns>helpers</returns>
         public static ResultSetProcessorGroupedOutputFirstHelper[] InitializeOutputFirstHelpers(
             ResultSetProcessorHelperFactory resultSetProcessorHelperFactory,
-            AgentInstanceContext agentInstanceContext,
+            ExprEvaluatorContext exprEvaluatorContext,
             Type[] groupKeyTypes,
             AggregationGroupByRollupDesc groupByRollupDesc,
-            OutputConditionPolledFactory outputConditionPolledFactory)
+            OutputConditionPolledFactory outputConditionPolledFactory,
+            StateMgmtSetting outputLimitHelperSettings)
         {
             var outputFirstHelpers = new ResultSetProcessorGroupedOutputFirstHelper[groupByRollupDesc.Levels.Length];
             for (var i = 0; i < groupByRollupDesc.Levels.Length; i++) {
                 outputFirstHelpers[i] = resultSetProcessorHelperFactory.MakeRSGroupedOutputFirst(
-                    agentInstanceContext,
+                    exprEvaluatorContext,
                     groupKeyTypes,
                     outputConditionPolledFactory,
                     groupByRollupDesc,
                     i,
-                    null);
+                    null,
+                    outputLimitHelperSettings);
             }
 
             return outputFirstHelpers;

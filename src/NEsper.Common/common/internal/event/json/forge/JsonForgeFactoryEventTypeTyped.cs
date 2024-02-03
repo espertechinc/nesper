@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -23,7 +23,7 @@ namespace com.espertech.esper.common.@internal.@event.json.forge
         {
             JsonDeserializerForge deserializerForge = new JsonDeserializerForgeByClassName(
                 other.Detail.DeserializerClassName);
-            
+
             JsonSerializerForge serializerForge;
             if (other.Detail.OptionalUnderlyingProvided == null) {
                 serializerForge = new JsonSerializerForgeByMethod("WriteNested");
@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.@internal.@event.json.forge
                             refs.Context,
                             refs.Field,
                             NewInstanceInner(other.Detail.SerializerClassName)
-                            ));
+                        ));
                 // NewInstanceInner(other.Detail.DeserializerFactoryClassName)));
             }
 
@@ -59,7 +59,7 @@ namespace com.espertech.esper.common.@internal.@event.json.forge
             //     other.Detail.DeserializerFactoryClassName,
             //     other.UnderlyingType);
             // JsonEndValueForge end = new JsonEndValueForgeCast(TypeHelper.GetArrayType(other.UnderlyingType));
-            
+
             JsonSerializerForge serializerForge;
             if (other.Detail.OptionalUnderlyingProvided == null) {
                 serializerForge = new JsonSerializerForgeByMethod("WriteNestedArray");
@@ -76,7 +76,7 @@ namespace com.espertech.esper.common.@internal.@event.json.forge
                             refs.Context,
                             refs.Field,
                             NewInstanceInner(other.Detail.SerializerClassName)
-                            ));
+                        ));
             }
 
             return new JsonForgeDesc(deserializerForge, serializerForge);

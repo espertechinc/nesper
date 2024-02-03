@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.dataflow.core;
@@ -18,6 +19,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.dataflow;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 {
@@ -25,7 +27,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
     {
         public void Run(RegressionEnvironment env)
         {
-            var epl = "@Name('flow') create dataflow WordCount " +
+            var epl = "@name('flow') create dataflow WordCount " +
                       "MyLineFeedSource -> LineOfTextStream {} " +
                       "MyTokenizerCounter(LineOfTextStream) -> SingleLineCountStream {}" +
                       "MyWordCountAggregator(SingleLineCountStream) -> WordCountStream {}" +
@@ -40,7 +42,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 
             env.Runtime.DataFlowService.Instantiate(env.DeploymentId("flow"), "WordCount", options).Start();
 
-            var received = new object[0];
+            var received = Array.Empty<object>();
             try {
                 received = future.GetValue(3, TimeUnit.SECONDS);
             }
@@ -48,13 +50,18 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 throw new EPException(t);
             }
 
-            Assert.AreEqual(1, received.Length);
-            var stats = (MyWordCountStats) received[0];
-            Assert.AreEqual(2, stats.Lines);
-            Assert.AreEqual(6, stats.Words);
-            Assert.AreEqual(23, stats.Chars);
+            ClassicAssert.AreEqual(1, received.Length);
+            var stats = (MyWordCountStats)received[0];
+            ClassicAssert.AreEqual(2, stats.Lines);
+            ClassicAssert.AreEqual(6, stats.Words);
+            ClassicAssert.AreEqual(23, stats.Chars);
 
             env.UndeployAll();
+        }
+
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.DATAFLOW);
         }
     }
 } // end of namespace

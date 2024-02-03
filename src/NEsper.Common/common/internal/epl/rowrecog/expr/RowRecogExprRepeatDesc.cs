@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -14,7 +14,6 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 
 namespace com.espertech.esper.common.@internal.epl.rowrecog.expr
 {
-    [Serializable]
     public class RowRecogExprRepeatDesc
     {
         public RowRecogExprRepeatDesc(
@@ -52,11 +51,12 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.expr
 
             writer.Write("}");
         }
-        
-        public RowRecogExprRepeatDesc CheckedCopy(ExpressionCopier expressionCopier) {
-            ExprNode lowerCopy = Lower == null ? null : expressionCopier.Copy(Lower);
-            ExprNode upperCopy = Upper == null ? null : expressionCopier.Copy(Upper);
-            ExprNode singleCopy = Single == null ? null : expressionCopier.Copy(Single);
+
+        public RowRecogExprRepeatDesc CheckedCopy(ExpressionCopier expressionCopier)
+        {
+            var lowerCopy = Lower == null ? null : expressionCopier.Copy(Lower);
+            var upperCopy = Upper == null ? null : expressionCopier.Copy(Upper);
+            var singleCopy = Single == null ? null : expressionCopier.Copy(Single);
             return new RowRecogExprRepeatDesc(lowerCopy, upperCopy, singleCopy);
         }
     }

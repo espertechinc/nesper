@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -45,7 +45,9 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
             Type[] keyTypes,
             int[] keyColNums,
             IDictionary<string, TableMetadataColumn> columns,
-            int numMethodAggs)
+            int numMethodAggs,
+            StateMgmtSetting stateMgmtSettingsPrimaryKey,
+            StateMgmtSetting stateMgmtSettingsUnkeyed)
         {
             TableName = tableName;
             TableModuleName = tableModuleName;
@@ -60,9 +62,10 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
             Columns = columns;
             KeyColNums = keyColNums;
             NumMethodAggs = numMethodAggs;
+            StateMgmtSettingsPrimaryKey = stateMgmtSettingsPrimaryKey;
+            StateMgmtSettingsUnkeyed = stateMgmtSettingsUnkeyed;
             Init();
         }
-
 
         private TableMetaData(
             string tableName,
@@ -79,7 +82,9 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
             IDictionary<string, TableMetadataColumn> columns,
             int numMethodAggs,
             IndexMultiKey keyIndexMultiKey,
-            EventTableIndexMetadata indexMetadata)
+            EventTableIndexMetadata indexMetadata,
+            StateMgmtSetting stateMgmtSettingsPrimaryKey,
+            StateMgmtSetting stateMgmtSettingsUnkeyed)
         {
             TableName = tableName;
             TableModuleName = tableModuleName;
@@ -96,6 +101,8 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
             NumMethodAggs = numMethodAggs;
             KeyIndexMultiKey = keyIndexMultiKey;
             IndexMetadata = indexMetadata;
+            StateMgmtSettingsPrimaryKey = stateMgmtSettingsPrimaryKey;
+            StateMgmtSettingsUnkeyed = stateMgmtSettingsUnkeyed;
         }
 
         public EventType InternalEventType { get; set; }
@@ -112,9 +119,21 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
 
         public Type[] KeyTypes { get; set; }
 
-        public int NumMethodAggs { get; set; }
+        public IDictionary<string, TableMetadataColumn> Columns { get; set; }
 
-        public string[] KeyColumns { get; set; }
+        public int NumMethodAggs { set; get; }
+
+        public string[] KeyColumns { set; get; }
+
+        public ISet<string> UniquenessAsSet {
+            get {
+                if (KeyColumns == null || KeyColumns.Length == 0) {
+                    return EmptySet<string>.Instance;
+                }
+
+                return new HashSet<string>(KeyColumns);
+            }
+        }
 
         public EventTableIndexMetadata IndexMetadata { get; set; } = new EventTableIndexMetadata();
 
@@ -128,7 +147,9 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
 
         public NameAccessModifier TableVisibility { get; set; }
 
-        public IDictionary<string, TableMetadataColumn> Columns { get; set; }
+        public StateMgmtSetting StateMgmtSettingsPrimaryKey { get; set; }
+
+        public StateMgmtSetting StateMgmtSettingsUnkeyed { get; set; }
 
         public TableMetaData Copy()
         {
@@ -147,30 +168,28 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
                 Columns,
                 NumMethodAggs,
                 KeyIndexMultiKey,
-                IndexMetadata.Copy());
+                IndexMetadata.Copy(),
+                StateMgmtSettingsPrimaryKey,
+                StateMgmtSettingsUnkeyed);
         }
-        
+
         public void Init()
         {
             // add index multi-key for implicit primary-key index
-            if (KeyColumns == null || KeyColumns.Length == 0)
-            {
+            if (KeyColumns == null || KeyColumns.Length == 0) {
                 return;
             }
 
             var props = new IndexedPropDesc[KeyColumns.Length];
-            for (var i = 0; i < props.Length; i++)
-            {
+            for (var i = 0; i < props.Length; i++) {
                 props[i] = new IndexedPropDesc(KeyColumns[i], KeyTypes[i]);
             }
 
-            KeyIndexMultiKey = new IndexMultiKey(true, props, new IndexedPropDesc[0], null);
-            try
-            {
+            KeyIndexMultiKey = new IndexMultiKey(true, props, Array.Empty<IndexedPropDesc>(), null);
+            try {
                 IndexMetadata.AddIndexExplicit(true, KeyIndexMultiKey, TableName, TableModuleName, null, "");
             }
-            catch (ExprValidationException e)
-            {
+            catch (ExprValidationException e) {
                 throw new EPException("Failed to add primary key index: " + e.Message, e);
             }
         }
@@ -182,7 +201,7 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
         {
             var method = parent.MakeChild(typeof(TableMetaData), GetType(), classScope);
             method.Block
-                .DeclareVar<TableMetaData>("meta", NewInstance(typeof(TableMetaData)))
+                .DeclareVarNewInstance(typeof(TableMetaData), "meta")
                 .SetProperty(Ref("meta"), "TableName", Constant(TableName))
                 .SetProperty(Ref("meta"), "TableModuleName", Constant(TableModuleName))
                 .SetProperty(Ref("meta"), "TableVisibility", Constant(TableVisibility))
@@ -205,6 +224,11 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
                     "Columns",
                     TableMetadataColumn.MakeColumns(Columns, method, symbols, classScope))
                 .SetProperty(Ref("meta"), "NumMethodAggs", Constant(NumMethodAggs))
+                .SetProperty(
+                    Ref("meta"),
+                    "StateMgmtSettingsPrimaryKey",
+                    StateMgmtSettingsPrimaryKey.ToExpression())
+                .SetProperty(Ref("meta"), "StateMgmtSettingsUnkeyed", StateMgmtSettingsUnkeyed.ToExpression())
                 .ExprDotMethod(Ref("meta"), "Init")
                 .MethodReturn(Ref("meta"));
             return LocalMethod(method);
@@ -212,25 +236,14 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
 
         public CodegenExpression Make(CodegenExpressionRef addInitSvc)
         {
-            return NewInstance<TableMetaData>(
+            return NewInstance(
+                typeof(TableMetaData),
                 Constant(TableName),
                 Constant(OptionalContextName),
                 Constant(OptionalContextVisibility),
                 Constant(OptionalContextModule),
                 EventTypeUtility.ResolveTypeCodegen(InternalEventType, addInitSvc),
                 EventTypeUtility.ResolveTypeCodegen(PublicEventType, addInitSvc));
-        }
-
-        public ISet<string> UniquenessAsSet
-        {
-            get {
-                if (KeyColumns == null || KeyColumns.Length == 0)
-                {
-                    return Collections.GetEmptySet<string>();
-                }
-
-                return new HashSet<string>(KeyColumns);
-            }
         }
 
         public void AddIndex(

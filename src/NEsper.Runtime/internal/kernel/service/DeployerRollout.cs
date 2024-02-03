@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -10,7 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using com.espertech.esper.common.client.artifact;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.runtime.client;
 
@@ -46,7 +45,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 			// per-deployment: obtain module providers
 			var moduleProviders = new ModuleProviderCLPair[items.Length];
 			for (var i = 0; i < items.Length; i++) {
-				var classLoader = DeployerHelperResolver.GetClassLoader(i, items[i].Options.DeploymentClassLoaderOption, runtime.ServicesContext);
+				var classLoader = DeployerHelperResolver.GetTypeResolver(i, items[i].Options.DeploymentTypeResolverOption, runtime.ServicesContext);
 				try {
 					moduleProviders[i] = ModuleProviderUtil.Analyze(
 						items[i].Compiled,
@@ -154,7 +153,8 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 						items[i].Compiled,
 						recoveryInformation.StatementUserObjectsRuntime,
 						recoveryInformation.StatementNamesWhenProvidedByAPI,
-						stmtLightweights[i].SubstitutionParameters);
+						stmtLightweights[i].SubstitutionParameters,
+						deployments[i].DeploymentIdDependencies);
 				}
 				catch (Exception t) {
 					RolloutCleanStatements(statements, stmtLightweights, inits, deploymentIds, moduleProviders, runtime.ServicesContext);

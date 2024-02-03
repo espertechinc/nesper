@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -11,7 +11,7 @@ using System;
 namespace com.espertech.esper.compat.concurrency
 {
     /// <summary>
-    /// TBD: Replace with .NET Task Model
+    /// TODO: Replace with .NET Task Model
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public interface IFuture<T>

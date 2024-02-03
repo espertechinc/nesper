@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -35,7 +35,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
             ICollection<object> optionalKeyCollector,
             CompositeIndexQueryResultPostProcessor postProcessor)
         {
-            var index = (IOrderedDictionary<object, CompositeIndexEntry>) parent;
+            var index = (IOrderedDictionary<object, CompositeIndexEntry>)parent;
             var comparable = EvaluateLookup(theEvent, context);
             optionalKeyCollector?.Add(comparable);
 
@@ -61,7 +61,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
             ICollection<object> optionalKeyCollector,
             CompositeIndexQueryResultPostProcessor postProcessor)
         {
-            var index = (IOrderedDictionary<object, CompositeIndexEntry>) parent;
+            var index = (IOrderedDictionary<object, CompositeIndexEntry>)parent;
             var comparable = EvaluatePerStream(eventsPerStream, context);
             optionalKeyCollector?.Add(comparable);
 

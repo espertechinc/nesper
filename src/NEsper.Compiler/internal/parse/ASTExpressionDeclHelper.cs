@@ -1,11 +1,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -61,7 +62,7 @@ namespace com.espertech.esper.compiler.@internal.parse
                 var node = ASTExprHelper.ExprCollectSubNodes(ctx, 0, astExprNodeMap)[0];
                 var alias = ctx.name.Text;
                 var expressionUnmap = StatementSpecMapper.Unmap(node);
-                var decl = new ExpressionDeclItem(alias, new string[0], true);
+                var decl = new ExpressionDeclItem(alias, Array.Empty<string>(), true);
                 decl.OptionalSoda = expressionUnmap;
                 return new MyPair(decl, null);
             }
@@ -70,13 +71,17 @@ namespace com.espertech.esper.compiler.@internal.parse
             {
                 var expressionText = scriptBodies.DeleteAt(0);
                 var parameters = ASTUtil.GetIdentList(ctx.columnList());
-                var optionalReturnType = ctx.classIdentifier() == null ? null : ASTUtil.UnescapeClassIdent(ctx.classIdentifier());
-                var optionalReturnTypeArray = ctx.array != null;
+                var classIdent = ASTClassIdentifierHelper.Walk(ctx.classIdentifierWithDimensions());
+                var classIdentText = classIdent?.ToEPL();
                 var optionalDialect = ctx.expressionDialect() == null ? null : ctx.expressionDialect().d.Text;
                 var optionalEventTypeName = ASTTypeExpressionAnnoHelper.ExpectMayTypeAnno(ctx.typeExpressionAnnotation(), tokenStream);
                 var script = new ExpressionScriptProvided(
-                    name, expressionText, parameters.ToArray(),
-                    optionalReturnType, optionalReturnTypeArray, optionalEventTypeName, optionalDialect);
+                    name,
+                    expressionText,
+                    parameters.ToArray(),
+                    classIdentText,
+                    optionalEventTypeName,
+                    optionalDialect);
                 return new MyPair(null, script);
             }
 

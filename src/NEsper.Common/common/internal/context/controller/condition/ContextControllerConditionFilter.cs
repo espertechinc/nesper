@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -15,6 +15,7 @@ using com.espertech.esper.common.@internal.context.mgr;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.common.@internal.filtersvc;
+using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.context.controller.condition
 {
@@ -54,7 +55,7 @@ namespace com.espertech.esper.common.@internal.context.controller.condition
                 ProcMatchFound = (
                     theEvent,
                     allStmtMatches) => FilterMatchFound(theEvent),
-                ProcIsSubselect = () => false,
+                ProcIsSubselect = () => false
             };
 
             filterHandle = new EPStatementHandleCallbackFilter(
@@ -67,7 +68,8 @@ namespace com.espertech.esper.common.@internal.context.controller.condition
                     filterValueSet,
                     filterHandle);
                 var filtersVersion = agentInstanceContext.FilterService.FiltersVersion;
-                agentInstanceContext.EpStatementAgentInstanceHandle.StatementFilterVersion.StmtFilterVersion = filtersVersion;
+                agentInstanceContext.EpStatementAgentInstanceHandle.StatementFilterVersion.StmtFilterVersion =
+                    filtersVersion;
             }
 
             var match = false;
@@ -90,7 +92,6 @@ namespace com.espertech.esper.common.@internal.context.controller.condition
             var agentInstanceContext = controller.Realization.AgentInstanceContextCreate;
             var filterValueSet = ComputeFilterValues(agentInstanceContext);
             if (filterValueSet != null) {
-
                 agentInstanceContext.FilterService.Remove(
                     filterHandle,
                     filter.FilterSpecActivatable.FilterForEventType,
@@ -116,21 +117,13 @@ namespace com.espertech.esper.common.@internal.context.controller.condition
                 agentInstanceContext.StatementContextFilterEvalEnv);
         }
 
-        public bool IsImmediate {
-            get => false;
-        }
+        public bool IsImmediate => false;
 
-        public bool IsRunning {
-            get => filterHandle != null;
-        }
+        public bool IsRunning => filterHandle != null;
 
-        public ContextConditionDescriptor Descriptor {
-            get => filter;
-        }
+        public ContextConditionDescriptor Descriptor => filter;
 
-        public long? ExpectedEndTime {
-            get => null;
-        }
+        public long? ExpectedEndTime => null;
 
 
         public void Transfer(AgentInstanceTransferServices xfer)
@@ -141,8 +134,14 @@ namespace com.espertech.esper.common.@internal.context.controller.condition
 
             var filterValueSet = ComputeFilterValues(xfer.AgentInstanceContext);
             if (filterValueSet != null) {
-                xfer.AgentInstanceContext.FilterService.Remove(filterHandle, filter.FilterSpecActivatable.FilterForEventType, filterValueSet);
-                xfer.TargetFilterService.Add(filter.FilterSpecActivatable.FilterForEventType, filterValueSet, filterHandle);
+                xfer.AgentInstanceContext.FilterService.Remove(
+                    filterHandle,
+                    filter.FilterSpecActivatable.FilterForEventType,
+                    filterValueSet);
+                xfer.TargetFilterService.Add(
+                    filter.FilterSpecActivatable.FilterForEventType,
+                    filterValueSet,
+                    filterHandle);
             }
         }
 
@@ -157,7 +156,12 @@ namespace com.espertech.esper.common.@internal.context.controller.condition
                 lastEvent = theEvent;
             }
 
-            callback.RangeNotification(conditionPath, this, theEvent, null, null, null);
+            IDictionary<string, object> terminationProperties = null;
+            if (filter.OptionalFilterAsName != null) {
+                terminationProperties = Collections.SingletonDataMap(filter.OptionalFilterAsName, theEvent);
+            }
+
+            callback.RangeNotification(conditionPath, this, theEvent, null, null, null, terminationProperties);
         }
     }
 } // end of namespace

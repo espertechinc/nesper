@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -7,25 +7,21 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Reflection;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.function;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.compiler.client;
 using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.framework
 {
     public class SupportMessageAssertUtil
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-
         public static void TryInvalidFAFCompile(
             RegressionEnvironment env,
             RegressionPath path,
@@ -41,6 +37,7 @@ namespace com.espertech.esper.regressionlib.framework
             }
         }
 
+#if OBSOLETE
         public static void TryInvalidCompile(
             RegressionEnvironment env,
             string epl,
@@ -69,7 +66,8 @@ namespace com.espertech.esper.regressionlib.framework
                 AssertMessage(ex, message);
             }
         }
-
+#endif
+        
         public static void AssertMessageContains(
             Exception ex,
             string message)
@@ -116,13 +114,13 @@ namespace com.espertech.esper.regressionlib.framework
 #if DEPRECATED
             if (message.Length > 10) {
                 if (!ex.Message.StartsWith(message)) {
-                    log.Error("Expected:" + message + "\nReceived:" + ex.Message, ex);
+                    Log.Error("Expected:" + message + "\nReceived:" + ex.Message, ex);
                     Assert.Fail("\nExpected:" + message + "\nReceived:" + ex.Message);
                 }
             }
             else {
                 // Comment-in for logging: log.error("Exception: " + ex.getMessage(), ex);
-                log.Error("No assertion provided, received: " + ex.Message, ex);
+                Log.Error("No assertion provided, received: " + ex.Message, ex);
                 Assert.Fail("No assertion provided, received: " + ex.Message);
             }
 #endif
@@ -209,7 +207,7 @@ namespace com.espertech.esper.regressionlib.framework
         {
             try {
                 @event.Get(propertyName);
-                Assert.Fail();
+                Assert.Fail("Property named '" + propertyName + "' exists, but should be considered invalid");
             }
             catch (PropertyAccessException ex) {
                 // expected

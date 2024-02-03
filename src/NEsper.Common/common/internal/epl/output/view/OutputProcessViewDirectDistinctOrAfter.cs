@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
     /// </summary>
     public class OutputProcessViewDirectDistinctOrAfter : OutputProcessViewBaseWAfter
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(OutputProcessViewDirectDistinctOrAfter));
+        private static readonly ILog Log = LogManager.GetLogger(typeof(OutputProcessViewDirectDistinctOrAfter));
 
         private readonly OutputProcessViewDirectDistinctOrAfterFactory _parent;
 
@@ -77,7 +77,9 @@ namespace com.espertech.esper.common.@internal.epl.output.view
 
             if (_parent.IsDistinct && newOldEvents != null) {
                 newOldEvents.First = EventBeanUtility.GetDistinctByProp(newOldEvents.First, _parent.DistinctKeyGetter);
-                newOldEvents.Second = EventBeanUtility.GetDistinctByProp(newOldEvents.Second, _parent.DistinctKeyGetter);
+                newOldEvents.Second = EventBeanUtility.GetDistinctByProp(
+                    newOldEvents.Second,
+                    _parent.DistinctKeyGetter);
             }
 
             if (!isGenerateSynthetic && !isGenerateNatural) {
@@ -91,7 +93,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
             var forceOutput = false;
             if (newData == null &&
                 oldData == null &&
-                (newOldEvents == null || newOldEvents.First == null && newOldEvents.Second == null)) {
+                (newOldEvents == null || (newOldEvents.First == null && newOldEvents.Second == null))) {
                 forceOutput = true;
             }
 
@@ -112,13 +114,13 @@ namespace com.espertech.esper.common.@internal.epl.output.view
             ISet<MultiKeyArrayOfKeys<EventBean>> oldEvents,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            if (ExecutionPathDebugLog.IsDebugEnabled && log.IsDebugEnabled) {
-                log.Debug(
+            if (ExecutionPathDebugLog.IsDebugEnabled && Log.IsDebugEnabled) {
+                Log.Debug(
                     ".process Received update, " +
                     "  newData.length==" +
-                    (newEvents == null ? 0 : newEvents.Count) +
+                    (newEvents?.Count ?? 0) +
                     "  oldData.length==" +
-                    (oldEvents == null ? 0 : oldEvents.Count));
+                    (oldEvents?.Count ?? 0));
             }
 
             var statementResultService = _agentInstanceContext.StatementResultService;
@@ -133,7 +135,9 @@ namespace com.espertech.esper.common.@internal.epl.output.view
 
             if (_parent.IsDistinct && newOldEvents != null) {
                 newOldEvents.First = EventBeanUtility.GetDistinctByProp(newOldEvents.First, _parent.DistinctKeyGetter);
-                newOldEvents.Second = EventBeanUtility.GetDistinctByProp(newOldEvents.Second, _parent.DistinctKeyGetter);
+                newOldEvents.Second = EventBeanUtility.GetDistinctByProp(
+                    newOldEvents.Second,
+                    _parent.DistinctKeyGetter);
             }
 
             if (!isGenerateSynthetic && !isGenerateNatural) {

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -27,23 +27,23 @@ namespace com.espertech.esper.common.client.util
 
         public void Add(CountMinSketchAgentContextAdd ctx)
         {
-            string text = (string) ctx.Value;
+            var text = (string)ctx.Value;
             if (text == null) {
                 return;
             }
 
-            byte[] bytes = ToBytesUTF16(text);
+            var bytes = ToBytesUTF16(text);
             ctx.State.Add(bytes, 1);
         }
 
         public long? Estimate(CountMinSketchAgentContextEstimate ctx)
         {
-            string text = (string) ctx.Value;
+            var text = (string)ctx.Value;
             if (text == null) {
                 return null;
             }
 
-            byte[] bytes = ToBytesUTF16(text);
+            var bytes = ToBytesUTF16(text);
             return ctx.State.Frequency(bytes);
         }
 

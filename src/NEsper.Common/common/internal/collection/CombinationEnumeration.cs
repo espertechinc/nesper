@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -74,9 +74,9 @@ namespace com.espertech.esper.common.@internal.collection
         public static IEnumerable<object[]> FromZeroBasedRanges(int[] zeroBasedRanges)
         {
             var combinations = new object[zeroBasedRanges.Length][];
-            for (int i = 0; i < zeroBasedRanges.Length; i++) {
+            for (var i = 0; i < zeroBasedRanges.Length; i++) {
                 combinations[i] = new object[zeroBasedRanges[i]];
-                for (int j = 0; j < zeroBasedRanges[i]; j++) {
+                for (var j = 0; j < zeroBasedRanges[i]; j++) {
                     combinations[i][j] = j;
                 }
             }
@@ -108,7 +108,7 @@ namespace com.espertech.esper.common.@internal.collection
             object[] prototype,
             int[] current)
         {
-            for (int i = 0; i < prototype.Length; i++) {
+            for (var i = 0; i < prototype.Length; i++) {
                 prototype[i] = combinations[i][current[i]];
             }
         }
@@ -118,8 +118,8 @@ namespace com.espertech.esper.common.@internal.collection
             object[] prototype,
             int[] current)
         {
-            for (int i = combinations.Length - 1; i >= 0; i--) {
-                int max = combinations[i].Length;
+            for (var i = combinations.Length - 1; i >= 0; i--) {
+                var max = combinations[i].Length;
                 if (current[i] < max - 1) {
                     current[i]++;
                     return true;

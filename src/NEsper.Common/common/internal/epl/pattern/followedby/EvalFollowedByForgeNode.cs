@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -10,8 +10,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
+using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.compile.stage2;
+using com.espertech.esper.common.@internal.compile.util;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.pattern.core;
@@ -27,15 +29,18 @@ namespace com.espertech.esper.common.@internal.epl.pattern.followedby
     /// </summary>
     public class EvalFollowedByForgeNode : EvalForgeNodeBase
     {
-        public EvalFollowedByForgeNode(bool attachPatternText, IList<ExprNode> optionalMaxExpressions)
-            : base(attachPatternText)
+        public EvalFollowedByForgeNode(
+            bool attachPatternText,
+            IList<ExprNode> optionalMaxExpressions) : base(attachPatternText)
         {
             OptionalMaxExpressions = optionalMaxExpressions;
         }
 
-        public IList<ExprNode> OptionalMaxExpressions { get; set; }
+        public IList<ExprNode> OptionalMaxExpressions { set; get; }
 
-        public override PatternExpressionPrecedenceEnum Precedence => PatternExpressionPrecedenceEnum.FOLLOWEDBY;
+        protected override Type TypeOfFactory => typeof(EvalFollowedByFactoryNode);
+
+        protected override string NameOfFactory => "Followedby";
 
         public override string ToString()
         {
@@ -69,15 +74,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.followedby
             }
         }
 
-        protected override Type TypeOfFactory()
-        {
-            return typeof(EvalFollowedByFactoryNode);
-        }
-
-        protected override string NameOfFactory()
-        {
-            return "Followedby";
-        }
+        public override PatternExpressionPrecedenceEnum Precedence => PatternExpressionPrecedenceEnum.FOLLOWEDBY;
 
         protected override void InlineCodegen(
             CodegenMethod method,
@@ -128,9 +125,15 @@ namespace com.espertech.esper.common.@internal.epl.pattern.followedby
         }
 
         public override void CollectSelfFilterAndSchedule(
-            IList<FilterSpecCompiled> filters,
-            IList<ScheduleHandleCallbackProvider> schedules)
+            Func<short, CallbackAttribution> callbackAttribution,
+            IList<FilterSpecTracked> filters,
+            IList<ScheduleHandleTracked> schedules)
         {
+        }
+
+        public override AppliesTo AppliesTo()
+        {
+            return client.annotation.AppliesTo.PATTERN_FOLLOWEDBY;
         }
     }
 } // end of namespace

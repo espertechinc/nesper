@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -7,32 +7,40 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.client;
 using com.espertech.esper.runtime.client.scopetest;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.multithread
 {
     public class MultithreadContextInitiatedTerminatedWithNowParallel : RegressionExecution
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
+        }
 
         public void Run(RegressionEnvironment env)
         {
             env.AdvanceTime(0);
             var path = new RegressionPath();
-            env.CompileDeploy("create context MyCtx start @now end after 1 second", path);
+            env.CompileDeploy("@public create context MyCtx start @now end after 1 second", path);
             env.CompileDeploy(
-                "@Name('s0') context MyCtx select count(*) as cnt from SupportBean output last when terminated",
+                "@name('s0') context MyCtx select count(*) as cnt from SupportBean output last when terminated",
                 path);
             var listener = new SupportUpdateListener();
             env.Statement("s0").AddListener(listener);
@@ -66,7 +74,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                 total += count;
             }
 
-            Assert.AreEqual(numEvents, total);
+            ClassicAssert.AreEqual(numEvents, total);
 
             env.UndeployAll();
         }
@@ -99,11 +107,11 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                         env.AdvanceTime(time);
                         numAdvances++;
                         time += 1000;
-                        SupportCompileDeployUtil.ThreadSleep((int) threadSleepTime);
+                        SupportCompileDeployUtil.ThreadSleep((int)threadSleepTime);
                     }
                 }
                 catch (Exception ex) {
-                    log.Error("Error while processing", ex);
+                    Log.Error("Error while processing", ex);
                 }
             }
         }

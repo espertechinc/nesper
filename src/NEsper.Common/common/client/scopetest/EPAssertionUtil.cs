@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -199,12 +199,12 @@ namespace com.espertech.esper.common.client.scopetest
                 return;
             }
 
-            if ((expected == null) && (actual == null)) {
+            if (expected == null && actual == null) {
                 return;
             }
 
             if (expected == null) {
-                expected = new object[0];
+                expected = Array.Empty<object>();
             }
 
             for (var i = 0; i < expected.Count; i++) {
@@ -238,7 +238,7 @@ namespace com.espertech.esper.common.client.scopetest
                 return;
             }
 
-            if ((expected == null) && (actual == null)) {
+            if (expected == null && actual == null) {
                 return;
             }
 
@@ -266,7 +266,7 @@ namespace com.espertech.esper.common.client.scopetest
                 return;
             }
 
-            if ((expected == null) && (actual == null)) {
+            if (expected == null && actual == null) {
                 return;
             }
 
@@ -374,9 +374,9 @@ namespace com.espertech.esper.common.client.scopetest
             T valueA,
             T valueB)
         {
-            if ((valueA is ICollection) && (valueB is ICollection)) {
-                var collectionA = ((ICollection) valueA).Cast<object>().ToList();
-                var collectionB = ((ICollection) valueB).Cast<object>().ToList();
+            if (valueA is ICollection collection && valueB is ICollection iCollection) {
+                var collectionA = collection.Cast<object>().ToList();
+                var collectionB = iCollection.Cast<object>().ToList();
                 return CompatExtensions.DeepEquals(collectionA, collectionB);
                 //return Collections.AreEqual(collectionA, collectionB);
             }
@@ -998,7 +998,7 @@ namespace com.espertech.esper.common.client.scopetest
 
             return events.OrderBy(comparer).ToArray();
         }
-        
+
         /// <summary>Convert an enumerator of event beans to an array of underlying objects. </summary>
         /// <param name="enumerator">to convert</param>
         /// <returns>array of event underlying objects</returns>
@@ -1037,7 +1037,7 @@ namespace com.espertech.esper.common.client.scopetest
             EventBean[] received,
             IList<IDictionary<string, object>> expected)
         {
-            if ((expected == null) && (received == null)) {
+            if (expected == null && received == null) {
                 return;
             }
 
@@ -1161,8 +1161,8 @@ namespace com.espertech.esper.common.client.scopetest
                 (
                     o1,
                     o2) => {
-                    var val1 = (IComparable) o1.Get(property);
-                    var val2 = (IComparable) o2.Get(property);
+                    var val1 = (IComparable)o1.Get(property);
+                    var val2 = (IComparable)o2.Get(property);
                     return val1.CompareTo(val2);
                 });
 
@@ -1316,7 +1316,7 @@ namespace com.espertech.esper.common.client.scopetest
             EventBean[] actual,
             EventBean[] expected)
         {
-            if ((expected == null) && (actual == null)) {
+            if (expected == null && actual == null) {
                 return true;
             }
 
@@ -1329,7 +1329,7 @@ namespace com.espertech.esper.common.client.scopetest
             }
 
             for (var i = 0; i < expected.Length; i++) {
-                if ((actual[i] == null) && (expected[i] == null)) {
+                if (actual[i] == null && expected[i] == null) {
                     continue;
                 }
 
@@ -1349,7 +1349,7 @@ namespace com.espertech.esper.common.client.scopetest
             IList<object> actual,
             IList<object> expected)
         {
-            if ((expected == null) && (actual == null)) {
+            if (expected == null && actual == null) {
                 return true;
             }
 
@@ -1467,7 +1467,7 @@ namespace com.espertech.esper.common.client.scopetest
             object expected,
             object actual)
         {
-            if ((expected != null) && (expected.GetType().IsArray) && (actual != null) && (actual.GetType().IsArray)) {
+            if (expected != null && expected.GetType().IsArray && actual != null && actual.GetType().IsArray) {
                 var valueArray = ToObjectArray(expected);
                 var eventPropArray = ToObjectArray(actual);
                 AssertEqualsExactOrder(valueArray, eventPropArray);
@@ -1524,15 +1524,15 @@ namespace com.espertech.esper.common.client.scopetest
             ICollection<T1> expected,
             ICollection<T2> actual)
         {
-            if ((expected == null) && (actual == null)) {
+            if (expected == null && actual == null) {
                 return false;
             }
 
-            if ((expected == null)) {
+            if (expected == null) {
                 ScopeTestHelper.AssertNull("Expected is null but actual is not null", actual);
             }
 
-            if ((actual == null)) {
+            if (actual == null) {
                 ScopeTestHelper.AssertNull("Actual is null but expected is not null", expected);
             }
 
@@ -1545,7 +1545,7 @@ namespace com.espertech.esper.common.client.scopetest
 
             return false;
         }
-        
+
         private static bool CompareArraySize(
             object expected,
             object actual)
@@ -1553,7 +1553,7 @@ namespace com.espertech.esper.common.client.scopetest
             var actualArray = actual as Array;
             var expectedArray = expected as Array;
 
-            if ((expectedArray == null) && (actualArray == null || actualArray.Length == 0)) {
+            if (expectedArray == null && (actualArray == null || actualArray.Length == 0)) {
                 return true;
             }
 
@@ -1611,7 +1611,7 @@ namespace com.espertech.esper.common.client.scopetest
             ScopeTestHelper.AssertEquals(map.Count, keys.Length);
 
             for (var i = 0; i < keys.Length; i++) {
-                var value = (ICollection) map.Get(keys[i]);
+                var value = (ICollection)map.Get(keys[i]);
                 var itemsExpected = expectedList[i].SplitCsv();
                 ScopeTestHelper.AssertEquals(itemsExpected.Length, value.Count);
 
@@ -1653,7 +1653,7 @@ namespace com.espertech.esper.common.client.scopetest
 
                 var newEvent = lastData[0];
                 for (var i = 0; i < namesAndValues.Length; i++) {
-                    var name = (string) namesAndValues[i][0];
+                    var name = (string)namesAndValues[i][0];
                     var value = namesAndValues[i][1];
                     ScopeTestHelper.AssertEquals("newEvent property named " + name, value, newEvent.Get(name));
                 }

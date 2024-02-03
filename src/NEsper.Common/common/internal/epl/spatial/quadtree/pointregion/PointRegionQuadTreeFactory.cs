@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -25,7 +25,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.pointregion
             int maxTreeHeight)
         {
             var bb = new BoundingBox(x, y, x + width, y + height);
-            var leaf = new PointRegionQuadTreeNodeLeaf<TL>(bb, 1, default(TL), 0);
+            var leaf = new PointRegionQuadTreeNodeLeaf<TL>(bb, 1, default, 0);
             return new PointRegionQuadTree<TL>(leafCapacity, maxTreeHeight, leaf);
         }
 

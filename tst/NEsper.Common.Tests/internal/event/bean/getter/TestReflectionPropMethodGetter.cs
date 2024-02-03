@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -15,6 +15,7 @@ using com.espertech.esper.compat;
 using com.espertech.esper.compat.logging;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.@event.bean.getter
 {
@@ -38,13 +39,13 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
         public void TestGetter()
         {
             ReflectionPropMethodGetter getter = MakeGetter(typeof(SupportBean), "GetIntPrimitive");
-            Assert.AreEqual(10, getter.Get(unitTestBean));
+            ClassicAssert.AreEqual(10, getter.Get(unitTestBean));
 
             getter = MakeGetter(typeof(SupportBean), "GetTheString");
-            Assert.AreEqual("a", getter.Get(unitTestBean));
+            ClassicAssert.AreEqual("a", getter.Get(unitTestBean));
 
             getter = MakeGetter(typeof(SupportBean), "GetDoubleBoxed");
-            Assert.AreEqual(null, getter.Get(unitTestBean));
+            ClassicAssert.AreEqual(null, getter.Get(unitTestBean));
         }
 
         [Test]
@@ -52,15 +53,15 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
         {
             ReflectionPropMethodGetter getter = MakeGetter(typeof(SupportBean), "GetIntPrimitive");
 
-            log.Info(".testPerformance Starting test");
+            Log.Info(".testPerformance Starting test");
 
             for (int i = 0; i < 10; i++)   // Change to 1E8 for performance testing
             {
                 int value = getter.Get(unitTestBean).AsInt32();
-                Assert.AreEqual(10, value);
+                ClassicAssert.AreEqual(10, value);
             }
 
-            log.Info(".testPerformance Done test");
+            Log.Info(".testPerformance Done test");
         }
 
         private ReflectionPropMethodGetter MakeGetter(Type clazz, string methodName)
@@ -72,6 +73,6 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             return getter;
         }
 
-        private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 } // end of namespace

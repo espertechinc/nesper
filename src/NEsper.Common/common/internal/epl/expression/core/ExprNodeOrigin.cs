@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -59,7 +59,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         MERGEMATCHCOND,
         MERGEMATCHWHERE,
         HINT,
-        API
+        API,
+        EVENTPRECEDENCE
     }
 
     public static class ExprNodeOriginExtensions
@@ -68,148 +69,151 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         {
             switch (enumValue) {
                 case ExprNodeOrigin.SELECT:
-                    return ("select-clause");
+                    return "select-clause";
 
                 case ExprNodeOrigin.WHERE:
-                    return ("where-clause");
+                    return "where-clause";
 
                 case ExprNodeOrigin.GROUPBY:
-                    return ("group-by-clause");
+                    return "group-by-clause";
 
                 case ExprNodeOrigin.HAVING:
-                    return ("having-clause");
+                    return "having-clause";
 
                 case ExprNodeOrigin.METHODINVJOIN:
-                    return ("from-clause method-invocation");
+                    return "from-clause method-invocation";
 
                 case ExprNodeOrigin.DATABASEPOLL:
-                    return ("from-clause database-access parameter");
+                    return "from-clause database-access parameter";
 
                 case ExprNodeOrigin.CONTEXT:
-                    return ("context declaration");
+                    return "context declaration";
 
                 case ExprNodeOrigin.CONTEXTDISTINCT:
-                    return ("context distinct-clause");
+                    return "context distinct-clause";
 
                 case ExprNodeOrigin.CONTEXTCONDITION:
-                    return ("context condition");
+                    return "context condition";
 
                 case ExprNodeOrigin.VARIABLEASSIGN:
-                    return ("variable-assignment");
+                    return "variable-assignment";
 
                 case ExprNodeOrigin.DATAFLOW:
-                    return ("dataflow operator");
+                    return "dataflow operator";
 
                 case ExprNodeOrigin.DATAFLOWBEACON:
-                    return ("beacon dataflow operator");
+                    return "beacon dataflow operator";
 
                 case ExprNodeOrigin.DATAFLOWFILTER:
-                    return ("filter dataflow operator");
+                    return "filter dataflow operator";
 
                 case ExprNodeOrigin.UPDATEASSIGN:
-                    return ("update assignment");
+                    return "update assignment";
 
                 case ExprNodeOrigin.PLUGINSINGLEROWPARAM:
-                    return ("single-row function parameter");
+                    return "single-row function parameter";
 
                 case ExprNodeOrigin.AGGPARAM:
-                    return ("aggregation function parameter");
+                    return "aggregation function parameter";
 
                 case ExprNodeOrigin.OUTPUTLIMIT:
-                    return ("output limit");
+                    return "output limit";
 
                 case ExprNodeOrigin.DECLAREDEXPRPARAM:
-                    return ("declared expression parameter");
+                    return "declared expression parameter";
 
                 case ExprNodeOrigin.DECLAREDEXPRBODY:
-                    return ("declared expression body");
+                    return "declared expression body";
 
                 case ExprNodeOrigin.ALIASEXPRBODY:
-                    return ("alias expression body");
+                    return "alias expression body";
 
                 case ExprNodeOrigin.ORDERBY:
-                    return ("order-by-clause");
+                    return "order-by-clause";
 
                 case ExprNodeOrigin.SCRIPTPARAMS:
-                    return ("script parameter");
+                    return "script parameter";
 
                 case ExprNodeOrigin.FOLLOWEDBYMAX:
-                    return ("pattern followed-by max");
+                    return "pattern followed-by max";
 
                 case ExprNodeOrigin.PATTERNMATCHUNTILBOUNDS:
-                    return ("pattern match-until bounds");
+                    return "pattern match-until bounds";
 
                 case ExprNodeOrigin.PATTERNGUARD:
-                    return ("pattern guard");
+                    return "pattern guard";
 
                 case ExprNodeOrigin.PATTERNEVERYDISTINCT:
-                    return ("pattern every-distinct");
+                    return "pattern every-distinct";
 
                 case ExprNodeOrigin.PATTERNOBSERVER:
-                    return ("pattern observer");
+                    return "pattern observer";
 
                 case ExprNodeOrigin.DOTNODEPARAMETER:
-                    return ("method-chain parameter");
+                    return "method-chain parameter";
 
                 case ExprNodeOrigin.DOTNODE:
-                    return ("method-chain");
+                    return "method-chain";
 
                 case ExprNodeOrigin.CONTAINEDEVENT:
-                    return ("Contained-event");
+                    return "contained-event";
 
                 case ExprNodeOrigin.CREATEWINDOWFILTER:
-                    return ("create-window filter");
+                    return "create-window filter";
 
                 case ExprNodeOrigin.CREATETABLECOLUMN:
-                    return ("table-column");
+                    return "table-column";
 
                 case ExprNodeOrigin.CREATEINDEXCOLUMN:
-                    return ("create-index index-column");
+                    return "create-index index-column";
 
                 case ExprNodeOrigin.CREATEINDEXPARAMETER:
-                    return ("create-index index-parameter");
+                    return "create-index index-parameter";
 
                 case ExprNodeOrigin.SUBQUERYSELECT:
-                    return ("subquery select-clause");
+                    return "subquery select-clause";
 
                 case ExprNodeOrigin.FILTER:
-                    return ("filter");
+                    return "filter";
 
                 case ExprNodeOrigin.FORCLAUSE:
-                    return ("for-clause");
+                    return "for-clause";
 
                 case ExprNodeOrigin.VIEWPARAMETER:
-                    return ("view parameter");
+                    return "view parameter";
 
                 case ExprNodeOrigin.MATCHRECOGDEFINE:
-                    return ("match-recognize define");
+                    return "match-recognize define";
 
                 case ExprNodeOrigin.MATCHRECOGMEASURE:
-                    return ("match-recognize measure");
+                    return "match-recognize measure";
 
                 case ExprNodeOrigin.MATCHRECOGPARTITION:
-                    return ("match-recognize partition");
+                    return "match-recognize partition";
 
                 case ExprNodeOrigin.MATCHRECOGINTERVAL:
-                    return ("match-recognize interval");
+                    return "match-recognize interval";
 
                 case ExprNodeOrigin.MATCHRECOGPATTERN:
-                    return ("match-recognize pattern");
+                    return "match-recognize pattern";
 
                 case ExprNodeOrigin.JOINON:
-                    return ("on-clause join");
+                    return "on-clause join";
 
                 case ExprNodeOrigin.MERGEMATCHCOND:
-                    return ("match condition");
+                    return "match condition";
 
                 case ExprNodeOrigin.MERGEMATCHWHERE:
-                    return ("match where-clause");
+                    return "match where-clause";
 
                 case ExprNodeOrigin.HINT:
-                    return ("hint");
+                    return "hint";
 
                 case ExprNodeOrigin.API:
-                    return ("api");
+                    return "api";
+
+                case ExprNodeOrigin.EVENTPRECEDENCE:
+                    return "event-precedence clause";
             }
 
             throw new ArgumentException("invalid value for EnumValue", nameof(enumValue));

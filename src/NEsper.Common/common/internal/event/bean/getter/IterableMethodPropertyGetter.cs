@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -41,8 +41,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             : base(
                 eventBeanTypedEventFactory,
                 beanEventTypeFactory,
-                TypeHelper.GetGenericReturnType(method, false),
-                null)
+                TypeHelper.GetGenericReturnType(method, false))
         {
             _index = index;
             _method = method;
@@ -73,7 +72,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             return true; // Property exists as the property is not dynamic (unchecked)
         }
 
-        public override Type BeanPropType => TypeHelper.GetGenericReturnType(_method, false);
+        //public override Type BeanPropType => TypeHelper.GetGenericReturnType(_method, false);
 
         public override Type TargetType => _method.DeclaringType;
 
@@ -133,11 +132,11 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             object value,
             int index)
         {
-            if (!(value is IEnumerable)) {
+            if (!(value is IEnumerable enumerable)) {
                 return null;
             }
 
-            var @enum = ((IEnumerable) value).GetEnumerator();
+            var @enum = enumerable.GetEnumerator();
 
             if (index == 0) {
                 if (@enum.MoveNext()) {
@@ -183,7 +182,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
         {
             return codegenMethodScope.MakeChild(beanPropType, typeof(IterableMethodPropertyGetter), codegenClassScope)
                 .AddParam(targetType, "@object")
-                .AddParam(typeof(int), "index")
+                .AddParam<int>("index")
                 .Block
                 .DeclareVar<object>("value", ExprDotMethod(Ref("@object"), method.Name))
                 .MethodReturn(

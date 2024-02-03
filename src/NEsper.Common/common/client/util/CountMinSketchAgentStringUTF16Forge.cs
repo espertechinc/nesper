@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -22,7 +22,7 @@ namespace com.espertech.esper.common.client.util
     public class CountMinSketchAgentStringUTF16Forge : CountMinSketchAgentForge
     {
         public Type[] AcceptableValueTypes {
-            get { return new Type[] {typeof(string)}; }
+            get { return new Type[] { typeof(string) }; }
         }
 
         public CodegenExpression CodegenMake(

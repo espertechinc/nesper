@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -41,15 +41,15 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             Type clazz,
             MemberInfo writerMember)
         {
-            this._clazz = clazz;
-            this._writerMember = writerMember;
+            _clazz = clazz;
+            _writerMember = writerMember;
         }
 
         public virtual void Write(
             object value,
             EventBean target)
         {
-            Invoke(new[] {value}, target.Underlying);
+            Invoke(new[] { value }, target.Underlying);
         }
 
         public CodegenExpression WriteCodegen(
@@ -75,7 +75,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             object value,
             object target)
         {
-            Invoke(new[] {value}, target);
+            Invoke(new[] { value }, target);
         }
 
         protected void Invoke(

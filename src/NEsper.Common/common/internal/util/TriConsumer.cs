@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -43,7 +43,7 @@ namespace com.espertech.esper.common.@internal.util
 #if MIXING_DEFAULT
     public default TriConsumer<T, U, V> andThen(TriConsumer<? super T, ? super U, ? super V> after) {
             Objects.requireNonNull(after);
-            return (a, b, c)-> {
+            return (a, b, c)=> {
                 accept(a, b, c);
                 after.accept(a, b, c);
             }

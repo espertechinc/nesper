@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -21,12 +21,12 @@ namespace com.espertech.esper.runtime.@internal.kernel.thread
 	/// </summary>
 	public class InboundUnitSendEvent : InboundUnitRunnable
 	{
-		private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-		private readonly object theEvent;
-		private readonly string eventTypeName;
-		private readonly EPRuntimeEventProcessWrapped runtime;
-		private readonly EPServicesEvaluation services;
+		private readonly object _theEvent;
+		private readonly string _eventTypeName;
+		private readonly EPRuntimeEventProcessWrapped _runtime;
+		private readonly EPServicesEvaluation _services;
 
 		public InboundUnitSendEvent(
 			object theEvent,
@@ -34,21 +34,21 @@ namespace com.espertech.esper.runtime.@internal.kernel.thread
 			EPRuntimeEventProcessWrapped runtime,
 			EPServicesEvaluation services)
 		{
-			this.theEvent = theEvent;
-			this.eventTypeName = eventTypeName;
-			this.runtime = runtime;
-			this.services = services;
+			this._theEvent = theEvent;
+			this._eventTypeName = eventTypeName;
+			this._runtime = runtime;
+			this._services = services;
 		}
 
 		public void Run()
 		{
 			try {
-				EventBean eventBean = services.EventTypeResolvingBeanFactory.AdapterForBean(theEvent, eventTypeName);
-				runtime.ProcessWrappedEvent(eventBean);
+				EventBean eventBean = _services.EventTypeResolvingBeanFactory.AdapterForBean(_theEvent, _eventTypeName);
+				_runtime.ProcessWrappedEvent(eventBean);
 			}
 			catch (Exception ex) {
-				services.ExceptionHandlingService.HandleInboundPoolException(runtime.URI, ex, theEvent);
-				log.Error("Unexpected error processing unwrapped event: " + ex.Message, ex);
+				_services.ExceptionHandlingService.HandleInboundPoolException(_runtime.URI, ex, _theEvent);
+				Log.Error("Unexpected error processing unwrapped event: " + ex.Message, ex);
 			}
 		}
 	}

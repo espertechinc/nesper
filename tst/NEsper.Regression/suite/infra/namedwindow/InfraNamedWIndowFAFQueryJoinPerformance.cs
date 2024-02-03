@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -7,12 +7,15 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 {
@@ -21,13 +24,21 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
     /// </summary>
     public class InfraNamedWIndowFAFQueryJoinPerformance : RegressionExecution
     {
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(
+                RegressionFlag.EXCLUDEWHENINSTRUMENTED,
+                RegressionFlag.PERFORMANCE,
+                RegressionFlag.FIREANDFORGET);
+        }
+
         public void Run(RegressionEnvironment env)
         {
             var path = new RegressionPath();
-            env.CompileDeploy("create window W1#unique(S1) as SupportSimpleBeanOne", path);
+            env.CompileDeploy("@public create window W1#unique(S1) as SupportSimpleBeanOne", path);
             env.CompileDeploy("insert into W1 select * from SupportSimpleBeanOne", path);
 
-            env.CompileDeploy("create window W2#unique(S2) as SupportSimpleBeanTwo", path);
+            env.CompileDeploy("@public create window W2#unique(S2) as SupportSimpleBeanTwo", path);
             env.CompileDeploy("insert into W2 select * from SupportSimpleBeanTwo", path);
 
             for (var i = 0; i < 1000; i++) {
@@ -40,7 +51,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             var prepared = env.Runtime.FireAndForgetService.PrepareQuery(compiled);
             for (var i = 0; i < 100; i++) {
                 var result = prepared.Execute();
-                Assert.AreEqual(1000, result.Array.Length);
+                ClassicAssert.AreEqual(1000, result.Array.Length);
             }
 
             var end = PerformanceObserver.MilliTime;

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -15,26 +15,23 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
 namespace com.espertech.esper.common.@internal.serde.compiletime.resolve
 {
-	public class DataInputOutputSerdeForgeSingleton : DataInputOutputSerdeForge
-	{
-		private readonly Type serdeClass;
+    public class DataInputOutputSerdeForgeSingleton : DataInputOutputSerdeForge
+    {
+        private readonly Type serdeClass;
 
-		public DataInputOutputSerdeForgeSingleton(Type serdeClass)
-		{
-			this.serdeClass = serdeClass;
-		}
+        public DataInputOutputSerdeForgeSingleton(Type serdeClass)
+        {
+            this.serdeClass = serdeClass;
+        }
 
-		public CodegenExpression Codegen(
-			CodegenMethod method,
-			CodegenClassScope classScope,
-			CodegenExpression optionalEventTypeResolver)
-		{
-			return PublicConstValue(serdeClass, "INSTANCE");
-		}
+        public CodegenExpression Codegen(
+            CodegenMethod method,
+            CodegenClassScope classScope,
+            CodegenExpression optionalEventTypeResolver)
+        {
+            return PublicConstValue(serdeClass, "INSTANCE");
+        }
 
-		public string ForgeClassName()
-		{
-			return serdeClass.Name;
-		}
-	}
+        public string ForgeClassName => serdeClass.Name;
+    }
 } // end of namespace

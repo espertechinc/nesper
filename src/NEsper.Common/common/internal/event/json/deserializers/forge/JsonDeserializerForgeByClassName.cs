@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -13,24 +13,24 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
 namespace com.espertech.esper.common.@internal.@event.json.deserializers.forge
 {
-	public class JsonDeserializerForgeByClassName : JsonDeserializerForge
-	{
-		private readonly string _clazzName;
+    public class JsonDeserializerForgeByClassName : JsonDeserializerForge
+    {
+        private readonly string _clazzName;
 
-		public JsonDeserializerForgeByClassName(string clazzName)
-		{
-			_clazzName = clazzName;
-		}
+        public JsonDeserializerForgeByClassName(string clazzName)
+        {
+            _clazzName = clazzName;
+        }
 
-		public CodegenExpression CodegenDeserialize(
-			CodegenMethod method,
-			CodegenClassScope classScope,
-			CodegenExpression elementExpr)
-		{
-			return ExprDotMethod(
-				NewInstanceInner(_clazzName),
-				"Deserialize",
-				elementExpr);
-		}
-	}
+        public CodegenExpression CodegenDeserialize(
+            CodegenMethod method,
+            CodegenClassScope classScope,
+            CodegenExpression elementExpr)
+        {
+            return ExprDotMethod(
+                NewInstanceInner(_clazzName),
+                "Deserialize",
+                elementExpr);
+        }
+    }
 } // end of namespace

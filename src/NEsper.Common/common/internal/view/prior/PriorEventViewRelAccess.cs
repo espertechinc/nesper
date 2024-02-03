@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -44,16 +44,10 @@ namespace com.espertech.esper.common.@internal.view.prior
             return null;
         }
 
-        public IEnumerator<EventBean> WindowToEvent {
-            get => null;
-        }
+        public IEnumerator<EventBean> WindowToEvent => null;
 
-        public ICollection<EventBean> WindowToEventCollReadOnly {
-            get => null;
-        }
+        public ICollection<EventBean> WindowToEventCollReadOnly => null;
 
-        public int WindowToEventCount {
-            get => 0;
-        }
+        public int WindowToEventCount => 0;
     }
 } // end of namespace

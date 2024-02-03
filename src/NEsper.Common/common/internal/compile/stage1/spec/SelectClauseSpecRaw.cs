@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
     /// <summary>
     /// Encapsulates the parsed select expressions in a select-clause in an EPL statement.
     /// </summary>
-    [Serializable]
     public class SelectClauseSpecRaw
     {
         private readonly List<SelectClauseElementRaw> _selectClauseElements;
@@ -53,8 +52,8 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         /// 	<c>true</c> if this instance is only wildcard; otherwise, <c>false</c>.
         /// </value>
         public bool IsOnlyWildcard =>
-            (_selectClauseElements.Count == 1) &&
-            (_selectClauseElements[0] is SelectClauseElementWildcard);
+            _selectClauseElements.Count == 1 &&
+            _selectClauseElements[0] is SelectClauseElementWildcard;
 
         /// <summary>
         /// Gets or sets a value indicating whether this instance is distinct.
@@ -72,7 +71,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         /// <returns>true if clause contains wildcard, false if not</returns>
         public bool IsUsingWildcard {
             get {
-                foreach (SelectClauseElementRaw element in _selectClauseElements) {
+                foreach (var element in _selectClauseElements) {
                     if (element is SelectClauseElementWildcard) {
                         return true;
                     }

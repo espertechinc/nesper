@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
         public object GetObjectArray(object[] oa)
         {
             var inner = oa[propertyIndex];
-            return BaseNestableEventUtil.GetArrayPropertyAsUnderlyingsArray(underlyingType, (EventBean[]) inner);
+            return BaseNestableEventUtil.GetArrayPropertyAsUnderlyingsArray(underlyingType, (EventBean[])inner);
         }
 
         public bool IsObjectArrayExistsProperty(object[] array)
@@ -125,7 +125,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
             CodegenClassScope codegenClassScope)
         {
             return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
-                .AddParam(typeof(object[]), "oa")
+                .AddParam<object[]>("oa")
                 .Block
                 .DeclareVar<object>("inner", ArrayAtIndex(Ref("oa"), Constant(propertyIndex)))
                 .MethodReturn(

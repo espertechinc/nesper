@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -22,9 +22,7 @@ namespace com.espertech.esper.common.@internal.collection
         /// Gets the thread queue.
         /// </summary>
         /// <value>The thread queue.</value>
-        public DualWorkQueue<object> ThreadQueue {
-            get { return _threadQueue.GetOrCreate(); }
-        }
+        public DualWorkQueue<object> ThreadQueue => _threadQueue.GetOrCreate();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ThreadWorkQueue"/> class.
@@ -39,7 +37,7 @@ namespace com.espertech.esper.common.@internal.collection
         /// <param name="ev">event to add</param>
         public void AddBack(object ev)
         {
-            DualWorkQueue<object> queue = ThreadQueue;
+            var queue = ThreadQueue;
             queue.BackQueue.AddLast(ev);
         }
 
@@ -47,7 +45,7 @@ namespace com.espertech.esper.common.@internal.collection
         /// <param name="ev">event to add</param>
         public void AddFront(object ev)
         {
-            DualWorkQueue<object> queue = ThreadQueue;
+            var queue = ThreadQueue;
             queue.FrontQueue.AddLast(ev);
         }
     }

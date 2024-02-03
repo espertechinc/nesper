@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using com.espertech.esper.compat.collections;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.util
 {
@@ -25,14 +26,14 @@ namespace com.espertech.esper.common.@internal.util
             string[] expected)
         {
             // assert
-            Assert.AreEqual(expected.Length, result.Count, "found: " + result + " for URI " + uriTested);
+            ClassicAssert.AreEqual(expected.Length, result.Count, "found: " + result + " for URI " + uriTested);
             var index = 0;
             foreach (var entry in result)
             {
                 var expectedUri = new Uri(expected[index], UriKind.RelativeOrAbsolute);
                 var message = "mismatch for line " + index;
-                Assert.AreEqual(expectedUri, entry.Key, message);
-                Assert.AreEqual(input.Get(expectedUri), entry.Value, message);
+                ClassicAssert.AreEqual(expectedUri, entry.Key, message);
+                ClassicAssert.AreEqual(input.Get(expectedUri), entry.Value, message);
                 index++;
             }
         }

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -29,9 +29,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
     {
         public ExprDotForgeUnpackCollEventBean(EventType type)
         {
-            TypeInfo = EPTypeHelper.CollectionOfSingleValue(
-                type.UnderlyingType,
-                typeof(EventBean));
+            TypeInfo = EPChainableTypeHelper.CollectionOfSingleValue(
+                type.UnderlyingType);
         }
 
         public object Evaluate(
@@ -42,11 +41,12 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
         {
             if (target == null) {
                 return null;
-            } else if (target is FlexCollection flexCollection) {
-                return new EventUnderlyingCollection(flexCollection);
+            }
+            else if (target is FlexCollection flexCollection) {
+                return new EventUnderlyingCollection<object>(flexCollection.EventBeanCollection);
             }
 
-            return new EventUnderlyingCollection(target.Unwrap<EventBean>());
+            return new EventUnderlyingCollection<object>(target.Unwrap<EventBean>());
         }
 
         public CodegenExpression Codegen(
@@ -54,32 +54,31 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             Type innerType,
             CodegenMethodScope parent,
             ExprForgeCodegenSymbol symbols,
-            CodegenClassScope classScope) 
+            CodegenClassScope classScope)
         {
-            var returnType = typeof(ICollection<EventBean>);
-            CodegenMethod methodNode = parent
+            var returnType = TypeInfo.GetCodegenReturnType();
+            var methodNode = parent
                 .MakeChild(returnType, typeof(ExprDotForgeUnpackCollEventBean), classScope)
-                .AddParam(typeof(FlexCollection), "target");
+                .AddParam(innerType, "target");
 
+            var collectionType = typeof(EventUnderlyingCollection<>).MakeGenericType(returnType.GetComponentType());
+            
             methodNode.Block
                 .IfRefNullReturnNull("target")
-                .MethodReturn(NewInstance<EventUnderlyingCollection>(Ref("target")));
+                .MethodReturn(NewInstance(collectionType, Ref("target")));
+            
             return LocalMethod(methodNode, inner);
         }
 
-        public EPType TypeInfo { get; }
+        public EPChainableType TypeInfo { get; }
 
         public void Visit(ExprDotEvalVisitor visitor)
         {
             visitor.VisitUnderlyingEventColl();
         }
 
-        public ExprDotEval DotEvaluator {
-            get => this;
-        }
+        public ExprDotEval DotEvaluator => this;
 
-        public ExprDotForge DotForge {
-            get => this;
-        }
+        public ExprDotForge DotForge => this;
     }
 } // end of namespace

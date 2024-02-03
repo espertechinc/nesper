@@ -1,17 +1,22 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.hook.expr;
 using com.espertech.esper.common.@internal.epl.enummethod.cache;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.epl.expression.time.abacus;
 using com.espertech.esper.common.@internal.epl.script.core;
 using com.espertech.esper.common.@internal.epl.table.core;
+using com.espertech.esper.common.@internal.epl.variable.core;
+using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.metrics.audit;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
 using com.espertech.esper.common.@internal.schedule;
@@ -33,9 +38,8 @@ namespace com.espertech.esper.common.@internal.context.util
             this.context = context;
             this.tableExprEvaluatorContext = tableExprEvaluatorContext;
         }
-        
-        public virtual object FilterReboolConstant
-        {
+
+        public virtual object FilterReboolConstant {
             get => null;
             set { }
         }
@@ -56,7 +60,8 @@ namespace com.espertech.esper.common.@internal.context.util
 
         public EventBean ContextProperties => context.ContextProperties;
 
-        public AgentInstanceScriptContext AllocateAgentInstanceScriptContext => context.AllocateAgentInstanceScriptContext;
+        public AgentInstanceScriptContext AllocateAgentInstanceScriptContext =>
+            context.AllocateAgentInstanceScriptContext;
 
         public IReaderWriterLock AgentInstanceLock => context.AgentInstanceLock;
 
@@ -73,5 +78,23 @@ namespace com.espertech.esper.common.@internal.context.util
         public ExceptionHandlingService ExceptionHandlingService => context.ExceptionHandlingService;
 
         public TypeResolver TypeResolver => context.TypeResolver;
+
+        public string ContextName => context.ContextName;
+
+        public string EPLWhenAvailable => context.EPLWhenAvailable;
+
+        public TimeZoneInfo TimeZone => context.TimeZone;
+
+        public TimeAbacus TimeAbacus => context.TimeAbacus;
+
+        public VariableManagementService VariableManagementService => context.VariableManagementService;
+
+        public EventBeanTypedEventFactory EventBeanTypedEventFactory => context.EventBeanTypedEventFactory;
+
+        public string ModuleName => context.ModuleName;
+
+        public bool IsWritesToTables => context.IsWritesToTables;
+
+        public Attribute[] Annotations => context.Annotations;
     }
 } // end of namespace

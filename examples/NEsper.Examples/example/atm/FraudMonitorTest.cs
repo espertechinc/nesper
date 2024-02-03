@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -15,7 +15,7 @@ using com.espertech.esper.runtime.client;
 using com.espertech.esper.runtime.client.scopetest;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using Configuration = com.espertech.esper.common.client.configuration.Configuration;
 
 namespace NEsper.Examples.ATM
@@ -61,18 +61,18 @@ namespace NEsper.Examples.ATM
 	        SendWithdrawal(1002, 400);
 	        SendWithdrawal(1001, 300);
 	
-	        Assert.IsFalse(_listener.GetAndClearIsInvoked());
+	        ClassicAssert.IsFalse(_listener.GetAndClearIsInvoked());
 	
 	        SendWithdrawal(1004, 100);
-	        Assert.IsTrue(_listener.GetAndClearIsInvoked());
+	        ClassicAssert.IsTrue(_listener.GetAndClearIsInvoked());
 	
-	        Assert.AreEqual(1, _listener.LastNewData.Length);
+	        ClassicAssert.AreEqual(1, _listener.LastNewData.Length);
 	        EventBean _event = _listener.LastNewData[0];
-	        Assert.AreEqual(1004L, _event["accountNumber"]);
-	        Assert.AreEqual(FraudText, _event["warning"]);
-	        Assert.AreEqual(100, _event["amount"]);
-	        Assert.IsTrue( ((long) _event["timestamp"]) > (DateTimeHelper.CurrentTimeMillis - 100));
-	        Assert.AreEqual("withdrawlFraudWarn", _event["descr"]);
+	        ClassicAssert.AreEqual(1004L, _event["accountNumber"]);
+	        ClassicAssert.AreEqual(FraudText, _event["warning"]);
+	        ClassicAssert.AreEqual(100, _event["amount"]);
+	        ClassicAssert.IsTrue( ((long) _event["timestamp"]) > (DateTimeHelper.CurrentTimeMillis - 100));
+	        ClassicAssert.AreEqual("withdrawlFraudWarn", _event["descr"]);
 	    }
 	
 	    private void SendWithdrawal(long acctNum, int amount)

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -18,20 +18,25 @@ namespace com.espertech.esper.common.@internal.util
     /// </summary>
     public class TypeWidenerBoxedNumeric : TypeWidenerSPI
     {
+        private readonly Type _fromType;
         private readonly Coercer _coercer;
 
         /// <summary>
         /// Ctor.
         /// </summary>
+        /// <param name="fromType"></param>
         /// <param name="coercer">the coercer</param>
-        public TypeWidenerBoxedNumeric(Coercer coercer)
+        public TypeWidenerBoxedNumeric(
+            Type fromType,
+            Coercer coercer)
         {
+            _fromType = fromType;
             _coercer = coercer;
         }
 
-        public Type WidenResultType {
-            get => _coercer.ReturnType;
-        }
+        public Type WidenInputType => _fromType;
+
+        public Type WidenResultType => _coercer.GetReturnType(_fromType);
 
         public object Widen(object input)
         {
@@ -43,7 +48,7 @@ namespace com.espertech.esper.common.@internal.util
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return _coercer.CoerceCodegen(expression, typeof(object));
+            return _coercer.CoerceCodegen(expression, _fromType, codegenMethodScope, codegenClassScope);
         }
     }
 } // end of namespace

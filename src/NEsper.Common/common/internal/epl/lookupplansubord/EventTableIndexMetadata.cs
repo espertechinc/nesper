@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -19,8 +19,6 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
 {
     public class EventTableIndexMetadata
     {
-        private static int _gid = 0;
-        private int _id = _gid++;
         public IDictionary<IndexMultiKey, EventTableIndexMetadataEntry> Indexes { get; }
 
         public EventTableIndexMetadata()
@@ -32,7 +30,7 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
         {
             Indexes = indexes;
         }
-        
+
         public void AddIndexExplicit(
             bool isPrimary,
             IndexMultiKey indexMultiKey,
@@ -131,12 +129,13 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
             entry?.AddReferringDeployment(deploymentId);
         }
 
-        public EventTableIndexMetadataEntry GetIndexEntryByName(string indexName) {
+        public EventTableIndexMetadataEntry GetIndexEntryByName(string indexName)
+        {
             var entry = FindIndex(indexName);
             return entry?.Value;
         }
 
-        
+
         public IndexMultiKey GetIndexByName(string indexName)
         {
             var entry = FindIndex(indexName);
@@ -153,7 +152,7 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
         {
             ICollection<string> indexNamesDerrefd = null;
             foreach (var entry in Indexes) {
-                bool last = entry.Value.RemoveReferringStatement(deploymentId);
+                var last = entry.Value.RemoveReferringStatement(deploymentId);
                 if (last) {
                     if (indexNamesDerrefd == null) {
                         indexNamesDerrefd = new ArrayDeque<string>(2);
@@ -177,7 +176,7 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
         private KeyValuePair<IndexMultiKey, EventTableIndexMetadataEntry>? FindIndex(string indexName)
         {
             foreach (var entry in Indexes) {
-                if ((entry.Value.OptionalIndexName != null) && (entry.Value.OptionalIndexName == indexName)) {
+                if (entry.Value.OptionalIndexName != null && entry.Value.OptionalIndexName == indexName) {
                     return entry;
                 }
             }
@@ -202,7 +201,7 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
                 return uniques.ToArray();
             }
         }
-        
+
         public EventTableIndexMetadata Copy()
         {
             return new EventTableIndexMetadata(

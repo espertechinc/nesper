@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -43,16 +43,14 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
 
         public ExprNode ExprEnd { get; }
 
-        public override ExprNode[] Expressions => new[] {ExprStart, ExprEnd};
+        public override ExprNode[] Expressions => new[] { ExprStart, ExprEnd };
 
         public override string ToQueryPlan()
         {
             return GetType().Name;
         }
 
-        protected override Type ResultType {
-            get { return ExprStart.Forge.EvaluationType; }
-        }
+        protected override Type ResultType => ExprStart.Forge.EvaluationType;
 
         public override CodegenExpression Make(
             Type optCoercionType,

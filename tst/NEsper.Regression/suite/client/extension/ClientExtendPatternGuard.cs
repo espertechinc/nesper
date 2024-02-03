@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -8,11 +8,8 @@
 
 using com.espertech.esper.common.@internal.epl.pattern.guard;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
-
-using NUnit.Framework;
-
-using static com.espertech.esper.regressionlib.framework.SupportMessageAssertUtil;
 
 namespace com.espertech.esper.regressionlib.suite.client.extension
 {
@@ -31,16 +28,16 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
                 return;
             }
 
-            var stmtText = "@Name('s0') select * from pattern [(every SupportBean) where myplugin:count_to(10)]";
+            var stmtText = "@name('s0') select * from pattern [(every SupportBean) where myplugin:count_to(10)]";
             env.CompileDeploy(stmtText).AddListener("s0");
 
             for (var i = 0; i < 10; i++) {
                 env.SendEventBean(new SupportBean());
-                Assert.IsTrue(env.Listener("s0").GetAndClearIsInvoked());
+                env.AssertListenerInvoked("s0");
             }
 
             env.SendEventBean(new SupportBean());
-            Assert.IsFalse(env.Listener("s0").IsInvoked);
+            env.AssertListenerNotInvoked("s0");
 
             env.UndeployAll();
         }
@@ -52,28 +49,27 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             }
 
             var path = new RegressionPath();
-            env.CompileDeploy("create variable int COUNT_TO = 3", path);
-            var stmtText = "@Name('s0') select * from pattern [(every SupportBean) where myplugin:count_to(COUNT_TO)]";
+            env.CompileDeploy("@public create variable int COUNT_TO = 3", path);
+            var stmtText = "@name('s0') select * from pattern [(every SupportBean) where myplugin:count_to(COUNT_TO)]";
             env.CompileDeploy(stmtText, path).AddListener("s0");
 
             for (var i = 0; i < 3; i++) {
                 env.SendEventBean(new SupportBean());
-                Assert.IsTrue(env.Listener("s0").GetAndClearIsInvoked());
+                env.AssertListenerInvoked("s0");
             }
 
             env.SendEventBean(new SupportBean());
-            Assert.IsFalse(env.Listener("s0").IsInvoked);
+            env.AssertListenerNotInvoked("s0");
 
             env.UndeployAll();
         }
 
         private void RunAssertionInvalid(RegressionEnvironment env)
         {
-            TryInvalidCompile(
-                env,
+            env.TryInvalidCompile(
                 "select * from pattern [every SupportBean where namespace:name(10)]",
                 "Failed to resolve pattern guard 'SupportBean where namespace:name(10)': Error casting guard forge instance to " +
-                nameof(GuardForge) +
+                typeof(GuardForge).CleanName() +
                 " interface for guard 'name'");
         }
     }

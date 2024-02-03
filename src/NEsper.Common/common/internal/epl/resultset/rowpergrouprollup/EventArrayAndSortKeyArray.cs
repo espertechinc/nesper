@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -25,22 +25,18 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
             this.sortKeyPerLevel = sortKeyPerLevel;
         }
 
-        public IList<EventBean>[] EventsPerLevel {
-            get { return eventsPerLevel; }
-        }
+        public IList<EventBean>[] EventsPerLevel => eventsPerLevel;
 
-        public IList<object>[] SortKeyPerLevel {
-            get { return sortKeyPerLevel; }
-        }
+        public IList<object>[] SortKeyPerLevel => sortKeyPerLevel;
 
         public void Reset()
         {
-            foreach (IList<EventBean> anEventsPerLevel in eventsPerLevel) {
+            foreach (var anEventsPerLevel in eventsPerLevel) {
                 anEventsPerLevel.Clear();
             }
 
             if (sortKeyPerLevel != null) {
-                foreach (IList<object> anSortKeyPerLevel in sortKeyPerLevel) {
+                foreach (var anSortKeyPerLevel in sortKeyPerLevel) {
                     anSortKeyPerLevel.Clear();
                 }
             }

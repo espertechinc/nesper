@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -32,13 +32,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             ExprForge selectEval,
             bool resultWhenNoMatchingEvents,
             RelationalOpEnumComputer computer,
-            ExprForge havingEval)
-            : base(
-                subselect,
-                valueEval,
-                selectEval,
-                resultWhenNoMatchingEvents,
-                computer)
+            ExprForge havingEval) : base(subselect, valueEval, selectEval, resultWhenNoMatchingEvents, computer)
         {
             this.havingEval = havingEval;
         }
@@ -48,7 +42,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             SubselectForgeNRSymbol symbols,
             CodegenClassScope classScope)
         {
-            var aggService = classScope.NamespaceScope.AddOrGetDefaultFieldWellKnown(
+            if (subselect.EvaluationType == null) {
+                return ConstantNull();
+            }
+
+            CodegenExpression aggService = classScope.NamespaceScope.AddOrGetDefaultFieldWellKnown(
                 new CodegenFieldNameSubqueryAgg(subselect.SubselectNumber),
                 typeof(AggregationResultFuture));
 
@@ -58,16 +56,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
 
             method.Block
                 .DeclareVar<int>("cpid", ExprDotName(evalCtx, "AgentInstanceId"))
-                .DeclareVar<AggregationService>(
-                    "aggregationService",
-                    ExprDotMethod(aggService, "GetContextPartitionAggregationService", Ref("cpid")))
-                .DeclareVar<ICollection<object>>(
-                    "groupKeys",
-                    ExprDotMethod(Ref("aggregationService"), "GetGroupKeys", evalCtx))
+                .DeclareVar<AggregationService>("aggregationService", ExprDotMethod(aggService, "GetContextPartitionAggregationService", Ref("cpid")))
+                .DeclareVar<ICollection<object>>("groupKeys", ExprDotMethod(Ref("aggregationService"), "GetGroupKeys", evalCtx))
                 .DeclareVar<bool>("hasRows", ConstantFalse())
                 .DeclareVar<bool>("hasNonNullRow", ConstantFalse());
 
-            var forEach = method.Block.ForEach(typeof(object), "groupKey", Ref("groupKeys"));
+            var forEach = method.Block.ForEach<object>("groupKey", Ref("groupKeys"));
             {
                 forEach.ExprDotMethod(
                     Ref("aggregationService"),
@@ -98,14 +92,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                     forEach.DeclareVar(
                         valueRightType,
                         "valueRight",
-                        ExprDotUnderlying(ArrayAtIndex(symbols.GetAddEPS(method), Constant(0))));
+                        ExprDotUnderlying(ArrayAtIndex(symbols.GetAddEps(method), Constant(0))));
                 }
 
                 forEach.IfCondition(NotEqualsNull(Ref("valueRight")))
                     .AssignRef("hasNonNullRow", ConstantTrue())
                     .BlockEnd()
                     .IfCondition(And(NotEqualsNull(left), NotEqualsNull(Ref("valueRight"))))
-                    .IfCondition(computer.Codegen(left, symbols.LeftResultType, Ref("valueRight"), valueRightType))
+                    .IfCondition(computer.Codegen(left, symbols.LeftResultType, Ref("valueRight"), valueRightType, parent, classScope))
                     .BlockReturn(ConstantTrue());
             }
 

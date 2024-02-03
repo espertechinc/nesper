@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -12,7 +12,7 @@ using System.Collections.Generic;
 using com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcif;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcif.SupportMXCIFQuadTreeUtil;
 using static com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilterindex.SupportMXCIFQuadTreeFilterIndexUtil;
 
@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
             }
             catch (Exception ex)
             {
-                Assert.AreEqual(ex.Message, "Rectangle (10.0d,90.0d,1.0d,1.0d) not in {MinX=1000.0d, MinY=100000.0d, MaxX=10000.0d, MaxY=1000000.0d}");
+                ClassicAssert.AreEqual(ex.Message, "Rectangle (10.0d,90.0d,1.0d,1.0d) not in {MinX=1000.0d, MinY=100000.0d, MaxX=10000.0d, MaxY=1000000.0d}");
             }
 
             try
@@ -66,27 +66,27 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
             Set(10, 80, 1, 1, "R4", tree);
             AssertCollectAll(tree, "R1,R3,R4");
 
-            Assert.AreEqual(3, NavigateLeaf(tree, "").Count);
-            Assert.AreEqual(3, NavigateLeaf(tree, "").Count);
+            ClassicAssert.AreEqual(3, NavigateLeaf(tree, "").Count);
+            ClassicAssert.AreEqual(3, NavigateLeaf(tree, "").Count);
             AssertCollectAll(tree, "R1,R3,R4");
 
             Delete(10, 61, 1, 1, tree);
-            Assert.AreEqual(3, NavigateLeaf(tree, "").Count);
+            ClassicAssert.AreEqual(3, NavigateLeaf(tree, "").Count);
             AssertCollectAll(tree, "R1,R3,R4");
 
             Delete(9, 60, 1, 1, tree);
             Delete(10, 80, 1, 1, tree);
-            Assert.AreEqual(2, NavigateLeaf(tree, "").Count);
+            ClassicAssert.AreEqual(2, NavigateLeaf(tree, "").Count);
             AssertCollectAll(tree, "R1,R3");
 
             Delete(9, 60, 1, 1, tree);
             Delete(10, 80, 1, 1, tree);
             Delete(10, 60, 1, 1, tree);
-            Assert.AreEqual(1, NavigateLeaf(tree, "").Count);
+            ClassicAssert.AreEqual(1, NavigateLeaf(tree, "").Count);
             AssertCollectAll(tree, "R3");
 
             Delete(20, 70, 1, 1, tree);
-            Assert.AreEqual(0, NavigateLeaf(tree, "").Count);
+            ClassicAssert.AreEqual(0, NavigateLeaf(tree, "").Count);
             AssertCollectAll(tree, "");
         }
 
@@ -97,7 +97,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
             Set(0, 0, 1, 1, "R1", tree);
             Set(1, 2, 1, 1, "R2", tree);
             Set(3, 2, 1, 1, "R3", tree);
-            Assert.AreEqual(3, NavigateLeaf(tree, "nw,nw").Count);
+            ClassicAssert.AreEqual(3, NavigateLeaf(tree, "nw,nw").Count);
 
             Delete(1, 2, 1, 1, tree);
             Delete(0, 0, 1, 1, tree);
@@ -109,14 +109,14 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
         public void TestSubdivideMerge()
         {
             var tree = MXCIFQuadTreeFactory.Make(0, 0, 100, 100, 3, 2);
-            Assert.AreEqual(1, tree.Root.Level);
+            ClassicAssert.AreEqual(1, tree.Root.Level);
             Set(10, 10, 0.01, 0.01, "R1", tree);
             Set(9.9, 10, 0.01, 0.01, "R2", tree);
             Set(10, 9.9, 0.01, 0.01, "R3", tree);
             Set(10, 10, 0.01, 0.01, "R4", tree);
             Set(10, 9.9, 0.01, 0.01, "R5", tree);
             Set(9.9, 10, 0.01, 0.01, "R6", tree);
-            Assert.IsInstanceOf<MXCIFQuadTreeNodeLeaf>(tree.Root);
+            ClassicAssert.IsInstanceOf<MXCIFQuadTreeNodeLeaf>(tree.Root);
             AssertCollect(tree, 9, 10, 1, 1, "R4,R6");
             AssertCollect(tree, 10, 9, 1, 1, "R4,R5");
             AssertCollect(tree, 10, 10, 1, 1, "R4");
@@ -124,15 +124,15 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
             AssertCollectAll(tree, "R4,R5,R6");
 
             Set(10, 10, 0.01, 0.01, "R7", tree);
-            Assert.IsInstanceOf<MXCIFQuadTreeNodeLeaf>(tree.Root);
+            ClassicAssert.IsInstanceOf<MXCIFQuadTreeNodeLeaf>(tree.Root);
 
             Set(9.9, 9.9, 0.01, 0.01, "R8", tree);
 
-            Assert.IsFalse(tree.Root is MXCIFQuadTreeNodeLeaf);
-            Assert.AreEqual(1, tree.Root.Level);
-            Assert.AreEqual(4, NavigateLeaf(tree, "nw").Count);
+            ClassicAssert.IsFalse(tree.Root is MXCIFQuadTreeNodeLeaf);
+            ClassicAssert.AreEqual(1, tree.Root.Level);
+            ClassicAssert.AreEqual(4, NavigateLeaf(tree, "nw").Count);
             var collection = (IList<XYWHRectangleWValue>) NavigateLeaf(tree, "nw").Data;
-            Assert.AreEqual(4, collection.Count);
+            ClassicAssert.AreEqual(4, collection.Count);
             Compare(10, 10, 0.01, 0.01, "R7", collection[0]);
             Compare(9.9, 10, 0.01, 0.01, "R6", collection[1]);
             Compare(10, 9.9, 0.01, 0.01, "R5", collection[2]);
@@ -149,9 +149,9 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
             Set(10, 10, 0.01, 0.01, "R12", tree);
             Set(10, 10, 0.01, 0.01, "R13", tree);
 
-            Assert.AreEqual(4, NavigateLeaf(tree, "nw").Count);
-            Assert.AreEqual(2, NavigateLeaf(tree, "nw").Level);
-            Assert.AreEqual(4, collection.Count);
+            ClassicAssert.AreEqual(4, NavigateLeaf(tree, "nw").Count);
+            ClassicAssert.AreEqual(2, NavigateLeaf(tree, "nw").Level);
+            ClassicAssert.AreEqual(4, collection.Count);
             Compare(10, 10, 0.01, 0.01, "R13", collection[0]);
             Compare(9.9, 10, 0.01, 0.01, "R9", collection[1]);
             Compare(10, 9.9, 0.01, 0.01, "R10", collection[2]);
@@ -171,16 +171,16 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
             AssertCollect(tree, 9, 9, 2, 2, "R8,R13");
             AssertCollectAll(tree, "R8,R13");
 
-            Assert.AreEqual(2, NavigateLeaf(tree, "").Count);
+            ClassicAssert.AreEqual(2, NavigateLeaf(tree, "").Count);
             collection = (IList<XYWHRectangleWValue>) NavigateLeaf(tree, "").Data;
-            Assert.AreEqual(2, collection.Count);
+            ClassicAssert.AreEqual(2, collection.Count);
             Compare(10, 10, 0.01, 0.01, "R13", collection[0]);
             Compare(9.9, 9.9, 0.01, 0.01, "R8", collection[1]);
 
             Delete(9.9, 9.9, 0.01, 0.01, tree);
             Delete(10, 10, 0.01, 0.01, tree);
-            Assert.IsInstanceOf<MXCIFQuadTreeNodeLeaf>(tree.Root);
-            Assert.AreEqual(0, NavigateLeaf(tree, "").Count);
+            ClassicAssert.IsInstanceOf<MXCIFQuadTreeNodeLeaf>(tree.Root);
+            ClassicAssert.AreEqual(0, NavigateLeaf(tree, "").Count);
             AssertCollectAll(tree, "");
         }
 
@@ -198,31 +198,31 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
             NavigateLeaf(tree, "se");
             NavigateLeaf(tree, "sw");
             var ne = NavigateBranch(tree, "ne");
-            Assert.AreEqual(2, ne.Level);
+            ClassicAssert.AreEqual(2, ne.Level);
 
             var nw = NavigateLeaf(ne, "nw");
             var collection = (IList<XYWHRectangleWValue>) nw.Data;
             Compare(60, 11, 1, 1, "R1", collection[0]);
             Compare(60, 10, 1, 1, "R4", collection[1]);
-            Assert.AreEqual(2, nw.Count);
+            ClassicAssert.AreEqual(2, nw.Count);
 
             var se = NavigateLeaf(ne, "se");
             Compare(90, 45, 1, 1, "R5", (XYWHRectangleWValue) se.Data);
-            Assert.AreEqual(1, se.Count);
+            ClassicAssert.AreEqual(1, se.Count);
 
             var sw = NavigateLeaf(ne, "sw");
             collection = (IList<XYWHRectangleWValue>) sw.Data;
             Compare(60, 40, 1, 1, "R2", collection[0]);
             Compare(70, 30, 1, 1, "R3", collection[1]);
-            Assert.AreEqual(2, sw.Count);
+            ClassicAssert.AreEqual(2, sw.Count);
 
             Delete(60, 11, 1, 1, tree);
             Delete(60, 40, 1, 1, tree);
 
             var root = NavigateLeaf(tree, "");
             collection = (IList<XYWHRectangleWValue>) root.Data;
-            Assert.AreEqual(3, root.Count);
-            Assert.AreEqual(3, collection.Count);
+            ClassicAssert.AreEqual(3, root.Count);
+            ClassicAssert.AreEqual(3, collection.Count);
             Compare(60, 10, 1, 1, "R4", collection[0]);
             Compare(70, 30, 1, 1, "R3", collection[1]);
             Compare(90, 45, 1, 1, "R5", collection[2]);
@@ -239,10 +239,10 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
             AssertCollect(tree, 60, 60, 20.5, 20.5, "R1,R3,R4");
             AssertCollectAll(tree, "R1,R2,R3,R4");
 
-            Assert.IsFalse(tree.Root is MXCIFQuadTreeNodeLeaf);
-            Assert.AreEqual(4, NavigateLeaf(tree, "se").Count);
+            ClassicAssert.IsFalse(tree.Root is MXCIFQuadTreeNodeLeaf);
+            ClassicAssert.AreEqual(4, NavigateLeaf(tree, "se").Count);
             var collection = (IList<XYWHRectangleWValue>) NavigateLeaf(tree, "se").Data;
-            Assert.AreEqual(4, collection.Count);
+            ClassicAssert.AreEqual(4, collection.Count);
             Compare(65, 75, 1, 1, "R1", collection[0]);
             Compare(81, 60, 1, 1, "R2", collection[1]);
             Compare(80, 60, 1, 1, "R3", collection[2]);
@@ -252,9 +252,9 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
             Delete(65, 75, 1, 1, tree);
             Delete(80, 60, 1, 1, tree);
 
-            Assert.AreEqual(3, NavigateLeaf(tree, "se").Count);
+            ClassicAssert.AreEqual(3, NavigateLeaf(tree, "se").Count);
             AssertCollectAll(tree, "R2,R4,R5");
-            Assert.AreEqual(3, collection.Count);
+            ClassicAssert.AreEqual(3, collection.Count);
             Compare(81, 60, 1, 1, "R2", collection[0]);
             Compare(80, 61, 1, 1, "R4", collection[1]);
             Compare(66, 78, 1, 1, "R5", collection[2]);
@@ -262,9 +262,9 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
             Delete(66, 78, 1, 1, tree);
 
             AssertCollectAll(tree, "R2,R4");
-            Assert.AreEqual(2, NavigateLeaf(tree, "").Count);
+            ClassicAssert.AreEqual(2, NavigateLeaf(tree, "").Count);
             collection = (IList<XYWHRectangleWValue>) NavigateLeaf(tree, "").Data;
-            Assert.AreEqual(2, collection.Count);
+            ClassicAssert.AreEqual(2, collection.Count);
             Compare(81, 60, 1, 1, "R2", collection[0]);
             Compare(80, 61, 1, 1, "R4", collection[1]);
         }

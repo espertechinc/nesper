@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -242,7 +242,7 @@ namespace com.espertech.esper.common.@internal.@event.render
                 }
 
                 if (!nestedProp.IsArray) {
-                    if (!(value is EventBean)) {
+                    if (!(value is EventBean nestedEventBean)) {
                         Log.Warn(
                             "Property '" +
                             nestedProp.Name +
@@ -253,11 +253,10 @@ namespace com.espertech.esper.common.@internal.@event.render
                         continue;
                     }
 
-                    var nestedEventBean = (EventBean) value;
                     RenderAttInner(buf, level, nestedEventBean, nestedProp);
                 }
                 else {
-                    if (!(value is EventBean[])) {
+                    if (!(value is EventBean[] nestedEventArray)) {
                         Log.Warn(
                             "Property '" +
                             nestedProp.Name +
@@ -268,7 +267,6 @@ namespace com.espertech.esper.common.@internal.@event.render
                         continue;
                     }
 
-                    var nestedEventArray = (EventBean[]) value;
                     for (var i = 0; i < nestedEventArray.Length; i++) {
                         var arrayItem = nestedEventArray[i];
                         RenderAttInner(buf, level, arrayItem, nestedProp);
@@ -428,19 +426,17 @@ namespace com.espertech.esper.common.@internal.@event.render
                 // Lists
                 else if (value.GetType().IsGenericList()) {
                     // All lists are generically enumerable
-                    int listItemIndex = 0;
+                    var listItemIndex = 0;
                     foreach (var listItem in value.UnwrapEnumerable<object>()) {
                         if (listItem != null) {
                             Ident(buf, level);
                             buf.Append('<');
                             buf.Append(indexProp.Name);
                             buf.Append('>');
-                            if (rendererMetaOptions.Renderer == null)
-                            {
+                            if (rendererMetaOptions.Renderer == null) {
                                 indexProp.Output.Render(listItem, buf);
                             }
-                            else
-                            {
+                            else {
                                 var context = rendererMetaOptions.RendererContext;
                                 context.SetStringBuilderAndReset(buf);
                                 context.PropertyName = indexProp.Name;
@@ -484,11 +480,10 @@ namespace com.espertech.esper.common.@internal.@event.render
                 buf.Append(Newline);
 
                 if (value != null) {
-                    var map = (IDictionary<string, object>) value;
+                    var map = (IDictionary<string, object>)value;
                     if (!map.IsEmpty()) {
                         var localDelimiter = "";
-                        foreach (var entry in map)
-                        {
+                        foreach (var entry in map) {
                             if (entry.Key == null) {
                                 continue;
                             }
@@ -543,7 +538,7 @@ namespace com.espertech.esper.common.@internal.@event.render
                 }
 
                 if (!nestedProp.IsArray) {
-                    if (!(value is EventBean)) {
+                    if (!(value is EventBean bean)) {
                         Log.Warn(
                             "Property '" +
                             nestedProp.Name +
@@ -554,10 +549,10 @@ namespace com.espertech.esper.common.@internal.@event.render
                         continue;
                     }
 
-                    RenderElementFragment((EventBean) value, buf, level, nestedProp, rendererMetaOptions);
+                    RenderElementFragment(bean, buf, level, nestedProp, rendererMetaOptions);
                 }
                 else {
-                    if (!(value is EventBean[])) {
+                    if (!(value is EventBean[] nestedEventArray)) {
                         Log.Warn(
                             "Property '" +
                             nestedProp.Name +
@@ -568,7 +563,6 @@ namespace com.espertech.esper.common.@internal.@event.render
                         continue;
                     }
 
-                    var nestedEventArray = (EventBean[]) value;
                     for (var i = 0; i < nestedEventArray.Length; i++) {
                         var arrayItem = nestedEventArray[i];
                         if (arrayItem == null) {

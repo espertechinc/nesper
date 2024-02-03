@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -13,39 +13,38 @@ using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.resultset.order;
 using com.espertech.esper.common.@internal.epl.resultset.select.core;
+using com.espertech.esper.common.@internal.fabric;
 
 namespace com.espertech.esper.common.@internal.epl.resultset.core
 {
     public class ResultSetProcessorDesc
     {
+        private readonly ResultSetProcessorFlags flags;
+
         public ResultSetProcessorDesc(
             ResultSetProcessorFactoryForge resultSetProcessorFactoryForge,
+            ResultSetProcessorFlags flags,
             ResultSetProcessorType resultSetProcessorType,
             SelectExprProcessorForge[] selectExprProcessorForges,
-            bool join,
-            bool hasOutputLimit,
-            ResultSetProcessorOutputConditionType? outputConditionType,
-            bool hasOutputLimitSnapshot,
             EventType resultEventType,
             bool rollup,
             AggregationServiceForgeDesc aggregationServiceForgeDesc,
             OrderByProcessorFactoryForge orderByProcessorFactoryForge,
             SelectSubscriberDescriptor selectSubscriberDescriptor,
-            IList<StmtClassForgeableFactory> additionalForgeables)
+            IList<StmtClassForgeableFactory> additionalForgeables,
+            FabricCharge fabricCharge)
         {
             ResultSetProcessorFactoryForge = resultSetProcessorFactoryForge;
             ResultSetProcessorType = resultSetProcessorType;
             SelectExprProcessorForges = selectExprProcessorForges;
-            IsJoin = join;
-            HasOutputLimit = hasOutputLimit;
-            OutputConditionType = outputConditionType;
-            HasOutputLimitSnapshot = hasOutputLimitSnapshot;
+            this.flags = flags;
             ResultEventType = resultEventType;
             IsRollup = rollup;
             AggregationServiceForgeDesc = aggregationServiceForgeDesc;
             OrderByProcessorFactoryForge = orderByProcessorFactoryForge;
             SelectSubscriberDescriptor = selectSubscriberDescriptor;
             AdditionalForgeables = additionalForgeables;
+            FabricCharge = fabricCharge;
         }
 
         public ResultSetProcessorFactoryForge ResultSetProcessorFactoryForge { get; }
@@ -54,13 +53,13 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
 
         public SelectExprProcessorForge[] SelectExprProcessorForges { get; }
 
-        public bool IsJoin { get; }
+        public bool IsJoin => flags.IsJoin;
 
-        public bool HasOutputLimit { get; }
+        public bool HasOutputLimit => flags.HasOutputLimit;
 
-        public ResultSetProcessorOutputConditionType? OutputConditionType { get; }
+        public ResultSetProcessorOutputConditionType? OutputConditionType => flags.OutputConditionType;
 
-        public bool HasOutputLimitSnapshot { get; }
+        public bool HasOutputLimitSnapshot => flags.IsOutputLimitWSnapshot;
 
         public EventType ResultEventType { get; }
 
@@ -71,7 +70,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
         public OrderByProcessorFactoryForge OrderByProcessorFactoryForge { get; }
 
         public SelectSubscriberDescriptor SelectSubscriberDescriptor { get; }
-        
+
         public IList<StmtClassForgeableFactory> AdditionalForgeables { get; }
+
+        public FabricCharge FabricCharge { get; }
     }
 } // end of namespace

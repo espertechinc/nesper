@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -39,8 +39,8 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
             string optionalModuleName,
             EPStatementInitServices services)
         {
-            string deploymentId = ResolveDeploymentId(namedWindowName, visibility, optionalModuleName, services);
-            NamedWindow namedWindow =
+            var deploymentId = ResolveDeploymentId(namedWindowName, visibility, optionalModuleName, services);
+            var namedWindow =
                 services.NamedWindowManagementService.GetNamedWindow(deploymentId, namedWindowName);
             if (namedWindow == null) {
                 throw new EPException("Failed to resolve named window '" + namedWindowName + "'");
@@ -62,8 +62,7 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
                     break;
 
                 case NameAccessModifier.PUBLIC:
-                case NameAccessModifier.INTERNAL:
-                {
+                case NameAccessModifier.INTERNAL: {
                     deploymentId = services.NamedWindowPathRegistry.GetDeploymentId(tableName, optionalModuleName);
                     if (deploymentId == null) {
                         throw new EPException("Failed to resolve path named window '" + tableName + "'");

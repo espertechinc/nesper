@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -11,7 +11,6 @@ using System.Collections.Generic;
 
 using Avro.Generic;
 
-using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.json.util;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.@event.bean.core;
@@ -30,8 +29,8 @@ using NEsper.Avro.Extensions;
 using Newtonsoft.Json.Linq;
 
 using NUnit.Framework;
-
-using static com.espertech.esper.regressionlib.support.@event.SupportEventInfra;
+using NUnit.Framework.Legacy;
+using static com.espertech.esper.regressionlib.support.@event.SupportEventInfra; // assertTrue
 
 namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 {
@@ -39,7 +38,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
     {
         public void Run(RegressionEnvironment env)
         {
-            RegressionPath path = new RegressionPath();
+            var path = new RegressionPath();
 
             // Bean
             RunAssertionConversionImplicitType(
@@ -54,7 +53,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 new SupportMarketDataBean("ACME", 0, 0L, null),
                 FBEANWTYPE,
                 "TheString".SplitCsv(),
-                new object[] {"ACME"});
+                new object[] { "ACME" });
 
             // Map
             IDictionary<string, object> mapEventOne = new Dictionary<string, object>();
@@ -72,7 +71,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 mapEventOne,
                 FMAPWTYPE,
                 "one,two".SplitCsv(),
-                new object[] {"1", "|2|"});
+                new object[] { "1", "|2|" });
 
             IDictionary<string, object> mapEventTwo = new Dictionary<string, object>();
             mapEventTwo.Put("one", "3");
@@ -88,7 +87,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 mapEventTwo,
                 FMAPWTYPE,
                 "one,two".SplitCsv(),
-                new object[] {"3", "|4|"});
+                new object[] { "3", "|4|" });
 
             // Object-Array
             RunAssertionConversionImplicitType(
@@ -100,10 +99,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 typeof(WrapperEventType),
                 typeof(object[]),
                 "OATwo",
-                new object[] {"1", "2"},
+                new object[] { "1", "2" },
                 FOAWTYPE,
                 "one,two".SplitCsv(),
-                new object[] {"1", "|2|"});
+                new object[] { "1", "|2|" });
             RunAssertionConversionConfiguredType(
                 env,
                 path,
@@ -112,14 +111,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 "OATwo",
                 typeof(ObjectArrayBackedEventBean),
                 typeof(object[]),
-                new object[] {"3", "4"},
+                new object[] { "3", "4" },
                 FOAWTYPE,
                 "one,two".SplitCsv(),
-                new object[] {"3", "|4|"});
+                new object[] { "3", "|4|" });
 
             // Avro
-            var rowOne = new GenericRecord(
-                AvroSchemaUtil.ResolveAvroSchema(env.Runtime.EventTypeService.GetEventTypePreconfigured("AvroOne")).AsRecordSchema());
+            var schemaOne = env.RuntimeAvroSchemaPreconfigured("AvroOne").AsRecordSchema();
+            var rowOne = new GenericRecord(schemaOne);
             rowOne.Put("one", "1");
             rowOne.Put("two", "2");
             RunAssertionConversionImplicitType(
@@ -134,12 +133,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 rowOne,
                 FAVROWTYPE,
                 "one,two".SplitCsv(),
-                new object[] {"1", "|2|"});
+                new object[] { "1", "|2|" });
 
-            var avroSchema = AvroSchemaUtil
-                .ResolveAvroSchema(env.Runtime.EventTypeService.GetEventTypePreconfigured("AvroTwo"))
-                .AsRecordSchema();
-            var rowTwo = new GenericRecord(avroSchema);
+            var schemaTwo = env.RuntimeAvroSchemaPreconfigured("AvroTwo").AsRecordSchema();
+            var rowTwo = new GenericRecord(schemaTwo);
             rowTwo.Put("one", "3");
             rowTwo.Put("two", "4");
             RunAssertionConversionConfiguredType(
@@ -153,16 +150,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 rowTwo,
                 FAVROWTYPE,
                 "one,two".SplitCsv(),
-                new object[] {"3", "|4|"});
+                new object[] { "3", "|4|" });
 
             // Json
             env.CompileDeploy(
                 "@buseventtype @public create json schema JsonOne(one string, two string);\n" +
                 "@buseventtype @public create json schema JsonTwo(one string, two string);\n",
                 path);
-            var jsonOne = new JObject();
-            jsonOne.Add("one", "1");
-            jsonOne.Add("two", "2");
+            var jsonOne = new JObject(new JProperty("one", "1"), new JProperty("two", "2"));
             RunAssertionConversionImplicitType(
                 env,
                 path,
@@ -175,11 +170,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 jsonOne.ToString(),
                 FJSONWTYPE,
                 "one,two".SplitCsv(),
-                new object[] {"1", "|2|"});
+                new object[] { "1", "|2|" });
 
-            var jsonTwo = new JObject();
-            jsonTwo.Add("one", "3");
-            jsonTwo.Add("two", "4");
+            var jsonTwo = new JObject(new JProperty("one", "3"), new JProperty("two", "4"));
             RunAssertionConversionConfiguredType(
                 env,
                 path,
@@ -191,7 +184,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 jsonTwo.ToString(),
                 FJSONWTYPE,
                 "one,two".SplitCsv(),
-                new object[] {"3", "|4|"});
+                new object[] { "3", "|4|" });
 
             env.UndeployAll();
         }
@@ -210,32 +203,41 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             string[] propertyName,
             object[] propertyValues)
         {
-            string streamName = prefix + "_Stream";
-            string textOne = "@Name('s1') insert into " + streamName + " select * from " + typeNameOrigin;
-            string textTwo = "@Name('s2') insert into " +
-                             streamName +
-                             " select " +
-                             typeof(SupportStaticMethodLib).FullName +
-                             "." +
-                             functionName +
-                             "(s0) from " +
-                             typeNameEvent +
-                             " as s0";
+            var streamName = prefix + "_Stream";
+            var textOne = "@name('s1') @public insert into " + streamName + " select * from " + typeNameOrigin;
+            var textTwo = "@name('s2') @public insert into " +
+                          streamName +
+                          " select " +
+                          typeof(SupportStaticMethodLib).FullName +
+                          "." +
+                          functionName +
+                          "(s0) from " +
+                          typeNameEvent +
+                          " as s0";
 
             env.CompileDeploy(textOne, path).AddListener("s1");
-            EventType type = env.Statement("s1").EventType;
-            Assert.IsTrue(TypeHelper.IsSubclassOrImplementsInterface(type.UnderlyingType, underlyingType));
+            env.AssertStatement(
+                "s1",
+                statement => ClassicAssert.IsTrue(
+                    TypeHelper.IsSubclassOrImplementsInterface(statement.EventType.UnderlyingType, underlyingType)));
 
             env.CompileDeploy(textTwo, path).AddListener("s2");
-            type = env.Statement("s2").EventType;
-            Assert.IsTrue(TypeHelper.IsSubclassOrImplementsInterface(type.UnderlyingType, underlyingType));
+            env.AssertStatement(
+                "s2",
+                statement => ClassicAssert.IsTrue(
+                    TypeHelper.IsSubclassOrImplementsInterface(statement.EventType.UnderlyingType, underlyingType)));
 
             sendEvent.Invoke(env, @event, typeNameEvent);
 
-            EventBean theEvent = env.Listener("s2").AssertOneGetNewAndReset();
-            Assert.IsTrue(TypeHelper.IsSubclassOrImplementsInterface(theEvent.EventType.GetType(), eventTypeType));
-            Assert.IsTrue(TypeHelper.IsSubclassOrImplementsInterface(theEvent.Underlying.GetType(), underlyingType));
-            EPAssertionUtil.AssertProps(theEvent, propertyName, propertyValues);
+            env.AssertEventNew(
+                "s2",
+                theEvent => {
+                    ClassicAssert.IsTrue(
+                        TypeHelper.IsSubclassOrImplementsInterface(theEvent.EventType.GetType(), eventTypeType));
+                    ClassicAssert.IsTrue(
+                        TypeHelper.IsSubclassOrImplementsInterface(theEvent.Underlying.GetType(), underlyingType));
+                    EPAssertionUtil.AssertProps(theEvent, propertyName, propertyValues);
+                });
 
             env.UndeployModuleContaining("s2");
             env.UndeployModuleContaining("s1");
@@ -256,7 +258,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
         {
             // test native
             env.CompileDeploy(
-                "@Name('insert') insert into " +
+                "@name('insert') insert into " +
                 typeNameTarget +
                 " select " +
                 typeof(SupportStaticMethodLib).FullName +
@@ -266,14 +268,18 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 typeNameOrigin +
                 " as s0",
                 path);
-            env.CompileDeploy("@Name('s0') select * from " + typeNameTarget, path).AddListener("s0");
+            env.CompileDeploy("@name('s0') select * from " + typeNameTarget, path).AddListener("s0");
 
             sendEvent.Invoke(env, @event, typeNameOrigin);
 
-            EventBean eventBean = env.Listener("s0").AssertOneGetNewAndReset();
-            Assert.IsTrue(TypeHelper.IsSubclassOrImplementsInterface(eventBean.Underlying.GetType(), underlyingType));
-            Assert.IsTrue(TypeHelper.IsSubclassOrImplementsInterface(eventBean.GetType(), eventBeanType));
-            EPAssertionUtil.AssertProps(eventBean, propertyName, propertyValues);
+            env.AssertEventNew(
+                "s0",
+                eventBean => {
+                    ClassicAssert.IsTrue(
+                        TypeHelper.IsSubclassOrImplementsInterface(eventBean.Underlying.GetType(), underlyingType));
+                    ClassicAssert.IsTrue(TypeHelper.IsSubclassOrImplementsInterface(eventBean.GetType(), eventBeanType));
+                    EPAssertionUtil.AssertProps(eventBean, propertyName, propertyValues);
+                });
 
             env.UndeployModuleContaining("s0");
             env.UndeployModuleContaining("insert");

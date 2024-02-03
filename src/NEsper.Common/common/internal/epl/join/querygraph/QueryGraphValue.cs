@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -31,8 +31,7 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
                 IList<QueryGraphValueEntryHashKeyed> keys = new List<QueryGraphValueEntryHashKeyed>();
                 Deque<string> indexed = new ArrayDeque<string>();
                 foreach (var desc in Items) {
-                    if (desc.Entry is QueryGraphValueEntryHashKeyed) {
-                        var keyprop = (QueryGraphValueEntryHashKeyed) desc.Entry;
+                    if (desc.Entry is QueryGraphValueEntryHashKeyed keyprop) {
                         keys.Add(keyprop);
                         indexed.Add(desc.IndexExprs[0]);
                     }
@@ -47,8 +46,7 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
                 Deque<string> indexed = new ArrayDeque<string>();
                 IList<QueryGraphValueEntryRange> keys = new List<QueryGraphValueEntryRange>();
                 foreach (var desc in Items) {
-                    if (desc.Entry is QueryGraphValueEntryRange) {
-                        var keyprop = (QueryGraphValueEntryRange) desc.Entry;
+                    if (desc.Entry is QueryGraphValueEntryRange keyprop) {
                         keys.Add(keyprop);
                         indexed.Add(desc.IndexExprs[0]);
                     }
@@ -64,8 +62,7 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
                 IList<QueryGraphValueEntryInKeywordSingleIdx> single =
                     new List<QueryGraphValueEntryInKeywordSingleIdx>();
                 foreach (var desc in Items) {
-                    if (desc.Entry is QueryGraphValueEntryInKeywordSingleIdx) {
-                        var keyprop = (QueryGraphValueEntryInKeywordSingleIdx) desc.Entry;
+                    if (desc.Entry is QueryGraphValueEntryInKeywordSingleIdx keyprop) {
                         single.Add(keyprop);
                         indexedProps.Add(desc.IndexExprs[0]);
                     }

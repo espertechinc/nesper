@@ -1,5 +1,5 @@
 ﻿///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -13,7 +13,6 @@ using System.Linq;
 
 namespace com.espertech.esper.compat.collections
 {
-    [Serializable]
     public class EmptySet<T> : ISet<T>
     {
         public static readonly EmptySet<T> Instance = new EmptySet<T>(); 

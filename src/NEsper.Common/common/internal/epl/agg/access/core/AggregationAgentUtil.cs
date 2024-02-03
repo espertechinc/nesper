@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -23,8 +23,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.core
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            CodegenExpression[] inits = new CodegenExpression[accessAgents.Length];
-            for (int i = 0; i < inits.Length; i++) {
+            var inits = new CodegenExpression[accessAgents.Length];
+            for (var i = 0; i < inits.Length; i++) {
                 inits[i] = accessAgents[i].Make(method, symbols, classScope);
             }
 

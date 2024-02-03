@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -21,7 +21,6 @@ namespace com.espertech.esper.common.@internal.context.util
     /// requiring internal dispatch logic to not shortcut evaluation of all filters for the statement
     /// within one lock, requiring the callback handle to be sorted.
     /// </summary>
-    [Serializable]
     public class EPStatementHandle
     {
         private readonly string statementName;
@@ -72,77 +71,51 @@ namespace com.espertech.esper.common.@internal.context.util
         /// Returns the statement id.
         /// </summary>
         /// <returns>statement id</returns>
-        public int StatementId {
-            get => statementId;
-        }
+        public int StatementId => statementId;
 
         /// <summary>
         /// Returns true if the statement uses variables, false if not.
         /// </summary>
         /// <returns>indicator if variables are used by statement</returns>
-        public bool HasVariables {
-            get => hasVariables;
-        }
+        public bool HasVariables => hasVariables;
 
         /// <summary>
         /// Returns the statement priority.
         /// </summary>
         /// <returns>priority, default 0</returns>
-        public int Priority {
-            get => priority;
-        }
+        public int Priority => priority;
 
         /// <summary>
         /// True for preemptive (drop) statements.
         /// </summary>
         /// <returns>preemptive indicator</returns>
-        public bool IsPreemptive {
-            get => preemptive;
-        }
+        public bool IsPreemptive => preemptive;
 
         /// <summary>
         /// Returns true if the statement potentially self-joins amojng the events it processes.
         /// </summary>
         /// <returns>true for self-joins possible, false for not possible (most statements)</returns>
-        public bool IsCanSelfJoin {
-            get => canSelfJoin;
-        }
+        public bool IsCanSelfJoin => canSelfJoin;
 
         /// <summary>
         /// Returns handle for metrics reporting.
         /// </summary>
         /// <returns>handle for metrics reporting</returns>
-        public StatementMetricHandle MetricsHandle {
-            get => metricsHandle;
-        }
+        public StatementMetricHandle MetricsHandle => metricsHandle;
 
-        public bool HasTableAccess {
-            get => hasTableAccess;
-        }
+        public bool HasTableAccess => hasTableAccess;
 
-        public MultiMatchHandler MultiMatchHandler {
-            get => multiMatchHandler;
-        }
+        public MultiMatchHandler MultiMatchHandler => multiMatchHandler;
 
-        public string StatementName {
-            get => statementName;
-        }
+        public string StatementName => statementName;
 
-        public string DeploymentId {
-            get => deploymentId;
-        }
+        public string DeploymentId => deploymentId;
 
-        public string OptionalStatementEPL {
-            get => optionalStatementEPL;
-        }
+        public string OptionalStatementEPL => optionalStatementEPL;
 
-        public InsertIntoLatchFactory InsertIntoFrontLatchFactory {
-            get => insertIntoFrontLatchFactory;
-        }
+        public InsertIntoLatchFactory InsertIntoFrontLatchFactory => insertIntoFrontLatchFactory;
 
-        public InsertIntoLatchFactory InsertIntoBackLatchFactory {
-            get => insertIntoBackLatchFactory;
-        }
+        public InsertIntoLatchFactory InsertIntoBackLatchFactory => insertIntoBackLatchFactory;
 
         protected bool Equals(EPStatementHandle other)
         {
@@ -159,11 +132,11 @@ namespace com.espertech.esper.common.@internal.context.util
                 return true;
             }
 
-            if (obj.GetType() != this.GetType()) {
+            if (obj.GetType() != GetType()) {
                 return false;
             }
 
-            return Equals((EPStatementHandle) obj);
+            return Equals((EPStatementHandle)obj);
         }
 
         public override int GetHashCode()

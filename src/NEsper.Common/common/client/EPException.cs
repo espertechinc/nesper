@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client
     /// <summary>
     /// This exception is thrown to indicate a problem in administration and runtime.
     /// </summary>
-    [Serializable]
     public class EPException : Exception
     {
         private static readonly Type MyType =
@@ -53,7 +52,8 @@ namespace com.espertech.esper.common.client
         /// </summary>
         /// <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo" /> that holds the serialized object data about the exception being thrown.</param>
         /// <param name="context">The <see cref="T:System.Runtime.Serialization.StreamingContext" /> that contains contextual information about the source or destination.</param>
-        protected EPException(SerializationInfo info,
+        protected EPException(
+            SerializationInfo info,
             StreamingContext context) : base(info, context)
         {
         }

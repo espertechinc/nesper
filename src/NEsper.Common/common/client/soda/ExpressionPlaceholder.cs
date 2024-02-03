@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -14,15 +14,13 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     ///     For use in expression as a placeholder to represent its child nodes.
     /// </summary>
-    [Serializable]
     public class ExpressionPlaceholder : ExpressionBase
     {
         public override ExpressionPrecedenceEnum Precedence => ExpressionPrecedenceEnum.MINIMUM;
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
-            if (Children == null || Children.Count == 0)
-            {
+            if (Children == null || Children.Count == 0) {
                 return;
             }
 

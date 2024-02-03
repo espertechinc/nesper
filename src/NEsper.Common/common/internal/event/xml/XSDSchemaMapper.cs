@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -30,9 +30,10 @@ namespace com.espertech.esper.common.@internal.@event.xml
         public const int DEFAULT_MAX_RECURSIVE_DEPTH = 10;
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        protected internal static readonly SchemaItemAttribute[] EMPTY_SCHEMA_ATTRIBUTES = new SchemaItemAttribute[0];
+        protected internal static readonly SchemaItemAttribute[] EMPTY_SCHEMA_ATTRIBUTES =
+            Array.Empty<SchemaItemAttribute>();
 
-        protected internal static readonly XmlSchemaObject[] EMPTY_SCHEMA_OBJECTS = new XmlSchemaObject[0];
+        protected internal static readonly XmlSchemaObject[] EMPTY_SCHEMA_OBJECTS = Array.Empty<XmlSchemaObject>();
 
         /// <summary>
         ///     Component list
@@ -352,8 +353,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
             // For complex types, the simple type information can be embedded as an extension
             // of the complex type.
             var contentModel = complexActualElement?.ContentModel;
-            if (contentModel is XmlSchemaSimpleContent) {
-                var simpleContentModel = (XmlSchemaSimpleContent) contentModel;
+            if (contentModel is XmlSchemaSimpleContent simpleContentModel) {
                 var simpleContentExtension = simpleContentModel.Content as XmlSchemaSimpleContentExtension;
                 if (simpleContentExtension != null) {
                     var simpleContentBaseTypeName = simpleContentExtension.BaseTypeName;
@@ -441,8 +441,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
                 var attributes = GetAttributes(xsModel, complexType.Attributes);
 
                 var contentModel = complexType.ContentModel;
-                if (contentModel is XmlSchemaSimpleContent) {
-                    var simpleContentModel = (XmlSchemaSimpleContent) contentModel;
+                if (contentModel is XmlSchemaSimpleContent simpleContentModel) {
                     var simpleContentExtension = simpleContentModel.Content as XmlSchemaSimpleContentExtension;
                     if (simpleContentExtension != null) {
                         attributes = attributes.Concat(
@@ -570,8 +569,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
             SchemaElementComplex complexElement)
         {
             foreach (var childParticle in childParticles) {
-                if (childParticle is XmlSchemaElement) {
-                    var schemaElement = (XmlSchemaElement) childParticle;
+                if (childParticle is XmlSchemaElement schemaElement) {
                     var isArrayFlag = IsArray(schemaElement);
 
                     // the name for this element

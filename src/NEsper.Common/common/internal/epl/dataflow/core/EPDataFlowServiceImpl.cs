@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -193,8 +193,8 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.core
 
                 if (_configurationState.Exists(dataflowConfigName)) {
                     var message = "Data flow saved configuration by name '" +
-                                     dataflowConfigName +
-                                     "' already exists";
+                                  dataflowConfigName +
+                                  "' already exists";
                     throw new EPDataFlowAlreadyExistsException(message);
                 }
 
@@ -249,7 +249,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.core
             string dataFlowName)
         {
             var deployment = _deployments.Get(deploymentId);
-            return deployment == null ? null : deployment.GetDataflow(dataFlowName);
+            return deployment?.GetDataflow(dataFlowName);
         }
     }
 } // end of namespace

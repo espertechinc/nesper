@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
                 throw new ArgumentException("Not a 3-way join");
             }
 
-            if ((rootStream < 0) || (rootStream >= streamsJoinedPerStream.Count)) {
+            if (rootStream < 0 || rootStream >= streamsJoinedPerStream.Count) {
                 throw new ArgumentException("Invalid root stream");
             }
 
@@ -57,10 +57,10 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
                     " streamsJoinedPerStream=" +
                     NStreamOuterQueryPlanBuilder.Print(streamsJoinedPerStream) +
                     " isRequiredPerStream=" +
-                    CompatExtensions.Render(isRequiredPerStream));
+                    isRequiredPerStream.Render());
             }
 
-            BaseAssemblyNodeFactory topNode = CreateNode(
+            var topNode = CreateNode(
                 true,
                 rootStream,
                 streamsJoinedPerStream.Count,
@@ -70,8 +70,8 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
             RecursiveBuild(rootStream, topNode, streamsJoinedPerStream, isRequiredPerStream);
 
             if (Log.IsDebugEnabled) {
-                StringWriter buf = new StringWriter();
-                IndentWriter indentWriter = new IndentWriter(buf, 0, 2);
+                var buf = new StringWriter();
+                var indentWriter = new IndentWriter(buf, 0, 2);
                 topNode.PrintDescendends(indentWriter);
 
                 Log.Debug(".build Dumping root node for stream " + rootStream + ": \n" + buf.ToString());
@@ -86,11 +86,11 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
             IDictionary<int, int[]> streamsJoinedPerStream,
             bool[] isRequiredPerStream)
         {
-            int numStreams = streamsJoinedPerStream.Count;
+            var numStreams = streamsJoinedPerStream.Count;
 
-            for (int i = 0; i < streamsJoinedPerStream.Get(parentStreamNum).Length; i++) {
-                int streamJoined = streamsJoinedPerStream.Get(parentStreamNum)[i];
-                BaseAssemblyNodeFactory childNode = CreateNode(
+            for (var i = 0; i < streamsJoinedPerStream.Get(parentStreamNum).Length; i++) {
+                var streamJoined = streamsJoinedPerStream.Get(parentStreamNum)[i];
+                var childNode = CreateNode(
                     false,
                     streamJoined,
                     numStreams,
@@ -116,8 +116,8 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
             }
 
             if (joinedStreams.Length == 1) {
-                int joinedStream = joinedStreams[0];
-                bool isRequired = isRequiredPerStream[joinedStream];
+                var joinedStream = joinedStreams[0];
+                var isRequired = isRequiredPerStream[joinedStream];
                 if (isRequired) {
                     if (isRoot) {
                         return new RootRequiredAssemblyNodeFactory(streamNum, numStreams);
@@ -137,9 +137,9 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
             }
 
             // Determine if all substream are outer (optional) joins
-            bool allSubStreamsOptional = true;
-            for (int i = 0; i < joinedStreams.Length; i++) {
-                int stream = joinedStreams[i];
+            var allSubStreamsOptional = true;
+            for (var i = 0; i < joinedStreams.Length; i++) {
+                var stream = joinedStreams[i];
                 if (isRequiredPerStream[stream]) {
                     allSubStreamsOptional = false;
                 }

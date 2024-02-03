@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -16,7 +16,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     ///     Qualifies a join by providing the outer join type (full/left/right) and joined-on properties.
     /// </summary>
-    [Serializable]
     public class OuterJoinQualifier
     {
         private IList<PropertyValueExpressionPair> additionalProperties;
@@ -69,8 +68,7 @@ namespace com.espertech.esper.common.client.soda
         ///     Returns the type of outer join.
         /// </summary>
         /// <returns>outer join type</returns>
-        public OuterJoinType Type
-        {
+        public OuterJoinType Type {
             get => type;
             set => type = value;
         }
@@ -79,8 +77,7 @@ namespace com.espertech.esper.common.client.soda
         ///     Returns property value expression to join on.
         /// </summary>
         /// <returns>expression providing joined-on values</returns>
-        public Expression Left
-        {
+        public Expression Left {
             get => left;
             set => left = value;
         }
@@ -89,8 +86,7 @@ namespace com.espertech.esper.common.client.soda
         ///     Returns property value expression to join on.
         /// </summary>
         /// <returns>expression providing joined-on values</returns>
-        public Expression Right
-        {
+        public Expression Right {
             get => right;
             set => right = value;
         }
@@ -99,8 +95,7 @@ namespace com.espertech.esper.common.client.soda
         ///     Returns optional additional properties in the on-clause of the outer join.
         /// </summary>
         /// <returns>pairs of properties connected via logical-and in an on-clause</returns>
-        public IList<PropertyValueExpressionPair> AdditionalProperties
-        {
+        public IList<PropertyValueExpressionPair> AdditionalProperties {
             get => additionalProperties;
             set => additionalProperties = value;
         }

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -11,6 +11,8 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.client.artifact;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
+using com.espertech.esper.common.@internal.context.compile;
+using com.espertech.esper.common.@internal.fabric;
 
 namespace com.espertech.esper.compiler.@internal.util
 {
@@ -20,12 +22,16 @@ namespace com.espertech.esper.compiler.@internal.util
             string providerClassName,
             IList<CodegenClass> classes,
             CompilableItemPostCompileLatch postCompileLatch,
-            ICollection<IArtifact> artifactsProvided)
+            ICollection<IArtifact> artifactsProvided,
+            ContextCompileTimeDescriptor contextDescriptor,
+            FabricCharge fabricCharge)
         {
             ProviderClassName = providerClassName;
             Classes = classes;
             PostCompileLatch = postCompileLatch;
             ArtifactsProvided = artifactsProvided;
+            ContextDescriptor = contextDescriptor;
+            FabricCharge = fabricCharge;
         }
 
         public string ProviderClassName { get; }
@@ -35,5 +41,9 @@ namespace com.espertech.esper.compiler.@internal.util
         public CompilableItemPostCompileLatch PostCompileLatch { get; }
 
         public ICollection<IArtifact> ArtifactsProvided { get; }
+        
+        public ContextCompileTimeDescriptor ContextDescriptor { get; }
+        
+        public FabricCharge FabricCharge { get; }
     }
 } // end of namespace

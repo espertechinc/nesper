@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -15,6 +15,7 @@ using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.compat;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.epl.expression.ops
 {
@@ -45,9 +46,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         [Test]
         public void TestEqualsNode()
         {
-            Assert.IsTrue(opNode.EqualsNode(opNode, false));
-            Assert.IsFalse(opNode.EqualsNode(new ExprRelationalOpNodeImpl(RelationalOpEnum.LE), false));
-            Assert.IsFalse(opNode.EqualsNode(new ExprOrNode(), false));
+            ClassicAssert.IsTrue(opNode.EqualsNode(opNode, false));
+            ClassicAssert.IsFalse(opNode.EqualsNode(new ExprRelationalOpNodeImpl(RelationalOpEnum.LE), false));
+            ClassicAssert.IsFalse(opNode.EqualsNode(new ExprOrNode(), false));
         }
 
         [Test]
@@ -59,20 +60,20 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             opNode.AddChildNode(childTwo);
             opNode.Validate(SupportExprValidationContextFactory.MakeEmpty(container)); // Type initialization
 
-            Assert.AreEqual(true, opNode.Forge.ExprEvaluator.Evaluate(null, false, null));
+            ClassicAssert.AreEqual(true, opNode.Forge.ExprEvaluator.Evaluate(null, false, null));
 
             childOne.Value = "c";
-            Assert.AreEqual(true, opNode.Forge.ExprEvaluator.Evaluate(null, false, null));
+            ClassicAssert.AreEqual(true, opNode.Forge.ExprEvaluator.Evaluate(null, false, null));
 
             childOne.Value = "b";
-            Assert.AreEqual(false, opNode.Forge.ExprEvaluator.Evaluate(null, false, null));
+            ClassicAssert.AreEqual(false, opNode.Forge.ExprEvaluator.Evaluate(null, false, null));
 
             opNode = MakeNode(null, typeof(int?), 2, typeof(int?));
-            Assert.AreEqual(null, opNode.Forge.ExprEvaluator.Evaluate(null, false, null));
+            ClassicAssert.AreEqual(null, opNode.Forge.ExprEvaluator.Evaluate(null, false, null));
             opNode = MakeNode(1, typeof(int?), null, typeof(int?));
-            Assert.AreEqual(null, opNode.Forge.ExprEvaluator.Evaluate(null, false, null));
+            ClassicAssert.AreEqual(null, opNode.Forge.ExprEvaluator.Evaluate(null, false, null));
             opNode = MakeNode(null, typeof(int?), null, typeof(int?));
-            Assert.AreEqual(null, opNode.Forge.ExprEvaluator.Evaluate(null, false, null));
+            ClassicAssert.AreEqual(null, opNode.Forge.ExprEvaluator.Evaluate(null, false, null));
         }
 
         [Test]
@@ -81,7 +82,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             opNode.AddChildNode(new SupportExprNode(typeof(long?)));
             opNode.AddChildNode(new SupportExprNode(typeof(int)));
             opNode.Validate(SupportExprValidationContextFactory.MakeEmpty(container));
-            Assert.AreEqual(typeof(bool?), opNode.Forge.EvaluationType);
+            ClassicAssert.AreEqual(typeof(bool?), opNode.Forge.EvaluationType);
         }
 
         [Test]
@@ -89,7 +90,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         {
             opNode.AddChildNode(new SupportExprNode(10));
             opNode.AddChildNode(new SupportExprNode(5));
-            Assert.AreEqual("10>=5", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(opNode));
+            ClassicAssert.AreEqual("10>=5", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(opNode));
         }
 
         [Test]

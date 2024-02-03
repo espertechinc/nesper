@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
     {
         protected internal static void AssertNonNullArgs(CodegenExpression[] @params)
         {
-            for (int i = 0; i < @params.Length; i++) {
+            for (var i = 0; i < @params.Length; i++) {
                 if (@params[i] == null) {
                     throw new ArgumentException("Parameter " + i + " is null");
                 }

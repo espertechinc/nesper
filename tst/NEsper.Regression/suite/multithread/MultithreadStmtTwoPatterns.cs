@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -7,21 +7,24 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 using System.Threading;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.client;
 using com.espertech.esper.regressionlib.support.multithread;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.multithread
 {
     /// <summary>
     ///     Test for multithread-safety for case of 2 patterns:
-    ///     1. Thread 1 starts pattern "every event1=SupportTradeEvent(userID in ('100','101'), amount&gt;=1000)"
+    ///     1. Thread 1 starts pattern "every event1=SupportTradeEvent(userID in ('100','101'), Amount&gt;=1000)"
     ///     2. Thread 1 repeats sending 100 events and tests 5% received
     ///     3. Main thread starts pattern:
     ///     ( every event1=SupportTradeEvent(userID in ('100','101')) -&gt;
@@ -42,6 +45,11 @@ namespace com.espertech.esper.regressionlib.suite.multithread
         public bool EnableHATest => true;
 
         public bool HAWithCOnly => true;
+
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
+        }
 
         public void Run(RegressionEnvironment env)
         {
@@ -74,7 +82,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 
             runnable.Shutdown = true;
             SupportCompileDeployUtil.ThreadSleep(1000);
-            Assert.IsFalse(t.IsAlive);
+            ClassicAssert.IsFalse(t.IsAlive);
 
             env.UndeployAll();
         }

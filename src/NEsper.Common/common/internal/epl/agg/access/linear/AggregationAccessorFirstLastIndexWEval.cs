@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -30,8 +30,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
             AggregationAccessorFirstLastIndexWEvalForge forge,
             AggregationAccessorForgeGetCodegenContext context)
         {
-            AggregationStateLinearForge stateForge = (AggregationStateLinearForge) context.AccessStateForge;
-            CodegenMethod getBeanFirstLastIndex = GetBeanFirstLastIndexCodegen(
+            var stateForge = (AggregationStateLinearForge)context.AccessStateForge;
+            var getBeanFirstLastIndex = GetBeanFirstLastIndexCodegen(
                 forge,
                 context.Column,
                 context.ClassScope,
@@ -50,19 +50,18 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                         CodegenLegoMethodExpression.CodegenExpression(
                             forge.ChildNode,
                             context.Method,
-                            context.ClassScope,
-                            true),
+                            context.ClassScope),
                         Ref("eventsPerStreamBuf"),
                         ConstantTrue(),
-                        ConstantNull()));
+                        Ref(ExprForgeCodegenNames.NAME_EXPREVALCONTEXT)));
         }
 
         public static void GetEnumerableEventsCodegen(
             AggregationAccessorFirstLastIndexWEvalForge forge,
             AggregationAccessorForgeGetCodegenContext context)
         {
-            AggregationStateLinearForge stateForge = (AggregationStateLinearForge) context.AccessStateForge;
-            CodegenMethod getBeanFirstLastIndex = GetBeanFirstLastIndexCodegen(
+            var stateForge = (AggregationStateLinearForge)context.AccessStateForge;
+            var getBeanFirstLastIndex = GetBeanFirstLastIndexCodegen(
                 forge,
                 context.Column,
                 context.ClassScope,
@@ -78,8 +77,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
             AggregationAccessorFirstLastIndexWEvalForge forge,
             AggregationAccessorForgeGetCodegenContext context)
         {
-            AggregationStateLinearForge stateForge = (AggregationStateLinearForge) context.AccessStateForge;
-            CodegenMethod getBeanFirstLastIndex = GetBeanFirstLastIndexCodegen(
+            var stateForge = (AggregationStateLinearForge)context.AccessStateForge;
+            var getBeanFirstLastIndex = GetBeanFirstLastIndexCodegen(
                 forge,
                 context.Column,
                 context.ClassScope,
@@ -99,11 +98,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                         CodegenLegoMethodExpression.CodegenExpression(
                             forge.ChildNode,
                             context.Method,
-                            context.ClassScope,
-                            true),
+                            context.ClassScope),
                         Ref("eventsPerStreamBuf"),
                         ConstantTrue(),
-                        ConstantNull()))
+                        Ref(ExprForgeCodegenNames.NAME_EXPREVALCONTEXT)))
                 .IfRefNullReturnNull("value")
                 .MethodReturn(StaticMethod(typeof(Collections), "SingletonList", Ref("value")));
         }
@@ -112,8 +110,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
             AggregationAccessorFirstLastIndexWEvalForge forge,
             AggregationAccessorForgeGetCodegenContext context)
         {
-            AggregationStateLinearForge stateForge = (AggregationStateLinearForge) context.AccessStateForge;
-            CodegenMethod getBeanFirstLastIndex = GetBeanFirstLastIndexCodegen(
+            var stateForge = (AggregationStateLinearForge)context.AccessStateForge;
+            var getBeanFirstLastIndex = GetBeanFirstLastIndexCodegen(
                 forge,
                 context.Column,
                 context.ClassScope,
@@ -131,21 +129,20 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
             CodegenMethod parent,
             CodegenNamedMethods namedMethods)
         {
-            CodegenMethod method = parent.MakeChild(
+            var method = parent.MakeChild(
                 typeof(EventBean),
                 typeof(AggregationAccessorFirstLastIndexWEval),
                 classScope);
             if (forge.Constant == -1) {
-                Type evalType = forge.IndexNode.EvaluationType;
+                var evalType = forge.IndexNode.EvaluationType;
                 method.Block.DeclareVar(
                     evalType,
                     "indexResult",
                     LocalMethod(
                         CodegenLegoMethodExpression.CodegenExpression(
                             forge.IndexNode,
-                            method, 
-                            classScope,
-                            true),
+                            method,
+                            classScope),
                         ConstantNull(),
                         ConstantTrue(),
                         ConstantNull()));
@@ -161,7 +158,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                 method.Block.DeclareVar<int>("index", Constant(forge.Constant));
             }
 
-            CodegenExpression value = forge.IsFirst
+            var value = forge.IsFirst
                 ? stateForge.AggregatorLinear.GetFirstNthValueCodegen(Ref("index"), method, classScope, namedMethods)
                 : stateForge.AggregatorLinear.GetLastNthValueCodegen(Ref("index"), method, classScope, namedMethods);
             method.Block.MethodReturn(value);

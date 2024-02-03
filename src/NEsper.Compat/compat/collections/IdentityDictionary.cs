@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -15,12 +15,12 @@ namespace com.espertech.esper.compat.collections
     /// An extended dictionary based upon a closed hashing
     /// algorithm.
     /// </summary>
-    /// <typeparam name="K"></typeparam>
-    /// <typeparam name="V"></typeparam>
+    /// <typeparam name="TK"></typeparam>
+    /// <typeparam name="TV"></typeparam>
 
-	public class IdentityDictionary<K,V>
-		: HashMap<K,V>
-        where K : class
+	public class IdentityDictionary<TK,TV>
+		: HashMap<TK,TV>
+        where TK : class
 	{
         /// <summary>
         /// Initializes a new instance of the <see cref="IdentityDictionary{K,V}"/> class.
@@ -30,7 +30,7 @@ namespace com.espertech.esper.compat.collections
 		{
 		}
 
-        internal class EqualityComparer : IEqualityComparer<K>
+        internal class EqualityComparer : IEqualityComparer<TK>
         {
             /// <summary>
             /// Returns true if the two objects are equal.  In the case of the
@@ -41,7 +41,7 @@ namespace com.espertech.esper.compat.collections
             /// <param name="y"></param>
             /// <returns></returns>
 
-            public bool Equals(K x, K y)
+            public bool Equals(TK x, TK y)
             {
                 return x == y;
             }
@@ -52,7 +52,7 @@ namespace com.espertech.esper.compat.collections
             /// <param name="obj"></param>
             /// <returns></returns>
 
-            public int GetHashCode(K obj)
+            public int GetHashCode(TK obj)
             {
                 return obj.GetHashCode();
             }

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -27,7 +27,7 @@ namespace com.espertech.esper.common.@internal.context.airegistry
         {
             AIRegistryPriorEvalStrategy[] priorEvalStrategies = null;
             if (registryRequirements.PriorFlagsPerStream != null) {
-                bool[] priorFlagPerStream = registryRequirements.PriorFlagsPerStream;
+                var priorFlagPerStream = registryRequirements.PriorFlagsPerStream;
                 priorEvalStrategies = new AIRegistryPriorEvalStrategy[priorFlagPerStream.Length];
                 for (var i = 0; i < priorEvalStrategies.Length; i++) {
                     if (priorFlagPerStream[i]) {
@@ -38,7 +38,7 @@ namespace com.espertech.esper.common.@internal.context.airegistry
 
             AIRegistryPreviousGetterStrategy[] previousGetterStrategies = null;
             if (registryRequirements.PreviousFlagsPerStream != null) {
-                bool[] previousFlagPerStream = registryRequirements.PreviousFlagsPerStream;
+                var previousFlagPerStream = registryRequirements.PreviousFlagsPerStream;
                 previousGetterStrategies = new AIRegistryPreviousGetterStrategy[previousFlagPerStream.Length];
                 for (var i = 0; i < previousGetterStrategies.Length; i++) {
                     if (previousFlagPerStream[i]) {
@@ -49,7 +49,7 @@ namespace com.espertech.esper.common.@internal.context.airegistry
 
             IDictionary<int, AIRegistrySubqueryEntry> subselects = null;
             if (registryRequirements.Subqueries != null) {
-                AIRegistryRequirementSubquery[] requirements = registryRequirements.Subqueries;
+                var requirements = registryRequirements.Subqueries;
                 subselects = new Dictionary<int, AIRegistrySubqueryEntry>();
                 for (var i = 0; i < requirements.Length; i++) {
                     var lookup = factory.MakeSubqueryLookup(requirements[i].LookupStrategyDesc);

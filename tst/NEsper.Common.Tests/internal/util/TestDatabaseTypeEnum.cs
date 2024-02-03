@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -9,6 +9,7 @@
 using com.espertech.esper.compat;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.util
 {
@@ -34,7 +35,7 @@ namespace com.espertech.esper.common.@internal.util
 
             for (var i = 0; i < types.Length; i++) {
                 var val = (DatabaseTypeEnum) types[i][1];
-                Assert.AreEqual(val, DatabaseTypeEnumExtensions.GetEnum((string) types[i][0]));
+                ClassicAssert.AreEqual(val, DatabaseTypeEnumExtensions.GetEnum((string) types[i][0]));
             }
         }
 
@@ -56,8 +57,8 @@ namespace com.espertech.esper.common.@internal.util
 
             for (var i = 0; i < types.Length; i++) {
                 var val = (DatabaseTypeEnum) types[i][0];
-                Assert.AreEqual(types[i][1], val.GetBinding().DataType.GetBoxedType());
-                Assert.AreEqual(types[i][1], val.GetBoxedType());
+                ClassicAssert.AreEqual(types[i][1], val.GetBinding().DataType.GetBoxedType());
+                ClassicAssert.AreEqual(types[i][1], val.GetBoxedType());
             }
         }
     }

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -70,7 +70,7 @@ namespace com.espertech.esper.common.@internal.@event.render
                 }
                 else {
                     if (c < ' ') {
-                        t = "000" + ((short) c).ToString("X2");
+                        t = "000" + ((short)c).ToString("X2");
                         sb.Append("\\u");
                         sb.Append(t.Substring(t.Length - 4));
                     }

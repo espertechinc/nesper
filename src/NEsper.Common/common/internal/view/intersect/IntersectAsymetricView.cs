@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -53,6 +53,8 @@ namespace com.espertech.esper.common.@internal.view.intersect
         public View[] ViewContained => views;
 
         public IntersectViewFactory ViewFactory { get; }
+
+        public View[] RelatedViews => views;
 
         public void Stop(AgentInstanceStopServices services)
         {
@@ -209,7 +211,7 @@ namespace com.espertech.esper.common.@internal.view.intersect
 
             if (newDataPosted != null || oldDataPosted != null) {
                 agentInstanceContext.InstrumentationProvider.QViewIndicate(ViewFactory, newDataPosted, oldDataPosted);
-                child.Update(newDataPosted, oldDataPosted);
+                Child.Update(newDataPosted, oldDataPosted);
                 agentInstanceContext.InstrumentationProvider.AViewIndicate();
             }
 
@@ -264,7 +266,7 @@ namespace com.espertech.esper.common.@internal.view.intersect
             }
 
             agentInstanceContext.InstrumentationProvider.QViewIndicate(ViewFactory, null, oldEvents);
-            child.Update(null, oldEvents);
+            Child.Update(null, oldEvents);
             agentInstanceContext.InstrumentationProvider.AViewIndicate();
         }
 
@@ -272,7 +274,7 @@ namespace com.espertech.esper.common.@internal.view.intersect
         {
             IntersectDefaultView.VisitViewContained(viewDataVisitor, ViewFactory, views);
         }
-        
+
         public void Transfer(AgentInstanceTransferServices services)
         {
         }

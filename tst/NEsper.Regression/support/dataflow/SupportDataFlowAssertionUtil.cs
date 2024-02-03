@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -13,12 +13,13 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.support.dataflow
 {
     public class SupportDataFlowAssertionUtil
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public static void TryInvalidRun(
             RegressionEnvironment env,
@@ -26,7 +27,7 @@ namespace com.espertech.esper.regressionlib.support.dataflow
             string name,
             string message)
         {
-            env.CompileDeploy("@Name('flow') " + epl);
+            env.CompileDeploy("@name('flow') " + epl);
             var df = env.Runtime.DataFlowService.Instantiate(env.DeploymentId("flow"), name);
 
             try {
@@ -46,14 +47,14 @@ namespace com.espertech.esper.regressionlib.support.dataflow
             string epl,
             string message)
         {
-            env.CompileDeploy("@Name('flow') " + epl);
+            env.CompileDeploy("@name('flow') " + epl);
 
             try {
                 env.Runtime.DataFlowService.Instantiate(env.DeploymentId("flow"), name);
                 Assert.Fail();
             }
             catch (EPDataFlowInstantiationException ex) {
-                log.Info("Expected exception: " + ex.Message, ex);
+                Log.Info("Expected exception: " + ex.Message, ex);
                 AssertException(message, ex.Message);
             }
             finally {
@@ -74,7 +75,7 @@ namespace com.espertech.esper.regressionlib.support.dataflow
             }
 
             if (message.StartsWith(expected)) {
-                Assert.IsFalse(string.IsNullOrEmpty(expected.Trim()), "empty expected message, received:\n" + message);
+                ClassicAssert.IsFalse(string.IsNullOrEmpty(expected.Trim()), "empty expected message, received:\n" + message);
                 return;
             }
 

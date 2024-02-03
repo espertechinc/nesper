@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -62,19 +62,29 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            CodegenMethod method = parent.MakeChild(typeof(ExprTableEvalStrategyFactory), GetType(), classScope);
-            CodegenExpression groupKeyEval = ConstantNull();
+            var method = parent.MakeChild(typeof(ExprTableEvalStrategyFactory), GetType(), classScope);
+            var groupKeyEval = ConstantNull();
             if (_optionalGroupKeys != null && _optionalGroupKeys.Length > 0) {
                 groupKeyEval = MultiKeyCodegen.CodegenEvaluatorReturnObjectOrArrayWCoerce(
-                    _optionalGroupKeys, _tableMeta.KeyTypes, true, method, GetType(), classScope);
+                    _optionalGroupKeys,
+                    _tableMeta.KeyTypes,
+                    true,
+                    method,
+                    GetType(),
+                    classScope);
             }
 
-            CodegenExpression optionalEnumEval = ConstantNull();
+            var optionalEnumEval = ConstantNull();
             if (_optionalEnumEval != null) {
-                optionalEnumEval = ExprNodeUtilityCodegen.CodegenExprEnumEval(_optionalEnumEval, method, symbols, classScope, GetType());
+                optionalEnumEval = ExprNodeUtilityCodegen.CodegenExprEnumEval(
+                    _optionalEnumEval,
+                    method,
+                    symbols,
+                    classScope,
+                    GetType());
             }
 
-            CodegenExpression aggregationMethodEval = ConstantNull();
+            var aggregationMethodEval = ConstantNull();
             if (_aggregationMethod != null) {
                 aggregationMethodEval = _aggregationMethod.CodegenCreateReader(method, symbols, classScope);
             }
@@ -82,7 +92,10 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
             method.Block
                 .DeclareVar<ExprTableEvalStrategyFactory>("factory", NewInstance(typeof(ExprTableEvalStrategyFactory)))
                 .SetProperty(Ref("factory"), "StrategyEnum", Constant(_strategyEnum))
-                .SetProperty(Ref("factory"), "Table", TableDeployTimeResolver.MakeResolveTable(_tableMeta, symbols.GetAddInitSvc(method)))
+                .SetProperty(
+                    Ref("factory"),
+                    "Table",
+                    TableDeployTimeResolver.MakeResolveTable(_tableMeta, symbols.GetAddInitSvc(method)))
                 .SetProperty(Ref("factory"), "GroupKeyEval", groupKeyEval)
                 .SetProperty(Ref("factory"), "AggColumnNum", Constant(_aggColumnNum))
                 .SetProperty(Ref("factory"), "PropertyIndex", Constant(_propertyIndex))

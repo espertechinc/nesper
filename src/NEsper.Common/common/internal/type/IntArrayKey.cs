@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -27,9 +27,7 @@ namespace com.espertech.esper.common.@internal.type
             hashCode = CompatExtensions.Hash(keys);
         }
 
-        public int Count {
-            get { return keys.Length; }
-        }
+        public int Count => keys.Length;
 
         public override bool Equals(object other)
         {
@@ -37,8 +35,7 @@ namespace com.espertech.esper.common.@internal.type
                 return true;
             }
 
-            if (other is IntArrayKey) {
-                var otherKeys = (IntArrayKey) other;
+            if (other is IntArrayKey otherKeys) {
                 return CompatExtensions.Equals(keys, otherKeys.keys);
             }
 
@@ -52,12 +49,9 @@ namespace com.espertech.esper.common.@internal.type
 
         public override string ToString()
         {
-            return "IntArrayKey" + Arrays.AsList(keys);
+            return $"IntArrayKey{Arrays.AsList(keys)}";
         }
 
-        public int[] GetKeys()
-        {
-            return keys;
-        }
+        public int[] Keys => keys;
     }
 } // end of namespace

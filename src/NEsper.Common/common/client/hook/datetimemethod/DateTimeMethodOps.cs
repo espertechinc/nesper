@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -8,12 +8,12 @@
 
 namespace com.espertech.esper.common.client.hook.datetimemethod
 {
-	/// <summary>
-	///     Interface for use with date-time method operations. Use an implementation class provided by the extension API.
-	///     <para />
-	///     Not intended to be implemented by applications.
-	/// </summary>
-	public interface DateTimeMethodOps
+    /// <summary>
+    ///     Interface for use with date-time method operations. Use an implementation class provided by the extension API.
+    ///     <para />
+    ///     Not intended to be implemented by applications.
+    /// </summary>
+    public interface DateTimeMethodOps
     {
     }
 } // end of namespace

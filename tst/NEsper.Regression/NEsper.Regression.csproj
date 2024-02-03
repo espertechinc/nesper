@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFrameworks>netcoreapp3.1;net6.0</TargetFrameworks>
+        <TargetFrameworks>net6.0;net7.0</TargetFrameworks>
     </PropertyGroup>
 
     <PropertyGroup>
@@ -19,10 +19,10 @@
 
     <ItemGroup>
         <PackageReference Include="JetBrains.dotMemoryUnit" Version="3.2.20220510" />
-        <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
-        <PackageReference Include="Npgsql" Version="4.0.8" />
-        <PackageReference Include="NUnit" Version="3.13.3" />
-        <PackageReference Include="NUnit3TestAdapter" Version="4.4.2" />
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+        <PackageReference Include="Npgsql" Version="8.0.1" />
+        <PackageReference Include="NUnit" Version="4.0.1" />
+        <PackageReference Include="NUnit3TestAdapter" Version="4.5.0" />
     </ItemGroup>
 
     <ItemGroup>
@@ -34,15 +34,4 @@
         <ProjectReference Include="..\..\src\NEsper.Log.NLog\NEsper.Log.NLog.csproj" />
         <ProjectReference Include="..\..\src\NEsper.Runtime\NEsper.Runtime.csproj" />
     </ItemGroup>
-
-    <!--
-    <ItemGroup>
-      <None Update="log4net.config">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="NEsperRegressionConfig.xml">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-    </ItemGroup>
-    -->
 </Project>

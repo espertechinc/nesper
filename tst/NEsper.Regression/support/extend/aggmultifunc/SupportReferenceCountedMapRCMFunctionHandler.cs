@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -26,16 +26,16 @@ namespace com.espertech.esper.regressionlib.support.extend.aggmultifunc
             this.parameterExpressions = parameterExpressions;
         }
 
-        public EPType ReturnType => EPTypeHelper.NullValue();
+        public EPChainableType ReturnType => EPChainableTypeHelper.NullValue();
 
         public AggregationMultiFunctionStateKey AggregationStateUniqueKey { get; }
 
         public AggregationMultiFunctionStateMode StateMode =>
-            new AggregationMultiFunctionStateModeManaged().SetInjectionStrategyAggregationStateFactory(
+            new AggregationMultiFunctionStateModeManaged().WithInjectionStrategyAggregationStateFactory(
                 new InjectionStrategyClassNewInstance(typeof(SupportReferenceCountedMapStateFactory)));
 
         public AggregationMultiFunctionAccessorMode AccessorMode =>
-            new AggregationMultiFunctionAccessorModeManaged().SetInjectionStrategyAggregationAccessorFactory(
+            new AggregationMultiFunctionAccessorModeManaged().WithInjectionStrategyAggregationAccessorFactory(
                 new InjectionStrategyClassNewInstance(typeof(SupportReferenceCountedMapAccessorFactory)));
 
         public AggregationMultiFunctionAgentMode AgentMode =>

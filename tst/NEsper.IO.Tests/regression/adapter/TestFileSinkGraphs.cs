@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -19,7 +19,7 @@ using com.espertech.esperio.file;
 using com.espertech.esperio.support.util;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esperio.support.util.CompileUtil;
 
 namespace com.espertech.esperio.regression.adapter
@@ -37,6 +37,8 @@ namespace com.espertech.esperio.regression.adapter
 			configuration.Runtime.Threading.IsInternalTimerEnabled = false;
 			configuration.Common.AddImportNamespace(typeof(FileSinkFactory));
 			configuration.Common.AddImportNamespace(typeof(DefaultSupportSourceOpForge));
+			configuration.Common.EventMeta.IsEnableXmlXsd = true;
+			
 			DefaultSupportGraphEventUtil.AddTypeConfiguration(configuration);
 			_runtimeProvider = new EPRuntimeProvider();
 			_runtime = _runtimeProvider.GetDefaultRuntimeInstance(configuration);
@@ -52,7 +54,6 @@ namespace com.espertech.esperio.regression.adapter
 			        "DefaultSupportSourceOp -> mystreamOne<MyMapEvent> {}" +
 			        "FileSink(mystreamOne, mystreamOne) {file: 'x:\\a.bb'}";
 			TryInvalidCompileGraph(_runtime, graph,
-				"Error during compilation: " +
 				"Failed to obtain operator 'FileSink': " +
 				"FileSinkForge expected a single input port");
 
@@ -82,7 +83,7 @@ namespace com.espertech.esperio.regression.adapter
 				Assert.Fail();
 			}
 			catch (EPDataFlowInstantiationException ex) {
-				Assert.AreEqual(message, ex.Message);
+				ClassicAssert.AreEqual(message, ex.Message);
 			}
 
 			try {

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -12,6 +12,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.container;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.client.configuration
 {
@@ -56,9 +57,9 @@ namespace com.espertech.esper.common.client.configuration
             ConfigurationCommon common = config.Common;
             common.AddEventType("AEventType", "BClassName");
 
-            Assert.IsTrue(common.IsEventTypeExists("AEventType"));
-            Assert.AreEqual(1, common.EventTypeNames.Count);
-            Assert.AreEqual("BClassName", common.EventTypeNames.Get("AEventType"));
+            ClassicAssert.IsTrue(common.IsEventTypeExists("AEventType"));
+            ClassicAssert.AreEqual(1, common.EventTypeNames.Count);
+            ClassicAssert.AreEqual("BClassName", common.EventTypeNames.Get("AEventType"));
             AssertDefaultConfig();
         }
 

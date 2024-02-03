@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -13,6 +13,7 @@ using System.IO;
 using com.espertech.esper.common.@internal.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.collection
 {
@@ -34,7 +35,7 @@ namespace com.espertech.esper.common.@internal.collection
                 results.Add(copy);
             }
 
-            Assert.IsFalse(e.MoveNext());
+            ClassicAssert.IsFalse(e.MoveNext());
 
             IList<string> items = new List<string>();
             foreach (var result in results)
@@ -49,7 +50,7 @@ namespace com.espertech.esper.common.@internal.collection
             }
 
             var resultStr = CollectionUtil.ToString(items);
-            Assert.AreEqual(expected, resultStr);
+            ClassicAssert.AreEqual(expected, resultStr);
         }
 
         [Test]
@@ -70,7 +71,7 @@ namespace com.espertech.esper.common.@internal.collection
             }
             catch (ArgumentException ex)
             {
-                Assert.AreEqual("Expecting non-null element of minimum length 1", ex.Message);
+                ClassicAssert.AreEqual("Expecting non-null element of minimum length 1", ex.Message);
             }
         }
     }

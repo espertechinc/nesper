@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -38,7 +38,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
         public virtual void MergeClasses(ISet<Type> classes)
         {
         }
-        
+
         public void TraverseExpressions(Consumer<CodegenExpression> consumer)
         {
         }
@@ -53,7 +53,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
                 return false;
             }
 
-            var that = (CodegenExpressionRef) obj;
+            var that = (CodegenExpressionRef)obj;
 
             return _ref.Equals(that._ref);
         }

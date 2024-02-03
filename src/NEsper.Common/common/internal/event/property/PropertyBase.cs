@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -47,10 +47,6 @@ namespace com.espertech.esper.common.@internal.@event.property
             BeanEventType eventType,
             BeanEventTypeFactory beanEventTypeFactory);
 
-        public abstract GenericPropertyDesc GetPropertyTypeGeneric(
-            BeanEventType eventType,
-            BeanEventTypeFactory beanEventTypeFactory);
-
         public abstract EventPropertyGetterSPI GetGetter(
             BeanEventType eventType,
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
@@ -80,7 +76,6 @@ namespace com.espertech.esper.common.@internal.@event.property
             string propertyExpression);
 
         public abstract void ToPropertyEPL(TextWriter writer);
-
         public abstract string[] ToPropertyArray();
     }
 } // end of namespace

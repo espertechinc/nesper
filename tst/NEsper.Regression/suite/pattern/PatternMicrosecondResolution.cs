@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -13,6 +13,7 @@ using com.espertech.esper.compat.datetime;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.pattern
 {
@@ -178,21 +179,27 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         {
             env.AdvanceTime(startTime);
 
-            var epl = "@Name('s0') select * from pattern[" + patternExpr + "]";
+            var epl = "@name('s0') select * from pattern[" + patternExpr + "]";
             env.CompileDeploy(epl).AddListener("s0");
 
             var count = 0;
             foreach (var flipTime in flipTimes) {
                 env.AdvanceTime(flipTime - 1);
-                Assert.IsFalse(env.Listener("s0").GetAndClearIsInvoked(), "Failed for flip " + count);
+                env.AssertListener(
+                    "s0",
+                    listener => ClassicAssert.IsFalse(listener.GetAndClearIsInvoked(), "Failed for flip " + count));
+
+                ClassicAssert.IsFalse(env.Listener("s0").GetAndClearIsInvoked(), "Failed for flip " + count);
 
                 env.AdvanceTime(flipTime);
-                Assert.IsTrue(env.Listener("s0").GetAndClearIsInvoked(), "Failed for flip " + count);
+                env.AssertListener(
+                    "s0",
+                    listener => ClassicAssert.IsTrue(listener.GetAndClearIsInvoked(), "Failed for flip " + count));
                 count++;
             }
 
             env.AdvanceTime(long.MaxValue);
-            Assert.IsFalse(env.Listener("s0").GetAndClearIsInvoked());
+            env.AssertListenerNotInvoked("s0");
 
             env.UndeployAll();
         }

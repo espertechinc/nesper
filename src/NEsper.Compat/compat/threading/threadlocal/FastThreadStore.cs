@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -9,6 +9,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 using System.Threading;
 using com.espertech.esper.compat.threading.locks;
 
@@ -21,7 +22,6 @@ namespace com.espertech.esper.compat.threading.threadlocal
     /// </summary>
     /// <typeparam name="T"></typeparam>
 
-    [Serializable]
     public class FastThreadStore<T>
         where T : class
     {
@@ -29,6 +29,7 @@ namespace com.espertech.esper.compat.threading.threadlocal
 
         private static readonly Queue<int> IndexReclaim = new Queue<int>();
 
+        [JsonIgnore]
         [NonSerialized]
         private int _instanceId = 0;
 

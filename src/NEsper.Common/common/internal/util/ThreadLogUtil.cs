@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 
@@ -87,17 +86,9 @@ namespace com.espertech.esper.common.@internal.util
             Write(lockAction + " " + GetLockInfo(@lock));
         }
 
-        private static string GetLockInfo(object lockObj)
-        {
-            string lockid = $"Lock@{Marshal.GetIUnknownForObject(lockObj).ToInt64():X8}";
-            return "lock " + lockid;
-            //return "lock " + lockid + " held=" + lockObj.HoldCount + " isHeldMe=" + lockObj.IsHeldByCurrentThread() +
-            //        " hasQueueThreads=" + lockObj.HasQueuedThreads();
-        }
-
         private static string GetLockInfo(IReaderWriterLock lockObj)
         {
-            string lockid = $"RWLock@{lockObj.GetHashCode():X}";
+            var lockid = $"RWLock@{lockObj.GetHashCode():X}";
             return lockid +
                    //" readLockCount=" + lockObj.ReadLockCount +
                    " isWriteLocked=" +
@@ -108,11 +99,11 @@ namespace com.espertech.esper.common.@internal.util
             string text,
             params object[] objects)
         {
-            StringBuilder buf = new StringBuilder();
+            var buf = new StringBuilder();
             buf.Append(text);
             buf.Append(' ');
-            foreach (object obj in objects) {
-                if ((obj is string) || (obj is ValueType)) {
+            foreach (var obj in objects) {
+                if (obj is string || obj is ValueType) {
                     buf.Append(obj.ToString());
                 }
                 else {

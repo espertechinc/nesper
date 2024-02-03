@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -32,8 +32,8 @@ namespace com.espertech.esper.common.@internal.epl.lookupsubord
             IEnumerable<EventBean> iterable)
         {
             this.joinExpr = joinExpr;
-            this.eventsPerStream = new EventBean[2];
-            this.iterableEvents = iterable;
+            eventsPerStream = new EventBean[2];
+            iterableEvents = iterable;
         }
 
         public EventBean[] Lookup(
@@ -44,11 +44,11 @@ namespace com.espertech.esper.common.@internal.epl.lookupsubord
 
             ISet<EventBean> removeEvents = null;
 
-            IEnumerator<EventBean> eventsIt = iterableEvents.GetEnumerator();
+            var eventsIt = iterableEvents.GetEnumerator();
             while (eventsIt.MoveNext()) {
                 eventsPerStream[0] = eventsIt.Current;
 
-                foreach (EventBean aNewData in newData) {
+                foreach (var aNewData in newData) {
                     eventsPerStream[1] = aNewData; // Stream 1 events are the originating events (on-delete events)
 
                     var booleanResult = joinExpr.Evaluate(eventsPerStream, true, exprEvaluatorContext);
@@ -69,7 +69,7 @@ namespace com.espertech.esper.common.@internal.epl.lookupsubord
                 return null;
             }
 
-            EventBean[] result = removeEvents.ToArray();
+            var result = removeEvents.ToArray();
             exprEvaluatorContext.InstrumentationProvider.AInfraTriggeredLookup(result);
             return result;
         }
@@ -81,7 +81,7 @@ namespace com.espertech.esper.common.@internal.epl.lookupsubord
 
         public string ToQueryPlan()
         {
-            return this.GetType().Name;
+            return GetType().Name;
         }
     }
 } // end of namespace

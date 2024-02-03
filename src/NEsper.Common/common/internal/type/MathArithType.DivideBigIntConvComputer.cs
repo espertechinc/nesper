@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -22,7 +22,6 @@ namespace com.espertech.esper.common.@internal.type
         /// <summary>
         ///     Computer for math op.
         /// </summary>
-        [Serializable]
         public class DivideBigIntConvComputer : Computer
         {
             private readonly BigIntegerCoercer _convOne;
@@ -67,8 +66,8 @@ namespace com.espertech.esper.common.@internal.type
                     .AddParam(ltype, "d1")
                     .AddParam(rtype, "d2")
                     .Block
-                    .DeclareVar<BigInteger?>("s1", _convOne.CoerceBoxedBigIntCodegen(Ref("d1"), ltype))
-                    .DeclareVar<BigInteger?>("s2", _convTwo.CoerceBoxedBigIntCodegen(Ref("d2"), rtype))
+                    .DeclareVar<BigInteger?>("s1", _convOne.CoerceBoxedBigIntCodegen(Ref("d1"), ltype, codegenMethodScope, codegenClassScope))
+                    .DeclareVar<BigInteger?>("s2", _convTwo.CoerceBoxedBigIntCodegen(Ref("d2"), rtype, codegenMethodScope, codegenClassScope))
                     .IfCondition(EqualsIdentity(Ref("s2"), EnumValue(typeof(BigInteger), "Zero")))
                     .BlockReturn(ConstantNull())
                     .MethodReturn(Op(Ref("s1"), "/", Ref("s2")));

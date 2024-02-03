@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -20,7 +20,8 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
 namespace com.espertech.esper.common.@internal.epl.expression.etc
 {
-    public class ExprEvalEnumerationSingleToCollForge : ExprForge, SelectExprProcessorTypableForge
+    public class ExprEvalEnumerationSingleToCollForge : ExprForge,
+        SelectExprProcessorTypableForge
     {
         private readonly ExprEnumerationForge _;
         private readonly EventType _targetType;
@@ -29,13 +30,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             ExprEnumerationForge enumerationForge,
             EventType targetType)
         {
-            this._ = enumerationForge;
-            this._targetType = targetType;
+            _ = enumerationForge;
+            _targetType = targetType;
         }
 
-        public ExprEvaluator ExprEvaluator {
-            get { throw ExprNodeUtilityMake.MakeUnsupportedCompileTime(); }
-        }
+        public ExprEvaluator ExprEvaluator => throw ExprNodeUtilityMake.MakeUnsupportedCompileTime();
 
         public CodegenExpression EvaluateCodegen(
             Type requiredType,
@@ -43,7 +42,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenMethod methodNode = codegenMethodScope.MakeChild(
+            var methodNode = codegenMethodScope.MakeChild(
                 typeof(EventBean[]),
                 typeof(ExprEvalEnumerationSingleToCollForge),
                 codegenClassScope);
@@ -59,20 +58,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             return LocalMethod(methodNode);
         }
 
-        public ExprForgeConstantType ForgeConstantType {
-            get => ExprForgeConstantType.NONCONST;
-        }
+        public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
 
-        public Type EvaluationType {
-            get => typeof(EventBean[]);
-        }
+        public Type EvaluationType => typeof(EventBean[]);
 
-        public Type UnderlyingEvaluationType {
-            get => TypeHelper.GetArrayType(_targetType.UnderlyingType);
-        }
+        public Type UnderlyingEvaluationType => TypeHelper.GetArrayType(_targetType.UnderlyingType);
 
-        public ExprNodeRenderable ExprForgeRenderable {
-            get => _.EnumForgeRenderable;
-        }
+        public ExprNodeRenderable ExprForgeRenderable => _.EnumForgeRenderable;
     }
 } // end of namespace

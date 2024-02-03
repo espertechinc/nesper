@@ -6,14 +6,14 @@ using System.Reflection;
 using com.espertech.esper.compat;
 
 #if NETCOREAPP3_0_OR_GREATER
-using System.Runtime.Loader;
 #endif
 
 using com.espertech.esper.compat.logging;
 
 namespace com.espertech.esper.common.client.artifact
 {
-    public class DefaultArtifactRepositoryManager : IArtifactRepositoryManager, IDisposable
+    public class DefaultArtifactRepositoryManager : IArtifactRepositoryManager,
+        IDisposable
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -35,7 +35,8 @@ namespace com.espertech.esper.common.client.artifact
 
 #if NETCOREAPP3_0_OR_GREATER
             DefaultRepository = new ArtifactRepositoryAssemblyLoadContext(
-                _parentTypeResolver, _assemblyResolver);
+                _parentTypeResolver,
+                _assemblyResolver);
 #else
             DefaultRepository = new ArtifactRepositoryAppDomain(AppDomain.CurrentDomain);
 #endif
@@ -69,7 +70,9 @@ namespace com.espertech.esper.common.client.artifact
         /// </summary>
         /// <param name="deploymentId"></param>
         /// <param name="createIfMissing"></param>
-        public IArtifactRepository GetArtifactRepository(string deploymentId, bool createIfMissing)
+        public IArtifactRepository GetArtifactRepository(
+            string deploymentId,
+            bool createIfMissing)
         {
             lock (_repositoryTable) {
                 if (!_repositoryTable.TryGetValue(deploymentId, out var artifactRepository) && createIfMissing) {

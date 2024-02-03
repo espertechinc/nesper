@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -23,8 +23,7 @@ namespace com.espertech.esper.common.@internal.statement.helper
                     break;
                 }
 
-                if (factory is GroupByViewFactory) {
-                    var grouped = (GroupByViewFactory) factory;
+                if (factory is GroupByViewFactory grouped) {
                     return FindPreviousViewFactory(grouped.Groupeds);
                 }
             }
@@ -34,7 +33,7 @@ namespace com.espertech.esper.common.@internal.statement.helper
                     "Failed to find 'previous'-handling view factory"); // was verified earlier, should not occur
             }
 
-            return (DataWindowViewWithPrevious) factoryFound;
+            return (DataWindowViewWithPrevious)factoryFound;
         }
     }
 } // end of namespace

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -34,7 +34,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.core
         {
             var pass = filterEval.Evaluate(eventsPerStream, true, exprEvaluatorContext);
             if (pass != null && true.Equals(pass)) {
-                EventBean[] rewrite = new EventBean[] {eventsPerStream[streamNum]};
+                var rewrite = new EventBean[] { eventsPerStream[streamNum] };
                 row.EnterAccess(column, rewrite, exprEvaluatorContext);
             }
         }
@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.core
         {
             var pass = filterEval.Evaluate(eventsPerStream, false, exprEvaluatorContext);
             if (pass != null && true.Equals(pass)) {
-                EventBean[] rewrite = new EventBean[] {eventsPerStream[streamNum]};
+                var rewrite = new EventBean[] { eventsPerStream[streamNum] };
                 row.LeaveAccess(column, rewrite, exprEvaluatorContext);
             }
         }

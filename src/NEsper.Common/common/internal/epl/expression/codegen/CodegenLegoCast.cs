@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -37,13 +37,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
             if (value is CodegenExpressionConstantNull) {
                 return value;
             }
-            
-            if ((value is CodegenExpressionConstant codegenExpressionConstant) &&
-                       (codegenExpressionConstant.IsNull)) {
+
+            if (value is CodegenExpressionConstant codegenExpressionConstant &&
+                codegenExpressionConstant.IsNull) {
                 return value;
             }
 
-            if (targetType == typeof(void)) {
+            if (targetType.IsTypeVoid()) {
                 throw new ArgumentException("Invalid void target type for cast");
             }
 
@@ -121,21 +121,21 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
             }
             else if (targetType.IsArray()) {
                 var elementType = targetType.GetElementType();
-                return StaticMethod(typeof(CompatExtensions), "UnwrapIntoArray", new[] {elementType}, value);
+                return StaticMethod(typeof(CompatExtensions), "UnwrapIntoArray", new[] { elementType }, value);
             }
             else if (targetType.IsGenericList()) {
-                var elementType = GenericExtensions.GetCollectionItemType(targetType);
-                return StaticMethod(typeof(CompatExtensions), "UnwrapIntoList", new [] {elementType}, value);
+                var elementType = targetType.GetCollectionItemType();
+                return StaticMethod(typeof(CompatExtensions), "UnwrapIntoList", new[] { elementType }, value);
             }
             else if (targetType.IsGenericSet()) {
-                var elementType = GenericExtensions.GetCollectionItemType(targetType);
-                return StaticMethod(typeof(CompatExtensions), "UnwrapIntoSet", new [] {elementType}, value);
+                var elementType = targetType.GetCollectionItemType();
+                return StaticMethod(typeof(CompatExtensions), "UnwrapIntoSet", new[] { elementType }, value);
             }
             else if (targetType == typeof(ICollection<object>)) {
                 return StaticMethod(typeof(TypeHelper), "AsObjectCollection", value);
             }
             else if (targetType.IsGenericCollection()) {
-                var elementType = GenericExtensions.GetCollectionItemType(targetType);
+                var elementType = targetType.GetCollectionItemType();
                 return Unwrap(elementType, value);
             }
 
@@ -151,6 +151,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
             CodegenClassScope codegenClassScope)
         {
             var type = forge.EvaluationType;
+            if (type == null) {
+                block.DeclareVar<double>(variable, Constant(0.0d));
+                return;
+            }
+
             if (type == typeof(double)) {
                 block.DeclareVar(
                     type,
@@ -159,7 +164,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
                 return;
             }
 
-            string holder = variable + "_";
+            var holder = variable + "_";
             block.DeclareVar(
                 type,
                 holder,

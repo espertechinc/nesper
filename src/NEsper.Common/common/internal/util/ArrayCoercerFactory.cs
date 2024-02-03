@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -35,19 +35,22 @@ namespace com.espertech.esper.common.@internal.util
         {
             var fromElement = fromType.GetElementType();
             var toElement = resultType.GetElementType();
-            
+
             if (fromElement == toElement) {
                 return new CoercerNull(resultType);
             }
+
             if (fromElement.GetBoxedType() == toElement) {
                 // Widening
                 return new CoercerWiden(fromElement);
-            } else if (fromElement == toElement.GetBoxedType()) {
+            }
+            else if (fromElement == toElement.GetBoxedType()) {
                 // Narrowing
                 return new CoercerNarrow(toElement);
             }
 
-            throw new ArgumentException($"Cannot coerce array of type '{fromElement.CleanName()}' to array type '{resultType.CleanName()}'");
+            throw new ArgumentException(
+                $"Cannot coerce array of type '{fromElement.CleanName()}' to array type '{resultType.CleanName()}'");
         }
 
         public static Array WidenArray(object source)
@@ -61,13 +64,13 @@ namespace com.espertech.esper.common.@internal.util
                 var sourceArrayType = sourceArray.GetType().GetElementType();
                 var targetArrayType = sourceArrayType.GetBoxedType().MakeArrayType();
                 var targetArray = Arrays.CreateInstanceChecked(targetArrayType, sourceArrayLength);
-                for (int ii = 0; ii < sourceArrayLength; ii++) {
+                for (var ii = 0; ii < sourceArrayLength; ii++) {
                     targetArray.SetValue(sourceArray.GetValue(ii), ii);
                 }
 
                 return targetArray;
             }
-            
+
             throw new EPException($"Invalid value presented for \"{nameof(source)}\" for array widening");
         }
 
@@ -82,7 +85,7 @@ namespace com.espertech.esper.common.@internal.util
                 var sourceArrayType = sourceArray.GetType().GetElementType();
                 var targetArrayType = sourceArrayType.GetUnboxedType().MakeArrayType();
                 var targetArray = Arrays.CreateInstanceChecked(targetArrayType, sourceArrayLength);
-                for (int ii = 0; ii < sourceArrayLength; ii++) {
+                for (var ii = 0; ii < sourceArrayLength; ii++) {
                     var sourceValue = sourceArray.GetValue(ii);
                     if (sourceValue != null) {
                         targetArray.SetValue(sourceValue, ii);
@@ -91,15 +94,17 @@ namespace com.espertech.esper.common.@internal.util
 
                 return targetArray;
             }
-            
+
             throw new EPException($"Invalid value presented for \"{nameof(source)}\" for array widening");
         }
-        
+
         private class CoercerNull : Coercer
         {
+            private readonly Type _returnType;
+
             public CoercerNull(Type returnType)
             {
-                ReturnType = returnType;
+                _returnType = returnType;
             }
 
             public object CoerceBoxed(object value)
@@ -107,11 +112,11 @@ namespace com.espertech.esper.common.@internal.util
                 return value;
             }
 
-            public Type ReturnType { get; }
+            public Type GetReturnType(Type valueType) => _returnType;
 
             public CodegenExpression CoerceCodegen(
                 CodegenExpression value,
-                Type valueType)
+                Type valueType, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope)
             {
                 return value;
             }
@@ -125,12 +130,14 @@ namespace com.espertech.esper.common.@internal.util
                 return value;
             }
         }
-        
+
         private class CoercerWiden : Coercer
         {
+            private readonly Type _returnType;
+
             public CoercerWiden(Type returnType)
             {
-                ReturnType = returnType;
+                _returnType = returnType;
             }
 
             public object CoerceBoxed(object value)
@@ -138,11 +145,11 @@ namespace com.espertech.esper.common.@internal.util
                 return value;
             }
 
-            public Type ReturnType { get; }
+            public Type GetReturnType(Type valueType) => _returnType;
 
             public CodegenExpression CoerceCodegen(
                 CodegenExpression value,
-                Type valueType)
+                Type valueType, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope)
             {
                 return StaticMethod(typeof(ArrayCoercerFactory), "WidenArray", value);
             }
@@ -156,12 +163,14 @@ namespace com.espertech.esper.common.@internal.util
                 return StaticMethod(typeof(ArrayCoercerFactory), "WidenArray", value);
             }
         }
-        
+
         private class CoercerNarrow : Coercer
         {
+            private readonly Type _returnType;
+
             public CoercerNarrow(Type returnType)
             {
-                ReturnType = returnType;
+                _returnType = returnType;
             }
 
             public object CoerceBoxed(object value)
@@ -169,11 +178,11 @@ namespace com.espertech.esper.common.@internal.util
                 return value;
             }
 
-            public Type ReturnType { get; }
+            public Type GetReturnType(Type valueType) => _returnType;
 
             public CodegenExpression CoerceCodegen(
                 CodegenExpression value,
-                Type valueType)
+                Type valueType, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope)
             {
                 return StaticMethod(typeof(ArrayCoercerFactory), "NarrowArray", value);
             }

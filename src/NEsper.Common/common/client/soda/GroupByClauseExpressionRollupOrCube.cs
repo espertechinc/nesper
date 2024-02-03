@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -15,7 +15,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Represents a rollup or cube in a group-by clause.
     /// </summary>
-    [Serializable]
     public class GroupByClauseExpressionRollupOrCube : GroupByClauseExpression
     {
         private bool _cube;
@@ -39,34 +38,29 @@ namespace com.espertech.esper.common.client.soda
 
         /// <summary>Returns the rollup or cube group-by expressions. </summary>
         /// <value>expressions</value>
-        public IList<GroupByClauseExpression> Expressions
-        {
-            get { return _expressions; }
-            set { _expressions = value; }
+        public IList<GroupByClauseExpression> Expressions {
+            get => _expressions;
+            set => _expressions = value;
         }
 
         /// <summary>Returns true for cube, false for rollup. </summary>
         /// <value>cube</value>
-        public bool IsCube
-        {
-            get { return _cube; }
-            set { _cube = value; }
+        public bool IsCube {
+            get => _cube;
+            set => _cube = value;
         }
 
         public void ToEPL(TextWriter writer)
         {
-            if (_cube)
-            {
+            if (_cube) {
                 writer.Write("cube(");
             }
-            else
-            {
+            else {
                 writer.Write("rollup(");
             }
 
-            string delimiter = "";
-            foreach (GroupByClauseExpression child in _expressions)
-            {
+            var delimiter = "";
+            foreach (var child in _expressions) {
                 writer.Write(delimiter);
                 child.ToEPL(writer);
                 delimiter = ", ";

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
             ClassProvidedExtension classProvidedExtension)
         {
             try {
-                AggregationFunctionForge aggregationFactory = importService.ResolveAggregationFunction(functionName, classProvidedExtension);
+                var aggregationFactory = importService.ResolveAggregationFunction(functionName, classProvidedExtension);
                 return new ExprPlugInAggNode(distinct, aggregationFactory, functionName);
             }
             catch (ImportUndefinedException) {
@@ -43,25 +43,30 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
             }
 
             // try plug-in aggregation multi-function
-            Pair<ConfigurationCompilerPlugInAggregationMultiFunction, Type> configPair = importService
+            var configPair = importService
                 .ResolveAggregationMultiFunction(functionName, classProvidedExtension);
             if (configPair != null) {
-                HashableMultiKey multiKey = new HashableMultiKey(configPair.First.FunctionNames);
-                AggregationMultiFunctionForge factory = plugInAggregations.Map.Get(multiKey);
+                var multiKey = new HashableMultiKey(configPair.First.FunctionNames);
+                var factory = plugInAggregations.Map.Get(multiKey);
                 if (factory == null) {
                     if (configPair.Second != null) {
-                        factory = (AggregationMultiFunctionForge) TypeHelper.Instantiate<AggregationMultiFunctionForge>(
+                        factory = TypeHelper.Instantiate<AggregationMultiFunctionForge>(
                             configPair.Second);
-                    } else {
-                        factory = (AggregationMultiFunctionForge) TypeHelper.Instantiate<AggregationMultiFunctionForge>(
-                            configPair.First.MultiFunctionForgeClassName, importService.TypeResolver);
                     }
+                    else {
+                        factory = TypeHelper.Instantiate<AggregationMultiFunctionForge>(
+                            configPair.First.MultiFunctionForgeClassName,
+                            importService.TypeResolver);
+                    }
+
                     plugInAggregations.Map[multiKey] = factory;
                 }
-                factory.AddAggregationFunction(new AggregationMultiFunctionDeclarationContext(
-                    functionName.ToLowerInvariant(),
-                    distinct,
-                    configPair.First));
+
+                factory.AddAggregationFunction(
+                    new AggregationMultiFunctionDeclarationContext(
+                        functionName.ToLowerInvariant(),
+                        distinct,
+                        configPair.First));
                 return new ExprPlugInMultiFunctionAggNode(distinct, configPair.First, factory, functionName);
             }
 

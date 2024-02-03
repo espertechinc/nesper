@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -25,11 +25,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
         ExprEnumerationForge,
         ExprForge
     {
-        private readonly ExprDotNodeAggregationMethodForge forge;
+        private readonly ExprDotNodeAggregationMethodForge _forge;
 
         public ExprDotNodeAggregationMethodRootNode(ExprDotNodeAggregationMethodForge forge)
         {
-            this.forge = forge;
+            _forge = forge;
         }
 
         public override ExprForge Forge => this;
@@ -42,7 +42,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                     (
                         writer,
                         parentPrecedence,
-                        flags) => forge.ToPrecedenceFreeEPL(writer, flags));
+                        flags) => _forge.ToPrecedenceFreeEPL(writer, flags));
             }
         }
 
@@ -52,7 +52,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                     (
                         writer,
                         parentPrecedence,
-                        flags) => forge.ToPrecedenceFreeEPL(writer, flags));
+                        flags) => _forge.ToPrecedenceFreeEPL(writer, flags));
             }
         }
 
@@ -60,24 +60,24 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             StatementRawInfo statementRawInfo,
             StatementCompileTimeServices compileTimeServices)
         {
-            return forge.EventTypeCollection;
+            return _forge.EventTypeCollection;
         }
 
         public EventType GetEventTypeSingle(
             StatementRawInfo statementRawInfo,
             StatementCompileTimeServices compileTimeServices)
         {
-            return forge.EventTypeSingle;
+            return _forge.EventTypeSingle;
         }
 
-        public Type ComponentTypeCollection => forge.ComponentTypeCollection;
+        public Type ComponentTypeCollection => _forge.ComponentTypeCollection;
 
         public CodegenExpression EvaluateGetROCollectionEventsCodegen(
             CodegenMethodScope codegenMethodScope,
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            return forge.EvaluateGetROCollectionEventsCodegen(codegenMethodScope, exprSymbol, codegenClassScope);
+            return _forge.EvaluateGetROCollectionEventsCodegen(codegenMethodScope, exprSymbol, codegenClassScope);
         }
 
         public CodegenExpression EvaluateGetEventBeanCodegen(
@@ -85,7 +85,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            return forge.EvaluateGetEventBeanCodegen(codegenMethodScope, exprSymbol, codegenClassScope);
+            return _forge.EvaluateGetEventBeanCodegen(codegenMethodScope, exprSymbol, codegenClassScope);
         }
 
         public CodegenExpression EvaluateGetROCollectionScalarCodegen(
@@ -93,7 +93,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            return forge.EvaluateGetROCollectionScalarCodegen(codegenMethodScope, exprSymbol, codegenClassScope);
+            return _forge.EvaluateGetROCollectionScalarCodegen(codegenMethodScope, exprSymbol, codegenClassScope);
         }
 
         public ExprEnumerationEval ExprEvaluatorEnumeration => throw NotAvailableCompileTime();
@@ -104,12 +104,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            return forge.EvaluateCodegen(requiredType, codegenMethodScope, exprSymbol, codegenClassScope);
+            return _forge.EvaluateCodegen(requiredType, codegenMethodScope, exprSymbol, codegenClassScope);
         }
 
-        public Type EvaluationType => forge.EvaluationType;
+        public Type EvaluationType => _forge.EvaluationType;
 
-        public ExprEvaluator ExprEvaluator => throw new UnsupportedOperationException("Evaluator not available at compile-time");
+        public ExprEvaluator ExprEvaluator =>
+            throw new UnsupportedOperationException("Evaluator not available at compile-time");
 
         public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
 
@@ -123,7 +124,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             TextWriter writer,
             ExprNodeRenderableFlags flags)
         {
-            forge.ToPrecedenceFreeEPL(writer, flags);
+            _forge.ToPrecedenceFreeEPL(writer, flags);
         }
 
         public override bool EqualsNode(
@@ -136,13 +137,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
         public override void Accept(ExprNodeVisitor visitor)
         {
             base.Accept(visitor);
-            forge.Accept(visitor);
+            _forge.Accept(visitor);
         }
 
         public override void Accept(ExprNodeVisitorWithParent visitor)
         {
             base.Accept(visitor);
-            forge.Accept(visitor);
+            _forge.Accept(visitor);
         }
 
         public override void AcceptChildnodes(
@@ -150,7 +151,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             ExprNode parent)
         {
             base.AcceptChildnodes(visitor, parent);
-            forge.AcceptChildnodes(visitor);
+            _forge.AcceptChildnodes(visitor);
         }
 
         public static UnsupportedOperationException NotAvailableCompileTime()

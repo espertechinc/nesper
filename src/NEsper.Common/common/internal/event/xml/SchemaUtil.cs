@@ -1,11 +1,10 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
-
 
 using System;
 using System.Collections.Generic;
@@ -16,18 +15,16 @@ using System.Xml.XPath;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.@event.xml
 {
-    /// <summary> Utility class for querying schema information.</summary>
-    /// <author>
-    ///     pablo
-    /// </author>
+    /// <summary>
+    /// Utility class for querying schema information.
+    /// </summary>
+    /// <author>pablo</author>
     public class SchemaUtil
     {
         private static readonly IDictionary<string, Type> TypeMap;
-
 
         private static readonly XmlSchemaSimpleType _SchemaTypeString =
             XmlSchemaType.GetBuiltInSimpleType(XmlTypeCode.String);
@@ -98,40 +95,45 @@ namespace com.espertech.esper.common.@internal.@event.xml
 
             return XPathResultType.Any;
         }
-
+        
         /// <summary>
         ///     Returns the Type-type of the schema item.
         /// </summary>
         /// <param name="item">to to determine type for</param>
-        /// <returns>
-        ///     type
-        /// </returns>
-        public static Type ToReturnType(SchemaItem item)
+        /// <param name="xmlxsdHandler">xml-xsd handler</param>
+        /// <returns>type</returns>
+        public static Type ToReturnType(
+            SchemaItem item,
+            EventTypeXMLXSDHandler xmlxsdHandler)
         {
-            if (item is SchemaItemAttribute) {
-                var att = (SchemaItemAttribute) item;
-                return ToReturnType(att.SimpleType, att.TypeName);
+            if (item is SchemaItemAttribute schemaItemAttribute) {
+                return xmlxsdHandler.ToReturnType(
+                    schemaItemAttribute.SimpleType,
+                    schemaItemAttribute.TypeName,
+                    null);
             }
 
-            if (item is SchemaElementSimple) {
-                var simple = (SchemaElementSimple) item;
-                var returnType = ToReturnType(simple.SimpleType, simple.TypeName);
-                if (simple.IsArray) {
-                    returnType = returnType.MakeArrayType();
+            if (item is SchemaElementSimple schemaElementSimple) {
+                var returnType = xmlxsdHandler.ToReturnType(
+                    schemaElementSimple.SimpleType,
+                    schemaElementSimple.TypeName,
+                    schemaElementSimple.FractionDigits);
+                if (schemaElementSimple.IsArray) {
+                    returnType = TypeHelper.GetArrayType(returnType);
                 }
 
                 return returnType;
             }
 
-            if (item is SchemaElementComplex) {
-                var complex = (SchemaElementComplex) item;
-                if (complex.OptionalSimpleType != null) {
-                    return ToReturnType(
-                        ToXPathResultType(complex.OptionalSimpleType),
-                        complex.OptionalSimpleTypeName.Name);
+            if (item is SchemaElementComplex schemaElementComplex) {
+                if (schemaElementComplex.OptionalSimpleType != null) {
+                    return xmlxsdHandler.ToReturnType(
+                        schemaElementComplex.OptionalSimpleType,
+                        schemaElementComplex.OptionalSimpleTypeName.Name,
+                        null);
                 }
 
-                if (complex.IsArray) {
+                if (schemaElementComplex.IsArray) {
                     return typeof(XmlNodeList);
                 }
 
@@ -141,6 +143,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
             throw new PropertyAccessException("Invalid schema return type:" + item);
         }
 
+        
         public static Type ToReturnType(XmlQualifiedName qname)
         {
             if (qname.Namespace == XMLConstants.W3C_XML_SCHEMA_NS_URI) {
@@ -214,8 +217,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
             string typeName)
         {
             if (typeName != null) {
-                var type = TypeMap.Get(typeName);
-                if (type != null) {
+                if (TypeMap.TryGetValue(typeName, out var type)) {
                     return type;
                 }
             }
@@ -278,29 +280,16 @@ namespace com.espertech.esper.common.@internal.@event.xml
                 return optionalCastToType;
             }
 
-            if (resultType == XPathResultType.NodeSet) {
-                return typeof(XmlNodeList);
-            }
-
-            if (resultType == XPathResultType.Any) {
-                return typeof(XmlNode);
-            }
-
-            if (resultType == XPathResultType.Boolean) {
-                return typeof(bool?);
-            }
-
-            if (resultType == XPathResultType.Number) {
-                return typeof(double?);
-            }
-
-            if (resultType == XPathResultType.String) {
-                return typeof(string);
-            }
-
-            return typeof(string);
+            return resultType switch {
+                XPathResultType.NodeSet => typeof(XmlNodeList),
+                XPathResultType.Any => typeof(XmlNode),
+                XPathResultType.Boolean => typeof(bool?),
+                XPathResultType.Number => typeof(double?),
+                XPathResultType.String => typeof(string),
+                _ => typeof(string)
+            };
         }
-
+        
         public static XPathResultType SimpleTypeToResultType(XmlSchemaSimpleType definition)
         {
             var qname = definition.QualifiedName;
@@ -339,7 +328,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
 
             throw new EPException("Unable to convert qualified type '" + qname + "' to path result");
         }
-
+        
         /// <summary>
         ///     Returns the XPathConstants type for a given Xerces type definition.
         /// </summary>
@@ -418,9 +407,8 @@ namespace com.espertech.esper.common.@internal.@event.xml
             return null;
         }
 
-
         /// <summary>
-        ///     Finds an apropiate definition for the given property, starting at the * given
+        ///     Finds an appropriate definition for the given property, starting at the * given
         ///     definition. First look if the property es an attribute. If not, look at simple and
         ///     then child element definitions.
         /// </summary>
@@ -467,4 +455,4 @@ namespace com.espertech.esper.common.@internal.@event.xml
             return doc.OuterXml;
         }
     }
-}
+} // end of namespace

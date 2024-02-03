@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -17,10 +17,9 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Dot-expresson is for use in "(inner_expression).dot_expression".
     /// </summary>
-    [Serializable]
     public class DotExpression : ExpressionBase
     {
-        private IList<DotExpressionItem> chain = new List<DotExpressionItem>();
+        private IList<DotExpressionItem> _chain = new List<DotExpressionItem>();
 
         /// <summary>
         /// Ctor.
@@ -44,9 +43,9 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="item">item to add</param>
         public void Add(DotExpressionItem item)
         {
-            chain.Add(item);
+            _chain.Add(item);
         }
-        
+
         /// <summary>
         /// Add a method to the chain of methods after the dot.
         /// </summary>
@@ -56,7 +55,7 @@ namespace com.espertech.esper.common.client.soda
             string name,
             IList<Expression> parameters)
         {
-            chain.Add(new DotExpressionItemCall(name, parameters));
+            _chain.Add(new DotExpressionItemCall(name, parameters));
         }
 
         /// <summary>
@@ -71,9 +70,10 @@ namespace com.espertech.esper.common.client.soda
             bool isProperty)
         {
             if (parameters.IsEmpty() && isProperty) {
-                chain.Add(new DotExpressionItemName(name));
-            } else {
-                chain.Add(new DotExpressionItemCall(name, parameters));
+                _chain.Add(new DotExpressionItemName(name));
+            }
+            else {
+                _chain.Add(new DotExpressionItemCall(name, parameters));
             }
         }
 
@@ -81,24 +81,20 @@ namespace com.espertech.esper.common.client.soda
         /// Returns the method chain of all methods after the dot.
         /// </summary>
         /// <returns>method name ane list of parameters</returns>
-        public IList<DotExpressionItem> Chain
-        {
-            get => chain;
+        public IList<DotExpressionItem> Chain {
+            get => _chain;
+            set => _chain = value;
         }
 
-        public override ExpressionPrecedenceEnum Precedence
-        {
-            get => ExpressionPrecedenceEnum.MINIMUM;
-        }
+        public override ExpressionPrecedenceEnum Precedence => ExpressionPrecedenceEnum.MINIMUM;
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
-            if (!Children.IsEmpty())
-            {
+            if (!Children.IsEmpty()) {
                 Children[0].ToEPL(writer, Precedence);
             }
 
-            DotExpressionItem.Render(chain, writer, !Children.IsEmpty());
+            DotExpressionItem.Render(_chain, writer, !Children.IsEmpty());
         }
     }
 } // end of namespace

@@ -1,5 +1,5 @@
 ﻿///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -29,7 +29,7 @@ namespace com.espertech.esper.container
         {
             var wrapper = new ContainerImpl(new WindsorContainer());
             if (initialize) {
-                ContainerInitializer.InitializeDefaultServices(wrapper);
+                wrapper.InitializeDefaultServices();
             }
 
             return wrapper;
@@ -68,10 +68,16 @@ namespace com.espertech.esper.container
             return container.Resolve<IResourceManager>();
         }
 
-        public static TypeResolverProvider ClassLoaderProvider(this IContainer container)
+        public static TypeResolverProvider TypeResolverProvider(this IContainer container)
         {
             container.CheckContainer();
             return container.Resolve<TypeResolverProvider>();
+        }
+
+        public static TypeResolver TypeResolver(this IContainer container)
+        {
+            container.CheckContainer();
+            return container.Resolve<TypeResolver>();
         }
 
         private static bool TryCreateInstance<T>(this IContainer container, ConstructorInfo constructor, out T instanceValue)
@@ -105,9 +111,9 @@ namespace com.espertech.esper.container
                 return (T) constructor.Invoke(new object[] { container });
             }
 
-            constructor = viewFactoryClass.GetConstructor(new Type[0]);
+            constructor = viewFactoryClass.GetConstructor(Type.EmptyTypes);
             if (constructor != null) {
-                return (T) constructor.Invoke(new object[0]);
+                return (T) constructor.Invoke(Array.Empty<object>());
             }
 
             var instance = default(T);

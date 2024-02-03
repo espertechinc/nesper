@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -18,7 +18,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
 {
     public class AggregationMethodLinearListReference : AggregationMultiFunctionAggregationMethod
     {
-        public static readonly AggregationMethodLinearListReference INSTANCE = new AggregationMethodLinearListReference();
+        public static readonly AggregationMethodLinearListReference INSTANCE =
+            new AggregationMethodLinearListReference();
 
         private AggregationMethodLinearListReference()
         {
@@ -31,7 +32,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            var events = (IList<EventBean>) row.GetCollectionOfEvents(aggColNum, eventsPerStream, isNewData, exprEvaluatorContext);
+            var events = (IList<EventBean>)row.GetCollectionOfEvents(
+                aggColNum,
+                eventsPerStream,
+                isNewData,
+                exprEvaluatorContext);
             return events.AsReadOnlyList();
         }
 

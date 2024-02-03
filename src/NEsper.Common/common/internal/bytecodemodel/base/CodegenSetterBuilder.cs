@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -18,159 +18,282 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.@base
 {
-	public class CodegenSetterBuilder
-	{
-		private readonly Type _originator;
-		private readonly string _refName;
-		private readonly CodegenClassScope _classScope;
+    public class CodegenSetterBuilder
+    {
+        private readonly Type _originator;
+        private readonly string _refName;
+        private readonly CodegenClassScope _classScope;
+        private readonly bool _methodProvided;
+        private readonly CodegenMethod _method;
+        private readonly CodegenProperty _property;
+        private bool _closed;
 
-		private CodegenMethod _method;
-		private bool _closed;
+        public CodegenExpressionRef RefName => Ref(_refName);
 
-		public CodegenSetterBuilder(
-			Type returnType,
-			Type originator,
-			string refName,
-			CodegenMethodScope parent,
-			CodegenClassScope classScope)
-		{
-			_originator = originator;
-			_refName = refName;
-			_classScope = classScope;
+        public CodegenSetterBuilder(
+            Type returnType,
+            Type originator,
+            string refName,
+            CodegenMethodScope parent,
+            CodegenClassScope classScope)
+        {
+            _originator = originator;
+            _refName = refName;
+            _classScope = classScope;
 
-			_method = parent.MakeChild(returnType, originator, classScope);
-			_method.Block.DeclareVar(returnType, refName, NewInstance(returnType));
-		}
+            _methodProvided = false;
+            _method = parent.MakeChild(returnType, originator, classScope);
+            _method.Block.DeclareVarNewInstance(returnType, refName);
+        }
 
-		public CodegenSetterBuilder Constant(
-			string name,
-			object value)
-		{
-			if (value is CodegenExpression) {
-				throw new ArgumentException("Expected a non-expression value, received " + value);
-			}
+        public CodegenSetterBuilder(
+            Type returnType,
+            Type originator,
+            string refName,
+            CodegenClassScope classScope,
+            CodegenMethod method)
+        {
+            _originator = originator;
+            _refName = refName;
+            _classScope = classScope;
 
-			return SetValue(name, value == null ? ConstantNull() : CodegenExpressionBuilder.Constant(value));
-		}
+            _methodProvided = true;
+            _method = method;
+            _method.Block.DeclareVarNewInstance(returnType, refName);
+        }
 
-		public CodegenSetterBuilder Expression(
-			string name,
-			CodegenExpression expression)
-		{
-			return SetValue(name, expression);
-		}
+        public CodegenSetterBuilder(
+            Type returnType,
+            Type originator,
+            string refName,
+            CodegenClassScope classScope,
+            CodegenProperty property)
+        {
+            _originator = originator;
+            _refName = refName;
+            _classScope = classScope;
 
-		public CodegenSetterBuilder Method(
-			string name,
-			Func<CodegenMethod, CodegenExpression> expressionFunc)
-		{
-			CodegenExpression expression = expressionFunc.Invoke(_method);
-			return SetValue(name, expression ?? ConstantNull());
-		}
+            _methodProvided = false;
+            _method = null;
 
-		public CodegenSetterBuilder MapOfConstants<T>(
-			string name,
-			IDictionary<string, T> values)
-		{
-			CodegenSetterBuilderItemConsumer<T> consumer = (
-				o,
-				parent,
-				scope) => CodegenExpressionBuilder.Constant(o);
-			return SetValue(name, BuildMap(values, consumer, _originator, _method, _classScope));
-		}
+            _property = property;
+            _property.GetterBlock.DeclareVarNewInstance(returnType, refName);
+        }
+        
+        public CodegenSetterBuilder(
+            Type returnType,
+            Type originator,
+            string refName,
+            CodegenClassScope classScope,
+            CodegenMethod method,
+            CodegenExpression initializer)
+        {
+            _originator = originator;
+            _refName = refName;
+            _classScope = classScope;
+            _method = method;
+            _methodProvided = true;
+            method.Block.DeclareVar(returnType, refName, initializer);
+        }
 
-		public CodegenSetterBuilder Map<TI>(
-			string name,
-			IDictionary<string, TI> values,
-			CodegenSetterBuilderItemConsumer<TI> consumer)
-		{
-			return SetValue(name, BuildMap(values, consumer, _originator, _method, _classScope));
-		}
+        public CodegenSetterBuilder ConstantExplicit(
+            string name,
+            object value)
+        {
+            if (value is CodegenExpression) {
+                throw new ArgumentException("Expected a non-expression value, received " + value);
+            }
 
-		public CodegenExpression Build()
-		{
-			if (_closed) {
-				throw new IllegalStateException("Builder already completed build");
-			}
+            return SetValue(name, value == null ? ConstantNull() : Constant(value));
+        }
 
-			_closed = true;
-			_method.Block.MethodReturn(Ref(_refName));
-			return LocalMethod(_method);
-		}
+        public CodegenSetterBuilder ConstantDefaultChecked(
+            string name,
+            bool value)
+        {
+            if (!value) {
+                return this;
+            }
 
-		public CodegenMethod GetMethod()
-		{
-			return _method;
-		}
+            return SetValue(name, Constant(value));
+        }
 
-		private static CodegenExpression BuildMap<TV>(
-			IDictionary<string, TV> map,
-			CodegenSetterBuilderItemConsumer<TV> valueConsumer,
-			Type originator,
-			CodegenMethod method,
-			CodegenClassScope classScope)
-		{
-			if (map == null) {
-				return ConstantNull();
-			}
+        public CodegenSetterBuilder ConstantDefaultChecked(
+            string name,
+            int value)
+        {
+            if (value == 0) {
+                return this;
+            }
 
-			if (map.IsEmpty()) {
-				return EnumValue(typeof(EmptyDictionary<string, TV>), "Instance");
-			}
+            return SetValue(name, Constant(value));
+        }
 
-			CodegenMethod child = method.MakeChild(typeof(IDictionary<string, TV>), originator, classScope);
-			if (map.Count == 1) {
-				KeyValuePair<string, TV> single = map.First();
-				CodegenExpression value = BuildMapValue(single.Value, valueConsumer, originator, child, classScope);
-				child.Block.MethodReturn(
-					StaticMethod(
-						typeof(Collections),
-						"SingletonMap",
-						new[] {typeof(string), typeof(TV)},
-						CodegenExpressionBuilder.Constant(single.Key),
-						value));
-			}
-			else {
-				child.Block.DeclareVar(
-					typeof(IDictionary<string, TV>),
-					"map",
-					NewInstance(typeof(LinkedHashMap<string, TV>)));
-				foreach (KeyValuePair<string, TV> entry in map) {
-					CodegenExpression value = BuildMapValue(entry.Value, valueConsumer, originator, child, classScope);
-					child.Block.ExprDotMethod(Ref("map"), "Put", CodegenExpressionBuilder.Constant(entry.Key), value);
-				}
+        public CodegenSetterBuilder ConstantDefaultChecked(
+            string name,
+            bool? value)
+        {
+            return ConstantDefaultCheckedObj(name, value);
+        }
 
-				child.Block.MethodReturn(Ref("map"));
-			}
+        public CodegenSetterBuilder ConstantDefaultChecked(
+            string name,
+            int? value)
+        {
+            return ConstantDefaultCheckedObj(name, value);
+        }
 
-			return LocalMethod(child);
-		}
+        public CodegenSetterBuilder ConstantDefaultCheckedObj(
+            string name,
+            object value)
+        {
+            if (value == null) {
+                return this;
+            }
 
-		private static CodegenExpression BuildMapValue<TV>(
-			TV value,
-			CodegenSetterBuilderItemConsumer<TV> valueConsumer,
-			Type originator,
-			CodegenMethod method,
-			CodegenClassScope classScope)
-		{
-			if (value is IDictionary<string, TV> valueMap) {
-				return BuildMap(valueMap, valueConsumer, originator, method, classScope);
-			}
+            return SetValue(name, Constant(value));
+        }
 
-			return valueConsumer.Invoke(value, method, classScope);
-		}
+        public CodegenSetterBuilder ExpressionDefaultChecked(
+            string name,
+            CodegenExpression expression)
+        {
+            if (expression.Equals(ConstantNull())) {
+                return this;
+            }
 
-		private CodegenSetterBuilder SetValue(
-			string name,
-			CodegenExpression expression)
-		{
-			_method.Block.SetProperty(Ref(_refName), GetBeanCap(name), expression);
-			return this;
-		}
+            return SetValue(name, expression);
+        }
 
-		private string GetBeanCap(string name)
-		{
-			return name.Substring(0, 1).ToUpper() + name.Substring(1);
-		}
-	}
+        public CodegenSetterBuilder Expression(
+            string name,
+            CodegenExpression expression)
+        {
+            return SetValue(name, expression);
+        }
+
+        public CodegenSetterBuilder Method(
+            string name,
+            Func<CodegenMethod, CodegenExpression> expressionFunc)
+        {
+            var expression = expressionFunc.Invoke(_method);
+            return SetValue(name, expression ?? ConstantNull());
+        }
+
+        public CodegenSetterBuilder MapOfConstants<T>(
+            string name,
+            IDictionary<string, T> values)
+        {
+            CodegenSetterBuilderItemConsumer<T> consumer = (
+                o,
+                parent,
+                scope) => Constant(o);
+            return SetValue(name, BuildMap(values, consumer, _originator, _method, _classScope));
+        }
+
+        public CodegenSetterBuilder Map<TI>(
+            string name,
+            IDictionary<string, TI> values,
+            CodegenSetterBuilderItemConsumer<TI> consumer)
+        {
+            return SetValue(name, BuildMap(values, consumer, _originator, _method, _classScope));
+        }
+
+        public CodegenExpression Build()
+        {
+            if (_methodProvided) {
+                throw new IllegalStateException(
+                    "Builder build is reserved for the case when the method is not already provided");
+            }
+
+            if (_closed) {
+                throw new IllegalStateException("Builder already completed build");
+            }
+
+            _closed = true;
+
+            if (_method != null) {
+                _method.Block.MethodReturn(Ref(_refName));
+            } else if (_property != null) {
+                _property.GetterBlock.BlockReturn(Ref(_refName));
+            }
+
+            return LocalMethod(_method);
+        }
+
+        private static CodegenExpression BuildMap<TV>(
+            IDictionary<string, TV> map,
+            CodegenSetterBuilderItemConsumer<TV> valueConsumer,
+            Type originator,
+            CodegenMethod method,
+            CodegenClassScope classScope)
+        {
+            if (map == null) {
+                return ConstantNull();
+            }
+
+            if (map.IsEmpty()) {
+                return EnumValue(typeof(EmptyDictionary<string, TV>), "Instance");
+            }
+
+            var child = method.MakeChild(typeof(IDictionary<string, TV>), originator, classScope);
+            if (map.Count == 1) {
+                var single = map.First();
+                var value = BuildMapValue(single.Value, valueConsumer, originator, child, classScope);
+                child.Block.MethodReturn(
+                    StaticMethod(
+                        typeof(Collections),
+                        "SingletonMap",
+                        new[] { typeof(string), typeof(TV) },
+                        Constant(single.Key),
+                        value));
+            }
+            else {
+                child.Block.DeclareVar(
+                    typeof(IDictionary<string, TV>),
+                    "map",
+                    NewInstance(typeof(LinkedHashMap<string, TV>)));
+                foreach (var entry in map) {
+                    var value = BuildMapValue(entry.Value, valueConsumer, originator, child, classScope);
+                    child.Block.ExprDotMethod(Ref("map"), "Put", Constant(entry.Key), value);
+                }
+
+                child.Block.MethodReturn(Ref("map"));
+            }
+
+            return LocalMethod(child);
+        }
+
+        private static CodegenExpression BuildMapValue<TV>(
+            TV value,
+            CodegenSetterBuilderItemConsumer<TV> valueConsumer,
+            Type originator,
+            CodegenMethod method,
+            CodegenClassScope classScope)
+        {
+            if (value is IDictionary<string, TV> valueMap) {
+                return BuildMap(valueMap, valueConsumer, originator, method, classScope);
+            }
+
+            return valueConsumer.Invoke(value, method, classScope);
+        }
+
+        private CodegenSetterBuilder SetValue(
+            string name,
+            CodegenExpression expression)
+        {
+            if (_method != null) {
+                _method.Block.SetProperty(Ref(_refName), GetBeanCap(name), expression);
+            } else if (_property != null) {
+                _property.GetterBlock.SetProperty(Ref(_refName), GetBeanCap(name), expression);
+            }
+
+            return this;
+        }
+
+        private string GetBeanCap(string name)
+        {
+            return name.Substring(0, 1).ToUpper() + name.Substring(1);
+        }
+    }
 } // end of namespace

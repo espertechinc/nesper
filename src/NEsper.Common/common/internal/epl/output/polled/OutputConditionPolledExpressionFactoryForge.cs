@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -79,8 +79,8 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
             var symbols = new SAIFFInitializeSymbol();
             var variableInit = classScope.NamespaceScope
                 .InitMethod
-                .MakeChildWithScope(typeof(VariableReadWritePackage), this.GetType(), symbols, classScope)
-                .AddParam(typeof(EPStatementInitServices), EPStatementInitServicesConstants.REF.Ref);
+                .MakeChildWithScope(typeof(VariableReadWritePackage), GetType(), symbols, classScope)
+                .AddParam<EPStatementInitServices>(EPStatementInitServicesConstants.REF.Ref);
             variableInit.Block
                 .MethodReturn(variableReadWritePackage.Make(variableInit, symbols, classScope));
             var variableRW = classScope.NamespaceScope.AddDefaultFieldUnshared(
@@ -88,15 +88,13 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
                 typeof(VariableReadWritePackage),
                 LocalMethod(variableInit, EPStatementInitServicesConstants.REF));
 
-            var method = parent.MakeChild(typeof(OutputConditionPolledExpressionFactory), this.GetType(), classScope);
+            var method = parent.MakeChild(typeof(OutputConditionPolledExpressionFactory), GetType(), classScope);
             method.Block
-                .DeclareVar<OutputConditionPolledExpressionFactory>(
-                    "factory",
-                    NewInstance(typeof(OutputConditionPolledExpressionFactory)))
+                .DeclareVarNewInstance<OutputConditionPolledExpressionFactory>("factory")
                 .SetProperty(
                     Ref("factory"),
                     "WhenExpression",
-                    ExprNodeUtilityCodegen.CodegenEvaluator(whenExpressionNode, method, this.GetType(), classScope))
+                    ExprNodeUtilityCodegen.CodegenEvaluator(whenExpressionNode, method, GetType(), classScope))
                 .SetProperty(Ref("factory"), "VariableReadWritePackage", variableRW)
                 .SetProperty(Ref("factory"), "IsUsingBuiltinProperties", Constant(isUsingBuiltinProperties))
                 .MethodReturn(Ref("factory"));

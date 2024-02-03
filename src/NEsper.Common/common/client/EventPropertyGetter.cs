@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.client
         /// Returns true if the property exists, or false if the type does not have such a property.
         /// <para/>
         /// Useful for dynamic properties of the syntax "property?" and the dynamic nested/indexed/mapped versions.
-        /// Dynamic nested properties follow the syntax "property?.nested" which is equivalent to "property?.nested?". 
+        /// Dynamic nested properties follow the syntax "property?.Nested" which is equivalent to "property?.Nested?". 
         /// If any of the properties in the path of a dynamic nested property return null, the dynamic nested property 
         /// does not exists and the method returns false. <para/> For non-dynamic properties, this method always returns
         /// true since a getter would not be available unless
@@ -112,7 +112,7 @@ namespace com.espertech.esper.common.client
         /// <para/>
         /// Useful for dynamic properties of the syntax "property?" and the dynamic
         /// nested/indexed/mapped versions. Dynamic nested properties follow the syntax
-        /// "property?.nested" which is equivalent to "property?.nested?". If any of the properties in
+        /// "property?.Nested" which is equivalent to "property?.Nested?". If any of the properties in
         /// the path of a dynamic nested property return null, the dynamic nested property does
         /// not exists and the method returns false.
         /// <para/>

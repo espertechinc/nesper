@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -27,8 +27,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
     /// </summary>
     public class SubselectForgeNREqualsAllAnyWGroupBy : SubselectForgeNREqualsBase
     {
-        private readonly ExprForge havingEval;
-        private readonly bool isAll;
+        private readonly ExprForge _havingEval;
+        private readonly bool _isAll;
 
         public SubselectForgeNREqualsAllAnyWGroupBy(
             ExprSubselectNode subselect,
@@ -38,11 +38,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             bool isNot,
             Coercer coercer,
             ExprForge havingEval,
-            bool isAll)
-            : base(subselect, valueEval, selectEval, resultWhenNoMatchingEvents, isNot, coercer)
+            bool isAll) : base(subselect, valueEval, selectEval, resultWhenNoMatchingEvents, isNot, coercer)
         {
-            this.havingEval = havingEval;
-            this.isAll = isAll;
+            _havingEval = havingEval;
+            _isAll = isAll;
         }
 
         protected override CodegenExpression CodegenEvaluateInternal(
@@ -50,11 +49,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             SubselectForgeNRSymbol symbols,
             CodegenClassScope classScope)
         {
-            CodegenExpression aggService = classScope.NamespaceScope.AddOrGetDefaultFieldWellKnown(
+            if (subselect.EvaluationType == null) {
+                return ConstantNull();
+            }
+
+            var aggService = classScope.NamespaceScope.AddOrGetDefaultFieldWellKnown(
                 new CodegenFieldNameSubqueryAgg(subselect.SubselectNumber),
                 typeof(AggregationResultFuture));
 
-            var method = parent.MakeChild(subselect.EvaluationType, this.GetType(), classScope);
+            var method = parent.MakeChild(subselect.EvaluationType, GetType(), classScope);
             var evalCtx = symbols.GetAddExprEvalCtx(method);
             var left = symbols.GetAddLeftResult(method);
 
@@ -68,7 +71,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                     ExprDotMethod(Ref("aggregationService"), "GetGroupKeys", evalCtx))
                 .DeclareVar<bool>("hasNullRow", ConstantFalse());
 
-            var forEach = method.Block.ForEach(typeof(object), "groupKey", Ref("groupKeys"));
+            var forEach = method.Block.ForEach<object>("groupKey", Ref("groupKeys"));
             {
                 forEach.IfCondition(EqualsNull(left))
                     .BlockReturn(ConstantNull())
@@ -79,16 +82,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                         Ref("cpid"),
                         ConstantNull());
 
-                if (havingEval != null) {
+                if (_havingEval != null) {
                     CodegenLegoBooleanExpression.CodegenContinueIfNullOrNotPass(
                         forEach,
-                        havingEval.EvaluationType,
-                        havingEval.EvaluateCodegen(havingEval.EvaluationType, method, symbols, classScope));
+                        _havingEval.EvaluationType,
+                        _havingEval.EvaluateCodegen(_havingEval.EvaluationType, method, symbols, classScope));
                 }
 
                 Type valueRightType;
                 if (selectEval != null) {
-                    valueRightType = Boxing.GetBoxedType(selectEval.EvaluationType);
+                    valueRightType = selectEval.EvaluationType.GetBoxedType();
                     forEach.DeclareVar(
                         valueRightType,
                         "valueRight",
@@ -99,7 +102,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                     forEach.DeclareVar(
                         valueRightType,
                         "valueRight",
-                        ExprDotUnderlying(ArrayAtIndex(symbols.GetAddEPS(method), Constant(0))));
+                        ExprDotUnderlying(ArrayAtIndex(symbols.GetAddEps(method), Constant(0))));
                 }
 
                 var ifRightNotNull = forEach.IfCondition(EqualsNull(Ref("valueRight")))
@@ -110,13 +113,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                         ifRightNotNull.DeclareVar<bool>("eq", ExprDotMethod(left, "Equals", Ref("valueRight")));
                     }
                     else {
-                        ifRightNotNull.DeclareVar<object>("left", coercer.CoerceCodegen(left, symbols.LeftResultType))
-                            .DeclareVar<object>("right", coercer.CoerceCodegen(Ref("valueRight"), valueRightType))
-                            .DeclareVar<bool>("eq", StaticMethod<object>("Equals", Ref("left"), Ref("right")));
+                        ifRightNotNull.DeclareVar<object>(
+                                "left",
+                                coercer.CoerceCodegen(left, symbols.LeftResultType, method, classScope))
+                            .DeclareVar<object>(
+                                "right",
+                                coercer.CoerceCodegen(Ref("valueRight"), valueRightType, method, classScope))
+                            .DeclareVar<bool>("eq", ExprDotMethod(Ref("left"), "Equals", Ref("right")));
                     }
 
                     if (isNot) {
-                        if (isAll) {
+                        if (_isAll) {
                             ifRightNotNull.IfCondition(Ref("eq")).BlockReturn(ConstantFalse());
                         }
                         else {
@@ -124,7 +131,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                         }
                     }
                     else {
-                        if (isAll) {
+                        if (_isAll) {
                             ifRightNotNull.IfCondition(Not(Ref("eq"))).BlockReturn(ConstantFalse());
                         }
                         else {
@@ -137,7 +144,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             method.Block
                 .IfCondition(Ref("hasNullRow"))
                 .BlockReturn(ConstantNull())
-                .MethodReturn(isAll ? ConstantTrue() : ConstantFalse());
+                .MethodReturn(_isAll ? ConstantTrue() : ConstantFalse());
 
             return LocalMethod(method);
         }

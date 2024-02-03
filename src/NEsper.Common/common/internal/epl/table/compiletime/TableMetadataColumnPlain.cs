@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -37,10 +37,8 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
             CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(TableMetadataColumnPlain), GetType(), classScope);
-            method.Block.DeclareVar<TableMetadataColumnPlain>(
-                "col",
-                NewInstance(typeof(TableMetadataColumnPlain)));
-            base.MakeSettersInline(Ref("col"), method.Block);
+            method.Block.DeclareVarNewInstance<TableMetadataColumnPlain>("col");
+            MakeSettersInline(Ref("col"), method.Block);
             method.Block
                 .SetProperty(Ref("col"), "IndexPlain", Constant(IndexPlain))
                 .MethodReturn(Ref("col"));

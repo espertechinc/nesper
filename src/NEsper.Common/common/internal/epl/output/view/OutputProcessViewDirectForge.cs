@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -28,6 +28,8 @@ namespace com.espertech.esper.common.@internal.epl.output.view
 
         public bool IsCodeGenerated => false;
 
+        public bool IsDirectAndSimple => false;
+
         public void ProvideCodegen(
             CodegenMethod method,
             SAIFFInitializeSymbol symbols,
@@ -35,9 +37,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
         {
             var factory = Ref("factory");
             method.Block
-                .DeclareVar<OutputProcessViewDirectFactory>(
-                    factory.Ref,
-                    NewInstance(typeof(OutputProcessViewDirectFactory)))
+                .DeclareVarNewInstance<OutputProcessViewDirectFactory>(factory.Ref)
                 .SetProperty(
                     factory,
                     "PostProcessFactory",
@@ -65,7 +65,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
         {
         }
 
-        public void CollectSchedules(IList<ScheduleHandleCallbackProvider> scheduleHandleCallbackProviders)
+        public void CollectSchedules(IList<ScheduleHandleTracked> scheduleHandleCallbackProviders)
         {
         }
     }

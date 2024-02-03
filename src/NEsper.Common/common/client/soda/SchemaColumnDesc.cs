@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     ///     Descriptor for use in create-schema syntax to define property name and type of an event property.
     /// </summary>
-    [Serializable]
     public class SchemaColumnDesc
     {
         private string name;
@@ -44,8 +43,7 @@ namespace com.espertech.esper.common.client.soda
         ///     Returns property name.
         /// </summary>
         /// <returns>name</returns>
-        public string Name
-        {
+        public string Name {
             get => name;
             set => name = value;
         }
@@ -54,8 +52,7 @@ namespace com.espertech.esper.common.client.soda
         ///     Returns property type.
         /// </summary>
         /// <returns>type</returns>
-        public string Type
-        {
+        public string Type {
             get => type;
             set => type = value;
         }

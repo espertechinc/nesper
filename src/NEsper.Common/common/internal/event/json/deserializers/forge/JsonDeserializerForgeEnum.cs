@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -21,7 +21,7 @@ namespace com.espertech.esper.common.@internal.@event.json.deserializers.forge
 
         public JsonDeserializerForgeEnum(Type type)
         {
-            this._type = type;
+            _type = type;
         }
 
         public CodegenExpression CodegenDeserialize(
@@ -29,11 +29,11 @@ namespace com.espertech.esper.common.@internal.@event.json.deserializers.forge
             CodegenClassScope classScope,
             CodegenExpression elementExpr)
         {
-            // Generic types not yet implemented on codegen (TBD)
+            // Generic types not yet implemented on codegen (TODO)
             return StaticMethod(
                 typeof(JsonElementExtensions),
                 "GetBoxedEnum",
-                new Type[] {_type},
+                new Type[] { _type },
                 elementExpr);
         }
     }

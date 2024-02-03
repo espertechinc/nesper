@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -11,7 +11,7 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 
 namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
 {
-    class DTLocalBeanReformatEval : DTLocalEvaluator
+    internal class DTLocalBeanReformatEval : DTLocalEvaluator
     {
         private readonly EventPropertyGetter getter;
         private readonly DTLocalEvaluator inner;
@@ -30,7 +30,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            object timestamp = getter.Get((EventBean) target);
+            var timestamp = getter.Get((EventBean)target);
             if (timestamp == null) {
                 return null;
             }

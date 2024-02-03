@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -23,8 +23,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 {
     public class ExprDotNodeAggregationMethodForgeTableReset : ExprDotNodeAggregationMethodForge
     {
-        private readonly TableMetadataColumnAggregation column;
-        private readonly ExprTableIdentNode identNode;
+        private readonly TableMetadataColumnAggregation _column;
+        private readonly ExprTableIdentNode _identNode;
 
         public ExprDotNodeAggregationMethodForgeTableReset(
             ExprDotNodeImpl parent,
@@ -35,13 +35,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             TableMetadataColumnAggregation column)
             : base(parent, aggregationMethodName, parameters, validation)
         {
-            this.identNode = identNode;
-            this.column = column;
+            _identNode = identNode;
+            _column = column;
         }
 
-        protected override string TableName => identNode.TableMetadata.TableName;
+        protected override string TableName => _identNode.TableMetadata.TableName;
 
-        protected override string TableColumnName => column.ColumnName;
+        protected override string TableColumnName => _column.ColumnName;
 
         public override bool IsLocalInlinedClass => false;
 
@@ -54,12 +54,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
         {
             var method = parent.MakeChild(typeof(void), GetType(), classScope);
             method.Block
-                .DeclareVar(
-                    typeof(AggregationRow),
-                    "row",
-                    StaticMethod(typeof(ExprTableIdentNode), "TableColumnRow", Constant(identNode.StreamNum), symbols.GetAddEPS(method)))
+                .DeclareVar<AggregationRow>("row",
+                    StaticMethod(
+                        typeof(ExprTableIdentNode),
+                        "TableColumnRow",
+                        Constant(_identNode.StreamNum),
+                        symbols.GetAddEps(method)))
                 .IfRefNotNull("row")
-                .ExprDotMethod(Ref("row"), "Reset", Constant(column.Column));
+                .ExprDotMethod(Ref("row"), "Reset", Constant(_column.Column));
             return LocalMethod(method);
         }
 
@@ -67,7 +69,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             TextWriter writer,
             ExprNodeRenderableFlags flags)
         {
-            identNode.ToPrecedenceFreeEPL(writer, flags);
+            _identNode.ToPrecedenceFreeEPL(writer, flags);
         }
     }
 } // end of namespace

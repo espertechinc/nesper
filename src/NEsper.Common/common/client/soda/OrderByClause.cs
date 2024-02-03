@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -15,7 +15,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// An order-by clause consists of expressions and flags indicating if ascending or descending.
     /// </summary>
-    [Serializable]
     public class OrderByClause
     {
         private IList<OrderByElement> orderByExpressions;
@@ -78,8 +77,7 @@ namespace com.espertech.esper.common.client.soda
         public OrderByClause(params string[] properties)
             : this()
         {
-            for (int i = 0; i < properties.Length; i++)
-            {
+            for (var i = 0; i < properties.Length; i++) {
                 orderByExpressions.Add(new OrderByElement(Expressions.GetPropExpr(properties[i]), false));
             }
         }
@@ -89,27 +87,24 @@ namespace com.espertech.esper.common.client.soda
         public OrderByClause(params Expression[] expressions)
             : this()
         {
-            for (int i = 0; i < expressions.Length; i++)
-            {
+            for (var i = 0; i < expressions.Length; i++) {
                 orderByExpressions.Add(new OrderByElement(expressions[i], false));
             }
         }
 
         /// <summary>Gets or set a list of expressions and flags to order by.</summary>
         /// <returns>order-by elements</returns>
-        public IList<OrderByElement> OrderByExpressions
-        {
-            get { return orderByExpressions; }
-            set { orderByExpressions = value; }
+        public IList<OrderByElement> OrderByExpressions {
+            get => orderByExpressions;
+            set => orderByExpressions = value;
         }
 
         /// <summary>Renders the clause in textual representation.</summary>
         /// <param name="writer">to output to</param>
         public void ToEPL(TextWriter writer)
         {
-            string delimiter = "";
-            foreach (OrderByElement element in orderByExpressions)
-            {
+            var delimiter = "";
+            foreach (var element in orderByExpressions) {
                 writer.Write(delimiter);
                 element.ToEPL(writer);
                 delimiter = ", ";

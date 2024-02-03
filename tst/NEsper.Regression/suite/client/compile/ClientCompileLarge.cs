@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -18,11 +18,14 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            WithLargeConstantPoolDueToMethods(execs);
+#if REGRESSION_EXECUTIONS
+            With(LargeConstantPoolDueToMethods)(execs);
+#endif
             return execs;
         }
 
-        public static IList<RegressionExecution> WithLargeConstantPoolDueToMethods(IList<RegressionExecution> execs = null)
+        public static IList<RegressionExecution> WithLargeConstantPoolDueToMethods(
+            IList<RegressionExecution> execs = null)
         {
             execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ClientCompileLargeConstantPoolDueToMethods());
@@ -38,7 +41,8 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 var delimiter = "";
                 for (var i = 0; i < 1000; i++) {
                     buf.Append(delimiter);
-                    buf.Append("((((((((((((((((((((((((1+1)+1)+1)+1)+1)+1)+1)+1)+1)+1)+1)+1)+1)+1)+1)+1)+1)+1)+1)+1)+1)+1)+1)+1)+1");
+                    buf.Append(
+                        "((((((((((((((((((((((((1+1)+1)+1)+1)+1)+1)+1)+1)+1)+1)+1)+1)+1)+1)+1)+1)+1)+1)+1)+1)+1)+1)+1)+1)+1");
                     buf.Append(" as z" + i);
                     delimiter = ",";
                 }

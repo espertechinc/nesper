@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -66,7 +66,7 @@ namespace com.espertech.esper.common.@internal.view.core
                     if (matches.Length == 2) {
                         var overlaps = AddEventsFromMatch(matches[1], events);
                         if (overlaps) {
-                            matches = new[] {matches[0]};
+                            matches = new[] { matches[0] };
                         }
                     }
                     else {
@@ -115,11 +115,10 @@ namespace com.espertech.esper.common.@internal.view.core
                 var prop = propDictionary.Get(desc.PropertyName);
                 if (prop == null) {
                 }
-                else if (prop is EventBean) {
-                    overlaps |= !events.Add((EventBean) prop);
+                else if (prop is EventBean bean) {
+                    overlaps |= !events.Add(bean);
                 }
-                else if (prop is EventBean[]) {
-                    var arr = (EventBean[]) prop;
+                else if (prop is EventBean[] arr) {
                     foreach (var ele in arr) {
                         overlaps |= !events.Add(ele);
                     }

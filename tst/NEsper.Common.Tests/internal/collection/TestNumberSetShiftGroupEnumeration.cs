@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -13,6 +13,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.collection
 {
@@ -24,8 +25,8 @@ namespace com.espertech.esper.common.@internal.collection
         [Test]
         public void TestGen()
         {
-            Assert.AreEqual(29, CountEnumeration(new int[] { 1, 2, 3, 4, 5, 6 }));
-            Assert.AreEqual(31, CountEnumeration(new int[] { 1, 2, 3, 4, 5, 6, 7, 8 }));
+            ClassicAssert.AreEqual(29, CountEnumeration(new int[] { 1, 2, 3, 4, 5, 6 }));
+            ClassicAssert.AreEqual(31, CountEnumeration(new int[] { 1, 2, 3, 4, 5, 6, 7, 8 }));
 
             int[] set = new int[] { 1, 2, 3, 4, 5, 6, 7 };
 
@@ -64,7 +65,7 @@ namespace com.espertech.esper.common.@internal.collection
 
             // NumberSetShiftGroupEnumeration enumeration = new NumberSetShiftGroupEnumeration(set);
             // while(enumeration.hasMoreElements()) {
-            // System.out.println(Arrays.toString(enumeration.nextElement()));
+            // Console.WriteLine(Arrays.toString(enumeration.nextElement()));
             // }
 
             TryPermutation(set, expectedValues);
@@ -101,9 +102,9 @@ namespace com.espertech.esper.common.@internal.collection
                 AssertSet(expected, result);
 
                 count++;
-                Assert.IsTrue(Arrays.AreEqual(result, expected), "Mismatch in count=" + count);
+                ClassicAssert.IsTrue(Arrays.AreEqual(result, expected), "Mismatch in count=" + count);
             }
-            Assert.AreEqual(count, expectedValues.Length);
+            ClassicAssert.AreEqual(count, expectedValues.Length);
             Assert.That(enumeration.MoveNext(), Is.False);
         }
 

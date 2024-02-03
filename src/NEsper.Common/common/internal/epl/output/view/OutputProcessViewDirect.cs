@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -69,7 +69,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
             var forceOutput = false;
             if (newData == null &&
                 oldData == null &&
-                (newOldEvents == null || newOldEvents.First == null && newOldEvents.Second == null)) {
+                (newOldEvents == null || (newOldEvents.First == null && newOldEvents.Second == null))) {
                 forceOutput = true;
             }
 
@@ -124,7 +124,12 @@ namespace com.espertech.esper.common.@internal.epl.output.view
 
         public override IEnumerator<EventBean> GetEnumerator()
         {
-            return OutputStrategyUtil.GetEnumerator(joinExecutionStrategy, _resultSetProcessor, parentView, false, null);
+            return OutputStrategyUtil.GetEnumerator(
+                joinExecutionStrategy,
+                _resultSetProcessor,
+                parentView,
+                false,
+                null);
         }
 
         public override void Terminated()

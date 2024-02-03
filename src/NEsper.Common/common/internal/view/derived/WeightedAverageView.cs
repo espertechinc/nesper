@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -30,13 +30,13 @@ namespace com.espertech.esper.common.@internal.view.derived
 
         private readonly EventBean[] eventsPerStream = new EventBean[1];
         private readonly WeightedAverageViewFactory viewFactory;
-        protected internal double currentValue = double.NaN;
+        private double currentValue = double.NaN;
 
         private EventBean lastNewEvent;
-        protected internal object[] lastValuesEventNew;
-        protected internal double sumW = double.NaN;
+        private object[] lastValuesEventNew;
+        private double sumW = double.NaN;
 
-        protected internal double sumXtimesW = double.NaN;
+        private double sumXtimesW = double.NaN;
 
         public WeightedAverageView(
             WeightedAverageViewFactory viewFactory,
@@ -80,7 +80,7 @@ namespace com.espertech.esper.common.@internal.view.derived
             // If we have child views, keep a reference to the old values, so we can update them as old data event.
             EventBean oldDataMap = null;
             if (lastNewEvent == null) {
-                if (child != null) {
+                if (Child != null) {
                     IDictionary<string, object> oldDataValues = new Dictionary<string, object>();
                     oldDataValues.Put(ViewFieldEnum.WEIGHTED_AVERAGE__AVERAGE.GetName(), oldValue);
                     AddProperties(oldDataValues);
@@ -103,8 +103,8 @@ namespace com.espertech.esper.common.@internal.view.derived
                         true,
                         agentInstanceContext);
                     if (pointnum != null && weightnum != null) {
-                        double point = pointnum.AsDouble();
-                        double weight = weightnum.AsDouble();
+                        var point = pointnum.AsDouble();
+                        var weight = weightnum.AsDouble();
 
                         if (double.IsNaN(sumXtimesW.AsDouble())) {
                             sumXtimesW = point * weight;
@@ -144,8 +144,8 @@ namespace com.espertech.esper.common.@internal.view.derived
                         agentInstanceContext);
 
                     if (pointnum != null && weightnum != null) {
-                        double point = pointnum.AsDouble();
-                        double weight = weightnum.AsDouble();
+                        var point = pointnum.AsDouble();
+                        var weight = weightnum.AsDouble();
                         sumXtimesW -= point * weight;
                         sumW -= weight;
                     }
@@ -160,7 +160,7 @@ namespace com.espertech.esper.common.@internal.view.derived
             }
 
             // If there are child view, fireStatementStopped update method
-            if (child != null) {
+            if (Child != null) {
                 IDictionary<string, object> newDataMap = new Dictionary<string, object>();
                 newDataMap.Put(ViewFieldEnum.WEIGHTED_AVERAGE__AVERAGE.GetName(), currentValue);
                 AddProperties(newDataMap);
@@ -169,17 +169,17 @@ namespace com.espertech.esper.common.@internal.view.derived
                         newDataMap,
                         viewFactory.eventType);
 
-                EventBean[] newEvents = {newDataEvent};
+                EventBean[] newEvents = { newDataEvent };
                 EventBean[] oldEvents;
                 if (lastNewEvent == null) {
-                    oldEvents = new[] {oldDataMap};
+                    oldEvents = new[] { oldDataMap };
                 }
                 else {
-                    oldEvents = new[] {lastNewEvent};
+                    oldEvents = new[] { lastNewEvent };
                 }
 
                 agentInstanceContext.InstrumentationProvider.QViewIndicate(viewFactory, newEvents, oldEvents);
-                child.Update(newEvents, oldEvents);
+                Child.Update(newEvents, oldEvents);
                 agentInstanceContext.InstrumentationProvider.AViewIndicate();
 
                 lastNewEvent = newDataEvent;
@@ -206,8 +206,7 @@ namespace com.espertech.esper.common.@internal.view.derived
 
         public static EventType CreateEventType(
             StatViewAdditionalPropsForge additionalProps,
-            ViewForgeEnv env,
-            int streamNum)
+            ViewForgeEnv env)
         {
             var schemaMap = new LinkedHashMap<string, object>();
             schemaMap.Put(ViewFieldEnum.WEIGHTED_AVERAGE__AVERAGE.GetName(), typeof(double?));
@@ -215,7 +214,7 @@ namespace com.espertech.esper.common.@internal.view.derived
                 schemaMap,
                 additionalProps,
                 ViewFieldEnum.WEIGHTED_AVERAGE__AVERAGE);
-            return DerivedViewTypeUtil.NewType("wavgview", schemaMap, env, streamNum);
+            return DerivedViewTypeUtil.NewType("wavgview", schemaMap, env);
         }
     }
 } // end of namespace

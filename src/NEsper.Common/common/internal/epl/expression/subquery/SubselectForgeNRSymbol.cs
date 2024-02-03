@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -20,17 +20,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
     public class SubselectForgeNRSymbol : ExprSubselectEvalMatchSymbol
     {
         public const string NAME_LEFTRESULT = "leftResult";
-
         public static readonly CodegenExpressionRef REF_LEFTRESULT = Ref(NAME_LEFTRESULT);
-
+        private readonly Type leftResultType;
         private CodegenExpressionRef optionalLeftResult;
 
-        public SubselectForgeNRSymbol(Type leftResultType)
+        public SubselectForgeNRSymbol(Type leftResultType) : base()
         {
-            LeftResultType = leftResultType;
+            this.leftResultType = leftResultType;
         }
-
-        public Type LeftResultType { get; }
 
         public CodegenExpressionRef GetAddLeftResult(CodegenMethodScope scope)
         {
@@ -45,10 +42,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
         public override void Provide(IDictionary<string, Type> symbols)
         {
             if (optionalLeftResult != null) {
-                symbols.Put(optionalLeftResult.Ref, LeftResultType);
+                symbols.Put(optionalLeftResult.Ref, leftResultType);
             }
 
             base.Provide(symbols);
         }
+
+        public Type LeftResultType => leftResultType;
     }
 } // end of namespace

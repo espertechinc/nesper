@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -261,25 +261,25 @@ namespace com.espertech.esper.regressionrun.suite.epl
             }
 
             [Test, RunInApplicationDomain]
-            public void WithContext() => RegressionRunner.Run(_session, EPLSpatialPointRegionQuadTreeFilterIndex.WithContext());
+            public void WithContext() => RegressionRunner.Run(_session, EPLSpatialPointRegionQuadTreeFilterIndex.WithFilterIndexContext());
 
             [Test, RunInApplicationDomain]
-            public void WithPatternSimple() => RegressionRunner.Run(_session, EPLSpatialPointRegionQuadTreeFilterIndex.WithPatternSimple());
+            public void WithPatternSimple() => RegressionRunner.Run(_session, EPLSpatialPointRegionQuadTreeFilterIndex.WithFilterIndexPatternSimple());
 
             [Test, RunInApplicationDomain]
-            public void WithTypeAssertion() => RegressionRunner.Run(_session, EPLSpatialPointRegionQuadTreeFilterIndex.WithTypeAssertion());
+            public void WithTypeAssertion() => RegressionRunner.Run(_session, EPLSpatialPointRegionQuadTreeFilterIndex.WithFilterIndexTypeAssertion());
 
             [Test, RunInApplicationDomain]
-            public void WithUnoptimized() => RegressionRunner.Run(_session, EPLSpatialPointRegionQuadTreeFilterIndex.WithUnoptimized());
+            public void WithUnoptimized() => RegressionRunner.Run(_session, EPLSpatialPointRegionQuadTreeFilterIndex.WithFilterIndexUnoptimized());
 
             [Test, RunInApplicationDomain]
-            public void WithPerfPattern() => RegressionRunner.Run(_session, EPLSpatialPointRegionQuadTreeFilterIndex.WithPerfPattern());
+            public void WithPerfPattern() => RegressionRunner.Run(_session, EPLSpatialPointRegionQuadTreeFilterIndex.WithFilterIndexPerfPattern());
 
             [Test, RunInApplicationDomain]
-            public void WithPerfContextPartition() => RegressionRunner.Run(_session, EPLSpatialPointRegionQuadTreeFilterIndex.WithPerfContextPartition());
+            public void WithPerfContextPartition() => RegressionRunner.Run(_session, EPLSpatialPointRegionQuadTreeFilterIndex.WithFilterIndexPerfContextPartition());
 
             [Test, RunInApplicationDomain]
-            public void WithPerfStatement() => RegressionRunner.Run(_session, EPLSpatialPointRegionQuadTreeFilterIndex.WithPerfStatement());
+            public void WithPerfStatement() => RegressionRunner.Run(_session, EPLSpatialPointRegionQuadTreeFilterIndex.WithFilterIndexPerfStatement());
         }
 
         /// <summary>

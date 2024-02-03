@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -22,20 +22,21 @@ namespace com.espertech.esper.regressionlib.support.multithread
 {
     public class StmtNamedWindowUpdateCallable : ICallable<StmtNamedWindowUpdateCallable.UpdateResult>
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-        private readonly int numRepeats;
-        private readonly EPEventServiceSPI runtime;
-        private readonly string threadName;
-        private readonly IList<UpdateItem> updates = new List<UpdateItem>();
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        
+        private readonly int _numRepeats;
+        private readonly EPEventServiceSPI _runtime;
+        private readonly string _threadName;
+        private readonly IList<UpdateItem> _updates = new List<UpdateItem>();
 
         public StmtNamedWindowUpdateCallable(
             string threadName,
             EPRuntime runtime,
             int numRepeats)
         {
-            this.runtime = (EPEventServiceSPI) runtime.EventService;
-            this.numRepeats = numRepeats;
-            this.threadName = threadName;
+            _runtime = (EPEventServiceSPI) runtime.EventService;
+            _numRepeats = numRepeats;
+            _threadName = threadName;
         }
 
         public UpdateResult Call()
@@ -43,7 +44,7 @@ namespace com.espertech.esper.regressionlib.support.multithread
             var start = PerformanceObserver.MilliTime;
             try {
                 var random = new Random();
-                for (var loop = 0; loop < numRepeats; loop++) {
+                for (var loop = 0; loop < _numRepeats; loop++) {
                     var theString = Convert.ToString(
                         Math.Abs(random.Next()) % MultithreadStmtNamedWindowUpdate.NUM_STRINGS);
                     var intPrimitive = Math.Abs(random.Next()) % MultithreadStmtNamedWindowUpdate.NUM_INTS;
@@ -52,12 +53,12 @@ namespace com.espertech.esper.regressionlib.support.multithread
                 }
             }
             catch (Exception ex) {
-                log.Error("Error in thread " + Thread.CurrentThread.ManagedThreadId, ex);
+                Log.Error("Error in thread " + Thread.CurrentThread.ManagedThreadId, ex);
                 return null;
             }
 
             var end = PerformanceObserver.MilliTime;
-            return new UpdateResult(end - start, updates);
+            return new UpdateResult(end - start, _updates);
         }
 
         private void SendEvent(
@@ -68,8 +69,8 @@ namespace com.espertech.esper.regressionlib.support.multithread
             var bean = new SupportBean(theString, intPrimitive);
             bean.BoolPrimitive = false;
             bean.DoublePrimitive = doublePrimitive;
-            ((EPEventServiceSendEvent) runtime).SendEventBean(bean, "SupportBean");
-            updates.Add(new UpdateItem(theString, intPrimitive, doublePrimitive));
+            ((EPEventServiceSendEvent) _runtime).SendEventBean(bean, "SupportBean");
+            _updates.Add(new UpdateItem(theString, intPrimitive, doublePrimitive));
         }
 
         public class UpdateResult

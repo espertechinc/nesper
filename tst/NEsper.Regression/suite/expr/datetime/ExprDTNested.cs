@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -8,11 +8,9 @@
 
 using System;
 
-using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
-using com.espertech.esper.regressionlib.support.util;
 
 namespace com.espertech.esper.regressionlib.suite.expr.datetime
 {
@@ -21,15 +19,15 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
         public void Run(RegressionEnvironment env)
         {
             var fields = new[] { "val0", "val1", "val2", "val3" };
-            var eplFragment = "@Name('s0') select " +
+            var eplFragment = "@name('s0') select " +
                               "LongDate.set('hour', 1).set('minute', 2).set('second', 3) as val0," +
                               "DateTimeEx.set('hour', 1).set('minute', 2).set('second', 3) as val1," +
                               "DateTimeOffset.set('hour', 1).set('minute', 2).set('second', 3) as val2," +
                               "DateTime.set('hour', 1).set('minute', 2).set('second', 3) as val3" +
                               " from SupportDateTime";
             env.CompileDeploy(eplFragment).AddListener("s0");
-            LambdaAssertionUtil.AssertTypes(
-                env.Statement("s0").EventType,
+            env.AssertStmtTypes(
+                "s0",
                 fields,
                 new[] {
                     typeof(long?),
@@ -42,33 +40,29 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             var expectedTime = "2002-05-30T01:02:03.000";
             env.SendEventBean(SupportDateTime.Make(startTime));
 
-            EPAssertionUtil.AssertProps(
-                env.Listener("s0").AssertOneGetNewAndReset(),
+            env.AssertPropsNew(
+                "s0",
                 fields,
                 SupportDateTime.GetArrayCoerced(expectedTime, "long", "dtx", "dto", "date"));
 
             env.UndeployAll();
 
-            eplFragment = "@Name('s0') select " +
+            eplFragment = "@name('s0') select " +
                           "LongDate.set('hour', 1).set('minute', 2).set('second', 3).toDateTimeEx() as val0," +
                           "DateTimeEx.set('hour', 1).set('minute', 2).set('second', 3).toDateTimeEx() as val1," +
                           "DateTimeOffset.set('hour', 1).set('minute', 2).set('second', 3).toDateTimeEx() as val2," +
                           "DateTime.set('hour', 1).set('minute', 2).set('second', 3).toDateTimeEx() as val3" +
                           " from SupportDateTime";
             env.CompileDeployAddListenerMile(eplFragment, "s0", 1);
-            LambdaAssertionUtil.AssertTypes(
-                env.Statement("s0").EventType,
+            env.AssertStmtTypesAllSame(
+                "s0",
                 fields,
-                new[] {
-                    typeof(DateTimeEx),
-                    typeof(DateTimeEx),
-                    typeof(DateTimeEx),
-                    typeof(DateTimeEx)
-                });
+                typeof(DateTimeEx)
+            );
 
             env.SendEventBean(SupportDateTime.Make(startTime));
-            EPAssertionUtil.AssertProps(
-                env.Listener("s0").AssertOneGetNewAndReset(),
+            env.AssertPropsNew(
+                "s0",
                 fields,
                 SupportDateTime.GetArrayCoerced(expectedTime, "dtx", "dtx", "dtx", "dtx"));
 

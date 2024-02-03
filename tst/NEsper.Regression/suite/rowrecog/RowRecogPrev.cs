@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -8,41 +8,71 @@
 
 using System.Collections.Generic;
 
-using com.espertech.esper.common.client.scopetest;
+using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.rowrecog;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.rowrecog
 {
     public class RowRecogPrev
     {
-        public static IList<RegressionExecution> Executions()
+        public static ICollection<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new RowRecogTimeWindowPartitionedSimple());
-            execs.Add(new RowRecogPartitionBy2FieldsKeepall());
-            execs.Add(new RowRecogUnpartitionedKeepAll());
-            execs.Add(new RowRecogTimeWindowUnpartitioned());
+            WithTimeWindowPartitionedSimple(execs);
+            WithPartitionBy2FieldsKeepall(execs);
+            WithUnpartitionedKeepAll(execs);
+            WithTimeWindowUnpartitioned(execs);
+            WithTimeWindowPartitioned(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTimeWindowPartitioned(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new RowRecogTimeWindowPartitioned());
             return execs;
         }
 
-        private static void SendTimer(
-            long time,
-            RegressionEnvironment env)
+        public static IList<RegressionExecution> WithTimeWindowUnpartitioned(IList<RegressionExecution> execs = null)
         {
-            env.AdvanceTime(time);
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new RowRecogTimeWindowUnpartitioned());
+            return execs;
         }
 
-        internal class RowRecogTimeWindowUnpartitioned : RegressionExecution
+        public static IList<RegressionExecution> WithUnpartitionedKeepAll(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new RowRecogUnpartitionedKeepAll());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPartitionBy2FieldsKeepall(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new RowRecogPartitionBy2FieldsKeepall());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTimeWindowPartitionedSimple(
+            IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new RowRecogTimeWindowPartitionedSimple());
+            return execs;
+        }
+
+        private class RowRecogTimeWindowUnpartitioned : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 SendTimer(0, env);
-                var fields = new [] { "a_string","b_string" };
-                var text = "@Name('s0') select * from SupportRecogBean#time(5) " +
+                var fields = "a_string,b_string".SplitCsv();
+                var text = "@name('s0') select * from SupportRecogBean#time(5) " +
                            "match_recognize (" +
                            "  measures A.TheString as a_string, B.TheString as b_string" +
                            "  all matches pattern (A B) " +
@@ -64,8 +94,8 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 SendTimer(2000, env);
                 env.SendEventBean(new SupportRecogBean("P2", 1));
                 env.SendEventBean(new SupportRecogBean("E1", 3));
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
-                Assert.IsFalse(env.Statement("s0").GetEnumerator().MoveNext());
+                env.AssertListenerNotInvoked("s0");
+                env.AssertIterator("s0", it => ClassicAssert.IsFalse(it.MoveNext()));
 
                 env.Milestone(1);
 
@@ -80,14 +110,14 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 env.SendEventBean(new SupportRecogBean("xx", 4));
                 env.SendEventBean(new SupportRecogBean("E2", -1));
                 env.SendEventBean(new SupportRecogBean("E3", 12));
-                EPAssertionUtil.AssertPropsPerRow(
-                    env.Listener("s0").GetAndResetLastNewData(),
+                env.AssertPropsPerRowLastNew(
+                    "s0",
                     fields,
-                    new[] {new object[] {"E2", "E3"}});
-                EPAssertionUtil.AssertPropsPerRow(
-                    env.Statement("s0").GetEnumerator(),
+                    new object[][] { new object[] { "E2", "E3" } });
+                env.AssertPropsPerRowIterator(
+                    "s0",
                     fields,
-                    new[] {new object[] {"E2", "E3"}});
+                    new object[][] { new object[] { "E2", "E3" } });
 
                 env.Milestone(3);
 
@@ -102,59 +132,59 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 env.SendEventBean(new SupportRecogBean("xx", -2));
                 env.SendEventBean(new SupportRecogBean("E5", -1));
                 env.SendEventBean(new SupportRecogBean("E6", -2));
-                EPAssertionUtil.AssertPropsPerRow(
-                    env.Listener("s0").GetAndResetLastNewData(),
+                env.AssertPropsPerRowLastNew(
+                    "s0",
                     fields,
-                    new[] {new object[] {"E5", "E6"}});
-                EPAssertionUtil.AssertPropsPerRow(
-                    env.Statement("s0").GetEnumerator(),
+                    new object[][] { new object[] { "E5", "E6" } });
+                env.AssertPropsPerRowIterator(
+                    "s0",
                     fields,
-                    new[] {new object[] {"E2", "E3"}, new object[] {"E5", "E6"}});
+                    new object[][] { new object[] { "E2", "E3" }, new object[] { "E5", "E6" } });
 
                 env.Milestone(5);
 
                 SendTimer(8500, env);
-                EPAssertionUtil.AssertPropsPerRow(
-                    env.Statement("s0").GetEnumerator(),
+                env.AssertPropsPerRowIterator(
+                    "s0",
                     fields,
-                    new[] {new object[] {"E2", "E3"}, new object[] {"E5", "E6"}});
+                    new object[][] { new object[] { "E2", "E3" }, new object[] { "E5", "E6" } });
 
                 SendTimer(9500, env);
-                EPAssertionUtil.AssertPropsPerRow(
-                    env.Statement("s0").GetEnumerator(),
+                env.AssertPropsPerRowIterator(
+                    "s0",
                     fields,
-                    new[] {new object[] {"E5", "E6"}});
+                    new object[][] { new object[] { "E5", "E6" } });
 
                 env.Milestone(6);
 
                 SendTimer(10500, env);
-                EPAssertionUtil.AssertPropsPerRow(
-                    env.Statement("s0").GetEnumerator(),
+                env.AssertPropsPerRowIterator(
+                    "s0",
                     fields,
-                    new[] {new object[] {"E5", "E6"}});
+                    new object[][] { new object[] { "E5", "E6" } });
 
                 SendTimer(11500, env);
-                Assert.IsFalse(env.Statement("s0").GetEnumerator().MoveNext());
+                env.AssertIterator("s0", it => ClassicAssert.IsFalse(it.MoveNext()));
 
                 env.UndeployAll();
             }
         }
 
-        internal class RowRecogTimeWindowPartitioned : RegressionExecution
+        private class RowRecogTimeWindowPartitioned : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 SendTimer(0, env);
-                var fields = new [] { "cat","a_string","b_string" };
-                var text = "@Name('s0') select * from SupportRecogBean#time(5) " +
+                var fields = "Cat,a_string,b_string".SplitCsv();
+                var text = "@name('s0') select * from SupportRecogBean#time(5) " +
                            "match_recognize (" +
                            "  partition by Cat" +
-                           "  measures A.Cat as cat, A.TheString as a_string, B.TheString as b_string" +
+                           "  measures A.Cat as Cat, A.TheString as a_string, B.TheString as b_string" +
                            "  all matches pattern (A B) " +
                            "  define " +
                            "    A as PREV(A.TheString, 3) = 'P3' and PREV(A.TheString, 2) = 'P2' and PREV(A.TheString, 4) = 'P4'," +
                            "    B as B.Value in (PREV(B.Value, 4), PREV(B.Value, 2))" +
-                           ") order by cat";
+                           ") order by Cat";
 
                 env.CompileDeploy(text).AddListener("s0");
 
@@ -169,8 +199,8 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 SendTimer(2000, env);
                 env.SendEventBean(new SupportRecogBean("P2", "c1", 1));
                 env.SendEventBean(new SupportRecogBean("E1", "c1", 3));
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
-                Assert.IsFalse(env.Statement("s0").GetEnumerator().MoveNext());
+                env.AssertListenerNotInvoked("s0");
+                env.AssertIterator("s0", it => ClassicAssert.IsFalse(it.MoveNext()));
 
                 env.Milestone(1);
 
@@ -185,14 +215,14 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 env.SendEventBean(new SupportRecogBean("xx", "c1", 4));
                 env.SendEventBean(new SupportRecogBean("E2", "c1", -1));
                 env.SendEventBean(new SupportRecogBean("E3", "c1", 12));
-                EPAssertionUtil.AssertPropsPerRow(
-                    env.Listener("s0").GetAndResetLastNewData(),
+                env.AssertPropsPerRowLastNew(
+                    "s0",
                     fields,
-                    new[] {new object[] {"c1", "E2", "E3"}});
-                EPAssertionUtil.AssertPropsPerRow(
-                    env.Statement("s0").GetEnumerator(),
+                    new object[][] { new object[] { "c1", "E2", "E3" } });
+                env.AssertPropsPerRowIterator(
+                    "s0",
                     fields,
-                    new[] {new object[] {"c1", "E2", "E3"}});
+                    new object[][] { new object[] { "c1", "E2", "E3" } });
 
                 env.Milestone(3);
 
@@ -207,54 +237,54 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 env.SendEventBean(new SupportRecogBean("xx", "c2", -2));
                 env.SendEventBean(new SupportRecogBean("E5", "c2", -1));
                 env.SendEventBean(new SupportRecogBean("E6", "c2", -2));
-                EPAssertionUtil.AssertPropsPerRow(
-                    env.Listener("s0").GetAndResetLastNewData(),
+                env.AssertPropsPerRowLastNew(
+                    "s0",
                     fields,
-                    new[] {new object[] {"c2", "E5", "E6"}});
-                EPAssertionUtil.AssertPropsPerRow(
-                    env.Statement("s0").GetEnumerator(),
+                    new object[][] { new object[] { "c2", "E5", "E6" } });
+                env.AssertPropsPerRowIterator(
+                    "s0",
                     fields,
-                    new[] {new object[] {"c1", "E2", "E3"}, new object[] {"c2", "E5", "E6"}});
+                    new object[][] { new object[] { "c1", "E2", "E3" }, new object[] { "c2", "E5", "E6" } });
 
                 env.Milestone(5);
 
                 SendTimer(8500, env);
-                EPAssertionUtil.AssertPropsPerRow(
-                    env.Statement("s0").GetEnumerator(),
+                env.AssertPropsPerRowIterator(
+                    "s0",
                     fields,
-                    new[] {new object[] {"c1", "E2", "E3"}, new object[] {"c2", "E5", "E6"}});
+                    new object[][] { new object[] { "c1", "E2", "E3" }, new object[] { "c2", "E5", "E6" } });
 
                 SendTimer(9500, env);
-                EPAssertionUtil.AssertPropsPerRow(
-                    env.Statement("s0").GetEnumerator(),
+                env.AssertPropsPerRowIterator(
+                    "s0",
                     fields,
-                    new[] {new object[] {"c2", "E5", "E6"}});
+                    new object[][] { new object[] { "c2", "E5", "E6" } });
 
                 env.Milestone(6);
 
                 SendTimer(10500, env);
-                EPAssertionUtil.AssertPropsPerRow(
-                    env.Statement("s0").GetEnumerator(),
+                env.AssertPropsPerRowIterator(
+                    "s0",
                     fields,
-                    new[] {new object[] {"c2", "E5", "E6"}});
+                    new object[][] { new object[] { "c2", "E5", "E6" } });
 
                 SendTimer(11500, env);
-                Assert.IsFalse(env.Statement("s0").GetEnumerator().MoveNext());
+                env.AssertIterator("s0", it => ClassicAssert.IsFalse(it.MoveNext()));
 
                 env.UndeployAll();
             }
         }
 
-        internal class RowRecogTimeWindowPartitionedSimple : RegressionExecution
+        private class RowRecogTimeWindowPartitionedSimple : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 SendTimer(0, env);
-                var fields = new [] { "a_string" };
-                var text = "@Name('s0') select * from SupportRecogBean#time(5 sec) " +
+                var fields = "a_string".SplitCsv();
+                var text = "@name('s0') select * from SupportRecogBean#time(5 sec) " +
                            "match_recognize (" +
                            "  partition by Cat " +
-                           "  measures A.Cat as cat, A.TheString as a_string" +
+                           "  measures A.Cat as Cat, A.TheString as a_string" +
                            "  all matches pattern (A) " +
                            "  define " +
                            "    A as PREV(A.Value) = (A.Value - 1)" +
@@ -279,97 +309,99 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
 
                 SendTimer(6200, env);
                 env.SendEventBean(new SupportRecogBean("E4", "S1", 101));
-                EPAssertionUtil.AssertPropsPerRow(
-                    env.Listener("s0").GetAndResetLastNewData(),
+                env.AssertPropsPerRowLastNew(
+                    "s0",
                     fields,
-                    new[] {new object[] {"E4"}});
-                EPAssertionUtil.AssertPropsPerRow(
-                    env.Statement("s0").GetEnumerator(),
+                    new object[][] { new object[] { "E4" } });
+                env.AssertPropsPerRowIterator(
+                    "s0",
                     fields,
-                    new[] {new object[] {"E4"}});
+                    new object[][] { new object[] { "E4" } });
 
                 env.Milestone(3);
 
                 SendTimer(6500, env);
                 env.SendEventBean(new SupportRecogBean("E5", "S3", 101));
-                EPAssertionUtil.AssertPropsPerRow(
-                    env.Listener("s0").GetAndResetLastNewData(),
+                env.AssertPropsPerRowLastNew(
+                    "s0",
                     fields,
-                    new[] {new object[] {"E5"}});
-                EPAssertionUtil.AssertPropsPerRow(
-                    env.Statement("s0").GetEnumerator(),
+                    new object[][] { new object[] { "E5" } });
+                env.AssertPropsPerRowIterator(
+                    "s0",
                     fields,
-                    new[] {new object[] {"E4"}, new object[] {"E5"}});
+                    new object[][] { new object[] { "E4" }, new object[] { "E5" } });
 
                 env.Milestone(4);
 
                 SendTimer(7000, env);
                 env.SendEventBean(new SupportRecogBean("E6", "S1", 102));
-                EPAssertionUtil.AssertPropsPerRow(
-                    env.Listener("s0").GetAndResetLastNewData(),
+                env.AssertPropsPerRowLastNew(
+                    "s0",
                     fields,
-                    new[] {new object[] {"E6"}});
-                EPAssertionUtil.AssertPropsPerRow(
-                    env.Statement("s0").GetEnumerator(),
+                    new object[][] { new object[] { "E6" } });
+                env.AssertPropsPerRowIterator(
+                    "s0",
                     fields,
-                    new[] {new object[] {"E4"}, new object[] {"E5"}, new object[] {"E6"}});
+                    new object[][] { new object[] { "E4" }, new object[] { "E5" }, new object[] { "E6" } });
 
                 env.Milestone(5);
 
                 SendTimer(10000, env);
                 env.SendEventBean(new SupportRecogBean("E7", "S2", 103));
-                EPAssertionUtil.AssertPropsPerRow(
-                    env.Listener("s0").GetAndResetLastNewData(),
+                env.AssertPropsPerRowLastNew(
+                    "s0",
                     fields,
-                    new[] {new object[] {"E7"}});
-                EPAssertionUtil.AssertPropsPerRow(
-                    env.Statement("s0").GetEnumerator(),
+                    new object[][] { new object[] { "E7" } });
+                env.AssertPropsPerRowIterator(
+                    "s0",
                     fields,
-                    new[] {new object[] {"E4"}, new object[] {"E5"}, new object[] {"E6"}, new object[] {"E7"}});
+                    new object[][]
+                        { new object[] { "E4" }, new object[] { "E5" }, new object[] { "E6" }, new object[] { "E7" } });
 
                 env.SendEventBean(new SupportRecogBean("E8", "S2", 102));
                 env.SendEventBean(new SupportRecogBean("E8", "S1", 101));
                 env.SendEventBean(new SupportRecogBean("E8", "S2", 104));
                 env.SendEventBean(new SupportRecogBean("E8", "S1", 105));
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+                env.AssertListenerNotInvoked("s0");
 
                 env.Milestone(6);
 
                 SendTimer(11199, env);
-                EPAssertionUtil.AssertPropsPerRow(
-                    env.Statement("s0").GetEnumerator(),
+                env.AssertPropsPerRowIterator(
+                    "s0",
                     fields,
-                    new[] {new object[] {"E4"}, new object[] {"E5"}, new object[] {"E6"}, new object[] {"E7"}});
+                    new object[][]
+                        { new object[] { "E4" }, new object[] { "E5" }, new object[] { "E6" }, new object[] { "E7" } });
 
                 env.Milestone(7);
 
                 SendTimer(11200, env);
-                EPAssertionUtil.AssertPropsPerRow(
-                    env.Statement("s0").GetEnumerator(),
+                env.AssertPropsPerRowIterator(
+                    "s0",
                     fields,
-                    new[] {new object[] {"E5"}, new object[] {"E6"}, new object[] {"E7"}});
+                    new object[][] { new object[] { "E5" }, new object[] { "E6" }, new object[] { "E7" } });
 
                 SendTimer(11600, env);
-                EPAssertionUtil.AssertPropsPerRow(
-                    env.Statement("s0").GetEnumerator(),
+                env.AssertPropsPerRowIterator(
+                    "s0",
                     fields,
-                    new[] {new object[] {"E6"}, new object[] {"E7"}});
+                    new object[][] { new object[] { "E6" }, new object[] { "E7" } });
 
                 env.Milestone(8);
 
                 SendTimer(16000, env);
-                Assert.IsFalse(env.Statement("s0").GetEnumerator().MoveNext());
+                env.AssertIterator("s0", it => ClassicAssert.IsFalse(it.MoveNext()));
 
                 env.UndeployAll();
             }
         }
 
-        internal class RowRecogPartitionBy2FieldsKeepall : RegressionExecution
+        private class RowRecogPartitionBy2FieldsKeepall : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "a_string","a_cat","a_value","b_value" };
-                var text = "@Name('s0') select * from SupportRecogBean#keepall " +
+                var fields = "a_string,a_cat,a_value,b_value".SplitCsv();
+                var text = "@name('s0') select * from SupportRecogBean#keepall " +
                            "match_recognize (" +
                            "  partition by TheString, Cat" +
                            "  measures A.TheString as a_string, A.Cat as a_cat, A.Value as a_value, B.Value as b_value " +
@@ -395,70 +427,70 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 env.SendEventBean(new SupportRecogBean("S2", "T2", 1000));
                 env.SendEventBean(new SupportRecogBean("S2", "T2", 1001));
                 env.SendEventBean(new SupportRecogBean("S1", null, 9));
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
-                Assert.IsFalse(env.Statement("s0").GetEnumerator().MoveNext());
+                env.AssertListenerNotInvoked("s0");
+                env.AssertIterator("s0", it => ClassicAssert.IsFalse(it.MoveNext()));
 
                 env.Milestone(2);
 
                 env.SendEventBean(new SupportRecogBean("S1", "T1", 9));
-                EPAssertionUtil.AssertPropsPerRow(
-                    env.Listener("s0").GetAndResetLastNewData(),
+                env.AssertPropsPerRowLastNew(
+                    "s0",
                     fields,
-                    new[] {new object[] {"S1", "T1", 7, 9}});
-                EPAssertionUtil.AssertPropsPerRow(
-                    env.Statement("s0").GetEnumerator(),
+                    new object[][] { new object[] { "S1", "T1", 7, 9 } });
+                env.AssertPropsPerRowIterator(
+                    "s0",
                     fields,
-                    new[] {new object[] {"S1", "T1", 7, 9}});
+                    new object[][] { new object[] { "S1", "T1", 7, 9 } });
 
                 env.Milestone(3);
 
                 env.SendEventBean(new SupportRecogBean("S2", "T2", 1001));
                 env.SendEventBean(new SupportRecogBean("S2", "T1", 109));
                 env.SendEventBean(new SupportRecogBean("S1", "T2", 25));
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
-                EPAssertionUtil.AssertPropsPerRow(
-                    env.Statement("s0").GetEnumerator(),
+                env.AssertListenerNotInvoked("s0");
+                env.AssertPropsPerRowIterator(
+                    "s0",
                     fields,
-                    new[] {new object[] {"S1", "T1", 7, 9}});
+                    new object[][] { new object[] { "S1", "T1", 7, 9 } });
 
                 env.Milestone(4);
 
                 env.SendEventBean(new SupportRecogBean("S2", "T2", 1002));
                 env.SendEventBean(new SupportRecogBean("S2", "T2", 1003));
-                EPAssertionUtil.AssertPropsPerRow(
-                    env.Listener("s0").GetAndResetLastNewData(),
+                env.AssertPropsPerRowLastNew(
+                    "s0",
                     fields,
-                    new[] {new object[] {"S2", "T2", 1002, 1003}});
-                EPAssertionUtil.AssertPropsPerRow(
-                    env.Statement("s0").GetEnumerator(),
+                    new object[][] { new object[] { "S2", "T2", 1002, 1003 } });
+                env.AssertPropsPerRowIterator(
+                    "s0",
                     fields,
-                    new[] {new object[] {"S1", "T1", 7, 9}, new object[] {"S2", "T2", 1002, 1003}});
+                    new object[][] { new object[] { "S1", "T1", 7, 9 }, new object[] { "S2", "T2", 1002, 1003 } });
 
                 env.Milestone(5);
 
                 env.SendEventBean(new SupportRecogBean("S1", "T2", 28));
-                EPAssertionUtil.AssertPropsPerRow(
-                    env.Listener("s0").GetAndResetLastNewData(),
+                env.AssertPropsPerRowLastNew(
+                    "s0",
                     fields,
-                    new[] {new object[] {"S1", "T2", 25, 28}});
-                EPAssertionUtil.AssertPropsPerRow(
-                    env.Statement("s0").GetEnumerator(),
+                    new object[][] { new object[] { "S1", "T2", 25, 28 } });
+                env.AssertPropsPerRowIterator(
+                    "s0",
                     fields,
-                    new[] {
-                        new object[] {"S1", "T1", 7, 9}, new object[] {"S1", "T2", 25, 28},
-                        new object[] {"S2", "T2", 1002, 1003}
+                    new object[][] {
+                        new object[] { "S1", "T1", 7, 9 }, new object[] { "S1", "T2", 25, 28 },
+                        new object[] { "S2", "T2", 1002, 1003 }
                     });
 
                 env.UndeployAll();
             }
         }
 
-        internal class RowRecogUnpartitionedKeepAll : RegressionExecution
+        private class RowRecogUnpartitionedKeepAll : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "a_string" };
-                var text = "@Name('s0') select * from SupportRecogBean#keepall " +
+                var fields = "a_string".SplitCsv();
+                var text = "@name('s0') select * from SupportRecogBean#keepall " +
                            "match_recognize (" +
                            "  measures A.TheString as a_string" +
                            "  all matches pattern (A) " +
@@ -469,53 +501,53 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
 
                 env.SendEventBean(new SupportRecogBean("E1", 5));
                 env.SendEventBean(new SupportRecogBean("E2", 3));
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
-                Assert.IsFalse(env.Statement("s0").GetEnumerator().MoveNext());
+                env.AssertListenerNotInvoked("s0");
+                env.AssertIterator("s0", it => ClassicAssert.IsFalse(it.MoveNext()));
 
                 env.Milestone(0);
 
                 env.SendEventBean(new SupportRecogBean("E3", 6));
-                EPAssertionUtil.AssertPropsPerRow(
-                    env.Listener("s0").GetAndResetLastNewData(),
+                env.AssertPropsPerRowLastNew(
+                    "s0",
                     fields,
-                    new[] {new object[] {"E3"}});
-                EPAssertionUtil.AssertPropsPerRow(
-                    env.Statement("s0").GetEnumerator(),
+                    new object[][] { new object[] { "E3" } });
+                env.AssertPropsPerRowIterator(
+                    "s0",
                     fields,
-                    new[] {new object[] {"E3"}});
+                    new object[][] { new object[] { "E3" } });
 
                 env.Milestone(1);
 
                 env.SendEventBean(new SupportRecogBean("E4", 4));
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
-                EPAssertionUtil.AssertPropsPerRow(
-                    env.Statement("s0").GetEnumerator(),
+                env.AssertListenerNotInvoked("s0");
+                env.AssertPropsPerRowIterator(
+                    "s0",
                     fields,
-                    new[] {new object[] {"E3"}});
+                    new object[][] { new object[] { "E3" } });
 
                 env.Milestone(2);
 
                 env.SendEventBean(new SupportRecogBean("E5", 6));
-                EPAssertionUtil.AssertPropsPerRow(
-                    env.Listener("s0").GetAndResetLastNewData(),
+                env.AssertPropsPerRowLastNew(
+                    "s0",
                     fields,
-                    new[] {new object[] {"E5"}});
-                EPAssertionUtil.AssertPropsPerRow(
-                    env.Statement("s0").GetEnumerator(),
+                    new object[][] { new object[] { "E5" } });
+                env.AssertPropsPerRowIterator(
+                    "s0",
                     fields,
-                    new[] {new object[] {"E3"}, new object[] {"E5"}});
+                    new object[][] { new object[] { "E3" }, new object[] { "E5" } });
 
                 env.Milestone(3);
 
                 env.SendEventBean(new SupportRecogBean("E6", 10));
-                EPAssertionUtil.AssertPropsPerRow(
-                    env.Listener("s0").GetAndResetLastNewData(),
+                env.AssertPropsPerRowLastNew(
+                    "s0",
                     fields,
-                    new[] {new object[] {"E6"}});
-                EPAssertionUtil.AssertPropsPerRow(
-                    env.Statement("s0").GetEnumerator(),
+                    new object[][] { new object[] { "E6" } });
+                env.AssertPropsPerRowIterator(
+                    "s0",
                     fields,
-                    new[] {new object[] {"E3"}, new object[] {"E5"}, new object[] {"E6"}});
+                    new object[][] { new object[] { "E3" }, new object[] { "E5" }, new object[] { "E6" } });
 
                 env.Milestone(4);
 
@@ -524,15 +556,15 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 env.Milestone(5);
 
                 env.SendEventBean(new SupportRecogBean("E8", 4));
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
-                EPAssertionUtil.AssertPropsPerRow(
-                    env.Statement("s0").GetEnumerator(),
+                env.AssertListenerNotInvoked("s0");
+                env.AssertPropsPerRowIterator(
+                    "s0",
                     fields,
-                    new[] {new object[] {"E3"}, new object[] {"E5"}, new object[] {"E6"}});
+                    new object[][] { new object[] { "E3" }, new object[] { "E5" }, new object[] { "E6" } });
 
                 env.UndeployModuleContaining("s0");
 
-                text = "@Name('s0') select * from SupportRecogBean#keepall " +
+                text = "@name('s0') select * from SupportRecogBean#keepall " +
                        "match_recognize (" +
                        "  measures A.TheString as a_string" +
                        "  all matches pattern (A) " +
@@ -544,20 +576,20 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
 
                 env.SendEventBean(new SupportRecogBean("E1", 5));
                 env.SendEventBean(new SupportRecogBean("E2", 4));
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
-                Assert.IsFalse(env.Statement("s0").GetEnumerator().MoveNext());
+                env.AssertListenerNotInvoked("s0");
+                env.AssertIterator("s0", it => ClassicAssert.IsFalse(it.MoveNext()));
 
                 env.Milestone(6);
 
                 env.SendEventBean(new SupportRecogBean("E3", 6));
-                EPAssertionUtil.AssertPropsPerRow(
-                    env.Listener("s0").GetAndResetLastNewData(),
+                env.AssertPropsPerRowLastNew(
+                    "s0",
                     fields,
-                    new[] {new object[] {"E3"}});
-                EPAssertionUtil.AssertPropsPerRow(
-                    env.Statement("s0").GetEnumerator(),
+                    new object[][] { new object[] { "E3" } });
+                env.AssertPropsPerRowIterator(
+                    "s0",
                     fields,
-                    new[] {new object[] {"E3"}});
+                    new object[][] { new object[] { "E3" } });
 
                 env.Milestone(7);
 
@@ -565,38 +597,45 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 env.SendEventBean(new SupportRecogBean("E5", 3));
                 env.SendEventBean(new SupportRecogBean("E5", 5));
                 env.SendEventBean(new SupportRecogBean("E6", 5));
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
-                EPAssertionUtil.AssertPropsPerRow(
-                    env.Statement("s0").GetEnumerator(),
+                env.AssertListenerNotInvoked("s0");
+                env.AssertPropsPerRowIterator(
+                    "s0",
                     fields,
-                    new[] {new object[] {"E3"}});
+                    new object[][] { new object[] { "E3" } });
 
                 env.Milestone(8);
 
                 env.SendEventBean(new SupportRecogBean("E7", 6));
-                EPAssertionUtil.AssertPropsPerRow(
-                    env.Listener("s0").GetAndResetLastNewData(),
+                env.AssertPropsPerRowLastNew(
+                    "s0",
                     fields,
-                    new[] {new object[] {"E7"}});
-                EPAssertionUtil.AssertPropsPerRow(
-                    env.Statement("s0").GetEnumerator(),
+                    new object[][] { new object[] { "E7" } });
+                env.AssertPropsPerRowIterator(
+                    "s0",
                     fields,
-                    new[] {new object[] {"E3"}, new object[] {"E7"}});
+                    new object[][] { new object[] { "E3" }, new object[] { "E7" } });
 
                 env.Milestone(9);
 
                 env.SendEventBean(new SupportRecogBean("E8", 6));
-                EPAssertionUtil.AssertPropsPerRow(
-                    env.Listener("s0").GetAndResetLastNewData(),
+                env.AssertPropsPerRowLastNew(
+                    "s0",
                     fields,
-                    new[] {new object[] {"E8"}});
-                EPAssertionUtil.AssertPropsPerRow(
-                    env.Statement("s0").GetEnumerator(),
+                    new object[][] { new object[] { "E8" } });
+                env.AssertPropsPerRowIterator(
+                    "s0",
                     fields,
-                    new[] {new object[] {"E3"}, new object[] {"E7"}, new object[] {"E8"}});
+                    new object[][] { new object[] { "E3" }, new object[] { "E7" }, new object[] { "E8" } });
 
                 env.UndeployAll();
             }
+        }
+
+        private static void SendTimer(
+            long time,
+            RegressionEnvironment env)
+        {
+            env.AdvanceTime(time);
         }
     }
 } // end of namespace

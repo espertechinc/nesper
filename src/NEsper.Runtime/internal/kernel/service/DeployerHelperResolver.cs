@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -15,6 +15,7 @@ using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.script.core;
 using com.espertech.esper.common.@internal.type;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.runtime.client;
@@ -25,14 +26,14 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 {
 	public class DeployerHelperResolver
 	{
-		public static TypeResolver GetClassLoader(
+		public static TypeResolver GetTypeResolver(
 			int rolloutItemNumber,
-			DeploymentClassLoaderOption deploymentClassLoaderOption,
+			DeploymentTypeResolverOption deploymentTypeResolverOption,
 			EPServicesContext servicesContext)
 		{
 			TypeResolver deploymentTypeResolver = servicesContext.TypeResolverParent;
-			if (deploymentClassLoaderOption != null) {
-				deploymentTypeResolver = deploymentClassLoaderOption(
+			if (deploymentTypeResolverOption != null) {
+				deploymentTypeResolver = deploymentTypeResolverOption(
 					new DeploymentClassLoaderContext(
 						servicesContext.TypeResolverParent,
 						servicesContext.ConfigSnapshot));
@@ -51,7 +52,12 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 		{
 			string deploymentId;
 			if (optionsMayNull == null || optionsMayNull.DeploymentId == null) {
-				deploymentId = Guid.NewGuid().ToString();
+				// the CRC may already exists, however this is very unlikely
+				long crc;
+				do {
+					deploymentId = Guid.NewGuid().ToString();
+					crc = CRC32Util.ComputeCRC32(deploymentId);
+				} while (deploymentLifecycleService.GetDeploymentByCRC(crc) != null);
 			}
 			else {
 				deploymentId = optionsMayNull.DeploymentId;

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -55,7 +55,7 @@ namespace com.espertech.esper.runtime.client
         /// <summary>
         ///    Returns the class loader option
         /// </summary>
-        public DeploymentClassLoaderOption DeploymentClassLoaderOption { get; set; }
+        public DeploymentTypeResolverOption DeploymentTypeResolverOption { get; set; }
 
         /// <summary>
         ///     Sets the deployment id if one should be assigned; A null value causes the runtime to generate
@@ -121,12 +121,12 @@ namespace com.espertech.esper.runtime.client
         /// <summary>
         ///     Sets the deployment class loader options.
         /// </summary>
-        /// <param name="deploymentClassLoaderOption">deployment options</param>
+        /// <param name="deploymentTypeResolverOption">deployment options</param>
         /// <returns>itself</returns>
         public DeploymentOptions WithDeploymentClassLoaderOption(
-            DeploymentClassLoaderOption deploymentClassLoaderOption)
+            DeploymentTypeResolverOption deploymentTypeResolverOption)
         {
-            DeploymentClassLoaderOption = deploymentClassLoaderOption;
+            DeploymentTypeResolverOption = deploymentTypeResolverOption;
             return this;
         }
     }

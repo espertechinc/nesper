@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -18,6 +18,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
 {
     public abstract class AggregationPortableValidationWFilterWInputType : AggregationPortableValidationBase
     {
+        private bool _hasFilter;
+        private Type _inputValueType;
+
         protected AggregationPortableValidationWFilterWInputType()
         {
         }
@@ -28,8 +31,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             Type inputValueType)
             : base(distinct)
         {
-            this.HasFilter = hasFilter;
-            this.InputValueType = inputValueType;
+            HasFilter = hasFilter;
+            InputValueType = inputValueType;
         }
 
         protected abstract void CodegenInlineSetWFilterWInputType(
@@ -62,14 +65,20 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             string intoExpression,
             AggregationForgeFactory factory)
         {
-            var that = (AggregationPortableValidationWFilterWInputType) intoTableAgg;
+            var that = (AggregationPortableValidationWFilterWInputType)intoTableAgg;
             AggregationValidationUtil.ValidateAggregationInputType(InputValueType, that.InputValueType);
             AggregationValidationUtil.ValidateAggregationFilter(HasFilter, that.HasFilter);
             ValidateIntoTableWFilterWInputType(tableExpression, intoTableAgg, intoExpression, factory);
         }
 
-        public bool HasFilter { get; set; }
+        public virtual bool HasFilter {
+            get => _hasFilter;
+            set => _hasFilter = value;
+        }
 
-        public Type InputValueType { get; set; }
+        public virtual Type InputValueType {
+            get => _inputValueType;
+            set => _inputValueType = value;
+        }
     }
 } // end of namespace

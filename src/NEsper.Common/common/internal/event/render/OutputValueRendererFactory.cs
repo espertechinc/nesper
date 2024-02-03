@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.@event.render
                 return options.IsXmlOutput ? XmlStringOutput : JsonStringOutput;
             }
 
-            if (type.IsEnum || type.IsNullable() && Nullable.GetUnderlyingType(type).IsEnum) {
+            if (type.IsEnum || (type.IsNullable() && Nullable.GetUnderlyingType(type).IsEnum)) {
                 return options.IsXmlOutput ? BaseOutput : JsonEnumOutput;
             }
 

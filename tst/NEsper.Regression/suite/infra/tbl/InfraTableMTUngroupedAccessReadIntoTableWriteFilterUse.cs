@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -7,17 +7,20 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.runtime.client.scopetest;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.infra.tbl
 {
@@ -26,7 +29,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
     /// </summary>
     public class InfraTableMTUngroupedAccessReadIntoTableWriteFilterUse : RegressionExecution
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
+        }
 
         /// <summary>
         ///     For a given number of seconds:
@@ -49,15 +57,15 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             int numSeconds)
         {
             var path = new RegressionPath();
-            var eplCreateVariable = "create table vartotal (total sum(int))";
+            var eplCreateVariable = "@public create table vartotal (Total sum(int))";
             env.CompileDeploy(eplCreateVariable, path);
 
-            var eplInto = "into table vartotal select sum(IntPrimitive) as total from SupportBean";
+            var eplInto = "into table vartotal select sum(IntPrimitive) as Total from SupportBean";
             env.CompileDeploy(eplInto, path);
 
-            env.CompileDeploy("@Name('s0') select * from SupportBean_S0(1 = vartotal.total)", path).AddListener("s0");
+            env.CompileDeploy("@name('s0') select * from SupportBean_S0(1 = vartotal.Total)", path).AddListener("s0");
 
-            env.CompileDeploy("@Name('s1') select * from SupportBean_S0(0 = vartotal.total)", path).AddListener("s1");
+            env.CompileDeploy("@name('s1') select * from SupportBean_S0(0 = vartotal.Total)", path).AddListener("s1");
 
             var writeRunnable = new WriteRunnable(env);
             var readRunnable = new ReadRunnable(env, env.Listener("s0"), env.Listener("s1"));
@@ -80,15 +88,15 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             readRunnable.Shutdown = true;
 
             // join
-            log.Info("Waiting for completion");
+            Log.Info("Waiting for completion");
             t1.Join();
             t2.Join();
 
             env.UndeployAll();
-            Assert.IsNull(writeRunnable.Exception);
-            Assert.IsNull(readRunnable.Exception);
-            Assert.IsTrue(writeRunnable.numEvents > 100);
-            Assert.IsTrue(readRunnable.numQueries > 100);
+            ClassicAssert.IsNull(writeRunnable.Exception);
+            ClassicAssert.IsNull(readRunnable.Exception);
+            ClassicAssert.IsTrue(writeRunnable.numEvents > 100);
+            ClassicAssert.IsTrue(readRunnable.numQueries > 100);
             Console.Out.WriteLine(
                 "Send " + writeRunnable.numEvents + " and performed " + readRunnable.numQueries + " reads");
         }
@@ -113,7 +121,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
             public void Run()
             {
-                log.Info("Started event send for write");
+                Log.Info("Started event send for write");
 
                 try {
                     while (!shutdown) {
@@ -123,11 +131,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     }
                 }
                 catch (Exception ex) {
-                    log.Error("Exception encountered: " + ex.Message, ex);
+                    Log.Error("Exception encountered: " + ex.Message, ex);
                     Exception = ex;
                 }
 
-                log.Info("Completed event send for write");
+                Log.Info("Completed event send for write");
             }
         }
 
@@ -158,7 +166,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
             public void Run()
             {
-                log.Info("Started event send for read");
+                Log.Info("Started event send for read");
 
                 try {
                     while (!shutdown) {
@@ -169,11 +177,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     }
                 }
                 catch (Exception ex) {
-                    log.Error("Exception encountered: " + ex.Message, ex);
+                    Log.Error("Exception encountered: " + ex.Message, ex);
                     Exception = ex;
                 }
 
-                log.Info("Completed event send for read");
+                Log.Info("Completed event send for read");
             }
         }
     }

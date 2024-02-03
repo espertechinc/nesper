@@ -1,21 +1,22 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.runtime.client;
 using com.espertech.esper.runtime.client.option;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.client.deploy
 {
@@ -24,8 +25,22 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new ClientDeployUserObjectValues());
+            WithValues(execs);
+            WithResolveContext(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithResolveContext(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ClientDeployUserObjectResolveContext());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithValues(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientDeployUserObjectValues());
             return execs;
         }
 
@@ -49,7 +64,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
             public void Run(RegressionEnvironment env)
             {
                 MyUserObjectRuntimeOption.Contexts.Clear();
-                var epl = "@Name('s0') select * from SupportBean";
+                var epl = "@name('s0') select * from SupportBean";
                 var compiled = env.Compile(epl);
                 var options = new DeploymentOptions();
                 options.StatementUserObjectRuntime = new MyUserObjectRuntimeOption();
@@ -57,12 +72,17 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
                 env.Deployment.Deploy(compiled, options);
 
                 var ctx = MyUserObjectRuntimeOption.Contexts[0];
-                Assert.AreEqual("s0", ctx.StatementName);
-                Assert.AreEqual(env.DeploymentId("s0"), ctx.DeploymentId);
-                Assert.AreSame(env.Statement("s0").Annotations, ctx.Annotations);
-                Assert.AreEqual(epl, ctx.Epl);
+                ClassicAssert.AreEqual("s0", ctx.StatementName);
+                ClassicAssert.AreEqual(env.DeploymentId("s0"), ctx.DeploymentId);
+                ClassicAssert.AreSame(env.Statement("s0").Annotations, ctx.Annotations);
+                ClassicAssert.AreEqual(epl, ctx.Epl);
 
                 env.UndeployAll();
+            }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.RUNTIMEOPS);
             }
         }
 
@@ -70,17 +90,21 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
         {
             public void Run(RegressionEnvironment env)
             {
-                var compiled = env.Compile("@Name('s0') select * from SupportBean");
+                var compiled = env.Compile("@name('s0') select * from SupportBean");
 
                 var milestone = new AtomicLong();
                 AssertDeploy(env, compiled, milestone, null);
                 AssertDeploy(env, compiled, milestone, "ABC");
                 AssertDeploy(env, compiled, milestone, new MyUserObject("hello"));
             }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.INVALIDITY);
+            }
         }
 
-        [Serializable]
-        internal class MyUserObject
+        public class MyUserObject
         {
             public MyUserObject(string id)
             {
@@ -99,7 +123,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
                     return false;
                 }
 
-                var that = (MyUserObject) o;
+                var that = (MyUserObject)o;
 
                 return Id.Equals(that.Id);
             }

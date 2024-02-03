@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -21,35 +21,31 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onspl
 {
     public class OnSplitItemForge
     {
+        private readonly ExprNode whereClause;
+        private readonly bool isNamedWindowInsert;
+        private readonly TableMetaData insertIntoTable;
+        private readonly ResultSetProcessorDesc resultSetProcessorDesc;
+        private readonly PropertyEvaluatorForge propertyEvaluator;
         private string resultSetProcessorClassName;
+        private readonly ExprNode eventPrecedence;
 
         public OnSplitItemForge(
             ExprNode whereClause,
             bool isNamedWindowInsert,
             TableMetaData insertIntoTable,
             ResultSetProcessorDesc resultSetProcessorDesc,
-            PropertyEvaluatorForge propertyEvaluator)
+            PropertyEvaluatorForge propertyEvaluator,
+            ExprNode eventPrecedence)
         {
-            WhereClause = whereClause;
-            IsNamedWindowInsert = isNamedWindowInsert;
-            InsertIntoTable = insertIntoTable;
-            ResultSetProcessorDesc = resultSetProcessorDesc;
-            PropertyEvaluator = propertyEvaluator;
+            this.whereClause = whereClause;
+            this.isNamedWindowInsert = isNamedWindowInsert;
+            this.insertIntoTable = insertIntoTable;
+            this.resultSetProcessorDesc = resultSetProcessorDesc;
+            this.propertyEvaluator = propertyEvaluator;
+            this.eventPrecedence = eventPrecedence;
         }
 
-        public ExprNode WhereClause { get; }
-
-        public bool IsNamedWindowInsert { get; }
-
-        public TableMetaData InsertIntoTable { get; }
-
-        public ResultSetProcessorDesc ResultSetProcessorDesc { get; }
-
-        public PropertyEvaluatorForge PropertyEvaluator { get; }
-
-        public string ResultSetProcessorClassName {
-            set => resultSetProcessorClassName = value;
-        }
+        public bool IsNamedWindowInsert => isNamedWindowInsert;
 
         public static CodegenExpression Make(
             OnSplitItemForge[] items,
@@ -71,21 +67,20 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onspl
             CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(OnSplitItemEval), GetType(), classScope);
-            method.Block
-                .DeclareVar<OnSplitItemEval>("eval", NewInstance(typeof(OnSplitItemEval)))
+            method.Block.DeclareVarNewInstance(typeof(OnSplitItemEval), "eval")
                 .SetProperty(
                     Ref("eval"),
                     "WhereClause",
-                    WhereClause == null
+                    whereClause == null
                         ? ConstantNull()
-                        : ExprNodeUtilityCodegen.CodegenEvaluator(WhereClause.Forge, method, GetType(), classScope))
-                .SetProperty(Ref("eval"), "IsNamedWindowInsert", Constant(IsNamedWindowInsert))
+                        : ExprNodeUtilityCodegen.CodegenEvaluator(whereClause.Forge, method, GetType(), classScope))
+                .SetProperty(Ref("eval"), "IsNamedWindowInsert", Constant(isNamedWindowInsert))
                 .SetProperty(
                     Ref("eval"),
                     "InsertIntoTable",
-                    InsertIntoTable == null
+                    insertIntoTable == null
                         ? ConstantNull()
-                        : TableDeployTimeResolver.MakeResolveTable(InsertIntoTable, symbols.GetAddInitSvc(method)))
+                        : TableDeployTimeResolver.MakeResolveTable(insertIntoTable, symbols.GetAddInitSvc(method)))
                 .SetProperty(
                     Ref("eval"),
                     "RspFactoryProvider",
@@ -93,9 +88,27 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onspl
                 .SetProperty(
                     Ref("eval"),
                     "PropertyEvaluator",
-                    PropertyEvaluator == null ? ConstantNull() : PropertyEvaluator.Make(method, symbols, classScope))
+                    propertyEvaluator == null ? ConstantNull() : propertyEvaluator.Make(method, symbols, classScope))
+                .SetProperty(
+                    Ref("eval"),
+                    "EventPrecedence",
+                    eventPrecedence == null
+                        ? ConstantNull()
+                        : ExprNodeUtilityCodegen.CodegenEvaluator(eventPrecedence.Forge, method, GetType(), classScope))
                 .MethodReturn(Ref("eval"));
             return LocalMethod(method);
+        }
+
+        public ExprNode WhereClause => whereClause;
+
+        public TableMetaData InsertIntoTable => insertIntoTable;
+
+        public ResultSetProcessorDesc ResultSetProcessorDesc => resultSetProcessorDesc;
+
+        public PropertyEvaluatorForge PropertyEvaluator => propertyEvaluator;
+
+        public string ResultSetProcessorClassName {
+            set => resultSetProcessorClassName = value;
         }
     }
 } // end of namespace

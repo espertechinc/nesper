@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.@event.json
                 case JsonValueKind.Object:
                     var result = new Dictionary<string, object>();
                     var enumerator = element.EnumerateObject();
-                    for (int ii = 0; enumerator.MoveNext(); ii++) {
+                    for (var ii = 0; enumerator.MoveNext(); ii++) {
                         var property = enumerator.Current;
                         result.Add(property.Name, ElementToValue(property.Value));
                     }
@@ -42,7 +42,7 @@ namespace com.espertech.esper.common.@internal.@event.json
 
                 case JsonValueKind.Null:
                     return null;
-                
+
                 default:
                     throw new ArgumentException("Invalid JsonElement", nameof(element));
             }
@@ -56,7 +56,7 @@ namespace com.espertech.esper.common.@internal.@event.json
                 case JsonValueKind.Object:
                     var result = new Dictionary<string, T>();
                     var enumerator = element.EnumerateObject();
-                    for (int ii = 0; enumerator.MoveNext(); ii++) {
+                    for (var ii = 0; enumerator.MoveNext(); ii++) {
                         var property = enumerator.Current;
                         var propertyName = property.Name;
                         var propertyValue = deserializer.Invoke(property.Value);
@@ -67,12 +67,12 @@ namespace com.espertech.esper.common.@internal.@event.json
 
                 case JsonValueKind.Null:
                     return null;
-                
+
                 default:
                     throw new ArgumentException("Invalid JsonElement", nameof(element));
             }
         }
-        
+
         public static IList<object> ElementToList(this JsonElement element)
         {
             return ElementToList(element, ElementToValue);
@@ -86,7 +86,7 @@ namespace com.espertech.esper.common.@internal.@event.json
                 case JsonValueKind.Array:
                     var result = new List<T>();
                     var enumerator = element.EnumerateArray();
-                    for (int ii = 0; enumerator.MoveNext(); ii++) {
+                    for (var ii = 0; enumerator.MoveNext(); ii++) {
                         var itemElement = enumerator.Current;
                         var itemValue = deserializer.Invoke(itemElement);
                         result.Add(itemValue);
@@ -96,7 +96,7 @@ namespace com.espertech.esper.common.@internal.@event.json
 
                 case JsonValueKind.Null:
                     return null;
-                
+
                 default:
                     throw new ArgumentException("Invalid JsonElement", nameof(element));
             }
@@ -110,9 +110,9 @@ namespace com.espertech.esper.common.@internal.@event.json
                 case JsonValueKind.Array:
                     var result = new List<T>();
                     var enumerator = element.EnumerateArray();
-                    for (int ii = 0; enumerator.MoveNext(); ii++) {
+                    for (var ii = 0; enumerator.MoveNext(); ii++) {
                         var itemElement = enumerator.Current;
-                        var itemValue = (T) deserializer.Deserialize(itemElement);
+                        var itemValue = (T)deserializer.Deserialize(itemElement);
                         result.Add(itemValue);
                     }
 
@@ -120,12 +120,12 @@ namespace com.espertech.esper.common.@internal.@event.json
 
                 case JsonValueKind.Null:
                     return null;
-                
+
                 default:
                     throw new ArgumentException("Invalid JsonElement", nameof(element));
             }
         }
-        
+
         public static object[] ElementToArray(this JsonElement element)
         {
             return ElementToList(element)?.ToArray();
@@ -147,22 +147,22 @@ namespace com.espertech.esper.common.@internal.@event.json
 
         public static object ElementToNumeric(this JsonElement element)
         {
+            if (element.TryGetInt32(out var valueInt32)) {
+                return valueInt32;
+            }
+            if (element.TryGetInt64(out var valueInt64)) {
+                return valueInt64;
+            }
             if (element.TryGetDecimal(out var valueDecimal)) {
                 return valueDecimal;
             }
-            else if (element.TryGetDouble(out var valueDouble)) {
+            if (element.TryGetDouble(out var valueDouble)) {
                 return valueDouble;
-            }
-            else if (element.TryGetInt32(out var valueInt32)) {
-                return valueInt32;
-            }
-            else if (element.TryGetInt64(out var valueInt64)) {
-                return valueInt64;
             }
 
             throw new FormatException($"unable to parse the value \"{element}\" to a numeric");
         }
-        
+
         // --------------------------------------------------------------------------------
 
         public static BigInteger GetBigInteger(this JsonElement element)
@@ -170,7 +170,7 @@ namespace com.espertech.esper.common.@internal.@event.json
             if (element.ValueKind == JsonValueKind.String) {
                 return BigInteger.Parse(element.GetString());
             }
-            
+
             if (element.ValueKind == JsonValueKind.Number) {
                 if (element.TryGetInt64(out var valueInt64)) {
                     return new BigInteger(valueInt64);
@@ -189,7 +189,7 @@ namespace com.espertech.esper.common.@internal.@event.json
                 _ => throw new ArgumentException("Invalid JsonElement", nameof(element))
             };
 
-            return element.ValueKind == JsonValueKind.Null ? (BigInteger?) null : GetBigInteger(element);
+            return element.ValueKind == JsonValueKind.Null ? (BigInteger?)null : GetBigInteger(element);
         }
 
         public static bool GetSmartBoolean(this JsonElement element)
@@ -197,7 +197,7 @@ namespace com.espertech.esper.common.@internal.@event.json
             return element.ValueKind switch {
                 JsonValueKind.True => true,
                 JsonValueKind.False => false,
-                JsonValueKind.String => Boolean.Parse(element.GetString()),
+                JsonValueKind.String => bool.Parse(element.GetString()),
                 _ => throw new ArgumentException("Invalid JsonElement", nameof(element))
             };
         }
@@ -208,7 +208,7 @@ namespace com.espertech.esper.common.@internal.@event.json
                 JsonValueKind.Null => null,
                 JsonValueKind.True => true,
                 JsonValueKind.False => false,
-                JsonValueKind.String => Boolean.Parse(element.GetString()),
+                JsonValueKind.String => bool.Parse(element.GetString()),
                 _ => throw new ArgumentException("Invalid JsonElement", nameof(element))
             };
         }
@@ -217,7 +217,7 @@ namespace com.espertech.esper.common.@internal.@event.json
         {
             return element.ValueKind switch {
                 JsonValueKind.Number => element.GetByte(),
-                JsonValueKind.String => Byte.Parse(element.GetString()),
+                JsonValueKind.String => byte.Parse(element.GetString()),
                 _ => throw new ArgumentException("Invalid JsonElement", nameof(element))
             };
         }
@@ -227,7 +227,7 @@ namespace com.espertech.esper.common.@internal.@event.json
             return element.ValueKind switch {
                 JsonValueKind.Null => null,
                 JsonValueKind.Number => element.GetByte(),
-                JsonValueKind.String => Byte.Parse(element.GetString()),
+                JsonValueKind.String => byte.Parse(element.GetString()),
                 _ => throw new ArgumentException("Invalid JsonElement", nameof(element))
             };
         }
@@ -236,7 +236,7 @@ namespace com.espertech.esper.common.@internal.@event.json
         {
             return element.ValueKind switch {
                 JsonValueKind.Number => element.GetInt16(),
-                JsonValueKind.String => Int16.Parse(element.GetString()),
+                JsonValueKind.String => short.Parse(element.GetString()),
                 _ => throw new ArgumentException("Invalid JsonElement", nameof(element))
             };
         }
@@ -246,7 +246,7 @@ namespace com.espertech.esper.common.@internal.@event.json
             return element.ValueKind switch {
                 JsonValueKind.Null => null,
                 JsonValueKind.Number => element.GetInt16(),
-                JsonValueKind.String => Int16.Parse(element.GetString()),
+                JsonValueKind.String => short.Parse(element.GetString()),
                 _ => throw new ArgumentException("Invalid JsonElement", nameof(element))
             };
         }
@@ -255,7 +255,7 @@ namespace com.espertech.esper.common.@internal.@event.json
         {
             return element.ValueKind switch {
                 JsonValueKind.Number => element.GetInt32(),
-                JsonValueKind.String => Int32.Parse(element.GetString()),
+                JsonValueKind.String => int.Parse(element.GetString()),
                 _ => throw new ArgumentException("Invalid JsonElement", nameof(element))
             };
         }
@@ -265,7 +265,7 @@ namespace com.espertech.esper.common.@internal.@event.json
             return element.ValueKind switch {
                 JsonValueKind.Null => null,
                 JsonValueKind.Number => element.GetInt32(),
-                JsonValueKind.String => Int32.Parse(element.GetString()),
+                JsonValueKind.String => int.Parse(element.GetString()),
                 _ => throw new ArgumentException("Invalid JsonElement", nameof(element))
             };
         }
@@ -274,7 +274,7 @@ namespace com.espertech.esper.common.@internal.@event.json
         {
             return element.ValueKind switch {
                 JsonValueKind.Number => element.GetInt64(),
-                JsonValueKind.String => Int64.Parse(element.GetString()),
+                JsonValueKind.String => long.Parse(element.GetString()),
                 _ => throw new ArgumentException("Invalid JsonElement", nameof(element))
             };
         }
@@ -284,16 +284,16 @@ namespace com.espertech.esper.common.@internal.@event.json
             return element.ValueKind switch {
                 JsonValueKind.Null => null,
                 JsonValueKind.Number => element.GetInt64(),
-                JsonValueKind.String => Int64.Parse(element.GetString()),
+                JsonValueKind.String => long.Parse(element.GetString()),
                 _ => throw new ArgumentException("Invalid JsonElement", nameof(element))
             };
         }
-        
+
         public static float GetSmartSingle(this JsonElement element)
         {
             return element.ValueKind switch {
                 JsonValueKind.Number => element.GetSingle(),
-                JsonValueKind.String => Single.Parse(element.GetString()),
+                JsonValueKind.String => float.Parse(element.GetString()),
                 _ => throw new ArgumentException("Invalid JsonElement", nameof(element))
             };
         }
@@ -303,7 +303,7 @@ namespace com.espertech.esper.common.@internal.@event.json
             return element.ValueKind switch {
                 JsonValueKind.Null => null,
                 JsonValueKind.Number => element.GetSingle(),
-                JsonValueKind.String => Single.Parse(element.GetString()),
+                JsonValueKind.String => float.Parse(element.GetString()),
                 _ => throw new ArgumentException("Invalid JsonElement", nameof(element))
             };
         }
@@ -312,7 +312,7 @@ namespace com.espertech.esper.common.@internal.@event.json
         {
             return element.ValueKind switch {
                 JsonValueKind.Number => element.GetDouble(),
-                JsonValueKind.String => Double.Parse(element.GetString()),
+                JsonValueKind.String => double.Parse(element.GetString()),
                 _ => throw new ArgumentException("Invalid JsonElement", nameof(element))
             };
         }
@@ -322,7 +322,7 @@ namespace com.espertech.esper.common.@internal.@event.json
             return element.ValueKind switch {
                 JsonValueKind.Null => null,
                 JsonValueKind.Number => element.GetDouble(),
-                JsonValueKind.String => Double.Parse(element.GetString()),
+                JsonValueKind.String => double.Parse(element.GetString()),
                 _ => throw new ArgumentException("Invalid JsonElement", nameof(element))
             };
         }
@@ -331,7 +331,7 @@ namespace com.espertech.esper.common.@internal.@event.json
         {
             return element.ValueKind switch {
                 JsonValueKind.Number => element.GetDecimal(),
-                JsonValueKind.String => Decimal.Parse(element.GetString()),
+                JsonValueKind.String => decimal.Parse(element.GetString()),
                 _ => throw new ArgumentException("Invalid JsonElement", nameof(element))
             };
         }
@@ -341,7 +341,7 @@ namespace com.espertech.esper.common.@internal.@event.json
             return element.ValueKind switch {
                 JsonValueKind.Null => null,
                 JsonValueKind.Number => element.GetDecimal(),
-                JsonValueKind.String => Decimal.Parse(element.GetString()),
+                JsonValueKind.String => decimal.Parse(element.GetString()),
                 _ => throw new ArgumentException("Invalid JsonElement", nameof(element))
             };
         }
@@ -353,7 +353,7 @@ namespace com.espertech.esper.common.@internal.@event.json
                 _ => throw new ArgumentException("Invalid JsonElement", nameof(element))
             };
         }
-        
+
         public static char? GetBoxedCharacter(this JsonElement element)
         {
             return element.ValueKind switch {
@@ -377,7 +377,7 @@ namespace com.espertech.esper.common.@internal.@event.json
 
             throw new ArgumentException("Invalid JsonElement", nameof(element));
         }
-        
+
         public static DateTime? GetBoxedDateTime(this JsonElement element)
         {
             return element.ValueKind switch {
@@ -416,6 +416,7 @@ namespace com.espertech.esper.common.@internal.@event.json
             switch (element.ValueKind) {
                 case JsonValueKind.Null:
                     return null;
+
                 case JsonValueKind.String: {
                     var stringValue = element.GetString();
                     try {
@@ -425,6 +426,7 @@ namespace com.espertech.esper.common.@internal.@event.json
                         throw HandleParseException(typeof(DateTime), stringValue, ex);
                     }
                 }
+
                 default:
                     throw new ArgumentException("Invalid JsonElement", nameof(element));
             }
@@ -484,6 +486,6 @@ namespace com.espertech.esper.common.@internal.@event.json
             return new EPException(
                 "Failed to parse json value as a " + type.Name + "-type from value '" + value + "': " + innerMsg,
                 ex);
-        }       
+        }
     }
 }

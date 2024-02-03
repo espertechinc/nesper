@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -8,16 +8,13 @@
 
 using com.espertech.esper.regressionlib.framework;
 
-using static com.espertech.esper.regressionlib.framework.SupportMessageAssertUtil;
-
 namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 {
     public class ResultSetAggregateExtInvalid : RegressionExecution
     {
         public void Run(RegressionEnvironment env)
         {
-            TryInvalidCompile(
-                env,
+            env.TryInvalidCompile(
                 "select rate(10) from SupportBean",
                 "Failed to validate select-clause expression 'rate(10)': Unknown single-row function, aggregation function or mapped or indexed property named 'rate' could not be resolved [select rate(10) from SupportBean]");
         }

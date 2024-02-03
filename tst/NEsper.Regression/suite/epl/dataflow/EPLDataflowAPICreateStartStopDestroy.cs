@@ -1,24 +1,24 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.dataflow.core;
-using com.espertech.esper.common.client.module;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 {
@@ -27,21 +27,27 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-WithCreateStartStop(execs);
-WithDeploymentAdmin(execs);
+#if REGRESSION_EXECUTIONS
+            WithCreateStartStop(execs);
+            With(DeploymentAdmin)(execs);
+#endif
             return execs;
         }
-public static IList<RegressionExecution> WithDeploymentAdmin(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new EPLDataflowDeploymentAdmin());
-    return execs;
-}public static IList<RegressionExecution> WithCreateStartStop(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new EPLDataflowCreateStartStop());
-    return execs;
-}
+
+        public static IList<RegressionExecution> WithDeploymentAdmin(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDataflowDeploymentAdmin());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithCreateStartStop(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDataflowCreateStartStop());
+            return execs;
+        }
+
         private static void TryInstantiate(
             RegressionEnvironment env,
             string deploymentId,
@@ -53,7 +59,7 @@ public static IList<RegressionExecution> WithDeploymentAdmin(IList<RegressionExe
                 Assert.Fail();
             }
             catch (EPDataFlowInstantiationException ex) {
-                Assert.AreEqual(message, ex.Message);
+                ClassicAssert.AreEqual(message, ex.Message);
             }
         }
 
@@ -62,14 +68,14 @@ public static IList<RegressionExecution> WithDeploymentAdmin(IList<RegressionExe
             string message)
         {
             var received = message.Substring(0, message.IndexOf("[") + 1);
-            Assert.AreEqual(expected, received);
+            ClassicAssert.AreEqual(expected, received);
         }
 
         internal class EPLDataflowCreateStartStop : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('flow') create dataflow MyGraph Emitter -> outstream<?> {}";
+                var epl = "@name('flow') create dataflow MyGraph Emitter -> outstream<?> {}";
                 var compiledGraph = env.Compile(epl);
                 try {
                     env.Deployment.Deploy(compiledGraph, new DeploymentOptions().WithDeploymentId("DEP1"));
@@ -80,11 +86,11 @@ public static IList<RegressionExecution> WithDeploymentAdmin(IList<RegressionExe
 
                 var dfruntime = env.Runtime.DataFlowService;
                 EPAssertionUtil.AssertEqualsAnyOrder(
-                    new[] {new DeploymentIdNamePair(env.DeploymentId("flow"), "MyGraph")},
+                    new[] { new DeploymentIdNamePair(env.DeploymentId("flow"), "MyGraph") },
                     dfruntime.DataFlows);
                 var desc = dfruntime.GetDataFlow("DEP1", "MyGraph");
-                Assert.AreEqual("MyGraph", desc.DataFlowName);
-                Assert.AreEqual("flow", desc.StatementName);
+                ClassicAssert.AreEqual("MyGraph", desc.DataFlowName);
+                ClassicAssert.AreEqual("flow", desc.StatementName);
 
                 dfruntime.Instantiate(env.DeploymentId("flow"), "MyGraph");
 
@@ -102,8 +108,8 @@ public static IList<RegressionExecution> WithDeploymentAdmin(IList<RegressionExe
                     "Data flow by name 'DUMMY' for deployment id 'DEP1' has not been defined");
 
                 // destroy - should be gone
-                Assert.AreEqual(null, dfruntime.GetDataFlow("DEP1", "MyGraph"));
-                Assert.AreEqual(0, dfruntime.DataFlows.Length);
+                ClassicAssert.AreEqual(null, dfruntime.GetDataFlow("DEP1", "MyGraph"));
+                ClassicAssert.AreEqual(0, dfruntime.DataFlows.Length);
                 TryInstantiate(
                     env,
                     "DEP1",
@@ -115,6 +121,11 @@ public static IList<RegressionExecution> WithDeploymentAdmin(IList<RegressionExe
                 dfruntime.Instantiate(env.DeploymentId("flow"), "MyGraph");
                 env.UndeployAll();
             }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.DATAFLOW);
+            }
         }
 
         internal class EPLDataflowDeploymentAdmin : RegressionExecution
@@ -125,7 +136,7 @@ public static IList<RegressionExecution> WithDeploymentAdmin(IList<RegressionExe
                     return;
                 }
 
-                var epl = "@Name('flow') create dataflow TheGraph\n" +
+                var epl = "@name('flow') create dataflow TheGraph\n" +
                           "create schema ABC as " +
                           typeof(SupportBean).FullName +
                           "," +
@@ -133,14 +144,19 @@ public static IList<RegressionExecution> WithDeploymentAdmin(IList<RegressionExe
                           "select(outstream) -> selectedData {select: (select TheString, IntPrimitive from outstream) }\n" +
                           "DefaultSupportCaptureOp(selectedData) {};";
 
-                Module module = env.Compiler.ParseModule(epl);
+                var module = env.Compiler.ParseModule(epl);
 
-                Assert.AreEqual(1, module.Items.Count);
+                ClassicAssert.AreEqual(1, module.Items.Count);
                 env.CompileDeploy(epl);
 
                 env.Runtime.DataFlowService.Instantiate(env.DeploymentId("flow"), "TheGraph");
 
                 env.UndeployAll();
+            }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.DATAFLOW);
             }
         }
     }

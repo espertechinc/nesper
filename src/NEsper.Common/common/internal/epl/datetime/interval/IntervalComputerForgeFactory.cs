@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -209,11 +209,10 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             ExprNode exprNode,
             TimeAbacus timeAbacus)
         {
-            if (exprNode is ExprTimePeriod) {
-                var timePeriod = (ExprTimePeriod) exprNode;
+            if (exprNode is ExprTimePeriod timePeriod) {
                 if (!timePeriod.HasMonth && !timePeriod.HasYear) {
                     // no-month and constant
-                    if (exprNode.Forge.ForgeConstantType.IsCompileTimeConstant) {
+                    if (timePeriod.Forge.ForgeConstantType.IsCompileTimeConstant) {
                         var sec = timePeriod.EvaluateAsSeconds(null, true, null);
                         var l = timeAbacus.DeltaForSecondsDouble(sec);
                         return new ExprOptionalConstantForge(new IntervalDeltaExprMSecConstForge(l), l);
@@ -257,7 +256,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                             field,
                             "DeltaAdd",
                             reference,
-                            exprSymbol.GetAddEPS(parent),
+                            exprSymbol.GetAddEps(parent),
                             exprSymbol.GetAddIsNewData(parent),
                             exprSymbol.GetAddExprEvalCtx(parent));
                     }
@@ -266,7 +265,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             }
 
             if (ExprNodeUtilityQuery.IsConstant(exprNode)) {
-                var constantNode = (ExprConstantNode) exprNode;
+                var constantNode = (ExprConstantNode)exprNode;
                 var l = constantNode.ConstantValue.AsInt64();
                 return new ExprOptionalConstantForge(new IntervalDeltaExprMSecConstForge(l), l);
             }

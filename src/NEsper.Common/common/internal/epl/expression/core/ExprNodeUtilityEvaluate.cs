@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -14,11 +14,36 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 
+using com.espertech.esper.compat;
+
 namespace com.espertech.esper.common.@internal.epl.expression.core
 {
     public class ExprNodeUtilityEvaluate
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+        public static int EvaluateIntOptional(
+            ExprEvaluator evalOptional,
+            EventBean @event,
+            int defaultValue,
+            ExprEvaluatorContext exprEvaluatorContext)
+        {
+            if (evalOptional == null) {
+                return defaultValue;
+            }
+
+            var precedenceResult = evalOptional
+                .Evaluate(
+                    new EventBean[] { @event },
+                    true,
+                    exprEvaluatorContext)
+                .AsBoxedInt32();
+            if (precedenceResult != null) {
+                return precedenceResult.Value;
+            }
+
+            return defaultValue;
+        }
 
         public static object EvaluateValidationTimeNoStreams(
             ExprEvaluator evaluator,
@@ -43,13 +68,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             ExprEvaluatorContext exprEvaluatorContext,
             ICollection<EventBean> eventsInWindow)
         {
-            EventBean[] events = new EventBean[1];
+            var events = new EventBean[1];
             while (enumerator.MoveNext()) {
                 events[0] = enumerator.Current;
 
                 try {
                     var result = filterExpression.Evaluate(events, true, exprEvaluatorContext);
-                    if ((result == null) || (!((bool) result))) {
+                    if (result == null || !(bool)result) {
                         continue;
                     }
 
@@ -74,17 +99,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             EventBean[] streamOneEvents,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            EventBean[] eventsPerStream = new EventBean[2];
+            var eventsPerStream = new EventBean[2];
             eventsPerStream[0] = streamZeroEvent;
 
-            EventBean[] filtered = new EventBean[streamOneEvents.Length];
-            int countPass = 0;
+            var filtered = new EventBean[streamOneEvents.Length];
+            var countPass = 0;
 
-            foreach (EventBean eventBean in streamOneEvents) {
+            foreach (var eventBean in streamOneEvents) {
                 eventsPerStream[1] = eventBean;
 
                 var result = filter.Evaluate(eventsPerStream, true, exprEvaluatorContext);
-                if ((result != null) && true.Equals(result)) {
+                if (result != null && true.Equals(result)) {
                     filtered[countPass] = eventBean;
                     countPass++;
                 }
@@ -110,16 +135,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             ExprEvaluatorContext exprEvaluatorContext)
         {
             var result = filter.Evaluate(eventsPerStream, true, exprEvaluatorContext);
-            return (result != null) && true.Equals(result);
+            return result != null && true.Equals(result);
         }
 
         public static object[] EvaluateExpressions(
             ExprEvaluator[] parameters,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            object[] results = new object[parameters.Length];
-            int count = 0;
-            foreach (ExprEvaluator expr in parameters) {
+            var results = new object[parameters.Length];
+            var count = 0;
+            foreach (var expr in parameters) {
                 try {
                     results[count] = expr.Evaluate(null, true, exprEvaluatorContext);
                     count++;
@@ -128,10 +153,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                     throw;
                 }
                 catch (Exception ex) {
-                    string message = "Failed expression evaluation in crontab timer-at for parameter " +
-                                     count +
-                                     ": " +
-                                     ex.Message;
+                    var message = "Failed expression evaluation in crontab timer-at for parameter " +
+                                  count +
+                                  ": " +
+                                  ex.Message;
                     Log.Error(message, ex);
                     throw new ArgumentException(message);
                 }

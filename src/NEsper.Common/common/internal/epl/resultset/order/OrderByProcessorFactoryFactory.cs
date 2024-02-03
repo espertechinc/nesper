@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -129,7 +129,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
             var descending = new bool[orderBy.Length];
             for (var i = 0; i < orderBy.Length; i++) {
                 nodes[i] = orderBy[i].ExprNode;
-                descending[i] = orderBy[i].IsDescending();
+                descending[i] = orderBy[i].IsDescending;
             }
 
             var types = ExprNodeUtilityQuery.GetExprResultTypes(nodes);

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -53,9 +53,7 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
             var count = 0;
             if (queryPlanIndexItem.HashProps != null) {
                 foreach (var indexProp in queryPlanIndexItem.HashProps) {
-                    var coercionType = queryPlanIndexItem.HashPropTypes == null
-                        ? null
-                        : queryPlanIndexItem.HashPropTypes[count];
+                    var coercionType = queryPlanIndexItem.HashPropTypes?[count];
                     hashFields.Add(
                         new VirtualDataWindowLookupFieldDesc(
                             indexProp,
@@ -69,9 +67,7 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
             count = 0;
             if (queryPlanIndexItem.RangeProps != null) {
                 foreach (var btreeprop in queryPlanIndexItem.RangeProps) {
-                    var coercionType = queryPlanIndexItem.RangePropTypes == null
-                        ? null
-                        : queryPlanIndexItem.RangePropTypes[count];
+                    var coercionType = queryPlanIndexItem.RangePropTypes?[count];
                     btreeFields.Add(new VirtualDataWindowLookupFieldDesc(btreeprop, null, coercionType));
                     count++;
                 }

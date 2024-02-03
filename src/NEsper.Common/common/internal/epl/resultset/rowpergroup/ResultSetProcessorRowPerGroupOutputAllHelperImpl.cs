@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -13,16 +13,18 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.compat.collections;
 
+
 namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
 {
     public class ResultSetProcessorRowPerGroupOutputAllHelperImpl : ResultSetProcessorRowPerGroupOutputAllHelper
     {
+        protected readonly ResultSetProcessorRowPerGroup processor;
+
         private readonly IDictionary<object, EventBean[]> groupReps = new LinkedHashMap<object, EventBean[]>();
 
         private readonly IDictionary<object, EventBean> groupRepsOutputLastUnordRStream =
             new LinkedHashMap<object, EventBean>();
 
-        internal readonly ResultSetProcessorRowPerGroup processor;
         private bool first;
 
         public ResultSetProcessorRowPerGroupOutputAllHelperImpl(ResultSetProcessorRowPerGroup processor)
@@ -39,7 +41,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
 
             if (newData != null) {
                 foreach (var aNewData in newData) {
-                    EventBean[] eventsPerStream = {aNewData};
+                    var eventsPerStream = new EventBean[] { aNewData };
                     var mk = processor.GenerateGroupKeySingle(eventsPerStream, true);
                     groupReps.Put(mk, eventsPerStream);
 
@@ -55,13 +57,13 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                         }
                     }
 
-                    processor.AggregationService.ApplyEnter(eventsPerStream, mk, processor.GetAgentInstanceContext());
+                    processor.AggregationService.ApplyEnter(eventsPerStream, mk, processor.ExprEvaluatorContext);
                 }
             }
 
             if (oldData != null) {
                 foreach (var anOldData in oldData) {
-                    EventBean[] eventsPerStream = {anOldData};
+                    var eventsPerStream = new EventBean[] { anOldData };
                     var mk = processor.GenerateGroupKeySingle(eventsPerStream, true);
 
                     if (processor.IsSelectRStream && !groupRepsOutputLastUnordRStream.ContainsKey(mk)) {
@@ -76,7 +78,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                         }
                     }
 
-                    processor.AggregationService.ApplyLeave(eventsPerStream, mk, processor.GetAgentInstanceContext());
+                    processor.AggregationService.ApplyLeave(eventsPerStream, mk, processor.ExprEvaluatorContext);
                 }
             }
         }
@@ -105,7 +107,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                         }
                     }
 
-                    processor.AggregationService.ApplyEnter(aNewData.Array, mk, processor.GetAgentInstanceContext());
+                    processor.AggregationService.ApplyEnter(aNewData.Array, mk, processor.ExprEvaluatorContext);
                 }
             }
 
@@ -124,7 +126,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                         }
                     }
 
-                    processor.AggregationService.ApplyLeave(anOldData.Array, mk, processor.GetAgentInstanceContext());
+                    processor.AggregationService.ApplyLeave(anOldData.Array, mk, processor.ExprEvaluatorContext);
                 }
             }
         }

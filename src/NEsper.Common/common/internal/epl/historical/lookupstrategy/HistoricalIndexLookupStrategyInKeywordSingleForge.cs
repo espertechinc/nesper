@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -42,9 +42,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.lookupstrategy
             var method = parent.MakeChild(typeof(HistoricalIndexLookupStrategyInKeywordSingle), GetType(), classScope);
 
             method.Block
-                .DeclareVar<HistoricalIndexLookupStrategyInKeywordSingle>(
-                    "strat",
-                    NewInstance(typeof(HistoricalIndexLookupStrategyInKeywordSingle)))
+                .DeclareVarNewInstance<HistoricalIndexLookupStrategyInKeywordSingle>("strat")
                 .SetProperty(Ref("strat"), "LookupStream", Constant(lookupStream))
                 .SetProperty(
                     Ref("strat"),

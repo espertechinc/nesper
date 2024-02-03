@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -28,7 +28,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         private readonly RelationalOpEnumComputer _computer;
         private readonly Type _coercionType;
 
-        public ExprRelationalOpNodeForge(ExprRelationalOpNodeImpl parent,
+        public ExprRelationalOpNodeForge(
+            ExprRelationalOpNodeImpl parent,
             RelationalOpEnumComputer computer,
             Type coercionType)
         {
@@ -37,12 +38,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             _coercionType = coercionType;
         }
 
-        public ExprEvaluator ExprEvaluator {
-            get => new ExprRelationalOpNodeForgeEval(
+        public ExprEvaluator ExprEvaluator =>
+            new ExprRelationalOpNodeForgeEval(
                 this,
                 _parent.ChildNodes[0].Forge.ExprEvaluator,
                 _parent.ChildNodes[1].Forge.ExprEvaluator);
-        }
 
         public CodegenExpression EvaluateCodegenUninstrumented(
             Type requiredType,
@@ -81,8 +81,6 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
         public Type CoercionType => _coercionType;
 
-        public ExprForgeConstantType ForgeConstantType {
-            get => ExprForgeConstantType.NONCONST;
-        }
+        public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
     }
 } // end of namespace

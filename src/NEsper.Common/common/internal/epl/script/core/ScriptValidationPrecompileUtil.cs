@@ -1,5 +1,5 @@
 ﻿///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -70,20 +70,24 @@ namespace com.espertech.esper.common.@internal.epl.script.core
             }
 
             scriptCompiler.VerifyScript(dialect, script);
-            
+
 #if false
             ExpressionScriptCompiled compiledBuf = JSR223Helper
                 .VerifyCompileScript(script.Name, script.Expression, dialect);
 
             script.CompiledBuf = compiledBuf;
 #endif
-            
+
             if (script.ParameterNames.Length != 0) {
-                var parameters = new HashSet<String>();
+                var parameters = new HashSet<string>();
                 foreach (var param in script.ParameterNames) {
                     if (parameters.Contains(param)) {
                         throw new ExprValidationException(
-                            "Invalid script parameters for script '" + script.Name + "', parameter '" + param + "' is defined more then once");
+                            "Invalid script parameters for script '" +
+                            script.Name +
+                            "', parameter '" +
+                            param +
+                            "' is defined more then once");
                     }
 
                     parameters.Add(param);

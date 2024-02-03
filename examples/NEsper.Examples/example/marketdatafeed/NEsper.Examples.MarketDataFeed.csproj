@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFrameworks>netcoreapp3.1;net6.0</TargetFrameworks>
+        <TargetFrameworks>net6.0;net7.0</TargetFrameworks>
     </PropertyGroup>
 
     <PropertyGroup>
@@ -12,16 +12,16 @@
 
     <ItemGroup Condition="'$(NetCore)'=='true'">
         <PackageReference Include="System.Data.Common" Version="4.3.0" />
-        <PackageReference Include="System.Data.SqlClient" Version="4.5.0" />
+        <PackageReference Include="System.Data.SqlClient" Version="4.8.6" />
     </ItemGroup>
 
     <ItemGroup Condition="'$(NetFramework)' == 'net472'">
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="NLog" Version="4.7.12" />
+        <PackageReference Include="NLog" Version="5.2.8" />
 
-        <PackageReference Include="NUnit" Version="3.10.1" />
+        <PackageReference Include="NUnit" Version="4.0.1" />
     </ItemGroup>
 
     <ItemGroup>

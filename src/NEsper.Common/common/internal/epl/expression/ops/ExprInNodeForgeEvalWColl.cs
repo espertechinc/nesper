@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -25,19 +26,19 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 namespace com.espertech.esper.common.@internal.epl.expression.ops
 {
     /// <summary>
-    ///     Represents the in-clause (set check) function in an expression tree.
+    /// Represents the in-clause (set check) function in an expression tree.
     /// </summary>
     public class ExprInNodeForgeEvalWColl : ExprEvaluator
     {
-        private readonly ExprEvaluator[] _evaluators;
         private readonly ExprInNodeForge _forge;
+        private readonly ExprEvaluator[] _evaluators;
 
         public ExprInNodeForgeEvalWColl(
             ExprInNodeForge forge,
             ExprEvaluator[] evaluators)
         {
-            this._forge = forge;
-            this._evaluators = evaluators;
+            _forge = forge;
+            _evaluators = evaluators;
         }
 
         public object Evaluate(
@@ -82,7 +83,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                     }
 
                     for (var index = 0; index < arrayLength; index++) {
-                        object item = array.GetValue(index);
+                        var item = array.GetValue(index);
                         if (item == null) {
                             hasNullRow = true;
                             continue;
@@ -228,12 +229,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                                         .BlockReturn(!isNot ? ConstantTrue() : ConstantFalse());
                                 }
                                 else {
-                                    if (TypeHelper.IsNumeric(reftype.GetElementType())) {
+                                    if (reftype.GetElementType().IsTypeNumeric()) {
                                         itemNotNull.IfCondition(
                                                 CodegenLegoCompareEquals.CodegenEqualsNonNullNoCoerce(
                                                     Ref("leftCoerced"),
                                                     leftTypeCoerced,
-                                                    forge.Coercer.CoerceCodegen(Ref("item"), reftype.GetElementType()),
+                                                    forge.Coercer.CoerceCodegen(Ref("item"), reftype.GetElementType(), codegenMethodScope, codegenClassScope),
                                                     forge.CoercionType))
                                             .BlockReturn(!isNot ? ConstantTrue() : ConstantFalse());
                                     }
@@ -279,8 +280,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                         }
 
                         if (!forge.IsMustCoerce) {
-                            ifRightNotNull
-                                .IfCondition(
+                            ifRightNotNull.IfCondition(
                                     CodegenLegoCompareEquals.CodegenEqualsNonNullNoCoerce(
                                         Ref("leftCoerced"),
                                         leftTypeCoerced,
@@ -289,12 +289,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                                 .BlockReturn(!isNot ? ConstantTrue() : ConstantFalse());
                         }
                         else {
-                            ifRightNotNull
-                                .IfCondition(
+                            ifRightNotNull.IfCondition(
                                     CodegenLegoCompareEquals.CodegenEqualsNonNullNoCoerce(
                                         Ref("leftCoerced"),
                                         leftTypeCoerced,
-                                        forge.Coercer.CoerceCodegen(Ref(refname), reftype),
+                                        forge.Coercer.CoerceCodegen(Ref(refname), reftype, codegenMethodScope, codegenClassScope),
                                         forge.CoercionType))
                                 .BlockReturn(!isNot ? ConstantTrue() : ConstantFalse());
                         }

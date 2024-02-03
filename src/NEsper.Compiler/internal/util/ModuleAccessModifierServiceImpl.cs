@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -107,15 +107,23 @@ namespace com.espertech.esper.compiler.@internal.util
                 conf => conf.AccessModifierScript);
         }
 
+        public NameAccessModifier GetAccessModifierInlinedClass(
+            StatementBaseInfo @base,
+            string inlinedClassName)
+        {
+            return GetModifier(
+                @base.StatementRawInfo.Annotations,
+                opts => opts.AccessModifierInlinedClass?.Invoke(new AccessModifierInlinedClassContext(@base, inlinedClassName)),
+                _ => _.AccessModifierInlinedClass);
+        }
+
         public EventTypeBusModifier GetBusModifierEventType(
             StatementRawInfo raw,
             string eventTypeName)
         {
-            if (options.BusModifierEventType != null) {
-                var result = options.BusModifierEventType.Invoke(new BusModifierEventTypeContext(raw, eventTypeName));
-                if (result != null) {
-                    return result.Value;
-                }
+            var result = options.BusModifierEventType?.Invoke(new BusModifierEventTypeContext(raw, eventTypeName));
+            if (result != null) {
+                return result.Value;
             }
 
             var busEventType = AnnotationUtil.HasAnnotation(raw.Annotations, typeof(BusEventTypeAttribute));

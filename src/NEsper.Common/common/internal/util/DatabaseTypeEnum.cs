@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -98,57 +98,57 @@ namespace com.espertech.esper.common.@internal.util
                 (
                     rawData,
                     columnName) => Convert.ToString(rawData),
-                () => CodegenExpressionBuilder.PublicConstValue(typeof(DatabaseTypeEnum), "InstanceBindingString"));
+                () => CodegenExpressionBuilder.PublicConstValue(typeof(DatabaseTypeEnumExtensions), "InstanceBindingString"));
 
             InstanceBindingDecimal = new ProxyDatabaseTypeBinding<decimal>(
                 (
                     rawData,
                     columnName) => Convert.ToDecimal(rawData),
-                () => CodegenExpressionBuilder.PublicConstValue(typeof(DatabaseTypeEnum), "InstanceBindingDecimal"));
+                () => CodegenExpressionBuilder.PublicConstValue(typeof(DatabaseTypeEnumExtensions), "InstanceBindingDecimal"));
             InstanceBindingDouble = new ProxyDatabaseTypeBinding<double>(
                 (
                     rawData,
                     columnName) => Convert.ToDouble(rawData),
-                () => CodegenExpressionBuilder.PublicConstValue(typeof(DatabaseTypeEnum), "InstanceBindingDouble"));
+                () => CodegenExpressionBuilder.PublicConstValue(typeof(DatabaseTypeEnumExtensions), "InstanceBindingDouble"));
             InstanceBindingFloat = new ProxyDatabaseTypeBinding<float>(
                 (
                     rawData,
                     columnName) => Convert.ToSingle(rawData),
-                () => CodegenExpressionBuilder.PublicConstValue(typeof(DatabaseTypeEnum), "InstanceBindingFloat"));
+                () => CodegenExpressionBuilder.PublicConstValue(typeof(DatabaseTypeEnumExtensions), "InstanceBindingFloat"));
 
             InstanceBindingInt64 = new ProxyDatabaseTypeBinding<long>(
                 (
                     rawData,
                     columnName) => Convert.ToInt64(rawData),
-                () => CodegenExpressionBuilder.PublicConstValue(typeof(DatabaseTypeEnum), "InstanceBindingInt64"));
+                () => CodegenExpressionBuilder.PublicConstValue(typeof(DatabaseTypeEnumExtensions), "InstanceBindingInt64"));
             InstanceBindingInt32 = new ProxyDatabaseTypeBinding<int>(
                 (
                     rawData,
                     columnName) => Convert.ToInt32(rawData),
-                () => CodegenExpressionBuilder.PublicConstValue(typeof(DatabaseTypeEnum), "InstanceBindingInt32"));
+                () => CodegenExpressionBuilder.PublicConstValue(typeof(DatabaseTypeEnumExtensions), "InstanceBindingInt32"));
             InstanceBindingInt16 = new ProxyDatabaseTypeBinding<short>(
                 (
                     rawData,
                     columnName) => Convert.ToInt16(rawData),
-                () => CodegenExpressionBuilder.PublicConstValue(typeof(DatabaseTypeEnum), "InstanceBindingInt16"));
+                () => CodegenExpressionBuilder.PublicConstValue(typeof(DatabaseTypeEnumExtensions), "InstanceBindingInt16"));
 
 
             InstanceBindingByte = new ProxyDatabaseTypeBinding<byte>(
                 (
                     rawData,
                     columnName) => Convert.ToByte(rawData),
-                () => CodegenExpressionBuilder.PublicConstValue(typeof(DatabaseTypeEnum), "InstanceBindingByte"));
+                () => CodegenExpressionBuilder.PublicConstValue(typeof(DatabaseTypeEnumExtensions), "InstanceBindingByte"));
             InstanceBindingByteArray = new ProxyDatabaseTypeBinding<byte[]>(
                 (
                     rawData,
                     columnName) => Convert.ChangeType(rawData, typeof(byte[])),
-                () => CodegenExpressionBuilder.PublicConstValue(typeof(DatabaseTypeEnum), "InstanceBindingByteArray"));
+                () => CodegenExpressionBuilder.PublicConstValue(typeof(DatabaseTypeEnumExtensions), "InstanceBindingByteArray"));
 
             InstanceBindingBoolean = new ProxyDatabaseTypeBinding<bool>(
                 (
                     rawData,
                     columnName) => Convert.ToBoolean(rawData),
-                () => CodegenExpressionBuilder.PublicConstValue(typeof(DatabaseTypeEnum), "InstanceBindingBoolean"));
+                () => CodegenExpressionBuilder.PublicConstValue(typeof(DatabaseTypeEnumExtensions), "InstanceBindingBoolean"));
 
             BINDINGS = new Dictionary<DatabaseTypeEnum, DatabaseTypeBinding>();
             BINDINGS.Put(DatabaseTypeEnum.STRING, InstanceBindingString);
@@ -197,18 +197,16 @@ namespace com.espertech.esper.common.@internal.util
         {
             var sourceName1 = type.ToLowerInvariant();
 
-            foreach (var val in VALUES)
-            {
+            foreach (var val in VALUES) {
                 var targetName1 = val.GetName().ToLowerInvariant();
-                if (targetName1 == sourceName1)
-                {
+                if (targetName1 == sourceName1) {
                     return val;
                 }
 
                 var dataType = val.GetDataType();
                 if (dataType != null) {
-                    if ((sourceName1 == dataType.FullName?.ToLowerInvariant()) ||
-                        (sourceName1 == dataType.GetBoxedType().FullName?.ToLowerInvariant())) {
+                    if (sourceName1 == dataType.FullName?.ToLowerInvariant() ||
+                        sourceName1 == dataType.GetBoxedType().FullName?.ToLowerInvariant()) {
                         return val;
                     }
                 }
@@ -219,30 +217,40 @@ namespace com.espertech.esper.common.@internal.util
 
         public static Type GetDataType(this DatabaseTypeEnum value)
         {
-            switch (value)
-            {
+            switch (value) {
                 case DatabaseTypeEnum.BOOLEAN:
                     return typeof(bool);
+
                 case DatabaseTypeEnum.BYTE:
                     return typeof(byte);
+
                 case DatabaseTypeEnum.BYTE_ARRAY:
                     return typeof(byte[]);
+
                 case DatabaseTypeEnum.DECIMAL:
                     return typeof(decimal);
+
                 case DatabaseTypeEnum.DOUBLE:
                     return typeof(double);
+
                 case DatabaseTypeEnum.FLOAT:
                     return typeof(float);
+
                 case DatabaseTypeEnum.INT32:
                     return typeof(int);
+
                 case DatabaseTypeEnum.INT64:
                     return typeof(long);
+
                 case DatabaseTypeEnum.INT16:
                     return typeof(short);
+
                 case DatabaseTypeEnum.STRING:
                     return typeof(string);
+
                 case DatabaseTypeEnum.TIMESTAMP:
                     return typeof(DateTime);
+
                 default:
                     throw new ArgumentOutOfRangeException(nameof(value), value, null);
             }
@@ -250,30 +258,40 @@ namespace com.espertech.esper.common.@internal.util
 
         public static Type GetBoxedType(this DatabaseTypeEnum value)
         {
-            switch (value)
-            {
+            switch (value) {
                 case DatabaseTypeEnum.BOOLEAN:
                     return typeof(bool?);
+
                 case DatabaseTypeEnum.BYTE:
                     return typeof(byte?);
+
                 case DatabaseTypeEnum.BYTE_ARRAY:
                     return typeof(byte[]);
+
                 case DatabaseTypeEnum.DECIMAL:
                     return typeof(decimal?);
+
                 case DatabaseTypeEnum.DOUBLE:
                     return typeof(double?);
+
                 case DatabaseTypeEnum.FLOAT:
                     return typeof(float?);
+
                 case DatabaseTypeEnum.INT32:
                     return typeof(int?);
+
                 case DatabaseTypeEnum.INT64:
                     return typeof(long?);
+
                 case DatabaseTypeEnum.INT16:
                     return typeof(short?);
+
                 case DatabaseTypeEnum.STRING:
                     return typeof(string);
+
                 case DatabaseTypeEnum.TIMESTAMP:
                     return typeof(DateTime?);
+
                 default:
                     throw new ArgumentOutOfRangeException(nameof(value), value, null);
             }

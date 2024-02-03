@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -17,34 +17,31 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
 namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 {
-	public class AggregationMethodSortedMinMaxByForge : AggregationMethodForge
-	{
-		private readonly Type resultType;
-		private readonly bool max;
+    public class AggregationMethodSortedMinMaxByForge : AggregationMethodForge
+    {
+        private readonly Type resultType;
+        private readonly bool max;
 
-		public AggregationMethodSortedMinMaxByForge(
-			Type resultType,
-			bool max)
-		{
-			this.resultType = resultType;
-			this.max = max;
-		}
+        public AggregationMethodSortedMinMaxByForge(
+            Type resultType,
+            bool max)
+        {
+            this.resultType = resultType;
+            this.max = max;
+        }
 
-		public Type ResultType {
-			get { return resultType; }
-		}
+        public CodegenExpression CodegenCreateReader(
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
+        {
+            var method = parent.MakeChild(typeof(AggregationMethodSortedMinMaxBy), GetType(), classScope);
+            method.Block.DeclareVarNewInstance(typeof(AggregationMethodSortedMinMaxBy), "strat")
+                .SetProperty(Ref("strat"), "Max", Constant(max))
+                .MethodReturn(Ref("strat"));
+            return LocalMethod(method);
+        }
 
-		public CodegenExpression CodegenCreateReader(
-			CodegenMethodScope parent,
-			SAIFFInitializeSymbol symbols,
-			CodegenClassScope classScope)
-		{
-			CodegenMethod method = parent.MakeChild(typeof(AggregationMethodSortedMinMaxBy), GetType(), classScope);
-			method.Block
-				.DeclareVar<AggregationMethodSortedMinMaxBy>("strat", NewInstance(typeof(AggregationMethodSortedMinMaxBy)))
-				.SetProperty(Ref("strat"), "Max", Constant(max))
-				.MethodReturn(Ref("strat"));
-			return LocalMethod(method);
-		}
-	}
+        public Type ResultType => resultType;
+    }
 } // end of namespace

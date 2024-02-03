@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -14,10 +14,9 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Arithmatic expression for addition, subtraction, multiplication, division and modulo.
     /// </summary>
-    [Serializable]
     public class ArithmaticExpression : ExpressionBase
     {
-        private string @operator;
+        private string _operator;
 
         /// <summary>
         /// Ctor.
@@ -32,7 +31,7 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="operator">can be any of '-', '+', '*', '/' or '%' (modulo).</param>
         public ArithmaticExpression(string @operator)
         {
-            this.@operator = @operator;
+            _operator = @operator;
         }
 
         /// <summary>
@@ -46,7 +45,7 @@ namespace com.espertech.esper.common.client.soda
             string @operator,
             Expression right)
         {
-            this.@operator = @operator;
+            _operator = @operator;
             AddChild(left);
             AddChild(right);
         }
@@ -55,10 +54,9 @@ namespace com.espertech.esper.common.client.soda
         /// Returns the arithmatic operator.
         /// </summary>
         /// <returns>operator</returns>
-        public string Operator
-        {
-            get => @operator;
-            set => @operator = value;
+        public string Operator {
+            get => _operator;
+            set => _operator = value;
         }
 
         /// <summary>
@@ -94,15 +92,12 @@ namespace com.espertech.esper.common.client.soda
             return this;
         }
 
-        public override ExpressionPrecedenceEnum Precedence
-        {
+        public override ExpressionPrecedenceEnum Precedence {
             get {
-                if (@operator.Equals("*") || @operator.Equals("/") || @operator.Equals("%"))
-                {
+                if (_operator.Equals("*") || _operator.Equals("/") || _operator.Equals("%")) {
                     return ExpressionPrecedenceEnum.MULTIPLY;
                 }
-                else
-                {
+                else {
                     return ExpressionPrecedenceEnum.ADDITIVE;
                 }
             }
@@ -110,12 +105,11 @@ namespace com.espertech.esper.common.client.soda
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
-            string delimiter = "";
-            foreach (Expression child in Children)
-            {
+            var delimiter = "";
+            foreach (var child in Children) {
                 writer.Write(delimiter);
                 child.ToEPL(writer, Precedence);
-                delimiter = @operator;
+                delimiter = _operator;
             }
         }
     }

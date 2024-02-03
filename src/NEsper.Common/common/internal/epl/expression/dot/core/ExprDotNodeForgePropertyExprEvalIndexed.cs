@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -24,15 +24,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private readonly ExprDotNodeForgePropertyExpr forge;
-        private readonly ExprEvaluator exprEvaluator;
+        private readonly ExprDotNodeForgePropertyExpr _forge;
+        private readonly ExprEvaluator _exprEvaluator;
 
         public ExprDotNodeForgePropertyExprEvalIndexed(
             ExprDotNodeForgePropertyExpr forge,
             ExprEvaluator exprEvaluator)
         {
-            this.forge = forge;
-            this.exprEvaluator = exprEvaluator;
+            _forge = forge;
+            _exprEvaluator = exprEvaluator;
         }
 
         public object Evaluate(
@@ -40,18 +40,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            var @event = eventsPerStream[forge.StreamNum];
+            var @event = eventsPerStream[_forge.StreamNum];
             if (@event == null) {
                 return null;
             }
 
-            var index = exprEvaluator.Evaluate(eventsPerStream, isNewData, context);
+            var index = _exprEvaluator.Evaluate(eventsPerStream, isNewData, context);
             if (index == null || !index.IsInt32()) {
-                Log.Warn(forge.GetWarningText("integer", index));
+                Log.Warn(_forge.GetWarningText("integer", index));
                 return null;
             }
 
-            return forge.IndexedGetter.Get(@event, index.AsInt32());
+            return _forge.IndexedGetter.Get(@event, index.AsInt32());
         }
 
         public static CodegenExpression Codegen(
@@ -65,7 +65,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                 typeof(ExprDotNodeForgePropertyExprEvalIndexed),
                 codegenClassScope);
 
-            var refEPS = exprSymbol.GetAddEPS(methodNode);
+            var refEPS = exprSymbol.GetAddEps(methodNode);
             methodNode.Block
                 .DeclareVar<EventBean>("@event", ArrayAtIndex(refEPS, Constant(forge.StreamNum)))
                 .IfRefNullReturnNull("@event")

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -18,7 +18,6 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
 namespace com.espertech.esper.common.@internal.epl.join.querygraph
 {
-    [Serializable]
     public class QueryGraphValueEntryRangeRelOpForge : QueryGraphValueEntryRangeForge
     {
         public QueryGraphValueEntryRangeRelOpForge(
@@ -39,7 +38,7 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
 
         public bool IsBetweenPart { get; }
 
-        public override ExprNode[] Expressions => new[] {Expression};
+        public override ExprNode[] Expressions => new[] { Expression };
 
         protected override Type ResultType => Expression.Forge.EvaluationType;
 

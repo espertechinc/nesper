@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.statement.dispatch
 {
@@ -41,8 +42,8 @@ namespace com.espertech.esper.common.@internal.statement.dispatch
             service.Dispatch();
 
             var dispatchList = SupportDispatchable.GetAndResetInstanceList();
-            Assert.AreSame(dispatchables[0], dispatchList[0]);
-            Assert.AreSame(dispatchables[1], dispatchList[1]);
+            ClassicAssert.AreSame(dispatchables[0], dispatchList[0]);
+            ClassicAssert.AreSame(dispatchables[1], dispatchList[1]);
         }
 
         [Test]
@@ -56,18 +57,18 @@ namespace com.espertech.esper.common.@internal.statement.dispatch
             service.AddExternal(disOne);
             service.AddExternal(disTwo);
 
-            Assert.AreEqual(0, disOne.GetAndResetNumExecuted());
-            Assert.AreEqual(0, disTwo.GetAndResetNumExecuted());
+            ClassicAssert.AreEqual(0, disOne.GetAndResetNumExecuted());
+            ClassicAssert.AreEqual(0, disTwo.GetAndResetNumExecuted());
 
             service.Dispatch();
 
             service.AddExternal(disTwo);
-            Assert.AreEqual(1, disOne.GetAndResetNumExecuted());
-            Assert.AreEqual(1, disTwo.GetAndResetNumExecuted());
+            ClassicAssert.AreEqual(1, disOne.GetAndResetNumExecuted());
+            ClassicAssert.AreEqual(1, disTwo.GetAndResetNumExecuted());
 
             service.Dispatch();
-            Assert.AreEqual(0, disOne.GetAndResetNumExecuted());
-            Assert.AreEqual(1, disTwo.GetAndResetNumExecuted());
+            ClassicAssert.AreEqual(0, disOne.GetAndResetNumExecuted());
+            ClassicAssert.AreEqual(1, disTwo.GetAndResetNumExecuted());
         }
 
         [Test]
@@ -77,10 +78,10 @@ namespace com.espertech.esper.common.@internal.statement.dispatch
             service.AddExternal(disOne);
 
             service.Dispatch();
-            Assert.AreEqual(1, disOne.GetAndResetNumExecuted());
+            ClassicAssert.AreEqual(1, disOne.GetAndResetNumExecuted());
 
             service.Dispatch();
-            Assert.AreEqual(0, disOne.GetAndResetNumExecuted());
+            ClassicAssert.AreEqual(0, disOne.GetAndResetNumExecuted());
         }
 
         public class SupportDispatchable : Dispatchable

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -15,13 +15,12 @@ namespace com.espertech.esper.common.client.configuration.compiler
     /// <summary>
     ///     Holds default settings for stream selection in the select-clause.
     /// </summary>
-    [Serializable]
     public class ConfigurationCompilerStreamSelection
     {
         /// <summary>
         ///     Ctor - sets up defaults.
         /// </summary>
-        internal ConfigurationCompilerStreamSelection()
+        public ConfigurationCompilerStreamSelection()
         {
             DefaultStreamSelector = StreamSelector.ISTREAM_ONLY;
         }

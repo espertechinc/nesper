@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -19,18 +19,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
     {
         public class StringToDateTimeExWExprFormatComputer : StringToDateLongWExprFormatForge
         {
-            private readonly TimeZoneInfo timeZone;
+            private readonly TimeZoneInfo _timeZone;
 
             public StringToDateTimeExWExprFormatComputer(
                 ExprForge dateFormatForge,
                 TimeZoneInfo timeZone)
                 : base(dateFormatForge)
             {
-                this.timeZone = timeZone;
+                _timeZone = timeZone;
             }
 
             public override CasterParserComputer EvaluatorComputer =>
-                new StringToDateTimeExWExprFormatComputerEval(dateFormatForge.ExprEvaluator, timeZone);
+                new StringToDateTimeExWExprFormatComputerEval(dateFormatForge.ExprEvaluator, _timeZone);
 
             public override CodegenExpression CodegenPremade(
                 Type evaluationType,
@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                     codegenMethodScope,
                     exprSymbol,
                     codegenClassScope,
-                    timeZone);
+                    _timeZone);
             }
         }
     }

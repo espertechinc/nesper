@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -16,23 +16,24 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.name
 
         public CodegenFieldNameSubqueryResult(int subqueryNumber)
         {
-            this._subqueryNumber = subqueryNumber;
+            _subqueryNumber = subqueryNumber;
         }
 
-        public string Name {
-            get => CodegenNamespaceScopeNames.SubqueryResultFuture(_subqueryNumber);
-        }
+        public string Name => CodegenNamespaceScopeNames.SubqueryResultFuture(_subqueryNumber);
 
-        public int SubqueryNumber {
-            get => _subqueryNumber;
-        }
+        public int SubqueryNumber => _subqueryNumber;
 
         public override bool Equals(object o)
         {
-            if (this == o) return true;
-            if (o == null || GetType() != o.GetType()) return false;
+            if (this == o) {
+                return true;
+            }
 
-            CodegenFieldNameSubqueryResult that = (CodegenFieldNameSubqueryResult) o;
+            if (o == null || GetType() != o.GetType()) {
+                return false;
+            }
+
+            var that = (CodegenFieldNameSubqueryResult)o;
 
             return _subqueryNumber == that._subqueryNumber;
         }

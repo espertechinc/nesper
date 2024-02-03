@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -14,10 +14,9 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     ///     Represents a list-compare of the format "expression operator all/any (expressions)".
     /// </summary>
-    [Serializable]
     public class CompareListExpression : ExpressionBase
     {
-        private string @operator;
+        private string _operator;
 
         /// <summary>
         ///     Ctor.
@@ -36,7 +35,7 @@ namespace com.espertech.esper.common.client.soda
             string @operator)
         {
             IsAll = all;
-            this.@operator = @operator;
+            _operator = @operator;
         }
 
         /// <summary>
@@ -55,10 +54,9 @@ namespace com.espertech.esper.common.client.soda
         ///     Returns the operator.
         /// </summary>
         /// <returns>operator</returns>
-        public string Operator
-        {
-            get => @operator;
-            set => @operator = value;
+        public string Operator {
+            get => _operator;
+            set => _operator = value;
         }
 
         public override ExpressionPrecedenceEnum Precedence => ExpressionPrecedenceEnum.RELATIONAL_BETWEEN_IN;
@@ -76,19 +74,16 @@ namespace com.espertech.esper.common.client.soda
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             Children[0].ToEPL(writer, Precedence);
-            writer.Write(@operator);
-            if (IsAll)
-            {
+            writer.Write(_operator);
+            if (IsAll) {
                 writer.Write("all(");
             }
-            else
-            {
+            else {
                 writer.Write("any(");
             }
 
             var delimiter = "";
-            for (var i = 1; i < Children.Count; i++)
-            {
+            for (var i = 1; i < Children.Count; i++) {
                 writer.Write(delimiter);
                 Children[i].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                 delimiter = ",";

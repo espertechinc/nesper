@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -8,7 +8,7 @@
 
 using System;
 using System.Numerics;
-
+using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 
 namespace com.espertech.esper.common.@internal.type
@@ -24,9 +24,9 @@ namespace com.espertech.esper.common.@internal.type
                 object objOne,
                 object objTwo)
             {
-                BigInteger s1 = (BigInteger) objOne;
-                BigInteger s2 = (BigInteger) objTwo;
-                int result = s1.CompareTo(s2);
+                var s1 = (BigInteger)objOne;
+                var s2 = (BigInteger)objTwo;
+                var result = s1.CompareTo(s2);
                 return result > 0;
             }
 
@@ -34,9 +34,12 @@ namespace com.espertech.esper.common.@internal.type
                 CodegenExpression lhs,
                 Type lhsType,
                 CodegenExpression rhs,
-                Type rhsType)
+                Type rhsType, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope)
             {
-                return RelationalOpEnumExtensions.CodegenComparable(lhs, rhs, CodegenExpressionRelational.CodegenRelational.GT);
+                return RelationalOpEnumExtensions.CodegenComparable(
+                    lhs,
+                    rhs,
+                    CodegenExpressionRelational.CodegenRelational.GT);
             }
         }
     }

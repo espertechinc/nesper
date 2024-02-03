@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -31,6 +31,22 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.state
             this.preventStart = preventStart;
             poolCount = new AtomicLong();
             matchRecognizeContexts = new HashSet<StatementEntry>().AsSyncSet();
+        }
+
+        public IDictionary<DeploymentIdNamePair, long> Counts {
+            get {
+                IDictionary<DeploymentIdNamePair, long> counts = new Dictionary<DeploymentIdNamePair, long>();
+                foreach (var context in matchRecognizeContexts) {
+                    if (!counts.TryGetValue(context.Statement, out var count)) {
+                        count = 0L;
+                    }
+
+                    count += context.StmtCounts.Count;
+                    counts.Put(context.Statement, count);
+                }
+
+                return counts;
+            }
         }
 
         public long? MatchRecognizeMaxStates {
@@ -69,11 +85,10 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.state
             // test pool max
             var newMax = poolCount.IncrementAndGet();
             if (newMax > maxPoolCountConfigured && maxPoolCountConfigured >= 0) {
-                IDictionary<DeploymentIdNamePair, long> counts = GetCounts();
+                IDictionary<DeploymentIdNamePair, long> counts = Counts;
                 agentInstanceContext.StatementContext.ExceptionHandlingService.HandleCondition(
                     new ConditionMatchRecognizeStatesMax(maxPoolCountConfigured, counts),
                     agentInstanceContext.StatementContext);
-
                 if (preventStart) {
                     poolCount.DecrementAndGet();
                     return false;
@@ -94,7 +109,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.state
             AgentInstanceContext agentInstanceContext,
             int numRemoved)
         {
-            long newMax = poolCount.IncrementAndGet(-1 * numRemoved);
+            var newMax = poolCount.IncrementAndGet(-1 * numRemoved);
             if (newMax < 0) {
                 poolCount.Set(0);
             }
@@ -108,21 +123,6 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.state
         {
         }
 
-        private IDictionary<DeploymentIdNamePair, long> GetCounts()
-        {
-            IDictionary<DeploymentIdNamePair, long> counts = new Dictionary<DeploymentIdNamePair, long>();
-            foreach (var context in matchRecognizeContexts) {
-                if (!counts.TryGetValue(context.Statement, out var count)) {
-                    count = 0L;
-                }
-
-                count += context.StmtCounts.Count;
-                counts.Put(context.Statement, count);
-            }
-
-            return counts;
-        }
-
         public class StatementEntry
         {
             public StatementEntry(
@@ -134,7 +134,6 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.state
             }
 
             public DeploymentIdNamePair Statement { get; }
-
             public RowRecogStatePoolStmtHandler StmtCounts { get; }
         }
     }

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -38,7 +38,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         public bool IsOverlapping { get; }
 
         public ExprNode[] DistinctExpressions { get; }
-        
+
         public MultiKeyClassRef DistinctMultiKey { get; set; }
 
         public CodegenExpression MakeCodegen(
@@ -49,18 +49,28 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
             var method = parent.MakeChild(typeof(ContextControllerDetailInitiatedTerminated), GetType(), classScope);
 
             var distinctEval = MultiKeyCodegen.CodegenExprEvaluatorMayMultikey(
-                DistinctExpressions, null, DistinctMultiKey, method, classScope);
+                DistinctExpressions,
+                null,
+                DistinctMultiKey,
+                method,
+                classScope);
 
             method.Block
-                .DeclareVar<ContextControllerDetailInitiatedTerminated>(
-                    "detail",
-                    NewInstance(typeof(ContextControllerDetailInitiatedTerminated)))
+                .DeclareVarNewInstance<ContextControllerDetailInitiatedTerminated>("detail")
                 .SetProperty(Ref("detail"), "StartCondition", StartCondition.Make(method, symbols, classScope))
                 .SetProperty(Ref("detail"), "EndCondition", EndCondition.Make(method, symbols, classScope))
                 .SetProperty(Ref("detail"), "IsOverlapping", Constant(IsOverlapping))
                 .SetProperty(Ref("detail"), "DistinctEval", distinctEval)
-                .SetProperty(Ref("detail"), "DistinctTypes", DistinctExpressions == null ? ConstantNull() : Constant(ExprNodeUtilityQuery.GetExprResultTypes(DistinctExpressions)))
-                .SetProperty(Ref("detail"), "DistinctSerde", DistinctMultiKey == null ? ConstantNull() : DistinctMultiKey.GetExprMKSerde(method, classScope));
+                .SetProperty(
+                    Ref("detail"),
+                    "DistinctTypes",
+                    DistinctExpressions == null
+                        ? ConstantNull()
+                        : Constant(ExprNodeUtilityQuery.GetExprResultTypes(DistinctExpressions)))
+                .SetProperty(
+                    Ref("detail"),
+                    "DistinctSerde",
+                    DistinctMultiKey == null ? ConstantNull() : DistinctMultiKey.GetExprMKSerde(method, classScope));
 
             method.Block.MethodReturn(Ref("detail"));
             return LocalMethod(method);

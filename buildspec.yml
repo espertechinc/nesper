@@ -4,7 +4,7 @@ env:
   variables:
     MASTER_PROJECT: .\NEsper.proj
     PACKAGE_DIRECTORY: .\packages
-    VERSION: 8.5.8
+    VERSION: 8.9.0
 
 phases:
   build:

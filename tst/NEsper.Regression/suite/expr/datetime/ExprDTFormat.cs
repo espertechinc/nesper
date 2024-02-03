@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -8,14 +8,10 @@
 
 using System.Collections.Generic;
 
-using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.datetime;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
-using com.espertech.esper.regressionlib.support.util;
-
-using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.expr.datetime
 {
@@ -51,7 +47,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 env.AdvanceTime(DateTimeParsingFunctions.ParseDefaultMSec(startTime));
 
                 var fields = new[] { "val0", "val1", "val2", "val3", "val4" };
-                var eplFragment = "@Name('s0') select " +
+                var eplFragment = "@name('s0') select " +
                                   "current_timestamp.format() as val0," +
                                   "DateTimeEx.format() as val1," +
                                   "DateTimeOffset.format() as val2," +
@@ -59,26 +55,24 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                                   "LongDate.format() as val4" +
                                   " from SupportDateTime";
                 env.CompileDeploy(eplFragment).AddListener("s0");
-                LambdaAssertionUtil.AssertTypes(
-                    env.Statement("s0").EventType,
-                    fields,
-                    new[] {
-                        typeof(string), // val0
-                        typeof(string), // val1
-                        typeof(string), // val2
-                        typeof(string), // val3
-                        typeof(string) // val4
-                    });
+                env.AssertStmtTypesAllSame("s0", fields, typeof(string));
 
                 env.SendEventBean(SupportDateTime.Make(startTime));
-                var expected = SupportDateTime.GetArrayCoerced(startTime, "iso", "iso", "iso", "iso", "iso");
-                EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, expected);
+                var expected = SupportDateTime.GetArrayCoerced(
+                    startTime,
+                    "iso",
+                    "iso",
+                    "iso",
+                    "iso",
+                    "iso");
+
+                env.AssertPropsNew("s0", fields, expected);
 
                 env.SendEventBean(SupportDateTime.Make(null));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
+                env.AssertPropsNew(
+                    "s0",
                     fields,
-                    new[] {
+                    new object[] {
                         SupportDateTime.GetValueCoerced(startTime, "iso"),
                         null,
                         null,
@@ -99,39 +93,40 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 var sdfPattern = "yyyy.MM.dd G 'at' HH:mm:ss";
                 var sdf = new SimpleDateFormat(sdfPattern);
 
-                var fields = new[] { "val0", "val1", "val2", "val3" };
-                var eplFragment = "@Name('s0') select " +
-                                  "DateTimeEx.format(\"" +
-                                  sdfPattern +
-                                  "\") as val0," +
-                                  "DateTimeOffset.format(\"" +
-                                  sdfPattern +
-                                  "\") as val1," +
-                                  "DateTime.format(\"" +
-                                  sdfPattern +
-                                  "\") as val2," +
-                                  "LongDate.format(\"" +
-                                  sdfPattern +
-                                  "\") as val3" +
-                                  " from SupportDateTime";
+                var fields = "val0,val1,val2,val3".SplitCsv();
+                var eplFragment =
+                    "@name('s0') select " +
+                    $"DateTimeEx.format(\"{sdfPattern}\") as val0," +
+                    $"DateTimeOffset.format(\"{sdfPattern}\") as val1," +
+                    $"DateTime.format(\"{sdfPattern}\") as val2," +
+                    $"LongDate.format(\"{sdfPattern}\") as val3" +
+                    " from SupportDateTime";
                 env.CompileDeploy(eplFragment).AddListener("s0");
-                LambdaAssertionUtil.AssertTypesAllSame(env.Statement("s0").EventType, fields, typeof(string));
+                env.AssertStmtTypesAllSame("s0", fields, typeof(string));
 
                 var sdt = SupportDateTime.Make(startTime);
                 env.SendEventBean(SupportDateTime.Make(startTime));
 
-                var received = env.Listener("s0").AssertOneGetNewAndReset();
-                Assert.That(received.Get("val0"), Is.EqualTo(sdf.Format(sdt.DateTimeEx)));
-                Assert.That(received.Get("val1"), Is.EqualTo(sdf.Format(sdt.DateTimeOffset)));
-                Assert.That(received.Get("val2"), Is.EqualTo(sdf.Format(sdt.DateTime)));
-                Assert.That(received.Get("val3"), Is.EqualTo(sdf.Format(sdt.LongDate)));
+                env.AssertPropsNew(
+                    "s0",
+                    fields,
+                    new object[] {
+                        sdf.Format(sdt.DateTimeEx),
+                        sdf.Format(sdt.DateTimeOffset),
+                        sdf.Format(sdt.DateTime),
+                        sdf.Format(sdt.LongDate)
+                    });
 
                 env.SendEventBean(SupportDateTime.Make(null));
-                received = env.Listener("s0").AssertOneGetNewAndReset();
-                Assert.That(received.Get("val0"), Is.Null);
-                Assert.That(received.Get("val1"), Is.Null);
-                Assert.That(received.Get("val2"), Is.Null);
-                Assert.That(received.Get("val3"), Is.Null);
+                env.AssertPropsNew(
+                    "s0",
+                    fields,
+                    new object[] {
+                        null,
+                        null,
+                        null,
+                        null
+                    });
 
                 env.UndeployAll();
             }

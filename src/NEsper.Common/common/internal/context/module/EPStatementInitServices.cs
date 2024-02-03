@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -63,7 +63,7 @@ namespace com.espertech.esper.common.@internal.context.module
         ContextServiceFactory ContextServiceFactory { get; }
 
         ImportServiceRuntime ImportServiceRuntime { get; }
-        
+
         ScriptCompiler ScriptCompiler { get; }
 
         RuntimeSettingsService RuntimeSettingsService { get; }
@@ -146,7 +146,9 @@ namespace com.espertech.esper.common.@internal.context.module
     public class EPStatementInitServicesConstants
     {
         public const string AGGREGATIONSERVICEFACTORYSERVICE = "AggregationServiceFactoryService";
+
         public const string CONTEXTSERVICEFACTORY = "ContextServiceFactory";
+
         //public const string DATAINPUTOUTPUTSERDEPROVIDER = "DataInputOutputSerdeProvider";
         public const string IMPORTSERVICERUNTIME = "ImportServiceRuntime";
         public const string SCRIPTCOMPILER = "ScriptCompiler";

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -12,14 +12,12 @@ using System.Linq;
 using System.Reflection;
 
 using com.espertech.esper.common.client.artifact;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.client
 {
     /// <summary>
     ///     The assembly of a compile EPL module or EPL fire-and-forget query.
     /// </summary>
-    [Serializable]
     public class EPCompiled
     {
         /// <summary>
@@ -45,9 +43,7 @@ namespace com.espertech.esper.common.client
         /// <summary>
         ///     Returns a set of assemblies.
         /// </summary>
-        public IEnumerable<Assembly> Assemblies {
-            get => Artifacts.Select(_ => _.Runtime.Assembly);
-        }
+        public IEnumerable<Assembly> Assemblies => Artifacts.Select(_ => _.Runtime.Assembly);
 
         /// <summary>
         ///     Returns a set of compiled artifacts.

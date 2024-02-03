@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -14,6 +14,7 @@ using com.espertech.esper.compat;
 using com.espertech.esper.compat.logging;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.epl.expression.core
 {
@@ -48,24 +49,24 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         public void TestValidate()
         {
             identNodes[0].Validate(SupportExprValidationContextFactory.Make(container, streamTypeService));
-            Assert.AreEqual(2, identNodes[0].StreamId);
-            Assert.AreEqual(typeof(string), identNodes[0].Forge.EvaluationType);
-            Assert.AreEqual("Mapped('a')", identNodes[0].ResolvedPropertyName);
+            ClassicAssert.AreEqual(2, identNodes[0].StreamId);
+            ClassicAssert.AreEqual(typeof(string), identNodes[0].Forge.EvaluationType);
+            ClassicAssert.AreEqual("Mapped('a')", identNodes[0].ResolvedPropertyName);
 
             identNodes[1].Validate(SupportExprValidationContextFactory.Make(container, streamTypeService));
-            Assert.AreEqual(2, identNodes[1].StreamId);
-            Assert.AreEqual(typeof(string), identNodes[1].Forge.EvaluationType);
-            Assert.AreEqual("Nested.NestedValue", identNodes[1].ResolvedPropertyName);
+            ClassicAssert.AreEqual(2, identNodes[1].StreamId);
+            ClassicAssert.AreEqual(typeof(string), identNodes[1].Forge.EvaluationType);
+            ClassicAssert.AreEqual("Nested.NestedValue", identNodes[1].ResolvedPropertyName);
 
             identNodes[2].Validate(SupportExprValidationContextFactory.Make(container, streamTypeService));
-            Assert.AreEqual(2, identNodes[2].StreamId);
-            Assert.AreEqual(typeof(int?), identNodes[2].Forge.EvaluationType);
-            Assert.AreEqual("Indexed[1]", identNodes[2].ResolvedPropertyName);
+            ClassicAssert.AreEqual(2, identNodes[2].StreamId);
+            ClassicAssert.AreEqual(typeof(int?), identNodes[2].Forge.EvaluationType);
+            ClassicAssert.AreEqual("Indexed[1]", identNodes[2].ResolvedPropertyName);
 
             identNodes[3].Validate(SupportExprValidationContextFactory.Make(container, streamTypeService));
-            Assert.AreEqual(0, identNodes[3].StreamId);
-            Assert.AreEqual(typeof(int?), identNodes[3].Forge.EvaluationType);
-            Assert.AreEqual("IntPrimitive", identNodes[3].ResolvedPropertyName);
+            ClassicAssert.AreEqual(0, identNodes[3].StreamId);
+            ClassicAssert.AreEqual(typeof(int?), identNodes[3].Forge.EvaluationType);
+            ClassicAssert.AreEqual("IntPrimitive", identNodes[3].ResolvedPropertyName);
 
             TryInvalidValidate(new ExprIdentNodeImpl(""));
             TryInvalidValidate(new ExprIdentNodeImpl("dummy"));
@@ -80,7 +81,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         {
             // test success
             identNodes[0].Validate(SupportExprValidationContextFactory.Make(container, streamTypeService));
-            Assert.AreEqual(typeof(string), identNodes[0].Forge.EvaluationType);
+            ClassicAssert.AreEqual(typeof(string), identNodes[0].Forge.EvaluationType);
         }
 
         [Test]
@@ -89,8 +90,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             EventBean[] events = new[] { MakeEvent(10) };
 
             identNodes[3].Validate(SupportExprValidationContextFactory.Make(container, streamTypeService));
-            Assert.AreEqual(10, identNodes[3].Forge.ExprEvaluator.Evaluate(events, false, null));
-            Assert.IsNull(identNodes[3].Forge.ExprEvaluator.Evaluate(new EventBean[2], false, null));
+            ClassicAssert.AreEqual(10, identNodes[3].Forge.ExprEvaluator.Evaluate(events, false, null));
+            ClassicAssert.IsNull(identNodes[3].Forge.ExprEvaluator.Evaluate(new EventBean[2], false, null));
         }
 
         [Test]
@@ -120,10 +121,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             {
                 identNodes[i].Validate(SupportExprValidationContextFactory.Make(container, streamTypeService));
             }
-            Assert.AreEqual("Mapped('a')", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(identNodes[0]));
-            Assert.AreEqual("Nested.NestedValue", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(identNodes[1]));
-            Assert.AreEqual("s2.Indexed[1]", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(identNodes[2]));
-            Assert.AreEqual("s0.IntPrimitive", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(identNodes[3]));
+            ClassicAssert.AreEqual("Mapped('a')", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(identNodes[0]));
+            ClassicAssert.AreEqual("Nested.NestedValue", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(identNodes[1]));
+            ClassicAssert.AreEqual("s2.Indexed[1]", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(identNodes[2]));
+            ClassicAssert.AreEqual("s0.IntPrimitive", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(identNodes[3]));
         }
 
         [Test]
@@ -132,8 +133,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             identNodes[0].Validate(SupportExprValidationContextFactory.Make(container, streamTypeService));
             identNodes[2].Validate(SupportExprValidationContextFactory.Make(container, streamTypeService));
             identNodes[3].Validate(SupportExprValidationContextFactory.Make(container, streamTypeService));
-            Assert.IsTrue(identNodes[3].EqualsNode(identNodes[3], false));
-            Assert.IsFalse(identNodes[0].EqualsNode(identNodes[2], false));
+            ClassicAssert.IsTrue(identNodes[3].EqualsNode(identNodes[3], false));
+            ClassicAssert.IsFalse(identNodes[0].EqualsNode(identNodes[2], false));
         }
 
         protected EventBean MakeEvent(int intPrimitive)

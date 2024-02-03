@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -11,18 +11,20 @@ using System.Collections.Generic;
 using com.espertech.esper.common.client.fireandforget;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 {
     public class InfraNWTableFAFIndexPerfWNoQueryPlanLog : IndexBackingTableInfo
     {
-        public static IList<RegressionExecution> Executions()
+        public static ICollection<RegressionExecution> Executions()
         {
-            var execs = new List<RegressionExecution>();
+            IList<RegressionExecution> execs = new List<RegressionExecution>();
             WithKeyBTreePerformance(execs);
             WithKeyAndRangePerformance(execs);
             WithRangePerformance(execs);
@@ -71,50 +73,13 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             return execs;
         }
 
-        private static void RunFAFAssertion(
-            RegressionEnvironment env,
-            RegressionPath path,
-            string epl,
-            int? expected)
+        private class InfraFAFKeyBTreePerformance : RegressionExecution
         {
-            var start = PerformanceObserver.MilliTime;
-            var loops = 500;
-
-            var query = Prepare(env, path, epl);
-            for (var i = 0; i < loops; i++) {
-                RunFAFQuery(query, expected);
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.PERFORMANCE);
             }
 
-            var end = PerformanceObserver.MilliTime;
-            var delta = end - start;
-
-#if DEBUG // DEBUG builds are a little slower
-            Assert.That(delta, Is.LessThan(2750), "delta=" + delta);
-#else
-            Assert.That(delta, Is.LessThan(2000), "delta=" + delta);
-#endif
-        }
-
-        private static void RunFAFQuery(
-            EPFireAndForgetPreparedQuery query,
-            int? expectedValue)
-        {
-            var result = query.Execute();
-            Assert.AreEqual(1, result.Array.Length);
-            Assert.AreEqual(expectedValue, result.Array[0].Get("sumi"));
-        }
-
-        private static EPFireAndForgetPreparedQuery Prepare(
-            RegressionEnvironment env,
-            RegressionPath path,
-            string queryText)
-        {
-            var compiled = env.CompileFAF(queryText, path);
-            return env.Runtime.FireAndForgetService.PrepareQuery(compiled);
-        }
-
-        internal class InfraFAFKeyBTreePerformance : RegressionExecution
-        {
             private readonly bool namedWindow;
 
             public InfraFAFKeyBTreePerformance(bool namedWindow)
@@ -127,11 +92,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 var path = new RegressionPath();
                 // create window one
                 var eplCreate = namedWindow
-                    ? "create window MyInfraFAFKB#keepall as SupportBean"
-                    : "create table MyInfraFAFKB (TheString string primary key, IntPrimitive int primary key)";
+                    ? "@public create window MyInfraFAFKB#keepall as SupportBean"
+                    : "@public create table MyInfraFAFKB (TheString string primary key, IntPrimitive int primary key)";
                 env.CompileDeploy(eplCreate, path);
                 env.CompileDeploy("insert into MyInfraFAFKB select TheString, IntPrimitive from SupportBean", path);
-                env.CompileDeploy("@Name('Idx') create index Idx1 on MyInfraFAFKB(IntPrimitive btree)", path);
+                env.CompileDeploy("@name('idx') create index idx1 on MyInfraFAFKB(IntPrimitive btree)", path);
 
                 // insert X rows
                 var maxRows = 10000; //for performance testing change to int maxRows = 100000;
@@ -149,9 +114,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 RunFAFAssertion(env, path, eplIdx1Two, 9998 + 9999);
 
                 // drop index, create multikey btree
-                env.UndeployModuleContaining("Idx");
+                env.UndeployModuleContaining("idx");
 
-                env.CompileDeploy("create index Idx2 on MyInfraFAFKB(IntPrimitive btree, TheString btree)", path);
+                env.CompileDeploy("create index idx2 on MyInfraFAFKB(IntPrimitive btree, TheString btree)", path);
 
                 var eplIdx2One =
                     "select IntPrimitive as sumi from MyInfraFAFKB where IntPrimitive = 5501 and TheString = 'A'";
@@ -167,10 +132,24 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 env.UndeployAll();
             }
+
+            public string Name()
+            {
+                return this.GetType().Name +
+                       "{" +
+                       "namedWindow=" +
+                       namedWindow +
+                       '}';
+            }
         }
 
-        internal class InfraFAFKeyAndRangePerformance : RegressionExecution
+        private class InfraFAFKeyAndRangePerformance : RegressionExecution
         {
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.PERFORMANCE);
+            }
+
             private readonly bool namedWindow;
 
             public InfraFAFKeyAndRangePerformance(bool namedWindow)
@@ -183,11 +162,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 var path = new RegressionPath();
                 // create window one
                 var eplCreate = namedWindow
-                    ? "create window MyInfraFAFKR#keepall as SupportBean"
-                    : "create table MyInfraFAFKR (TheString string primary key, IntPrimitive int primary key)";
+                    ? "@public create window MyInfraFAFKR#keepall as SupportBean"
+                    : "@public create table MyInfraFAFKR (TheString string primary key, IntPrimitive int primary key)";
                 env.CompileDeploy(eplCreate, path);
                 env.CompileDeploy("insert into MyInfraFAFKR select TheString, IntPrimitive from SupportBean", path);
-                env.CompileDeploy("create index Idx1 on MyInfraFAFKR(TheString hash, IntPrimitive btree)", path);
+                env.CompileDeploy("create index idx1 on MyInfraFAFKR(TheString hash, IntPrimitive btree)", path);
 
                 // insert X rows
                 var maxRows = 10000; //for performance testing change to int maxRows = 100000;
@@ -284,14 +263,28 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 // test no value returned
                 var query = Prepare(env, path, "select * from MyInfraFAFKR where TheString = 'A' and IntPrimitive < 0");
                 var result = query.Execute();
-                Assert.AreEqual(0, result.Array.Length);
+                ClassicAssert.AreEqual(0, result.Array.Length);
 
                 env.UndeployAll();
             }
+
+            public string Name()
+            {
+                return this.GetType().Name +
+                       "{" +
+                       "namedWindow=" +
+                       namedWindow +
+                       '}';
+            }
         }
 
-        internal class InfraFAFRangePerformance : RegressionExecution
+        private class InfraFAFRangePerformance : RegressionExecution
         {
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.PERFORMANCE);
+            }
+
             private readonly bool namedWindow;
 
             public InfraFAFRangePerformance(bool namedWindow)
@@ -304,11 +297,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 var path = new RegressionPath();
                 // create window one
                 var eplCreate = namedWindow
-                    ? "create window MyInfraRP#keepall as SupportBean"
-                    : "create table MyInfraRP (TheString string primary key, IntPrimitive int primary key)";
+                    ? "@public create window MyInfraRP#keepall as SupportBean"
+                    : "@public create table MyInfraRP (TheString string primary key, IntPrimitive int primary key)";
                 env.CompileDeploy(eplCreate, path);
                 env.CompileDeploy("insert into MyInfraRP select TheString, IntPrimitive from SupportBean", path);
-                env.CompileDeploy("create index Idx1 on MyInfraRP(IntPrimitive btree)", path);
+                env.CompileDeploy("create index idx1 on MyInfraRP(IntPrimitive btree)", path);
 
                 // insert X rows
                 var maxRows = 10000; //for performance testing change to int maxRows = 100000;
@@ -400,14 +393,28 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 // test no value returned
                 var query = Prepare(env, path, "select * from MyInfraRP where IntPrimitive < 0");
                 var result = query.Execute();
-                Assert.AreEqual(0, result.Array.Length);
+                ClassicAssert.AreEqual(0, result.Array.Length);
 
                 env.UndeployAll();
             }
+
+            public string Name()
+            {
+                return this.GetType().Name +
+                       "{" +
+                       "namedWindow=" +
+                       namedWindow +
+                       '}';
+            }
         }
 
-        internal class InfraFAFKeyPerformance : RegressionExecution
+        private class InfraFAFKeyPerformance : RegressionExecution
         {
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.PERFORMANCE);
+            }
+
             private readonly bool namedWindow;
 
             public InfraFAFKeyPerformance(bool namedWindow)
@@ -420,8 +427,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 // create window one
                 var path = new RegressionPath();
                 var stmtTextCreateOne = namedWindow
-                    ? "create window MyInfraOne#keepall as (f1 string, f2 int)"
-                    : "create table MyInfraOne (f1 string primary key, f2 int primary key)";
+                    ? "@public create window MyInfraOne#keepall as (f1 string, f2 int)"
+                    : "@public create table MyInfraOne (f1 string primary key, f2 int primary key)";
                 env.CompileDeploy(stmtTextCreateOne, path);
                 env.CompileDeploy(
                     "insert into MyInfraOne(f1, f2) select TheString, IntPrimitive from SupportBean",
@@ -447,8 +454,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 for (var i = 0; i < loops; i++) {
                     result = query.Execute();
-                    Assert.AreEqual(1, result.Array.Length);
-                    Assert.AreEqual("K10", result.Array[0].Get("f1"));
+                    ClassicAssert.AreEqual(1, result.Array.Length);
+                    ClassicAssert.AreEqual("K10", result.Array[0].Get("f1"));
                 }
 
                 var end = PerformanceObserver.MilliTime;
@@ -459,34 +466,48 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 queryText = "select * from MyInfraOne where f1='KX'";
                 query = Prepare(env, path, queryText);
                 result = query.Execute();
-                Assert.AreEqual(0, result.Array.Length);
+                ClassicAssert.AreEqual(0, result.Array.Length);
 
                 // test query null
                 queryText = "select * from MyInfraOne where f1=null";
                 query = Prepare(env, path, queryText);
                 result = query.Execute();
-                Assert.AreEqual(0, result.Array.Length);
+                ClassicAssert.AreEqual(0, result.Array.Length);
 
                 // insert null and test null
                 env.SendEventBean(new SupportBean(null, -2));
                 result = query.Execute();
-                Assert.AreEqual(0, result.Array.Length);
+                ClassicAssert.AreEqual(0, result.Array.Length);
 
                 // test two values
                 env.SendEventBean(new SupportBean(null, -1));
                 query = Prepare(env, path, "select * from MyInfraOne where f1 is null order by f2 asc");
                 result = query.Execute();
-                Assert.AreEqual(2, result.Array.Length);
-                Assert.AreEqual(-2, result.Array[0].Get("f2"));
-                Assert.AreEqual(-1, result.Array[1].Get("f2"));
+                ClassicAssert.AreEqual(2, result.Array.Length);
+                ClassicAssert.AreEqual(-2, result.Array[0].Get("f2"));
+                ClassicAssert.AreEqual(-1, result.Array[1].Get("f2"));
 
                 env.UndeployAll();
             }
+
+            public string Name()
+            {
+                return this.GetType().Name +
+                       "{" +
+                       "namedWindow=" +
+                       namedWindow +
+                       '}';
+            }
         }
 
-        internal class InfraFAFInKeywordSingleIndex : RegressionExecution
+        private class InfraFAFInKeywordSingleIndex : RegressionExecution
         {
             private readonly bool namedWindow;
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.STATICHOOK);
+            }
 
             public InfraFAFInKeywordSingleIndex(bool namedWindow)
             {
@@ -497,10 +518,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             {
                 var path = new RegressionPath();
                 var eplCreate = namedWindow
-                    ? "create window MyInfraIKW#keepall as SupportBean"
-                    : "create table MyInfraIKW (TheString string primary key)";
+                    ? "@public create window MyInfraIKW#keepall as SupportBean"
+                    : "@public create table MyInfraIKW (TheString string primary key)";
                 env.CompileDeploy(eplCreate, path);
-                env.CompileDeploy("create index Idx on MyInfraIKW(TheString)", path);
+                env.CompileDeploy("create index idx on MyInfraIKW(TheString)", path);
                 env.CompileDeploy("insert into MyInfraIKW select TheString from SupportBean", path);
 
                 var eventCount = 10;
@@ -508,22 +529,78 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     env.SendEventBean(new SupportBean("E" + i, 0));
                 }
 
-                InvocationCounter.Count = 0;
+                InvocationCounter.SetCount(0);
                 var fafEPL = "select * from MyInfraIKW as mw where justCount(mw) and TheString in ('notfound')";
                 env.CompileExecuteFAF(fafEPL, path);
-                Assert.AreEqual(0, InvocationCounter.Count);
+                ClassicAssert.AreEqual(0, InvocationCounter.GetCount());
 
                 env.UndeployAll();
             }
+
+            public string Name()
+            {
+                return this.GetType().Name +
+                       "{" +
+                       "namedWindow=" +
+                       namedWindow +
+                       '}';
+            }
+        }
+
+        private static void RunFAFAssertion(
+            RegressionEnvironment env,
+            RegressionPath path,
+            string epl,
+            int? expected)
+        {
+            var start = PerformanceObserver.MilliTime;
+            var loops = 500;
+
+            var query = Prepare(env, path, epl);
+            for (var i = 0; i < loops; i++) {
+                RunFAFQuery(query, expected);
+            }
+
+            var end = PerformanceObserver.MilliTime;
+            var delta = end - start;
+            Assert.That(delta, Is.LessThan(1500), "delta=" + delta);
+        }
+
+        private static void RunFAFQuery(
+            EPFireAndForgetPreparedQuery query,
+            int? expectedValue)
+        {
+            var result = query.Execute();
+            ClassicAssert.AreEqual(1, result.Array.Length);
+            ClassicAssert.AreEqual(expectedValue, result.Array[0].Get("sumi"));
+        }
+
+        private static EPFireAndForgetPreparedQuery Prepare(
+            RegressionEnvironment env,
+            RegressionPath path,
+            string queryText)
+        {
+            var compiled = env.CompileFAF(queryText, path);
+            return env.Runtime.FireAndForgetService.PrepareQuery(compiled);
         }
 
         public class InvocationCounter
         {
-            public static int Count { get; set; }
+            private static int count;
+
+            public static void SetCount(int count)
+            {
+                InvocationCounter.count = count;
+            }
+
+            public static int GetCount()
+            {
+                return count;
+            }
 
             public static bool JustCount(object o)
             {
-                Count++;
+                count++;
                 return true;
             }
         }

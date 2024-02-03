@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -38,7 +38,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
             BeanEventTypeFactory beanEventTypeFactory,
             Type returnType)
-            : base(eventBeanTypedEventFactory, beanEventTypeFactory, returnType, null)
+            : base(eventBeanTypedEventFactory, beanEventTypeFactory, returnType)
         {
             this.propertyIndex = propertyIndex;
             this.index = index;
@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
 
         public override Type TargetType => typeof(object[]);
 
-        public override Type BeanPropType => typeof(object);
+        //public override Type BeanPropType => typeof(object);
 
         public object GetObjectArray(object[] array)
         {
@@ -112,7 +112,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
             CodegenClassScope codegenClassScope)
         {
             var method = codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
-                .AddParam(typeof(object[]), "array");
+                .AddParam<object[]>("array");
             method.Block
                 .DeclareVar<object>("value", ArrayAtIndex(Ref("array"), Constant(propertyIndex)))
                 .MethodReturn(

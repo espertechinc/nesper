@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -8,7 +8,7 @@
 
 using System;
 using System.Collections.Generic;
-
+using System.Text.Json.Serialization;
 using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.compat.collections;
 
@@ -17,7 +17,6 @@ namespace com.espertech.esper.common.client.configuration.runtime
     /// <summary>
     ///     Configuration for metrics reporting.
     /// </summary>
-    [Serializable]
     public class ConfigurationRuntimeMetricsReporting
     {
         /// <summary>
@@ -37,10 +36,7 @@ namespace com.espertech.esper.common.client.configuration.runtime
         ///     Returns true if metrics reporting is turned on, false if not.
         /// </summary>
         /// <returns>indicator whether metrics reporting is turned on</returns>
-        public bool IsEnableMetricsReporting {
-            get;
-            set;
-        }
+        public bool IsEnableMetricsReporting { get; set; }
 
         /// <summary>
         ///     Returns true to indicate that metrics reporting takes place in a separate thread (default),
@@ -72,7 +68,7 @@ namespace com.espertech.esper.common.client.configuration.runtime
         ///     Returns a map of statement group and metrics configuration for the statement group.
         /// </summary>
         /// <value>map of statement group and metrics configuration</value>
-        public IDictionary<string, StmtGroupMetrics> StatementGroups { get; }
+        public IDictionary<string, StmtGroupMetrics> StatementGroups { get; set; }
 
 
         public ConfigurationRuntimeMetricsReporting WithMetricsReporting(bool value)
@@ -145,7 +141,6 @@ namespace com.espertech.esper.common.client.configuration.runtime
         /// <summary>
         ///     Class to configure statement metrics reporting for a group of one or more statements.
         /// </summary>
-        [Serializable]
         public class StmtGroupMetrics
         {
             /// <summary>
@@ -156,6 +151,21 @@ namespace com.espertech.esper.common.client.configuration.runtime
                 Patterns = new List<Pair<StringPatternSet, bool>>();
                 Interval = 10000;
                 NumStatements = 100;
+            }
+
+            [JsonConstructor]
+            public StmtGroupMetrics(
+                long interval,
+                int numStatements,
+                bool isReportInactive,
+                bool isDefaultInclude,
+                IList<Pair<StringPatternSet, bool>> patterns)
+            {
+                Patterns = patterns;
+                Interval = interval;
+                NumStatements = numStatements;
+                IsReportInactive = isReportInactive;
+                IsDefaultInclude = isDefaultInclude;
             }
 
             /// <summary>

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -15,69 +15,50 @@ namespace com.espertech.esper.common.client.configuration.compiler
     /// <summary>
     ///     Code generation settings.
     /// </summary>
-    [Serializable]
     public class ConfigurationCompilerByteCode
     {
         private NameAccessModifier accessModifierContext = NameAccessModifier.PRIVATE;
         private NameAccessModifier accessModifierEventType = NameAccessModifier.PRIVATE;
         private NameAccessModifier accessModifierExpression = NameAccessModifier.PRIVATE;
+        private NameAccessModifier accessModifierInlinedClass = NameAccessModifier.PRIVATE;
         private NameAccessModifier accessModifierNamedWindow = NameAccessModifier.PRIVATE;
         private NameAccessModifier accessModifierScript = NameAccessModifier.PRIVATE;
         private NameAccessModifier accessModifierTable = NameAccessModifier.PRIVATE;
         private NameAccessModifier accessModifierVariable = NameAccessModifier.PRIVATE;
+
+        private bool allowInlinedClass = true;
+        private bool allowSubscriber;
+        private bool attachEPL = true;
+        private bool attachModuleEPL;
+        private bool attachPatternEPL;
         private EventTypeBusModifier busModifierEventType = EventTypeBusModifier.NONBUS;
-        
-        /// <summary>
-        /// Returns the number of threads available for parallel compilation of multiple EPL statements.
-        /// The default is 8 threads.
-        /// </summary>
-        public int ThreadPoolCompilerNumThreads { get; set; } = 8;
+        private bool includeComments;
+        private bool includeDebugSymbols;
+        private bool instrumented;
+        private int internalUseOnlyMaxMembersPerClass = 2 * 1024;
 
-        /// <summary>
-        /// Returns the capacity of the parallel compiler semaphore, or null if none defined
-        /// (null is the default and is the unbounded case).
-        /// </summary>
-        public int? ThreadPoolCompilerCapacity { get; set; } = null;
+        private int internalUseOnlyMaxMethodComplexity = 1024;
 
-        /// <summary>
-        /// Returns the maximum number of methods per class, which defaults to 16k. The lower limit
-        /// for this number is 1000.
-        /// </summary>
-        public int MaxMethodsPerClass { get; set; } = 16 * 1024;
-        
-        /// <summary>
-        /// Returns the flag whether the compiler allows inlined classes.
-        /// </summary>
-        public bool IsAllowInlinedClass { get; set; } = true;
+        private int maxMethodsPerClass = 1024;
+        private int? threadPoolCompilerCapacity;
+        private int threadPoolCompilerNumThreads = 8;
 
         /// <summary>
         ///     Returns indicator whether the binary class code should include debug symbols
         /// </summary>
         /// <value>indicator</value>
-        public bool IsIncludeDebugSymbols { get; private set; }
-
-        /// <summary>
-        ///     Sets indicator whether the binary class code should include debug symbols
-        /// </summary>
-        /// <value>indicator</value>
-        public bool IncludeDebugSymbols {
-            get => IsIncludeDebugSymbols;
-            set => IsIncludeDebugSymbols = value;
+        public bool IsIncludeDebugSymbols {
+            get => includeDebugSymbols;
+            set => includeDebugSymbols = value;
         }
 
         /// <summary>
         ///     Returns indicator whether the generated source code should include comments for tracing back
         /// </summary>
         /// <value>indicator</value>
-        public bool IsIncludeComments { get; private set; }
-
-        /// <summary>
-        ///     Sets indicator whether the generated source code should include comments for tracing back
-        /// </summary>
-        /// <value>indicator</value>
-        public bool IncludeComments {
-            get => IsIncludeComments;
-            set => IsIncludeComments = value;
+        public bool IsIncludeComments {
+            get => includeComments;
+            set => includeComments = value;
         }
 
         /// <summary>
@@ -86,17 +67,9 @@ namespace com.espertech.esper.common.client.configuration.compiler
         ///     When set to false the compiler does not retain the EPL in the compiler output.
         /// </summary>
         /// <value>indicator</value>
-        public bool IsAttachEPL { get; private set; } = true;
-
-        /// <summary>
-        ///     Sets the indicator whether the EPL text will be available as a statement property.
-        ///     The default is true and the compiler provides the EPL as a statement property.
-        ///     When set to false the compiler does not retain the EPL in the compiler output.
-        /// </summary>
-        /// <value>indicator</value>
-        public bool AttachEPL {
-            get => IsAttachEPL;
-            set => IsAttachEPL = value;
+        public bool IsAttachEPL {
+            get => attachEPL;
+            set => attachEPL = value;
         }
 
         /// <summary>
@@ -105,38 +78,11 @@ namespace com.espertech.esper.common.client.configuration.compiler
         ///     When set to true the compiler retains the module EPL in the compiler output.
         /// </summary>
         /// <value>indicator</value>
-        public bool IsAttachModuleEPL { get; private set; }
-
-        /// <summary>
-        ///     Sets the indicator whether the EPL module text will be available as a module property.
-        ///     The default is false and the compiler does not provide the module EPL as a module property.
-        ///     When set to true the compiler retains the module EPL in the compiler output.
-        /// </summary>
-        /// <value>indicator</value>
-        public bool AttachModuleEPL {
-            get => IsAttachModuleEPL;
-            set => IsAttachModuleEPL = value;
+        public bool IsAttachModuleEPL {
+            get => attachModuleEPL;
+            set => attachModuleEPL = value;
         }
 
-        /// <summary>
-        /// Returns the indicator whether, for tools with access to pattern factories, the pattern subexpression text
-        /// will be available for the pattern.
-        /// The default is false and the compiler does not produce text for patterns for tooling.
-        /// When set to true the compiler does generate pattern subexpression text for pattern for use by tools.
-        /// </summary>
-        public bool IsAttachPatternEPL { get; private set; }
-
-        /// <summary>
-        /// Gets or sets the indicator whether, for tools with access to pattern factories, the pattern subexpression text
-        /// will be available for the pattern.
-        /// The default is false and the compiler does not produce text for patterns for tooling.
-        /// When set to true the compiler does generate pattern subexpression text for pattern for use by tools.
-        /// </summary>
-        public bool AttachPatternEPL {
-            get => IsAttachPatternEPL;
-            set => IsAttachPatternEPL = value;
-        }
-        
         /// <summary>
         ///     Returns indicator whether any statements allow subscribers or not (false by default).
         ///     The default is false which results in the runtime throwing an exception when an application calls {@code
@@ -144,33 +90,18 @@ namespace com.espertech.esper.common.client.configuration.compiler
         ///     on a statement.
         /// </summary>
         /// <value>indicator</value>
-        public bool IsAllowSubscriber { get; private set; }
-
-        /// <summary>
-        ///     Sets indicator whether any statements allow subscribers or not (false by default).
-        ///     The default is false which results in the runtime throwing an exception when an application calls {@code
-        ///     setSubscriber}
-        ///     on a statement.
-        /// </summary>
-        /// <value>indicator</value>
-        public bool AllowSubscriber {
-            get => IsAllowSubscriber;
-            set => IsAllowSubscriber = value;
+        public bool IsAllowSubscriber {
+            get => allowSubscriber;
+            set => allowSubscriber = value;
         }
 
         /// <summary>
         ///     Returns the indicator whether the compiler generates instrumented byte code for use with the debugger.
         /// </summary>
         /// <value>indicator</value>
-        public bool IsInstrumented { get; private set; }
-
-        /// <summary>
-        ///     Sets the indicator whether the compiler generates instrumented byte code for use with the debugger.
-        /// </summary>
-        /// <value>indicator</value>
-        public bool Instrumented {
-            get => IsInstrumented;
-            set => IsInstrumented = value;
+        public bool IsInstrumented {
+            get => instrumented;
+            set => instrumented = value;
         }
 
         /// <summary>
@@ -255,12 +186,92 @@ namespace com.espertech.esper.common.client.configuration.compiler
         }
 
         /// <summary>
+        ///     Returns the default access modifier for inlined-classes
+        /// </summary>
+        /// <value>access modifier</value>
+        public NameAccessModifier AccessModifierInlinedClass {
+            get => accessModifierInlinedClass;
+            set => accessModifierInlinedClass = value;
+        }
+
+        /// <summary>
         ///     Returns the default bus modifier for event types
         /// </summary>
         /// <value>access modifier</value>
         public EventTypeBusModifier BusModifierEventType {
             get => busModifierEventType;
             set => busModifierEventType = value;
+        }
+
+        /// <summary>
+        ///     Returns the indicator whether, for tools with access to pattern factories, the pattern subexpression text
+        ///     will be available for the pattern.
+        ///     The default is false and the compiler does not produce text for patterns for tooling.
+        ///     When set to true the compiler does generate pattern subexpression text for pattern for use by tools.
+        /// </summary>
+        /// <value>indicator</value>
+        public bool IsAttachPatternEPL {
+            get => attachPatternEPL;
+            set => attachPatternEPL = value;
+        }
+
+        /// <summary>
+        ///     Returns the number of threads available for parallel compilation of multiple EPL statements. The default is 8
+        ///     threads.
+        /// </summary>
+        /// <value>number of threads</value>
+        public int ThreadPoolCompilerNumThreads {
+            get => threadPoolCompilerNumThreads;
+            set => threadPoolCompilerNumThreads = value;
+        }
+
+        /// <summary>
+        ///     Returns the capacity of the parallel compiler semaphore, or null if none defined (null is the default and is the
+        ///     unbounded case).
+        /// </summary>
+        /// <value>capacity or null if none defined</value>
+        public int? ThreadPoolCompilerCapacity {
+            get => threadPoolCompilerCapacity;
+            set => threadPoolCompilerCapacity = value;
+        }
+
+        /// <summary>
+        ///     Returns the maximum number of methods per class, which defaults to 1k. The lower limit for this number is 1000.
+        /// </summary>
+        /// <value>max number methods per class</value>
+        public int MaxMethodsPerClass {
+            get => maxMethodsPerClass;
+            set => maxMethodsPerClass = value;
+        }
+
+        /// <summary>
+        ///     (Internal-use-only) Returns the maximum number of members per class, which defaults to 2k. The lower limit for this
+        ///     number is 1.
+        /// </summary>
+        /// <value>max number of members per class</value>
+        public int InternalUseOnlyMaxMembersPerClass {
+            get => internalUseOnlyMaxMembersPerClass;
+            set => internalUseOnlyMaxMembersPerClass = value;
+        }
+
+        /// <summary>
+        ///     (Internal-use-only) Sets the maximum method complexity, which defaults to 1k. Applicable to methods that repeat
+        ///     operations on elements.
+        ///     This roughly corresponds to lines of code of a method. The lower limit is not defined.
+        /// </summary>
+        /// <value>max method complexity</value>
+        public int InternalUseOnlyMaxMethodComplexity {
+            get => internalUseOnlyMaxMethodComplexity;
+            set => internalUseOnlyMaxMethodComplexity = value;
+        }
+
+        /// <summary>
+        ///     Returns the flag whether the compiler allows inlined classes
+        /// </summary>
+        /// <value>flag</value>
+        public bool IsAllowInlinedClass {
+            get => allowInlinedClass;
+            set => allowInlinedClass = value;
         }
 
         /// <summary>
@@ -275,6 +286,7 @@ namespace com.espertech.esper.common.client.configuration.compiler
             accessModifierExpression = NameAccessModifier.PUBLIC;
             accessModifierScript = NameAccessModifier.PUBLIC;
             accessModifierTable = NameAccessModifier.PUBLIC;
+            accessModifierInlinedClass = NameAccessModifier.PUBLIC;
         }
 
         private void CheckModifier(NameAccessModifier modifier)

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -16,8 +16,10 @@ using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.fabric;
 using com.espertech.esper.common.@internal.schedule;
 using com.espertech.esper.common.@internal.serde.compiletime.eventtype;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.common.@internal.view.groupwin;
 using com.espertech.esper.common.@internal.view.intersect;
 using com.espertech.esper.common.@internal.view.union;
@@ -29,28 +31,6 @@ namespace com.espertech.esper.common.@internal.view.core
 {
     public class ViewFactoryForgeUtil
     {
-        public static void DetermineViewSchedules(
-            IList<ViewFactoryForge>[] forgesPerStream,
-            IList<ScheduleHandleCallbackProvider> scheduleHandleCallbackProviders)
-        {
-            var collector = new ViewForgeVisitorSchedulesCollector(scheduleHandleCallbackProviders);
-            for (var stream = 0; stream < forgesPerStream.Length; stream++) {
-                foreach (var forge in forgesPerStream[stream]) {
-                    forge.Accept(collector);
-                }
-            }
-        }
-
-        public static void DetermineViewSchedules(
-            IList<ViewFactoryForge> forges,
-            IList<ScheduleHandleCallbackProvider> scheduleHandleCallbackProviders)
-        {
-            var collector = new ViewForgeVisitorSchedulesCollector(scheduleHandleCallbackProviders);
-            foreach (var forge in forges) {
-                forge.Accept(collector);
-            }
-        }
-
         public static ViewFactoryForgeDesc CreateForges(
             ViewSpec[] viewSpecDefinitions,
             ViewFactoryForgeArgs args,
@@ -59,29 +39,29 @@ namespace com.espertech.esper.common.@internal.view.core
             try {
                 // Clone the view spec list to prevent parameter modification
                 var viewSpecList = new List<ViewSpec>(viewSpecDefinitions);
-                var viewForgeEnv = new ViewForgeEnv(args);
-                var additionalForgeables = new List<StmtClassForgeableFactory>();
+                var additionalForgeables = new List<StmtClassForgeableFactory>(2);
 
                 // Inspect views and add merge views if required
                 // As users can specify merge views, if they are not provided they get added
                 AddMergeViews(viewSpecList);
 
                 // Instantiate factories, not making them aware of each other yet, we now have a chain
+                var viewForgeEnv = new ViewForgeEnv(args);
                 var forgesChain = InstantiateFactories(viewSpecList, args, viewForgeEnv);
 
-                
                 // Determine event type serdes that may be required
-                foreach (ViewFactoryForge forge in forgesChain) {
+                foreach (var forge in forgesChain) {
                     if (forge is DataWindowViewForge) {
-                        IList<StmtClassForgeableFactory> serdeForgeables = SerdeEventTypeUtility.Plan(
+                        var serdeForgeables = SerdeEventTypeUtility.Plan(
                             parentEventType,
                             viewForgeEnv.StatementRawInfo,
                             viewForgeEnv.SerdeEventTypeRegistry,
-                            viewForgeEnv.SerdeResolver);
+                            viewForgeEnv.SerdeResolver,
+                            viewForgeEnv.StateMgmtSettingsProvider);
                         additionalForgeables.AddAll(serdeForgeables);
                     }
                 }
-                
+
                 // Build data window views that occur next to each other ("d d", "d d d") into a single intersection or union
                 // Calls attach on the contained-views.
                 var forgesChainWIntersections = BuildIntersectionsUnions(
@@ -95,14 +75,18 @@ namespace com.espertech.esper.common.@internal.view.core
 
                 // Build group window views that may contain data windows and also intersection and union
                 // Calls attach on the contained-views.
-                var forgesGrouped = BuildGrouped(forgesChainWIntersections, args, viewForgeEnv, parentEventType);
+                var forgesGrouped = BuildGrouped(
+                    forgesChainWIntersections,
+                    args,
+                    viewForgeEnv,
+                    parentEventType);
 
                 var eventType = parentEventType;
 
                 for (var i = 0; i < forgesGrouped.Count; i++) {
-                    ViewFactoryForge factoryToAttach = forgesGrouped[i];
+                    var factoryToAttach = forgesGrouped[i];
                     try {
-                        factoryToAttach.Attach(eventType, args.StreamNum, viewForgeEnv);
+                        factoryToAttach.Attach(eventType, viewForgeEnv);
                         eventType = factoryToAttach.EventType;
                     }
                     catch (ViewParameterException ex) {
@@ -114,7 +98,12 @@ namespace com.espertech.esper.common.@internal.view.core
                 var multikeyForges = GetMultikeyForges(forgesGrouped, viewForgeEnv);
                 additionalForgeables.AddAll(multikeyForges);
 
-                return new ViewFactoryForgeDesc(forgesGrouped, additionalForgeables);
+                // get state mgmt settings
+                var states = GetStateMgmtSettings(
+                    forgesGrouped,
+                    viewForgeEnv);
+
+                return new ViewFactoryForgeDesc(forgesGrouped, additionalForgeables, states.First, states.Second);
             }
             catch (ViewProcessingException ex) {
                 throw new ExprValidationException("Failed to validate data window declaration: " + ex.Message, ex);
@@ -125,7 +114,7 @@ namespace com.espertech.esper.common.@internal.view.core
             IList<ViewFactoryForge> forges,
             ViewForgeEnv viewForgeEnv)
         {
-            var factories = new List<StmtClassForgeableFactory>();
+            IList<StmtClassForgeableFactory> factories = new List<StmtClassForgeableFactory>(1);
             GetMultikeyForgesRecursive(forges, factories, viewForgeEnv);
             return factories;
         }
@@ -135,9 +124,70 @@ namespace com.espertech.esper.common.@internal.view.core
             IList<StmtClassForgeableFactory> multikeyForges,
             ViewForgeEnv viewForgeEnv)
         {
-            foreach (ViewFactoryForge forge in forges) {
-                multikeyForges.AddAll(forge.InitAdditionalForgeables(viewForgeEnv));
+            foreach (var forge in forges) {
+                var plan = forge.InitAdditionalForgeables(viewForgeEnv);
+                multikeyForges.AddAll(plan);
                 GetMultikeyForgesRecursive(forge.InnerForges, multikeyForges, viewForgeEnv);
+            }
+        }
+
+        private static Pair<IList<ScheduleHandleTracked>, FabricCharge> GetStateMgmtSettings(
+            IList<ViewFactoryForge> forges,
+            ViewForgeEnv viewForgeEnv)
+        {
+            var fabricCharge = viewForgeEnv.StateMgmtSettingsProvider.NewCharge();
+            IList<ScheduleHandleTracked> schedules = new List<ScheduleHandleTracked>(2);
+            foreach (var forge in forges) {
+                if (forge is ScheduleHandleCallbackProvider provider) {
+                    schedules.Add(
+                        new ScheduleHandleTracked(
+                            viewForgeEnv.AttributionUngrouped,
+                            provider));
+                }
+
+                try {
+                    forge.AssignStateMgmtSettings(fabricCharge, viewForgeEnv, null);
+                }
+                catch (ViewParameterException e) {
+                    throw new ViewProcessingException(e.Message, e);
+                }
+
+                GetStateMgmtSettingsGroupedRecursive(forge.InnerForges, fabricCharge, schedules, viewForgeEnv, null);
+            }
+
+            return new Pair<IList<ScheduleHandleTracked>, FabricCharge>(schedules, fabricCharge);
+        }
+
+        private static void GetStateMgmtSettingsGroupedRecursive(
+            IList<ViewFactoryForge> forges,
+            FabricCharge fabricCharge,
+            IList<ScheduleHandleTracked> schedules,
+            ViewForgeEnv viewForgeEnv,
+            int[] grouping)
+        {
+            for (var i = 0; i < forges.Count; i++) {
+                var groupingChild = grouping == null ? new int[] { i } : IntArrayUtil.Append(grouping, i);
+                var child = forges[i];
+                try {
+                    if (child is ScheduleHandleCallbackProvider provider) {
+                        schedules.Add(
+                            new ScheduleHandleTracked(
+                                viewForgeEnv.GetAttributionGrouped(groupingChild),
+                                provider));
+                    }
+
+                    child.AssignStateMgmtSettings(fabricCharge, viewForgeEnv, groupingChild);
+                }
+                catch (ViewParameterException e) {
+                    throw new ViewProcessingException(e.Message, e);
+                }
+
+                GetStateMgmtSettingsGroupedRecursive(
+                    child.InnerForges,
+                    fabricCharge,
+                    schedules,
+                    viewForgeEnv,
+                    groupingChild);
             }
         }
 
@@ -155,7 +205,7 @@ namespace com.espertech.esper.common.@internal.view.core
                 return forgesChain;
             }
 
-            var group = (GroupByViewFactoryForge) forgesChain[0];
+            var group = (GroupByViewFactoryForge)forgesChain[0];
 
             // find merge
             var indexMerge = -1;
@@ -175,11 +225,11 @@ namespace com.espertech.esper.common.@internal.view.core
             var eventType = parentEventType;
 
             for (var i = 1; i < indexMerge; i++) {
-                ViewFactoryForge forge = forgesChain[i];
+                var forge = forgesChain[i];
                 groupeds.Add(forge);
 
                 try {
-                    forge.Attach(eventType, args.StreamNum, viewForgeEnv);
+                    forge.Attach(eventType, viewForgeEnv);
                 }
                 catch (ViewParameterException ex) {
                     throw new ViewProcessingException(ex.Message, ex);
@@ -219,7 +269,11 @@ namespace com.espertech.esper.common.@internal.view.core
                             result.AddAll(dataWindows);
                         }
                         else {
-                            var intersectUnion = MakeIntersectOrUnion(dataWindows, args, viewForgeEnv, parentEventType);
+                            var intersectUnion = MakeIntersectOrUnion(
+                                dataWindows,
+                                args,
+                                viewForgeEnv,
+                                parentEventType);
                             result.Add(intersectUnion);
                         }
 
@@ -235,7 +289,11 @@ namespace com.espertech.esper.common.@internal.view.core
                     result.AddAll(dataWindows);
                 }
                 else {
-                    var intersectUnion = MakeIntersectOrUnion(dataWindows, args, viewForgeEnv, parentEventType);
+                    var intersectUnion = MakeIntersectOrUnion(
+                        dataWindows,
+                        args,
+                        viewForgeEnv,
+                        parentEventType);
                     result.Add(intersectUnion);
                 }
             }
@@ -251,7 +309,7 @@ namespace com.espertech.esper.common.@internal.view.core
         {
             foreach (var forge in dataWindows) {
                 try {
-                    forge.Attach(parentEventType, args.StreamNum, viewForgeEnv);
+                    forge.Attach(parentEventType, viewForgeEnv);
                 }
                 catch (ViewParameterException ex) {
                     throw new ViewProcessingException(ex.Message, ex);
@@ -271,18 +329,18 @@ namespace com.espertech.esper.common.@internal.view.core
             MergeViewFactoryForge merge = null;
             var numDataWindows = 0;
             foreach (var forge in forges) {
-                if (forge is GroupByViewFactoryForge) {
+                if (forge is GroupByViewFactoryForge factoryForge) {
                     if (group == null) {
-                        group = (GroupByViewFactoryForge) forge;
+                        group = factoryForge;
                     }
                     else {
                         throw new ViewProcessingException("Multiple groupwin-declarations are not supported");
                     }
                 }
 
-                if (forge is MergeViewFactoryForge) {
+                if (forge is MergeViewFactoryForge viewFactoryForge) {
                     if (merge == null) {
-                        merge = (MergeViewFactoryForge) forge;
+                        merge = viewFactoryForge;
                     }
                     else {
                         throw new ViewProcessingException("Multiple merge-declarations are not supported");
@@ -322,7 +380,7 @@ namespace com.espertech.esper.common.@internal.view.core
 
             foreach (var spec in viewSpecList) {
                 // Create the new view factory
-                ViewFactoryForge viewFactoryForge = args.ViewResolutionService.Create(
+                var viewFactoryForge = args.ViewResolutionService.Create(
                     spec.ObjectNamespace,
                     spec.ObjectName,
                     args.OptionalCreateNamedWindowName);
@@ -330,10 +388,7 @@ namespace com.espertech.esper.common.@internal.view.core
 
                 // Set view factory parameters
                 try {
-                    viewFactoryForge.SetViewParameters(
-                        spec.ObjectParameters,
-                        viewForgeEnv,
-                        args.StreamNum);
+                    viewFactoryForge.SetViewParameters(spec.ObjectParameters, viewForgeEnv, args.StreamNum);
                 }
                 catch (ViewParameterException e) {
                     throw new ViewProcessingException(
@@ -352,7 +407,7 @@ namespace com.espertech.esper.common.@internal.view.core
         {
             // A grouping view requires a merge view and cannot be last since it would not group sub-views
             if (specifications.Count > 0) {
-                ViewSpec lastView = specifications[specifications.Count - 1];
+                var lastView = specifications[^1];
                 var viewEnum = ViewEnumExtensions.ForName(lastView.ObjectNamespace, lastView.ObjectName);
                 if (viewEnum != null && viewEnum.Value.GetMergeView() != null) {
                     throw new ViewProcessingException(
@@ -362,7 +417,7 @@ namespace com.espertech.esper.common.@internal.view.core
                 }
             }
 
-            LinkedList<ViewSpec> mergeViewSpecs = new LinkedList<ViewSpec>();
+            var mergeViewSpecs = new LinkedList<ViewSpec>();
             var foundMerge = false;
             foreach (var spec in specifications) {
                 var viewEnum = ViewEnumExtensions.ForName(spec.ObjectNamespace, spec.ObjectName);
@@ -378,16 +433,19 @@ namespace com.espertech.esper.common.@internal.view.core
 
             foreach (var spec in specifications) {
                 var viewEnum = ViewEnumExtensions.ForName(spec.ObjectNamespace, spec.ObjectName);
+                if (viewEnum == null) {
+                    continue;
+                }
 
-                if (viewEnum?.GetMergeView() == null) {
+                var mergeView = viewEnum.Value.GetMergeView();
+                if (mergeView == null) {
                     continue;
                 }
 
                 // The merge view gets the same parameters as the view that requires the merge
-                var mergeView = viewEnum.Value.GetMergeView();
                 var mergeViewSpec = new ViewSpec(
-                    mergeView?.GetNamespace(),
-                    mergeView?.GetViewName(),
+                    mergeView.Value.GetNamespace(),
+                    mergeView.Value.GetViewName(),
                     spec.ObjectParameters);
 
                 // The merge views are added to the beginning of the list.
@@ -428,17 +486,17 @@ namespace com.espertech.esper.common.@internal.view.core
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
+            if (forges.IsEmpty()) {
+                return PublicConstValue(typeof(ViewFactory), "EMPTY_ARRAY");
+            }
+
             var method = parent.MakeChild(typeof(ViewFactory[]), typeof(ViewFactoryForgeUtil), classScope);
             method.Block
-                .DeclareVar<ViewFactory[]>(
-                    "factories",
-                    NewArrayByLength(typeof(ViewFactory), Constant(forges.Count)));
+                .DeclareVar<ViewFactory[]>("factories", NewArrayByLength(typeof(ViewFactory), Constant(forges.Count)));
 
-            var grouped = !forges.IsEmpty() && forges[0] is GroupByViewFactoryForge;
-            method.Block.DeclareVar<ViewFactoryContext>("ctx", NewInstance(typeof(ViewFactoryContext)))
+            method.Block.DeclareVarNewInstance(typeof(ViewFactoryContext), "ctx")
                 .SetProperty(Ref("ctx"), "StreamNum", Constant(streamNum))
-                .SetProperty(Ref("ctx"), "SubqueryNumber", Constant(subqueryNum))
-                .SetProperty(Ref("ctx"), "IsGrouped", Constant(grouped));
+                .SetProperty(Ref("ctx"), "SubqueryNumber", Constant(subqueryNum));
             for (var i = 0; i < forges.Count; i++) {
                 var @ref = "factory_" + i;
                 method.Block.DeclareVar<ViewFactory>(@ref, forges[i].Make(method, symbols, classScope))
@@ -457,8 +515,7 @@ namespace com.espertech.esper.common.@internal.view.core
                     return true;
                 }
 
-                if (view is GroupByViewFactoryForge) {
-                    var grouped = (GroupByViewFactoryForge) view;
+                if (view is GroupByViewFactoryForge grouped) {
                     return HasDataWindows(grouped.Groupeds);
                 }
             }

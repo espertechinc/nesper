@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -13,6 +13,7 @@ using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.supportunit.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.epl.expression.ops
 {
@@ -72,69 +73,69 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         [Test]
         public void TestEqualsNode()
         {
-            Assert.IsTrue(equalsNodes[0].EqualsNode(equalsNodes[1], false));
-            Assert.IsFalse(equalsNodes[0].EqualsNode(equalsNodes[2], false));
+            ClassicAssert.IsTrue(equalsNodes[0].EqualsNode(equalsNodes[1], false));
+            ClassicAssert.IsFalse(equalsNodes[0].EqualsNode(equalsNodes[2], false));
         }
 
         [Test]
         public void TestEvaluateEquals()
         {
             equalsNodes[0] = MakeNode(true, false, false);
-            Assert.IsFalse((bool) equalsNodes[0].Forge.ExprEvaluator.Evaluate(null, false, null));
+            ClassicAssert.IsFalse((bool) equalsNodes[0].Forge.ExprEvaluator.Evaluate(null, false, null));
 
             equalsNodes[0] = MakeNode(false, false, false);
-            Assert.IsTrue((bool) equalsNodes[0].Forge.ExprEvaluator.Evaluate(null, false, null));
+            ClassicAssert.IsTrue((bool) equalsNodes[0].Forge.ExprEvaluator.Evaluate(null, false, null));
 
             equalsNodes[0] = MakeNode(true, true, false);
-            Assert.IsTrue((bool) equalsNodes[0].Forge.ExprEvaluator.Evaluate(null, false, null));
+            ClassicAssert.IsTrue((bool) equalsNodes[0].Forge.ExprEvaluator.Evaluate(null, false, null));
 
             equalsNodes[0] = MakeNode(true, typeof(bool?), null, typeof(bool?), false);
-            Assert.IsNull(equalsNodes[0].Forge.ExprEvaluator.Evaluate(null, false, null));
+            ClassicAssert.IsNull(equalsNodes[0].Forge.ExprEvaluator.Evaluate(null, false, null));
 
             equalsNodes[0] = MakeNode(null, typeof(string), "ss", typeof(string), false);
-            Assert.IsNull(equalsNodes[0].Forge.ExprEvaluator.Evaluate(null, false, null));
+            ClassicAssert.IsNull(equalsNodes[0].Forge.ExprEvaluator.Evaluate(null, false, null));
 
             equalsNodes[0] = MakeNode(null, typeof(string), null, typeof(string), false);
-            Assert.IsNull(equalsNodes[0].Forge.ExprEvaluator.Evaluate(null, false, null));
+            ClassicAssert.IsNull(equalsNodes[0].Forge.ExprEvaluator.Evaluate(null, false, null));
 
             // try a long and int
             equalsNodes[1].Validate(SupportExprValidationContextFactory.MakeEmpty(container));
-            Assert.IsTrue((bool) equalsNodes[1].Forge.ExprEvaluator.Evaluate(null, false, null));
+            ClassicAssert.IsTrue((bool) equalsNodes[1].Forge.ExprEvaluator.Evaluate(null, false, null));
 
             // try a double and int
             equalsNodes[2].Validate(SupportExprValidationContextFactory.MakeEmpty(container));
-            Assert.IsTrue((bool) equalsNodes[2].Forge.ExprEvaluator.Evaluate(null, false, null));
+            ClassicAssert.IsTrue((bool) equalsNodes[2].Forge.ExprEvaluator.Evaluate(null, false, null));
 
             equalsNodes[3].Validate(SupportExprValidationContextFactory.MakeEmpty(container));
-            Assert.IsTrue((bool) equalsNodes[3].Forge.ExprEvaluator.Evaluate(null, false, null));
+            ClassicAssert.IsTrue((bool) equalsNodes[3].Forge.ExprEvaluator.Evaluate(null, false, null));
         }
 
         [Test]
         public void TestEvaluateNotEquals()
         {
             equalsNodes[0] = MakeNode(true, false, true);
-            Assert.IsTrue((bool) equalsNodes[0].Forge.ExprEvaluator.Evaluate(null, false, null));
+            ClassicAssert.IsTrue((bool) equalsNodes[0].Forge.ExprEvaluator.Evaluate(null, false, null));
 
             equalsNodes[0] = MakeNode(false, false, true);
-            Assert.IsFalse((bool) equalsNodes[0].Forge.ExprEvaluator.Evaluate(null, false, null));
+            ClassicAssert.IsFalse((bool) equalsNodes[0].Forge.ExprEvaluator.Evaluate(null, false, null));
 
             equalsNodes[0] = MakeNode(true, true, true);
-            Assert.IsFalse((bool) equalsNodes[0].Forge.ExprEvaluator.Evaluate(null, false, null));
+            ClassicAssert.IsFalse((bool) equalsNodes[0].Forge.ExprEvaluator.Evaluate(null, false, null));
 
             equalsNodes[0] = MakeNode(true, typeof(bool?), null, typeof(bool?), true);
-            Assert.IsNull(equalsNodes[0].Forge.ExprEvaluator.Evaluate(null, false, null));
+            ClassicAssert.IsNull(equalsNodes[0].Forge.ExprEvaluator.Evaluate(null, false, null));
 
             equalsNodes[0] = MakeNode(null, typeof(string), "ss", typeof(string), true);
-            Assert.IsNull(equalsNodes[0].Forge.ExprEvaluator.Evaluate(null, false, null));
+            ClassicAssert.IsNull(equalsNodes[0].Forge.ExprEvaluator.Evaluate(null, false, null));
 
             equalsNodes[0] = MakeNode(null, typeof(string), null, typeof(string), true);
-            Assert.IsNull(equalsNodes[0].Forge.ExprEvaluator.Evaluate(null, false, null));
+            ClassicAssert.IsNull(equalsNodes[0].Forge.ExprEvaluator.Evaluate(null, false, null));
         }
 
         [Test]
         public void TestGetType()
         {
-            Assert.AreEqual(typeof(bool?), equalsNodes[1].Forge.EvaluationType);
+            ClassicAssert.AreEqual(typeof(bool?), equalsNodes[1].Forge.EvaluationType);
         }
 
         [Test]
@@ -142,7 +143,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         {
             equalsNodes[0].AddChildNode(new SupportExprNode(true));
             equalsNodes[0].AddChildNode(new SupportExprNode(false));
-            Assert.AreEqual("true=false", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(equalsNodes[0]));
+            ClassicAssert.AreEqual("true=false", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(equalsNodes[0]));
         }
 
         [Test]

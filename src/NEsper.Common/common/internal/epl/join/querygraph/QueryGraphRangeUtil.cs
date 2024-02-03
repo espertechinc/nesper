@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -19,8 +19,9 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
     /// </summary>
     public class QueryGraphRangeUtil
     {
-        private static readonly IDictionary<UniformPair<QueryGraphRangeEnum>, QueryGraphRangeConsolidateDesc> OPS_TABLE =
-            new Dictionary<UniformPair<QueryGraphRangeEnum>, QueryGraphRangeConsolidateDesc>();
+        private static readonly IDictionary<UniformPair<QueryGraphRangeEnum>, QueryGraphRangeConsolidateDesc>
+            OPS_TABLE =
+                new Dictionary<UniformPair<QueryGraphRangeEnum>, QueryGraphRangeConsolidateDesc>();
 
         static QueryGraphRangeUtil()
         {

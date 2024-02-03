@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.compat.collections;
@@ -20,10 +21,11 @@ namespace com.espertech.esper.common.@internal.util
     ///     A comparator on multikeys with string values and using the Collator for comparing. The multikeys must contain the
     ///     same number of values.
     /// </summary>
-    [Serializable]
     public sealed class ComparatorHashableMultiKeyCollating : IComparer<HashableMultiKey>
     {
-        [NonSerialized] private readonly IComparer<object> _collator;
+        [JsonIgnore]
+        [NonSerialized]
+        private readonly IComparer<object> _collator;
         private readonly bool[] _isDescendingValues;
         private readonly bool[] _stringTypedValue;
 

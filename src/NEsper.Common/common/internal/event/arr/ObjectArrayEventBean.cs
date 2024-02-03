@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -20,10 +20,10 @@ namespace com.espertech.esper.common.@internal.@event.arr
             object[] propertyValues,
             EventType eventType)
         {
-            if ((propertyValues != null) &&  (propertyValues.GetType() != typeof(object[]))) {
+            if (propertyValues != null && propertyValues.GetType() != typeof(object[])) {
                 throw new ArgumentException("propertyValues must adhere to strict object array");
             }
-            
+
             Properties = propertyValues;
             EventType = eventType;
         }
@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
 
         public object Underlying {
             get => Properties;
-            set => Properties = (object[]) value;
+            set => Properties = (object[])value;
         }
 
         public object GetFragment(string propertyExpression)

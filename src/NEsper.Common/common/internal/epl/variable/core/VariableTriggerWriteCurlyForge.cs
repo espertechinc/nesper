@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -37,8 +37,14 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
             method.Block
                 .DeclareVar<VariableTriggerWriteCurly>("desc", NewInstance(typeof(VariableTriggerWriteCurly)))
                 .SetProperty(Ref("desc"), "VariableName", Constant(variableName))
-                .SetProperty(Ref("desc"), "Expression",
-                    ExprNodeUtilityCodegen.CodegenEvaluator(expression, method, typeof(VariableTriggerWriteCurlyForge), classScope))
+                .SetProperty(
+                    Ref("desc"),
+                    "Expression",
+                    ExprNodeUtilityCodegen.CodegenEvaluator(
+                        expression,
+                        method,
+                        typeof(VariableTriggerWriteCurlyForge),
+                        classScope))
                 .MethodReturn(Ref("desc"));
             return LocalMethod(method);
         }

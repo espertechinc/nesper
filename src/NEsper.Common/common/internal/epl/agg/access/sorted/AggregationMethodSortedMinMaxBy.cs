@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -16,70 +16,70 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 
 namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 {
-	public class AggregationMethodSortedMinMaxBy : AggregationMultiFunctionAggregationMethod
-	{
-		private bool max;
+    public class AggregationMethodSortedMinMaxBy : AggregationMultiFunctionAggregationMethod
+    {
+        private bool max;
 
-		public bool Max {
-			get => max;
-			set => max = value;
-		}
+        public bool Max {
+            get => max;
+            set => max = value;
+        }
 
-		public object GetValue(
-			int aggColNum,
-			AggregationRow row,
-			EventBean[] eventsPerStream,
-			bool isNewData,
-			ExprEvaluatorContext exprEvaluatorContext)
-		{
-			var sorted = (AggregationStateSorted) row.GetAccessState(aggColNum);
-			var @event = GetEnumerableEvent(sorted, eventsPerStream, isNewData, exprEvaluatorContext);
-			return @event?.Underlying;
-		}
+        public object GetValue(
+            int aggColNum,
+            AggregationRow row,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
+        {
+            var sorted = (AggregationStateSorted)row.GetAccessState(aggColNum);
+            var @event = GetEnumerableEvent(sorted, eventsPerStream, isNewData, exprEvaluatorContext);
+            return @event?.Underlying;
+        }
 
-		public ICollection<EventBean> GetValueCollectionEvents(
-			int aggColNum,
-			AggregationRow row,
-			EventBean[] eventsPerStream,
-			bool isNewData,
-			ExprEvaluatorContext exprEvaluatorContext)
-		{
-			return null;
-		}
+        public ICollection<EventBean> GetValueCollectionEvents(
+            int aggColNum,
+            AggregationRow row,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
+        {
+            return null;
+        }
 
-		public ICollection<object> GetValueCollectionScalar(
-			int aggColNum,
-			AggregationRow row,
-			EventBean[] eventsPerStream,
-			bool isNewData,
-			ExprEvaluatorContext exprEvaluatorContext)
-		{
-			return null;
-		}
+        public ICollection<object> GetValueCollectionScalar(
+            int aggColNum,
+            AggregationRow row,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
+        {
+            return null;
+        }
 
-		public EventBean GetValueEventBean(
-			int aggColNum,
-			AggregationRow row,
-			EventBean[] eventsPerStream,
-			bool isNewData,
-			ExprEvaluatorContext exprEvaluatorContext)
-		{
-			AggregationStateSorted sorted = (AggregationStateSorted) row.GetAccessState(aggColNum);
-			return GetEnumerableEvent(sorted, eventsPerStream, isNewData, exprEvaluatorContext);
-		}
+        public EventBean GetValueEventBean(
+            int aggColNum,
+            AggregationRow row,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
+        {
+            var sorted = (AggregationStateSorted)row.GetAccessState(aggColNum);
+            return GetEnumerableEvent(sorted, eventsPerStream, isNewData, exprEvaluatorContext);
+        }
 
-		private EventBean GetEnumerableEvent(
-			AggregationStateSorted state,
-			EventBean[] eventsPerStream,
-			bool isNewData,
-			ExprEvaluatorContext exprEvaluatorContext)
-		{
-			if (max) {
-				return state.LastValue;
-			}
-			else {
-				return state.FirstValue;
-			}
-		}
-	}
+        private EventBean GetEnumerableEvent(
+            AggregationStateSorted state,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
+        {
+            if (max) {
+                return state.LastValue;
+            }
+            else {
+                return state.FirstValue;
+            }
+        }
+    }
 } // end of namespace

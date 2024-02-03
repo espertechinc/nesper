@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -19,14 +19,14 @@ using com.espertech.esper.runtime.client;
 using com.espertech.esper.runtime.client.scopetest;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A;
 
 namespace com.espertech.esper.regressionlib.support.multithread
 {
     public class VariableReadWriteCallable : ICallable<object>
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private readonly int numRepeats;
         private readonly EPRuntime runtime;
         private readonly SupportUpdateListener selectListener;
@@ -42,11 +42,7 @@ namespace com.espertech.esper.regressionlib.support.multithread
             this.threadNum = threadNum;
 
             selectListener = new SupportUpdateListener();
-            var stmtText = "@Name('t" +
-                           threadNum +
-                           "') select var1, var2, var3 from SupportBean_A(Id='" +
-                           threadNum +
-                           "')";
+            var stmtText = $"@name('t{threadNum}') select var1, var2, var3 from SupportBean_A(Id='{threadNum}')";
             env.CompileDeploy(stmtText).Statement("t" + threadNum).AddListener(selectListener);
         }
 
@@ -75,15 +71,15 @@ namespace com.espertech.esper.regressionlib.support.multithread
                         new SupportBean_A(Convert.ToString(threadNum)),
                         nameof(SupportBean_A));
                     var received = selectListener.AssertOneGetNewAndReset();
-                    Assert.AreEqual(received.Get("var1"), received.Get("var2"));
+                    ClassicAssert.AreEqual(received.Get("var1"), received.Get("var2"));
                 }
             }
             catch (AssertionException ex) {
-                log.Error("Assertion error in thread " + Thread.CurrentThread.ManagedThreadId, ex);
+                Log.Error("Assertion error in thread " + Thread.CurrentThread.ManagedThreadId, ex);
                 return false;
             }
             catch (Exception ex) {
-                log.Error("Error in thread " + Thread.CurrentThread.ManagedThreadId, ex);
+                Log.Error("Error in thread " + Thread.CurrentThread.ManagedThreadId, ex);
                 return false;
             }
 

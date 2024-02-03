@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -108,7 +108,7 @@ namespace com.espertech.esper.common.@internal.context.mgr
                         ContextManager.ContextDefinition.ControllerFactories,
                         allPartitionKeys,
                         AgentInstanceContextCreate);
-                
+
                 AgentInstanceFilterProxy proxy = new AgentInstanceFilterProxyImpl(generator);
 
                 var agentInstance = AgentInstanceUtil.StartStatement(
@@ -238,7 +238,7 @@ namespace com.espertech.esper.common.@internal.context.mgr
 
         public void StartContext()
         {
-            ContextControllers[0].Activate(IntSeqKeyRoot.INSTANCE, new object[0], null, null);
+            ContextControllers[0].Activate(IntSeqKeyRoot.INSTANCE, Array.Empty<object>(), null, null);
         }
 
         public void StopContext()
@@ -293,8 +293,7 @@ namespace com.espertech.esper.common.@internal.context.mgr
 
         public ICollection<int> GetAgentInstanceIds(ContextPartitionSelector selector)
         {
-            if (selector is ContextPartitionSelectorById) {
-                var byId = (ContextPartitionSelectorById) selector;
+            if (selector is ContextPartitionSelectorById byId) {
                 var ids = byId.ContextPartitionIds;
                 if (ids == null || ids.IsEmpty()) {
                     return Collections.GetEmptyList<int>();
@@ -309,15 +308,14 @@ namespace com.espertech.esper.common.@internal.context.mgr
                 return ContextManager.ContextPartitionIdService.Ids;
             }
 
-            if (selector is ContextPartitionSelectorNested) {
+            if (selector is ContextPartitionSelectorNested nested) {
                 if (ContextControllers.Length == 1) {
                     throw ContextControllerSelectorUtil.GetInvalidSelector(
-                        new[] {typeof(ContextPartitionSelectorNested)},
-                        selector,
+                        new[] { typeof(ContextPartitionSelectorNested) },
+                        nested,
                         true);
                 }
 
-                var nested = (ContextPartitionSelectorNested) selector;
                 var visitor = new ContextPartitionVisitorAgentInstanceId(ContextControllers.Length);
                 foreach (var stack in nested.Selectors) {
                     ContextControllers[0].VisitSelectedPartitions(IntSeqKeyRoot.INSTANCE, stack[0], visitor, stack);
@@ -342,7 +340,7 @@ namespace com.espertech.esper.common.@internal.context.mgr
                         IntSeqKeyRoot.INSTANCE,
                         selector,
                         visitor,
-                        new[] {selector});
+                        new[] { selector });
                 return visitor.Ids;
             }
         }

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -42,13 +42,16 @@ namespace com.espertech.esper.common.client.serde
             }
 
             try {
-                MethodResolver.ResolveCtor(SerdeClass, new Type[0]);
+                MethodResolver.ResolveCtor(SerdeClass, Type.EmptyTypes);
                 return new DataInputOutputSerdeForgeEmptyCtor(SerdeClass);
             }
             catch (MethodResolverNoSuchCtorException) {
             }
 
-            throw new EPException("Serde class '" + SerdeClass.Name + "' does not have a singleton-style INSTANCE field or default constructor");
+            throw new EPException(
+                "Serde class '" +
+                SerdeClass.Name +
+                "' does not have a singleton-style INSTANCE field or default constructor");
         }
     }
 } // end of namespace

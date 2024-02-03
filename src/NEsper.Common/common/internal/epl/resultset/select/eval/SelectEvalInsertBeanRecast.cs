@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -29,12 +29,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             int streamNumber,
             EventType[] typesPerStream)
         {
-            this.eventType = targetType;
+            eventType = targetType;
             this.streamNumber = streamNumber;
 
-            EventType sourceType = typesPerStream[streamNumber];
-            Type sourceClass = sourceType.UnderlyingType;
-            Type targetClass = targetType.UnderlyingType;
+            var sourceType = typesPerStream[streamNumber];
+            var sourceClass = sourceType.UnderlyingType;
+            var targetClass = targetType.UnderlyingType;
             if (!TypeHelper.IsSubclassOrImplementsInterface(sourceClass, targetClass)) {
                 throw SelectEvalInsertUtil.MakeEventTypeCastException(sourceType, targetType);
             }
@@ -48,19 +48,17 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenMethod methodNode = codegenMethodScope.MakeChild(
+            var methodNode = codegenMethodScope.MakeChild(
                 typeof(EventBean),
-                this.GetType(),
+                GetType(),
                 codegenClassScope);
-            CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(methodNode);
+            var refEPS = exprSymbol.GetAddEps(methodNode);
             CodegenExpression bean = ExprDotName(ArrayAtIndex(refEPS, Constant(streamNumber)), "Underlying");
             methodNode.Block.MethodReturn(
                 ExprDotMethod(eventBeanFactory, "AdapterForTypedObject", bean, resultEventType));
             return methodNode;
         }
 
-        public EventType ResultEventType {
-            get => eventType;
-        }
+        public EventType ResultEventType => eventType;
     }
 } // end of namespace

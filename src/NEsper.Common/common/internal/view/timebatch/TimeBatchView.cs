@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -184,7 +184,7 @@ namespace com.espertech.esper.common.@internal.view.timebatch
             // there have been any events in this or the last interval do we schedule a callback,
             // such as to not waste resources when no events arrive.
             if (!_currentBatch.IsEmpty() ||
-                _lastBatch != null && !_lastBatch.IsEmpty() ||
+                (_lastBatch != null && !_lastBatch.IsEmpty()) ||
                 _factory.isForceUpdate) {
                 ScheduleCallback();
                 _isCallbackScheduled = true;
@@ -219,13 +219,13 @@ namespace com.espertech.esper.common.@internal.view.timebatch
         private void ScheduleCallback()
         {
             var current = _agentInstanceContext.StatementContext.SchedulingService.Time;
-            TimePeriodDeltaResult deltaWReference = _timePeriodProvide.DeltaAddWReference(
+            var deltaWReference = _timePeriodProvide.DeltaAddWReference(
                 current,
                 _currentReferencePoint.Value,
                 null,
                 true,
                 _agentInstanceContext);
-            long afterTime = deltaWReference.Delta;
+            var afterTime = deltaWReference.Delta;
             _currentReferencePoint = deltaWReference.LastReference;
 
             ScheduleHandleCallback callback = new ProxyScheduleHandleCallback {

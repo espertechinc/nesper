@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -16,7 +16,6 @@ namespace com.espertech.esper.common.client.soda
     ///     <para />
     ///     Event row regular expressions are organized into a tree-like structure with nodes representing sub-expressions.
     /// </summary>
-    [Serializable]
     public class MatchRecognizeRegExNested : MatchRecognizeRegEx
     {
         private MatchRecognizeRegExRepeat optionalRepeat;
@@ -55,8 +54,7 @@ namespace com.espertech.esper.common.client.soda
         ///     Returns multiplicity.
         /// </summary>
         /// <returns>multiplicity</returns>
-        public MatchRecogizePatternElementType Type
-        {
+        public MatchRecogizePatternElementType Type {
             get => type;
             set => type = value;
         }
@@ -65,8 +63,7 @@ namespace com.espertech.esper.common.client.soda
         ///     Returns the repetition
         /// </summary>
         /// <returns>repetition</returns>
-        public MatchRecognizeRegExRepeat OptionalRepeat
-        {
+        public MatchRecognizeRegExRepeat OptionalRepeat {
             get => optionalRepeat;
             set => optionalRepeat = value;
         }
@@ -75,8 +72,7 @@ namespace com.espertech.esper.common.client.soda
         {
             writer.Write("(");
             var delimiter = "";
-            foreach (var node in Children)
-            {
+            foreach (var node in Children) {
                 writer.Write(delimiter);
                 node.WriteEPL(writer);
                 delimiter = " ";

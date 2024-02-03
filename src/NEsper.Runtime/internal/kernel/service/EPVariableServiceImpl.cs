@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -191,16 +191,13 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             }
         }
 
-        public void SetVariableValue(IDictionary<DeploymentIdNamePair, object> variableValues)
-        {
-            SetVariableValueInternal(variableValues, DEFAULT_AGENT_INSTANCE_ID, false);
-        }
+        public void SetVariableValue(IDictionary<DeploymentIdNamePair, object> value) => SetVariableValueInternal(value, DEFAULT_AGENT_INSTANCE_ID, false);
 
         public void SetVariableValue(
-            IDictionary<DeploymentIdNamePair, object> variableValues,
+            IDictionary<DeploymentIdNamePair, object> value,
             int agentInstanceId)
         {
-            SetVariableValueInternal(variableValues, agentInstanceId, true);
+            SetVariableValueInternal(value, agentInstanceId, true);
         }
 
         private void CheckVariable(

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -55,9 +55,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
             var method = parent
                 .MakeChild(typeof(ContextConditionDescriptorCrontab), GetType(), classScope);
             method.Block
-                .DeclareVar<ContextConditionDescriptorCrontab>(
-                    "condition",
-                    NewInstance(typeof(ContextConditionDescriptorCrontab)))
+                .DeclareVarNewInstance<ContextConditionDescriptorCrontab>("condition")
                 .SetProperty(
                     Ref("condition"),
                     "EvaluatorsPerCrontab",
@@ -73,6 +71,11 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
                 .MethodReturn(
                     Ref("condition"));
             return LocalMethod(method);
+        }
+
+        public T Accept<T>(ContextSpecConditionVisitor<T> visitor)
+        {
+            return visitor.Visit(this);
         }
     }
 } // end of namespace

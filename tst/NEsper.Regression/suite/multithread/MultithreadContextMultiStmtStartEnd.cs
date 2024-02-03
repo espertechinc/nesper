@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -21,17 +21,23 @@ using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.multithread
 {
-    public class MultithreadContextMultiStmtStartEnd
+    public class MultithreadContextMultiStmtStartEnd : RegressionExecutionPreConfigured
     {
         private EPRuntimeProvider _runtimeProvider;
-        
-        public void Run(Configuration configuration)
+        private readonly Configuration _configuration;
+
+        public MultithreadContextMultiStmtStartEnd(Configuration configuration)
+        {
+            _configuration = configuration;
+        }
+
+        public void Run()
         {
             _runtimeProvider = new EPRuntimeProvider();
-            
-            configuration.Runtime.Threading.IsInternalTimerEnabled = true;
-            RunAssertion(FilterServiceProfile.READMOSTLY, configuration);
-            RunAssertion(FilterServiceProfile.READWRITE, configuration);
+
+            _configuration.Runtime.Threading.IsInternalTimerEnabled = true;
+            RunAssertion(FilterServiceProfile.READMOSTLY, _configuration);
+            RunAssertion(FilterServiceProfile.READWRITE, _configuration);
         }
 
         private void RunAssertion(
@@ -45,7 +51,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             var runtime = _runtimeProvider.GetRuntimeInstance(runtimeURI, configuration);
 
             var path = new RegressionPath();
-            var eplContext = "create context MyContext start @now end after 100 milliseconds;\n";
+            var eplContext = "@public create context MyContext start @now end after 100 milliseconds;\n";
             var compiledContext = SupportCompileDeployUtil.Compile(eplContext, configuration, path);
             SupportCompileDeployUtil.Deploy(compiledContext, runtime);
             path.Add(compiledContext);

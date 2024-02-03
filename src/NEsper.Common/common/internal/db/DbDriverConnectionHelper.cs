@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -45,14 +45,14 @@ namespace com.espertech.esper.common.@internal.db
             }
 
             // Check for the type in the driverNamespace
-            string specificName = $"{DriverNamespace}.{driverName}";
+            var specificName = $"{DriverNamespace}.{driverName}";
             if ((driverType = TypeHelper.ResolveType(specificName, false)) != null) {
                 return driverType;
             }
 
             // Check for the type in the driverNamespace, but modified to include
             // a prefix to the name.
-            string pseudoName = $"{DriverNamespace}.DbDriver{driverName}";
+            var pseudoName = $"{DriverNamespace}.DbDriver{driverName}";
             if ((driverType = TypeHelper.ResolveType(pseudoName, false)) != null) {
                 return driverType;
             }

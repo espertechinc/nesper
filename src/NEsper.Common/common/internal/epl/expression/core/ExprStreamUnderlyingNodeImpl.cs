@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -8,6 +8,7 @@
 
 using System;
 using System.IO;
+using System.Text.Json.Serialization;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -23,17 +24,19 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 namespace com.espertech.esper.common.@internal.epl.expression.core
 {
     /// <summary>
-    ///     Represents an stream selector that returns the streams underlying event, or null if undefined.
+    /// Represents an stream selector that returns the streams underlying event, or null if undefined.
     /// </summary>
     public class ExprStreamUnderlyingNodeImpl : ExprNodeBase,
         ExprForgeInstrumentable,
         ExprEvaluator,
         ExprStreamUnderlyingNode
     {
+        private readonly string streamName;
         private readonly bool isWildcard;
-        [NonSerialized] private EventType eventType;
         private int streamNum = -1;
-        private Type type;
+        [JsonIgnore]
+        [NonSerialized]
+        private EventType eventType;
 
         public ExprStreamUnderlyingNodeImpl(
             string streamName,
@@ -43,19 +46,84 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 throw new ArgumentException("Stream name is null");
             }
 
-            StreamName = streamName;
+            this.streamName = streamName;
             this.isWildcard = isWildcard;
         }
 
-        public ExprNode ForgeRenderable => this;
+        public Type EvaluationType {
+            get {
+                if (streamNum == -1) {
+                    throw new IllegalStateException("Stream underlying node has not been validated");
+                }
+
+                return eventType.UnderlyingType;
+            }
+        }
+
+        public ExprEvaluator ExprEvaluator => this;
+
+        public override ExprForge Forge => this;
+
+        public ExprNodeRenderable ExprForgeRenderable => this;
 
         /// <summary>
-        ///     Returns the stream name.
+        /// Returns the stream name.
         /// </summary>
-        /// <returns>stream name</returns>
-        public string StreamName { get; }
+        /// <value>stream name</value>
+        public string StreamName => streamName;
+
+        public int? StreamReferencedIfAny => StreamId;
+
+        public string RootPropertyNameIfAny => null;
+
+        public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
+
+        public override ExprNode Validate(ExprValidationContext validationContext)
+        {
+            if (streamName == null && isWildcard) {
+                if (validationContext.StreamTypeService.StreamNames.Length > 1) {
+                    throw new ExprValidationException(
+                        "Wildcard must be stream wildcard if specifying multiple streams, use the 'streamname.*' syntax instead");
+                }
+
+                streamNum = 0;
+            }
+            else {
+                streamNum = validationContext.StreamTypeService.GetStreamNumForStreamName(streamName);
+            }
+
+            if (streamNum == -1) {
+                throw new ExprValidationException(
+                    "Stream by name '" + streamName + "' could not be found among all streams");
+            }
+
+            eventType = validationContext.StreamTypeService.EventTypes[streamNum];
+            return null;
+        }
 
         public bool IsConstantResult => false;
+
+        /// <summary>
+        /// Returns stream id supplying the property value.
+        /// </summary>
+        /// <value>stream number</value>
+        public int StreamId {
+            get {
+                if (streamNum == -1) {
+                    throw new IllegalStateException("Stream underlying node has not been validated");
+                }
+
+                return streamNum;
+            }
+        }
+
+        public override string ToString()
+        {
+            return "streamName=" +
+                   streamName +
+                   " streamNum=" +
+                   streamNum;
+        }
 
         public object Evaluate(
             EventBean[] eventsPerStream,
@@ -63,15 +131,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             ExprEvaluatorContext exprEvaluatorContext)
         {
             var @event = eventsPerStream[streamNum];
+            if (@event == null) {
+                return null;
+            }
 
-            return @event?.Underlying;
+            return @event.Underlying;
         }
-
-        ExprNodeRenderable ExprForge.ExprForgeRenderable => ForgeRenderable;
-
-        public ExprEvaluator ExprEvaluator => this;
-
-        public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
 
         public CodegenExpression EvaluateCodegenUninstrumented(
             Type requiredType,
@@ -83,7 +148,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 eventType.UnderlyingType,
                 typeof(ExprStreamUnderlyingNodeImpl),
                 codegenClassScope);
-            var refEPS = exprSymbol.GetAddEPS(methodNode);
+            var refEPS = exprSymbol.GetAddEps(methodNode);
             methodNode.Block
                 .DeclareVar<EventBean>("@event", ArrayAtIndex(refEPS, Constant(streamNum)))
                 .IfRefNullReturnNull("@event")
@@ -98,67 +163,22 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             CodegenClassScope codegenClassScope)
         {
             return new InstrumentationBuilderExpr(
-                    GetType(),
-                    this,
-                    "ExprStreamUnd",
-                    requiredType,
-                    codegenMethodScope,
-                    exprSymbol,
-                    codegenClassScope)
-                .Build();
+                GetType(),
+                this,
+                "ExprStreamUnd",
+                requiredType,
+                codegenMethodScope,
+                exprSymbol,
+                codegenClassScope).Build();
         }
 
-        public Type EvaluationType {
-            get {
-                if (streamNum == -1) {
-                    throw new IllegalStateException("Stream underlying node has not been validated");
-                }
-
-                return type;
-            }
-        }
-
-        public override ExprForge Forge => this;
-
-        public int? StreamReferencedIfAny => StreamId;
-
-        public string RootPropertyNameIfAny => null;
-
-        public override ExprNode Validate(ExprValidationContext validationContext)
+        public override void ToPrecedenceFreeEPL(
+            TextWriter writer,
+            ExprNodeRenderableFlags flags)
         {
-            if (StreamName == null && isWildcard) {
-                if (validationContext.StreamTypeService.StreamNames.Length > 1) {
-                    throw new ExprValidationException(
-                        "Wildcard must be stream wildcard if specifying multiple streams, use the 'streamname.*' syntax instead");
-                }
-
-                streamNum = 0;
-            }
-            else {
-                streamNum = validationContext.StreamTypeService.GetStreamNumForStreamName(StreamName);
-            }
-
-            if (streamNum == -1) {
-                throw new ExprValidationException(
-                    "Stream by name '" + StreamName + "' could not be found among all streams");
-            }
-
-            eventType = validationContext.StreamTypeService.EventTypes[streamNum];
-            type = eventType.UnderlyingType;
-            return null;
-        }
-
-        /// <summary>
-        ///     Returns stream id supplying the property value.
-        /// </summary>
-        /// <value>stream number</value>
-        public int StreamId {
-            get {
-                if (streamNum == -1) {
-                    throw new IllegalStateException("Stream underlying node has not been validated");
-                }
-
-                return streamNum;
+            writer.Write(streamName);
+            if (isWildcard) {
+                writer.Write(".*");
             }
         }
 
@@ -170,11 +190,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             ExprNode node,
             bool ignoreStreamPrefix)
         {
-            if (!(node is ExprStreamUnderlyingNodeImpl)) {
+            if (!(node is ExprStreamUnderlyingNodeImpl other)) {
                 return false;
             }
 
-            var other = (ExprStreamUnderlyingNodeImpl) node;
             if (isWildcard != other.isWildcard) {
                 return false;
             }
@@ -183,30 +202,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 return true;
             }
 
-            return StreamName.Equals(other.StreamName);
+            return streamName.Equals(other.streamName);
         }
 
-        public override string ToString()
+        public ExprEnumerationForgeDesc GetEnumerationForge(
+            StreamTypeService streamTypeService,
+            ContextCompileTimeDescriptor contextDescriptor)
         {
-            return "streamName=" +
-                   StreamName +
-                   " streamNum=" +
-                   streamNum;
-        }
-
-        public override void ToPrecedenceFreeEPL(
-            TextWriter writer,
-            ExprNodeRenderableFlags flags)
-        {
-            writer.Write(StreamName);
-            if (isWildcard) {
-                writer.Write(".*");
-            }
-        }
-        
-        public ExprEnumerationForgeDesc GetEnumerationForge(StreamTypeService streamTypeService, ContextCompileTimeDescriptor contextDescriptor) {
             return new ExprEnumerationForgeDesc(
-                new ExprStreamUnderlyingNodeEnumerationForge(StreamName, streamNum, eventType),
+                new ExprStreamUnderlyingNodeEnumerationForge(streamName, streamNum, eventType),
                 streamTypeService.IStreamOnly[StreamId],
                 StreamId);
         }

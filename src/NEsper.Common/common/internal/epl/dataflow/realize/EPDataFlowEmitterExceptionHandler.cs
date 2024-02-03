@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -17,10 +17,10 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
 {
     public class EPDataFlowEmitterExceptionHandler
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(EPDataFlowEmitterExceptionHandler));
+        private static readonly ILog Log = LogManager.GetLogger(typeof(EPDataFlowEmitterExceptionHandler));
 
-        private readonly AgentInstanceContext agentInstanceContext;
-        private readonly string instanceId;
+        private readonly AgentInstanceContext _agentInstanceContext;
+        private readonly string _instanceId;
 
         public EPDataFlowEmitterExceptionHandler(
             AgentInstanceContext agentInstanceContext,
@@ -31,18 +31,18 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
             string operatorPrettyPrint,
             EPDataFlowExceptionHandler optionalExceptionHandler)
         {
-            this.agentInstanceContext = agentInstanceContext;
+            _agentInstanceContext = agentInstanceContext;
             DataFlowName = dataFlowName;
-            this.instanceId = instanceId;
+            _instanceId = instanceId;
             OperatorName = operatorName;
             OperatorNumber = operatorNumber;
             OperatorPrettyPrint = operatorPrettyPrint;
             OptionalExceptionHandler = optionalExceptionHandler;
         }
 
-        public string RuntimeURI => agentInstanceContext.RuntimeURI;
+        public string RuntimeURI => _agentInstanceContext.RuntimeURI;
 
-        public string StatementName => agentInstanceContext.StatementName;
+        public string StatementName => _agentInstanceContext.StatementName;
 
         public string DataFlowName { get; }
 
@@ -54,7 +54,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
 
         public EPDataFlowExceptionHandler OptionalExceptionHandler { get; }
 
-        public string DeploymentId => agentInstanceContext.DeploymentId;
+        public string DeploymentId => _agentInstanceContext.DeploymentId;
 
         public void HandleException(
             object targetObject,
@@ -62,7 +62,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
             TargetException ex,
             object[] parameters)
         {
-            log.Error("Exception encountered: " + ex.InnerException?.Message, ex.InnerException);
+            Log.Error("Exception encountered: " + ex.InnerException?.Message, ex.InnerException);
             HandleExceptionCommon(targetObject, fastMethod, ex.InnerException, parameters);
         }
 
@@ -72,7 +72,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
             TargetInvocationException ex,
             object[] parameters)
         {
-            log.Error("Exception encountered: " + ex.InnerException?.Message, ex.InnerException);
+            Log.Error("Exception encountered: " + ex.InnerException?.Message, ex.InnerException);
             HandleExceptionCommon(targetObject, fastMethod, ex.InnerException, parameters);
         }
 
@@ -82,7 +82,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
             MemberAccessException ex,
             object[] parameters)
         {
-            log.Error("Exception encountered: " + ex.Message, ex);
+            Log.Error("Exception encountered: " + ex.Message, ex);
             HandleExceptionCommon(targetObject, fastMethod, ex, parameters);
         }
 
@@ -105,13 +105,13 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
             object targetObject,
             object[] parameters)
         {
-            agentInstanceContext.AuditProvider.DataflowOp(
+            _agentInstanceContext.AuditProvider.DataflowOp(
                 DataFlowName,
-                instanceId,
+                _instanceId,
                 OperatorName,
                 OperatorNumber,
                 parameters,
-                agentInstanceContext);
+                _agentInstanceContext);
         }
     }
 } // end of namespace

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -40,16 +40,16 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
             bool isNWOnTrigger,
             int numOuterstreams)
         {
-            ExprForge x = positionalExpressions.Get(0).Forge;
-            ExprForge y = positionalExpressions.Get(1).Forge;
-            ExprForge width = positionalExpressions.Get(2).Forge;
-            ExprForge height = positionalExpressions.Get(3).Forge;
-            string[] expressions = new string[positionalExpressions.Count];
-            foreach (KeyValuePair<int, ExprNode> entry in positionalExpressions) {
+            var x = positionalExpressions.Get(0).Forge;
+            var y = positionalExpressions.Get(1).Forge;
+            var width = positionalExpressions.Get(2).Forge;
+            var height = positionalExpressions.Get(3).Forge;
+            var expressions = new string[positionalExpressions.Count];
+            foreach (var entry in positionalExpressions) {
                 expressions[entry.Key] = ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(entry.Value);
             }
 
-            LookupStrategyDesc lookupStrategyDesc = new LookupStrategyDesc(LookupStrategyType.ADVANCED, expressions);
+            var lookupStrategyDesc = new LookupStrategyDesc(LookupStrategyType.ADVANCED, expressions);
             return new SubordTableLookupStrategyFactoryQuadTreeForge(
                 x,
                 y,

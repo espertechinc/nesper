@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -12,6 +12,7 @@ using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.supportunit.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.epl.expression.ops
 {
@@ -29,9 +30,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         [Test]
         public void TestEqualsNode()
         {
-            Assert.IsTrue(orNode.EqualsNode(orNode, false));
-            Assert.IsFalse(orNode.EqualsNode(new ExprMinMaxRowNode(MinMaxTypeEnum.MIN), false));
-            Assert.IsTrue(orNode.EqualsNode(new ExprOrNode(), false));
+            ClassicAssert.IsTrue(orNode.EqualsNode(orNode, false));
+            ClassicAssert.IsFalse(orNode.EqualsNode(new ExprMinMaxRowNode(MinMaxTypeEnum.MIN), false));
+            ClassicAssert.IsTrue(orNode.EqualsNode(new ExprOrNode(), false));
         }
 
         [Test]
@@ -40,25 +41,25 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             orNode.AddChildNode(new SupportBoolExprNode(true));
             orNode.AddChildNode(new SupportBoolExprNode(false));
             SupportExprNodeUtil.Validate(container, orNode);
-            Assert.IsTrue((bool) orNode.Forge.ExprEvaluator.Evaluate(null, false, null));
+            ClassicAssert.IsTrue((bool) orNode.Forge.ExprEvaluator.Evaluate(null, false, null));
 
             orNode = new ExprOrNode();
             orNode.AddChildNode(new SupportBoolExprNode(false));
             orNode.AddChildNode(new SupportBoolExprNode(false));
             SupportExprNodeUtil.Validate(container, orNode);
-            Assert.IsFalse((bool) orNode.Forge.ExprEvaluator.Evaluate(null, false, null));
+            ClassicAssert.IsFalse((bool) orNode.Forge.ExprEvaluator.Evaluate(null, false, null));
 
             orNode = new ExprOrNode();
             orNode.AddChildNode(new SupportExprNode(null, typeof(bool?)));
             orNode.AddChildNode(new SupportExprNode(false));
             SupportExprNodeUtil.Validate(container, orNode);
-            Assert.IsNull(orNode.Forge.ExprEvaluator.Evaluate(null, false, null));
+            ClassicAssert.IsNull(orNode.Forge.ExprEvaluator.Evaluate(null, false, null));
         }
 
         [Test]
         public void TestGetType()
         {
-            Assert.AreEqual(typeof(bool?), orNode.Forge.EvaluationType);
+            ClassicAssert.AreEqual(typeof(bool?), orNode.Forge.EvaluationType);
         }
 
         [Test]
@@ -66,7 +67,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         {
             orNode.AddChildNode(new SupportExprNode(true));
             orNode.AddChildNode(new SupportExprNode(false));
-            Assert.AreEqual("true or false", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(orNode));
+            ClassicAssert.AreEqual("true or false", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(orNode));
         }
 
         [Test]
@@ -77,7 +78,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             orNode.AddChildNode(new SupportExprNode(typeof(bool?)));
             orNode.Validate(SupportExprValidationContextFactory.MakeEmpty(container));
 
-            // test failure, type mismatch
+            // test failure, Type mismatch
             orNode.AddChildNode(new SupportExprNode(typeof(string)));
             try
             {

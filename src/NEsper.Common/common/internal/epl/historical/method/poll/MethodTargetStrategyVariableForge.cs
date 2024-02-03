@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -37,14 +37,12 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.poll
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            CodegenMethod method = parent.MakeChild(
+            var method = parent.MakeChild(
                 typeof(MethodTargetStrategyVariableFactory),
-                this.GetType(),
+                GetType(),
                 classScope);
             method.Block
-                .DeclareVar<MethodTargetStrategyVariableFactory>(
-                    "target",
-                    NewInstance(typeof(MethodTargetStrategyVariableFactory)))
+                .DeclareVarNewInstance<MethodTargetStrategyVariableFactory>("target")
                 .SetProperty(
                     Ref("target"),
                     "Variable",

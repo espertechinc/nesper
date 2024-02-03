@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -38,6 +38,11 @@ namespace com.espertech.esper.common.@internal.epl.index.hash
                 : null;
         }
 
+        public override ISet<EventBean> LookupFAF(object key)
+        {
+            return Lookup(key);
+        }
+
         public override int NumKeys => _propertyIndex.Count;
 
         public override object Index => _propertyIndex;
@@ -56,13 +61,13 @@ namespace com.espertech.esper.common.@internal.epl.index.hash
             exprEvaluatorContext.InstrumentationProvider.QIndexAddRemove(this, newData, oldData);
 
             if (oldData != null) {
-                foreach (EventBean theEvent in oldData) {
+                foreach (var theEvent in oldData) {
                     Remove(theEvent, exprEvaluatorContext);
                 }
             }
 
             if (newData != null) {
-                foreach (EventBean theEvent in newData) {
+                foreach (var theEvent in newData) {
                     Add(theEvent, exprEvaluatorContext);
                 }
             }
@@ -75,10 +80,10 @@ namespace com.espertech.esper.common.@internal.epl.index.hash
             ExprEvaluatorContext exprEvaluatorContext)
         {
             var key = GetKey(theEvent);
-            
+
             var existing = _propertyIndex.Push(key, theEvent);
             if (existing != null && !existing.Equals(theEvent)) {
-                throw HandleUniqueIndexViolation(base.Factory.Organization.IndexName, key);
+                throw HandleUniqueIndexViolation(Factory.Organization.IndexName, key);
             }
         }
 
@@ -131,7 +136,7 @@ namespace com.espertech.esper.common.@internal.epl.index.hash
             string indexName,
             object key)
         {
-            string indexNameDisplay = indexName == null ? "" : " '" + indexName + "'";
+            var indexNameDisplay = indexName == null ? "" : " '" + indexName + "'";
             throw new EPException(
                 "Unique index violation, index" +
                 indexNameDisplay +

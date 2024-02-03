@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.inner
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            object array = rootEvaluator.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+            var array = rootEvaluator.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
             return CollectionUtil.ArrayToCollectionAllowNull<object>(array);
         }
 
@@ -43,7 +43,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.inner
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            Type evaluationType = forge.rootForge.EvaluationType;
+            var evaluationType = forge.rootForge.EvaluationType;
             return CollectionUtil.ArrayToCollectionAllowNullCodegen(
                 codegenMethodScope,
                 evaluationType,

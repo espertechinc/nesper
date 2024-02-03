@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.propertydot
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            EventBean @event = eventsPerStream[forge.StreamId];
+            var @event = eventsPerStream[forge.StreamId];
             if (@event == null) {
                 return null;
             }
@@ -52,13 +52,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.propertydot
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenMethod methodNode = codegenMethodScope.MakeChild(
+            var methodNode = codegenMethodScope.MakeChild(
                 forge.EvaluationType,
                 typeof(PropertyDotNonLambdaIndexedForgeEval),
                 codegenClassScope);
 
-            CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(methodNode);
-            Type evaluationType = forge.ParamForge.EvaluationType;
+            var refEPS = exprSymbol.GetAddEps(methodNode);
+            var evaluationType = forge.ParamForge.EvaluationType;
             methodNode.Block
                 .DeclareVar<EventBean>("@event", ArrayAtIndex(refEPS, Constant(forge.StreamId)))
                 .IfRefNullReturnNull("@event")

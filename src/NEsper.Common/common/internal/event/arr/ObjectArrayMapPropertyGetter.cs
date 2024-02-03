@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -46,21 +46,21 @@ namespace com.espertech.esper.common.@internal.@event.arr
         public object GetObjectArray(object[] array)
         {
             var valueTopObj = array[index];
-            if (!(valueTopObj is Map)) {
+            if (!(valueTopObj is Map obj)) {
                 return null;
             }
 
-            return getter.GetMap((Map) valueTopObj);
+            return getter.GetMap(obj);
         }
 
         public bool IsObjectArrayExistsProperty(object[] array)
         {
             var valueTopObj = array[index];
-            if (!(valueTopObj is Map)) {
+            if (!(valueTopObj is Map obj)) {
                 return false;
             }
 
-            return getter.IsMapExistsProperty((Map) valueTopObj);
+            return getter.IsMapExistsProperty(obj);
         }
 
         public object Get(EventBean eventBean)
@@ -144,9 +144,9 @@ namespace com.espertech.esper.common.@internal.@event.arr
                 Cast(typeof(Map), Ref("valueTopObj")),
                 codegenMethodScope,
                 codegenClassScope);
-            
+
             return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
-                .AddParam(typeof(object[]), "array")
+                .AddParam<object[]>("array")
                 .Block
                 .DeclareVar<object>("valueTopObj", ArrayAtIndex(Ref("array"), Constant(index)))
                 .IfRefNotTypeReturnConst("valueTopObj", typeof(Map), null)
@@ -158,7 +158,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
             CodegenClassScope codegenClassScope)
         {
             return codegenMethodScope.MakeChild(typeof(bool), GetType(), codegenClassScope)
-                .AddParam(typeof(object[]), "array")
+                .AddParam<object[]>("array")
                 .Block
                 .DeclareVar<object>("valueTopObj", ArrayAtIndex(Ref("array"), Constant(index)))
                 .IfRefNotTypeReturnConst("valueTopObj", typeof(Map), false)

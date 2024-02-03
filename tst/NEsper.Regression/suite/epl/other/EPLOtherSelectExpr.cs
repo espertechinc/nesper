@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-using System.Reflection;
 
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
@@ -17,25 +16,24 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
-
-using DescriptionAttribute = com.espertech.esper.common.client.annotation.DescriptionAttribute;
+using NUnit.Framework.Legacy;
 using SupportBeanComplexProps = com.espertech.esper.regressionlib.support.bean.SupportBeanComplexProps;
 
 namespace com.espertech.esper.regressionlib.suite.epl.other
 {
     public class EPLOtherSelectExpr
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
+#if REGRESSION_EXECUTIONS
             WithPrecedenceNoColumnName(execs);
             WithGraphSelect(execs);
             WithKeywordsAllowed(execs);
             WithEscapeString(execs);
             WithGetEventType(execs);
-            WithWindowStats(execs);
+            With(WindowStats)(execs);
+#endif
             return execs;
         }
 
@@ -81,24 +79,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             return execs;
         }
 
-        private static void SendEvent(
-            RegressionEnvironment env,
-            string s,
-            bool b,
-            int i,
-            float f1,
-            float f2)
-        {
-            var bean = new SupportBean();
-            bean.TheString = s;
-            bean.BoolBoxed = b;
-            bean.IntPrimitive = i;
-            bean.FloatPrimitive = f1;
-            bean.FloatBoxed = f2;
-            env.SendEventBean(bean);
-        }
-
-        internal class EPLOtherPrecedenceNoColumnName : RegressionExecution
+        private class EPLOtherPrecedenceNoColumnName : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
@@ -113,37 +94,40 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 string expectedColumn,
                 object value)
             {
-                var epl = "@Name('s0') select " + selectColumn + " from SupportBean";
+                var epl = "@name('s0') select " + selectColumn + " from SupportBean";
                 env.CompileDeploy(epl).AddListener("s0");
-                if (!env.Statement("s0").EventType.PropertyNames[0].Equals(expectedColumn)) {
-                    Assert.Fail(
-                        "Expected '" + expectedColumn + "' but was " + env.Statement("s0").EventType.PropertyNames[0]);
-                }
+                env.AssertStatement(
+                    "s0",
+                    statement => {
+                        if (!statement.EventType.PropertyNames[0].Equals(expectedColumn)) {
+                            Assert.Fail(
+                                "Expected '" + expectedColumn + "' but was " + statement.EventType.PropertyNames[0]);
+                        }
+                    });
 
                 env.SendEventBean(new SupportBean("E1", 1));
-                var @event = env.Listener("s0").AssertOneGetNewAndReset();
-                Assert.AreEqual(value, @event.Get(expectedColumn));
+                env.AssertEqualsNew("s0", expectedColumn, value);
                 env.UndeployAll();
             }
         }
 
-        internal class EPLOtherGraphSelect : RegressionExecution
+        private class EPLOtherGraphSelect : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                env.CompileDeploy("insert into MyStream select Nested from SupportBeanComplexProps", path);
-                var epl = "@Name('s0') select Nested.NestedValue, Nested.NestedNested.NestedNestedValue from MyStream";
+                env.CompileDeploy("@public insert into MyStream select Nested from SupportBeanComplexProps", path);
+                var epl = "@name('s0') select Nested.NestedValue, Nested.NestedNested.NestedNestedValue from MyStream";
                 env.CompileDeploy(epl, path).AddListener("s0");
 
                 env.SendEventBean(SupportBeanComplexProps.MakeDefaultBean());
-                Assert.IsNotNull(env.Listener("s0").AssertOneGetNewAndReset());
+                env.AssertEventNew("s0", @event => { });
 
                 env.UndeployAll();
             }
         }
 
-        internal class EPLOtherKeywordsAllowed : RegressionExecution
+        private class EPLOtherKeywordsAllowed : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
@@ -158,37 +142,45 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     .AddListener("s0");
 
                 env.SendEventBean(new SupportBeanKeywords());
-                EPAssertionUtil.AssertEqualsExactOrder(env.Statement("s0").EventType.PropertyNames, fields);
+                env.AssertStatement(
+                    "s0",
+                    statement => EPAssertionUtil.AssertEqualsExactOrder(
+                        statement.EventType.PropertyNames,
+                        fields));
 
-                var theEvent = env.Listener("s0").AssertOneGetNewAndReset();
-
-                var fieldsArr = fields;
-                foreach (var aFieldsArr in fieldsArr) {
-                    Assert.AreEqual(1, theEvent.Get(aFieldsArr));
-                }
-
+                env.AssertEventNew(
+                    "s0",
+                    theEvent => {
+                        var fieldsArr = fields;
+                        foreach (var aFieldsArr in fieldsArr) {
+                            ClassicAssert.AreEqual(1, theEvent.Get(aFieldsArr));
+                        }
+                    });
                 env.UndeployAll();
 
                 env.CompileDeploy(
-                    "@Name('s0') select Escape as Stddev, count(*) as Count, Last from SupportBeanKeywords");
+                    "@name('s0') select Escape as Stddev, count(*) as Count, Last from SupportBeanKeywords");
                 env.AddListener("s0");
                 env.SendEventBean(new SupportBeanKeywords());
 
-                theEvent = env.Listener("s0").AssertOneGetNewAndReset();
-                Assert.AreEqual(1, theEvent.Get("Stddev"));
-                Assert.AreEqual(1L, theEvent.Get("Count"));
-                Assert.AreEqual(1, theEvent.Get("Last"));
+                env.AssertEventNew(
+                    "s0",
+                    theEvent => {
+                        ClassicAssert.AreEqual(1, theEvent.Get("Stddev"));
+                        ClassicAssert.AreEqual(1L, theEvent.Get("Count"));
+                        ClassicAssert.AreEqual(1, theEvent.Get("Last"));
+                    });
 
                 env.UndeployAll();
             }
         }
 
-        internal class EPLOtherEscapeString : RegressionExecution
+        private class EPLOtherEscapeString : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 // The following EPL syntax compiles but fails to match a string "A'B", we are looking into:
-                // env.CompileDeploy("@Name('s0') select * from SupportBean(string='A\\\'B')");
+                // env.compileDeploy("@name('s0') select * from SupportBean(string='A\\\'B')");
 
                 TryEscapeMatch(env, "A'B", "\"A'B\""); // opposite quotes
                 TryEscapeMatch(env, "A'B", "'A\\'B'"); // escape '
@@ -198,21 +190,26 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 TryEscapeMatch(env, "A\"B", "'A\\\"B'"); // escape "
                 TryEscapeMatch(env, "A\"B", "'A\\u0022B'"); // unicode
 
-                env.CompileDeploy("@Name('A\\\'B') @Description(\"A\\\"B\") select * from SupportBean");
-                Assert.AreEqual("A\'B", env.Statement("A\'B").Name);
-                var desc = (DescriptionAttribute) env.Statement("A\'B").Annotations[1];
-                Assert.AreEqual("A\"B", desc.Value);
+                env.CompileDeploy("@name('A\\\'B') @Description(\"A\\\"B\") select * from SupportBean");
+                env.AssertStatement(
+                    "A\'B",
+                    statement => {
+                        ClassicAssert.AreEqual("A\'B", statement.Name);
+                        var desc = (com.espertech.esper.common.client.annotation.DescriptionAttribute)
+                            statement.Annotations[1];
+                        ClassicAssert.AreEqual("A\"B", desc.Value);
+                    });
                 env.UndeployAll();
 
                 env.CompileDeploy(
-                    "@Name('s0') select 'Volume' as field1, \"sleep\" as field2, \"\\u0041\" as unicodeA from SupportBean");
+                    "@name('s0') select 'Volume' as field1, \"sleep\" as field2, \"\\u0041\" as unicodeA from SupportBean");
                 env.AddListener("s0");
 
                 env.SendEventBean(new SupportBean());
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    new[] {"field1", "field2", "unicodeA"},
-                    new object[] {"Volume", "sleep", "A"});
+                env.AssertPropsNew(
+                    "s0",
+                    new string[] { "field1", "field2", "unicodeA" },
+                    new object[] { "Volume", "sleep", "A" });
                 env.UndeployAll();
 
                 TryStatementMatch(env, "John's", "select * from SupportBean(TheString='John\\'s')");
@@ -234,12 +231,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 string property,
                 string escaped)
             {
-                var epl = "@Name('s0') select * from SupportBean(TheString=" + escaped + ")";
+                var epl = "@name('s0') select * from SupportBean(TheString=" + escaped + ")";
                 var text = "trying >" + escaped + "< (" + escaped.Length + " chars) EPL " + epl;
-                log.Info("tryEscapeMatch for " + text);
+                Log.Info("tryEscapeMatch for " + text);
                 env.CompileDeploy(epl).AddListener("s0");
                 env.SendEventBean(new SupportBean(property, 1));
-                Assert.AreEqual(env.Listener("s0").AssertOneGetNewAndReset().Get("IntPrimitive"), 1);
+                env.AssertEqualsNew("s0", "IntPrimitive", 1);
                 env.UndeployAll();
             }
 
@@ -249,60 +246,87 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 string epl)
             {
                 var text = "trying EPL " + epl;
-                log.Info("tryEscapeMatch for " + text);
-                env.CompileDeploy("@Name('s0') " + epl).AddListener("s0");
+                Log.Info("tryEscapeMatch for " + text);
+                env.CompileDeploy("@name('s0') " + epl).AddListener("s0");
                 env.SendEventBean(new SupportBean(property, 1));
-                Assert.AreEqual(env.Listener("s0").AssertOneGetNewAndReset().Get("IntPrimitive"), 1);
+                env.AssertEqualsNew("s0", "IntPrimitive", 1);
                 env.UndeployAll();
             }
         }
 
-        internal class EPLOtherGetEventType : RegressionExecution
+        private class EPLOtherGetEventType : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@Name('s0') select TheString, BoolBoxed aBool, 3*IntPrimitive, FloatBoxed+FloatPrimitive result" +
+                    "@name('s0') select TheString, BoolBoxed aBool, 3*IntPrimitive, FloatBoxed+FloatPrimitive result" +
                     " from SupportBean#length(3) " +
                     " where BoolBoxed = true";
                 env.CompileDeploy(epl).AddListener("s0");
 
-                var type = env.Statement("s0").EventType;
-                log.Debug(".testGetEventType properties=" + type.PropertyNames.RenderAny());
-                EPAssertionUtil.AssertEqualsAnyOrder(
-                    type.PropertyNames,
-                    new[] {"3*IntPrimitive", "TheString", "result", "aBool"});
-                Assert.AreEqual(typeof(string), type.GetPropertyType("TheString"));
-                Assert.AreEqual(typeof(bool?), type.GetPropertyType("aBool"));
-                Assert.AreEqual(typeof(float?), type.GetPropertyType("result"));
-                Assert.AreEqual(typeof(int?), type.GetPropertyType("3*IntPrimitive"));
+                env.AssertStatement(
+                    "s0",
+                    statement => {
+                        var type = statement.EventType;
+                        Log.Debug(".testGetEventType properties=" + type.PropertyNames.RenderAny());
+                        EPAssertionUtil.AssertEqualsAnyOrder(
+                            type.PropertyNames,
+                            new string[] { "3*IntPrimitive", "TheString", "result", "aBool" });
+                        ClassicAssert.AreEqual(typeof(string), type.GetPropertyType("TheString"));
+                        ClassicAssert.AreEqual(typeof(bool?), type.GetPropertyType("aBool"));
+                        ClassicAssert.AreEqual(typeof(float?), type.GetPropertyType("result"));
+                        ClassicAssert.AreEqual(typeof(int?), type.GetPropertyType("3*IntPrimitive"));
+                    });
 
                 env.UndeployAll();
             }
         }
 
-        internal class EPLOtherWindowStats : RegressionExecution
+        private class EPLOtherWindowStats : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@Name('s0') select TheString, BoolBoxed as aBool, 3*IntPrimitive, FloatBoxed+FloatPrimitive as result" +
+                    "@name('s0') select TheString, BoolBoxed as aBool, 3*IntPrimitive, FloatBoxed+FloatPrimitive as result" +
                     " from SupportBean#length(3) " +
                     " where BoolBoxed = true";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendEvent(env, "a", false, 0, 0, 0);
                 SendEvent(env, "b", false, 0, 0, 0);
-                Assert.IsTrue(env.Listener("s0").LastNewData == null);
+                env.AssertListener("s0", listener => ClassicAssert.IsNull(listener.LastNewData));
                 SendEvent(env, "c", true, 3, 10, 20);
 
-                var received = env.Listener("s0").GetAndResetLastNewData()[0];
-                Assert.AreEqual("c", received.Get("TheString"));
-                Assert.AreEqual(true, received.Get("aBool"));
-                Assert.AreEqual(30f, received.Get("result"));
+                env.AssertListener(
+                    "s0",
+                    listener => {
+                        var received = listener.GetAndResetLastNewData()[0];
+                        ClassicAssert.AreEqual("c", received.Get("TheString"));
+                        ClassicAssert.AreEqual(true, received.Get("aBool"));
+                        ClassicAssert.AreEqual(30f, received.Get("result"));
+                    });
 
                 env.UndeployAll();
             }
         }
+
+        private static void SendEvent(
+            RegressionEnvironment env,
+            string s,
+            bool b,
+            int i,
+            float f1,
+            float f2)
+        {
+            var bean = new SupportBean();
+            bean.TheString = s;
+            bean.BoolBoxed = b;
+            bean.IntPrimitive = i;
+            bean.FloatPrimitive = f1;
+            bean.FloatBoxed = f2;
+            env.SendEventBean(bean);
+        }
+
+        private static readonly ILog Log = LogManager.GetLogger(typeof(EPLOtherSelectExpr));
     }
 } // end of namespace

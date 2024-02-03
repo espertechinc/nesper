@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -44,14 +44,14 @@ namespace com.espertech.esper.common.@internal.view.expression
             this.factory = factory;
             this.viewUpdatedCollection = viewUpdatedCollection;
             this.builtinEventProps = builtinEventProps;
-            eventsPerStream = new EventBean[] {null, builtinEventProps};
+            eventsPerStream = new EventBean[] { null, builtinEventProps };
             this.agentInstanceContext = agentInstanceContext.AgentInstanceContext;
 
             if (factory.Variables != null && factory.Variables.Length > 0) {
                 foreach (var variable in factory.Variables) {
                     var variableDepId = variable.DeploymentId;
                     var variableName = variable.MetaData.VariableName;
-                    int agentInstanceId = agentInstanceContext.AgentInstanceId;
+                    var agentInstanceId = agentInstanceContext.AgentInstanceId;
                     agentInstanceContext.StatementContext.VariableManagementService.RegisterCallback(
                         variable.DeploymentId,
                         variableName,
@@ -90,8 +90,7 @@ namespace com.espertech.esper.common.@internal.view.expression
             if (factory.AggregationServiceFactory != null) {
                 aggregationService = factory.AggregationServiceFactory.MakeService(
                     agentInstanceContext.AgentInstanceContext,
-                    agentInstanceContext.ImportService,
-                    false,
+                    factory.StreamNumber,
                     null,
                     null);
             }

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -118,10 +118,10 @@ namespace com.espertech.esper.compiler.@internal.parse
         {
             if (p != null)
             {
-                if (!p.Text.ToLowerInvariant().Equals(ClassIdentifierWArray.PRIMITIVE_KEYWORD))
+                if (!p.Text.Equals(ClassDescriptor.PRIMITIVE_KEYWORD, StringComparison.InvariantCultureIgnoreCase))
                 {
                     throw ASTWalkException.From(
-                        "Column type keyword '" + p.Text + "' not recognized, expecting '[" + ClassIdentifierWArray.PRIMITIVE_KEYWORD + "]'");
+                        "Column type keyword '" + p.Text + "' not recognized, expecting '[" + ClassDescriptor.PRIMITIVE_KEYWORD + "]'");
                 }
 
                 return true;

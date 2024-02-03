@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -94,33 +94,30 @@ namespace com.espertech.esper.common.@internal.@event.xml
         public object Get(EventBean eventBean)
         {
             var result = eventBean.Underlying;
-            if (!(result is XmlNode)) {
+            if (!(result is XmlNode node)) {
                 return null;
             }
 
-            var node = (XmlNode) result;
             return GetValueAsNode(node);
         }
 
         public bool IsExistsProperty(EventBean eventBean)
         {
             var result = eventBean.Underlying;
-            if (!(result is XmlNode)) {
+            if (!(result is XmlNode node)) {
                 return false;
             }
 
-            var node = (XmlNode) result;
             return GetValueAsNode(node) != null;
         }
 
         public object GetFragment(EventBean eventBean)
         {
             var result = eventBean.Underlying;
-            if (!(result is XmlNode)) {
+            if (!(result is XmlNode node)) {
                 return null;
             }
 
-            var node = (XmlNode) result;
             return GetValueAsFragment(node);
         }
 
@@ -204,7 +201,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
                 typeof(FragmentFactory),
                 fragmentFactory.Make(codegenClassScope.NamespaceScope.InitMethod, codegenClassScope));
             var method = codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
-                .AddParam(typeof(XmlNode), "node");
+                .AddParam<XmlNode>("node");
             method.Block
                 .DeclareVar<XmlNode>(
                     "result",

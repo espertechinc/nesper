@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -32,31 +32,35 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
         private readonly BeanEventTypeFactory _beanEventTypeFactory;
         private readonly EventBeanTypedEventFactory _eventBeanTypedEventFactory;
         private readonly Type _fragmentClassType;
-        private bool _isFragmentable;
         private readonly bool _isArray;
         private readonly bool _isIterable;
         private volatile BeanEventType _fragmentEventType;
+        private bool _isFragmentable;
+        private readonly Type _returnType;
+
+        public bool IsFragmentable => _isFragmentable;
 
         public BaseNativePropertyGetter(
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
             BeanEventTypeFactory beanEventTypeFactory,
-            Type returnType,
-            Type genericType)
+            Type type)
         {
             _eventBeanTypedEventFactory = eventBeanTypedEventFactory;
             _beanEventTypeFactory = beanEventTypeFactory;
-            if (returnType.IsArray) {
-                _fragmentClassType = returnType.GetElementType();
+            _returnType = type;
+
+            if (type.IsArray) {
+                _fragmentClassType = type.GetElementType();
                 _isArray = true;
                 _isIterable = false;
             }
-            else if (returnType.IsGenericEnumerable()) {
-                _fragmentClassType = genericType;
+            else if (type.IsGenericEnumerable()) {
+                _fragmentClassType = type.GetComponentType();
                 _isArray = false;
                 _isIterable = true;
             }
             else {
-                _fragmentClassType = returnType;
+                _fragmentClassType = type;
                 _isArray = false;
                 _isIterable = false;
             }
@@ -66,9 +70,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 
         public abstract Type TargetType { get; }
 
-        public abstract Type BeanPropType { get; }
-
-        public bool IsFragmentable => _isFragmentable;
+        public virtual Type BeanPropType => _returnType;
 
         public object GetFragment(EventBean eventBean)
         {
@@ -85,28 +87,28 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             return GetFragmentFromObject(@object);
         }
 
-        public object GetFragmentFromValue(object valueReturnedByGet)
-        {
-            DetermineFragmentable();
-            if (!_isFragmentable) {
-                return null;
-            }
+        public abstract object Get(EventBean eventBean);
+        public abstract bool IsExistsProperty(EventBean eventBean);
 
-            return GetFragmentFromObject(valueReturnedByGet);
-        }
+        public abstract CodegenExpression EventBeanGetCodegen(
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope);
 
-        private object GetFragmentFromObject(object value)
-        {
-            if (_isArray) {
-                return ToFragmentArray((object[]) value, _fragmentEventType, _eventBeanTypedEventFactory);
-            }
-            else if (_isIterable) {
-                return ToFragmentIterable(value, _fragmentEventType, _eventBeanTypedEventFactory);
-            }
-            else {
-                return _eventBeanTypedEventFactory.AdapterForTypedObject(value, _fragmentEventType);
-            }
-        }
+        public abstract CodegenExpression EventBeanExistsCodegen(
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope);
+
+        public abstract CodegenExpression UnderlyingGetCodegen(
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope);
+
+        public abstract CodegenExpression UnderlyingExistsCodegen(
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope);
 
         public CodegenExpression EventBeanFragmentCodegen(
             CodegenExpression beanExpression,
@@ -137,28 +139,28 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             return LocalMethod(GetFragmentCodegen(codegenMethodScope, codegenClassScope), underlyingExpression);
         }
 
-        public abstract object Get(EventBean eventBean);
-        public abstract bool IsExistsProperty(EventBean eventBean);
+        public object GetFragmentFromValue(object valueReturnedByGet)
+        {
+            DetermineFragmentable();
+            if (!_isFragmentable) {
+                return null;
+            }
 
-        public abstract CodegenExpression EventBeanGetCodegen(
-            CodegenExpression beanExpression,
-            CodegenMethodScope codegenMethodScope,
-            CodegenClassScope codegenClassScope);
+            return GetFragmentFromObject(valueReturnedByGet);
+        }
 
-        public abstract CodegenExpression EventBeanExistsCodegen(
-            CodegenExpression beanExpression,
-            CodegenMethodScope codegenMethodScope,
-            CodegenClassScope codegenClassScope);
+        private object GetFragmentFromObject(object value)
+        {
+            if (_isArray) {
+                return ToFragmentArray((object[])value, _fragmentEventType, _eventBeanTypedEventFactory);
+            }
 
-        public abstract CodegenExpression UnderlyingGetCodegen(
-            CodegenExpression underlyingExpression,
-            CodegenMethodScope codegenMethodScope,
-            CodegenClassScope codegenClassScope);
+            if (_isIterable) {
+                return ToFragmentIterable(value, _fragmentEventType, _eventBeanTypedEventFactory);
+            }
 
-        public abstract CodegenExpression UnderlyingExistsCodegen(
-            CodegenExpression underlyingExpression,
-            CodegenMethodScope codegenMethodScope,
-            CodegenClassScope codegenClassScope);
+            return _eventBeanTypedEventFactory.AdapterForTypedObject(value, _fragmentEventType);
+        }
 
         /// <summary>
         ///     NOTE: Code-generation-invoked method, method name and parameter order matters
@@ -167,7 +169,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
         /// <param name="fragmentEventType">fragment type</param>
         /// <param name="eventBeanTypedEventFactory">event adapters</param>
         /// <returns>array</returns>
-        public static object ToFragmentArray(
+        public static EventBean[] ToFragmentArray(
             object[] objectArray,
             BeanEventType fragmentEventType,
             EventBeanTypedEventFactory eventBeanTypedEventFactory)
@@ -190,7 +192,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             }
 
             if (countFilled == 0) {
-                return new EventBean[0];
+                return Array.Empty<EventBean>();
             }
 
             var returnVal = new EventBean[countFilled];
@@ -219,9 +221,10 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             var isArray = false;
             var objectType = @object.GetType();
             if (objectType.IsArray) {
-                if (objectType.GetElementType().IsFragmentableType()) {
+                var componentType = objectType.GetElementType();
+                if (componentType.IsFragmentableType()) {
                     isArray = true;
-                    fragmentEventType = beanEventTypeFactory.GetCreateBeanType(objectType.GetElementType(), false);
+                    fragmentEventType = beanEventTypeFactory.GetCreateBeanType(componentType, false);
                 }
             }
             else {
@@ -235,7 +238,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             }
 
             if (isArray) {
-                var objectArray = (Array) @object;
+                var objectArray = (Array)@object;
                 var len = objectArray.Length;
                 var events = new EventBean[len];
                 var countFilled = 0;
@@ -255,7 +258,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
                 }
 
                 if (countFilled == 0) {
-                    return new EventBean[0];
+                    return Array.Empty<EventBean>();
                 }
 
                 var returnVal = new EventBean[countFilled];
@@ -274,7 +277,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
         /// <param name="fragmentEventType">type</param>
         /// <param name="eventBeanTypedEventFactory">factory for event beans and event types</param>
         /// <returns>fragment</returns>
-        public static object ToFragmentIterable(
+        public static EventBean[] ToFragmentIterable(
             object @object,
             BeanEventType fragmentEventType,
             EventBeanTypedEventFactory eventBeanTypedEventFactory)
@@ -285,7 +288,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 
             var enumerator = enumerable.GetEnumerator();
             if (!enumerator.MoveNext()) {
-                return new EventBean[0];
+                return Array.Empty<EventBean>();
             }
 
             var events = new ArrayDeque<EventBean>();
@@ -312,7 +315,8 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
                     typeof(BeanEventType),
                     EventTypeUtility.ResolveTypeCodegen(_fragmentEventType, EPStatementInitServicesConstants.REF)));
 
-            var block = codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
+            var block = codegenMethodScope
+                .MakeChild(typeof(object), GetType(), codegenClassScope)
                 .AddParam(TargetType, "underlying")
                 .Block
                 .DeclareVar(
@@ -333,7 +337,12 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 
             if (_isIterable) {
                 return block.MethodReturn(
-                    StaticMethod(typeof(BaseNativePropertyGetter), "ToFragmentIterable", Ref("@object"), mtype, msvc));
+                    StaticMethod(
+                        typeof(BaseNativePropertyGetter),
+                        "ToFragmentIterable",
+                        Ref("@object"),
+                        mtype,
+                        msvc));
             }
 
             return block.MethodReturn(ExprDotMethod(msvc, "AdapterForTypedObject", Ref("@object"), mtype));

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -34,13 +34,13 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             }
 
             // add one time period
-            DateTimeEx work = reference.Clone();
+            var work = reference.Clone();
             if (DEBUG && Log.IsDebugEnabled) {
                 Log.Debug("Work date is " + work);
             }
 
             CalendarPlusMinusForgeOp.ActionSafeOverflow(work, 1, timePeriod);
-            long inMillis = timeAbacus.DateTimeGet(work, remainder);
+            var inMillis = timeAbacus.DateTimeGet(work, remainder);
             if (inMillis > currentTime) {
                 return new CalendarOpPlusFastAddResult(1, work);
             }
@@ -52,24 +52,24 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             long factor = 1;
 
             // determine multiplier
-            long refTime = timeAbacus.DateTimeGet(reference, remainder);
-            long deltaCurrentToStart = currentTime - refTime;
-            long deltaAddedOne = timeAbacus.DateTimeGet(work, remainder) - refTime;
-            double multiplierDbl = (deltaCurrentToStart / deltaAddedOne) - 1;
-            var multiplierRoundedLong = (long) multiplierDbl;
+            var refTime = timeAbacus.DateTimeGet(reference, remainder);
+            var deltaCurrentToStart = currentTime - refTime;
+            var deltaAddedOne = timeAbacus.DateTimeGet(work, remainder) - refTime;
+            double multiplierDbl = deltaCurrentToStart / deltaAddedOne - 1;
+            var multiplierRoundedLong = (long)multiplierDbl;
 
             // handle integer max
-            while (multiplierRoundedLong > Int32.MaxValue) {
-                CalendarPlusMinusForgeOp.ActionSafeOverflow(work, Int32.MaxValue, timePeriod);
-                factor += Int32.MaxValue;
-                multiplierRoundedLong -= Int32.MaxValue;
+            while (multiplierRoundedLong > int.MaxValue) {
+                CalendarPlusMinusForgeOp.ActionSafeOverflow(work, int.MaxValue, timePeriod);
+                factor += int.MaxValue;
+                multiplierRoundedLong -= int.MaxValue;
                 if (DEBUG && Log.IsDebugEnabled) {
                     Log.Debug("Work date is {0} factor {1}", work, factor);
                 }
             }
 
             // add
-            var multiplierRoundedInt = (int) multiplierRoundedLong;
+            var multiplierRoundedInt = (int)multiplierRoundedLong;
             CalendarPlusMinusForgeOp.ActionSafeOverflow(work, multiplierRoundedInt, timePeriod);
             factor += multiplierRoundedInt;
 

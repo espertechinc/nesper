@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -13,6 +13,7 @@ using com.espertech.esper.common.@internal.supportunit.@event;
 using com.espertech.esper.common.@internal.supportunit.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.epl.expression.ops
 {
@@ -54,31 +55,31 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         {
             var otherRegexpNodeNot = supportExprNodeFactory.MakeRegexpNode(true);
 
-            Assert.IsTrue(regexpNodeNot.EqualsNode(otherRegexpNodeNot, false));
-            Assert.IsFalse(regexpNodeNormal.EqualsNode(otherRegexpNodeNot, false));
+            ClassicAssert.IsTrue(regexpNodeNot.EqualsNode(otherRegexpNodeNot, false));
+            ClassicAssert.IsFalse(regexpNodeNormal.EqualsNode(otherRegexpNodeNot, false));
         }
 
         [Test]
         public void TestEvaluate()
         {
-            Assert.IsFalse((bool) regexpNodeNormal.Forge.ExprEvaluator.Evaluate(MakeEvent("bcd"), false, null));
-            Assert.IsTrue((bool) regexpNodeNormal.Forge.ExprEvaluator.Evaluate(MakeEvent("ab"), false, null));
-            Assert.IsTrue((bool) regexpNodeNot.Forge.ExprEvaluator.Evaluate(MakeEvent("bcd"), false, null));
-            Assert.IsFalse((bool) regexpNodeNot.Forge.ExprEvaluator.Evaluate(MakeEvent("ab"), false, null));
+            ClassicAssert.IsFalse((bool) regexpNodeNormal.Forge.ExprEvaluator.Evaluate(MakeEvent("bcd"), false, null));
+            ClassicAssert.IsTrue((bool) regexpNodeNormal.Forge.ExprEvaluator.Evaluate(MakeEvent("ab"), false, null));
+            ClassicAssert.IsTrue((bool) regexpNodeNot.Forge.ExprEvaluator.Evaluate(MakeEvent("bcd"), false, null));
+            ClassicAssert.IsFalse((bool) regexpNodeNot.Forge.ExprEvaluator.Evaluate(MakeEvent("ab"), false, null));
         }
 
         [Test]
         public void TestGetType()
         {
-            Assert.AreEqual(typeof(bool?), regexpNodeNormal.Type);
-            Assert.AreEqual(typeof(bool?), regexpNodeNot.Type);
+            ClassicAssert.AreEqual(typeof(bool?), regexpNodeNormal.Type);
+            ClassicAssert.AreEqual(typeof(bool?), regexpNodeNot.Type);
         }
 
         [Test]
         public void TestToExpressionString()
         {
-            Assert.AreEqual("s0.TheString regexp \"[a-z][a-z]\"", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(regexpNodeNormal));
-            Assert.AreEqual("s0.TheString not regexp \"[a-z][a-z]\"", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(regexpNodeNot));
+            ClassicAssert.AreEqual("s0.TheString regexp \"[a-z][a-z]\"", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(regexpNodeNormal));
+            ClassicAssert.AreEqual("s0.TheString not regexp \"[a-z][a-z]\"", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(regexpNodeNot));
         }
 
         [Test]

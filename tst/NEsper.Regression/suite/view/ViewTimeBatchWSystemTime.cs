@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -17,6 +17,7 @@ using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.view
 {
@@ -27,19 +28,17 @@ namespace com.espertech.esper.regressionlib.suite.view
         public void Run(RegressionEnvironment env)
         {
             // Set up a 2 second time window
-            var epl = "@Name('s0') select * from SupportMarketDataBean(Symbol='" +
-                      SYMBOL +
-                      "')#time_batch(2)#uni(Volume)";
+            var epl = $"@name('s0') select * from SupportMarketDataBean(Symbol='{SYMBOL}')#time_batch(2)#uni(Volume)";
             env.CompileDeployAddListenerMileZero(epl, "s0");
 
             CheckMeanIterator(env, double.NaN);
-            Assert.IsFalse(env.Listener("s0").IsInvoked);
+            env.AssertListenerNotInvoked("s0");
 
             // Send a couple of events, check mean
             SendEvent(env, SYMBOL, 500);
             SendEvent(env, SYMBOL, 1000);
             CheckMeanIterator(env, double.NaN); // The iterator is still showing no result yet as no batch was released
-            Assert.IsFalse(env.Listener("s0").IsInvoked); // No new data posted to the iterator, yet
+            env.AssertListenerNotInvoked("s0"); // No new data posted to the iterator, yet
 
             // Sleep for 1 seconds
             Sleep(1000);
@@ -48,12 +47,11 @@ namespace com.espertech.esper.regressionlib.suite.view
             SendEvent(env, SYMBOL, 1000);
             SendEvent(env, SYMBOL, 1200);
             CheckMeanIterator(env, double.NaN); // The iterator is still showing no result yet as no batch was released
-            Assert.IsFalse(env.Listener("s0").IsInvoked);
+            env.AssertListenerNotInvoked("s0");
 
             // Sleep for 1.5 seconds, thus triggering a new batch
             Sleep(1500);
             CheckMeanIterator(env, 925); // Now the statistics view received the first batch
-            Assert.IsTrue(env.Listener("s0").IsInvoked); // Listener has been invoked
             CheckMeanListener(env, 925);
 
             // Send more events
@@ -61,7 +59,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             SendEvent(env, SYMBOL, 600);
             SendEvent(env, SYMBOL, 1000);
             CheckMeanIterator(env, 925); // The iterator is still showing the old result as next batch not released
-            Assert.IsFalse(env.Listener("s0").IsInvoked);
+            env.AssertListenerNotInvoked("s0");
 
             // Sleep for 1 seconds
             Sleep(1000);
@@ -69,25 +67,23 @@ namespace com.espertech.esper.regressionlib.suite.view
             // Send more events
             SendEvent(env, SYMBOL, 200);
             CheckMeanIterator(env, 925);
-            Assert.IsFalse(env.Listener("s0").IsInvoked);
+            env.AssertListenerNotInvoked("s0");
 
             // Sleep for 1.5 seconds, thus triggering a new batch
             Sleep(1500);
             CheckMeanIterator(
                 env,
                 2300d / 4d); // Now the statistics view received the second batch, the mean now is over all events
-            Assert.IsTrue(env.Listener("s0").IsInvoked); // Listener has been invoked
             CheckMeanListener(env, 2300d / 4d);
 
             // Send more events
             SendEvent(env, SYMBOL, 1200);
             CheckMeanIterator(env, 2300d / 4d);
-            Assert.IsFalse(env.Listener("s0").IsInvoked);
+            env.AssertListenerNotInvoked("s0");
 
             // Sleep for 2 seconds, no events received anymore
             Sleep(2000);
             CheckMeanIterator(env, 1200); // statistics view received the third batch
-            Assert.IsTrue(env.Listener("s0").IsInvoked); // Listener has been invoked
             CheckMeanListener(env, 1200);
 
             env.UndeployAll();
@@ -106,19 +102,26 @@ namespace com.espertech.esper.regressionlib.suite.view
             RegressionEnvironment env,
             double meanExpected)
         {
-            Assert.IsTrue(env.Listener("s0").LastNewData.Length == 1);
-            var listenerValues = env.Listener("s0").LastNewData[0];
-            CheckValue(listenerValues, meanExpected);
-            env.Listener("s0").Reset();
+            env.AssertListener(
+                "s0",
+                listener => {
+                    ClassicAssert.AreEqual(1, listener.LastNewData.Length);
+                    var listenerValues = listener.LastNewData[0];
+                    CheckValue(listenerValues, meanExpected);
+                    listener.Reset();
+                });
         }
 
         private void CheckMeanIterator(
             RegressionEnvironment env,
             double meanExpected)
         {
-            var iterator = env.Statement("s0").GetEnumerator();
-            CheckValue(iterator.Advance(), meanExpected);
-            Assert.IsTrue(!iterator.MoveNext());
+            env.AssertIterator(
+                "s0",
+                iterator => {
+                    CheckValue(iterator.Advance(), meanExpected);
+                    ClassicAssert.IsFalse(iterator.MoveNext());
+                });
         }
 
         private void CheckValue(
@@ -126,7 +129,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             double avgE)
         {
             var avg = GetDoubleValue(ViewFieldEnum.WEIGHTED_AVERAGE__AVERAGE, values);
-            Assert.IsTrue(DoubleValueAssertionUtil.Equals(avg, avgE, 6));
+            ClassicAssert.IsTrue(DoubleValueAssertionUtil.Equals(avg, avgE, 6));
         }
 
         private double GetDoubleValue(

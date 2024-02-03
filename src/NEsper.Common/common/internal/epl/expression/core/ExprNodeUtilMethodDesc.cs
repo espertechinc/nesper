@@ -1,35 +1,47 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Reflection;
+
 
 namespace com.espertech.esper.common.@internal.epl.expression.core
 {
     public class ExprNodeUtilMethodDesc
     {
+        private readonly bool allConstants;
+        private readonly ExprForge[] childForges;
+        private readonly MethodInfo reflectionMethod;
+        private readonly Type methodTargetType;
+        private readonly bool localInlinedClass;
+
         public ExprNodeUtilMethodDesc(
             bool allConstants,
             ExprForge[] childForges,
             MethodInfo reflectionMethod,
-            bool isLocalInlinedClass)
+            Type methodTargetType,
+            bool localInlinedClass)
         {
-            IsAllConstants = allConstants;
-            ChildForges = childForges;
-            ReflectionMethod = reflectionMethod;
-            IsLocalInlinedClass = isLocalInlinedClass;
+            this.allConstants = allConstants;
+            this.childForges = childForges;
+            this.reflectionMethod = reflectionMethod;
+            this.methodTargetType = methodTargetType;
+            this.localInlinedClass = localInlinedClass;
         }
 
-        public bool IsAllConstants { get; }
+        public bool IsAllConstants => allConstants;
 
-        public MethodInfo ReflectionMethod { get; }
+        public bool IsLocalInlinedClass => localInlinedClass;
 
-        public ExprForge[] ChildForges { get; }
-        
-        public bool IsLocalInlinedClass { get; }
+        public MethodInfo ReflectionMethod => reflectionMethod;
+
+        public ExprForge[] ChildForges => childForges;
+
+        public Type MethodTargetType => methodTargetType;
     }
 } // end of namespace

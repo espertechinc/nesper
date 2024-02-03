@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -28,13 +28,11 @@ namespace com.espertech.esper.common.@internal.epl.lookupsubord
             SubordTableLookupStrategy tableLookupStrategy)
         {
             this.joinExpr = joinExpr;
-            this.eventsPerStream = new EventBean[2];
+            eventsPerStream = new EventBean[2];
             this.tableLookupStrategy = tableLookupStrategy;
         }
 
-        public SubordTableLookupStrategy TableLookupStrategy {
-            get => tableLookupStrategy;
-        }
+        public SubordTableLookupStrategy TableLookupStrategy => tableLookupStrategy;
 
         public EventBean[] Lookup(
             EventBean[] newData,
@@ -44,21 +42,21 @@ namespace com.espertech.esper.common.@internal.epl.lookupsubord
             ISet<EventBean> foundEvents = null;
 
             // For every new event (usually 1)
-            foreach (EventBean newEvent in newData) {
+            foreach (var newEvent in newData) {
                 eventsPerStream[1] = newEvent;
 
                 // use index to find match
-                ICollection<EventBean> matches = tableLookupStrategy.Lookup(eventsPerStream, exprEvaluatorContext);
-                if ((matches == null) || (matches.IsEmpty())) {
+                var matches = tableLookupStrategy.Lookup(eventsPerStream, exprEvaluatorContext);
+                if (matches == null || matches.IsEmpty()) {
                     continue;
                 }
 
                 // evaluate expression
-                IEnumerator<EventBean> eventsIt = matches.GetEnumerator();
+                var eventsIt = matches.GetEnumerator();
                 while (eventsIt.MoveNext()) {
                     eventsPerStream[0] = eventsIt.Current;
 
-                    foreach (EventBean aNewData in newData) {
+                    foreach (var aNewData in newData) {
                         eventsPerStream[1] = aNewData; // Stream 1 events are the originating events (on-delete events)
 
                         var result = joinExpr.Evaluate(eventsPerStream, true, exprEvaluatorContext);
@@ -80,7 +78,7 @@ namespace com.espertech.esper.common.@internal.epl.lookupsubord
                 return null;
             }
 
-            EventBean[] events = foundEvents.ToArray();
+            var events = foundEvents.ToArray();
             exprEvaluatorContext.InstrumentationProvider.AInfraTriggeredLookup(events);
             return events;
         }
@@ -92,7 +90,7 @@ namespace com.espertech.esper.common.@internal.epl.lookupsubord
 
         public string ToQueryPlan()
         {
-            return this.GetType().Name + " " + " strategy " + tableLookupStrategy.ToQueryPlan();
+            return GetType().Name + " " + " strategy " + tableLookupStrategy.ToQueryPlan();
         }
     }
 } // end of namespace

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -16,7 +16,6 @@ namespace com.espertech.esper.common.client
     /// Manifest is part of the <seealso cref="EPCompiled" /> and provides information for the runtime that
     /// allows it to use the byte code.
     /// </summary>
-    [Serializable]
     public class EPCompiledManifest
     {
         private readonly string _compilerVersion;
@@ -37,35 +36,29 @@ namespace com.espertech.esper.common.client
             string queryProviderClassName,
             bool targetHa)
         {
-            this._compilerVersion = compilerVersion;
-            this._moduleProviderClassName = moduleProviderClassName;
-            this._queryProviderClassName = queryProviderClassName;
-            this._targetHA = targetHa;
+            _compilerVersion = compilerVersion;
+            _moduleProviderClassName = moduleProviderClassName;
+            _queryProviderClassName = queryProviderClassName;
+            _targetHA = targetHa;
         }
 
         /// <summary>
         /// Returns the compiler version.
         /// </summary>
         /// <returns>compiler version</returns>
-        public string CompilerVersion {
-            get => _compilerVersion;
-        }
+        public string CompilerVersion => _compilerVersion;
 
         /// <summary>
         /// Returns the class name of the class providing the module, or null for fire-and-forget query
         /// </summary>
         /// <returns>class name</returns>
-        public string ModuleProviderClassName {
-            get => _moduleProviderClassName;
-        }
+        public string ModuleProviderClassName => _moduleProviderClassName;
 
         /// <summary>
         /// Returns the class name of the class providing the fire-and-forget query, or null when this is a module
         /// </summary>
         /// <returns>class name</returns>
-        public string QueryProviderClassName {
-            get => _queryProviderClassName;
-        }
+        public string QueryProviderClassName => _queryProviderClassName;
 
         /// <summary>
         /// Returns true if the compiler targets high-availability.
@@ -93,10 +86,10 @@ namespace com.espertech.esper.common.client
         /// <throws>IOException when an IO exception occurs</throws>
         public static EPCompiledManifest Read(DataInput input)
         {
-            string compilerVersion = input.ReadUTF();
-            string moduleClassName = ReadNullableString(input);
-            string queryClassName = ReadNullableString(input);
-            bool targetHa = input.ReadBoolean();
+            var compilerVersion = input.ReadUTF();
+            var moduleClassName = ReadNullableString(input);
+            var queryClassName = ReadNullableString(input);
+            var targetHa = input.ReadBoolean();
             return new EPCompiledManifest(compilerVersion, moduleClassName, queryClassName, targetHa);
         }
 
@@ -115,7 +108,7 @@ namespace com.espertech.esper.common.client
 
         private static string ReadNullableString(DataInput input)
         {
-            bool hasValue = input.ReadBoolean();
+            var hasValue = input.ReadBoolean();
             if (!hasValue) {
                 return null;
             }

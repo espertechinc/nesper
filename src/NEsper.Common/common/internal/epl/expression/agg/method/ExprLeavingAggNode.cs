@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -32,9 +32,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
             return new AggregationForgeFactoryLeaving(this);
         }
 
-        public override string AggregationFunctionName {
-            get => "leaving";
-        }
+        public override string AggregationFunctionName => "leaving";
 
         public override bool EqualsNodeAggregateMethodOnly(ExprAggregateNode node)
         {

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -17,6 +17,7 @@ using com.espertech.esper.compat.threading.locks;
 using com.espertech.esper.runtime.@internal.support;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 {
@@ -50,7 +51,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
         public void TestClosedRange()
         {
             FilterParamIndexDoubleRangeInverted index = MakeOne("LongBoxed", FilterOperator.NOT_RANGE_CLOSED, testEventType);
-            Assert.AreEqual(FilterOperator.NOT_RANGE_CLOSED, index.FilterOperator);
+            ClassicAssert.AreEqual(FilterOperator.NOT_RANGE_CLOSED, index.FilterOperator);
 
             index.Put(new DoubleRange(2d, 4d), testEvaluators[0]);
             index.Put(new DoubleRange(2d, 5d), testEvaluators[1]);
@@ -135,7 +136,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             index.MatchEvent(testEventBean, matchesList, null);
             for (int i = 0; i < expected.Length; i++)
             {
-                Assert.AreEqual(expected[i], testEvaluators[i].GetAndResetCountInvoked() == 1, "Unexpected result for eval " + i);
+                ClassicAssert.AreEqual(expected[i], testEvaluators[i].GetAndResetCountInvoked() == 1, "Unexpected result for eval " + i);
             }
         }
 

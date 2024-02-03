@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -13,6 +13,7 @@ using com.espertech.esper.common.@internal.supportunit.util;
 using com.espertech.esper.common.@internal.type;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.epl.expression.funcs
 {
@@ -24,10 +25,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         {
             castNodes = new ExprCastNode[2];
 
-            castNodes[0] = new ExprCastNode(new ClassIdentifierWArray("long"));
+            castNodes[0] = new ExprCastNode(new ClassDescriptor("long"));
             castNodes[0].AddChildNode(new SupportExprNode(10L, typeof(long?)));
 
-            castNodes[1] = new ExprCastNode(new ClassIdentifierWArray(typeof(int).FullName));
+            castNodes[1] = new ExprCastNode(new ClassDescriptor(typeof(int).FullName));
             castNodes[1].AddChildNode(new SupportExprNode(0x10, typeof(byte)));
         }
 
@@ -36,9 +37,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         [Test]
         public void TestEquals()
         {
-            Assert.IsFalse(castNodes[0].EqualsNode(new ExprEqualsNodeImpl(true, false), false));
-            Assert.IsFalse(castNodes[0].EqualsNode(castNodes[1], false));
-            Assert.IsFalse(castNodes[0].EqualsNode(new ExprCastNode(new ClassIdentifierWArray(typeof(int).FullName)), false));
+            ClassicAssert.IsFalse(castNodes[0].EqualsNode(new ExprEqualsNodeImpl(true, false), false));
+            ClassicAssert.IsFalse(castNodes[0].EqualsNode(castNodes[1], false));
+            ClassicAssert.IsFalse(castNodes[0].EqualsNode(new ExprCastNode(new ClassDescriptor(typeof(int).FullName)), false));
         }
 
         [Test]
@@ -49,8 +50,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 castNodes[i].Validate(SupportExprValidationContextFactory.MakeEmpty(container));
             }
 
-            Assert.AreEqual(10L, castNodes[0].Forge.ExprEvaluator.Evaluate(null, false, null));
-            Assert.AreEqual(16, castNodes[1].Forge.ExprEvaluator.Evaluate(null, false, null));
+            ClassicAssert.AreEqual(10L, castNodes[0].Forge.ExprEvaluator.Evaluate(null, false, null));
+            ClassicAssert.AreEqual(16, castNodes[1].Forge.ExprEvaluator.Evaluate(null, false, null));
         }
 
         [Test]
@@ -61,21 +62,21 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 castNodes[i].Validate(SupportExprValidationContextFactory.MakeEmpty(container));
             }
 
-            Assert.AreEqual(typeof(long?), castNodes[0].TargetType);
-            Assert.AreEqual(typeof(int?), castNodes[1].TargetType);
+            ClassicAssert.AreEqual(typeof(long?), castNodes[0].TargetType);
+            ClassicAssert.AreEqual(typeof(int?), castNodes[1].TargetType);
         }
 
         [Test]
         public void TestToExpressionString()
         {
             castNodes[0].Validate(SupportExprValidationContextFactory.MakeEmpty(container));
-            Assert.AreEqual("cast(10L,long)", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(castNodes[0]));
+            ClassicAssert.AreEqual("cast(10L,long)", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(castNodes[0]));
         }
 
         [Test]
         public void TestValidate()
         {
-            var castNode = new ExprCastNode(new ClassIdentifierWArray("int"));
+            var castNode = new ExprCastNode(new ClassDescriptor("int"));
 
             // Test too few nodes under this node
             try

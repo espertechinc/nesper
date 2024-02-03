@@ -1,5 +1,5 @@
 ﻿///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -17,7 +17,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Object model of a data flow operator declaration.
     /// </summary>
-    [Serializable]
     public class DataFlowOperator
     {
         private IList<AnnotationPart> annotations;
@@ -51,32 +50,27 @@ namespace com.espertech.esper.common.client.soda
         {
         }
 
-        public IList<AnnotationPart> Annotations
-        {
+        public IList<AnnotationPart> Annotations {
             get => annotations;
             set => annotations = value;
         }
 
-        public string OperatorName
-        {
+        public string OperatorName {
             get => operatorName;
             set => operatorName = value;
         }
 
-        public IList<DataFlowOperatorInput> Input
-        {
+        public IList<DataFlowOperatorInput> Input {
             get => input;
             set => input = value;
         }
 
-        public IList<DataFlowOperatorOutput> Output
-        {
+        public IList<DataFlowOperatorOutput> Output {
             get => output;
             set => output = value;
         }
 
-        public IList<DataFlowOperatorParameter> Parameters
-        {
+        public IList<DataFlowOperatorParameter> Parameters {
             get => parameters;
             set => parameters = value;
         }
@@ -87,16 +81,13 @@ namespace com.espertech.esper.common.client.soda
         {
             writer.Write(operatorName);
 
-            if (!input.IsEmpty())
-            {
+            if (!input.IsEmpty()) {
                 writer.Write("(");
-                string delimiter = "";
-                foreach (DataFlowOperatorInput inputItem in input)
-                {
+                var delimiter = "";
+                foreach (var inputItem in input) {
                     writer.Write(delimiter);
                     WriteInput(inputItem, writer);
-                    if (inputItem.OptionalAsName != null)
-                    {
+                    if (inputItem.OptionalAsName != null) {
                         writer.Write(" as ");
                         writer.Write(inputItem.OptionalAsName);
                     }
@@ -107,12 +98,10 @@ namespace com.espertech.esper.common.client.soda
                 writer.Write(")");
             }
 
-            if (!output.IsEmpty())
-            {
+            if (!output.IsEmpty()) {
                 writer.Write(" -> ");
-                string delimiter = "";
-                foreach (DataFlowOperatorOutput outputItem in output)
-                {
+                var delimiter = "";
+                foreach (var outputItem in output) {
                     writer.Write(delimiter);
                     writer.Write(outputItem.StreamName);
                     WriteTypes(outputItem.TypeInfo, writer);
@@ -120,23 +109,19 @@ namespace com.espertech.esper.common.client.soda
                 }
             }
 
-            if (parameters.IsEmpty())
-            {
+            if (parameters.IsEmpty()) {
                 writer.Write(" {}");
                 formatter.EndDataFlowOperatorDetails(writer);
             }
-            else
-            {
+            else {
                 writer.Write(" {");
                 formatter.BeginDataFlowOperatorDetails(writer);
-                string delimiter = ",";
-                int count = 0;
-                foreach (DataFlowOperatorParameter parameter in parameters)
-                {
+                var delimiter = ",";
+                var count = 0;
+                foreach (var parameter in parameters) {
                     parameter.ToEPL(writer);
                     count++;
-                    if (parameters.Count > count)
-                    {
+                    if (parameters.Count > count) {
                         writer.Write(delimiter);
                     }
 
@@ -152,12 +137,10 @@ namespace com.espertech.esper.common.client.soda
             DataFlowOperatorInput inputItem,
             TextWriter writer)
         {
-            if (inputItem.InputStreamNames.Count > 1)
-            {
-                string delimiterNames = "";
+            if (inputItem.InputStreamNames.Count > 1) {
+                var delimiterNames = "";
                 writer.Write("(");
-                foreach (string name in inputItem.InputStreamNames)
-                {
+                foreach (var name in inputItem.InputStreamNames) {
                     writer.Write(delimiterNames);
                     writer.Write(name);
                     delimiterNames = ", ";
@@ -165,8 +148,7 @@ namespace com.espertech.esper.common.client.soda
 
                 writer.Write(")");
             }
-            else
-            {
+            else {
                 writer.Write(inputItem.InputStreamNames[0]);
             }
         }
@@ -175,15 +157,13 @@ namespace com.espertech.esper.common.client.soda
             ICollection<DataFlowOperatorOutputType> types,
             TextWriter writer)
         {
-            if (types == null || types.IsEmpty())
-            {
+            if (types == null || types.IsEmpty()) {
                 return;
             }
 
             writer.Write("<");
-            string typeDelimiter = "";
-            foreach (DataFlowOperatorOutputType type in types)
-            {
+            var typeDelimiter = "";
+            foreach (var type in types) {
                 writer.Write(typeDelimiter);
                 WriteType(type, writer);
                 typeDelimiter = ",";
@@ -196,8 +176,7 @@ namespace com.espertech.esper.common.client.soda
             DataFlowOperatorOutputType type,
             TextWriter writer)
         {
-            if (type.IsWildcard)
-            {
+            if (type.IsWildcard) {
                 writer.Write('?');
                 return;
             }

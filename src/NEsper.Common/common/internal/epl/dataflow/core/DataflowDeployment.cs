@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -22,7 +22,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.core
             string dataflowName,
             DataflowDesc metadata)
         {
-            DataflowDesc existing = dataflows.Get(dataflowName);
+            var existing = dataflows.Get(dataflowName);
             if (existing != null) {
                 throw new IllegalStateException("Dataflow already found for name '" + dataflowName + "'");
             }
@@ -45,8 +45,6 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.core
             return dataflows.IsEmpty();
         }
 
-        public IDictionary<string, DataflowDesc> Dataflows {
-            get { return dataflows; }
-        }
+        public IDictionary<string, DataflowDesc> Dataflows => dataflows;
     }
 } // end of namespace

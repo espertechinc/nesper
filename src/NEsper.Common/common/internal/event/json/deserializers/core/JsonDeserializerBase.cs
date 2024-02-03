@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -25,9 +25,7 @@ namespace com.espertech.esper.common.@internal.@event.json.deserializers.core
         /// <summary>
         /// Allocates a vanilla json composite object.
         /// </summary>
-        public Func<object> Allocator {
-            get => throw new NotImplementedException();
-        }
+        public Func<object> Allocator => throw new NotImplementedException();
 
         public JsonElement JsonValue { get; set; }
 

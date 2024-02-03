@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -8,7 +8,6 @@
 
 using System.Collections.Generic;
 
-using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
@@ -16,6 +15,9 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
+
+// assertEquals
 
 namespace com.espertech.esper.regressionlib.suite.epl.contained
 {
@@ -24,40 +26,46 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new EPLContainedEventDocSample());
-            execs.Add(new EPLContainedEventIntArray());
+            WithEventDocSample(execs);
+            WithEventIntArray(execs);
+            WithStringArrayWithWhere(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithStringArrayWithWhere(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EPLContainedStringArrayWithWhere());
             return execs;
         }
 
-        private static void AssertCount(
-            RegressionEnvironment env,
-            RegressionPath path,
-            long i)
+        public static IList<RegressionExecution> WithEventIntArray(IList<RegressionExecution> execs = null)
         {
-            Assert.AreEqual(i, env.CompileExecuteFAF("select count(*) as c0 from MyWindow", path).Array[0].Get("c0"));
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLContainedEventIntArray());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithEventDocSample(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLContainedEventDocSample());
+            return execs;
         }
 
         private class EPLContainedStringArrayWithWhere : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
-                string epl = "create schema MyRow(id String);\n" +
-                             "@public @buseventtype create schema MyEvent(idsBefore string[], idsAfter string[]);\n" +
-                             "@Name('s0') select id from MyEvent[select idsBefore, * from idsAfter@type(MyRow)] where id not in (idsBefore);\n";
+                var epl = "create schema MyRow(Id String);\n" +
+                          "@public @buseventtype create schema MyEvent(idsBefore string[], idsAfter string[]);\n" +
+                          "@name('s0') select Id from MyEvent[select idsBefore, * from idsAfter@type(MyRow)] where Id not in (idsBefore);\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
-                AssertSend(env, "A,B,C", "D,E", new object[][] {
-                    new object[] {"D"}, 
-                    new object[] {"E"}
-                });
+                AssertSend(env, "A,B,C", "D,E", new object[][] { new object[] { "D" }, new object[] { "E" } });
                 AssertSend(env, "A,C", "C,A", null);
-                AssertSend(env, "A", "B", new object[][] {
-                    new object[] {"B"}
-                });
-                AssertSend(env, "A,B", "F,B,A", new object[][] {
-                    new object[] {"F"}
-                });
+                AssertSend(env, "A", "B", new object[][] { new object[] { "B" } });
+                AssertSend(env, "A,B", "F,B,A", new object[][] { new object[] { "F" } });
 
                 env.UndeployAll();
             }
@@ -68,46 +76,50 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                 string idsAfterCSV,
                 object[][] expected)
             {
-                var data = CollectionUtil.BuildMap("idsBefore", idsBeforeCSV.SplitCsv(), "idsAfter", idsAfterCSV.SplitCsv());
+                var data = CollectionUtil.BuildMap(
+                    "idsBefore",
+                    idsBeforeCSV.SplitCsv(),
+                    "idsAfter",
+                    idsAfterCSV.SplitCsv());
                 env.SendEventMap(data, "MyEvent");
                 if (expected == null) {
-                    Assert.IsFalse(env.Listener("s0").IsInvokedAndReset());
+                    env.AssertListenerNotInvoked("s0");
                 }
                 else {
-                    EPAssertionUtil.AssertPropsPerRow(env.Listener("s0").GetAndResetLastNewData(), "id".SplitCsv(), expected);
+                    env.AssertPropsPerRowLastNew("s0", "Id".SplitCsv(), expected);
                 }
             }
         }
 
-        internal class EPLContainedEventDocSample : RegressionExecution
+        private class EPLContainedEventDocSample : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "create schema IdContainer(Id int);" +
-                    "create schema MyEvent(Ids int[]);" +
-                    "select * from MyEvent[Ids@type(IdContainer)];",
+                    "@public create schema IdContainer(Id int);" +
+                    "@public create schema MyEvent(ids int[]);" +
+                    "select * from MyEvent[ids@type(IdContainer)];",
                     path);
 
                 env.CompileDeploy(
-                    "create window MyWindow#keepall (Id int);" +
-                    "on MyEvent[Ids@type(IdContainer)] as my_Ids \n" +
+                    "@public create window MyWindow#keepall (Id int);" +
+                    "on MyEvent[ids@type(IdContainer)] as my_ids \n" +
                     "delete from MyWindow my_window \n" +
-                    "where my_Ids.Id = my_window.Id;",
+                    "where my_ids.Id = my_window.Id;",
                     path);
 
                 env.UndeployAll();
             }
         }
 
-        internal class EPLContainedEventIntArray : RegressionExecution
+        private class EPLContainedEventIntArray : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
                 var epl = "create objectarray schema DeleteId(Id int);" +
-                          "create window MyWindow#keepall as SupportBean;" +
+                          "@public create window MyWindow#keepall as SupportBean;" +
                           "insert into MyWindow select * from SupportBean;" +
                           "on SupportBeanArrayCollMap[IntArr@type(DeleteId)] delete from MyWindow where IntPrimitive = Id";
                 env.CompileDeploy(epl, path);
@@ -116,11 +128,22 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                 env.SendEventBean(new SupportBean("E2", 2));
 
                 AssertCount(env, path, 2);
-                env.SendEventBean(new SupportBeanArrayCollMap(new[] {1, 2}));
+                env.SendEventBean(new SupportBeanArrayCollMap(new int[] { 1, 2 }));
                 AssertCount(env, path, 0);
 
                 env.UndeployAll();
             }
+        }
+
+        private static void AssertCount(
+            RegressionEnvironment env,
+            RegressionPath path,
+            long i)
+        {
+            env.AssertThat(
+                () => ClassicAssert.AreEqual(
+                    i,
+                    env.CompileExecuteFAF("select count(*) as c0 from MyWindow", path).Array[0].Get("c0")));
         }
     }
 } // end of namespace

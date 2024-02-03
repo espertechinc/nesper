@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 
@@ -19,6 +20,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.infra.tbl
 {
@@ -27,7 +29,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
     /// </summary>
     public class InfraTableMTUngroupedAccessReadInotTableWriteIterate : RegressionExecution
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
+        }
 
         /// <summary>
         ///     Proof that multiple threads iterating the same statement
@@ -49,7 +56,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             int numSeconds)
         {
             var path = new RegressionPath();
-            var eplCreateVariable = "create table vartotal (S0 sum(int), S1 sum(double), S2 sum(long))";
+            var eplCreateVariable = "@public create table vartotal (S0 sum(int), S1 sum(double), S2 sum(long))";
             env.CompileDeploy(eplCreateVariable, path);
 
             var eplInto = "into table vartotal select " +
@@ -61,7 +68,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             env.SendEventBean(MakeSupportBean("E", 1, 1, 1));
 
             env.CompileDeploy(
-                "@Name('iterate') select vartotal.S0 as c0, vartotal.S1 as c1, vartotal.S2 as c2 from SupportBean_S0#lastevent",
+                "@name('iterate') select vartotal.S0 as c0, vartotal.S1 as c1, vartotal.S2 as c2 from SupportBean_S0#lastevent",
                 path);
             env.SendEventBean(new SupportBean_S0(0));
 
@@ -98,7 +105,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             }
 
             // join
-            log.Info("Waiting for completion");
+            Log.Info("Waiting for completion");
             writeThread.Join();
             foreach (var readThread in readThreads) {
                 readThread.Join();
@@ -107,11 +114,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             env.UndeployAll();
 
             // assert
-            Assert.IsNull(writeRunnable.Exception);
-            Assert.IsTrue(writeRunnable.numEvents > 100);
+            ClassicAssert.IsNull(writeRunnable.Exception);
+            ClassicAssert.IsTrue(writeRunnable.numEvents > 100);
             foreach (var readRunnable in readRunnables) {
-                Assert.IsNull(readRunnable.Exception);
-                Assert.IsTrue(readRunnable.numQueries > 100);
+                ClassicAssert.IsNull(readRunnable.Exception);
+                ClassicAssert.IsTrue(readRunnable.numQueries > 100);
             }
         }
 
@@ -148,7 +155,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
             public void Run()
             {
-                log.Info("Started event send for write");
+                Log.Info("Started event send for write");
 
                 try {
                     while (!shutdown) {
@@ -157,11 +164,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     }
                 }
                 catch (Exception ex) {
-                    log.Error("Exception encountered: " + ex.Message, ex);
+                    Log.Error("Exception encountered: " + ex.Message, ex);
                     exception = ex;
                 }
 
-                log.Info("Completed event send for write");
+                Log.Info("Completed event send for write");
             }
         }
 
@@ -186,26 +193,26 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
             public void Run()
             {
-                log.Info("Started event send for read");
+                Log.Info("Started event send for read");
 
                 try {
                     while (!shutdown) {
                         using (var iterator = iterateStatement.GetSafeEnumerator()) {
                             var @event = iterator.Advance();
                             var c0 = @event.Get("c0").AsInt32();
-                            Assert.AreEqual((double) c0, @event.Get("c1"));
-                            Assert.AreEqual((long) c0, @event.Get("c2"));
+                            ClassicAssert.AreEqual((double)c0, @event.Get("c1"));
+                            ClassicAssert.AreEqual((long)c0, @event.Get("c2"));
                         }
 
                         numQueries++;
                     }
                 }
                 catch (Exception ex) {
-                    log.Error("Exception encountered: " + ex.Message, ex);
+                    Log.Error("Exception encountered: " + ex.Message, ex);
                     exception = ex;
                 }
 
-                log.Info("Completed event send for read");
+                Log.Info("Completed event send for read");
             }
         }
     }

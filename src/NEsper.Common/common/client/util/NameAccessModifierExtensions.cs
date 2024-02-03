@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -61,12 +61,12 @@ namespace com.espertech.esper.common.client.util
         /// <returns>indicator</returns>
         public static bool IsModuleProvidedAccessModifier(this NameAccessModifier value)
         {
-            switch (value)
-            {
+            switch (value) {
                 case NameAccessModifier.PRIVATE:
                 case NameAccessModifier.INTERNAL:
                 case NameAccessModifier.PUBLIC:
                     return true;
+
                 case NameAccessModifier.TRANSIENT:
                 case NameAccessModifier.PRECONFIGURED:
                     return false;
@@ -81,12 +81,12 @@ namespace com.espertech.esper.common.client.util
         /// <returns>indicator</returns>
         public static bool IsNonPrivateNonTransient(this NameAccessModifier value)
         {
-            switch (value)
-            {
+            switch (value) {
                 case NameAccessModifier.TRANSIENT:
                 case NameAccessModifier.PRIVATE:
                 case NameAccessModifier.PRECONFIGURED:
                     return false;
+
                 case NameAccessModifier.INTERNAL:
                 case NameAccessModifier.PUBLIC:
                     return true;

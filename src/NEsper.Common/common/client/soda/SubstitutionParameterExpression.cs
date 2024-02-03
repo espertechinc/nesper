@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Represents a substitution parameter
     /// </summary>
-    [Serializable]
     public class SubstitutionParameterExpression : ExpressionBase
     {
         private string optionalName;
@@ -49,26 +48,20 @@ namespace com.espertech.esper.common.client.soda
             set => optionalName = value;
         }
 
-        public override ExpressionPrecedenceEnum Precedence
-        {
-            get => ExpressionPrecedenceEnum.UNARY;
-        }
+        public override ExpressionPrecedenceEnum Precedence => ExpressionPrecedenceEnum.UNARY;
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             writer.Write("?");
-            if (optionalName != null)
-            {
+            if (optionalName != null) {
                 writer.Write(":");
                 writer.Write(optionalName);
-                if (optionalType != null)
-                {
+                if (optionalType != null) {
                     writer.Write(":");
                     writer.Write(optionalType);
                 }
             }
-            else if (optionalType != null)
-            {
+            else if (optionalType != null) {
                 writer.Write("::");
                 writer.Write(optionalType);
             }
@@ -82,7 +75,6 @@ namespace com.espertech.esper.common.client.soda
         {
             this.optionalName = optionalName;
             return this;
-
         }
 
         /// <summary>
@@ -102,7 +94,6 @@ namespace com.espertech.esper.common.client.soda
         {
             this.optionalType = optionalType;
             return this;
-
         }
     }
 } // end of namespace

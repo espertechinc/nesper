@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections.Generic;
 
 using Avro.Generic;
 
@@ -18,9 +17,6 @@ using com.espertech.esper.compat.datetime;
 using com.espertech.esper.regressionlib.framework;
 
 using NEsper.Avro.Extensions;
-using NEsper.Avro.Util.Support;
-
-using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.expr.datetime
 {
@@ -33,18 +29,15 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             }
 
             // test Bean-type Date-type timestamps
-            var typeName = typeof(SupportBean).FullName;
             var startA = "2002-05-30T09:00:00.000";
-            var epl =
-                $"create schema SupportBeanXXX as {typeName} starttimestamp LongPrimitive endtimestamp LongBoxed;\n" +
-                $"@Name('s0') select a.Get('month') as val0 from SupportBeanXXX a;\n";
-
-            env.CompileDeployWBusPublicType(epl, new RegressionPath()).AddListener("s0");
+            var epl = $"@public @buseventtype create schema SupportBeanXXX as {typeof(SupportBean).FullName} starttimestamp LongPrimitive endtimestamp LongBoxed;\n";
+            epl += "@name('s0') select a.get('month') as val0 from SupportBeanXXX a;\n";
+            env.CompileDeploy(epl, new RegressionPath()).AddListener("s0");
 
             var theEvent = new SupportBean();
             theEvent.LongPrimitive = DateTimeParsingFunctions.ParseDefaultMSec(startA);
-            env.EventService.SendEventBean(theEvent, "SupportBeanXXX");
-            Assert.AreEqual(5, env.Listener("s0").AssertOneGetNewAndReset().Get("val0"));
+            env.SendEventBean(theEvent, "SupportBeanXXX");
+            env.AssertEqualsNew("s0", "val0", 5);
 
             env.UndeployAll();
         }
@@ -115,23 +108,23 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             object endB)
         {
             var epl = eventRepresentationEnum.GetAnnotationTextWJsonProvided<T>() +
-                      " create schema TypeA as (startts " +
+                      " @buseventtype @public create schema TypeA as (startts " +
                       typeOfDatetimeProp +
                       ", endts " +
                       typeOfDatetimeProp +
                       ") starttimestamp startts endtimestamp endts;\n";
             epl += eventRepresentationEnum.GetAnnotationTextWJsonProvided<T>() +
-                   " create schema TypeB as (startts " +
+                   " @buseventtype @public create schema TypeB as (startts " +
                    typeOfDatetimeProp +
                    ", endts " +
                    typeOfDatetimeProp +
                    ") starttimestamp startts endtimestamp endts;\n";
-            epl += "@Name('s0') select a.includes(b) as val0 from TypeA#lastevent as a, TypeB#lastevent as b;\n";
-            env.CompileDeployWBusPublicType(epl, new RegressionPath()).AddListener("s0");
+            epl += "@name('s0') select a.includes(b) as val0 from TypeA#lastevent as a, TypeB#lastevent as b;\n";
+            env.CompileDeploy(epl, new RegressionPath()).AddListener("s0");
 
             MakeSendEvent(env, "TypeA", eventRepresentationEnum, startA, endA);
             MakeSendEvent(env, "TypeB", eventRepresentationEnum, startB, endB);
-            Assert.AreEqual(true, env.Listener("s0").AssertOneGetNewAndReset().Get("val0"));
+            env.AssertEqualsNew("s0", "val0", true);
 
             env.UndeployAll();
         }
@@ -144,33 +137,30 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             object endTs)
         {
             if (eventRepresentationEnum.IsObjectArrayEvent()) {
-                env.SendEventObjectArray(new[] { startTs, endTs }, typeName);
+                env.SendEventObjectArray(new object[] { startTs, endTs }, typeName);
             }
             else if (eventRepresentationEnum.IsMapEvent()) {
-                var theEvent = new Dictionary<string, object>();
+                var theEvent = new LinkedHashMap<string, object>();
                 theEvent.Put("startts", startTs);
                 theEvent.Put("endts", endTs);
                 env.SendEventMap(theEvent, typeName);
             }
             else if (eventRepresentationEnum.IsAvroEvent()) {
                 var record = new GenericRecord(
-                    SupportAvroUtil.GetAvroSchema(
-                            env.Runtime.EventTypeService.GetEventTypePreconfigured(typeName))
-                        .AsRecordSchema());
+                    env.RuntimeAvroSchemaPreconfigured(typeName).AsRecordSchema());
                 record.Put("startts", startTs);
                 record.Put("endts", endTs);
-                env.EventService.SendEventAvro(record, typeName);
+                env.SendEventAvro(record, typeName);
             }
             else if (eventRepresentationEnum.IsJsonEvent() || eventRepresentationEnum.IsJsonProvidedClassEvent()) {
                 var json = "{\"startts\": \"" + startTs + "\", \"endts\": \"" + endTs + "\"}";
-                env.EventService.SendEventJson(json, typeName);
+                env.SendEventJson(json, typeName);
             }
             else {
                 throw new IllegalStateException("Unrecognized enum " + eventRepresentationEnum);
             }
         }
 
-        [Serializable]
         public class MyLocalJsonProvided<T>
         {
             // ReSharper disable InconsistentNaming
@@ -184,22 +174,18 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             // ReSharper restore InconsistentNaming
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedLong : MyLocalJsonProvided<long>
         {
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedDateTimeEx : MyLocalJsonProvided<DateTimeEx>
         {
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedDateTimeOffset : MyLocalJsonProvided<DateTimeOffset>
         {
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedDateTime : MyLocalJsonProvided<DateTime>
         {
         }

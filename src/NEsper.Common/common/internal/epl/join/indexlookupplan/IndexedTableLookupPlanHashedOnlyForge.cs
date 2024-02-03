@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -20,17 +20,18 @@ using com.espertech.esper.common.@internal.epl.join.queryplan;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.compat.collections;
 
+
 namespace com.espertech.esper.common.@internal.epl.join.indexlookupplan
 {
     /// <summary>
-    ///     Plan to perform an indexed table lookup.
+    /// Plan to perform an indexed table lookup.
     /// </summary>
     public class IndexedTableLookupPlanHashedOnlyForge : TableLookupPlanForge
     {
-        private readonly QueryGraphValueEntryHashKeyedForge[] _hashKeys;
-        private readonly QueryPlanIndexForge _indexSpecs;
-        private readonly Type[] _optionalCoercionTypes;
-        private readonly MultiKeyClassRef _optionalEPLTableLookupMultiKey;
+        private readonly QueryGraphValueEntryHashKeyedForge[] hashKeys;
+        private readonly QueryPlanIndexForge indexSpecs;
+        private readonly Type[] optionalCoercionTypes;
+        private readonly MultiKeyClassRef optionalEPLTableLookupMultiKey;
 
         public IndexedTableLookupPlanHashedOnlyForge(
             int lookupStream,
@@ -41,32 +42,22 @@ namespace com.espertech.esper.common.@internal.epl.join.indexlookupplan
             QueryGraphValueEntryHashKeyedForge[] hashKeys,
             QueryPlanIndexForge indexSpecs,
             Type[] optionalCoercionTypes,
-            MultiKeyClassRef optionalEPLTableLookupMultiKey) 
-            : base(
-                lookupStream,
-                indexedStream,
-                indexedStreamIsVDW,
-                typesPerStream,
-                new[] { indexNum })
+            MultiKeyClassRef optionalEPLTableLookupMultiKey) : base(
+            lookupStream,
+            indexedStream,
+            indexedStreamIsVDW,
+            typesPerStream,
+            new TableLookupIndexReqKey[] { indexNum })
         {
-            _hashKeys = hashKeys;
-            _indexSpecs = indexSpecs;
-            _optionalCoercionTypes = optionalCoercionTypes;
-            _optionalEPLTableLookupMultiKey = optionalEPLTableLookupMultiKey;
+            this.hashKeys = hashKeys;
+            this.indexSpecs = indexSpecs;
+            this.optionalCoercionTypes = optionalCoercionTypes;
+            this.optionalEPLTableLookupMultiKey = optionalEPLTableLookupMultiKey;
         }
-
-        public override TableLookupKeyDesc KeyDescriptor => new TableLookupKeyDesc(
-            Arrays.AsList(HashKeys),
-            Collections.GetEmptyList<QueryGraphValueEntryRangeForge>());
-
-        public QueryGraphValueEntryHashKeyedForge[] HashKeys => _hashKeys;
 
         public override string ToString()
         {
-            return "IndexedTableLookupPlan " +
-                   base.ToString() +
-                   " keyProperty=" +
-                   KeyDescriptor;
+            return "IndexedTableLookupPlan " + base.ToString() + " keyProperty=" + KeyDescriptor;
         }
 
         public override Type TypeOfPlanFactory()
@@ -79,22 +70,21 @@ namespace com.espertech.esper.common.@internal.epl.join.indexlookupplan
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            var forges = QueryGraphValueEntryHashKeyedForge.GetForges(HashKeys);
+            var forges = QueryGraphValueEntryHashKeyedForge.GetForges(hashKeys);
             var types = ExprNodeUtilityQuery.GetExprResultTypes(forges);
-
             // we take coercion types from the index plan as the index plan is always accurate but not always available (for tables it is not)
             Type[] coercionTypes;
-            var indexForge = _indexSpecs.Items.Get(IndexNum[0]);
+            var indexForge = indexSpecs.Items.Get(IndexNum[0]);
             if (indexForge != null) {
                 coercionTypes = indexForge.HashTypes;
             }
             else {
-                coercionTypes = _optionalCoercionTypes;
+                coercionTypes = optionalCoercionTypes;
             }
 
             CodegenExpression getter;
-            EventType eventType = typesPerStream[LookupStream];
-            EventPropertyGetterSPI[] getterSPIS = QueryGraphValueEntryHashKeyedForge.GetGettersIfPropsOnly(_hashKeys);
+            var eventType = typesPerStream[LookupStream];
+            var getterSPIS = QueryGraphValueEntryHashKeyedForge.GetGettersIfPropsOnly(hashKeys);
             if (indexForge != null) {
                 if (getterSPIS != null) {
                     getter = MultiKeyCodegen.CodegenGetterMayMultiKey(
@@ -107,7 +97,12 @@ namespace com.espertech.esper.common.@internal.epl.join.indexlookupplan
                         classScope);
                 }
                 else {
-                    getter = MultiKeyCodegen.CodegenExprEvaluatorMayMultikey(forges, coercionTypes, indexForge.HashMultiKeyClasses, method, classScope);
+                    getter = MultiKeyCodegen.CodegenExprEvaluatorMayMultikey(
+                        forges,
+                        coercionTypes,
+                        indexForge.HashMultiKeyClasses,
+                        method,
+                        classScope);
                 }
             }
             else {
@@ -117,16 +112,27 @@ namespace com.espertech.esper.common.@internal.epl.join.indexlookupplan
                         getterSPIS,
                         types,
                         coercionTypes,
-                        _optionalEPLTableLookupMultiKey,
+                        optionalEPLTableLookupMultiKey,
                         method,
                         classScope);
                 }
                 else {
-                    getter = MultiKeyCodegen.CodegenExprEvaluatorMayMultikey(forges, coercionTypes, _optionalEPLTableLookupMultiKey, method, classScope);
+                    getter = MultiKeyCodegen.CodegenExprEvaluatorMayMultikey(
+                        forges,
+                        coercionTypes,
+                        optionalEPLTableLookupMultiKey,
+                        method,
+                        classScope);
                 }
             }
 
             return Collections.SingletonList(getter);
         }
+
+        public override TableLookupKeyDesc KeyDescriptor => new TableLookupKeyDesc(
+            Arrays.AsList(hashKeys),
+            EmptyList<QueryGraphValueEntryRangeForge>.Instance);
+
+        public QueryGraphValueEntryHashKeyedForge[] HashKeys => hashKeys;
     }
 } // end of namespace

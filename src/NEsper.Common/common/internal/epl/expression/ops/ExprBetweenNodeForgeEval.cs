@@ -1,11 +1,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Reflection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -70,7 +71,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             var isNot = forge.ForgeRenderable.IsNotBetween;
 
             var methodNode = codegenMethodScope.MakeChild(
-                typeof(bool?),
+                typeof(bool),
                 typeof(ExprBetweenNodeForgeEval),
                 codegenClassScope);
             var block = methodNode.Block;
@@ -106,13 +107,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 "result",
                 forge.Computer.CodegenNoNullCheck(
                     Unbox(Ref("value"), valueType),
-                    value.EvaluationType,
+                    valueType.GetUnboxedType(),
                     Unbox(Ref("lower"), lowerType),
-                    lower.EvaluationType,
+                    lowerType.GetUnboxedType(),
                     Unbox(Ref("higher"), higherType),
-                    higher.EvaluationType,
+                    higherType.GetUnboxedType(),
                     methodNode,
                     codegenClassScope));
+
             block.MethodReturn(NotOptional(forge.ForgeRenderable.IsNotBetween, Ref("result")));
             return LocalMethod(methodNode);
         }

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -42,7 +42,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             // rewrite streams
             var events = new EventBean[_eventEnumerationForges.Length];
             for (var i = 0; i < _eventEnumerationForges.Length; i++) {
-                events[i] = _eventEnumerationForges[i].ExprEvaluatorEnumeration.EvaluateGetEventBean(eps, isNewData, context);
+                events[i] = _eventEnumerationForges[i]
+                    .ExprEvaluatorEnumeration.EvaluateGetEventBean(eps, isNewData, context);
             }
 
             return events;
@@ -53,8 +54,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            var method = codegenMethodScope.MakeChild(typeof(EventBean[]), typeof(ExprDeclaredForgeRewrite), codegenClassScope);
-            method.Block.DeclareVar<EventBean[]>("events", NewArrayByLength(typeof(EventBean), Constant(_eventEnumerationForges.Length)));
+            var method = codegenMethodScope.MakeChild(
+                typeof(EventBean[]),
+                typeof(ExprDeclaredForgeRewrite),
+                codegenClassScope);
+            method.Block.DeclareVar<EventBean[]>(
+                "events",
+                NewArrayByLength(typeof(EventBean), Constant(_eventEnumerationForges.Length)));
             for (var i = 0; i < _eventEnumerationForges.Length; i++) {
                 method.Block.AssignArrayElement(
                     "events",

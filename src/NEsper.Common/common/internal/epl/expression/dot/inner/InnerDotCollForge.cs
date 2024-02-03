@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -8,8 +8,8 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
@@ -23,23 +23,27 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.inner
 {
     public class InnerDotCollForge : ExprDotEvalRootChildInnerForge
     {
-        private readonly ExprForge rootForge;
+        private readonly ExprForge _rootForge;
 
         public InnerDotCollForge(ExprForge rootForge)
         {
-            this.rootForge = rootForge;
+            _rootForge = rootForge;
         }
 
-        public ExprDotEvalRootChildInnerEval InnerEvaluator {
-            get => new InnerDotCollEval(rootForge.ExprEvaluator);
-        }
+        public ExprDotEvalRootChildInnerEval InnerEvaluator => new InnerDotCollEval(_rootForge.ExprEvaluator);
 
         public CodegenExpression CodegenEvaluate(
             CodegenMethod parentMethod,
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            return rootForge.EvaluateCodegen(rootForge.EvaluationType, parentMethod, exprSymbol, codegenClassScope);
+            return Cast(
+                typeof(ICollection<object>),
+                _rootForge.EvaluateCodegen(
+                    _rootForge.EvaluationType,
+                    parentMethod,
+                    exprSymbol,
+                    codegenClassScope));
         }
 
         public CodegenExpression EvaluateGetROCollectionEventsCodegen(
@@ -66,22 +70,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.inner
             return ConstantNull();
         }
 
-        public EventType EventTypeCollection {
-            get => null;
-        }
+        public EventType EventTypeCollection => null;
 
-        public Type ComponentTypeCollection {
-            get => null;
-        }
+        public Type ComponentTypeCollection => null;
 
-        public EventType EventTypeSingle {
-            get => null;
-        }
+        public EventType EventTypeSingle => null;
 
-        public EPType TypeInfo {
-            get => EPTypeHelper.CollectionOfSingleValue(
-                typeof(object),
-                typeof(ICollection<object>));
-        }
+        public EPChainableType TypeInfo =>
+            EPChainableTypeHelper.CollectionOfSingleValue(
+                typeof(object));
     }
 } // end of namespace

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -44,7 +44,7 @@ namespace com.espertech.esper.common.@internal.epl.contained
 
             IList<EventType> streamEventTypes = new List<EventType>();
             IList<string> streamNames = new List<string>();
-            IDictionary<string, int> streamNameAndNumber = new Dictionary<string, int>().WithNullKeySupport();
+            var streamNameAndNumber = new Dictionary<string, int>().WithNullKeySupport();
             IList<string> expressionTexts = new List<string>();
 
             streamEventTypes.Add(sourceEventType);
@@ -175,7 +175,7 @@ namespace com.espertech.esper.common.@internal.epl.contained
                                 }
                             }
                         }
-                        else if (GenericExtensions.IsGenericEnumerable(returnType) || 
+                        else if (returnType.IsGenericEnumerable() || 
                                  TypeHelper.IsImplementsInterface<System.Collections.IEnumerable>(returnType)) {
                             // fine, assumed to return the right type
                         }
@@ -194,7 +194,7 @@ namespace com.espertech.esper.common.@internal.epl.contained
                     }
 
                     expressionText = ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(validatedExprNode);
-                    fragmentEventType = new FragmentEventType(streamEventType, true, false);
+                    fragmentEventType = new FragmentEventType(streamEventType, true, false, false);
                 }
 
                 // validate where clause, if any

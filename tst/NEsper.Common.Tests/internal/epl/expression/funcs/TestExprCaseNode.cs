@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -13,6 +13,7 @@ using com.espertech.esper.common.@internal.supportunit.@event;
 using com.espertech.esper.common.@internal.supportunit.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.epl.expression.funcs
 {
@@ -45,11 +46,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             var caseNodeSyntax2 = supportExprNodeFactory.MakeCaseSyntax2Node();
             var otherCaseNodeSyntax2 = supportExprNodeFactory.MakeCaseSyntax2Node();
 
-            Assert.IsTrue(caseNode.EqualsNode(otherCaseNode, false));
-            Assert.IsTrue(otherCaseNode.EqualsNode(caseNode, false));
-            Assert.IsFalse(caseNode.EqualsNode(caseNodeSyntax2, false));
-            Assert.IsFalse(caseNodeSyntax2.EqualsNode(caseNode, false));
-            Assert.IsTrue(caseNodeSyntax2.EqualsNode(otherCaseNodeSyntax2, false));
+            ClassicAssert.IsTrue(caseNode.EqualsNode(otherCaseNode, false));
+            ClassicAssert.IsTrue(otherCaseNode.EqualsNode(caseNode, false));
+            ClassicAssert.IsFalse(caseNode.EqualsNode(caseNodeSyntax2, false));
+            ClassicAssert.IsFalse(caseNodeSyntax2.EqualsNode(caseNode, false));
+            ClassicAssert.IsTrue(caseNodeSyntax2.EqualsNode(otherCaseNodeSyntax2, false));
         }
 
         [Test]
@@ -58,16 +59,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             var caseNode = supportExprNodeFactory.MakeCaseSyntax1Node();
             caseNode.Validate(SupportExprValidationContextFactory.MakeEmpty(container));
 
-            Assert.AreEqual("a", caseNode.Forge.ExprEvaluator.Evaluate(MakeEvent(1), false, null));
-            Assert.AreEqual("b", caseNode.Forge.ExprEvaluator.Evaluate(MakeEvent(2), false, null));
-            Assert.AreEqual("c", caseNode.Forge.ExprEvaluator.Evaluate(MakeEvent(3), false, null));
+            ClassicAssert.AreEqual("a", caseNode.Forge.ExprEvaluator.Evaluate(MakeEvent(1), false, null));
+            ClassicAssert.AreEqual("b", caseNode.Forge.ExprEvaluator.Evaluate(MakeEvent(2), false, null));
+            ClassicAssert.AreEqual("c", caseNode.Forge.ExprEvaluator.Evaluate(MakeEvent(3), false, null));
 
             caseNode = supportExprNodeFactory.MakeCaseSyntax2Node();
             caseNode.Validate(SupportExprValidationContextFactory.MakeEmpty(container));
 
-            Assert.AreEqual("a", caseNode.Forge.ExprEvaluator.Evaluate(MakeEvent(1), false, null));
-            Assert.AreEqual("b", caseNode.Forge.ExprEvaluator.Evaluate(MakeEvent(2), false, null));
-            Assert.AreEqual("c", caseNode.Forge.ExprEvaluator.Evaluate(MakeEvent(3), false, null));
+            ClassicAssert.AreEqual("a", caseNode.Forge.ExprEvaluator.Evaluate(MakeEvent(1), false, null));
+            ClassicAssert.AreEqual("b", caseNode.Forge.ExprEvaluator.Evaluate(MakeEvent(2), false, null));
+            ClassicAssert.AreEqual("c", caseNode.Forge.ExprEvaluator.Evaluate(MakeEvent(3), false, null));
         }
 
         [Test]
@@ -76,24 +77,24 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             // Template expression is:
             // case when (so.FloatPrimitive>s1.ShortBoxed) then count(5) when (so.LongPrimitive>s1.IntPrimitive) then (25 + 130.5) else (3*3) end
             var caseNode = supportExprNodeFactory.MakeCaseSyntax1Node();
-            Assert.AreEqual(typeof(string), caseNode.Forge.EvaluationType);
+            ClassicAssert.AreEqual(typeof(string), caseNode.Forge.EvaluationType);
 
             // case when (2.5>2) then count(5) when (1>3) then (25 + 130.5) else (3*3) end
             // First when node is true, case node type is the first when node type.
             caseNode = supportExprNodeFactory.MakeCaseSyntax2Node();
-            Assert.AreEqual(typeof(string), caseNode.Forge.EvaluationType);
+            ClassicAssert.AreEqual(typeof(string), caseNode.Forge.EvaluationType);
         }
 
         [Test]
         public void TestToExpressionString()
         {
             var _caseNode = supportExprNodeFactory.MakeCaseSyntax1Node();
-            Assert.AreEqual(
+            ClassicAssert.AreEqual(
                 "case when s0.IntPrimitive=1 then \"a\" when s0.IntPrimitive=2 then \"b\" else \"c\" end",
                 ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(_caseNode));
 
             _caseNode = supportExprNodeFactory.MakeCaseSyntax2Node();
-            Assert.AreEqual(
+            ClassicAssert.AreEqual(
                 "case s0.IntPrimitive when 1 then \"a\" when 2 then \"b\" else \"c\" end",
                 ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(_caseNode));
         }

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -13,6 +13,7 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
+using static com.espertech.esper.common.@internal.epl.expression.codegen.ExprForgeCodegenNames;
 
 namespace com.espertech.esper.common.@internal.epl.agg.access.linear
 {
@@ -26,11 +27,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
             AggregationStateLinearForge accessStateFactory,
             AggregationAccessorForgeGetCodegenContext context)
         {
-            CodegenMethod childExpr = CodegenLegoMethodExpression.CodegenExpression(
+            var childExpr = CodegenLegoMethodExpression.CodegenExpression(
                 forge.ChildNode,
                 context.Method,
-                context.ClassScope,
-                true);
+                context.ClassScope);
             context.Method.Block
                 .DeclareVar<EventBean>(
                     "bean",
@@ -40,7 +40,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                     "eventsPerStreamBuf",
                     NewArrayByLength(typeof(EventBean), Constant(forge.StreamNum + 1)))
                 .AssignArrayElement("eventsPerStreamBuf", Constant(forge.StreamNum), Ref("bean"))
-                .MethodReturn(LocalMethod(childExpr, Ref("eventsPerStreamBuf"), Constant(true), ConstantNull()));
+                .MethodReturn(
+                    LocalMethod(childExpr, Ref("eventsPerStreamBuf"), Constant(true), Ref(NAME_EXPREVALCONTEXT)));
         }
 
         public static void GetEnumerableEventsCodegen(
@@ -60,11 +61,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
             AggregationStateLinearForge accessStateFactory,
             AggregationAccessorForgeGetCodegenContext context)
         {
-            CodegenMethod childExpr = CodegenLegoMethodExpression.CodegenExpression(
+            var childExpr = CodegenLegoMethodExpression.CodegenExpression(
                 forge.ChildNode,
                 context.Method,
-                context.ClassScope,
-                true);
+                context.ClassScope);
             context.Method.Block.DeclareVar<EventBean>(
                     "bean",
                     accessStateFactory.AggregatorLinear.GetFirstValueCodegen(context.ClassScope, context.Method))
@@ -76,7 +76,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                 .AssignArrayElement("eventsPerStreamBuf", Constant(forge.StreamNum), Ref("bean"))
                 .DeclareVar<object>(
                     "value",
-                    LocalMethod(childExpr, Ref("eventsPerStreamBuf"), Constant(true), ConstantNull()))
+                    LocalMethod(childExpr, Ref("eventsPerStreamBuf"), Constant(true), Ref(NAME_EXPREVALCONTEXT)))
                 .IfRefNullReturnNull("value")
                 .MethodReturn(StaticMethod(typeof(Collections), "SingletonList", Ref("value")));
         }

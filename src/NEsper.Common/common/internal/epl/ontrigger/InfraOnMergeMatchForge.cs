@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -35,11 +35,11 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            CodegenMethod method = parent.MakeChild(typeof(InfraOnMergeMatch), this.GetType(), classScope);
-            CodegenExpression evaluator = optionalCond == null
+            var method = parent.MakeChild(typeof(InfraOnMergeMatch), GetType(), classScope);
+            var evaluator = optionalCond == null
                 ? ConstantNull()
-                : ExprNodeUtilityCodegen.CodegenEvaluator(optionalCond.Forge, method, this.GetType(), classScope);
-            CodegenExpression actionsList = InfraOnMergeActionForge.MakeActions(actions, method, symbols, classScope);
+                : ExprNodeUtilityCodegen.CodegenEvaluator(optionalCond.Forge, method, GetType(), classScope);
+            var actionsList = InfraOnMergeActionForge.MakeActions(actions, method, symbols, classScope);
             method.Block.MethodReturn(NewInstance<InfraOnMergeMatch>(evaluator, actionsList));
             return LocalMethod(method);
         }

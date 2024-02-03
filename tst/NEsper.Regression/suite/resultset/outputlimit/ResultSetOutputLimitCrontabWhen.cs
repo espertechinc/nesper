@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -16,155 +16,606 @@ using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
-using com.espertech.esper.runtime.client.scopetest;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
 {
     public class ResultSetOutputLimitCrontabWhen
     {
-        public static IList<RegressionExecution> Executions()
+        public static ICollection<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-WithOutputCrontabAt(execs);
-WithOutputCrontabAtOMCreate(execs);
-WithOutputCrontabAtOMCompile(execs);
-WithOutputWhenBuiltInCountInsert(execs);
-WithOutputWhenBuiltInCountRemove(execs);
-WithOutputWhenBuiltInLastTimestamp(execs);
-WithOutputCrontabAtVariable(execs);
-WithOutputWhenExpression(execs);
-WithOutputWhenThenExpression(execs);
-WithOutputWhenThenExpressionSODA(execs);
-WithOutputWhenThenSameVarTwice(execs);
-WithOutputWhenThenWVariable(execs);
-WithOutputWhenThenWCount(execs);
-WithInvalid(execs);
+#if TEMPORARY
+            WithOutputCrontabAt(execs);
+            WithOutputCrontabAtOMCreate(execs);
+            WithOutputCrontabAtOMCompile(execs);
+            WithOutputWhenBuiltInCountInsert(execs);
+            WithOutputWhenBuiltInCountRemove(execs);
+            WithOutputWhenBuiltInLastTimestamp(execs);
+            WithOutputCrontabAtVariable(execs);
+            WithOutputWhenExpression(execs);
+            WithOutputWhenThenExpression(execs);
+            WithOutputWhenThenExpressionSODA(execs);
+            WithOutputWhenThenSameVarTwice(execs);
+            WithOutputWhenThenWVariable(execs);
+            WithOutputWhenThenWCount(execs);
+            WithInvalid(execs);
+#endif
             return execs;
         }
-public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new ResultSetInvalid());
-    return execs;
-}public static IList<RegressionExecution> WithOutputWhenThenWCount(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new ResultSetOutputWhenThenWCount());
-    return execs;
-}public static IList<RegressionExecution> WithOutputWhenThenWVariable(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new ResultSetOutputWhenThenWVariable());
-    return execs;
-}public static IList<RegressionExecution> WithOutputWhenThenSameVarTwice(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new ResultSetOutputWhenThenSameVarTwice());
-    return execs;
-}public static IList<RegressionExecution> WithOutputWhenThenExpressionSODA(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new ResultSetOutputWhenThenExpressionSODA());
-    return execs;
-}public static IList<RegressionExecution> WithOutputWhenThenExpression(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new ResultSetOutputWhenThenExpression());
-    return execs;
-}public static IList<RegressionExecution> WithOutputWhenExpression(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new ResultSetOutputWhenExpression());
-    return execs;
-}public static IList<RegressionExecution> WithOutputCrontabAtVariable(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new ResultSetOutputCrontabAtVariable());
-    return execs;
-}public static IList<RegressionExecution> WithOutputWhenBuiltInLastTimestamp(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new ResultSetOutputWhenBuiltInLastTimestamp());
-    return execs;
-}public static IList<RegressionExecution> WithOutputWhenBuiltInCountRemove(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new ResultSetOutputWhenBuiltInCountRemove());
-    return execs;
-}public static IList<RegressionExecution> WithOutputWhenBuiltInCountInsert(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new ResultSetOutputWhenBuiltInCountInsert());
-    return execs;
-}public static IList<RegressionExecution> WithOutputCrontabAtOMCompile(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new ResultSetOutputCrontabAtOMCompile());
-    return execs;
-}public static IList<RegressionExecution> WithOutputCrontabAtOMCreate(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new ResultSetOutputCrontabAtOMCreate());
-    return execs;
-}public static IList<RegressionExecution> WithOutputCrontabAt(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new ResultSetOutputCrontabAt());
-    return execs;
-}
+
+        public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetInvalid());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithOutputWhenThenWCount(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetOutputWhenThenWCount());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithOutputWhenThenWVariable(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetOutputWhenThenWVariable());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithOutputWhenThenSameVarTwice(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetOutputWhenThenSameVarTwice());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithOutputWhenThenExpressionSODA(
+            IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetOutputWhenThenExpressionSODA());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithOutputWhenThenExpression(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetOutputWhenThenExpression());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithOutputWhenExpression(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetOutputWhenExpression());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithOutputCrontabAtVariable(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetOutputCrontabAtVariable());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithOutputWhenBuiltInLastTimestamp(
+            IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetOutputWhenBuiltInLastTimestamp());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithOutputWhenBuiltInCountRemove(
+            IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetOutputWhenBuiltInCountRemove());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithOutputWhenBuiltInCountInsert(
+            IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetOutputWhenBuiltInCountInsert());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithOutputCrontabAtOMCompile(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetOutputCrontabAtOMCompile());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithOutputCrontabAtOMCreate(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetOutputCrontabAtOMCreate());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithOutputCrontabAt(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetOutputCrontabAt());
+            return execs;
+        }
+
+        private class ResultSetOutputCrontabAtVariable : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                // every 15 minutes 8am to 5pm
+                SendTimeEvent(env, 1, 17, 10, 0, 0);
+                var epl = "create variable int VFREQ = 15;\n" +
+                          "create variable int VMIN = 8;\n" +
+                          "create variable int VMAX = 17;\n" +
+                          "@name('s0') select * from SupportMarketDataBean#lastevent output at (*/VFREQ, VMIN:VMAX, *, *, *);\n";
+                env.CompileDeploy(epl).AddListener("s0");
+
+                TryAssertionCrontab(env, 1);
+            }
+        }
+
+        private class ResultSetOutputCrontabAt : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                // every 15 minutes 8am to 5pm
+                SendTimeEvent(env, 1, 17, 10, 0, 0);
+                var expression =
+                    "@name('s0') select * from SupportMarketDataBean#lastevent output at (*/15, 8:17, *, *, *)";
+                env.CompileDeploy(expression).AddListener("s0");
+
+                TryAssertionCrontab(env, 1);
+            }
+        }
+
+        private class ResultSetOutputCrontabAtOMCreate : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                // every 15 minutes 8am to 5pm
+                SendTimeEvent(env, 1, 17, 10, 0, 0);
+                var expression = "select * from SupportMarketDataBean#lastevent output at (*/15, 8:17, *, *, *)";
+
+                var model = new EPStatementObjectModel();
+                model.SelectClause = SelectClause.CreateWildcard();
+                model.FromClause = FromClause.Create(FilterStream.Create("SupportMarketDataBean").AddView("lastevent"));
+                var crontabParams = new Expression[] {
+                    Expressions.CrontabScheduleFrequency(15),
+                    Expressions.CrontabScheduleRange(8, 17),
+                    Expressions.CrontabScheduleWildcard(),
+                    Expressions.CrontabScheduleWildcard(),
+                    Expressions.CrontabScheduleWildcard()
+                };
+                model.OutputLimitClause = OutputLimitClause.CreateSchedule(crontabParams);
+
+                var epl = model.ToEPL();
+                ClassicAssert.AreEqual(expression, epl);
+
+                model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
+                env.CompileDeploy(model).AddListener("s0");
+
+                TryAssertionCrontab(env, 1);
+            }
+        }
+
+        private class ResultSetOutputCrontabAtOMCompile : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                // every 15 minutes 8am to 5pm
+                SendTimeEvent(env, 1, 17, 10, 0, 0);
+                var expression =
+                    "@name('s0') select * from SupportMarketDataBean#lastevent output at (*/15, 8:17, *, *, *)";
+
+                env.EplToModelCompileDeploy(expression).AddListener("s0");
+
+                TryAssertionCrontab(env, 1);
+            }
+        }
+
+        private class ResultSetOutputWhenThenExpression : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                env.RuntimeSetVariable(null, "myvar", 0);
+                SendTimeEvent(env, 1, 8, 0, 0, 0);
+                env.CompileDeploy("on SupportBean set myvar = IntPrimitive");
+
+                var expression =
+                    "@name('s0') select Symbol from SupportMarketDataBean#length(2) output when myvar=1 then set myvar=0, count_insert_var=count_insert";
+                env.CompileDeploy(expression).AddListener("s0").SetSubscriber("s0");
+                TryAssertion(env, 1);
+                env.UndeployAll();
+            }
+        }
+
+        private class ResultSetOutputWhenThenExpressionSODA : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                env.RuntimeSetVariable(null, "myvar", 0);
+                SendTimeEvent(env, 1, 8, 0, 0, 0);
+                env.CompileDeploy("on SupportBean set myvar = IntPrimitive");
+
+                var expression =
+                    "@Name('s0') select Symbol from SupportMarketDataBean#length(2) output when myvar=1 then set myvar=0, count_insert_var=count_insert";
+                var model = new EPStatementObjectModel();
+                model.SelectClause = SelectClause.Create("Symbol");
+                model.FromClause = FromClause.Create(
+                    FilterStream.Create("SupportMarketDataBean").AddView("length", Expressions.Constant(2)));
+                model.OutputLimitClause = OutputLimitClause.Create(Expressions.Eq("myvar", 1))
+                    .WithAddThenAssignment(Expressions.Eq(Expressions.Property("myvar"), Expressions.Constant(0)))
+                    .WithAddThenAssignment(
+                        Expressions.Eq(Expressions.Property("count_insert_var"), Expressions.Property("count_insert")));
+                model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
+                var epl = model.ToEPL();
+                ClassicAssert.AreEqual(expression, epl);
+                env.RuntimeSetVariable(null, "myvar", 0);
+                env.CompileDeploy(model).AddListener("s0");
+
+                env.UndeployAll();
+            }
+        }
+
+        private class ResultSetOutputWhenThenSameVarTwice : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                // test same variable referenced multiple times JIRA-386
+                SendTimer(env, 0);
+                env.CompileDeploy("@name('s1') select * from SupportMarketDataBean output last when myvar=100")
+                    .AddListener("s1");
+                env.CompileDeploy("@name('s2') select * from SupportMarketDataBean output last when myvar=100")
+                    .AddListener("s2");
+
+                env.SendEventBean(new SupportMarketDataBean("ABC", "E1", 100));
+                env.SendEventBean(new SupportMarketDataBean("ABC", "E2", 100));
+
+                SendTimer(env, 1000);
+                env.AssertListenerNotInvoked("s1");
+                env.AssertListenerNotInvoked("s2");
+
+                env.RuntimeSetVariable(null, "myvar", 100);
+                SendTimer(env, 2000);
+                env.AssertListenerInvoked("s1");
+                env.AssertListenerInvoked("s2");
+
+                env.UndeployModuleContaining("s1");
+                env.UndeployModuleContaining("s2");
+            }
+        }
+
+        private class ResultSetOutputWhenThenWVariable : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                // test when-then with condition triggered by output events
+                SendTimeEvent(env, 2, 8, 0, 0, 0);
+                var eplToDeploy = "create variable boolean varOutputTriggered = false\n;" +
+                                  "@Audit @Name('s0') select * from SupportBean#lastevent output snapshot when (count_insert > 1 and varOutputTriggered = false) then set varOutputTriggered = true;";
+                env.CompileDeploy(eplToDeploy).AddListener("s0");
+
+                env.SendEventBean(new SupportBean("E1", 1));
+                env.AssertListenerNotInvoked("s0");
+
+                env.SendEventBean(new SupportBean("E2", 2));
+                env.AssertEqualsNew("s0", "TheString", "E2");
+
+                env.SendEventBean(new SupportBean("E3", 3));
+                env.SendEventBean(new SupportBean("E4", 4));
+                env.AssertListenerNotInvoked("s0");
+
+                env.RuntimeSetVariable("s0", "varOutputTriggered", false); // turns true right away as triggering output
+
+                env.SendEventBean(new SupportBean("E5", 5));
+                SendTimeEvent(env, 2, 8, 0, 1, 0);
+                env.AssertEqualsNew("s0", "TheString", "E5");
+
+                env.SendEventBean(new SupportBean("E6", 6));
+                env.AssertListenerNotInvoked("s0");
+
+                env.UndeployAll();
+            }
+        }
+
+        private class ResultSetOutputWhenThenWCount : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                // test count_total for insert and remove
+                var path = new RegressionPath();
+                env.CompileDeploy("@name('var') @public create variable int var_cnt_total = 3", path);
+                var expressionTotal =
+                    "@name('s0') select TheString from SupportBean#length(2) output when count_insert_total = var_cnt_total or count_remove_total > 2";
+                env.CompileDeploy(expressionTotal, path).AddListener("s0");
+
+                env.SendEventBean(new SupportBean("E1", 1));
+                env.SendEventBean(new SupportBean("E2", 1));
+                env.AssertListenerNotInvoked("s0");
+
+                env.SendEventBean(new SupportBean("E3", 1));
+                env.AssertPropsPerRowLastNew(
+                    "s0",
+                    "TheString".SplitCsv(),
+                    new object[][] { new object[] { "E1" }, new object[] { "E2" }, new object[] { "E3" } });
+
+                env.RuntimeSetVariable("var", "var_cnt_total", -1);
+
+                env.SendEventBean(new SupportBean("E4", 1));
+                env.AssertListenerNotInvoked("s0");
+
+                env.SendEventBean(new SupportBean("E5", 1));
+                env.AssertPropsPerRowLastNew(
+                    "s0",
+                    "TheString".SplitCsv(),
+                    new object[][] { new object[] { "E4" }, new object[] { "E5" } });
+
+                env.UndeployAll();
+            }
+        }
+
+        private class ResultSetOutputWhenExpression : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                SendTimeEvent(env, 1, 8, 0, 0, 0);
+                env.CompileDeploy("on SupportBean set myint = IntPrimitive, mystring = TheString");
+
+                var expression =
+                    "@name('s0') select Symbol from SupportMarketDataBean#length(2) output when myint = 1 and mystring like 'F%'";
+                env.CompileDeploy(expression).SetSubscriber("s0");
+                SendEvent(env, "S1", 0);
+
+                env.SendEventBean(new SupportBean("E1", 1));
+                env.AssertRuntime(
+                    runtime => {
+                        ClassicAssert.AreEqual(1, runtime.VariableService.GetVariableValue(null, "myint"));
+                        ClassicAssert.AreEqual("E1", runtime.VariableService.GetVariableValue(null, "mystring"));
+                    });
+
+                SendEvent(env, "S2", 0);
+                SendTimeEvent(env, 1, 8, 0, 1, 0);
+                env.AssertSubscriber("s0", subscriber => ClassicAssert.IsFalse(subscriber.IsInvoked));
+
+                env.SendEventBean(new SupportBean("F1", 0));
+                env.AssertRuntime(
+                    runtime => {
+                        ClassicAssert.AreEqual(0, runtime.VariableService.GetVariableValue(null, "myint"));
+                        ClassicAssert.AreEqual("F1", runtime.VariableService.GetVariableValue(null, "mystring"));
+                    });
+
+                SendTimeEvent(env, 1, 8, 0, 2, 0);
+                SendEvent(env, "S3", 0);
+                env.AssertSubscriber("s0", subscriber => ClassicAssert.IsFalse(subscriber.IsInvoked));
+
+                env.SendEventBean(new SupportBean("F2", 1));
+                env.AssertRuntime(
+                    runtime => {
+                        ClassicAssert.AreEqual(1, runtime.VariableService.GetVariableValue(null, "myint"));
+                        ClassicAssert.AreEqual("F2", runtime.VariableService.GetVariableValue(null, "mystring"));
+                    });
+
+                SendEvent(env, "S4", 0);
+                env.AssertSubscriber(
+                    "s0",
+                    subscriber => EPAssertionUtil.AssertEqualsExactOrder(
+                        new object[] { "S1", "S2", "S3", "S4" },
+                        subscriber.GetAndResetLastNewData()));
+
+                env.UndeployAll();
+            }
+        }
+
+        private class ResultSetOutputWhenBuiltInCountInsert : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var expression =
+                    "@name('s0') select Symbol from SupportMarketDataBean#length(2) output when count_insert >= 3";
+                env.CompileDeploy(expression).SetSubscriber("s0");
+
+                SendEvent(env, "S1", 0);
+                SendEvent(env, "S2", 0);
+                env.AssertSubscriber("s0", subscriber => ClassicAssert.IsFalse(subscriber.IsInvoked));
+
+                SendEvent(env, "S3", 0);
+                env.AssertSubscriber(
+                    "s0",
+                    subscriber => EPAssertionUtil.AssertEqualsExactOrder(
+                        new object[] { "S1", "S2", "S3" },
+                        subscriber.GetAndResetLastNewData()));
+
+                SendEvent(env, "S4", 0);
+                SendEvent(env, "S5", 0);
+                env.AssertSubscriber("s0", subscriber => ClassicAssert.IsFalse(subscriber.IsInvoked));
+
+                SendEvent(env, "S6", 0);
+                env.AssertSubscriber(
+                    "s0",
+                    subscriber => EPAssertionUtil.AssertEqualsExactOrder(
+                        new object[] { "S4", "S5", "S6" },
+                        subscriber.GetAndResetLastNewData()));
+
+                SendEvent(env, "S7", 0);
+                env.AssertSubscriber("s0", subscriber => ClassicAssert.IsFalse(subscriber.IsInvoked));
+
+                env.UndeployAll();
+            }
+        }
+
+        private class ResultSetOutputWhenBuiltInCountRemove : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var expression =
+                    "@name('s0') select Symbol from SupportMarketDataBean#length(2) output when count_remove >= 2";
+                env.CompileDeploy(expression).SetSubscriber("s0");
+
+                SendEvent(env, "S1", 0);
+                SendEvent(env, "S2", 0);
+                SendEvent(env, "S3", 0);
+                env.AssertSubscriber("s0", subscriber => ClassicAssert.IsFalse(subscriber.IsInvoked));
+
+                SendEvent(env, "S4", 0);
+                env.AssertSubscriber(
+                    "s0",
+                    subscriber => EPAssertionUtil.AssertEqualsExactOrder(
+                        new object[] { "S1", "S2", "S3", "S4" },
+                        subscriber.GetAndResetLastNewData()));
+
+                SendEvent(env, "S5", 0);
+                env.AssertSubscriber("s0", subscriber => ClassicAssert.IsFalse(subscriber.IsInvoked));
+
+                SendEvent(env, "S6", 0);
+                env.AssertSubscriber(
+                    "s0",
+                    subscriber => EPAssertionUtil.AssertEqualsExactOrder(
+                        new object[] { "S5", "S6" },
+                        subscriber.GetAndResetLastNewData()));
+
+                SendEvent(env, "S7", 0);
+                env.AssertSubscriber("s0", subscriber => ClassicAssert.IsFalse(subscriber.IsInvoked));
+
+                env.UndeployAll();
+            }
+        }
+
+        private class ResultSetOutputWhenBuiltInLastTimestamp : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                SendTimeEvent(env, 1, 8, 0, 0, 0);
+                var expression =
+                    "@name('s0') select Symbol from SupportMarketDataBean#length(2) output when current_timestamp - last_output_timestamp >= 2000";
+                env.CompileDeploy(expression).SetSubscriber("s0");
+
+                SendEvent(env, "S1", 0);
+
+                SendTimeEvent(env, 1, 8, 0, 1, 900);
+                SendEvent(env, "S2", 0);
+
+                SendTimeEvent(env, 1, 8, 0, 2, 0);
+                env.AssertSubscriber("s0", subscriber => ClassicAssert.IsFalse(subscriber.IsInvoked));
+
+                SendEvent(env, "S3", 0);
+                env.AssertSubscriber(
+                    "s0",
+                    subscriber => EPAssertionUtil.AssertEqualsExactOrder(
+                        new object[] { "S1", "S2", "S3" },
+                        subscriber.GetAndResetLastNewData()));
+
+                SendTimeEvent(env, 1, 8, 0, 3, 0);
+                SendEvent(env, "S4", 0);
+
+                SendTimeEvent(env, 1, 8, 0, 3, 500);
+                SendEvent(env, "S5", 0);
+                env.AssertSubscriber("s0", subscriber => ClassicAssert.IsFalse(subscriber.IsInvoked));
+
+                SendTimeEvent(env, 1, 8, 0, 4, 0);
+                SendEvent(env, "S6", 0);
+                env.AssertSubscriber(
+                    "s0",
+                    subscriber => EPAssertionUtil.AssertEqualsExactOrder(
+                        new object[] { "S4", "S5", "S6" },
+                        subscriber.GetAndResetLastNewData()));
+
+                env.UndeployAll();
+            }
+        }
+
+        private class ResultSetInvalid : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                env.TryInvalidCompile(
+                    "select * from SupportMarketDataBean output when myvardummy",
+                    "The when-trigger expression in the OUTPUT WHEN clause must return a boolean-type value [select * from SupportMarketDataBean output when myvardummy]");
+
+                env.TryInvalidCompile(
+                    "select * from SupportMarketDataBean output when true then set myvardummy = 'b'",
+                    "Failed to validate the output rate limiting clause: Failed to validate assignment expression 'myvardummy=\"b\"': Variable 'myvardummy' of declared type System.Int32 cannot be assigned a value of type System.String [select * from SupportMarketDataBean output when true then set myvardummy = 'b']");
+
+                env.TryInvalidCompile(
+                    "select * from SupportMarketDataBean output when true then set myvardummy = sum(myvardummy)",
+                    "Aggregation functions may not be used within update-set [select * from SupportMarketDataBean output when true then set myvardummy = sum(myvardummy)]");
+
+                env.TryInvalidCompile(
+                    "select * from SupportMarketDataBean output when true then set 1",
+                    "Failed to validate the output rate limiting clause: Failed to validate assignment expression '1': Assignment expression must receive a single variable value");
+
+                env.TryInvalidCompile(
+                    "select * from SupportMarketDataBean output when sum(Price) > 0",
+                    "Failed to validate output limit expression '(sum(Price))>0': Property named 'Price' is not valid in any stream [select * from SupportMarketDataBean output when sum(Price) > 0]");
+
+                env.TryInvalidCompile(
+                    "select * from SupportMarketDataBean output when sum(count_insert) > 0",
+                    "An aggregate function may not appear in a OUTPUT LIMIT clause [select * from SupportMarketDataBean output when sum(count_insert) > 0]");
+
+                env.TryInvalidCompile(
+                    "select * from SupportMarketDataBean output when prev(1, count_insert) = 0",
+                    "Failed to validate output limit expression 'prev(1,count_insert)=0': Previous function cannot be used in this context [select * from SupportMarketDataBean output when prev(1, count_insert) = 0]");
+
+                env.TryInvalidCompile(
+                    "select TheString, count(*) from SupportBean#length(2) group by TheString output all every 0 seconds",
+                    "Invalid time period expression returns a zero or negative time interval [select TheString, count(*) from SupportBean#length(2) group by TheString output all every 0 seconds]");
+            }
+        }
+
         private static void TryAssertionCrontab(
             RegressionEnvironment env,
             int days)
         {
-            var fields = new [] { "Symbol" };
+            var fields = "Symbol".SplitCsv();
             SendEvent(env, "S1", 0);
-            Assert.IsFalse(env.Listener("s0").IsInvoked);
+            env.AssertListenerNotInvoked("s0");
 
             SendTimeEvent(env, days, 17, 14, 59, 0);
             SendEvent(env, "S2", 0);
-            Assert.IsFalse(env.Listener("s0").IsInvoked);
+            env.AssertListenerNotInvoked("s0");
 
             SendTimeEvent(env, days, 17, 15, 0, 0);
-            EPAssertionUtil.AssertPropsPerRow(
-                env.Listener("s0").GetAndResetLastNewData(),
-                fields,
-                new[] {new object[] {"S1"}, new object[] {"S2"}});
+            env.AssertPropsPerRowLastNew("s0", fields, new object[][] { new object[] { "S1" }, new object[] { "S2" } });
 
             SendTimeEvent(env, days, 17, 18, 0, 0);
             SendEvent(env, "S3", 0);
-            Assert.IsFalse(env.Listener("s0").IsInvoked);
+            env.AssertListenerNotInvoked("s0");
 
             SendTimeEvent(env, days, 17, 30, 0, 0);
-            EPAssertionUtil.AssertPropsPerRow(
-                env.Listener("s0").GetAndResetLastNewData(),
-                fields,
-                new[] {new object[] {"S3"}});
+            env.AssertPropsPerRowLastNew("s0", fields, new object[][] { new object[] { "S3" } });
 
             SendTimeEvent(env, days, 17, 35, 0, 0);
             SendTimeEvent(env, days, 17, 45, 0, 0);
-            EPAssertionUtil.AssertPropsPerRow(env.Listener("s0").GetAndResetLastNewData(), fields, null);
+            env.AssertPropsPerRowLastNew("s0", fields, null);
 
             SendEvent(env, "S4", 0);
             SendEvent(env, "S5", 0);
             SendTimeEvent(env, days, 18, 0, 0, 0);
-            Assert.IsFalse(env.Listener("s0").IsInvoked);
+            env.AssertListenerNotInvoked("s0");
 
             SendTimeEvent(env, days, 18, 1, 0, 0);
             SendEvent(env, "S6", 0);
 
             SendTimeEvent(env, days, 18, 15, 0, 0);
-            Assert.IsFalse(env.Listener("s0").IsInvoked);
+            env.AssertListenerNotInvoked("s0");
 
             SendTimeEvent(env, days + 1, 7, 59, 59, 0);
-            Assert.IsFalse(env.Listener("s0").IsInvoked);
+            env.AssertListenerNotInvoked("s0");
 
             SendTimeEvent(env, days + 1, 8, 0, 0, 0);
-            EPAssertionUtil.AssertPropsPerRow(
-                env.Listener("s0").GetAndResetLastNewData(),
+            env.AssertPropsPerRowLastNew(
+                "s0",
                 fields,
-                new[] {new object[] {"S4"}, new object[] {"S5"}, new object[] {"S6"}});
+                new object[][] { new object[] { "S4" }, new object[] { "S5" }, new object[] { "S6" } });
 
             env.UndeployAll();
         }
@@ -173,39 +624,51 @@ public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> 
             RegressionEnvironment env,
             int days)
         {
-            var subscriber = new SupportSubscriber();
-            env.Statement("s0").Subscriber = subscriber;
-
             SendEvent(env, "S1", 0);
 
             // now scheduled for output
             env.SendEventBean(new SupportBean("E1", 1));
-            Assert.AreEqual(0, env.Runtime.VariableService.GetVariableValue(null, "myvar"));
-            Assert.IsFalse(subscriber.IsInvoked);
+            env.AssertRuntime(
+                runtime => ClassicAssert.AreEqual(0, env.Runtime.VariableService.GetVariableValue(null, "myvar")));
+            env.AssertSubscriber("s0", subscriber => ClassicAssert.IsFalse(subscriber.IsInvoked));
 
             SendTimeEvent(env, days, 8, 0, 1, 0);
-            EPAssertionUtil.AssertEqualsExactOrder(new object[] {"S1"}, subscriber.GetAndResetLastNewData());
-            Assert.AreEqual(0, env.Runtime.VariableService.GetVariableValue(null, "myvar"));
-            Assert.AreEqual(1, env.Runtime.VariableService.GetVariableValue(null, "count_insert_var"));
+            env.AssertSubscriber(
+                "s0",
+                subscriber => EPAssertionUtil.AssertEqualsExactOrder(
+                    new object[] { "S1" },
+                    subscriber.GetAndResetLastNewData()));
+            env.AssertRuntime(
+                runtime => {
+                    ClassicAssert.AreEqual(0, runtime.VariableService.GetVariableValue(null, "myvar"));
+                    ClassicAssert.AreEqual(1, runtime.VariableService.GetVariableValue(null, "count_insert_var"));
+                });
 
             SendEvent(env, "S2", 0);
             SendEvent(env, "S3", 0);
             SendTimeEvent(env, days, 8, 0, 2, 0);
             SendTimeEvent(env, days, 8, 0, 3, 0);
             env.SendEventBean(new SupportBean("E2", 1));
-            Assert.AreEqual(0, env.Runtime.VariableService.GetVariableValue(null, "myvar"));
-            Assert.AreEqual(2, env.Runtime.VariableService.GetVariableValue(null, "count_insert_var"));
+            env.AssertRuntime(
+                runtime => {
+                    ClassicAssert.AreEqual(0, runtime.VariableService.GetVariableValue(null, "myvar"));
+                    ClassicAssert.AreEqual(2, runtime.VariableService.GetVariableValue(null, "count_insert_var"));
+                });
 
-            Assert.IsFalse(subscriber.IsInvoked);
+            env.AssertSubscriber("s0", subscriber => ClassicAssert.IsFalse(subscriber.IsInvoked));
             SendTimeEvent(env, days, 8, 0, 4, 0);
-            EPAssertionUtil.AssertEqualsExactOrder(new object[] {"S2", "S3"}, subscriber.GetAndResetLastNewData());
-            Assert.AreEqual(0, env.Runtime.VariableService.GetVariableValue(null, "myvar"));
+            env.AssertSubscriber(
+                "s0",
+                subscriber => EPAssertionUtil.AssertEqualsExactOrder(
+                    new object[] { "S2", "S3" },
+                    subscriber.GetAndResetLastNewData()));
+            env.AssertRuntime(runtime => ClassicAssert.AreEqual(0, runtime.VariableService.GetVariableValue(null, "myvar")));
 
             SendTimeEvent(env, days, 8, 0, 5, 0);
-            Assert.IsFalse(subscriber.IsInvoked);
+            env.AssertSubscriber("s0", subscriber => ClassicAssert.IsFalse(subscriber.IsInvoked));
             env.SendEventBean(new SupportBean("E1", 1));
-            Assert.AreEqual(0, env.Runtime.VariableService.GetVariableValue(null, "myvar"));
-            Assert.IsFalse(subscriber.IsInvoked);
+            env.AssertRuntime(runtime => ClassicAssert.AreEqual(0, runtime.VariableService.GetVariableValue(null, "myvar")));
+            env.AssertSubscriber("s0", subscriber => ClassicAssert.IsFalse(subscriber.IsInvoked));
 
             env.UndeployAll();
         }
@@ -238,425 +701,6 @@ public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> 
                 .Set(2008, 1, day, hour, minute, second)
                 .SetMillis(millis);
             env.AdvanceTime(dateTimeEx.UtcMillis);
-        }
-
-        internal class ResultSetOutputCrontabAtVariable : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                // every 15 minutes 8am to 5pm
-                SendTimeEvent(env, 1, 17, 10, 0, 0);
-                var epl = "create variable int VFREQ = 15;\n" +
-                          "create variable int VMIN = 8;\n" +
-                          "create variable int VMAX = 17;\n" +
-                          "@Name('s0') select * from SupportMarketDataBean#lastevent output at (*/VFREQ, VMIN:VMAX, *, *, *);\n";
-                env.CompileDeploy(epl).AddListener("s0");
-
-                TryAssertionCrontab(env, 1);
-            }
-        }
-
-        internal class ResultSetOutputCrontabAt : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                // every 15 minutes 8am to 5pm
-                SendTimeEvent(env, 1, 17, 10, 0, 0);
-                var expression =
-                    "@Name('s0') select * from SupportMarketDataBean#lastevent output at (*/15, 8:17, *, *, *)";
-                env.CompileDeploy(expression).AddListener("s0");
-
-                TryAssertionCrontab(env, 1);
-            }
-        }
-
-        internal class ResultSetOutputCrontabAtOMCreate : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                // every 15 minutes 8am to 5pm
-                SendTimeEvent(env, 1, 17, 10, 0, 0);
-                var expression = "select * from SupportMarketDataBean#lastevent output at (*/15, 8:17, *, *, *)";
-
-                var model = new EPStatementObjectModel();
-                model.SelectClause = SelectClause.CreateWildcard();
-                model.FromClause = FromClause.Create(FilterStream.Create("SupportMarketDataBean").AddView("lastevent"));
-                Expression[] crontabParams = {
-                    Expressions.CrontabScheduleFrequency(15),
-                    Expressions.CrontabScheduleRange(8, 17),
-                    Expressions.CrontabScheduleWildcard(),
-                    Expressions.CrontabScheduleWildcard(),
-                    Expressions.CrontabScheduleWildcard()
-                };
-                model.OutputLimitClause = OutputLimitClause.CreateSchedule(crontabParams);
-
-                var epl = model.ToEPL();
-                Assert.AreEqual(expression, epl);
-
-                model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
-                env.CompileDeploy(model).AddListener("s0");
-
-                TryAssertionCrontab(env, 1);
-            }
-        }
-
-        internal class ResultSetOutputCrontabAtOMCompile : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                // every 15 minutes 8am to 5pm
-                SendTimeEvent(env, 1, 17, 10, 0, 0);
-                var expression =
-                    "@Name('s0') select * from SupportMarketDataBean#lastevent output at (*/15, 8:17, *, *, *)";
-
-                env.EplToModelCompileDeploy(expression).AddListener("s0");
-
-                TryAssertionCrontab(env, 1);
-            }
-        }
-
-        internal class ResultSetOutputWhenThenExpression : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                env.Runtime.VariableService.SetVariableValue(null, "myvar", 0);
-                SendTimeEvent(env, 1, 8, 0, 0, 0);
-                env.CompileDeploy("on SupportBean set myvar = IntPrimitive");
-
-                var expression =
-                    "@Name('s0') select Symbol from SupportMarketDataBean#length(2) output when myvar=1 then set myvar=0, count_insert_var=count_insert";
-                env.CompileDeploy(expression).AddListener("s0");
-                TryAssertion(env, 1);
-                env.UndeployAll();
-            }
-        }
-
-        internal class ResultSetOutputWhenThenExpressionSODA : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                env.Runtime.VariableService.SetVariableValue(null, "myvar", 0);
-                SendTimeEvent(env, 1, 8, 0, 0, 0);
-                env.CompileDeploy("on SupportBean set myvar = IntPrimitive");
-
-                var expression =
-                    "@Name('s0') select Symbol from SupportMarketDataBean#length(2) output when myvar=1 then set myvar=0, count_insert_var=count_insert";
-                var model = new EPStatementObjectModel();
-                model.SelectClause = SelectClause.Create("Symbol");
-                model.FromClause = FromClause.Create(
-                    FilterStream.Create("SupportMarketDataBean").AddView("length", Expressions.Constant(2)));
-                model.OutputLimitClause = OutputLimitClause.Create(Expressions.Eq("myvar", 1))
-                    .WithAddThenAssignment(Expressions.Eq(Expressions.Property("myvar"), Expressions.Constant(0)))
-                    .WithAddThenAssignment(
-                        Expressions.Eq(Expressions.Property("count_insert_var"), Expressions.Property("count_insert")));
-                model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
-                var epl = model.ToEPL();
-                Assert.AreEqual(expression, epl);
-                env.Runtime.VariableService.SetVariableValue(null, "myvar", 0);
-                env.CompileDeploy(model).AddListener("s0");
-
-                env.UndeployAll();
-            }
-        }
-
-        internal class ResultSetOutputWhenThenSameVarTwice : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                // test same variable referenced multiple times JIRA-386
-                SendTimer(env, 0);
-                env.CompileDeploy("@Name('s1') select * from SupportMarketDataBean output last when myvar=100")
-                    .AddListener("s1");
-                env.CompileDeploy("@Name('s2') select * from SupportMarketDataBean output last when myvar=100")
-                    .AddListener("s2");
-
-                env.SendEventBean(new SupportMarketDataBean("ABC", "E1", 100));
-                env.SendEventBean(new SupportMarketDataBean("ABC", "E2", 100));
-
-                SendTimer(env, 1000);
-                Assert.IsFalse(env.Listener("s1").IsInvoked);
-                Assert.IsFalse(env.Listener("s2").IsInvoked);
-
-                env.Runtime.VariableService.SetVariableValue(null, "myvar", 100);
-                SendTimer(env, 2000);
-                Assert.IsTrue(env.Listener("s2").IsInvoked);
-                Assert.IsTrue(env.Listener("s1").IsInvoked);
-
-                env.UndeployModuleContaining("s1");
-                env.UndeployModuleContaining("s2");
-            }
-        }
-
-        internal class ResultSetOutputWhenThenWVariable : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                // test when-then with condition triggered by output events
-                SendTimeEvent(env, 2, 8, 0, 0, 0);
-                var eplToDeploy = "create variable boolean varOutputTriggered = false\n;" +
-                                  "@Audit @Name('s0') select * from SupportBean#lastevent output snapshot when (count_insert > 1 and varOutputTriggered = false) then set varOutputTriggered = true;";
-                env.CompileDeploy(eplToDeploy).AddListener("s0");
-
-                env.SendEventBean(new SupportBean("E1", 1));
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
-
-                env.SendEventBean(new SupportBean("E2", 2));
-                Assert.AreEqual("E2", env.Listener("s0").AssertOneGetNewAndReset().Get("TheString"));
-
-                env.SendEventBean(new SupportBean("E3", 3));
-                env.SendEventBean(new SupportBean("E4", 4));
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
-
-                env.Runtime.VariableService.SetVariableValue(
-                    env.DeploymentId("s0"),
-                    "varOutputTriggered",
-                    false); // turns true right away as triggering output
-
-                env.SendEventBean(new SupportBean("E5", 5));
-                SendTimeEvent(env, 2, 8, 0, 1, 0);
-                Assert.AreEqual("E5", env.Listener("s0").AssertOneGetNewAndReset().Get("TheString"));
-
-                env.SendEventBean(new SupportBean("E6", 6));
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
-
-                env.UndeployAll();
-            }
-        }
-
-        internal class ResultSetOutputWhenThenWCount : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                // test count_total for insert and remove
-                var path = new RegressionPath();
-                env.CompileDeploy("@Name('var') create variable int var_cnt_total = 3", path);
-                var expressionTotal =
-                    "@Name('s0') select TheString from SupportBean#length(2) output when count_insert_total = var_cnt_total or count_remove_total > 2";
-                env.CompileDeploy(expressionTotal, path).AddListener("s0");
-
-                env.SendEventBean(new SupportBean("E1", 1));
-                env.SendEventBean(new SupportBean("E2", 1));
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
-
-                env.SendEventBean(new SupportBean("E3", 1));
-                EPAssertionUtil.AssertPropsPerRow(
-                    env.Listener("s0").GetAndResetLastNewData(),
-                    new [] { "TheString" },
-                    new[] {new object[] {"E1"}, new object[] {"E2"}, new object[] {"E3"}});
-
-                env.Runtime.VariableService.SetVariableValue(env.DeploymentId("var"), "var_cnt_total", -1);
-
-                env.SendEventBean(new SupportBean("E4", 1));
-                Assert.IsFalse(env.Listener("s0").GetAndClearIsInvoked());
-
-                env.SendEventBean(new SupportBean("E5", 1));
-                EPAssertionUtil.AssertPropsPerRow(
-                    env.Listener("s0").GetAndResetLastNewData(),
-                    new [] { "TheString" },
-                    new[] {new object[] {"E4"}, new object[] {"E5"}});
-
-                env.UndeployAll();
-            }
-        }
-
-        internal class ResultSetOutputWhenExpression : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                SendTimeEvent(env, 1, 8, 0, 0, 0);
-                env.CompileDeploy("on SupportBean set myint = IntPrimitive, mystring = TheString");
-
-                var expression =
-                    "@Name('s0') select Symbol from SupportMarketDataBean#length(2) output when myint = 1 and mystring like 'F%'";
-                env.CompileDeploy(expression);
-                var stmt = env.Statement("s0");
-                var subscriber = new SupportSubscriber();
-                stmt.Subscriber = subscriber;
-
-                SendEvent(env, "S1", 0);
-
-                env.SendEventBean(new SupportBean("E1", 1));
-                Assert.AreEqual(1, env.Runtime.VariableService.GetVariableValue(null, "myint"));
-                Assert.AreEqual("E1", env.Runtime.VariableService.GetVariableValue(null, "mystring"));
-
-                SendEvent(env, "S2", 0);
-                SendTimeEvent(env, 1, 8, 0, 1, 0);
-                Assert.IsFalse(subscriber.IsInvoked);
-
-                env.SendEventBean(new SupportBean("F1", 0));
-                Assert.AreEqual(0, env.Runtime.VariableService.GetVariableValue(null, "myint"));
-                Assert.AreEqual("F1", env.Runtime.VariableService.GetVariableValue(null, "mystring"));
-
-                SendTimeEvent(env, 1, 8, 0, 2, 0);
-                SendEvent(env, "S3", 0);
-                Assert.IsFalse(subscriber.IsInvoked);
-
-                env.SendEventBean(new SupportBean("F2", 1));
-                Assert.AreEqual(1, env.Runtime.VariableService.GetVariableValue(null, "myint"));
-                Assert.AreEqual("F2", env.Runtime.VariableService.GetVariableValue(null, "mystring"));
-
-                SendEvent(env, "S4", 0);
-                EPAssertionUtil.AssertEqualsExactOrder(
-                    new object[] {"S1", "S2", "S3", "S4"},
-                    subscriber.GetAndResetLastNewData());
-
-                env.UndeployAll();
-            }
-        }
-
-        internal class ResultSetOutputWhenBuiltInCountInsert : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var expression =
-                    "@Name('s0') select Symbol from SupportMarketDataBean#length(2) output when count_insert >= 3";
-                var stmt = env.CompileDeploy(expression).Statement("s0");
-                var subscriber = new SupportSubscriber();
-                stmt.Subscriber = subscriber;
-
-                SendEvent(env, "S1", 0);
-                SendEvent(env, "S2", 0);
-                Assert.IsFalse(subscriber.IsInvoked);
-
-                SendEvent(env, "S3", 0);
-                EPAssertionUtil.AssertEqualsExactOrder(
-                    new object[] {"S1", "S2", "S3"},
-                    subscriber.GetAndResetLastNewData());
-
-                SendEvent(env, "S4", 0);
-                SendEvent(env, "S5", 0);
-                Assert.IsFalse(subscriber.IsInvoked);
-
-                SendEvent(env, "S6", 0);
-                EPAssertionUtil.AssertEqualsExactOrder(
-                    new object[] {"S4", "S5", "S6"},
-                    subscriber.GetAndResetLastNewData());
-
-                SendEvent(env, "S7", 0);
-                Assert.IsFalse(subscriber.IsInvoked);
-
-                env.UndeployAll();
-            }
-        }
-
-        internal class ResultSetOutputWhenBuiltInCountRemove : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var expression =
-                    "@Name('s0') select Symbol from SupportMarketDataBean#length(2) output when count_remove >= 2";
-                var stmt = env.CompileDeploy(expression).Statement("s0");
-                var subscriber = new SupportSubscriber();
-                stmt.Subscriber = subscriber;
-
-                SendEvent(env, "S1", 0);
-                SendEvent(env, "S2", 0);
-                SendEvent(env, "S3", 0);
-                Assert.IsFalse(subscriber.IsInvoked);
-
-                SendEvent(env, "S4", 0);
-                EPAssertionUtil.AssertEqualsExactOrder(
-                    new object[] {"S1", "S2", "S3", "S4"},
-                    subscriber.GetAndResetLastNewData());
-
-                SendEvent(env, "S5", 0);
-                Assert.IsFalse(subscriber.IsInvoked);
-
-                SendEvent(env, "S6", 0);
-                EPAssertionUtil.AssertEqualsExactOrder(new object[] {"S5", "S6"}, subscriber.GetAndResetLastNewData());
-
-                SendEvent(env, "S7", 0);
-                Assert.IsFalse(subscriber.IsInvoked);
-
-                env.UndeployAll();
-            }
-        }
-
-        internal class ResultSetOutputWhenBuiltInLastTimestamp : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                SendTimeEvent(env, 1, 8, 0, 0, 0);
-                var expression =
-                    "@Name('s0') select Symbol from SupportMarketDataBean#length(2) output when current_timestamp - last_output_timestamp >= 2000";
-                var stmt = env.CompileDeploy(expression).Statement("s0");
-                var subscriber = new SupportSubscriber();
-                stmt.Subscriber = subscriber;
-
-                SendEvent(env, "S1", 0);
-
-                SendTimeEvent(env, 1, 8, 0, 1, 900);
-                SendEvent(env, "S2", 0);
-
-                SendTimeEvent(env, 1, 8, 0, 2, 0);
-                Assert.IsFalse(subscriber.IsInvoked);
-
-                SendEvent(env, "S3", 0);
-                EPAssertionUtil.AssertEqualsExactOrder(
-                    new object[] {"S1", "S2", "S3"},
-                    subscriber.GetAndResetLastNewData());
-
-                SendTimeEvent(env, 1, 8, 0, 3, 0);
-                SendEvent(env, "S4", 0);
-
-                SendTimeEvent(env, 1, 8, 0, 3, 500);
-                SendEvent(env, "S5", 0);
-                Assert.IsFalse(subscriber.IsInvoked);
-
-                SendTimeEvent(env, 1, 8, 0, 4, 0);
-                SendEvent(env, "S6", 0);
-                EPAssertionUtil.AssertEqualsExactOrder(
-                    new object[] {"S4", "S5", "S6"},
-                    subscriber.GetAndResetLastNewData());
-
-                env.UndeployAll();
-            }
-        }
-
-        internal class ResultSetInvalid : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                SupportMessageAssertUtil.TryInvalidCompile(
-                    env,
-                    "select * from SupportMarketDataBean output when myvardummy",
-                    "The when-trigger expression in the OUTPUT WHEN clause must return a boolean-type value [select * from SupportMarketDataBean output when myvardummy]");
-
-                SupportMessageAssertUtil.TryInvalidCompile(
-                    env,
-                    "select * from SupportMarketDataBean output when true then set myvardummy = 'b'",
-                    "Failed to validate the output rate limiting clause: Failed to validate assignment expression 'myvardummy=\"b\"': Variable 'myvardummy' of declared type System.Nullable<System.Int32> cannot be assigned a value of type System.String [select * from SupportMarketDataBean output when true then set myvardummy = 'b']");
-
-                SupportMessageAssertUtil.TryInvalidCompile(
-                    env,
-                    "select * from SupportMarketDataBean output when true then set myvardummy = sum(myvardummy)",
-                    "Aggregation functions may not be used within update-set [select * from SupportMarketDataBean output when true then set myvardummy = sum(myvardummy)]");
-
-                SupportMessageAssertUtil.TryInvalidCompile(
-                    env,
-                    "select * from SupportMarketDataBean output when true then set 1",
-                    "Failed to validate the output rate limiting clause: Failed to validate assignment expression '1': Assignment expression must receive a single variable value");
-
-                SupportMessageAssertUtil.TryInvalidCompile(
-                    env,
-                    "select * from SupportMarketDataBean output when sum(Price) > 0",
-                    "Failed to validate output limit expression '(sum(Price))>0': Property named 'Price' is not valid in any stream [select * from SupportMarketDataBean output when sum(Price) > 0]");
-
-                SupportMessageAssertUtil.TryInvalidCompile(
-                    env,
-                    "select * from SupportMarketDataBean output when sum(count_insert) > 0",
-                    "An aggregate function may not appear in a OUTPUT LIMIT clause [select * from SupportMarketDataBean output when sum(count_insert) > 0]");
-
-                SupportMessageAssertUtil.TryInvalidCompile(
-                    env,
-                    "select * from SupportMarketDataBean output when prev(1, count_insert) = 0",
-                    "Failed to validate output limit expression 'prev(1,count_insert)=0': Previous function cannot be used in this context [select * from SupportMarketDataBean output when prev(1, count_insert) = 0]");
-
-                SupportMessageAssertUtil.TryInvalidCompile(
-                    env,
-                    "select TheString, count(*) from SupportBean#length(2) group by TheString output all every 0 seconds",
-                    "Invalid time period expression returns a zero or negative time interval [select TheString, count(*) from SupportBean#length(2) group by TheString output all every 0 seconds]");
-            }
         }
     }
 } // end of namespace

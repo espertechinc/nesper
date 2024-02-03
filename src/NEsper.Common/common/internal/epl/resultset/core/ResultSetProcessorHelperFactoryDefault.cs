@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -10,7 +10,7 @@ using System;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.serde;
-using com.espertech.esper.common.@internal.context.util;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.time.eval;
@@ -25,6 +25,7 @@ using com.espertech.esper.common.@internal.epl.resultset.rowpergroup;
 using com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup;
 using com.espertech.esper.common.@internal.epl.resultset.simple;
 using com.espertech.esper.common.@internal.epl.variable.core;
+
 
 namespace com.espertech.esper.common.@internal.epl.resultset.core
 {
@@ -41,25 +42,28 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
             Type[] groupKeyTypes,
             DataInputOutputSerde serde,
             EventType eventType,
-            AgentInstanceContext agentInstanceContext)
+            StateMgmtSetting stateMgmtSettings,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             return new ResultSetProcessorRowPerGroupUnboundHelperImpl();
         }
 
         public ResultSetProcessorGroupedOutputFirstHelper MakeRSGroupedOutputFirst(
-            AgentInstanceContext agentInstanceContext,
+            ExprEvaluatorContext exprEvaluatorContext,
             Type[] groupKeyTypes,
             OutputConditionPolledFactory optionalOutputFirstConditionFactory,
             AggregationGroupByRollupDesc optionalGroupByRollupDesc,
             int optionalRollupLevel,
-            DataInputOutputSerde serde)
+            DataInputOutputSerde serde,
+            StateMgmtSetting stateMgmtSettings)
         {
             return new ResultSetProcessorGroupedOutputFirstHelperImpl();
         }
 
         public OutputProcessViewConditionDeltaSet MakeOutputConditionChangeSet(
             EventType[] eventTypes,
-            AgentInstanceContext agentInstanceContext)
+            ExprEvaluatorContext exprEvaluatorContext,
+            StateMgmtSetting stateMgmtSettings)
         {
             return new OutputProcessViewConditionDeltaSetImpl(eventTypes.Length > 1);
         }
@@ -68,7 +72,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
             bool hasVariable,
             TimePeriodCompute timePeriodCompute,
             bool isStartConditionOnCreation,
-            int scheduleCallbackId)
+            int scheduleCallbackId,
+            StateMgmtSetting stateMgmtSetting)
         {
             return new OutputConditionTimeFactory(
                 hasVariable,
@@ -79,38 +84,43 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
 
         public ResultSetProcessorRowForAllOutputLastHelper MakeRSRowForAllOutputLast(
             ResultSetProcessorRowForAll processor,
-            AgentInstanceContext agentInstanceContext)
+            ExprEvaluatorContext exprEvaluatorContext,
+            StateMgmtSetting stateMgmtSetting)
         {
             return new ResultSetProcessorRowForAllOutputLastHelperImpl(processor);
         }
 
         public ResultSetProcessorRowForAllOutputAllHelper MakeRSRowForAllOutputAll(
             ResultSetProcessorRowForAll processor,
-            AgentInstanceContext agentInstanceContext)
+            ExprEvaluatorContext exprEvaluatorContext,
+            StateMgmtSetting stateMgmtSettings)
         {
             return new ResultSetProcessorRowForAllOutputAllHelperImpl(processor);
         }
 
         public ResultSetProcessorSimpleOutputLastHelper MakeRSSimpleOutputLast(
             ResultSetProcessorSimple simple,
-            AgentInstanceContext agentInstanceContext,
-            EventType[] eventTypes)
+            ExprEvaluatorContext exprEvaluatorContext,
+            EventType[] eventTypes,
+            StateMgmtSetting stateMgmtSetting)
         {
             return new ResultSetProcessorSimpleOutputLastHelperImpl(simple);
         }
 
         public ResultSetProcessorSimpleOutputAllHelper MakeRSSimpleOutputAll(
             ResultSetProcessorSimple simple,
-            AgentInstanceContext agentInstanceContext,
-            EventType[] eventTypes)
+            ExprEvaluatorContext exprEvaluatorContext,
+            EventType[] eventTypes,
+            StateMgmtSetting stateMgmtSettings)
         {
             return new ResultSetProcessorSimpleOutputAllHelperImpl(simple);
         }
 
-        public ResultSetProcessorSimpleOutputFirstHelper MakeRSSimpleOutputFirst(
-            AgentInstanceContext agentInstanceContext)
+        public ResultSetProcessorStraightOutputFirstHelper MakeRSStraightOutputFirst(
+            ExprEvaluatorContext exprEvaluatorContext,
+            StateMgmtSetting stateMgmtSetting)
         {
-            return new ResultSetProcessorSimpleOutputFirstHelperImpl();
+            return new ResultSetProcessorStraightOutputFirstHelperImpl();
         }
 
         public OutputConditionExpressionFactory MakeOutputConditionExpression()
@@ -128,16 +138,17 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
 
         public OutputConditionFactory MakeOutputConditionCount(
             int rate,
-            Variable variableMetaData)
+            Variable variableMetaData,
+            StateMgmtSetting stateMgmtSetting)
         {
-            return new OutputConditionCountFactory(rate, variableMetaData);
+            return new OutputConditionCountFactory(rate, variableMetaData, stateMgmtSetting);
         }
 
         public OutputProcessViewAfterState MakeOutputConditionAfter(
             long? afterConditionTime,
             int? afterConditionNumberOfEvents,
             bool afterConditionSatisfied,
-            AgentInstanceContext agentInstanceContext)
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             if (afterConditionSatisfied) {
                 return OutputProcessViewAfterStateNone.INSTANCE;
@@ -146,73 +157,81 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
             return new OutputProcessViewAfterStateImpl(afterConditionTime, afterConditionNumberOfEvents);
         }
 
-        ResultSetProcessorRowPerEventOutputLastHelper ResultSetProcessorHelperFactory.MakeRSRowPerEventOutputLast(
+        public ResultSetProcessorRowPerEventOutputLastHelper MakeRSRowPerEventOutputLast(
             ResultSetProcessorRowPerEvent processor,
-            AgentInstanceContext agentInstanceContext)
+            ExprEvaluatorContext exprEvaluatorContext,
+            StateMgmtSetting stateMgmtSetting)
         {
-            return MakeRSRowPerEventOutputLast(processor, agentInstanceContext);
+            return new ResultSetProcessorRowPerEventOutputLastHelperImpl(processor);
         }
 
         public ResultSetProcessorRowPerEventOutputAllHelper MakeRSRowPerEventOutputAll(
             ResultSetProcessorRowPerEvent processor,
-            AgentInstanceContext agentInstanceContext)
+            ExprEvaluatorContext exprEvaluatorContext,
+            StateMgmtSetting stateMgmtSettings)
         {
             return new ResultSetProcessorRowPerEventOutputAllHelperImpl(processor);
         }
 
         public ResultSetProcessorGroupedOutputAllGroupReps MakeRSGroupedOutputAllNoOpt(
-            AgentInstanceContext agentInstanceContext,
+            ExprEvaluatorContext exprEvaluatorContext,
             Type[] groupKeyTypes,
             DataInputOutputSerde serde,
-            EventType[] eventTypes)
+            EventType[] eventTypes,
+            StateMgmtSetting stateMgmtSettings)
         {
             return new ResultSetProcessorGroupedOutputAllGroupRepsImpl();
         }
 
         public ResultSetProcessorRowPerGroupOutputAllHelper MakeRSRowPerGroupOutputAllOpt(
-            AgentInstanceContext agentInstanceContext,
+            ExprEvaluatorContext exprEvaluatorContext,
             ResultSetProcessorRowPerGroup resultSetProcessorRowPerGroup,
             Type[] groupKeyTypes,
             DataInputOutputSerde serde,
-            EventType[] eventTypes)
+            EventType[] eventTypes,
+            StateMgmtSetting stateMgmtSettings)
         {
             return new ResultSetProcessorRowPerGroupOutputAllHelperImpl(resultSetProcessorRowPerGroup);
         }
 
         public ResultSetProcessorRowPerGroupOutputLastHelper MakeRSRowPerGroupOutputLastOpt(
-            AgentInstanceContext agentInstanceContext,
+            ExprEvaluatorContext exprEvaluatorContext,
             ResultSetProcessorRowPerGroup resultSetProcessorRowPerGroup,
             Type[] groupKeyTypes,
             DataInputOutputSerde serde,
-            EventType[] eventTypes)
+            EventType[] eventTypes,
+            StateMgmtSetting stateMgmtSettings)
         {
             return new ResultSetProcessorRowPerGroupOutputLastHelperImpl(resultSetProcessorRowPerGroup);
         }
 
         public ResultSetProcessorAggregateGroupedOutputAllHelper MakeRSAggregateGroupedOutputAll(
-            AgentInstanceContext agentInstanceContext,
+            ExprEvaluatorContext exprEvaluatorContext,
             ResultSetProcessorAggregateGrouped processor,
             Type[] groupKeyTypes,
             DataInputOutputSerde serde,
-            EventType[] eventTypes)
+            EventType[] eventTypes,
+            StateMgmtSetting stateMgmtSettings)
         {
             return new ResultSetProcessorAggregateGroupedOutputAllHelperImpl(processor);
         }
 
         public ResultSetProcessorAggregateGroupedOutputLastHelper MakeRSAggregateGroupedOutputLastOpt(
-            AgentInstanceContext agentInstanceContext,
+            ExprEvaluatorContext exprEvaluatorContext,
             ResultSetProcessorAggregateGrouped processor,
             Type[] groupKeyTypes,
-            DataInputOutputSerde serde)
+            DataInputOutputSerde serde,
+            StateMgmtSetting stateMgmtSettings)
         {
             return new ResultSetProcessorAggregateGroupedOutputLastHelperImpl(processor);
         }
 
         public ResultSetProcessorRowPerGroupRollupOutputLastHelper MakeRSRowPerGroupRollupLast(
-            AgentInstanceContext agentInstanceContext,
+            ExprEvaluatorContext exprEvaluatorContext,
             ResultSetProcessorRowPerGroupRollup resultSetProcessorRowPerGroupRollup,
             Type[] groupKeyTypes,
-            EventType[] eventTypes)
+            EventType[] eventTypes,
+            StateMgmtSetting stateMgmtSettings)
         {
             return new ResultSetProcessorRowPerGroupRollupOutputLastHelperImpl(
                 resultSetProcessorRowPerGroupRollup,
@@ -220,10 +239,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
         }
 
         public ResultSetProcessorRowPerGroupRollupOutputAllHelper MakeRSRowPerGroupRollupAll(
-            AgentInstanceContext agentInstanceContext,
+            ExprEvaluatorContext exprEvaluatorContext,
             ResultSetProcessorRowPerGroupRollup resultSetProcessorRowPerGroupRollup,
             Type[] groupKeyTypes,
-            EventType[] eventTypes)
+            EventType[] eventTypes,
+            StateMgmtSetting stateMgmtSettings)
         {
             return new ResultSetProcessorRowPerGroupRollupOutputAllHelperImpl(
                 resultSetProcessorRowPerGroupRollup,
@@ -231,21 +251,15 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
         }
 
         public ResultSetProcessorRowPerGroupRollupUnboundHelper MakeRSRowPerGroupRollupSnapshotUnbound(
-            AgentInstanceContext agentInstanceContext,
+            ExprEvaluatorContext exprEvaluatorContext,
             ResultSetProcessorRowPerGroupRollup resultSetProcessorRowPerGroupRollup,
             Type[] groupKeyTypes,
             int numStreams,
-            EventType[] eventTypes)
+            EventType[] eventTypes,
+            StateMgmtSetting stateMgmtSettings)
         {
             var levelCount = resultSetProcessorRowPerGroupRollup.GroupByRollupDesc.Levels.Length;
             return new ResultSetProcessorRowPerGroupRollupUnboundHelperImpl(levelCount);
-        }
-
-        public ResultSetProcessorRowPerEventOutputLastHelperImpl MakeRSRowPerEventOutputLast(
-            ResultSetProcessorRowPerEvent processor,
-            AgentInstanceContext agentInstanceContext)
-        {
-            return new ResultSetProcessorRowPerEventOutputLastHelperImpl(processor);
         }
     }
 } // end of namespace

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -16,7 +16,6 @@ namespace com.espertech.esper.common.client.configuration.runtime
     /// <summary>
     ///     Contains settings that apply to the runtime only (and that do not apply to the compiler).
     /// </summary>
-    [Serializable]
     public class ConfigurationRuntime
     {
         /// <summary>

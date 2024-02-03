@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -31,8 +31,16 @@ namespace com.espertech.esper.regressionlib.support.extend.aggfunc
 
         public Type ValueType => typeof(string);
 
-        public AggregationFunctionMode AggregationFunctionMode =>
-            new AggregationFunctionModeManaged().SetInjectionStrategyAggregationFunctionFactory(
-                new InjectionStrategyClassNewInstance(typeof(SupportConcatWManagedAggregationFunctionFactory).FullName));
+        public AggregationFunctionMode AggregationFunctionMode {
+            get {
+                var mode = new AggregationFunctionModeManaged();
+                mode.SetHasHA(true);
+                mode.SetSerde(typeof(SupportConcatWManagedAggregationFunctionSerde));
+                mode.SetInjectionStrategyAggregationFunctionFactory(
+                    new InjectionStrategyClassNewInstance(
+                        typeof(SupportConcatWManagedAggregationFunctionFactory).FullName));
+                return mode;
+            }
+        }
     }
 } // end of namespace

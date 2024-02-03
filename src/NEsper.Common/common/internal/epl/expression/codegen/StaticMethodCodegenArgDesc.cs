@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -28,16 +28,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
             this.argExpression = argExpression;
         }
 
-        public string BlockRefName {
-            get => blockRefName;
-        }
+        public string BlockRefName => blockRefName;
 
-        public Type DeclareType {
-            get => declareType;
-        }
+        public Type DeclareType => declareType;
 
-        public CodegenExpression ArgExpression {
-            get => argExpression;
-        }
+        public CodegenExpression ArgExpression => argExpression;
     }
 } // end of namespace

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -57,8 +57,7 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
             ContextPartitionVisitor visitor,
             ContextPartitionSelector[] selectorPerLevel)
         {
-            if (selector is ContextPartitionSelectorSegmented) {
-                var partitioned = (ContextPartitionSelectorSegmented) selector;
+            if (selector is ContextPartitionSelectorSegmented partitioned) {
                 if (partitioned.PartitionKeys == null || partitioned.PartitionKeys.IsEmpty()) {
                     return;
                 }
@@ -79,8 +78,7 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
                 return;
             }
 
-            if (selector is ContextPartitionSelectorFiltered) {
-                var filtered = (ContextPartitionSelectorFiltered) selector;
+            if (selector is ContextPartitionSelectorFiltered filtered) {
                 var identifier = new ContextPartitionIdentifierPartitioned();
                 VisitPartitions(
                     path,
@@ -93,7 +91,9 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
 
                         var keys = ContextControllerKeyedUtil.UnpackKey(key);
                         identifier.Keys = keys;
-                        if (filtered.Filter(identifier)) {
+
+                        var isFiltered = filtered.Filter(identifier);
+                        if (isFiltered) {
                             realization.ContextPartitionRecursiveVisit(
                                 path,
                                 subpathOrCPId,
@@ -119,8 +119,7 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
                 return;
             }
 
-            if (selector is ContextPartitionSelectorById) {
-                var ids = (ContextPartitionSelectorById) selector;
+            if (selector is ContextPartitionSelectorById ids) {
                 VisitPartitions(
                     path,
                     (
@@ -138,7 +137,7 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
             }
 
             throw ContextControllerSelectorUtil.GetInvalidSelector(
-                new[] {typeof(ContextPartitionSelectorSegmented)},
+                new[] { typeof(ContextPartitionSelectorSegmented) },
                 selector);
         }
     }

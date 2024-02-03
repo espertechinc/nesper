@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -20,6 +20,7 @@ using com.espertech.esper.regressionlib.support.util;
 using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.multithread
 {
@@ -83,16 +84,16 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             lock (sendLock) {
                 Monitor.PulseAll(sendLock);
             }
-            
+
             executor.Shutdown();
             SupportCompileDeployUtil.ExecutorAwait(executor, TimeSpan.FromSeconds(10));
 
             for (var i = 0; i < numEvents; i++) {
                 var theEventReceived = listener[i].AssertOneGetNewAndReset();
-                Assert.NotNull(theEventReceived);
+                ClassicAssert.NotNull(theEventReceived);
                 var theEventValue = theEventReceived.Get("a");
-                Assert.NotNull(theEventValue);
-                Assert.IsInstanceOf<SupportBean>(theEventValue);
+                ClassicAssert.NotNull(theEventValue);
+                ClassicAssert.IsInstanceOf<SupportBean>(theEventValue);
             }
 
             env.UndeployAll();

@@ -1,12 +1,11 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.index.@base;
 using com.espertech.esper.common.@internal.epl.lookup;
@@ -33,15 +32,15 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
 
         public SubordTableLookupStrategy MakeStrategy(
             EventTable[] eventTable,
-            AgentInstanceContext agentInstanceContext,
+            ExprEvaluatorContext exprEvaluatorContext,
             VirtualDWView vdw)
         {
             if (IsNwOnTrigger) {
-                return new SubordTableLookupStrategyQuadTreeNW((EventTableQuadTree) eventTable[0], this);
+                return new SubordTableLookupStrategyQuadTreeNW((EventTableQuadTree)eventTable[0], this);
             }
 
             return new SubordTableLookupStrategyQuadTreeSubq(
-                (EventTableQuadTree) eventTable[0],
+                (EventTableQuadTree)eventTable[0],
                 this,
                 StreamCountOuter);
         }

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -18,6 +18,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.compiler.@internal.parse
 {
@@ -152,7 +153,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 
 			string t1 = ToPatternText(l1);
 			string t2 = ToPatternText(l2);
-			Assert.AreEqual(t1, t2);
+			ClassicAssert.AreEqual(t1, t2);
 		}
 
 		private string ToPatternText(EPLTreeWalkerListener walker)
@@ -173,7 +174,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 			Log.Debug(".assertEquivalent parsing: " + expressionTwo);
 			Pair<ITree, CommonTokenStream> astTwo = Parse(expressionTwo);
 
-			Assert.IsFalse(astOne.First.ToStringTree().Equals(astTwo.First.ToStringTree()));
+			ClassicAssert.IsFalse(astOne.First.ToStringTree().Equals(astTwo.First.ToStringTree()));
 		}
 
 		private Pair<ITree, CommonTokenStream> Parse(string expression)

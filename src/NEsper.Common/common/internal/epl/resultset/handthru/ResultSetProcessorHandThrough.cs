@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -10,6 +10,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.resultset.codegen.ResultSetProcessorCodegenNames;
 using static com.espertech.esper.common.@internal.epl.resultset.handthru.ResultSetProcessorHandThroughUtil;
@@ -35,7 +36,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.handthru
                     REF_OLDDATA,
                     Constant(false),
                     REF_ISSYNTHESIZE,
-                    MEMBER_AGENTINSTANCECONTEXT);
+                    MEMBER_EXPREVALCONTEXT);
             }
 
             var newEvents = StaticMethod(
@@ -45,7 +46,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.handthru
                 REF_NEWDATA,
                 Constant(true),
                 REF_ISSYNTHESIZE,
-                MEMBER_AGENTINSTANCECONTEXT);
+                MEMBER_EXPREVALCONTEXT);
 
             method.Block
                 .DeclareVar<EventBean[]>("selectOldEvents", oldEvents)
@@ -66,7 +67,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.handthru
                     REF_OLDDATA,
                     Constant(false),
                     REF_ISSYNTHESIZE,
-                    MEMBER_AGENTINSTANCECONTEXT);
+                    MEMBER_EXPREVALCONTEXT);
             }
 
             var newEvents = StaticMethod(
@@ -76,7 +77,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.handthru
                 REF_NEWDATA,
                 Constant(true),
                 REF_ISSYNTHESIZE,
-                MEMBER_AGENTINSTANCECONTEXT);
+                MEMBER_EXPREVALCONTEXT);
 
             method.Block
                 .DeclareVar<EventBean[]>("selectOldEvents", oldEvents)
@@ -101,7 +102,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.handthru
                         Ref("this"),
                         "ProcessJoinResult",
                         REF_JOINSET,
-                        StaticMethod(typeof(Collections), "GetEmptySet", new[] {typeof(MultiKeyArrayOfKeys<EventBean>)}),
+                        StaticMethod(
+                            typeof(Collections),
+                            "GetEmptySet",
+                            new[] { typeof(MultiKeyArrayOfKeys<EventBean>) }),
                         Constant(true)))
                 .MethodReturn(
                     NewInstance<ArrayEventEnumerator>(

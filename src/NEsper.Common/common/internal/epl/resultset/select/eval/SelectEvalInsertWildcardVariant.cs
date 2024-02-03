@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -42,9 +42,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
         {
             var methodNode = codegenMethodScope.MakeChild(
                 typeof(EventBean),
-                this.GetType(),
+                GetType(),
                 codegenClassScope);
-            var refEPS = exprSymbol.GetAddEPS(methodNode);
+            var refEPS = exprSymbol.GetAddEps(methodNode);
             var type = VariantEventTypeUtil.GetField(variantEventType, codegenClassScope);
             methodNode.Block.MethodReturn(
                 ExprDotMethod(type, "GetValueAddEventBean", ArrayAtIndex(refEPS, Constant(0))));

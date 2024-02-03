@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
@@ -63,40 +64,37 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
             return execs;
         }
 
-        internal class EPLSpatialInvalidFilterIndex : RegressionExecution
+        private class EPLSpatialInvalidFilterIndex : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 // invalid index for filter
                 var epl = "expression myindex {pointregionquadtree(0, 0, 100, 100)}" +
                           "select * from SupportSpatialEventRectangle(rectangle(10, 20, 5, 6, filterindex:myindex).intersects(rectangle(X, Y, Width, Height)))";
-                SupportMessageAssertUtil.TryInvalidCompile(
-                    env,
+                env.TryInvalidCompile(
                     epl,
                     "Failed to validate filter expression 'rectangle(10,20,5,6,filterindex:myi...(82 chars)': Invalid index type 'pointregionquadtree', expected 'mxcifquadtree'");
             }
         }
 
-        internal class EPLSpatialInvalidMethod : RegressionExecution
+        private class EPLSpatialInvalidMethod : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
-                SupportMessageAssertUtil.TryInvalidCompile(
-                    env,
+                env.TryInvalidCompile(
                     "select * from SupportSpatialEventRectangle(rectangle('a', 0).inside(rectangle(0, 0, 0, 0)))",
                     "Failed to validate filter expression 'rectangle(\"a\",0).inside(rectangle(0...(43 chars)': Failed to validate method-chain parameter expression 'rectangle(0,0,0,0)': Unknown single-row function, expression declaration, script or aggregation function named 'rectangle' could not be resolved (did you mean 'rectangle.intersects')");
-                SupportMessageAssertUtil.TryInvalidCompile(
-                    env,
+                env.TryInvalidCompile(
                     "select * from SupportSpatialEventRectangle(rectangle(0).intersects(rectangle(0, 0, 0, 0)))",
                     "Failed to validate filter expression 'rectangle(0).intersects(rectangle(0...(43 chars)': Failed to validate left-hand-side method 'rectangle', expected 4 parameters but received 1 parameters");
             }
         }
 
-        internal class EPLSpatialInvalidEventIndexRuntime : RegressionExecution
+        private class EPLSpatialInvalidEventIndexRuntime : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('mywindow') create window RectangleWindow#keepall as SupportSpatialEventRectangle;\n" +
+                var epl = "@name('mywindow') create window RectangleWindow#keepall as SupportSpatialEventRectangle;\n" +
                           "insert into RectangleWindow select * from SupportSpatialEventRectangle;\n" +
                           "create index MyIndex on RectangleWindow((X, Y, Width, Height) mxcifquadtree(0, 0, 100, 100));\n";
                 env.CompileDeploy(epl);
@@ -121,30 +119,33 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
 
                 env.UndeployAll();
             }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.INVALIDITY);
+            }
         }
 
-        internal class EPLSpatialInvalidEventIndexCreate : RegressionExecution
+        private class EPLSpatialInvalidEventIndexCreate : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 // most are covered by point-region test already
                 var path = new RegressionPath();
-                env.CompileDeploy("create window MyWindow#keepall as SupportSpatialEventRectangle", path);
+                env.CompileDeploy("@public create window MyWindow#keepall as SupportSpatialEventRectangle", path);
 
                 // invalid number of columns
-                SupportMessageAssertUtil.TryInvalidCompile(
-                    env,
+                env.TryInvalidCompile(
                     path,
                     "create index MyIndex on MyWindow(X mxcifquadtree(0, 0, 100, 100))",
                     "Index of type 'mxcifquadtree' requires 4 expressions as index columns but received 1");
 
                 // same index twice, by-columns
-                env.CompileDeploy("create window SomeWindow#keepall as SupportSpatialEventRectangle", path);
+                env.CompileDeploy("@public create window SomeWindow#keepall as SupportSpatialEventRectangle", path);
                 env.CompileDeploy(
                     "create index SomeWindowIdx1 on SomeWindow((X, Y, Width, Height) mxcifquadtree(0, 0, 1, 1))",
                     path);
-                SupportMessageAssertUtil.TryInvalidCompile(
-                    env,
+                env.TryInvalidCompile(
                     path,
                     "create index SomeWindowIdx2 on SomeWindow((X, Y, Width, Height) mxcifquadtree(0, 0, 1, 1))",
                     "An index for the same columns already exists");
@@ -153,7 +154,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
             }
         }
 
-        internal class EPLSpatialDocSample : RegressionExecution
+        private class EPLSpatialDocSample : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {

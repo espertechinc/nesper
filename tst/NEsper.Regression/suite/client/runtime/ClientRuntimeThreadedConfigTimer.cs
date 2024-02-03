@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -13,6 +13,7 @@ using System.Threading;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.epl;
@@ -20,13 +21,13 @@ using com.espertech.esper.regressionlib.support.util;
 using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.client.runtime
 {
     public class ClientRuntimeThreadedConfigTimer : RegressionExecutionWithConfigure
     {
-        private static readonly ILog log =
-            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public bool EnableHATest => false;
         public bool HAWithCOnly => false;
@@ -41,11 +42,16 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             configuration.Common.AddImportNamespace(typeof(SupportStaticMethodLib));
         }
 
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.OBSERVEROPS);
+        }
+
         public void Run(RegressionEnvironment env)
         {
             SendTimer(0, env);
 
-            log.Debug("Creating statements");
+            Log.Debug("Creating statements");
             var countStatements = 100;
             var listener = new SupportListenerTimerHRes();
             var compiled = env.Compile(
@@ -56,7 +62,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 env.Statement(stmtName).AddListener(listener);
             }
 
-            log.Info("Sending trigger event");
+            Log.Info("Sending trigger event");
             env.SendEventMap(new Dictionary<string, object>(), "MyMap");
 
             var start = PerformanceObserver.NanoTime;
@@ -72,7 +78,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                     break;
                 }
 
-                log.Info("Delivered " + countDelivered + ", waiting for more");
+                Log.Info("Delivered " + countDelivered + ", waiting for more");
                 try {
                     Thread.Sleep(200);
                 }
@@ -81,7 +87,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 }
             }
 
-            Assert.AreEqual(100, listener.NewEvents.Count);
+            ClassicAssert.AreEqual(100, listener.NewEvents.Count);
             // analyze result
             //List<Pair<Long, EventBean[]>> events = listener.getNewEvents();
             //OccuranceResult result = OccuranceAnalyzer.analyze(events, new long[] {100 * 1000 * 1000L, 10*1000 * 1000L});

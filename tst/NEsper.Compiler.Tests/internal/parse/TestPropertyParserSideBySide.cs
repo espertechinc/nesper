@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -22,15 +22,15 @@ using com.espertech.esper.grammar.@internal.generated;
 using com.espertech.esper.grammar.@internal.util;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esper.grammar.@internal.generated.EsperEPL2GrammarParser;
 
 namespace com.espertech.esper.compiler.@internal.parse
 {
     [TestFixture]
 	public class TestPropertyParserSideBySide  {
-		private static object keywordCacheLock = new object();
-	    private static ISet<string> keywordCache;
+		private static readonly object KEYWORD_CACHE_LOCK = new object();
+	    private static ISet<string> _keywordCache;
 
         [Test]
 	    public void TestParse() {
@@ -42,9 +42,9 @@ namespace com.espertech.esper.compiler.@internal.parse
 	        RunAssertion("prop?", new SimplePropAssertion("prop", true));
 	        RunAssertion("a[1]?", new IndexedPropAssertion("a", 1, true));
 	        RunAssertion("a('key')?", new MappedPropAssertion("a", "key", true));
-	        RunAssertion("item?.id", new NestedPropAssertion(new SimplePropAssertion("item", true), new SimplePropAssertion("id", true)));
-	        RunAssertion("item[0]?.id", new NestedPropAssertion(new IndexedPropAssertion("item", 0, true), new SimplePropAssertion("id")));
-	        RunAssertion("item('a')?.id", new NestedPropAssertion(new MappedPropAssertion("item", "a", true), new SimplePropAssertion("id")));
+	        RunAssertion("Item?.Id", new NestedPropAssertion(new SimplePropAssertion("Item", true), new SimplePropAssertion("Id", true)));
+	        RunAssertion("Item[0]?.Id", new NestedPropAssertion(new IndexedPropAssertion("Item", 0, true), new SimplePropAssertion("Id")));
+	        RunAssertion("Item('a')?.Id", new NestedPropAssertion(new MappedPropAssertion("Item", "a", true), new SimplePropAssertion("Id")));
 	    }
 
 	    private void RunAssertion(
@@ -67,7 +67,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 	    }
 
 	    public static StartEventPropertyRuleContext Parse(string propertyName) {
-	        var input = new CaseInsensitiveInputStream(propertyName);
+	        var input = CaseChangingCharStreamFactory.Make(propertyName);
 	        var lex = ParseHelper.NewLexer(input);
 	        var tokens = new CommonTokenStream(lex);
 	        try {
@@ -106,7 +106,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 		    // Check for keywords and escape each, parse again
 		    var escapedPropertyName = EscapeKeywords(tokens);
 
-		    var inputEscaped = new CaseInsensitiveInputStream(escapedPropertyName);
+		    var inputEscaped = CaseChangingCharStreamFactory.Make(escapedPropertyName);
 		    var lexEscaped = ParseHelper.NewLexer(inputEscaped);
 		    var tokensEscaped = new CommonTokenStream(lexEscaped);
 		    var gEscaped = ParseHelper.NewParser(tokensEscaped);
@@ -136,9 +136,9 @@ namespace com.espertech.esper.compiler.@internal.parse
 	    }
 
 	    private static string EscapeKeywords(CommonTokenStream tokens) {
-		    lock (keywordCacheLock) {
-			    if (keywordCache == null) {
-				    keywordCache = CreateKeywordCache(tokens);
+		    lock (KEYWORD_CACHE_LOCK) {
+			    if (_keywordCache == null) {
+				    _keywordCache = CreateKeywordCache(tokens);
 			    }
 		    }
 
@@ -149,7 +149,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 				    break;
 			    }
 
-			    var isKeyword = keywordCache.Contains(t.Text.ToLowerInvariant());
+			    var isKeyword = _keywordCache.Contains(t.Text.ToLowerInvariant());
 			    if (isKeyword) {
 				    writer.Write('`');
 				    writer.Write(t.Text);
@@ -235,42 +235,42 @@ namespace com.espertech.esper.compiler.@internal.parse
 	    
 	    private class SimplePropAssertion : IPropAssertion
 	    {
-	        private readonly string name;
-	        private readonly bool dynamic;
+	        private readonly string _name;
+	        private readonly bool _dynamic;
 
 	        public SimplePropAssertion(string name) : this(name, false) {
 	        }
 
 	        public SimplePropAssertion(string name, bool dynamic) {
-	            this.name = name;
-	            this.dynamic = dynamic;
+	            this._name = name;
+	            this._dynamic = dynamic;
 	        }
 
 	        public void Accept(Property property) {
-	            if (dynamic) {
+	            if (_dynamic) {
 	                var dyn = (DynamicSimpleProperty) property;
-	                Assert.AreEqual(name, dyn.PropertyNameAtomic);
+	                ClassicAssert.AreEqual(_name, dyn.PropertyNameAtomic);
 	            } else {
 	                var prop = (SimpleProperty) property;
-	                Assert.AreEqual(name, prop.PropertyNameAtomic);
+	                ClassicAssert.AreEqual(_name, prop.PropertyNameAtomic);
 	            }
 	        }
 	    }
 
 	    private class IndexedPropAssertion : IPropAssertion
 	    {
-		    private readonly string name;
-		    private readonly int index;
-		    private readonly bool dynamic;
+		    private readonly string _name;
+		    private readonly int _index;
+		    private readonly bool _dynamic;
 
 		    public IndexedPropAssertion(
 			    string name,
 			    int index,
 			    bool dynamic)
 		    {
-			    this.name = name;
-			    this.index = index;
-			    this.dynamic = dynamic;
+			    this._name = name;
+			    this._index = index;
+			    this._dynamic = dynamic;
 		    }
 
 		    public IndexedPropAssertion(
@@ -281,33 +281,33 @@ namespace com.espertech.esper.compiler.@internal.parse
 
 		    public void Accept(Property property)
 		    {
-			    if (dynamic) {
+			    if (_dynamic) {
 				    var prop = (DynamicIndexedProperty) property;
-				    Assert.AreEqual(name, prop.PropertyNameAtomic);
-				    Assert.AreEqual(index, prop.Index);
+				    ClassicAssert.AreEqual(_name, prop.PropertyNameAtomic);
+				    ClassicAssert.AreEqual(_index, prop.Index);
 			    }
 			    else {
 				    var prop = (IndexedProperty) property;
-				    Assert.AreEqual(name, prop.PropertyNameAtomic);
-				    Assert.AreEqual(index, prop.Index);
+				    ClassicAssert.AreEqual(_name, prop.PropertyNameAtomic);
+				    ClassicAssert.AreEqual(_index, prop.Index);
 			    }
 		    }
 	    }
 
 	    private class MappedPropAssertion : IPropAssertion
 	    {
-		    private readonly string name;
-		    private readonly string key;
-		    private readonly bool dynamic;
+		    private readonly string _name;
+		    private readonly string _key;
+		    private readonly bool _dynamic;
 
 		    public MappedPropAssertion(
 			    string name,
 			    string key,
 			    bool dynamic)
 		    {
-			    this.name = name;
-			    this.key = key;
-			    this.dynamic = dynamic;
+			    this._name = name;
+			    this._key = key;
+			    this._dynamic = dynamic;
 		    }
 
 		    public MappedPropAssertion(
@@ -318,27 +318,26 @@ namespace com.espertech.esper.compiler.@internal.parse
 
 		    public void Accept(Property property)
 		    {
-			    if (dynamic) {
+			    if (_dynamic) {
 				    var prop = (DynamicMappedProperty) property;
-				    Assert.AreEqual(name, prop.PropertyNameAtomic);
-				    Assert.AreEqual(key, prop.Key);
+				    ClassicAssert.AreEqual(_name, prop.PropertyNameAtomic);
+				    ClassicAssert.AreEqual(_key, prop.Key);
 			    }
 			    else {
 				    var prop = (MappedProperty) property;
-				    Assert.AreEqual(name, prop.PropertyNameAtomic);
-				    Assert.AreEqual(key, prop.Key);
+				    ClassicAssert.AreEqual(_name, prop.PropertyNameAtomic);
+				    ClassicAssert.AreEqual(_key, prop.Key);
 			    }
 		    }
 	    }
 
 	    private class NestedPropAssertion : IPropAssertion
 	    {
-
-		    private readonly Consumer<Property>[] consumers;
+		    private readonly Consumer<Property>[] _consumers;
 
 		    public NestedPropAssertion(params IPropAssertion[] assertions)
 		    {
-			    this.consumers = assertions
+			    this._consumers = assertions
 				    .Select(v => new Consumer<Property>(v.Accept))
 				    .ToArray();
 		    }
@@ -346,9 +345,9 @@ namespace com.espertech.esper.compiler.@internal.parse
 		    public void Accept(Property property)
 		    {
 			    var nested = (NestedProperty) property;
-			    Assert.AreEqual(consumers.Length, nested.Properties.Count);
+			    ClassicAssert.AreEqual(_consumers.Length, nested.Properties.Count);
 			    for (var i = 0; i < nested.Properties.Count; i++) {
-				    consumers[i].Invoke(nested.Properties[i]);
+				    _consumers[i].Invoke(nested.Properties[i]);
 			    }
 		    }
 	    }

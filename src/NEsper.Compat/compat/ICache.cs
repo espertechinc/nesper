@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -9,11 +9,11 @@
 
 namespace com.espertech.esper.compat
 {
-    public interface ICache<K, V> where K : class
+    public interface ICache<TK, TV> where TK : class
     {
-        bool TryGet(K key, out V value);
-        V Get(K key);
-        V Put(K key, V value);
+        bool TryGet(TK key, out TV value);
+        TV Get(TK key);
+        TV Put(TK key, TV value);
         void Invalidate();
     }
 }

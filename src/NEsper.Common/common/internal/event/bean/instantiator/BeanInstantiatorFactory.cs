@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.instantiator
             // find public ctor
             ImportException ctorNotFoundEx;
             try {
-                importService.ResolveCtor(beanEventType.UnderlyingType, new Type[0]);
+                importService.ResolveCtor(beanEventType.UnderlyingType, Type.EmptyTypes);
                 return new BeanInstantiatorForgeByNewInstanceReflection(beanEventType.UnderlyingType);
             }
             catch (ImportException ex) {
@@ -58,9 +58,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.instantiator
                     var method = importService.ResolveMethod(
                         beanEventType.UnderlyingType,
                         factoryMethodName,
-                        new Type[0],
-                        new bool[0],
-                        new bool[0]);
+                        Type.EmptyTypes,
+                        Array.Empty<bool>(),
+                        Array.Empty<bool>());
                     return new BeanInstantiatorForgeByReflection(method);
                 }
                 catch (ImportException e) {
@@ -80,9 +80,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.instantiator
                 var method = importService.ResolveMethodOverloadChecked(
                     className,
                     methodName,
-                    new Type[0],
-                    new bool[0],
-                    new bool[0],
+                    Type.EmptyTypes,
+                    Array.Empty<bool>(),
+                    Array.Empty<bool>(),
                     ExtensionClassEmpty.INSTANCE);
                 return new BeanInstantiatorForgeByReflection(method);
             }

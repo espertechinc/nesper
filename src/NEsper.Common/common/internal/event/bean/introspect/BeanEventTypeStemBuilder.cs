@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -42,7 +42,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.introspect
             }
 
             _smartResolutionStyle = _propertyResolutionStyle.Equals(PropertyResolutionStyle.CASE_INSENSITIVE) ||
-                                   _propertyResolutionStyle.Equals(PropertyResolutionStyle.DISTINCT_CASE_INSENSITIVE);
+                                    _propertyResolutionStyle.Equals(PropertyResolutionStyle.DISTINCT_CASE_INSENSITIVE);
         }
 
         public BeanEventTypeStem Make(Type clazz)
@@ -54,7 +54,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.introspect
 
             var propertyDescriptors = new List<EventPropertyDescriptor>();
             var propertyDescriptorMap = new Dictionary<string, EventPropertyDescriptor>();
-            var propertyNames = new SortedSet<string>();
+            var propertyNames = new List<string>();
             var simpleProperties = new Dictionary<string, PropertyInfo>();
             var mappedPropertyDescriptors = new Dictionary<string, PropertyStem>();
             var indexedPropertyDescriptors = new Dictionary<string, PropertyStem>();
@@ -68,6 +68,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.introspect
                 indexedSmartPropertyTable = new Dictionary<string, IList<PropertyInfo>>();
             }
 
+            var count = 0;
             foreach (var desc in properties) {
                 var propertyName = desc.PropertyName;
                 Type underlyingType = null;
@@ -82,13 +83,10 @@ namespace com.espertech.esper.common.@internal.@event.bean.introspect
                 if (desc.PropertyType.IsUndefined()) {
                     continue;
                 }
-
+                
                 EventPropertyGetterSPIFactory getter = null;
 
-                // SIMPLE
-
-                if (desc.PropertyType.IsSimple())
-                {
+                if (desc.PropertyType.IsSimple()) {
                     if (desc.ReadMethod != null) {
                         getter = new ReflectionPropMethodGetterFactory(desc.ReadMethod);
                         underlyingType = desc.ReadMethod.ReturnType;
@@ -102,51 +100,33 @@ namespace com.espertech.esper.common.@internal.@event.bean.introspect
                         underlyingType = desc.AccessorField.FieldType;
                     }
                     else {
-                        throw new IllegalStateException($"invalid property descriptor: {desc}");
+                        // throw new IllegalStateException($"invalid property descriptor: {desc}");
+                        // ignore property
+                        continue;
                     }
 
                     isSimple = true;
+                    isRequiresIndex = false;
+                    isRequiresMapkey = false;
+                    isIndexed = false;
+                    isMapped = false;
                     isFragment = underlyingType.IsFragmentableType();
 
 #if false
-                    if (TypeHelper.IsImplementsInterface(type, typeof(IDictionary<object, object>))) {
+                    if (type.IsGenericStringDictionary()) {
                         isMapped = true;
                         // We do not yet allow to fragment maps entries.
                         // Class genericType = TypeHelper.getGenericReturnTypeMap(desc.getReadMethod(), desc.getAccessorField());
                         isFragment = false;
-
-                        if (desc.ReadMethod != null) {
-                            componentType = TypeHelper.GetGenericReturnTypeMap(desc.ReadMethod, false);
-                        }
-                        else if (desc.AccessorProp != null) {
-                            componentType = TypeHelper.GetGenericPropertyTypeMap(desc.AccessorProp, false);
-                        }
-                        else if (desc.AccessorField != null) {
-                            componentType = TypeHelper.GetGenericFieldTypeMap(desc.AccessorField, false);
-                        }
-                        else {
-                            componentType = typeof(object);
-                        }
                     }
                     else if (type.IsArray) {
                         isIndexed = true;
-                        isFragment = type.GetElementType().IsFragmentableType();
-                        componentType = type.GetElementType();
+                        isFragment = type.GetComponentType().IsFragmentableType();
                     }
                     else if (type.IsGenericEnumerable()) {
                         isIndexed = true;
-                        var genericType = TypeHelper.GetGenericReturnType(
-                            desc.ReadMethod,
-                            desc.AccessorField,
-                            desc.AccessorProp,
-                            true);
+                        var genericType = type.GetComponentType();
                         isFragment = genericType.IsFragmentableType();
-                        if (genericType != null) {
-                            componentType = genericType;
-                        }
-                        else {
-                            componentType = typeof(object);
-                        }
                     }
                     else {
                         isMapped = false;
@@ -160,34 +140,16 @@ namespace com.espertech.esper.common.@internal.@event.bean.introspect
                 // MAPPED
 
                 if (desc.PropertyType.IsMapped()) {
-                    // Local function: CheckComponentType
-                    void CheckComponentType()
-                    {
-                        if (underlyingType.IsGenericDictionary()) {
-                            componentType = underlyingType.GetDictionaryValueType();
-                        }
-                    }
-
-
                     underlyingType = desc.ReturnType;
-                    componentType = typeof(object);
 
                     if (desc.ReadMethod != null) {
                         isRequiresMapkey = desc.ReadMethod.GetParameters().Length > 0;
-                        if (isRequiresMapkey) {
-                            componentType = desc.ReadMethod.GetParameters()[0].ParameterType;
-                        }
-                        else {
-                            CheckComponentType();
-                        }
                     }
                     else if (desc.AccessorProp != null) {
                         isRequiresMapkey = false; // not required, you can "get" the property
-                        CheckComponentType();
                     }
                     else if (desc.AccessorField != null) {
                         isRequiresMapkey = false; // not required, you can "get" the property
-                        CheckComponentType();
                     }
                     else {
                         throw new IllegalStateException($"invalid property descriptor: {desc}");
@@ -207,7 +169,6 @@ namespace com.espertech.esper.common.@internal.@event.bean.introspect
                     {
                         if (underlyingType.IsArray) {
                             isFragment = underlyingType.GetElementType().IsFragmentableType();
-                            componentType = underlyingType.GetElementType();
                         }
                         else if (underlyingType.IsGenericEnumerable()) {
                             var genericType = TypeHelper.GetGenericReturnType(
@@ -216,39 +177,33 @@ namespace com.espertech.esper.common.@internal.@event.bean.introspect
                                 desc.AccessorProp,
                                 true);
                             isFragment = genericType.IsFragmentableType();
-                            componentType = genericType != null ? genericType : typeof(object);
                         }
                         else {
                             isFragment = false;
-                            componentType = typeof(object);
                         }
                     }
 
                     underlyingType = desc.ReturnType;
 
                     if (desc.ReadMethod != null) {
-                        var rmParameters = desc.ReadMethod.GetParameters() ?? new ParameterInfo[0];
+                        var rmParameters = desc.ReadMethod.GetParameters() ?? Array.Empty<ParameterInfo>();
                         isRequiresIndex = rmParameters.Length > 0;
                         if (!isRequiresIndex) {
-                            //componentType = TypeHelper.GetGenericReturnTypeMap(desc.ReadMethod, false);
                             CheckFragmentation();
                         }
                     }
                     else if (desc.AccessorProp != null) {
                         isRequiresIndex = false; // not required, you can "get" the index
-                        //componentType = TypeHelper.GetGenericPropertyTypeMap(desc.AccessorProp, false);
                         CheckFragmentation();
                     }
                     else if (desc.AccessorField != null) {
                         isRequiresIndex = false; // not required, you can "get" the index
-                        //componentType = TypeHelper.GetGenericFieldTypeMap(desc.AccessorField, false);
                         CheckFragmentation();
                     }
                     else {
                         throw new IllegalStateException($"invalid property descriptor: {desc}");
                     }
 
-                    //componentType = null;
                     isIndexed = true;
                     indexedPropertyDescriptors.Put(propertyName, desc);
                 }
@@ -318,7 +273,6 @@ namespace com.espertech.esper.common.@internal.@event.bean.introspect
                 var descriptor = new EventPropertyDescriptor(
                     desc.PropertyName,
                     underlyingType,
-                    componentType,
                     isRequiresIndex,
                     isRequiresMapkey,
                     isIndexed,

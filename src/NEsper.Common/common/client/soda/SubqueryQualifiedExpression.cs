@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     ///     Exists-expression for a set of values returned by a lookup.
     /// </summary>
-    [Serializable]
     public class SubqueryQualifiedExpression : ExpressionBase
     {
         /// <summary>
@@ -65,12 +64,10 @@ namespace com.espertech.esper.common.client.soda
             Children[0].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
             writer.Write(' ');
             writer.Write(Operator);
-            if (IsAll)
-            {
+            if (IsAll) {
                 writer.Write(" all (");
             }
-            else
-            {
+            else {
                 writer.Write(" any (");
             }
 

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -9,51 +9,38 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.Json.Serialization;
 
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 
+
 namespace com.espertech.esper.common.@internal.epl.expression.ops
 {
     /// <summary>
-    ///     Represents an equals (=) comparator in a filter expression tree.
+    /// Represents an equals (=) comparator in a filter expressiun tree.
     /// </summary>
-    [Serializable]
     public class ExprEqualsNodeImpl : ExprNodeBase,
         ExprEqualsNode
     {
-        [NonSerialized] private ExprEqualsNodeForge _forge;
+        private readonly bool _isNotEquals;
+        private readonly bool _isIs;
+        [JsonIgnore]        [NonSerialized]
+
+        private ExprEqualsNodeForge _forge;
 
         /// <summary>
-        ///     Ctor.
+        /// Ctor.
         /// </summary>
-        /// <param name="isNotEquals">true if this is a (!=) not equals rather then equals, false if its a '=' equals</param>
-        /// <param name="isIs">true when "is" or "is not" (instead of = or &amp;lt;&amp;gt;)</param>
+        /// <param name = "isNotEquals">true if this is a (!=) not equals rather then equals, false if its a '=' equals</param>
+        /// <param name = "isIs">true when "is" or "is not" (instead of = or &amp;lt;&amp;gt;)</param>
         public ExprEqualsNodeImpl(
             bool isNotEquals,
             bool isIs)
         {
-            IsNotEquals = isNotEquals;
-            IsIs = isIs;
-        }
-
-        public ExprEvaluator ExprEvaluator {
-            get {
-                CheckValidated(_forge);
-                return _forge.ExprEvaluator;
-            }
-        }
-
-        public bool IsConstantResult => false;
-
-        public IDictionary<string, object> EventType => null;
-
-        public override ExprForge Forge {
-            get {
-                CheckValidated(_forge);
-                return _forge;
-            }
+            _isNotEquals = isNotEquals;
+            _isIs = isIs;
         }
 
         public override ExprNode Validate(ExprValidationContext validationContext)
@@ -112,12 +99,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                         coercionType = typeOneElement.GetBoxedType().MakeArrayType();
                         var coercerLhs = ArrayCoercerFactory.GetCoercer(typeOne, coercionType);
                         var coercerRhs = ArrayCoercerFactory.GetCoercer(typeTwo, coercionType);
-                        _forge = new ExprEqualsNodeForgeCoercion(this, coercerLhs, coercerRhs);
+                        _forge = new ExprEqualsNodeForgeCoercion(
+                            this,
+                            coercerLhs,
+                            coercerRhs,
+                            typeOneElement,
+                            typeTwoElement);
                         return null;
                     }
                 }
 
-                if (!coercionType.IsNumeric()) {
+                if (!coercionType.IsTypeNumeric()) {
                     throw new ExprValidationException(
                         "Cannot convert datatype '" +
                         coercionType.CleanName() +
@@ -130,42 +122,27 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
                 var numberCoercerLHS = SimpleNumberCoercerFactory.GetCoercer(typeOne, coercionType);
                 var numberCoercerRHS = SimpleNumberCoercerFactory.GetCoercer(typeTwo, coercionType);
-                _forge = new ExprEqualsNodeForgeCoercion(this, numberCoercerLHS, numberCoercerRHS);
+                _forge = new ExprEqualsNodeForgeCoercion(this, numberCoercerLHS, numberCoercerRHS, typeOne, typeTwo);
             }
 
             return null;
         }
 
-        public override ExprPrecedenceEnum Precedence => ExprPrecedenceEnum.EQUALS;
+        public bool IsConstantResult => false;
 
-        public override bool EqualsNode(
-            ExprNode node,
-            bool ignoreStreamPrefix)
-        {
-            if (!(node is ExprEqualsNode)) {
-                return false;
-            }
-
-            var other = (ExprEqualsNode) node;
-            return Equals(other.IsNotEquals, IsNotEquals);
-        }
-
-        public bool IsNotEquals { get; }
-
-        public bool IsIs { get; }
-
-        public override void ToPrecedenceFreeEPL(TextWriter writer,
+        public override void ToPrecedenceFreeEPL(
+            TextWriter writer,
             ExprNodeRenderableFlags flags)
         {
             ChildNodes[0].ToEPL(writer, Precedence, flags);
-            if (IsIs) {
+            if (_isIs) {
                 writer.Write(" is ");
-                if (IsNotEquals) {
+                if (_isNotEquals) {
                     writer.Write("not ");
                 }
             }
             else {
-                if (!IsNotEquals) {
+                if (!_isNotEquals) {
                     writer.Write("=");
                 }
                 else {
@@ -175,5 +152,38 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
             ChildNodes[1].ToEPL(writer, Precedence, flags);
         }
+
+        public override ExprPrecedenceEnum Precedence => ExprPrecedenceEnum.EQUALS;
+
+        public override bool EqualsNode(
+            ExprNode node,
+            bool ignoreStreamPrefix)
+        {
+            if (!(node is ExprEqualsNode other)) {
+                return false;
+            }
+
+            return other.IsNotEquals == _isNotEquals;
+        }
+
+        public bool IsNotEquals => _isNotEquals;
+
+        public bool IsIs => _isIs;
+
+        public ExprEvaluator ExprEvaluator {
+            get {
+                CheckValidated(_forge);
+                return _forge.ExprEvaluator;
+            }
+        }
+
+        public override ExprForge Forge {
+            get {
+                CheckValidated(_forge);
+                return _forge;
+            }
+        }
+
+        public IDictionary<string, object> EventType => null;
     }
 } // end of namespace

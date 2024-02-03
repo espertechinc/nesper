@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -10,6 +10,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.runtime.client.scopetest;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace NEsper.Examples.Transaction
 {
@@ -119,42 +120,42 @@ namespace NEsper.Examples.Transaction
                                   long? minBC, long? maxBC, double? avgBC,
                                   long? minAB, long? maxAB, double? avgAB)
 	    {
-	        Assert.AreEqual(1, listenerTotals.NewDataList.Count);
-	        Assert.AreEqual(1, listenerTotals.LastNewData.Length);
+	        ClassicAssert.AreEqual(1, listenerTotals.NewDataList.Count);
+	        ClassicAssert.AreEqual(1, listenerTotals.LastNewData.Length);
 	        EventBean @event = listenerTotals.LastNewData[0];
-	        Assert.AreEqual(minAC, @event.Get("minLatencyAC"));
-	        Assert.AreEqual(maxAC, @event.Get("maxLatencyAC"));
-	        Assert.AreEqual(avgAC, @event.Get("avgLatencyAC"));
-	        Assert.AreEqual(minBC, @event.Get("minLatencyBC"));
-	        Assert.AreEqual(maxBC, @event.Get("maxLatencyBC"));
-	        Assert.AreEqual(avgBC, @event.Get("avgLatencyBC"));
-	        Assert.AreEqual(minAB, @event.Get("minLatencyAB"));
-	        Assert.AreEqual(maxAB, @event.Get("maxLatencyAB"));
-	        Assert.AreEqual(avgAB, @event.Get("avgLatencyAB"));
+	        ClassicAssert.AreEqual(minAC, @event.Get("minLatencyAC"));
+	        ClassicAssert.AreEqual(maxAC, @event.Get("maxLatencyAC"));
+	        ClassicAssert.AreEqual(avgAC, @event.Get("avgLatencyAC"));
+	        ClassicAssert.AreEqual(minBC, @event.Get("minLatencyBC"));
+	        ClassicAssert.AreEqual(maxBC, @event.Get("maxLatencyBC"));
+	        ClassicAssert.AreEqual(avgBC, @event.Get("avgLatencyBC"));
+	        ClassicAssert.AreEqual(minAB, @event.Get("minLatencyAB"));
+	        ClassicAssert.AreEqual(maxAB, @event.Get("maxLatencyAB"));
+	        ClassicAssert.AreEqual(avgAB, @event.Get("avgLatencyAB"));
 	        listenerTotals.Reset();
 	    }
 
         private void AssertTotalsByCustomer(string customerId, long? minAC, long? maxAC, double? avgAC)
 	    {
-            Assert.AreEqual(1, listenerByCustomer.NewDataList.Count);
-            Assert.AreEqual(1, listenerByCustomer.LastNewData.Length);
+            ClassicAssert.AreEqual(1, listenerByCustomer.NewDataList.Count);
+            ClassicAssert.AreEqual(1, listenerByCustomer.LastNewData.Length);
 	        EventBean @event = listenerByCustomer.LastNewData[0];
-	        Assert.AreEqual(customerId, @event.Get("customerId"));
-	        Assert.AreEqual(minAC, @event.Get("minLatency"));
-	        Assert.AreEqual(maxAC, @event.Get("maxLatency"));
-	        Assert.AreEqual(avgAC, @event.Get("avgLatency"));
+	        ClassicAssert.AreEqual(customerId, @event.Get("customerId"));
+	        ClassicAssert.AreEqual(minAC, @event.Get("minLatency"));
+	        ClassicAssert.AreEqual(maxAC, @event.Get("maxLatency"));
+	        ClassicAssert.AreEqual(avgAC, @event.Get("avgLatency"));
 	        listenerByCustomer.Reset();
 	    }
 
         private void AssertTotalsBySupplier(string supplierId, long? minAC, long? maxAC, double? avgAC)
 	    {
-	        Assert.AreEqual(1, listenerBySupplier.NewDataList.Count);
-	        Assert.AreEqual(1, listenerBySupplier.LastNewData.Length);
+	        ClassicAssert.AreEqual(1, listenerBySupplier.NewDataList.Count);
+	        ClassicAssert.AreEqual(1, listenerBySupplier.LastNewData.Length);
 	        EventBean @event = listenerBySupplier.LastNewData[0];
-	        Assert.AreEqual(supplierId, @event.Get("supplierId"));
-	        Assert.AreEqual(minAC, @event.Get("minLatency"));
-	        Assert.AreEqual(maxAC, @event.Get("maxLatency"));
-	        Assert.AreEqual(avgAC, @event.Get("avgLatency"));
+	        ClassicAssert.AreEqual(supplierId, @event.Get("supplierId"));
+	        ClassicAssert.AreEqual(minAC, @event.Get("minLatency"));
+	        ClassicAssert.AreEqual(maxAC, @event.Get("maxLatency"));
+	        ClassicAssert.AreEqual(avgAC, @event.Get("avgLatency"));
 	        listenerBySupplier.Reset();
 	    }
 	}

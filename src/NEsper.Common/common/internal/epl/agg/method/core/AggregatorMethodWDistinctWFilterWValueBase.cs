@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -9,9 +9,7 @@
 using System;
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
-using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
-using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.serde.compiletime.resolve;
@@ -24,29 +22,6 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.core
 {
     public abstract class AggregatorMethodWDistinctWFilterWValueBase : AggregatorMethodWDistinctWFilterBase
     {
-        public AggregatorMethodWDistinctWFilterWValueBase(
-            AggregationForgeFactory factory,
-            int col,
-            CodegenCtor rowCtor,
-            CodegenMemberCol membersColumnized,
-            CodegenClassScope classScope,
-            Type optionalDistinctValueType,
-            DataInputOutputSerdeForge optionalDistinctSerde,
-            bool hasFilter,
-            ExprNode optionalFilter)
-            : base(
-                factory,
-                col,
-                rowCtor,
-                membersColumnized,
-                classScope,
-                optionalDistinctValueType,
-                optionalDistinctSerde,
-                hasFilter,
-                optionalFilter)
-        {
-        }
-
         protected abstract void ApplyEvalEnterNonNull(
             CodegenExpressionRef value,
             Type valueType,
@@ -75,15 +50,44 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.core
             CodegenMethod method,
             CodegenClassScope classScope);
 
+        public AggregatorMethodWDistinctWFilterWValueBase(
+            Type optionalDistinctValueType,
+            DataInputOutputSerdeForge optionalDistinctSerde,
+            bool hasFilter,
+            ExprNode optionalFilter) : base(optionalDistinctValueType, optionalDistinctSerde, hasFilter, optionalFilter)
+        {
+        }
+
+        protected void ApplyEvalUnbox(
+            CodegenMethod method,
+            ExprForge[] forges,
+            out CodegenExpressionRef value,
+            out Type valueType)
+        {
+            // it is possible that "val" is actually a "nullable" type even though we
+            // have checked the value.  In this block, we unbox the type and unbox the
+            // value.
+            value = Ref("val");
+            valueType = forges[0].EvaluationType;
+            if (valueType.CanBeNull()) {
+                var valueTypeUnboxed = valueType.GetUnboxedType();
+                if (valueTypeUnboxed != valueType) {
+                    method.Block.DeclareVar(valueTypeUnboxed, "uval", Unbox(value, valueType));
+                    valueType = valueTypeUnboxed;
+                    value = Ref("uval");
+                }
+            }
+        }
+        
         protected override void ApplyEvalEnterFiltered(
             CodegenMethod method,
             ExprForgeCodegenSymbol symbols,
             ExprForge[] forges,
             CodegenClassScope classScope)
         {
-            var evaluationType = forges[0].EvaluationType;
             ApplyEvalValuePrefix(true, method, symbols, forges, classScope);
-            ApplyEvalEnterNonNull(Ref("val"), evaluationType, method, symbols, forges, classScope);
+            ApplyEvalUnbox(method, forges, out var value, out var valueType);
+            ApplyEvalEnterNonNull(value, valueType, method, symbols, forges, classScope);
         }
 
         protected override void ApplyTableEnterFiltered(
@@ -103,7 +107,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.core
             CodegenClassScope classScope)
         {
             ApplyEvalValuePrefix(false, method, symbols, forges, classScope);
-            ApplyEvalLeaveNonNull(Ref("val"), forges[0].EvaluationType.GetBoxedType(), method, symbols, forges, classScope);
+            ApplyEvalUnbox(method, forges, out var value, out var valueType);
+            ApplyEvalLeaveNonNull(value, valueType, method, symbols, forges, classScope);
         }
 
         protected override void ApplyTableLeaveFiltered(
@@ -130,9 +135,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.core
                 method.Block.IfRefNull("val").BlockReturnNoValue();
             }
 
-            if (distinct != null) {
+            if (Distinct != null) {
                 method.Block
-                    .IfCondition(Not(ExprDotMethod(distinct, enter ? "Add" : "Remove", ToDistinctValueKey(Ref("val")))))
+                    .IfCondition(Not(ExprDotMethod(Distinct, enter ? "Add" : "Remove", ToDistinctValueKey(Ref("val")))))
                     .BlockReturnNoValue();
             }
         }
@@ -144,9 +149,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.core
             CodegenClassScope classScope)
         {
             method.Block.IfCondition(EqualsNull(value)).BlockReturnNoValue();
-            if (distinct != null) {
+            if (Distinct != null) {
                 method.Block
-                    .IfCondition(Not(ExprDotMethod(distinct, enter ? "Add" : "Remove", ToDistinctValueKey(value))))
+                    .IfCondition(Not(ExprDotMethod(Distinct, enter ? "Add" : "Remove", ToDistinctValueKey(value))))
                     .BlockReturnNoValue();
             }
         }

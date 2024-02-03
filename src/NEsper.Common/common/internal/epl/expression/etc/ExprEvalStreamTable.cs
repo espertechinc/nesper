@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -34,9 +34,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             Type returnType,
             TableMetaData tableMetadata)
         {
-            this._streamNum = streamNum;
-            this._returnType = returnType;
-            this._tableMetadata = tableMetadata;
+            _streamNum = streamNum;
+            _returnType = returnType;
+            _tableMetadata = tableMetadata;
         }
 
         public object Evaluate(
@@ -53,11 +53,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenExpressionInstanceField eventToPublic =
-                TableDeployTimeResolver.MakeTableEventToPublicField(_tableMetadata, codegenClassScope, this.GetType());
-            CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(codegenMethodScope);
-            CodegenExpression refIsNewData = exprSymbol.GetAddIsNewData(codegenMethodScope);
-            CodegenExpressionRef refExprEvalCtx = exprSymbol.GetAddExprEvalCtx(codegenMethodScope);
+            var eventToPublic =
+                TableDeployTimeResolver.MakeTableEventToPublicField(_tableMetadata, codegenClassScope, GetType());
+            var refEPS = exprSymbol.GetAddEps(codegenMethodScope);
+            var refIsNewData = exprSymbol.GetAddIsNewData(codegenMethodScope);
+            var refExprEvalCtx = exprSymbol.GetAddExprEvalCtx(codegenMethodScope);
             return StaticMethod(
                 typeof(ExprEvalStreamTable),
                 "EvaluateConvertTableEventToUnd",
@@ -84,7 +84,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            EventBean @event = eventsPerStream[streamNum];
+            var @event = eventsPerStream[streamNum];
             if (@event == null) {
                 return null;
             }
@@ -92,27 +92,20 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             return eventToPublic.ConvertToUnd(@event, eventsPerStream, isNewData, context);
         }
 
-        public ExprEvaluator ExprEvaluator {
-            get => this;
-        }
+        public ExprEvaluator ExprEvaluator => this;
 
-        public Type EvaluationType {
-            get => _returnType;
-        }
+        public Type EvaluationType => _returnType;
 
-        public ExprNodeRenderable ExprForgeRenderable {
-            get => this;
-        }
+        public ExprNodeRenderable ExprForgeRenderable => this;
 
-        public void ToEPL(TextWriter writer,
+        public void ToEPL(
+            TextWriter writer,
             ExprPrecedenceEnum parentPrecedence,
             ExprNodeRenderableFlags flags)
         {
-            writer.Write(this.GetType().Name);
+            writer.Write(GetType().Name);
         }
 
-        public ExprForgeConstantType ForgeConstantType {
-            get => ExprForgeConstantType.NONCONST;
-        }
+        public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
     }
 } // end of namespace

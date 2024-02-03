@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -53,7 +53,7 @@ namespace com.espertech.esper.common.@internal.epl.variable.compiletime
                 return false;
             }
 
-            VariableReaderCodegenFieldSharable that = (VariableReaderCodegenFieldSharable) o;
+            var that = (VariableReaderCodegenFieldSharable)o;
 
             return metaWVisibility.VariableName.Equals(that.metaWVisibility.VariableName);
         }

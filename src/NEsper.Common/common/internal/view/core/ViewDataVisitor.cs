@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -23,14 +23,14 @@ namespace com.espertech.esper.common.@internal.view.core
             EventBean[] events,
             string viewName);
 
-        void VisitPrimary<K>(
-            ICollection<K> primary,
+        void VisitPrimary<TK>(
+            ICollection<TK> primary,
             bool countsEvents,
             string viewName,
             int? count);
 
-        void VisitPrimary<K, V>(
-            IDictionary<K, V> currentBatch,
+        void VisitPrimary<TK, TV>(
+            IDictionary<TK, TV> currentBatch,
             bool countsEvents,
             string viewName,
             int? count,

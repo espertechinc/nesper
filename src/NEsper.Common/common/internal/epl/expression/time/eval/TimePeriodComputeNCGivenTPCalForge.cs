@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -44,9 +44,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.eval
         {
             var method = parent.MakeChild(typeof(TimePeriodComputeNCGivenTPCalForgeEval), GetType(), classScope);
             method.Block
-                .DeclareVar<TimePeriodComputeNCGivenTPCalForgeEval>(
-                    "eval",
-                    NewInstance(typeof(TimePeriodComputeNCGivenTPCalForgeEval)))
+                .DeclareVarNewInstance<TimePeriodComputeNCGivenTPCalForgeEval>("eval")
                 .SetProperty(
                     Ref("eval"),
                     "Adders",
@@ -55,7 +53,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.eval
                     Ref("eval"),
                     "Evaluators",
                     ExprNodeUtilityCodegen.CodegenEvaluators(timePeriodForge.Forges, method, GetType(), classScope))
-                .SetProperty(Ref("eval"), "TimeAbacus", classScope.AddOrGetDefaultFieldSharable(TimeAbacusField.INSTANCE))
+                .SetProperty(
+                    Ref("eval"),
+                    "TimeAbacus",
+                    classScope.AddOrGetDefaultFieldSharable(TimeAbacusField.INSTANCE))
                 .SetProperty(
                     Ref("eval"),
                     "TimeZone",

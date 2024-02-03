@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -8,6 +8,7 @@
 
 using System;
 using System.IO;
+using System.Text.Json.Serialization;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -20,12 +21,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
     ///     A placeholder expression for view/pattern object parameters that allow
     ///     sorting expression values ascending or descending.
     /// </summary>
-    [Serializable]
     public class ExprOrderedExpr : ExprNodeBase,
         ExprForge,
         ExprEvaluator
     {
-        [NonSerialized] private ExprEvaluator evaluator;
+        [JsonIgnore]
+        [NonSerialized]
+        private ExprEvaluator evaluator;
 
         /// <summary>
         ///     Ctor.
@@ -85,11 +87,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             ExprNode node,
             bool ignoreStreamPrefix)
         {
-            if (!(node is ExprOrderedExpr)) {
+            if (!(node is ExprOrderedExpr other)) {
                 return false;
             }
 
-            var other = (ExprOrderedExpr) node;
             return other.IsDescending == IsDescending;
         }
 

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.hook.enummethod;
@@ -27,182 +28,217 @@ using static com.espertech.esper.common.@internal.epl.enummethod.codegen.EnumFor
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval.plugin
 {
-	public class EnumForgePlugin : EnumForge
-	{
-		private readonly IList<ExprDotEvalParam> _bodiesAndParameters;
-		private readonly EnumMethodModeStaticMethod _mode;
-		private readonly Type _expectedStateReturnType;
-		private readonly int _numStreamsIncoming;
-		private readonly EventType _inputEventType;
+    public class EnumForgePlugin : EnumForge
+    {
+        private readonly IList<ExprDotEvalParam> _bodiesAndParameters;
+        private readonly EnumMethodModeStaticMethod _mode;
+        private readonly Type _expectedStateReturnType;
+        private readonly int _numStreamsIncoming;
+        private readonly EventType _inputEventType;
 
-		public EnumForgePlugin(
-			IList<ExprDotEvalParam> bodiesAndParameters,
-			EnumMethodModeStaticMethod mode,
-			Type expectedStateReturnType,
-			int numStreamsIncoming,
-			EventType inputEventType)
-		{
-			_bodiesAndParameters = bodiesAndParameters;
-			_mode = mode;
-			_expectedStateReturnType = expectedStateReturnType;
-			_numStreamsIncoming = numStreamsIncoming;
-			_inputEventType = inputEventType;
-		}
+        public EnumForgePlugin(
+            IList<ExprDotEvalParam> bodiesAndParameters,
+            EnumMethodModeStaticMethod mode,
+            Type expectedStateReturnType,
+            int numStreamsIncoming,
+            EventType inputEventType)
+        {
+            _bodiesAndParameters = bodiesAndParameters;
+            _mode = mode;
+            _expectedStateReturnType = expectedStateReturnType;
+            _numStreamsIncoming = numStreamsIncoming;
+            _inputEventType = inputEventType;
+        }
 
-		public EnumEval EnumEvaluator {
-			get { throw new UnsupportedOperationException("Enum-evaluator not available at compile-time"); }
-		}
+        public EnumEval EnumEvaluator =>
+            throw new UnsupportedOperationException("Enum-evaluator not available at compile-time");
 
-		public int StreamNumSize {
-			get {
-				var countLambda = 0;
-				foreach (var param in _bodiesAndParameters) {
-					if (param is ExprDotEvalParamLambda) {
-						var lambda = (ExprDotEvalParamLambda) param;
-						countLambda += lambda.GoesToNames.Count;
-					}
-				}
+        public int StreamNumSize {
+            get {
+                var countLambda = 0;
+                foreach (var param in _bodiesAndParameters) {
+                    if (param is ExprDotEvalParamLambda lambda) {
+                        countLambda += lambda.GoesToNames.Count;
+                    }
+                }
 
-				return _numStreamsIncoming + countLambda;
-			}
-		}
+                return _numStreamsIncoming + countLambda;
+            }
+        }
 
-		public CodegenExpression Codegen(
-			EnumForgeCodegenParams args,
-			CodegenMethodScope codegenMethodScope,
-			CodegenClassScope codegenClassScope)
-		{
-			var scope = new ExprForgeCodegenSymbol(false, null);
-			var methodNode = codegenMethodScope
-				.MakeChildWithScope(_expectedStateReturnType, typeof(EnumForgePlugin), scope, codegenClassScope)
-				.AddParam(PARAMS);
-			methodNode.Block.DeclareVar(_mode.StateClass, "state", NewInstance(_mode.StateClass));
+        public CodegenExpression Codegen(
+            EnumForgeCodegenParams args,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            var inputType = args.EnumcollType;
+            
+            var scope = new ExprForgeCodegenSymbol(false, null);
+            var methodNode = codegenMethodScope
+                .MakeChildWithScope(_expectedStateReturnType, typeof(EnumForgePlugin), scope, codegenClassScope)
+                .AddParam(ExprForgeCodegenNames.FP_EPS)
+                .AddParam(inputType, REF_ENUMCOLL.Ref)
+                .AddParam(ExprForgeCodegenNames.FP_ISNEWDATA)
+                .AddParam(ExprForgeCodegenNames.FP_EXPREVALCONTEXT);
+            
+            methodNode.Block.DeclareVar(_mode.StateClass, "state", NewInstance(_mode.StateClass));
 
-			// call set-parameter for each non-lambda expression
-			var indexNonLambda = 0;
-			foreach (var param in _bodiesAndParameters) {
-				if (param is ExprDotEvalParamExpr) {
-					var expression = param.BodyForge.EvaluateCodegen(typeof(object), methodNode, scope, codegenClassScope);
-					methodNode.Block.ExprDotMethod(Ref("state"), "SetParameter", Constant(indexNonLambda), expression);
-					indexNonLambda++;
-				}
-			}
+            // call set-parameter for each non-lambda expression
+            var indexNonLambda = 0;
+            foreach (var param in _bodiesAndParameters) {
+                if (param is ExprDotEvalParamExpr) {
+                    var expression = param.BodyForge.EvaluateCodegen(
+                        typeof(object),
+                        methodNode,
+                        scope,
+                        codegenClassScope);
+                    methodNode.Block.ExprDotMethod(Ref("state"), "SetParameter", Constant(indexNonLambda), expression);
+                    indexNonLambda++;
+                }
+            }
 
-			// allocate event type and field for each lambda expression
-			var indexParameter = 0;
-			foreach (var param in _bodiesAndParameters) {
-				if (param is ExprDotEvalParamLambda) {
-					var lambda = (ExprDotEvalParamLambda) param;
-					for (var i = 0; i < lambda.LambdaDesc.Types.Length; i++) {
-						var eventType = lambda.LambdaDesc.Types[i];
-						var lambdaParameterType =
-							_mode.LambdaParameters.Invoke(new EnumMethodLambdaParameterDescriptor(indexParameter, i));
+            // allocate event type and field for each lambda expression
+            var indexParameter = 0;
+            foreach (var param in _bodiesAndParameters) {
+                if (param is ExprDotEvalParamLambda lambda) {
+                    for (var i = 0; i < lambda.LambdaDesc.Types.Length; i++) {
+                        var eventType = lambda.LambdaDesc.Types[i];
+                        var lambdaParameterType =
+                            _mode.LambdaParameters.Invoke(new EnumMethodLambdaParameterDescriptor(indexParameter, i));
 
-						if (eventType != _inputEventType) {
-							var type = codegenClassScope.AddDefaultFieldUnshared(
-								true,
-								typeof(ObjectArrayEventType),
-								Cast(typeof(ObjectArrayEventType), EventTypeUtility.ResolveTypeCodegen(lambda.LambdaDesc.Types[i], EPStatementInitServicesConstants.REF)));
-							var eventName = GetNameExt("resultEvent", indexParameter, i);
-							var propName = GetNameExt("props", indexParameter, i);
-							methodNode.Block
-								.DeclareVar<ObjectArrayEventBean>(eventName, NewInstance(typeof(ObjectArrayEventBean), NewArrayByLength(typeof(object), Constant(1)), type))
-								.AssignArrayElement(REF_EPS, Constant(lambda.StreamCountIncoming + i), Ref(eventName))
-								.DeclareVar<object[]>(propName, ExprDotName(Ref(eventName), "Properties"));
+                        if (eventType != _inputEventType) {
+                            var type = codegenClassScope.AddDefaultFieldUnshared(
+                                true,
+                                typeof(ObjectArrayEventType),
+                                Cast(
+                                    typeof(ObjectArrayEventType),
+                                    EventTypeUtility.ResolveTypeCodegen(
+                                        lambda.LambdaDesc.Types[i],
+                                        EPStatementInitServicesConstants.REF)));
+                            var eventName = GetNameExt("resultEvent", indexParameter, i);
+                            var propName = GetNameExt("props", indexParameter, i);
+                            methodNode.Block
+                                .CommentFullLine(MethodBase.GetCurrentMethod()!.DeclaringType!.FullName + "." + MethodBase.GetCurrentMethod()!.Name)
+                                .DeclareVar<ObjectArrayEventBean>(
+                                    eventName,
+                                    NewInstance(
+                                        typeof(ObjectArrayEventBean),
+                                        NewArrayByLength(typeof(object), Constant(1)),
+                                        type))
+                                .AssignArrayElement(REF_EPS, Constant(lambda.StreamCountIncoming + i), Ref(eventName))
+                                .DeclareVar<object[]>(propName, ExprDotName(Ref(eventName), "Properties"));
 
-							// initialize index-type lambda-parameters to zer0
-							if (lambdaParameterType is EnumMethodLambdaParameterTypeIndex) {
-								methodNode.Block
-									.AssignArrayElement(propName, Constant(0), Constant(0));
-							}
+                            // initialize index-type lambda-parameters to zer0
+                            if (lambdaParameterType is EnumMethodLambdaParameterTypeIndex) {
+                                methodNode.Block
+                                    .AssignArrayElement(propName, Constant(0), Constant(0));
+                            }
 
-							if (lambdaParameterType is EnumMethodLambdaParameterTypeSize) {
-								methodNode.Block
-									.AssignArrayElement(propName, Constant(0), ExprDotName(REF_ENUMCOLL, "Count"));
-							}
+                            if (lambdaParameterType is EnumMethodLambdaParameterTypeSize) {
+                                methodNode.Block
+                                    .AssignArrayElement(propName, Constant(0), ExprDotName(REF_ENUMCOLL, "Count"));
+                            }
 
-							if (lambdaParameterType is EnumMethodLambdaParameterTypeStateGetter) {
-								var getter = (EnumMethodLambdaParameterTypeStateGetter) lambdaParameterType;
-								methodNode.Block
-									.AssignArrayElement(propName, Constant(0), ExprDotName(Ref("state"), getter.PropertyName));
-							}
-						}
-					}
-				}
+                            if (lambdaParameterType is EnumMethodLambdaParameterTypeStateGetter getter) {
+                                methodNode.Block
+                                    .AssignArrayElement(
+                                        propName,
+                                        Constant(0),
+                                        ExprDotName(Ref("state"), getter.PropertyName));
+                            }
+                        }
+                    }
+                }
 
-				indexParameter++;
-			}
+                indexParameter++;
+            }
 
-			var elementType = _inputEventType == null ? typeof(object) : typeof(EventBean);
-			methodNode.Block.DeclareVar<int>("count", Constant(-1));
-			var forEach = methodNode.Block.ForEach(elementType, "next", REF_ENUMCOLL);
-			{
-				forEach.IncrementRef("count");
+            var elementType = _inputEventType == null ? typeof(object) : typeof(EventBean);
+            methodNode.Block.DeclareVar<int>("count", Constant(-1));
+            var forEach = methodNode.Block.ForEach(elementType, "next", REF_ENUMCOLL);
+            {
+                forEach.IncrementRef("count");
 
-				IList<CodegenExpression> paramsNext = new List<CodegenExpression>();
-				paramsNext.Add(Ref("state"));
-				paramsNext.Add(Ref("next"));
+                IList<CodegenExpression> paramsNext = new List<CodegenExpression>();
+                paramsNext.Add(Ref("state"));
+                paramsNext.Add(Ref("next"));
 
-				indexParameter = 0;
-				foreach (var param in _bodiesAndParameters) {
-					if (param is ExprDotEvalParamLambda) {
-						var lambda = (ExprDotEvalParamLambda) param;
-						var valueName = "value_" + indexParameter;
-						for (var i = 0; i < lambda.LambdaDesc.Types.Length; i++) {
-							var lambdaParameterType = _mode.LambdaParameters.Invoke(new EnumMethodLambdaParameterDescriptor(indexParameter, i));
+                indexParameter = 0;
+                foreach (var param in _bodiesAndParameters) {
+                    if (param is ExprDotEvalParamLambda lambda) {
+                        var valueName = "value_" + indexParameter;
+                        for (var i = 0; i < lambda.LambdaDesc.Types.Length; i++) {
+                            var lambdaParameterType = _mode.LambdaParameters.Invoke(
+                                new EnumMethodLambdaParameterDescriptor(indexParameter, i));
 
-							var propName = GetNameExt("props", indexParameter, i);
-							if (lambdaParameterType is EnumMethodLambdaParameterTypeValue) {
-								var eventType = lambda.LambdaDesc.Types[i];
-								if (eventType == _inputEventType) {
-									forEach.AssignArrayElement(REF_EPS, Constant(lambda.StreamCountIncoming + i), Ref("next"));
-								}
-								else {
-									forEach.AssignArrayElement(propName, Constant(0), Ref("next"));
-								}
-							}
-							else if (lambdaParameterType is EnumMethodLambdaParameterTypeIndex) {
-								forEach.AssignArrayElement(propName, Constant(0), Ref("count"));
-							}
-							else if (lambdaParameterType is EnumMethodLambdaParameterTypeStateGetter) {
-								var getter = (EnumMethodLambdaParameterTypeStateGetter) lambdaParameterType;
-								forEach.AssignArrayElement(propName, Constant(0), ExprDotName(Ref("state"), getter.PropertyName));
-							}
-							else if (lambdaParameterType is EnumMethodLambdaParameterTypeSize) {
-								// no action needed
-							}
-							else {
-								throw new UnsupportedOperationException("Unrecognized lambda parameter type " + lambdaParameterType);
-							}
-						}
+                            var propName = GetNameExt("props", indexParameter, i);
+                            if (lambdaParameterType is EnumMethodLambdaParameterTypeValue) {
+                                var eventType = lambda.LambdaDesc.Types[i];
+                                if (eventType == _inputEventType) {
+                                    forEach.AssignArrayElement(
+                                        REF_EPS,
+                                        Constant(lambda.StreamCountIncoming + i),
+                                        Ref("next"));
+                                }
+                                else {
+                                    forEach.AssignArrayElement(propName, Constant(0), Ref("next"));
+                                }
+                            }
+                            else if (lambdaParameterType is EnumMethodLambdaParameterTypeIndex) {
+                                forEach.AssignArrayElement(propName, Constant(0), Ref("count"));
+                            }
+                            else if (lambdaParameterType is EnumMethodLambdaParameterTypeStateGetter getter) {
+                                forEach.AssignArrayElement(
+                                    propName,
+                                    Constant(0),
+                                    ExprDotName(Ref("state"), getter.PropertyName));
+                            }
+                            else if (lambdaParameterType is EnumMethodLambdaParameterTypeSize) {
+                                // no action needed
+                            }
+                            else {
+                                throw new UnsupportedOperationException(
+                                    "Unrecognized lambda parameter type " + lambdaParameterType);
+                            }
+                        }
 
-						var forge = lambda.BodyForge;
-						forEach.DeclareVar(forge.EvaluationType, valueName, forge.EvaluateCodegen(forge.EvaluationType, methodNode, scope, codegenClassScope));
-						paramsNext.Add(Ref(valueName));
-					}
+                        var forge = lambda.BodyForge;
+                        var evalType = forge.EvaluationType;
+                        if (evalType == null) {
+                            forEach.DeclareVar<object>(valueName, ConstantNull());
+                        }
+                        else {
+                            forEach.DeclareVar(
+                                evalType,
+                                valueName,
+                                forge.EvaluateCodegen(evalType, methodNode, scope, codegenClassScope));
+                        }
 
-					indexParameter++;
-				}
+                        paramsNext.Add(Ref(valueName));
+                    }
 
-				forEach.Expression(StaticMethod(_mode.ServiceClass, _mode.MethodName, paramsNext.ToArray()));
+                    indexParameter++;
+                }
 
-				if (_mode.IsEarlyExit) {
-					forEach.IfCondition(ExprDotName(Ref("state"), "IsCompleted")).BreakLoop();
-				}
-			}
+                forEach.Expression(StaticMethod(_mode.ServiceClass, _mode.MethodName, paramsNext.ToArray()));
 
-			methodNode.Block.MethodReturn(
-				FlexCast(_expectedStateReturnType, ExprDotName(Ref("state"), "State")));
+                if (_mode.IsEarlyExit) {
+                    forEach.IfCondition(ExprDotName(Ref("state"), "IsCompleted")).BreakLoop();
+                }
+            }
 
-			return LocalMethod(methodNode, args.Eps, args.Enumcoll, args.IsNewData, args.ExprCtx);
-		}
+            methodNode.Block.MethodReturn(
+                Cast(_expectedStateReturnType, ExprDotName(Ref("state"), "State")));
 
-		private string GetNameExt(
-			string prefix,
-			int indexLambda,
-			int number)
-		{
-			return prefix + "_" + indexLambda + "_" + number;
-		}
-	}
+            return LocalMethod(methodNode, args.Eps, args.Enumcoll, args.IsNewData, args.ExprCtx);
+        }
+
+        private string GetNameExt(
+            string prefix,
+            int indexLambda,
+            int number)
+        {
+            return prefix + "_" + indexLambda + "_" + number;
+        }
+    }
 } // end of namespace

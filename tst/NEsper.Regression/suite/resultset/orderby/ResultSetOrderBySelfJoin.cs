@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -8,7 +8,6 @@
 
 using System.Collections.Generic;
 
-using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
@@ -19,6 +18,13 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
+            Withe(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> Withe(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ResultSetOrderBySelfJoinSimple());
             return execs;
         }
@@ -37,8 +43,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
         {
             public void Run(RegressionEnvironment env)
             {
-                string[] fields = {"prio", "cnt"};
-                var epl = "@Name('s0') select c1.Event_criteria_id as ecId, " +
+                string[] fields = { "prio", "cnt" };
+                var epl = "@name('s0') select c1.Event_criteria_id as ecId, " +
                           "c1.Priority as priority, " +
                           "c2.Priority as prio, cast(count(*), int) as cnt from " +
                           "SupportHierarchyEvent#lastevent as c1, " +
@@ -55,10 +61,11 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
 
                 SendEvent(env, 3, 2, 2);
                 SendEvent(env, 3, 2, 2);
-                EPAssertionUtil.AssertPropsPerRow(
-                    env.GetEnumerator("s0"),
+
+                env.AssertPropsPerRowIterator(
+                    "s0",
                     fields,
-                    new[] {new object[] {1, 2}, new object[] {2, 2}});
+                    new[] { new object[] { 1, 2 }, new object[] { 2, 2 } });
 
                 env.UndeployAll();
             }

@@ -1,5 +1,5 @@
 ﻿///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -25,7 +25,8 @@ public static class ExprEqualsAllAnyNodeForgeHelper
             // collectionType is same as itemType
             // - nothing to do
             return itemExpression;
-        } else if (collectionType.IsNullable()) {
+        }
+        else if (collectionType.IsNullable()) {
             // Let's make some assumptions that we've done sufficient type checking and that
             // the underlying data type for item is the same as the collection, but is just
             // a boxed or unboxed form.  If this is a reasonable assumption, then the type

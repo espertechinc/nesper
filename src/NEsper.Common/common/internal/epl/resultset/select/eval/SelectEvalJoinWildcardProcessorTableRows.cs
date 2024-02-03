@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -33,16 +33,14 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             TableCompileTimeResolver tableResolver)
         {
             this.types = types;
-            this.innerForge = inner;
+            innerForge = inner;
             tables = new TableMetaData[types.Length];
-            for (int i = 0; i < types.Length; i++) {
+            for (var i = 0; i < types.Length; i++) {
                 tables[i] = tableResolver.ResolveTableFromEventType(types[i]);
             }
         }
 
-        public EventType ResultEventType {
-            get => innerForge.ResultEventType;
-        }
+        public EventType ResultEventType => innerForge.ResultEventType;
 
         public CodegenMethod ProcessCodegen(
             CodegenExpression resultEventType,
@@ -52,17 +50,17 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenMethod methodNode = codegenMethodScope.MakeChild(
+            var methodNode = codegenMethodScope.MakeChild(
                 typeof(EventBean),
-                this.GetType(),
+                GetType(),
                 codegenClassScope);
-            CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(methodNode);
-            CodegenExpression refIsNewData = exprSymbol.GetAddIsNewData(methodNode);
-            CodegenExpressionRef refExprEvalCtx = exprSymbol.GetAddExprEvalCtx(methodNode);
+            var refEPS = exprSymbol.GetAddEps(methodNode);
+            var refIsNewData = exprSymbol.GetAddIsNewData(methodNode);
+            var refExprEvalCtx = exprSymbol.GetAddExprEvalCtx(methodNode);
             methodNode.Block.DeclareVar<EventBean[]>(
                 "eventsPerStreamWTableRows",
                 NewArrayByLength(typeof(EventBean), Constant(types.Length)));
-            for (int i = 0; i < types.Length; i++) {
+            for (var i = 0; i < types.Length; i++) {
                 if (tables[i] == null) {
                     methodNode.Block.AssignArrayElement(
                         "eventsPerStreamWTableRows",
@@ -70,12 +68,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                         ArrayAtIndex(refEPS, Constant(i)));
                 }
                 else {
-                    CodegenExpressionInstanceField eventToPublic =
+                    var eventToPublic =
                         TableDeployTimeResolver.MakeTableEventToPublicField(
                             tables[i],
                             codegenClassScope,
-                            this.GetType());
-                    string refname = "e" + i;
+                            GetType());
+                    var refname = "e" + i;
                     methodNode.Block.DeclareVar<EventBean>(refname, ArrayAtIndex(refEPS, Constant(i)))
                         .IfRefNotNull(refname)
                         .AssignArrayElement(
@@ -92,7 +90,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                 }
             }
 
-            CodegenMethod innerMethod = innerForge.ProcessCodegen(
+            var innerMethod = innerForge.ProcessCodegen(
                 resultEventType,
                 eventBeanFactory,
                 codegenMethodScope,

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -15,7 +15,7 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.methodbase;
 using com.espertech.esper.common.@internal.rettype;
 
-namespace com.espertech.esper.common.@internal.epl.enummethod.eval
+namespace com.espertech.esper.common.@internal.epl.enummethod.eval.plain.noop
 {
     public class ExprDotForgeNoOp : ExprDotForgeEnumMethodBase
     {
@@ -29,12 +29,13 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             ExprValidationContext validationContext)
         {
             return new ProxyEnumForgeDescFactory() {
-                ProcGetLambdaStreamTypesForParameter = parameterNum => new EnumForgeLambdaDesc(new EventType[0], new String[0]),
+                ProcGetLambdaStreamTypesForParameter = parameterNum =>
+                    new EnumForgeLambdaDesc(Array.Empty<EventType>(), Array.Empty<string>()),
                 ProcMakeEnumForgeDesc = (
                     bodiesAndParameters,
                     streamCountIncoming,
                     services) => {
-                    var type = EPTypeHelper.CollectionOfEvents(inputEventType);
+                    var type = EPChainableTypeHelper.CollectionOfEvents(inputEventType);
                     return new EnumForgeDesc(type, new EnumForgeNoOp(streamCountIncoming));
                 }
             };

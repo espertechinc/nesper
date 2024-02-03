@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -13,7 +13,6 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.common.@internal.filtersvc;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.threading.locks;
 using com.espertech.esper.runtime.@internal.metrics.instrumentation;
 
@@ -26,32 +25,30 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
     /// </summary>
     public class FilterParamIndexIn : FilterParamIndexLookupableBase
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(FilterParamIndexIn));
-
-        private readonly IDictionary<object, IList<EventEvaluator>> constantsMap;
-        private readonly IReaderWriterLock constantsMapRWLock;
-        private readonly IDictionary<HashableMultiKey, EventEvaluator> evaluatorsMap;
+        private readonly IDictionary<object, IList<EventEvaluator>> _constantsMap;
+        private readonly IReaderWriterLock _constantsMapRwLock;
+        private readonly IDictionary<HashableMultiKey, EventEvaluator> _evaluatorsMap;
 
         public FilterParamIndexIn(
             ExprFilterSpecLookupable lookupable,
             IReaderWriterLock readWriteLock)
             : base(FilterOperator.IN_LIST_OF_VALUES, lookupable)
         {
-            constantsMap = new HashMap<object, IList<EventEvaluator>>();
-            evaluatorsMap = new HashMap<HashableMultiKey, EventEvaluator>();
-            constantsMapRWLock = readWriteLock;
+            _constantsMap = new HashMap<object, IList<EventEvaluator>>();
+            _evaluatorsMap = new HashMap<HashableMultiKey, EventEvaluator>();
+            _constantsMapRwLock = readWriteLock;
         }
 
-        public override int CountExpensive => constantsMap.Count;
+        public override int CountExpensive => _constantsMap.Count;
 
-        public override bool IsEmpty => constantsMap.IsEmpty();
+        public override bool IsEmpty => _constantsMap.IsEmpty();
 
-        public override IReaderWriterLock ReadWriteLock => constantsMapRWLock;
+        public override IReaderWriterLock ReadWriteLock => _constantsMapRwLock;
 
         public override EventEvaluator Get(object filterConstant)
         {
             var keyValues = (HashableMultiKey) filterConstant;
-            return evaluatorsMap.Get(keyValues);
+            return _evaluatorsMap.Get(keyValues);
         }
 
         public override void Put(
@@ -62,15 +59,15 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             var keys = (HashableMultiKey) filterConstant;
 
             // make sure to remove the old evaluator for this constant
-            EventEvaluator oldEvaluator = evaluatorsMap.Push(keys, evaluator);
+            EventEvaluator oldEvaluator = _evaluatorsMap.Push(keys, evaluator);
 
             // Store each value to match against in Map with it's evaluator as a list
             var keyValues = keys.Keys;
             for (var i = 0; i < keyValues.Length; i++) {
-                var evaluators = constantsMap.Get(keyValues[i]);
+                var evaluators = _constantsMap.Get(keyValues[i]);
                 if (evaluators == null) {
                     evaluators = new List<EventEvaluator>();
-                    constantsMap.Put(keyValues[i], evaluators);
+                    _constantsMap.Put(keyValues[i], evaluators);
                 }
                 else {
                     if (oldEvaluator != null) {
@@ -87,16 +84,16 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             var keys = (HashableMultiKey) filterConstant;
 
             // remove the mapping of value set to evaluator
-            EventEvaluator eval = evaluatorsMap.Delete(keys);
+            EventEvaluator eval = _evaluatorsMap.Delete(keys);
 
             var keyValues = keys.Keys;
             for (var i = 0; i < keyValues.Length; i++) {
-                var evaluators = constantsMap.Get(keyValues[i]);
+                var evaluators = _constantsMap.Get(keyValues[i]);
                 if (evaluators != null) {
                     // could be removed already as same-value constants existed
                     evaluators.Remove(eval);
                     if (evaluators.IsEmpty()) {
-                        constantsMap.Remove(keyValues[i]);
+                        _constantsMap.Remove(keyValues[i]);
                     }
                 }
             }
@@ -121,8 +118,8 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             }
 
             // Look up in hashtable
-            using (constantsMapRWLock.ReadLock.Acquire()) {
-                var evaluators = constantsMap.Get(attributeValue);
+            using (_constantsMapRwLock.ReadLock.Acquire()) {
+                var evaluators = _constantsMap.Get(attributeValue);
 
                 // No listener found for the value, return
                 if (evaluators == null) {
@@ -148,7 +145,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             ICollection<int> statementIds,
             ArrayDeque<FilterItem> evaluatorStack)
         {
-            foreach (var entry in evaluatorsMap) {
+            foreach (var entry in _evaluatorsMap) {
                 evaluatorStack.Add(new FilterItem(Lookupable.Expression, FilterOperator, entry.Value, this));
                 entry.Value.GetTraverseStatement(traverse, statementIds, evaluatorStack);
                 evaluatorStack.RemoveLast();

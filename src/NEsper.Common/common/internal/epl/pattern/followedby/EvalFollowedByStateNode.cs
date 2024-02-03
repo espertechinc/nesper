@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.followedby
             : base(parentNode)
         {
             this.evalFollowedByNode = evalFollowedByNode;
-            this.nodes = new Dictionary<EvalStateNode, int>();
+            nodes = new Dictionary<EvalStateNode, int>();
         }
 
         public override void RemoveMatch(ISet<EventBean> matchEvent)
@@ -44,13 +44,11 @@ namespace com.espertech.esper.common.@internal.epl.pattern.followedby
             PatternConsumptionUtil.ChildNodeRemoveMatches(matchEvent, nodes.Keys);
         }
 
-        public override EvalNode FactoryNode {
-            get => evalFollowedByNode;
-        }
+        public override EvalNode FactoryNode => evalFollowedByNode;
 
         public override void Start(MatchedEventMap beginState)
         {
-            AgentInstanceContext agentInstanceContext = evalFollowedByNode.Context.AgentInstanceContext;
+            var agentInstanceContext = evalFollowedByNode.Context.AgentInstanceContext;
             agentInstanceContext.InstrumentationProvider.QPatternFollowedByStart(
                 evalFollowedByNode.factoryNode,
                 beginState);
@@ -59,8 +57,8 @@ namespace com.espertech.esper.common.@internal.epl.pattern.followedby
                 evalFollowedByNode.factoryNode,
                 agentInstanceContext);
 
-            EvalNode child = evalFollowedByNode.ChildNodes[0];
-            EvalStateNode childState = child.NewState(this);
+            var child = evalFollowedByNode.ChildNodes[0];
+            var childState = child.NewState(this);
             nodes.Put(childState, 0);
             childState.Start(beginState);
 
@@ -73,7 +71,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.followedby
             bool isQuitted,
             EventBean optionalTriggeringEvent)
         {
-            AgentInstanceContext agentInstanceContext = evalFollowedByNode.Context.AgentInstanceContext;
+            var agentInstanceContext = evalFollowedByNode.Context.AgentInstanceContext;
             int? index = nodes.Get(fromNode);
             agentInstanceContext.InstrumentationProvider.QPatternFollowedByEvaluateTrue(
                 evalFollowedByNode.factoryNode,
@@ -92,9 +90,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.followedby
             }
 
             // If the match came from the very last filter, need to escalate
-            int numChildNodes = evalFollowedByNode.ChildNodes.Length;
-            bool isFollowedByQuitted = false;
-            if (index == (numChildNodes - 1)) {
+            var numChildNodes = evalFollowedByNode.ChildNodes.Length;
+            var isFollowedByQuitted = false;
+            if (index == numChildNodes - 1) {
                 if (nodes.IsEmpty()) {
                     isFollowedByQuitted = true;
                     agentInstanceContext.AuditProvider.PatternInstance(
@@ -109,12 +107,12 @@ namespace com.espertech.esper.common.@internal.epl.pattern.followedby
                     matchEvent,
                     isFollowedByQuitted,
                     agentInstanceContext);
-                this.ParentEvaluator.EvaluateTrue(matchEvent, this, isFollowedByQuitted, optionalTriggeringEvent);
+                ParentEvaluator.EvaluateTrue(matchEvent, this, isFollowedByQuitted, optionalTriggeringEvent);
             }
             else {
                 // Else start a new sub-expression for the next-in-line filter
-                EvalNode child = evalFollowedByNode.ChildNodes[index.Value + 1];
-                EvalStateNode childState = child.NewState(this);
+                var child = evalFollowedByNode.ChildNodes[index.Value + 1];
+                var childState = child.NewState(this);
                 nodes.Put(childState, index.Value + 1);
                 childState.Start(matchEvent);
             }
@@ -126,7 +124,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.followedby
             EvalStateNode fromNode,
             bool restartable)
         {
-            AgentInstanceContext agentInstanceContext = evalFollowedByNode.Context.AgentInstanceContext;
+            var agentInstanceContext = evalFollowedByNode.Context.AgentInstanceContext;
             agentInstanceContext.InstrumentationProvider.QPatternFollowedByEvalFalse(evalFollowedByNode.factoryNode);
 
             fromNode.Quit();
@@ -141,7 +139,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.followedby
                     false,
                     evalFollowedByNode.factoryNode,
                     agentInstanceContext);
-                this.ParentEvaluator.EvaluateFalse(this, true);
+                ParentEvaluator.EvaluateFalse(this, true);
                 QuitInternal();
             }
 
@@ -150,7 +148,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.followedby
 
         public override void Quit()
         {
-            AgentInstanceContext agentInstanceContext = evalFollowedByNode.Context.AgentInstanceContext;
+            var agentInstanceContext = evalFollowedByNode.Context.AgentInstanceContext;
             agentInstanceContext.InstrumentationProvider.QPatternFollowedByQuit(evalFollowedByNode.factoryNode);
             agentInstanceContext.AuditProvider.PatternInstance(
                 false,
@@ -170,26 +168,18 @@ namespace com.espertech.esper.common.@internal.epl.pattern.followedby
         public override void Accept(EvalStateNodeVisitor visitor)
         {
             visitor.VisitFollowedBy(evalFollowedByNode.FactoryNode, this, nodes);
-            foreach (EvalStateNode node in nodes.Keys) {
+            foreach (var node in nodes.Keys) {
                 node.Accept(visitor);
             }
         }
 
-        public override bool IsNotOperator {
-            get => false;
-        }
+        public override bool IsNotOperator => false;
 
-        public override bool IsFilterStateNode {
-            get => false;
-        }
+        public override bool IsFilterStateNode => false;
 
-        public bool IsFilterChildNonQuitting {
-            get => false;
-        }
+        public bool IsFilterChildNonQuitting => false;
 
-        public override bool IsObserverStateNodeNonRestarting {
-            get => false;
-        }
+        public override bool IsObserverStateNodeNonRestarting => false;
 
         public override string ToString()
         {
@@ -198,7 +188,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.followedby
 
         private void QuitInternal()
         {
-            foreach (EvalStateNode child in nodes.Keys) {
+            foreach (var child in nodes.Keys) {
                 child.Quit();
             }
 

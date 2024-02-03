@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -11,7 +11,6 @@ using System;
 namespace com.espertech.esper.common.client.context
 {
     /// <summary>Context partition identifier for hash context. </summary>
-    [Serializable]
     public class ContextPartitionIdentifierHash : ContextPartitionIdentifier
     {
         private int _hash;
@@ -31,13 +30,13 @@ namespace com.espertech.esper.common.client.context
         /// <summary>Returns the hash code. </summary>
         /// <value>hash code</value>
         public int Hash {
-            get { return _hash; }
-            set { _hash = value; }
+            get => _hash;
+            set => _hash = value;
         }
 
         public override bool CompareTo(ContextPartitionIdentifier other)
         {
-            return other is ContextPartitionIdentifierHash && _hash == ((ContextPartitionIdentifierHash) other)._hash;
+            return other is ContextPartitionIdentifierHash hash && _hash == hash._hash;
         }
 
         public override string ToString()

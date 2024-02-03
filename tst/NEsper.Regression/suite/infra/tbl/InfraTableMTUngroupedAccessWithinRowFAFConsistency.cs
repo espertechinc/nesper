@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -7,16 +7,19 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.infra.tbl
 {
@@ -25,7 +28,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
     /// </summary>
     public class InfraTableMTUngroupedAccessWithinRowFAFConsistency : RegressionExecution
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
+        }
 
         /// <summary>
         ///     For a given number of seconds:
@@ -47,14 +55,14 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             int numSeconds)
         {
             var path = new RegressionPath();
-            var eplCreateVariable = "create table vartotal (cnt count(*), sumint sum(int), avgint avg(int))";
+            var eplCreateVariable = "@public create table vartotal (cnt count(*), sumint sum(int), avgint avg(int))";
             env.CompileDeploy(eplCreateVariable, path);
 
             var eplInto =
                 "into table vartotal select count(*) as cnt, sum(IntPrimitive) as sumint, avg(IntPrimitive) as avgint from SupportBean";
             env.CompileDeploy(eplInto, path);
 
-            env.CompileDeploy("create window MyWindow#lastevent as SupportBean_S0", path);
+            env.CompileDeploy("@public create window MyWindow#lastevent as SupportBean_S0", path);
             env.CompileDeploy("insert into MyWindow select * from SupportBean_S0", path);
             env.SendEventBean(new SupportBean_S0(0));
 
@@ -77,15 +85,15 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             readRunnable.Shutdown = true;
 
             // join
-            log.Info("Waiting for completion");
+            Log.Info("Waiting for completion");
             t1.Join();
             t2.Join();
 
-            Assert.IsNull(writeRunnable.Exception);
-            Assert.IsNull(readRunnable.Exception);
-            log.Info("Send " + writeRunnable.numEvents + " and performed " + readRunnable.numQueries + " reads");
-            Assert.IsTrue(writeRunnable.numEvents > 100);
-            Assert.IsTrue(readRunnable.numQueries > 20);
+            ClassicAssert.IsNull(writeRunnable.Exception);
+            ClassicAssert.IsNull(readRunnable.Exception);
+            Log.Info("Send " + writeRunnable.numEvents + " and performed " + readRunnable.numQueries + " reads");
+            ClassicAssert.IsTrue(writeRunnable.numEvents > 100);
+            ClassicAssert.IsTrue(readRunnable.numQueries > 20);
 
             env.UndeployAll();
         }
@@ -110,7 +118,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
             public void Run()
             {
-                log.Info("Started event send for write");
+                Log.Info("Started event send for write");
 
                 try {
                     while (!shutdown) {
@@ -125,11 +133,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     }
                 }
                 catch (Exception ex) {
-                    log.Error("Exception encountered: " + ex.Message, ex);
+                    Log.Error("Exception encountered: " + ex.Message, ex);
                     Exception = ex;
                 }
 
-                log.Info("Completed event send for write");
+                Log.Info("Completed event send for write");
             }
         }
 
@@ -157,7 +165,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
             public void Run()
             {
-                log.Info("Started event send for read");
+                Log.Info("Started event send for read");
 
                 // warmup
                 try {
@@ -175,18 +183,18 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                         var result = env.Runtime.FireAndForgetService.ExecuteQuery(compiled);
                         var count = result.Array[0].Get("c0").AsInt64();
                         var sumint = result.Array[0].Get("c1").AsInt32();
-                        var avgint = (double) result.Array[0].Get("c2");
-                        Assert.AreEqual(2d, avgint, 0);
-                        Assert.AreEqual(sumint, count * 2);
+                        var avgint = (double)result.Array[0].Get("c2");
+                        ClassicAssert.AreEqual(2d, avgint, 0);
+                        ClassicAssert.AreEqual(sumint, count * 2);
                         numQueries++;
                     }
                 }
                 catch (Exception ex) {
-                    log.Error("Exception encountered: " + ex.Message, ex);
+                    Log.Error("Exception encountered: " + ex.Message, ex);
                     Exception = ex;
                 }
 
-                log.Info("Completed event send for read");
+                Log.Info("Completed event send for read");
             }
         }
     }

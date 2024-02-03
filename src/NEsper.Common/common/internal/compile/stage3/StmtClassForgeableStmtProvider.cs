@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -14,21 +14,21 @@ using com.espertech.esper.common.@internal.bytecodemodel.util;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.compat.collections;
 
-using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder; // newInstance;
-using static com.espertech.esper.common.@internal.context.aifactory.core.SAIFFInitializeSymbol; // REF_STMTINITSVC;
+using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
+using static com.espertech.esper.common.@internal.context.aifactory.core.SAIFFInitializeSymbol;
 
 namespace com.espertech.esper.common.@internal.compile.stage3
 {
     public class StmtClassForgeableStmtProvider : StmtClassForgeable
     {
-        private const string MEMBERNAME_STATEMENT_FIELDS = "statementFields";
-        private const string MEMBERNAME_INFORMATION = "statementInformationals";
-        private const string MEMBERNAME_FACTORY_PROVIDER = "factoryProvider";
+        public const string MEMBERNAME_STATEMENT_FIELDS = "statementFields";
+        public const string MEMBERNAME_INFORMATION = "statementInformationals";
+        public const string MEMBERNAME_FACTORY_PROVIDER = "factoryProvider";
         
         private readonly CodegenNamespaceScope _namespaceScope;
-        private readonly string _statementAiFactoryClassName;
+        private readonly string _statementAIFactoryClassName;
+        private readonly string _statementProviderClassName;
         private readonly StatementInformationalsCompileTime _statementInformationals;
-        private readonly string _className;
 
         public StmtClassForgeableStmtProvider(
             string statementAIFactoryClassName,
@@ -36,8 +36,8 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             StatementInformationalsCompileTime statementInformationals,
             CodegenNamespaceScope namespaceScope)
         {
-            _statementAiFactoryClassName = statementAIFactoryClassName;
-            _className = statementProviderClassName;
+            _statementAIFactoryClassName = statementAIFactoryClassName;
+            _statementProviderClassName = statementProviderClassName;
             _statementInformationals = statementInformationals;
             _namespaceScope = namespaceScope;
         }
@@ -49,18 +49,17 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             // write code to create an implementation of StatementResource
             var methods = new CodegenClassMethods();
             var properties = new CodegenClassProperties();
-            
             // members
             IList<CodegenTypedParam> members = new List<CodegenTypedParam>();
-            members.Add(new CodegenTypedParam(_namespaceScope.FieldsClassName, MEMBERNAME_STATEMENT_FIELDS));
+            members.Add(new CodegenTypedParam(_namespaceScope.FieldsClassNameOptional, MEMBERNAME_STATEMENT_FIELDS).WithFinal(false));
             members.Add(new CodegenTypedParam(typeof(StatementInformationalsRuntime), MEMBERNAME_INFORMATION));
             members.Add(new CodegenTypedParam(typeof(StatementAIFactoryProvider), MEMBERNAME_FACTORY_PROVIDER).WithFinal(false));
-
+            
             // ctor
-            var ctor = new CodegenCtor(GetType(), ClassName, includeDebugSymbols, Collections.GetEmptyList<CodegenTypedParam>());
-            var classScope = new CodegenClassScope(includeDebugSymbols, _namespaceScope, ClassName);
+            var ctor = new CodegenCtor(GetType(), includeDebugSymbols, EmptyList<CodegenTypedParam>.Instance);
+            var classScope = new CodegenClassScope(includeDebugSymbols, _namespaceScope, _statementProviderClassName);
             ctor.Block.AssignMember(MEMBERNAME_INFORMATION, _statementInformationals.Make(ctor, classScope));
-
+            
             var initializeMethod = MakeInitialize(classScope);
             var statementAIFactoryProviderProp = MakeGetStatementAIFactoryProvider(classScope);
             var statementInformationalsProp = CodegenProperty.MakePropertyNode(
@@ -68,17 +67,18 @@ namespace com.espertech.esper.common.@internal.compile.stage3
                     typeof(StmtClassForgeableStmtProvider),
                     CodegenSymbolProviderEmpty.INSTANCE,
                     classScope);
+                
             statementInformationalsProp
                 .GetterBlock.BlockReturn(Ref(MEMBERNAME_INFORMATION));
 
             CodegenStackGenerator.RecursiveBuildStack(
-                statementInformationalsProp, 
-                "Informationals", 
+                statementInformationalsProp,
+                "Informationals",
                 methods,
                 properties);
             CodegenStackGenerator.RecursiveBuildStack(
-                initializeMethod, 
-                "Initialize", 
+                initializeMethod,
+                "Initialize",
                 methods,
                 properties);
             CodegenStackGenerator.RecursiveBuildStack(
@@ -91,11 +91,11 @@ namespace com.espertech.esper.common.@internal.compile.stage3
                 "ctor",
                 methods,
                 properties);
-
+            
             return new CodegenClass(
                 CodegenClassType.STATEMENTPROVIDER,
                 typeof(StatementProvider),
-                ClassName,
+                _statementProviderClassName,
                 classScope,
                 members,
                 ctor,
@@ -104,29 +104,25 @@ namespace com.espertech.esper.common.@internal.compile.stage3
                 EmptyList<CodegenInnerClass>.Instance);
         }
 
-        public string ClassName => _className;
-
-        public StmtClassForgeableType ForgeableType => StmtClassForgeableType.STMTPROVIDER;
-
         private CodegenMethod MakeInitialize(CodegenClassScope classScope)
         {
             var method = CodegenMethod
-                .MakeMethod(typeof(void), typeof(StmtClassForgeableStmtProvider), classScope)
-                .AddParam(typeof(EPStatementInitServices), REF_STMTINITSVC.Ref);
+                .MakeParentNode(typeof(void), typeof(StmtClassForgeableStmtProvider), classScope)
+                .AddParam<EPStatementInitServices>(REF_STMTINITSVC.Ref);
             
-            if (_namespaceScope.FieldsClassName != null) {
+            if (_namespaceScope.FieldsClassNameOptional != null) {
                 method.Block.AssignRef(
                     MEMBERNAME_STATEMENT_FIELDS,
-                    NewInstanceInner(_namespaceScope.FieldsClassName));
+                    NewInstanceInner(_namespaceScope.FieldsClassNameOptional));
             }
-
+            
             method.Block.AssignMember(
                 MEMBERNAME_FACTORY_PROVIDER,
-                NewInstanceInner(_statementAiFactoryClassName, REF_STMTINITSVC, Ref(MEMBERNAME_STATEMENT_FIELDS)));
+                NewInstanceInner(_statementAIFactoryClassName, REF_STMTINITSVC, Ref(MEMBERNAME_STATEMENT_FIELDS)));
             return method;
         }
 
-        private static CodegenProperty  MakeGetStatementAIFactoryProvider(CodegenClassScope classScope)
+        private static CodegenProperty MakeGetStatementAIFactoryProvider(CodegenClassScope classScope)
         {
             var property = CodegenProperty.MakePropertyNode(
                 typeof(StatementAIFactoryProvider),
@@ -136,5 +132,9 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             property.GetterBlock.BlockReturn(Ref(MEMBERNAME_FACTORY_PROVIDER));
             return property;
         }
+
+        public string ClassName => _statementProviderClassName;
+
+        public StmtClassForgeableType ForgeableType => StmtClassForgeableType.STMTPROVIDER;
     }
 } // end of namespace

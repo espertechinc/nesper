@@ -1,13 +1,15 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.annotation;
@@ -21,6 +23,7 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.time.eval;
 using com.espertech.esper.common.@internal.epl.expression.time.node;
 using com.espertech.esper.common.@internal.epl.expression.visitor;
+using com.espertech.esper.common.@internal.epl.namedwindow.path;
 using com.espertech.esper.common.@internal.epl.pattern.core;
 using com.espertech.esper.common.@internal.epl.pattern.everydistinct;
 using com.espertech.esper.common.@internal.epl.pattern.filter;
@@ -29,7 +32,9 @@ using com.espertech.esper.common.@internal.epl.pattern.guard;
 using com.espertech.esper.common.@internal.epl.pattern.matchuntil;
 using com.espertech.esper.common.@internal.epl.pattern.observer;
 using com.espertech.esper.common.@internal.epl.streamtype;
+using com.espertech.esper.common.@internal.epl.table.compiletime;
 using com.espertech.esper.common.@internal.@event.core;
+using com.espertech.esper.common.@internal.@event.map;
 using com.espertech.esper.common.@internal.serde.compiletime.eventtype;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.util;
@@ -37,16 +42,16 @@ using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 
+using static com.espertech.esper.common.@internal.compile.stage2.FilterSpecCompilerTagUtil;
+
 namespace com.espertech.esper.common.@internal.compile.stage2
 {
     public partial class StreamSpecCompiler
     {
-        private static readonly ILog Log = LogManager.GetLogger(typeof(StreamSpecCompiler));
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public static StreamSpecCompiledDesc Compile(
             StreamSpecRaw spec,
-            ISet<string> eventTypeReferences,
-            bool isInsertInto,
             bool isJoin,
             bool isContextDeclaration,
             bool isOnTrigger,
@@ -55,37 +60,23 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             StatementRawInfo statementRawInfo,
             StatementCompileTimeServices services)
         {
-            if (spec is DBStatementStreamSpec dbStatementStreamSpec) {
-                return new StreamSpecCompiledDesc(dbStatementStreamSpec, EmptyList<StmtClassForgeableFactory>.Instance);
+            if (spec is DBStatementStreamSpec streamSpec) {
+                return new StreamSpecCompiledDesc(streamSpec, EmptyList<StmtClassForgeableFactory>.Instance);
             }
-
-            if (spec is FilterStreamSpecRaw filterStreamSpecRaw) {
-                return CompileFilter(
-                    filterStreamSpecRaw,
-                    isInsertInto,
-                    isJoin,
-                    isContextDeclaration,
-                    isOnTrigger,
-                    optionalStreamName,
-                    statementRawInfo,
-                    services);
+            else if (spec is FilterStreamSpecRaw raw) {
+                return CompileFilter(raw, optionalStreamName, statementRawInfo, services);
             }
-
-            if (spec is PatternStreamSpecRaw patternStreamSpecRaw) {
+            else if (spec is PatternStreamSpecRaw specRaw) {
                 return CompilePattern(
-                    patternStreamSpecRaw,
-                    eventTypeReferences,
-                    isInsertInto,
+                    specRaw,
                     isJoin,
                     isContextDeclaration,
                     isOnTrigger,
-                    optionalStreamName,
                     streamNum,
                     statementRawInfo,
                     services);
             }
-
-            if (spec is MethodStreamSpec methodStreamSpec) {
+            else if (spec is MethodStreamSpec methodStreamSpec) {
                 return new StreamSpecCompiledDesc(
                     CompileMethod(methodStreamSpec),
                     EmptyList<StmtClassForgeableFactory>.Instance);
@@ -96,10 +87,6 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 
         public static StreamSpecCompiledDesc CompileFilter(
             FilterStreamSpecRaw streamSpec,
-            bool isInsertInto,
-            bool isJoin,
-            bool isContextDeclaration,
-            bool isOnTrigger,
             string optionalStreamName,
             StatementRawInfo statementRawInfo,
             StatementCompileTimeServices services)
@@ -115,19 +102,19 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 }
 
                 if (streamSpec.RawFilterSpec.OptionalPropertyEvalSpec != null) {
-                    throw new ExprValidationException("Contained-event expressions are not supported with tables");
+                    throw new ExprValidationException("contained-event expressions are not supported with tables");
                 }
 
-                StreamTypeService streamTypeService = new StreamTypeServiceImpl(
-                    new[] {table.InternalEventType},
-                    new[] {optionalStreamName},
-                    new[] {true},
+                StreamTypeService streamTypeServiceX = new StreamTypeServiceImpl(
+                    new EventType[] { table.InternalEventType },
+                    new string[] { optionalStreamName },
+                    new bool[] { true },
                     false,
                     false);
                 var descX = FilterSpecCompiler.ValidateAllowSubquery(
                     ExprNodeOrigin.FILTER,
                     rawFilterSpec.FilterExpressions,
-                    streamTypeService,
+                    streamTypeServiceX,
                     null,
                     null,
                     statementRawInfo,
@@ -138,25 +125,23 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                     streamSpec.Options,
                     table,
                     descX.Expressions);
-                return new StreamSpecCompiledDesc(
-                    tableStreamSpec,
-                    descX.AdditionalForgeables);
+                return new StreamSpecCompiledDesc(tableStreamSpec, descX.AdditionalForgeables);
             }
 
             // Could be a named window
             var namedWindowInfo = services.NamedWindowCompileTimeResolver.Resolve(eventTypeName);
             if (namedWindowInfo != null) {
-                StreamTypeService streamTypeService = new StreamTypeServiceImpl(
-                    new[] {namedWindowInfo.EventType},
-                    new[] {optionalStreamName},
-                    new[] {true},
+                StreamTypeService streamTypeServiceM = new StreamTypeServiceImpl(
+                    new EventType[] { namedWindowInfo.EventType },
+                    new string[] { optionalStreamName },
+                    new bool[] { true },
                     false,
                     false);
 
                 var validated = FilterSpecCompiler.ValidateAllowSubquery(
                     ExprNodeOrigin.FILTER,
                     rawFilterSpec.FilterExpressions,
-                    streamTypeService,
+                    streamTypeServiceM,
                     null,
                     null,
                     statementRawInfo,
@@ -179,7 +164,6 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                     validated.Expressions,
                     streamSpec.Options,
                     optionalPropertyEvaluator);
-
                 return new StreamSpecCompiledDesc(consumer, validated.AdditionalForgeables);
             }
 
@@ -187,49 +171,44 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 
             // Validate all nodes, make sure each returns a boolean and types are good;
             // Also decompose all AND super nodes into individual expressions
-            StreamTypeService streamTypeServiceX = new StreamTypeServiceImpl(
-                new[] {eventType},
-                new[] {streamSpec.OptionalStreamName},
-                new[] {true},
+            StreamTypeService streamTypeService = new StreamTypeServiceImpl(
+                new EventType[] { eventType },
+                new string[] { streamSpec.OptionalStreamName },
+                new bool[] { true },
                 false,
                 false);
 
             var desc = FilterSpecCompiler.MakeFilterSpec(
-                eventType, 
+                eventType,
                 eventTypeName,
                 rawFilterSpec.FilterExpressions,
                 rawFilterSpec.OptionalPropertyEvalSpec,
-                null, null, null, // no tags
-                streamTypeServiceX,
+                null,
+                null,
+                null, // no tags
+                streamTypeService,
                 streamSpec.OptionalStreamName,
                 statementRawInfo,
                 services);
-            
             var compiled = new FilterStreamSpecCompiled(
                 desc.FilterSpecCompiled,
                 streamSpec.ViewSpecs,
                 streamSpec.OptionalStreamName,
                 streamSpec.Options);
-
             return new StreamSpecCompiledDesc(compiled, desc.AdditionalForgeables);
         }
 
         public static StreamSpecCompiledDesc CompilePattern(
             PatternStreamSpecRaw streamSpecRaw,
-            ISet<string> eventTypeReferences,
-            bool isInsertInto,
             bool isJoin,
             bool isContextDeclaration,
             bool isOnTrigger,
-            string optionalStreamName,
             int streamNum,
             StatementRawInfo statementRawInfo,
             StatementCompileTimeServices services)
         {
             return CompilePatternWTags(
                 streamSpecRaw,
-                eventTypeReferences,
-                isInsertInto,
                 null,
                 null,
                 isJoin,
@@ -242,8 +221,6 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 
         public static StreamSpecCompiledDesc CompilePatternWTags(
             PatternStreamSpecRaw streamSpecRaw,
-            ISet<string> eventTypeReferences,
-            bool isInsertInto,
             MatchEventSpec tags,
             ISet<string> priorAllTags,
             bool isJoin,
@@ -260,23 +237,29 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                     "Discard-partials and suppress-matches is not supported in a joins, context declaration and on-action");
             }
 
+            var allowDuplicateTags = false;
             if (tags == null) {
+                allowDuplicateTags = true; // pattern without prior state
                 tags = new MatchEventSpec();
             }
 
             var nodeStack = new Stack<EvalForgeNode>();
 
-            // determine ordered tags
-            var allTagNamesOrdered = FilterSpecCompilerTagUtil.AssignEventAsTagNumber(priorAllTags, streamSpecRaw.EvalForgeNode);
+            // detemine ordered tags
+            var allTagNamesOrdered =
+                AssignEventAsTagNumber(priorAllTags, streamSpecRaw.EvalForgeNode);
 
             // construct root : assigns factory node ids
             var top = streamSpecRaw.EvalForgeNode;
-            var root = new EvalRootForgeNode(services.IsAttachPatternText, top, statementRawInfo.Annotations);
-            var additionalForgeables = new List<StmtClassForgeableFactory>();
-            
+            var root = new EvalRootForgeNode(
+                services.IsAttachPatternText,
+                top,
+                statementRawInfo.Annotations);
+            IList<StmtClassForgeableFactory> additionalForgeables = new List<StmtClassForgeableFactory>();
             RecursiveCompile(
                 top,
                 tags,
+                allowDuplicateTags,
                 nodeStack,
                 allTagNamesOrdered,
                 streamNum,
@@ -284,12 +267,14 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 statementRawInfo,
                 services);
 
-            var hook = (PatternCompileHook) ImportUtil.GetAnnotationHook(
+            var hook = (PatternCompileHook)ImportUtil.GetAnnotationHook(
                 statementRawInfo.Annotations,
                 HookType.INTERNAL_PATTERNCOMPILE,
                 typeof(PatternCompileHook),
                 services.ImportServiceCompileTime);
-            hook?.Pattern(root);
+            if (hook != null) {
+                hook.Pattern(root);
+            }
 
             var compiled = new PatternStreamSpecCompiled(
                 root,
@@ -301,13 +286,13 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 streamSpecRaw.Options,
                 streamSpecRaw.IsSuppressSameEventMatches,
                 streamSpecRaw.IsDiscardPartialsOnMatch);
-
             return new StreamSpecCompiledDesc(compiled, additionalForgeables);
         }
 
         private static void RecursiveCompile(
             EvalForgeNode evalNode,
             MatchEventSpec tags,
+            bool allowDuplicateTags,
             Stack<EvalForgeNode> parentNodeStack,
             ISet<string> allTagNamesOrdered,
             int streamNum,
@@ -320,6 +305,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 RecursiveCompile(
                     child,
                     tags,
+                    allowDuplicateTags,
                     parentNodeStack,
                     allTagNamesOrdered,
                     streamNum,
@@ -330,28 +316,27 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 
             parentNodeStack.Pop();
 
-            IDictionary<string, Pair<EventType, string>> newTaggedEventTypes = null;
-            IDictionary<string, Pair<EventType, string>> newArrayEventTypes = null;
+            LinkedHashMap<string, Pair<EventType, string>> newTaggedEventTypes = null;
+            LinkedHashMap<string, Pair<EventType, string>> newArrayEventTypes = null;
 
-            if (evalNode is EvalFilterForgeNode) {
-                var filterNode = (EvalFilterForgeNode) evalNode;
-                var eventName = filterNode.RawFilterSpec.EventTypeName;
+            if (evalNode is EvalFilterForgeNode node) {
+                var eventName = node.RawFilterSpec.EventTypeName;
                 if (services.TableCompileTimeResolver.Resolve(eventName) != null) {
                     throw new ExprValidationException("Tables cannot be used in pattern filter atoms");
                 }
 
                 var resolvedEventType = ResolveTypeName(eventName, services.EventTypeCompileTimeResolver);
                 var finalEventType = resolvedEventType;
-                var optionalTag = filterNode.EventAsName;
+                var optionalTag = node.EventAsName;
                 var isPropertyEvaluation = false;
-                var isParentMatchUntil = IsParentMatchUntil(evalNode, parentNodeStack);
+                var isParentMatchUntil = IsParentMatchUntil(node, parentNodeStack);
 
                 // obtain property event type, if final event type is properties
-                if (filterNode.RawFilterSpec.OptionalPropertyEvalSpec != null) {
+                if (node.RawFilterSpec.OptionalPropertyEvalSpec != null) {
                     var optionalPropertyEvaluator = PropertyEvaluatorForgeFactory.MakeEvaluator(
-                        filterNode.RawFilterSpec.OptionalPropertyEvalSpec,
+                        node.RawFilterSpec.OptionalPropertyEvalSpec,
                         resolvedEventType,
-                        filterNode.EventAsName,
+                        node.EventAsName,
                         statementRawInfo,
                         services);
                     finalEventType = optionalPropertyEvaluator.FragmentEventType;
@@ -361,6 +346,15 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 // If a tag was supplied for the type, the tags must stay with this type, i.e. a=BeanA -> b=BeanA -> a=BeanB is a no
                 if (optionalTag != null) {
                     var pair = tags.TaggedEventTypes.Get(optionalTag);
+                    if (!allowDuplicateTags && pair != null) {
+                        throw new ExprValidationException(
+                            "Tag '" +
+                            optionalTag +
+                            "' for event '" +
+                            eventName +
+                            "' is already assigned");
+                    }
+
                     EventType existingType = null;
                     if (pair != null) {
                         existingType = pair.First;
@@ -368,6 +362,15 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 
                     if (existingType == null) {
                         pair = tags.ArrayEventTypes.Get(optionalTag);
+                        if (!allowDuplicateTags && pair != null) {
+                            throw new ExprValidationException(
+                                "Tag '" +
+                                optionalTag +
+                                "' for event '" +
+                                eventName +
+                                "' is already assigned");
+                        }
+
                         if (pair != null) {
                             throw new ExprValidationException(
                                 "Tag '" +
@@ -385,7 +388,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                             "' for event '" +
                             eventName +
                             "' has already been declared for events of type " +
-                            existingType.UnderlyingType.Name);
+                            existingType.UnderlyingType.CleanName());
                     }
 
                     pair = new Pair<EventType, string>(finalEventType, eventName);
@@ -400,12 +403,13 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                         newTaggedEventTypes.Put(optionalTag, pair);
                     }
 
-                    var forgeables = SerdeEventTypeUtility.Plan(
+                    var serdeForgeables = SerdeEventTypeUtility.Plan(
                         pair.First,
                         statementRawInfo,
                         services.SerdeEventTypeRegistry,
-                        services.SerdeResolver);
-                    additionalForgeables.AddAll(forgeables);
+                        services.SerdeResolver,
+                        services.StateMgmtSettingsProvider);
+                    additionalForgeables.AddAll(serdeForgeables);
                 }
 
                 // For this filter, filter types are all known tags at this time,
@@ -418,22 +422,25 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                     selfStreamName = "s_" + UuidGenerator.Generate();
                 }
 
-                var filterTypes = new LinkedHashMap<string, Pair<EventType, string>>();
+                var filterTypes =
+                    new LinkedHashMap<string, Pair<EventType, string>>();
                 var typePair = new Pair<EventType, string>(finalEventType, eventName);
                 filterTypes.Put(selfStreamName, typePair);
                 filterTypes.PutAll(tags.TaggedEventTypes);
 
                 // for the filter, specify all tags used
-                var filterTaggedEventTypes = new LinkedHashMap<string, Pair<EventType, string>>(tags.TaggedEventTypes);
+                var filterTaggedEventTypes =
+                    new LinkedHashMap<string, Pair<EventType, string>>(tags.TaggedEventTypes);
                 filterTaggedEventTypes.Remove(optionalTag);
 
                 // handle array tags (match-until clause)
-                IDictionary<string, Pair<EventType, string>> arrayCompositeEventTypes = null;
+                LinkedHashMap<string, Pair<EventType, string>> arrayCompositeEventTypes = null;
                 if (tags.ArrayEventTypes != null && !tags.ArrayEventTypes.IsEmpty()) {
                     arrayCompositeEventTypes = new LinkedHashMap<string, Pair<EventType, string>>();
 
                     foreach (var entry in tags.ArrayEventTypes) {
-                        var specificArrayType = new LinkedHashMap<string, Pair<EventType, string>>();
+                        var specificArrayType =
+                            new LinkedHashMap<string, Pair<EventType, string>>();
                         specificArrayType.Put(entry.Key, entry.Value);
 
                         var eventTypeName = services.EventTypeNameGeneratorStatement.GetAnonymousPatternNameWTag(
@@ -441,7 +448,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                             evalNode.FactoryNodeId,
                             entry.Key);
                         var mapProps = GetMapProperties(
-                            Collections.GetEmptyMap<string, Pair<EventType, string>>(),
+                            EmptyDictionary<string, Pair<EventType, string>>.Instance,
                             specificArrayType);
                         var metadata = new EventTypeMetadata(
                             eventTypeName,
@@ -470,23 +477,24 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                             arrayCompositeEventTypes.Put(tag, pair);
                         }
 
-                        var forgeables = SerdeEventTypeUtility.Plan(
+                        var serdeForgeables = SerdeEventTypeUtility.Plan(
                             mapEventType,
                             statementRawInfo,
                             services.SerdeEventTypeRegistry,
-                            services.SerdeResolver);
-                        additionalForgeables.AddAll(forgeables);
+                            services.SerdeResolver,
+                            services.StateMgmtSettingsProvider);
+                        additionalForgeables.AddAll(serdeForgeables);
                     }
                 }
 
                 StreamTypeService streamTypeService = new StreamTypeServiceImpl(filterTypes, true, false);
-                var exprNodes = filterNode.RawFilterSpec.FilterExpressions;
+                var exprNodes = node.RawFilterSpec.FilterExpressions;
 
                 var compiled = FilterSpecCompiler.MakeFilterSpec(
                     resolvedEventType,
                     eventName,
                     exprNodes,
-                    filterNode.RawFilterSpec.OptionalPropertyEvalSpec,
+                    node.RawFilterSpec.OptionalPropertyEvalSpec,
                     filterTaggedEventTypes,
                     arrayCompositeEventTypes,
                     allTagNamesOrdered,
@@ -494,12 +502,10 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                     null,
                     statementRawInfo,
                     services);
-                
-                filterNode.FilterSpec = compiled.FilterSpecCompiled;
+                node.FilterSpec = compiled.FilterSpecCompiled;
                 additionalForgeables.AddAll(compiled.AdditionalForgeables);
             }
-            else if (evalNode is EvalObserverForgeNode) {
-                var observerNode = (EvalObserverForgeNode) evalNode;
+            else if (evalNode is EvalObserverForgeNode observerNode) {
                 try {
                     var observerForge =
                         services.PatternResolutionService.Create(observerNode.PatternObserverSpec);
@@ -511,10 +517,8 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                         streamNum,
                         statementRawInfo,
                         services);
-                    var validationContext = new ExprValidationContextBuilder(
-                        streamTypeService,
-                        statementRawInfo,
-                        services).Build();
+                    var validationContext =
+                        new ExprValidationContextBuilder(streamTypeService, statementRawInfo, services).Build();
                     var validated = ValidateExpressions(
                         ExprNodeOrigin.PATTERNOBSERVER,
                         observerNode.PatternObserverSpec.ObjectParameters,
@@ -544,8 +548,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                         e);
                 }
             }
-            else if (evalNode is EvalGuardForgeNode) {
-                var guardNode = (EvalGuardForgeNode) evalNode;
+            else if (evalNode is EvalGuardForgeNode guardNode) {
                 try {
                     var guardForge = services.PatternResolutionService.Create(guardNode.PatternGuardSpec);
 
@@ -556,10 +559,8 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                         streamNum,
                         statementRawInfo,
                         services);
-                    var validationContext = new ExprValidationContextBuilder(
-                        streamTypeService,
-                        statementRawInfo,
-                        services).Build();
+                    var validationContext =
+                        new ExprValidationContextBuilder(streamTypeService, statementRawInfo, services).Build();
                     var validated = ValidateExpressions(
                         ExprNodeOrigin.PATTERNGUARD,
                         guardNode.PatternGuardSpec.ObjectParameters,
@@ -586,8 +587,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                         e);
                 }
             }
-            else if (evalNode is EvalEveryDistinctForgeNode) {
-                var distinctNode = (EvalEveryDistinctForgeNode) evalNode;
+            else if (evalNode is EvalEveryDistinctForgeNode distinctNode) {
                 var matchEventFromChildNodes = AnalyzeMatchEvent(distinctNode);
                 var streamTypeService = GetStreamTypeService(
                     matchEventFromChildNodes.TaggedEventTypes,
@@ -631,22 +631,22 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                     count++;
                     if (count == last && expr is ExprTimePeriod) {
                         expiryTimeExp = expr;
-                        var timePeriodExpr = (ExprTimePeriod) expiryTimeExp;
+                        var timePeriodExpr = (ExprTimePeriod)expiryTimeExp;
                         timePeriodComputeForge = timePeriodExpr.TimePeriodComputeForge;
                     }
                     else if (expr.Forge.ForgeConstantType.IsCompileTimeConstant) {
                         if (count == last) {
                             var value = expr.Forge.ExprEvaluator.Evaluate(null, true, null);
-                            if (!value.IsNumber()) {
+                            if (!(value.IsNumber())) {
                                 throw new ExprValidationException(
                                     "Invalid parameter for every-distinct, expected number of seconds constant (constant not considered for distinct)");
                             }
 
                             var secondsExpire = expr.Forge.ExprEvaluator.Evaluate(null, true, null);
                             var timeExpire = secondsExpire == null
-                                ? (long?) null
-                                : (long?) services.ImportServiceCompileTime.TimeAbacus.DeltaForSecondsNumber(
-                                    secondsExpire);
+                                ? (long?)null
+                                : services.ImportServiceCompileTime.TimeAbacus.DeltaForSecondsNumber(secondsExpire);
+
                             if (timeExpire != null && timeExpire > 0) {
                                 timePeriodComputeForge = new TimePeriodComputeConstGivenDeltaForge(timeExpire.Value);
                                 expiryTimeExp = expr;
@@ -676,13 +676,19 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                         "Every-distinct node requires one or more distinct-value expressions that each return non-constant result values");
                 }
 
-                var multiKeyPlan = MultiKeyPlanner.PlanMultiKey(distinctExpressions.ToArray(), false, statementRawInfo, services.SerdeResolver);
-                distinctNode.SetDistinctExpressions(distinctExpressions, multiKeyPlan.ClassRef, timePeriodComputeForge, expiryTimeExp);
+                var multiKeyPlan = MultiKeyPlanner.PlanMultiKey(
+                    distinctExpressions.ToArray(),
+                    false,
+                    statementRawInfo,
+                    services.SerdeResolver);
+                distinctNode.SetDistinctExpressions(
+                    distinctExpressions,
+                    multiKeyPlan.ClassRef,
+                    timePeriodComputeForge,
+                    expiryTimeExp);
                 additionalForgeables.AddAll(multiKeyPlan.MultiKeyForgeables);
             }
-            else if (evalNode is EvalMatchUntilForgeNode) {
-                var matchUntilNode = (EvalMatchUntilForgeNode) evalNode;
-
+            else if (evalNode is EvalMatchUntilForgeNode matchUntilNode) {
                 // compile bounds expressions, if any
                 var untilMatchEventSpec = new MatchEventSpec(tags.TaggedEventTypes, tags.ArrayEventTypes);
                 var streamTypeService = GetStreamTypeService(
@@ -710,7 +716,8 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                     tightlyBound = true;
                 }
                 else {
-                    var allowZeroLowerBounds = matchUntilNode.LowerBounds != null && matchUntilNode.UpperBounds != null;
+                    var allowZeroLowerBounds =
+                        matchUntilNode.LowerBounds != null && matchUntilNode.UpperBounds != null;
                     tightlyBound = ValidateMatchUntil(
                         matchUntilNode.LowerBounds,
                         matchUntilNode.UpperBounds,
@@ -727,12 +734,12 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                     allTagNamesOrdered,
                     null,
                     false);
-
                 matchUntilNode.Convertor = convertor;
 
                 // compile new tag lists
                 ISet<string> arrayTags = null;
-                var matchUntilAnalysisResult = EvalNodeUtil.RecursiveAnalyzeChildNodes(matchUntilNode.ChildNodes[0]);
+                var matchUntilAnalysisResult =
+                    EvalNodeUtil.RecursiveAnalyzeChildNodes(matchUntilNode.ChildNodes[0]);
                 foreach (var filterNode in matchUntilAnalysisResult.FilterNodes) {
                     var optionalTag = filterNode.EventAsName;
                     if (optionalTag != null) {
@@ -755,8 +762,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 
                 matchUntilNode.TagsArrayedSet = GetIndexesForTags(allTagNamesOrdered, arrayTags);
             }
-            else if (evalNode is EvalFollowedByForgeNode) {
-                var followedByNode = (EvalFollowedByForgeNode) evalNode;
+            else if (evalNode is EvalFollowedByForgeNode followedByNode) {
                 StreamTypeService streamTypeService = new StreamTypeServiceImpl(false);
                 var validationContext =
                     new ExprValidationContextBuilder(streamTypeService, statementRawInfo, services).Build();
@@ -784,7 +790,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                                 validationContext);
                             validated.Add(validatedExpr);
                             var returnType = validatedExpr.Forge.EvaluationType;
-                            if (returnType == null || !returnType.IsNumeric()) {
+                            if (!returnType.IsTypeNumeric()) {
                                 var message =
                                     "Invalid maximum expression in followed-by, the expression must return an integer value";
                                 throw new ExprValidationException(message);
@@ -816,7 +822,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                     bounds,
                     validationContext);
                 var returnType = validated.Forge.EvaluationType;
-                if (returnType == null || !returnType.IsNumeric()) {
+                if (!returnType.IsTypeNumeric()) {
                     throw new ExprValidationException(message);
                 }
 
@@ -831,13 +837,13 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             ISet<string> arrayTags)
         {
             if (arrayTags == null || arrayTags.IsEmpty()) {
-                return new int[0];
+                return Array.Empty<int>();
             }
 
             var indexes = new int[arrayTags.Count];
             var count = 0;
             foreach (var arrayTag in arrayTags) {
-                var found = FilterSpecCompilerTagUtil.FindTagNumber(arrayTag, allTagNamesOrdered);
+                var found = FindTagNumber(arrayTag, allTagNamesOrdered);
                 indexes[count] = found;
                 count++;
             }
@@ -847,15 +853,10 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 
         private static bool IsParentMatchUntil(
             EvalForgeNode currentNode,
-            Stack<EvalForgeNode> parentNodeStack)
+            IEnumerable<EvalForgeNode> parentNodeStack)
         {
-            if (parentNodeStack.IsEmptyCollection()) {
-                return false;
-            }
-
             foreach (var deepParent in parentNodeStack) {
-                if (deepParent is EvalMatchUntilForgeNode) {
-                    var matchUntilFactoryNode = (EvalMatchUntilForgeNode) deepParent;
+                if (deepParent is EvalMatchUntilForgeNode matchUntilFactoryNode) {
                     if (matchUntilFactoryNode.ChildNodes[0] == currentNode) {
                         return true;
                     }
@@ -867,8 +868,10 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 
         private static MatchEventSpec AnalyzeMatchEvent(EvalForgeNode relativeNode)
         {
-            var taggedEventTypes = new LinkedHashMap<string, Pair<EventType, string>>();
-            var arrayEventTypes = new LinkedHashMap<string, Pair<EventType, string>>();
+            var taggedEventTypes =
+                new LinkedHashMap<string, Pair<EventType, string>>();
+            var arrayEventTypes =
+                new LinkedHashMap<string, Pair<EventType, string>>();
 
             // Determine all the filter nodes used in the pattern
             var evalNodeAnalysisResult = EvalNodeUtil.RecursiveAnalyzeChildNodes(relativeNode);
@@ -888,7 +891,8 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             // collect those filters under a repeat since they are arrays
             ISet<string> arrayTags = new HashSet<string>();
             foreach (var matchUntilNode in evalNodeAnalysisResult.RepeatNodes) {
-                var matchUntilAnalysisResult = EvalNodeUtil.RecursiveAnalyzeChildNodes(matchUntilNode.ChildNodes[0]);
+                var matchUntilAnalysisResult =
+                    EvalNodeUtil.RecursiveAnalyzeChildNodes(matchUntilNode.ChildNodes[0]);
                 foreach (var filterNode in matchUntilAnalysisResult.FilterNodes) {
                     var optionalTag = filterNode.EventAsName;
                     if (optionalTag != null) {
@@ -929,7 +933,8 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             StatementRawInfo statementRawInfo,
             StatementCompileTimeServices services)
         {
-            var filterTypes = new LinkedHashMap<string, Pair<EventType, string>>();
+            var filterTypes =
+                new LinkedHashMap<string, Pair<EventType, string>>();
             filterTypes.PutAll(taggedEventTypes);
 
             // handle array tags (match-until clause)
@@ -1012,14 +1017,14 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             }
 
             foreach (var entry in arrayEventTypes) {
-                mapProperties.Put(entry.Key, new[] {entry.Value.First});
+                mapProperties.Put(entry.Key, new EventType[] { entry.Value.First });
             }
 
             return mapProperties;
         }
 
         /// <summary>
-        ///     Validate.
+        /// Validate.
         /// </summary>
         /// <param name="lowerBounds">is the lower bounds, or null if none supplied</param>
         /// <param name="upperBounds">is the upper bounds, or null if none supplied</param>
@@ -1036,7 +1041,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             var numericMessage = "Match-until bounds expect a numeric or expression value";
             if (lowerBounds != null && lowerBounds.Forge.ForgeConstantType == ExprForgeConstantType.COMPILETIMECONST) {
                 constantLower = lowerBounds.Forge.ExprEvaluator.Evaluate(null, true, null);
-                if (constantLower == null || !constantLower.IsNumber()) {
+                if (constantLower == null || !(constantLower.IsNumber())) {
                     throw new ExprValidationException(numericMessage);
                 }
             }
@@ -1047,7 +1052,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             object constantUpper = null;
             if (upperBounds != null && upperBounds.Forge.ForgeConstantType == ExprForgeConstantType.COMPILETIMECONST) {
                 constantUpper = upperBounds.Forge.ExprEvaluator.Evaluate(null, true, null);
-                if (constantUpper == null || !constantUpper.IsNumber()) {
+                if (constantUpper == null || !(constantUpper.IsNumber())) {
                     throw new ExprValidationException(numericMessage);
                 }
             }
@@ -1061,7 +1066,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 
             if (constantLower != null && constantUpper != null) {
                 var lower = constantLower.AsInt32();
-                var upper = constantUpper.AsInt32();
+                var upper = (constantUpper).AsInt32();
                 if (lower > upper) {
                     throw new ExprValidationException(
                         "Incorrect range specification, lower bounds value '" +

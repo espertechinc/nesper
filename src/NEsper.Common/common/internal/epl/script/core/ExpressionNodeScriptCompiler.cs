@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -16,7 +16,7 @@ namespace com.espertech.esper.common.@internal.epl.script.core
     public class ExpressionNodeScriptCompiler
     {
         public const string DEFAULT_DIALECT = "js";
-        
+
         public static ExpressionScriptCompiled CompileScript(
             string dialect,
             string scriptName,
@@ -40,7 +40,6 @@ namespace com.espertech.esper.common.@internal.epl.script.core
                 expression,
                 parameterNames,
                 null,
-                false,
                 null,
                 dialect);
 

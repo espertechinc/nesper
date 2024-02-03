@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -7,16 +7,16 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+using System.Linq;
 using System.Xml;
 
-using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.container;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.util;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esper.regressionlib.suite.@event.xml.EventXMLSchemaPropertyDynamicDOMGetter;
 
 namespace com.espertech.esper.regressionlib.suite.@event.xml
@@ -26,8 +26,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
         public static List<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
+#if REGRESSION_EXECUTIONS
             WithPreconfig(execs);
-            WithCreateSchema(execs);
+            With(CreateSchema)(execs);
+#endif
             return execs;
         }
 
@@ -77,36 +79,33 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             string eventTypeName,
             RegressionPath path)
         {
-            var stmtText = "@Name('s0') select type?,dyn[1]?,nested.nes2?,map('a')? from " + eventTypeName;
+            var stmtText = "@name('s0') select type?,dyn[1]?,nested.nes2?,map('a')? from " + eventTypeName;
             env.CompileDeploy(stmtText, path).AddListener("s0");
 
-            CollectionAssert.AreEquivalent(
-                new EventPropertyDescriptor[] {
-                    new EventPropertyDescriptor("type?", typeof(XmlNode), null, false, false, false, false, false),
-                    new EventPropertyDescriptor("dyn[1]?", typeof(XmlNode), null, false, false, false, false, false),
-                    new EventPropertyDescriptor(
-                        "nested.nes2?",
-                        typeof(XmlNode),
-                        null,
-                        false,
-                        false,
-                        false,
-                        false,
-                        false),
-                    new EventPropertyDescriptor("map('a')?", typeof(XmlNode), null, false, false, false, false, false)
-                },
-                env.Statement("s0").EventType.PropertyDescriptors);
-            SupportEventTypeAssertionUtil.AssertConsistency(env.Statement("s0").EventType);
+            env.AssertStatement(
+                "s0",
+                statement => {
+                    SupportEventPropUtil.AssertPropsEquals(
+                        statement.EventType.PropertyDescriptors.ToArray(),
+                        new SupportEventPropDesc("type?", typeof(XmlNode)),
+                        new SupportEventPropDesc("dyn[1]?", typeof(XmlNode)),
+                        new SupportEventPropDesc("nested.nes2?", typeof(XmlNode)),
+                        new SupportEventPropDesc("map('a')?", typeof(XmlNode)));
+                    SupportEventTypeAssertionUtil.AssertConsistency(statement.EventType);
+                });
 
-            var sender = env.EventService.GetEventSender(eventTypeName);
-            var root = SupportXML.SendEvent(sender, SCHEMA_XML);
+            var root = SupportXML.GetDocument(SCHEMA_XML);
+            env.SendEventXMLDOM(root, eventTypeName);
 
-            var theEvent = env.Listener("s0").AssertOneGetNewAndReset();
-            Assert.AreSame(root.DocumentElement.ChildNodes.Item(0), theEvent.Get("type?"));
-            Assert.AreSame(root.DocumentElement.ChildNodes.Item(2), theEvent.Get("dyn[1]?"));
-            Assert.AreSame(root.DocumentElement.ChildNodes.Item(3).ChildNodes.Item(0), theEvent.Get("nested.nes2?"));
-            Assert.AreSame(root.DocumentElement.ChildNodes.Item(4), theEvent.Get("map('a')?"));
-            SupportEventTypeAssertionUtil.AssertConsistency(theEvent);
+            env.AssertEventNew(
+                "s0",
+                theEvent => {
+                    ClassicAssert.AreSame(root.DocumentElement.ChildNodes.Item(0), theEvent.Get("type?"));
+                    ClassicAssert.AreSame(root.DocumentElement.ChildNodes.Item(2), theEvent.Get("dyn[1]?"));
+                    ClassicAssert.AreSame(root.DocumentElement.ChildNodes.Item(3).ChildNodes.Item(0), theEvent.Get("nested.nes2?"));
+                    ClassicAssert.AreSame(root.DocumentElement.ChildNodes.Item(4), theEvent.Get("map('a')?"));
+                    SupportEventTypeAssertionUtil.AssertConsistency(theEvent);
+                });
 
             env.UndeployAll();
         }

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -8,6 +8,7 @@
 
 using System;
 using System.Text;
+using System.Text.Json.Serialization;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -24,7 +25,9 @@ namespace com.espertech.esper.common.@internal.filterspec
 {
     public class FilterForEvalContextPropDoubleForge : FilterSpecParamFilterForEvalDoubleForge
     {
-        [NonSerialized] private readonly EventPropertyGetterSPI _getter;
+        [JsonIgnore]
+        [NonSerialized]
+        private readonly EventPropertyGetterSPI _getter;
         private readonly string _propertyName;
 
         public FilterForEvalContextPropDoubleForge(
@@ -40,7 +43,7 @@ namespace com.espertech.esper.common.@internal.filterspec
             CodegenMethodScope parent)
         {
             var method = parent.MakeChild(typeof(object), GetType(), classScope)
-				.AddParam(GET_FILTER_VALUE_FP);
+                .AddParam(GET_FILTER_VALUE_FP);
 
             method.Block
                 .DeclareVar<EventBean>("props", ExprDotName(REF_EXPREVALCONTEXT, "ContextProperties"))
@@ -89,7 +92,7 @@ namespace com.espertech.esper.common.@internal.filterspec
                 return false;
             }
 
-            var that = (FilterForEvalContextPropDoubleForge) o;
+            var that = (FilterForEvalContextPropDoubleForge)o;
 
             return _propertyName.Equals(that._propertyName);
         }
@@ -98,7 +101,7 @@ namespace com.espertech.esper.common.@internal.filterspec
         {
             return _propertyName.GetHashCode();
         }
-        
+
         public void ValueToString(StringBuilder @out)
         {
             @out.Append("context property '")

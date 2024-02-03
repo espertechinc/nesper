@@ -1,11 +1,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.epl.rowrecog.core;
 using com.espertech.esper.common.@internal.view.derived;
 using com.espertech.esper.common.@internal.view.expression;
@@ -42,152 +43,152 @@ namespace com.espertech.esper.common.@internal.view.core
         {
         }
 
-        public LengthWindowViewFactory Length()
+        public LengthWindowViewFactory Length(StateMgmtSetting stateMgmtSettings)
         {
             return new LengthWindowViewFactory();
         }
 
-        public PriorEventViewFactory Prior()
+        public PriorEventViewFactory Prior(StateMgmtSetting stateMgmtSettings)
         {
             return new PriorEventViewFactory();
         }
 
-        public TimeWindowViewFactory Time()
+        public TimeWindowViewFactory Time(StateMgmtSetting stateMgmtSettings)
         {
             return new TimeWindowViewFactory();
         }
 
-        public KeepAllViewFactory Keepall()
+        public KeepAllViewFactory Keepall(StateMgmtSetting stateMgmtSettings)
         {
             return new KeepAllViewFactory();
         }
 
-        public TimeBatchViewFactory Timebatch()
+        public TimeBatchViewFactory Timebatch(StateMgmtSetting stateMgmtSettings)
         {
             return new TimeBatchViewFactory();
         }
 
-        public TimeLengthBatchViewFactory Timelengthbatch()
+        public TimeLengthBatchViewFactory Timelengthbatch(StateMgmtSetting stateMgmtSettings)
         {
             return new TimeLengthBatchViewFactory();
         }
 
-        public LengthBatchViewFactory Lengthbatch()
+        public LengthBatchViewFactory Lengthbatch(StateMgmtSetting stateMgmtSettings)
         {
             return new LengthBatchViewFactory();
         }
 
-        public SortWindowViewFactory Sort()
+        public SortWindowViewFactory Sort(StateMgmtSetting stateMgmtSettings)
         {
             return new SortWindowViewFactory();
         }
 
-        public RankWindowViewFactory Rank()
+        public RankWindowViewFactory Rank(StateMgmtSetting stateMgmtSettings)
         {
             return new RankWindowViewFactory();
         }
 
-        public TimeAccumViewFactory Timeaccum()
+        public TimeAccumViewFactory Timeaccum(StateMgmtSetting stateMgmtSettings)
         {
             return new TimeAccumViewFactory();
         }
 
-        public UniqueByPropertyViewFactory Unique()
+        public UniqueByPropertyViewFactory Unique(StateMgmtSetting stateMgmtSettings)
         {
             return new UniqueByPropertyViewFactory();
         }
 
-        public FirstUniqueByPropertyViewFactory Firstunique()
+        public FirstUniqueByPropertyViewFactory Firstunique(StateMgmtSetting stateMgmtSettings)
         {
             return new FirstUniqueByPropertyViewFactory();
         }
 
-        public FirstTimeViewFactory Firsttime()
+        public FirstTimeViewFactory Firsttime(StateMgmtSetting stateMgmtSettings)
         {
             return new FirstTimeViewFactory();
         }
 
-        public ExternallyTimedBatchViewFactory Exttimebatch()
+        public ExternallyTimedBatchViewFactory Exttimebatch(StateMgmtSetting stateMgmtSettings)
         {
             return new ExternallyTimedBatchViewFactory();
         }
 
-        public ExternallyTimedWindowViewFactory Exttime()
+        public ExternallyTimedWindowViewFactory Exttime(StateMgmtSetting stateMgmtSettings)
         {
             return new ExternallyTimedWindowViewFactory();
         }
 
-        public TimeOrderViewFactory Timeorder()
+        public TimeOrderViewFactory Timeorder(StateMgmtSetting stateMgmtSettings)
         {
             return new TimeOrderViewFactory();
         }
 
-        public LastEventViewFactory Lastevent()
+        public LastEventViewFactory Lastevent(StateMgmtSetting stateMgmtSettings)
         {
             return new LastEventViewFactory();
         }
 
-        public FirstEventViewFactory Firstevent()
+        public FirstEventViewFactory Firstevent(StateMgmtSetting stateMgmtSettings)
         {
             return new FirstEventViewFactory();
         }
 
-        public FirstLengthWindowViewFactory Firstlength()
+        public FirstLengthWindowViewFactory Firstlength(StateMgmtSetting stateMgmtSettings)
         {
             return new FirstLengthWindowViewFactory();
         }
 
-        public SizeViewFactory Size()
+        public SizeViewFactory Size(StateMgmtSetting stateMgmtSettings)
         {
             return new SizeViewFactory();
         }
 
-        public UnivariateStatisticsViewFactory Uni()
+        public UnivariateStatisticsViewFactory Uni(StateMgmtSetting stateMgmtSettings)
         {
             return new UnivariateStatisticsViewFactory();
         }
 
-        public WeightedAverageViewFactory Weightedavg()
+        public WeightedAverageViewFactory Weightedavg(StateMgmtSetting stateMgmtSettings)
         {
             return new WeightedAverageViewFactory();
         }
 
-        public RegressionLinestViewFactory Regression()
+        public RegressionLinestViewFactory Regression(StateMgmtSetting stateMgmtSettings)
         {
             return new RegressionLinestViewFactory();
         }
 
-        public CorrelationViewFactory Correlation()
+        public CorrelationViewFactory Correlation(StateMgmtSetting stateMgmtSettings)
         {
             return new CorrelationViewFactory();
         }
 
-        public GroupByViewFactory Group()
+        public GroupByViewFactory Group(StateMgmtSetting stateMgmtSettings)
         {
             return new GroupByViewFactory();
         }
 
-        public IntersectViewFactory Intersect()
+        public IntersectViewFactory Intersect(StateMgmtSetting stateMgmtSettings)
         {
             return new IntersectViewFactory();
         }
 
-        public UnionViewFactory Union()
+        public UnionViewFactory Union(StateMgmtSetting stateMgmtSettings)
         {
             return new UnionViewFactory();
         }
 
-        public ExpressionBatchViewFactory Exprbatch()
+        public ExpressionBatchViewFactory Exprbatch(StateMgmtSetting stateMgmtSettings)
         {
             return new ExpressionBatchViewFactory();
         }
 
-        public ExpressionWindowViewFactory Expr()
+        public ExpressionWindowViewFactory Expr(StateMgmtSetting stateMgmtSettings)
         {
             return new ExpressionWindowViewFactory();
         }
 
-        public RowRecogNFAViewFactory RowRecog()
+        public RowRecogNFAViewFactory RowRecog(StateMgmtSetting stateMgmtSettings)
         {
             return new RowRecogNFAViewFactory();
         }

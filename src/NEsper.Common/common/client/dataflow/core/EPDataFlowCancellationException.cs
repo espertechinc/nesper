@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -11,7 +11,6 @@ using System;
 namespace com.espertech.esper.common.client.dataflow.core
 {
     /// <summary>Indicates cancellation of a data flow instance. </summary>
-    [Serializable]
     public class EPDataFlowCancellationException : EPException
     {
         public string DataFlowName { get; private set; }

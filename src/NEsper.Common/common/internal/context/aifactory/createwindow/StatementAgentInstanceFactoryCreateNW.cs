@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -73,21 +73,21 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
 
         public bool[] PriorFlagPerStream => null;
 
-        public string AsEventTypeName => _asEventType == null ? null : _asEventType.Name;
+        public string AsEventTypeName => _asEventType?.Name;
 
         public EventType StatementEventType => _activator.EventType;
 
-        public void StatementCreate(StatementContext statementContext)
+        public void StatementCreate(StatementContext value)
         {
             // The filter lookupables for the as-type apply to this type, when used with contexts, as contexts generated filters for types
-            if (statementContext.ContextRuntimeDescriptor != null && _asEventType != null) {
-                var namedWindow = statementContext.NamedWindowManagementService.GetNamedWindow(
-                    statementContext.DeploymentId,
+            if (value.ContextRuntimeDescriptor != null && _asEventType != null) {
+                var namedWindow = value.NamedWindowManagementService.GetNamedWindow(
+                    value.DeploymentId,
                     _namedWindowName);
-                statementContext.FilterSharedLookupableRepository.ApplyLookupableFromType(
+                value.FilterSharedLookupableRepository.ApplyLookupableFromType(
                     _asEventType,
                     namedWindow.RootView.EventType,
-                    statementContext.StatementId);
+                    value.StatementId);
             }
         }
 
@@ -137,7 +137,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
 
                 // Materialize views
                 var viewFactoryChainContext =
-                    new AgentInstanceViewFactoryChainContext(agentInstanceContext, true, null, null);
+                    new AgentInstanceViewFactoryChainContext(agentInstanceContext, true, null, null, null);
                 var viewables = ViewFactoryUtil.Materialize(
                     _viewFactories,
                     eventStreamParentViewable,
@@ -147,14 +147,13 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
                 eventStreamParentViewable.Child = rootView;
                 rootView.Parent = eventStreamParentViewable;
                 topView = viewables.Top;
-                rootView.Child = (View) topView;
+                rootView.Child = (View)topView;
                 finalView = viewables.Last;
 
                 // If this is a virtual data window implementation, bind it to the context for easy lookup
                 AgentInstanceMgmtCallback envStopCallback = null;
-                if (finalView is VirtualDWView) {
+                if (finalView is VirtualDWView virtualDwView) {
                     var objectName = "/virtualdw/" + _namedWindowName;
-                    var virtualDwView = (VirtualDWView) finalView;
                     try {
                         agentInstanceContext.RuntimeEnvContext.Bind(objectName, virtualDwView.VirtualDataWindow);
                     }
@@ -166,7 +165,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
                 }
 
                 // destroy the instance
-                AgentInstanceMgmtCallback allInOneStopMethod = new CreateNWAllInOneMgmtCallback(namedWindow, envStopCallback);
+                AgentInstanceMgmtCallback allInOneStopMethod =
+                    new CreateNWAllInOneMgmtCallback(namedWindow, envStopCallback);
                 stopCallbacks.Add(allInOneStopMethod);
 
                 // Attach tail view
@@ -215,7 +215,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
             StatementContext statementContext,
             int agentInstanceId)
         {
-            return AgentInstanceUtil.NewLock(statementContext);
+            return AgentInstanceUtil.NewLock(statementContext, agentInstanceId);
         }
 
         public AIRegistryRequirements RegistryRequirements => AIRegistryRequirements.NoRequirements();
@@ -269,11 +269,11 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
         public class CreateNWVirtualDWMgmtCallback : AgentInstanceMgmtCallback
         {
             private readonly VirtualDWView _virtualDwView;
-            private readonly String _objectName;
+            private readonly string _objectName;
 
             public CreateNWVirtualDWMgmtCallback(
                 VirtualDWView virtualDWView,
-                String objectName)
+                string objectName)
             {
                 _virtualDwView = virtualDWView;
                 _objectName = objectName;

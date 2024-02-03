@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -11,17 +11,18 @@ using System.Linq;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
+using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.compat.collections;
+
 
 namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
 {
     public class ResultSetProcessorRowPerGroupRollupOutputAllHelperImpl :
         ResultSetProcessorRowPerGroupRollupOutputAllHelper
     {
-        private readonly IDictionary<object, EventBean>[] groupRepsOutputLastUnordRStream;
-        private readonly IDictionary<object, EventBean[]>[] outputLimitGroupRepsPerLevel;
-
         private readonly ResultSetProcessorRowPerGroupRollup processor;
+        private readonly IDictionary<object, EventBean[]>[] outputLimitGroupRepsPerLevel;
+        private readonly IDictionary<object, EventBean>[] groupRepsOutputLastUnordRStream;
         private bool first;
 
         public ResultSetProcessorRowPerGroupRollupOutputAllHelperImpl(
@@ -30,13 +31,13 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
         {
             this.processor = processor;
 
-            outputLimitGroupRepsPerLevel = new LinkedHashMap<object, EventBean[]>[levelCount];
+            outputLimitGroupRepsPerLevel = (LinkedHashMap<object, EventBean[]>[])new LinkedHashMap<object, EventBean[]>[levelCount];
             for (var i = 0; i < levelCount; i++) {
                 outputLimitGroupRepsPerLevel[i] = new LinkedHashMap<object, EventBean[]>();
             }
 
             if (processor.IsSelectRStream) {
-                groupRepsOutputLastUnordRStream = new LinkedHashMap<object, EventBean>[levelCount];
+                groupRepsOutputLastUnordRStream = new IDictionary<object, EventBean>[levelCount]; 
                 for (var i = 0; i < levelCount; i++) {
                     groupRepsOutputLastUnordRStream[i] = new LinkedHashMap<object, EventBean>();
                 }
@@ -58,12 +59,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
             EventBean[] eventsPerStream;
             if (newData != null) {
                 foreach (var aNewData in newData) {
-                    eventsPerStream = new[] {aNewData};
+                    eventsPerStream = new EventBean[] { aNewData };
                     var groupKeyComplete = processor.GenerateGroupKeySingle(eventsPerStream, true);
                     foreach (var level in processor.GroupByRollupDesc.Levels) {
                         var groupKey = level.ComputeSubkey(groupKeyComplete);
                         groupKeysPerLevel[level.LevelNumber] = groupKey;
-                        if (outputLimitGroupRepsPerLevel[level.LevelNumber].Push(groupKey, eventsPerStream) == null) {
+                        if (!outputLimitGroupRepsPerLevel[level.LevelNumber].TryPush(groupKey, eventsPerStream)) {
                             if (processor.IsSelectRStream) {
                                 processor.GenerateOutputBatchedMapUnsorted(
                                     false,
@@ -80,18 +81,18 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                     processor.AggregationService.ApplyEnter(
                         eventsPerStream,
                         groupKeysPerLevel,
-                        processor.GetAgentInstanceContext());
+                        processor.ExprEvaluatorContext);
                 }
             }
 
             if (oldData != null) {
                 foreach (var anOldData in oldData) {
-                    eventsPerStream = new[] {anOldData};
+                    eventsPerStream = new EventBean[] { anOldData };
                     var groupKeyComplete = processor.GenerateGroupKeySingle(eventsPerStream, false);
                     foreach (var level in processor.GroupByRollupDesc.Levels) {
                         var groupKey = level.ComputeSubkey(groupKeyComplete);
                         groupKeysPerLevel[level.LevelNumber] = groupKey;
-                        if (outputLimitGroupRepsPerLevel[level.LevelNumber].Push(groupKey, eventsPerStream) == null) {
+                        if (!outputLimitGroupRepsPerLevel[level.LevelNumber].TryPush(groupKey, eventsPerStream)) {
                             if (processor.IsSelectRStream) {
                                 processor.GenerateOutputBatchedMapUnsorted(
                                     true,
@@ -108,7 +109,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                     processor.AggregationService.ApplyLeave(
                         eventsPerStream,
                         groupKeysPerLevel,
-                        processor.GetAgentInstanceContext());
+                        processor.ExprEvaluatorContext);
                 }
             }
         }
@@ -129,7 +130,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                     foreach (var level in processor.GroupByRollupDesc.Levels) {
                         var groupKey = level.ComputeSubkey(groupKeyComplete);
                         groupKeysPerLevel[level.LevelNumber] = groupKey;
-                        if (outputLimitGroupRepsPerLevel[level.LevelNumber].Push(groupKey, aNewData) == null) {
+                        if (!outputLimitGroupRepsPerLevel[level.LevelNumber].TryPush(groupKey, aNewData)) {
                             if (processor.IsSelectRStream) {
                                 processor.GenerateOutputBatchedMapUnsorted(
                                     false,
@@ -146,7 +147,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                     processor.AggregationService.ApplyEnter(
                         aNewData,
                         groupKeysPerLevel,
-                        processor.GetAgentInstanceContext());
+                        processor.ExprEvaluatorContext);
                 }
             }
 
@@ -157,7 +158,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                     foreach (var level in processor.GroupByRollupDesc.Levels) {
                         var groupKey = level.ComputeSubkey(groupKeyComplete);
                         groupKeysPerLevel[level.LevelNumber] = groupKey;
-                        if (outputLimitGroupRepsPerLevel[level.LevelNumber].Push(groupKey, aOldData) == null) {
+                        if (!outputLimitGroupRepsPerLevel[level.LevelNumber].TryPush(groupKey, aOldData)) {
                             if (processor.IsSelectRStream) {
                                 processor.GenerateOutputBatchedMapUnsorted(
                                     true,
@@ -174,7 +175,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                     processor.AggregationService.ApplyLeave(
                         aOldData,
                         groupKeysPerLevel,
-                        processor.GetAgentInstanceContext());
+                        processor.ExprEvaluatorContext);
                 }
             }
         }
@@ -208,7 +209,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                 }
             }
 
-            var newEventsArr = newEvents.ToArrayOrNull();
+            var newEventsArr = newEvents.IsEmpty() ? null : newEvents.ToArray();
 
             EventBean[] oldEventsArr = null;
             if (processor.IsSelectRStream) {

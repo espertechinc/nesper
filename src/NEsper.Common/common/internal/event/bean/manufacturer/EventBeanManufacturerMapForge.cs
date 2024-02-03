@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.common.@internal.bytecodemodel.util;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.map;
@@ -21,19 +22,19 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
 {
     /// <summary>
-    ///     Factory for Map-underlying events.
+    /// Factory for Map-underlying events.
     /// </summary>
     public class EventBeanManufacturerMapForge : EventBeanManufacturerForge
     {
-        private readonly MapEventType mapEventType;
-        private readonly WriteablePropertyDescriptor[] writables;
+        private readonly MapEventType _mapEventType;
+        private readonly WriteablePropertyDescriptor[] _writables;
 
         public EventBeanManufacturerMapForge(
             MapEventType mapEventType,
             WriteablePropertyDescriptor[] writables)
         {
-            this.mapEventType = mapEventType;
-            this.writables = writables;
+            _mapEventType = mapEventType;
+            _writables = writables;
         }
 
         public CodegenExpression Make(
@@ -43,11 +44,12 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
         {
             //var init = codegenClassScope.NamespaceScope.InitMethod;
 
-            var factory = codegenClassScope.AddOrGetDefaultFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
+            var factory =
+                codegenClassScope.AddOrGetDefaultFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
             var eventType = codegenClassScope.AddDefaultFieldUnshared(
                 true,
                 typeof(EventType),
-                EventTypeUtility.ResolveTypeCodegen(mapEventType, EPStatementInitServicesConstants.REF));
+                EventTypeUtility.ResolveTypeCodegen(_mapEventType, EPStatementInitServicesConstants.REF));
 
             var makeUndFunc = new CodegenExpressionLambda(codegenBlock)
                 .WithParam<object[]>("properties")
@@ -58,24 +60,25 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
             //var manufacturer = NewAnonymousClass(init.Block, typeof(EventBeanManufacturer));
 
             //var makeUndMethod = CodegenMethod
-            //    .MakeMethod(typeof(IDictionary<object, object>), GetType(), codegenClassScope)
-            //    .AddParam(typeof(object[]), "properties");
+            //	.MakeParentNode(typeof(IDictionary<object, object>), GetType(), codegenClassScope)
+            //	.AddParam<object[]>("properties");
             //manufacturer.AddMethod("MakeUnderlying", makeUndMethod);
             //MakeUnderlyingCodegen(makeUndMethod, codegenClassScope);
 
-            //var makeMethod = CodegenMethod.MakeMethod(typeof(EventBean), GetType(), codegenClassScope)
-            //    .AddParam(typeof(object[]), "properties");
+            //var makeMethod = CodegenMethod
+            //  .MakeParentNode(typeof(EventBean), GetType(), codegenClassScope)
+            //	.AddParam<object[]>("properties");
             //manufacturer.AddMethod("Make", makeMethod);
             //makeMethod.Block
-            //    .DeclareVar<IDictionary<object, object>>("und", LocalMethod(makeUndMethod, Ref("properties")))
-            //    .MethodReturn(ExprDotMethod(factory, "AdapterForTypedMap", Ref("und"), eventType));
+            //	.DeclareVar<IDictionary<object, object>>("und", LocalMethod(makeUndMethod, Ref("properties")))
+            //	.MethodReturn(ExprDotMethod(factory, "AdapterForTypedMap", Ref("und"), eventType));
 
             return codegenClassScope.AddDefaultFieldUnshared(true, typeof(EventBeanManufacturer), manufacturer);
         }
 
         public EventBeanManufacturer GetManufacturer(EventBeanTypedEventFactory eventBeanTypedEventFactory)
         {
-            return new EventBeanManufacturerMap(mapEventType, eventBeanTypedEventFactory, writables);
+            return new EventBeanManufacturerMap(_mapEventType, eventBeanTypedEventFactory, _writables);
         }
 
         private void MakeUnderlyingCodegen(
@@ -85,11 +88,11 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
             block.DeclareVar<IDictionary<string, object>>(
                 "values",
                 NewInstance(typeof(HashMap<string, object>)));
-            for (var i = 0; i < writables.Length; i++) {
+            for (var i = 0; i < _writables.Length; i++) {
                 block.ExprDotMethod(
-                    Ref("values"),
-                    "Put",
-                    Constant(writables[i].PropertyName),
+                            Ref("values"),
+                            "Put",
+                    Constant(_writables[i].PropertyName),
                     ArrayAtIndex(Ref("properties"), Constant(i)));
             }
 

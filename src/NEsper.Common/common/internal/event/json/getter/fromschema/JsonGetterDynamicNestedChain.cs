@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -29,8 +29,8 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
             string underlyingClassName,
             JsonEventPropertyGetter[] getters)
         {
-            this._underlyingClassName = underlyingClassName;
-            this._getters = getters;
+            _underlyingClassName = underlyingClassName;
+            _getters = getters;
         }
 
         public CodegenExpression EventBeanGetCodegen(
@@ -38,7 +38,10 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return UnderlyingGetCodegen(CastUnderlying(_underlyingClassName, beanExpression), codegenMethodScope, codegenClassScope);
+            return UnderlyingGetCodegen(
+                CastUnderlying(_underlyingClassName, beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
         public CodegenExpression UnderlyingGetCodegen(
@@ -46,8 +49,11 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            var resultExpression = _getters[0].UnderlyingGetCodegen(underlyingExpression, codegenMethodScope, codegenClassScope);
-            return LocalMethod(HandleGetterTrailingChainCodegen(codegenMethodScope, codegenClassScope), resultExpression);
+            var resultExpression =
+                _getters[0].UnderlyingGetCodegen(underlyingExpression, codegenMethodScope, codegenClassScope);
+            return LocalMethod(
+                HandleGetterTrailingChainCodegen(codegenMethodScope, codegenClassScope),
+                resultExpression);
         }
 
         public CodegenExpression EventBeanExistsCodegen(
@@ -55,7 +61,10 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return UnderlyingExistsCodegen(CastUnderlying(_underlyingClassName, beanExpression), codegenMethodScope, codegenClassScope);
+            return UnderlyingExistsCodegen(
+                CastUnderlying(_underlyingClassName, beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
         public CodegenExpression UnderlyingExistsCodegen(
@@ -63,8 +72,11 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            var resultExpression = _getters[0].UnderlyingGetCodegen(underlyingExpression, codegenMethodScope, codegenClassScope);
-            return LocalMethod(HandleGetterTrailingExistsCodegen(codegenMethodScope, codegenClassScope), resultExpression);
+            var resultExpression =
+                _getters[0].UnderlyingGetCodegen(underlyingExpression, codegenMethodScope, codegenClassScope);
+            return LocalMethod(
+                HandleGetterTrailingExistsCodegen(codegenMethodScope, codegenClassScope),
+                resultExpression);
         }
 
         public CodegenExpression EventBeanFragmentCodegen(
@@ -134,7 +146,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
                 return false;
             }
 
-            return _getters[_getters.Length - 1].GetJsonExists(result);
+            return _getters[^1].GetJsonExists(result);
         }
 
         private CodegenMethod HandleGetterTrailingChainCodegen(
@@ -143,7 +155,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
         {
             var method = codegenMethodScope
                 .MakeChild(typeof(object), GetType(), codegenClassScope)
-                .AddParam(typeof(object), "result");
+                .AddParam<object>("result");
 
             for (var i = 1; i < _getters.Length; i++) {
                 var getter = _getters[i];
@@ -169,7 +181,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
         {
             var method = codegenMethodScope
                 .MakeChild(typeof(bool), GetType(), codegenClassScope)
-                .AddParam(typeof(object), "result");
+                .AddParam<object>("result");
 
             for (var i = 1; i < _getters.Length - 1; i++) {
                 var getter = _getters[i];
@@ -192,7 +204,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
                 .IfNotInstanceOf("result", typeof(IDictionary<string, object>))
                 .BlockReturn(ConstantFalse())
                 .MethodReturn(
-                    _getters[_getters.Length - 1]
+                    _getters[^1]
                         .UnderlyingExistsCodegen(
                             CastRef(typeof(IDictionary<string, object>), "result"),
                             codegenMethodScope,

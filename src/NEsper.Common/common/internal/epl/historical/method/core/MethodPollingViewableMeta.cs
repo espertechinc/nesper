@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.epl.historical.method.poll;
 using com.espertech.esper.common.@internal.epl.script.core;
 using com.espertech.esper.common.@internal.epl.variable.compiletime;
@@ -61,5 +62,12 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
         public Type MethodProviderClass { get; }
 
         public bool IsStaticMethod { get; }
+
+        public string GetConfigurationName(MethodStreamSpec methodStreamSpec)
+        {
+            return MethodProviderClass != null
+                ? MethodProviderClass.FullName
+                : methodStreamSpec.MethodName;
+        }
     }
 } // end of namespace

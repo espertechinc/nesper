@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -12,31 +12,31 @@ namespace com.espertech.esper.common.client.soda
     public enum PatternExprPrecedenceEnum
     {
         /// <summary>Precedence. </summary>
-        MAXIMIM = (int.MaxValue),
+        MAXIMIM = int.MaxValue,
 
         /// <summary>Precedence. </summary>
-        ATOM = (7),
+        ATOM = 7,
 
         /// <summary>Precedence. </summary>
-        GUARD = (6),
+        GUARD = 6,
 
         /// <summary>Precedence. </summary>
-        EVERY_NOT = (5),
+        EVERY_NOT = 5,
 
         /// <summary>Precedence. </summary>
-        MATCH_UNTIL = (4),
+        MATCH_UNTIL = 4,
 
         /// <summary>Precedence. </summary>
-        AND = (3),
+        AND = 3,
 
         /// <summary>Precedence. </summary>
-        OR = (2),
+        OR = 2,
 
         /// <summary>Precedence. </summary>
-        FOLLOWED_BY = (1),
+        FOLLOWED_BY = 1,
 
         /// <summary>Precedence. </summary>
-        MINIMUM = (int.MinValue)
+        MINIMUM = int.MinValue
     }
 
     public static class PatternExprPrecedenceEnumExtensions
@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.client.soda
         /// <returns>Precedence</returns>
         public static int GetLevel(this PatternExprPrecedenceEnum value)
         {
-            return (int) value;
+            return (int)value;
         }
     }
 }

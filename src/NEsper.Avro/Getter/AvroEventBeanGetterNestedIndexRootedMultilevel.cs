@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -122,7 +122,7 @@ namespace NEsper.Avro.Getter
             CodegenClassScope codegenClassScope)
         {
             return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
-                .AddParam(typeof(GenericRecord), "record")
+                .AddParam<GenericRecord>("record")
                 .Block
                 .DeclareVar<GenericRecord>(
                     "value",
@@ -143,7 +143,7 @@ namespace NEsper.Avro.Getter
             CodegenClassScope codegenClassScope)
         {
             return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
-                .AddParam(typeof(GenericRecord), "record")
+                .AddParam<GenericRecord>("record")
                 .Block
                 .DeclareVar<GenericRecord>(
                     "value",
@@ -175,7 +175,7 @@ namespace NEsper.Avro.Getter
         {
             var navigateRecordMethod = NavigateRecordMethodCodegen(codegenMethodScope, codegenClassScope);
             return codegenMethodScope.MakeChild(typeof(GenericRecord), GetType(), codegenClassScope)
-                .AddParam(typeof(GenericRecord), "record")
+                .AddParam<GenericRecord>("record")
                 .Block
                 .DeclareVar<object>(
                     "value",
@@ -212,7 +212,7 @@ namespace NEsper.Avro.Getter
             CodegenClassScope codegenClassScope)
         {
             var block = codegenMethodScope.MakeChild(typeof(GenericRecord), GetType(), codegenClassScope)
-                .AddParam(typeof(GenericRecord), "record")
+                .AddParam<GenericRecord>("record")
                 .Block
                 .DeclareVar<GenericRecord>("current", CodegenExpressionBuilder.Ref("record"))
                 .DeclareVarNull(typeof(object), "value");

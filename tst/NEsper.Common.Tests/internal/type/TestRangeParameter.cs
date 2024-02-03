@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using com.espertech.esper.common.client.scopetest;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.type
 {
@@ -21,13 +22,13 @@ namespace com.espertech.esper.common.@internal.type
         public void TestIsWildcard()
         {
             RangeParameter rangeParameter = new RangeParameter(10, 20);
-            Assert.IsTrue(rangeParameter.IsWildcard(10, 20));
-            Assert.IsTrue(rangeParameter.IsWildcard(11, 20));
-            Assert.IsTrue(rangeParameter.IsWildcard(10, 19));
-            Assert.IsFalse(rangeParameter.IsWildcard(9, 21));
-            Assert.IsFalse(rangeParameter.IsWildcard(10, 21));
-            Assert.IsFalse(rangeParameter.IsWildcard(9, 20));
-            Assert.IsTrue(rangeParameter.IsWildcard(11, 19));
+            ClassicAssert.IsTrue(rangeParameter.IsWildcard(10, 20));
+            ClassicAssert.IsTrue(rangeParameter.IsWildcard(11, 20));
+            ClassicAssert.IsTrue(rangeParameter.IsWildcard(10, 19));
+            ClassicAssert.IsFalse(rangeParameter.IsWildcard(9, 21));
+            ClassicAssert.IsFalse(rangeParameter.IsWildcard(10, 21));
+            ClassicAssert.IsFalse(rangeParameter.IsWildcard(9, 20));
+            ClassicAssert.IsTrue(rangeParameter.IsWildcard(11, 19));
         }
 
         [Test]
@@ -54,18 +55,18 @@ namespace com.espertech.esper.common.@internal.type
         public void TestContainsPoint()
         {
             RangeParameter rangeParameter = new RangeParameter(10, 20);
-            Assert.IsTrue(rangeParameter.ContainsPoint(10));
-            Assert.IsTrue(rangeParameter.ContainsPoint(11));
-            Assert.IsTrue(rangeParameter.ContainsPoint(20));
-            Assert.IsFalse(rangeParameter.ContainsPoint(9));
-            Assert.IsFalse(rangeParameter.ContainsPoint(21));
+            ClassicAssert.IsTrue(rangeParameter.ContainsPoint(10));
+            ClassicAssert.IsTrue(rangeParameter.ContainsPoint(11));
+            ClassicAssert.IsTrue(rangeParameter.ContainsPoint(20));
+            ClassicAssert.IsFalse(rangeParameter.ContainsPoint(9));
+            ClassicAssert.IsFalse(rangeParameter.ContainsPoint(21));
         }
 
         [Test]
         public void TestFormat()
         {
             RangeParameter rangeParameter = new RangeParameter(10, 20);
-            Assert.AreEqual("10-20", rangeParameter.Formatted());
+            ClassicAssert.AreEqual("10-20", rangeParameter.Formatted());
         }
     }
 } // end of namespace

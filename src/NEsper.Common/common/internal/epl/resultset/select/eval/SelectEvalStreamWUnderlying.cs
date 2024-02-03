@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -52,7 +52,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             EventType[] eventTypes)
             : base(selectExprForgeContext, resultEventType, namedStreams, usingWildcard)
         {
-            wrapperEventType = (WrapperEventType) resultEventType;
+            wrapperEventType = (WrapperEventType)resultEventType;
             this.unnamedStreams = unnamedStreams;
             this.singleStreamWrapper = singleStreamWrapper;
             this.underlyingIsFragmentEvent = underlyingIsFragmentEvent;
@@ -81,7 +81,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                     wrapperEventType.UnderlyingEventType,
                     EPStatementInitServicesConstants.REF));
 
-            var refEPS = exprSymbol.GetAddEPS(methodNode);
+            var refEPS = exprSymbol.GetAddEps(methodNode);
             var refIsNewData = exprSymbol.GetAddIsNewData(methodNode);
             var refExprEvalCtx = exprSymbol.GetAddExprEvalCtx(methodNode);
 
@@ -96,7 +96,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             }
 
             if (underlyingIsFragmentEvent) {
-                var fragment = ((EventTypeSPI) eventTypes[underlyingStreamNumber])
+                var fragment = ((EventTypeSPI)eventTypes[underlyingStreamNumber])
                     .GetGetterSPI(unnamedStreams[0].StreamSelected.StreamName)
                     .EventBeanFragmentCodegen(
                         Ref("eventBean"),

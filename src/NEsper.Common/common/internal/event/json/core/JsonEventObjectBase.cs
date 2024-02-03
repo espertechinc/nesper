@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -22,340 +22,434 @@ using static com.espertech.esper.common.@internal.@event.json.serializers.JsonSe
 
 namespace com.espertech.esper.common.@internal.@event.json.core
 {
-	public abstract class JsonEventObjectBase : JsonEventObject
-	{
-		/// <summary>
-		/// Add a dynamic property value that the json parser encounters.
-		/// Dynamic property values are not predefined and are catch-all in nature.
-		/// </summary>
-		/// <param name="name">name</param>
-		/// <param name="value">value</param>
-		public virtual void AddJsonValue(
-			string name,
-			object value)
-		{
-			throw new NotSupportedException();
-		}
+    public abstract class JsonEventObjectBase : JsonEventObject
+    {
+        /// <summary>
+        /// Add a dynamic property value that the json parser encounters.
+        /// Dynamic property values are not predefined and are catch-all in nature.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="value">value</param>
+        public virtual void AddJsonValue(
+            string name,
+            object value)
+        {
+            throw new NotSupportedException();
+        }
 
-		/// <summary>
-		/// Returns the dynamic property values (the non-predefined values)
-		/// </summary>
-		/// <value>map</value>
-		public virtual IDictionary<string, object> JsonValues => EmptyDictionary<string, object>.Instance;
+        /// <summary>
+        /// Returns the dynamic property values (the non-predefined values)
+        /// </summary>
+        /// <value>map</value>
+        public virtual IDictionary<string, object> JsonValues => EmptyDictionary<string, object>.Instance;
 
-		/// <summary>
-		/// Returns the set of property names that are visible to the caller.
-		/// </summary>
-		public ICollection<string> PropertyNames => Enumerable.Concat(JsonValues.Select(_ => _.Key),NativeKeys).ToList();
-		
-		#region Native
+        /// <summary>
+        /// Returns the set of property names that are visible to the caller.
+        /// </summary>
+        public ICollection<string> PropertyNames => Enumerable
+            .Concat(JsonValues.Select(_ => _.Key), NativeKeys.Select(GetNativeKeyName)) 
+            .ToList();
+            
 
-		/// <summary>
-		/// Returns the total number of pre-declared properties available including properties of the parent event type if any
-		/// </summary>
-		/// <value>size</value>
-		public virtual int NativeCount => 0;
+        #region Native
 
-		/// <summary>
-		/// Attempts to find the native value of the same name including property names of the parent event type if any.  If found,
-		/// the method places the value into the out var and returns true.  Otherwise, false.
-		/// </summary>
-		/// <param name="name"></param>
-		/// <param name="value"></param>
-		/// <returns></returns>
-		public virtual bool TryGetNativeEntry(
-			string name,
-			out KeyValuePair<string, object> value)
-		{
-			value = default;
-			return false;
-		}
+        /// <summary>
+        /// Returns the total number of pre-declared properties available including properties of the parent event type if any
+        /// </summary>
+        /// <value>size</value>
+        public virtual int NativeCount => 0;
 
-		/// <summary>
-		/// Attempts to find the native value of the same name including property names of the parent event type if any.  Returns
-		/// the key-value pair if found, otherwise throws KeyNotFoundException.
-		/// </summary>
-		/// <param name="name"></param>
-		/// <returns></returns>
-		/// <exception cref="KeyNotFoundException"></exception>
-		public virtual KeyValuePair<string, object> GetNativeEntry(string name)
-		{
-			if (!TryGetNativeEntry(name, out var value)) {
-				throw new KeyNotFoundException(name);
-			}
+        /// <summary>
+        /// Attempts to find the native value of the same name including property names of the parent event type if any.  If found,
+        /// the method places the value into the out var and returns true.  Otherwise, false.
+        /// </summary>
+        /// <param name="index"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public virtual bool TryGetNativeEntry(
+            int index,
+            out KeyValuePair<string, object> value)
+        {
+            value = default;
+            return false;
+        }
 
-			return value;
-		}
+        /// <summary>
+        /// Attempts to find the native value of the same name including property names of the parent event type if any.  Returns
+        /// the key-value pair if found, otherwise throws KeyNotFoundException.
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        /// <exception cref="KeyNotFoundException"></exception>
+        public virtual KeyValuePair<string, object> GetNativeEntry(int index)
+        {
+            if (!TryGetNativeEntry(index, out var value)) {
+                throw new KeyNotFoundException();
+            }
 
-		/// <summary>
-		/// Attempts to find the native value of the same name and assigns the value.  If found, the method assigns the
-		/// property, otherwise it return false.
-		/// </summary>
-		/// <param name="name"></param>
-		/// <param name="value"></param>
-		/// <returns></returns>
-		public virtual bool TrySetNativeValue(
-			string name,
-			object value)
-		{
-			return false;
-		}
-		
-		/// <summary>
-		/// Attempts to find the native value of the same name including property names of the parent event type if any.  If found,
-		/// the method places the value into the out var and returns true.  Otherwise, false.
-		/// </summary>
-		/// <param name="name"></param>
-		/// <param name="value"></param>
-		/// <returns></returns>
-		public virtual bool TryGetNativeValue(
-			string name,
-			out object value)
-		{
-			if (TryGetNativeEntry(name, out var entry)) {
-				value = entry.Value;
-				return true;
-			}
+            return value;
+        }
 
-			value = default(object);
-			return false;
-		}
+        /// <summary>
+        /// Attempts to find the native value of the same name and assigns the value.  If found, the method assigns the
+        /// property, otherwise it return false.
+        /// </summary>
+        /// <param name="index"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public virtual bool TrySetNativeValue(
+            int index,
+            object value)
+        {
+            return false;
+        }
 
-		/// <summary>
-		/// Attempts to find the native value of the same name including property names of the parent event type if any.  Returns
-		/// the value if found, otherwise throws KeyNotFoundException.
-		/// </summary>
-		/// <param name="name"></param>
-		/// <returns></returns>
-		/// <exception cref="KeyNotFoundException"></exception>
-		public virtual object GetNativeValue(string name)
-		{
-			if (!TryGetNativeValue(name, out var value)) {
-				throw new KeyNotFoundException(name);
-			}
+        /// <summary>
+        /// Returns the pre-declared property name including properties names of the parent event type if any
+        /// </summary>
+        /// <param name="index">the index of the property</param>
+        /// <param name="propertyName">the property name (output only)</param>
+        /// <returns></returns>
 
-			return value;
-		}
+        public virtual bool TryGetNativeKeyName(
+            int index,
+            out string propertyName)
+        {
+            propertyName = default;
+            return false;
+        }
 
-		/// <summary>
-		/// Returns the flag whether the key exists as a pre-declared property of the same name including
-		/// property names of the parent event type if any
-		/// </summary>
-		/// <param name="key">property name</param>
-		/// <returns>flag</returns>
-		public virtual bool NativeContainsKey(string key)
-		{
-			return false;
-		}
+        /// <summary>
+        /// Returns the pre-declared property name including properties names of the parent event type if any
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        public virtual string GetNativeKeyName(int index)
+        {
+            if (TryGetNativeKeyName(index, out var propertyName)) {
+                return propertyName;
+            }
+            
+            throw new NoSuchElementException();
+        }
 
-		/// <summary>
-		/// Returns the flag whether the value exists as the value element of a pre-declared property.  Not
-		/// sure who would use this, but its there, with a default implementation.
-		/// </summary>
-		/// <param name="value">property value</param>
-		/// <returns>flag</returns>
-		public virtual bool NativeContainsValue(object value)
-		{
-			using var enumerator = NativeEnumerable.GetEnumerator();
-			while (enumerator.MoveNext()) {
-				if (Equals(value, enumerator.Current.Value)) {
-					return true;
-				}
-			}
+        /// <summary>
+        /// Returns the index for a pre-declared property name including properties names of the parent event type if any
+        /// </summary>
+        /// <param name="propertyName"></param>
+        /// <returns></returns>
+        public virtual bool TryGetNativeKey(string propertyName, out int index)
+        {
+            index = default;
+            return false;
+        }
 
-			return false;
-		}
+        /// <summary>
+        /// Returns the pre-declared property name including properties names of the parent event type if any.
+        /// </summary>
+        /// <param name="propertyName"></param>
+        /// <returns></returns>
+        /// <exception cref="NoSuchElementException"></exception>
+        
+        public virtual int GetNativeKey(string propertyName)
+        {
+            if (TryGetNativeKey(propertyName, out var index)) {
+                return index;
+            }
 
-		/// <summary>
-		/// Returns a collection of native keys.
-		/// </summary>
-		public virtual IEnumerable<string> NativeKeys =>
-			NativeEnumerable.Select(_ => _.Key);
+            throw new NoSuchElementException();
+        }
+        
+        /// <summary>
+        /// Attempts to find the native value of the same name including property names of the parent event type if any.  If found,
+        /// the method places the value into the out var and returns true.  Otherwise, false.
+        /// </summary>
+        /// <param name="index"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public virtual bool TryGetNativeValue(
+            int index,
+            out object value)
+        {
+            if (TryGetNativeEntry(index, out var entry)) {
+                value = entry.Value;
+                return true;
+            }
 
-		/// <summary>
-		/// Returns an enumerable for the native key-value pairs.
-		/// </summary>
-		/// <value></value>
-		public virtual IEnumerable<KeyValuePair<string, object>> NativeEnumerable {
-			get => EmptyList<KeyValuePair<string, object>>.Instance;
-		}
+            value = default;
+            return false;
+        }
 
-		/// <summary>
-		/// Write the pre-declared properties to the writer
-		/// </summary>
-		/// <param name="context">serialization context</param>
-		/// <throws>IOException for IO exceptions</throws>
-		public virtual void NativeWrite(JsonSerializationContext context)
-		{
-		}
+        /// <summary>
+        /// Attempts to find the native value of the same name including property names of the parent event type if any.  Returns
+        /// the value if found, otherwise throws KeyNotFoundException.
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        /// <exception cref="KeyNotFoundException"></exception>
+        public virtual object GetNativeValue(int index)
+        {
+            if (!TryGetNativeValue(index, out var value)) {
+                throw new KeyNotFoundException();
+            }
 
-		#endregion
+            return value;
+        }
 
-		// ----------------------------------------------------------------------
-		public int Count => JsonValues.Count + NativeCount;
+        /// <summary>
+        /// Returns the flag whether the key exists as a pre-declared property of the same index including
+        /// indices of the parent event type if any
+        /// </summary>
+        /// <param name="index">property index</param>
+        /// <returns>flag</returns>
+        public virtual bool NativeContainsKey(int index)
+        {
+            // see if there is a native name mapped to this index
+            return TryGetNativeKeyName(index, out _);
+        }
 
-		public void Add(
-			string key,
-			object value)
-		{
-			throw new NotSupportedException();
-		}
+        /// <summary>
+        /// Returns the flag whether the key exists as a pre-declared property of the same name including
+        /// property names of the parent event type if any
+        /// </summary>
+        /// <param name="name">property name</param>
+        /// <returns>flag</returns>
+        public virtual bool NativeContainsKey(string name)
+        {
+            // see if there is a native index mapped to this key
+            return TryGetNativeKey(name, out _);
+        }
 
-		public void Add(KeyValuePair<string, object> item)
-		{
-			throw new NotSupportedException();
-		}
+        /// <summary>
+        /// Returns the flag whether the value exists as the value element of a pre-declared property.  Not
+        /// sure who would use this, but its there, with a default implementation.
+        /// </summary>
+        /// <param name="value">property value</param>
+        /// <returns>flag</returns>
+        public virtual bool NativeContainsValue(object value)
+        {
+            using var enumerator = NativeEnumerable.GetEnumerator();
+            while (enumerator.MoveNext()) {
+                if (Equals(value, enumerator.Current.Value)) {
+                    return true;
+                }
+            }
 
-		public bool Remove(KeyValuePair<string, object> item)
-		{
-			throw new NotSupportedException();
-		}
+            return false;
+        }
 
-		public bool Remove(string key)
-		{
-			throw new NotSupportedException();
-		}
+        /// <summary>
+        /// Returns a collection of native keys.
+        /// </summary>
+        public virtual IEnumerable<int> NativeKeys => NativeEnumerable.Select(_ => _.Key);
 
-		public bool ContainsKey(string key)
-		{
-			return NativeContainsKey(key) || JsonValues.ContainsKey(key);
-		}
+        /// <summary>
+        /// Returns an enumerable for the native key-value pairs.
+        /// </summary>
+        /// <value></value>
+        public virtual IEnumerable<KeyValuePair<int, object>> NativeEnumerable =>
+            EmptyList<KeyValuePair<int, object>>.Instance;
 
-		public bool ContainsValue(object value)
-		{
-			return NativeContainsValue(value) || JsonValues.Values.Contains(value);
-		}
+        /// <summary>
+        /// Write the pre-declared properties to the writer
+        /// </summary>
+        /// <param name="context">serialization context</param>
+        /// <throws>IOException for IO exceptions</throws>
+        public virtual void NativeWrite(JsonSerializationContext context)
+        {
+        }
 
-		public bool Contains(KeyValuePair<string, object> item)
-		{
-			if (TryGetNativeEntry(item.Key, out var existingKeyValuePair)) {
-				return Equals(item.Value, existingKeyValuePair.Value);
-			}
+        #endregion
 
-			if (JsonValues.TryGetValue(item.Key, out var existingValue)) {
-				return Equals(item.Value, existingValue);
-			}
+        // ----------------------------------------------------------------------
+        public int Count => JsonValues.Count + NativeCount;
 
-			return false;
-		}
+        public void Add(
+            string key,
+            object value)
+        {
+            throw new NotSupportedException();
+        }
 
-		public void Clear()
-		{
-			JsonValues.Clear();
-		}
+        public void Add(KeyValuePair<string, object> item)
+        {
+            throw new NotSupportedException();
+        }
 
-		public ICollection<string> Keys => new JsonEventUnderlyingKeyCollection(this);
+        public bool Remove(KeyValuePair<string, object> item)
+        {
+            throw new NotSupportedException();
+        }
 
-		public ICollection<object> Values => new JsonEventUnderlyingValueCollection(this);
+        public bool Remove(string key)
+        {
+            throw new NotSupportedException();
+        }
 
-		public bool IsReadOnly => true;
+        public bool ContainsKey(int index)
+        {
+            return NativeContainsKey(index);
+        }
+        
+        public bool ContainsKey(string key)
+        {
+            if (TryGetNativeKey(key, out var index)) {
+                if (NativeContainsKey(key)) {
+                    return true;
+                }
+            }
 
-		public bool TryGetValue(
-			string key,
-			out object value)
-		{
-			return TryGetNativeValue(key, out value) || JsonValues.TryGetValue(key, out value);
-		}
+            return JsonValues.ContainsKey(key);
+        }
 
-		public void CopyTo(
-			KeyValuePair<string, object>[] array,
-			int arrayIndex)
-		{
-			var arrayLength = array.Length;
+        public bool ContainsValue(object value)
+        {
+            return NativeContainsValue(value) || JsonValues.Values.Contains(value);
+        }
 
-			using (var enumerator = NativeEnumerable.GetEnumerator()) {
-				while ((arrayIndex < arrayLength) && enumerator.MoveNext()) {
-					array[arrayIndex] = enumerator.Current;
-					arrayIndex++;
-				}
-			}
+        public bool Contains(KeyValuePair<string, object> item)
+        {
+            // if (TryGetNativeEntry(item.Key, out var existingKeyValuePair)) {
+            //     return Equals(item.Value, existingKeyValuePair.Value);
+            // }
 
-			using (var enumerator = JsonValues.GetEnumerator()) {
-				while ((arrayIndex < arrayLength) && enumerator.MoveNext()) {
-					array[arrayIndex] = enumerator.Current;
-					arrayIndex++;
-				}
-			}
-		}
+            if (JsonValues.TryGetValue(item.Key, out var existingValue)) {
+                return Equals(item.Value, existingValue);
+            }
 
-		IEnumerator IEnumerable.GetEnumerator()
-		{
-			return GetEnumerator();
-		}
+            return false;
+        }
 
-		public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
-		{
-			using (var enumerator = NativeEnumerable.GetEnumerator()) {
-				while (enumerator.MoveNext()) {
-					yield return enumerator.Current;
-				}
-			}
+        public void Clear()
+        {
+            JsonValues.Clear();
+        }
 
-			using (var enumerator = JsonValues.GetEnumerator()) {
-				while (enumerator.MoveNext()) {
-					yield return enumerator.Current;
-				}
-			}
-		}
+        public ICollection<string> Keys => new JsonEventUnderlyingKeyCollection(this);
 
-		public object this[string key] {
-			get {
-				if (TryGetNativeValue(key, out var value)) {
-					return value;
-				}
+        public ICollection<object> Values => new JsonEventUnderlyingValueCollection(this);
 
-				return JsonValues[key];
-			}
-			set {
-				if (!TrySetNativeValue(key, value)) {
-					JsonValues[key] = value;
-				}
-			}
-		}
+        public bool IsReadOnly => true;
 
-		// ----------------------------------------------------------------------
+        public bool TryGetValue(
+            string key,
+            out object value)
+        {
+            if (TryGetNativeKey(key, out var index)) {
+                if (TryGetNativeValue(index, out value)) {
+                    return true;
+                }
+            }
 
-		public void WriteTo(Stream stream)
-		{
-			var writer = new Utf8JsonWriter(stream);
-			var context = new JsonSerializationContext(writer);
-			WriteTo(context);
-			writer.Flush();
-		}
+            return JsonValues.TryGetValue(key, out value);
+        }
 
-		public void WriteTo(JsonSerializationContext context)
-		{
-			var writer = context.Writer;
-			
-			writer.WriteStartObject();
-			
-			NativeWrite(context);
-			
-			foreach (var entry in JsonValues) {
-				writer.WritePropertyName(entry.Key);
-				WriteJsonValue(context, entry.Key, entry.Value);
-			}
+        public void CopyTo(
+            KeyValuePair<string, object>[] array,
+            int arrayIndex)
+        {
+            var arrayLength = array.Length;
 
-			writer.WriteEndObject();
-		}
+            using (var enumerator = NativeEnumerable.GetEnumerator()) {
+                while (arrayIndex < arrayLength && enumerator.MoveNext()) {
+                    var nkv = enumerator.Current;
+                    array[arrayIndex] = new KeyValuePair<string, object>(GetNativeKeyName(nkv.Key), nkv.Value);
+                    arrayIndex++;
+                }
+            }
 
-		public string ToString(JsonWriterOptions config)
-		{
-			var stream = new MemoryStream();
-			var writer = new Utf8JsonWriter(stream, config);
-			var context = new JsonSerializationContext(writer);
+            using (var enumerator = JsonValues.GetEnumerator()) {
+                while (arrayIndex < arrayLength && enumerator.MoveNext()) {
+                    array[arrayIndex] = enumerator.Current;
+                    arrayIndex++;
+                }
+            }
+        }
 
-			WriteTo(context);
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
 
-			writer.Flush();
-			stream.Flush();
+        public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
+        {
+            using (var enumerator = NativeEnumerable.GetEnumerator()) {
+                while (enumerator.MoveNext()) {
+                    var nkv = enumerator.Current;
+                    yield return new KeyValuePair<string, object>(GetNativeKeyName(nkv.Key), nkv.Value);
+                }
+            }
 
-			return Encoding.UTF8.GetString(stream.ToArray());
-		}
+            using (var enumerator = JsonValues.GetEnumerator()) {
+                while (enumerator.MoveNext()) {
+                    yield return enumerator.Current;
+                }
+            }
+        }
 
-		public override string ToString()
-		{
-			return ToString(new JsonWriterOptions());
-		}
-	}
+        public object this[string key] {
+            get {
+                if (TryGetNativeKey(key, out var index)) {
+                    if (TryGetNativeValue(index, out var value)) {
+                        return value;
+                    }
+                }
+
+                return JsonValues[key];
+            }
+            set {
+                if (TryGetNativeKey(key, out var index)) {
+                    if (!TrySetNativeValue(index, value)) {
+                        // not a native value
+                        JsonValues[key] = value;
+                    }
+                }
+            }
+        }
+
+        // ----------------------------------------------------------------------
+
+        public void WriteTo(Stream stream)
+        {
+            var writer = new Utf8JsonWriter(stream);
+            var context = new JsonSerializationContext(writer);
+            WriteTo(context);
+            writer.Flush();
+        }
+
+        public void WriteTo(JsonSerializationContext context)
+        {
+            var writer = context.Writer;
+
+            writer.WriteStartObject();
+
+            NativeWrite(context);
+
+            foreach (var entry in JsonValues) {
+                writer.WritePropertyName(entry.Key);
+                WriteJsonValue(context, entry.Key, entry.Value);
+            }
+
+            writer.WriteEndObject();
+        }
+
+        public string ToString(JsonWriterOptions config)
+        {
+            var stream = new MemoryStream();
+            var writer = new Utf8JsonWriter(stream, config);
+            var context = new JsonSerializationContext(writer);
+
+            WriteTo(context);
+
+            writer.Flush();
+            stream.Flush();
+
+            return Encoding.UTF8.GetString(stream.ToArray());
+        }
+
+        public override string ToString()
+        {
+            return ToString(new JsonWriterOptions());
+        }
+    }
 } // end of namespace

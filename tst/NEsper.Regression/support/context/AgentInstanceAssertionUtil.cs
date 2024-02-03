@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -11,6 +11,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.runtime.@internal.kernel.statement;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.support.context
 {
@@ -59,31 +60,31 @@ namespace com.espertech.esper.regressionlib.support.context
 
             var registry = context.StatementAIResourceRegistry;
             if (numAggregations != null) {
-                Assert.AreEqual((int) numAggregations, registry.AgentInstanceAggregationService.InstanceCount);
+                ClassicAssert.AreEqual((int) numAggregations, registry.AgentInstanceAggregationService.InstanceCount);
             }
             else {
-                Assert.IsNull(registry.AgentInstanceAggregationService);
+                ClassicAssert.IsNull(registry.AgentInstanceAggregationService);
             }
 
             if (numSubselect != null) {
-                Assert.AreEqual((int) numSubselect, registry.AgentInstanceSubselects[0].LookupStrategies.InstanceCount);
+                ClassicAssert.AreEqual((int) numSubselect, registry.AgentInstanceSubselects[0].LookupStrategies.InstanceCount);
             }
             else {
-                Assert.IsNull(registry.AgentInstanceSubselects);
+                ClassicAssert.IsNull(registry.AgentInstanceSubselects);
             }
 
             if (numPrev != null) {
-                Assert.AreEqual((int) numPrev, registry.AgentInstancePreviousGetterStrategies[0].InstanceCount);
+                ClassicAssert.AreEqual((int) numPrev, registry.AgentInstancePreviousGetterStrategies[0].InstanceCount);
             }
             else {
-                Assert.IsNull(registry.AgentInstancePreviousGetterStrategies);
+                ClassicAssert.IsNull(registry.AgentInstancePreviousGetterStrategies);
             }
 
             if (numPrior != null) {
-                Assert.AreEqual((int) numPrior, registry.AgentInstancePriorEvalStrategies[0].InstanceCount);
+                ClassicAssert.AreEqual((int) numPrior, registry.AgentInstancePriorEvalStrategies[0].InstanceCount);
             }
             else {
-                Assert.IsNull(registry.AgentInstancePriorEvalStrategies);
+                ClassicAssert.IsNull(registry.AgentInstancePriorEvalStrategies);
             }
         }
     }

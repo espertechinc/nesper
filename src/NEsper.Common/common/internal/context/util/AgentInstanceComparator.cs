@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -11,7 +11,6 @@ using System.Collections.Generic;
 
 namespace com.espertech.esper.common.@internal.context.util
 {
-    [Serializable]
     public class AgentInstanceComparator : IComparer<AgentInstance>
     {
         public static AgentInstanceComparator INSTANCE = new AgentInstanceComparator();
@@ -23,8 +22,8 @@ namespace com.espertech.esper.common.@internal.context.util
             AgentInstance ai1,
             AgentInstance ai2)
         {
-            EPStatementAgentInstanceHandle o1 = ai1.AgentInstanceContext.EpStatementAgentInstanceHandle;
-            EPStatementAgentInstanceHandle o2 = ai2.AgentInstanceContext.EpStatementAgentInstanceHandle;
+            var o1 = ai1.AgentInstanceContext.EpStatementAgentInstanceHandle;
+            var o2 = ai2.AgentInstanceContext.EpStatementAgentInstanceHandle;
             return _innerComparer.Compare(o1, o2);
         }
     }

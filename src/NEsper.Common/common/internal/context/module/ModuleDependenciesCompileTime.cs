@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -130,45 +130,57 @@ namespace com.espertech.esper.common.@internal.context.module
             pathIndexes.Add(new ModuleIndexMeta(namedWindow, infraName, infraModuleName, indexName, indexModuleName));
         }
 
-        public CodegenExpression Make(
-            CodegenMethodScope parent,
+
+        public ICollection<string> PublicEventTypes => publicEventTypes;
+
+        public ICollection<NameAndModule> PathEventTypes => pathEventTypes;
+
+        public void Make(
+            CodegenProperty property,
             CodegenClassScope classScope)
         {
-            var method = parent.MakeChild(typeof(ModuleDependenciesRuntime), GetType(), classScope);
-            method.Block
-                .DeclareVar<ModuleDependenciesRuntime>("md", NewInstance(typeof(ModuleDependenciesRuntime)))
-                .SetProperty(Ref("md"), "PathEventTypes", NameAndModule.MakeArray(pathEventTypes))
-                .SetProperty(Ref("md"), "PathNamedWindows", NameAndModule.MakeArray(pathNamedWindows))
-                .SetProperty(Ref("md"), "PathTables", NameAndModule.MakeArray(pathTables))
-                .SetProperty(Ref("md"), "PathVariables", NameAndModule.MakeArray(pathVariables))
-                .SetProperty(Ref("md"), "PathContexts", NameAndModule.MakeArray(pathContexts))
-                .SetProperty(Ref("md"), "PathExpressions", NameAndModule.MakeArray(pathExpressions))
-                .SetProperty(Ref("md"), "PathIndexes", ModuleIndexMeta.MakeArray(pathIndexes))
-                .SetProperty(Ref("md"), "PathScripts", NameParamNumAndModule.MakeArray(pathScripts))
-                .SetProperty(Ref("md"), "PathClasses", NameAndModule.MakeArray(pathClasses))
-                .SetProperty(Ref("md"), "PublicEventTypes", Constant(publicEventTypes.ToArray()))
-                .SetProperty(Ref("md"), "PublicVariables", Constant(publicVariables.ToArray()))
-                .MethodReturn(Ref("md"));
-            return LocalMethod(method);
+            var builder = new CodegenSetterBuilder(
+                typeof(ModuleDependenciesRuntime),
+                typeof(ModuleDependenciesCompileTime),
+                "md",
+                classScope,
+                property);
+
+            builder
+                .ExpressionDefaultChecked("PathEventTypes", NameAndModule.MakeArrayNullIfEmpty(pathEventTypes))
+                .ExpressionDefaultChecked("PathNamedWindows", NameAndModule.MakeArrayNullIfEmpty(pathNamedWindows))
+                .ExpressionDefaultChecked("PathTables", NameAndModule.MakeArrayNullIfEmpty(pathTables))
+                .ExpressionDefaultChecked("PathVariables", NameAndModule.MakeArrayNullIfEmpty(pathVariables))
+                .ExpressionDefaultChecked("PathContexts", NameAndModule.MakeArrayNullIfEmpty(pathContexts))
+                .ExpressionDefaultChecked("PathExpressions", NameAndModule.MakeArrayNullIfEmpty(pathExpressions))
+                .ExpressionDefaultChecked("PathIndexes", ModuleIndexMeta.MakeArrayNullIfEmpty(pathIndexes))
+                .ExpressionDefaultChecked("PathScripts", NameParamNumAndModule.MakeArrayNullIfEmpty(pathScripts))
+                .ExpressionDefaultChecked("PathClasses", NameAndModule.MakeArrayNullIfEmpty(pathClasses))
+                .ExpressionDefaultChecked("PublicEventTypes", MakeStringArrayNullIfEmpty(publicEventTypes))
+                .ExpressionDefaultChecked("PublicVariables", MakeStringArrayNullIfEmpty(publicVariables));
+
+            property.GetterBlock.BlockReturn(builder.RefName);
+
+            // method.Block
+            //     .DeclareVar<ModuleDependenciesRuntime>("md", NewInstance(typeof(ModuleDependenciesRuntime)))
+            //     .SetProperty(Ref("md"), "PathEventTypes", NameAndModule.MakeArray(pathEventTypes))
+            //     .SetProperty(Ref("md"), "PathNamedWindows", NameAndModule.MakeArray(pathNamedWindows))
+            //     .SetProperty(Ref("md"), "PathTables", NameAndModule.MakeArray(pathTables))
+            //     .SetProperty(Ref("md"), "PathVariables", NameAndModule.MakeArray(pathVariables))
+            //     .SetProperty(Ref("md"), "PathContexts", NameAndModule.MakeArray(pathContexts))
+            //     .SetProperty(Ref("md"), "PathExpressions", NameAndModule.MakeArray(pathExpressions))
+            //     .SetProperty(Ref("md"), "PathIndexes", ModuleIndexMeta.MakeArray(pathIndexes))
+            //     .SetProperty(Ref("md"), "PathScripts", NameParamNumAndModule.MakeArray(pathScripts))
+            //     .SetProperty(Ref("md"), "PathClasses", NameAndModule.MakeArray(pathClasses))
+            //     .SetProperty(Ref("md"), "PublicEventTypes", Constant(publicEventTypes.ToArray()))
+            //     .SetProperty(Ref("md"), "PublicVariables", Constant(publicVariables.ToArray()))
+            //     .MethodReturn(Ref("md"));
+            // return LocalMethod(method);
         }
 
-        [Obsolete]
-        public CodegenBlock Inject(CodegenBlock block)
+        private CodegenExpression MakeStringArrayNullIfEmpty(ICollection<string> values)
         {
-            return block
-                .DeclareVar<ModuleDependenciesRuntime>("md", NewInstance(typeof(ModuleDependenciesRuntime)))
-                .SetProperty(Ref("md"), "PathEventTypes", NameAndModule.MakeArray(pathEventTypes))
-                .SetProperty(Ref("md"), "PathNamedWindows", NameAndModule.MakeArray(pathNamedWindows))
-                .SetProperty(Ref("md"), "PathTables", NameAndModule.MakeArray(pathTables))
-                .SetProperty(Ref("md"), "PathVariables", NameAndModule.MakeArray(pathVariables))
-                .SetProperty(Ref("md"), "PathContexts", NameAndModule.MakeArray(pathContexts))
-                .SetProperty(Ref("md"), "PathExpressions", NameAndModule.MakeArray(pathExpressions))
-                .SetProperty(Ref("md"), "PathIndexes", ModuleIndexMeta.MakeArray(pathIndexes))
-                .SetProperty(Ref("md"), "PathScripts", NameParamNumAndModule.MakeArray(pathScripts))
-                .SetProperty(Ref("md"), "PathClasses", NameAndModule.MakeArray(pathClasses))
-                .SetProperty(Ref("md"), "PublicEventTypes", Constant(publicEventTypes.ToArray()))
-                .SetProperty(Ref("md"), "PublicVariables", Constant(publicVariables.ToArray()))
-                .BlockReturn(Ref("md"));
+            return values.IsEmpty() ? ConstantNull() : Constant(values.ToArray());
         }
     }
 } // end of namespace

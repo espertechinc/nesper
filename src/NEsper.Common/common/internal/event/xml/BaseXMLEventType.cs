@@ -1,22 +1,24 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Xml;
 using System.Xml.XPath;
+
+using Antlr4.Runtime.Tree.Xpath;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.client.meta;
 using com.espertech.esper.common.client.serde;
-using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.util;
@@ -28,7 +30,7 @@ using com.espertech.esper.compat.xml;
 namespace com.espertech.esper.common.@internal.@event.xml
 {
     /// <summary>
-    ///     Base class for XML event types.
+    /// Base class for XML event types.
     /// </summary>
     public abstract class BaseXMLEventType : BaseConfigurableEventType
     {
@@ -36,34 +38,40 @@ namespace com.espertech.esper.common.@internal.@event.xml
 
         private readonly IXPathFunctionResolver _functionResolver;
         private readonly IXPathVariableResolver _variableResolver;
+        
+        private readonly string _rootElementName;
+        private readonly ConfigurationCommonEventTypeXMLDOM _configurationEventTypeXMLDOM;
+        private string _startTimestampPropertyName;
         private string _endTimestampPropertyName;
 
         /// <summary>
-        ///     XPath namespace context.
+        /// XPath namespace context.
         /// </summary>
         private XPathNamespaceContext _namespaceContext;
 
-        private string _startTimestampPropertyName;
-
         /// <summary>
-        ///     Ctor.
+        /// Ctor.
         /// </summary>
-        /// <param name="configurationEventTypeXMLDOM">is the XML DOM configuration such as root element and schema names</param>
-        /// <param name="metadata">event type metadata</param>
-        /// <param name="eventBeanTypedEventFactory">for registration and lookup of types</param>
-        /// <param name="xmlEventTypeFactory">xml type factory</param>
-        /// <param name="eventTypeResolver">resolver</param>
+        /// <param name = "configurationEventTypeXMLDOM">is the XML DOM configuration such as root element and schema names</param>
+        /// <param name = "metadata">event type metadata</param>
+        /// <param name = "eventBeanTypedEventFactory">for registration and lookup of types</param>
+        /// <param name = "xmlEventTypeFactory">xml type factory</param>
+        /// <param name = "eventTypeResolver">resolver</param>
         public BaseXMLEventType(
             EventTypeMetadata metadata,
             ConfigurationCommonEventTypeXMLDOM configurationEventTypeXMLDOM,
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
             EventTypeNameResolver eventTypeResolver,
-            XMLFragmentEventTypeFactory xmlEventTypeFactory)
-            : base(eventBeanTypedEventFactory, metadata, typeof(XmlNode), eventTypeResolver, xmlEventTypeFactory)
+            XMLFragmentEventTypeFactory xmlEventTypeFactory) : base(
+            eventBeanTypedEventFactory,
+            metadata,
+            typeof(XmlNode),
+            eventTypeResolver,
+            xmlEventTypeFactory)
         {
-            RootElementName = configurationEventTypeXMLDOM.RootElementName;
-            ConfigurationEventTypeXMLDOM = configurationEventTypeXMLDOM;
-
+            _rootElementName = configurationEventTypeXMLDOM.RootElementName;
+            _configurationEventTypeXMLDOM = configurationEventTypeXMLDOM;
+            
             if (configurationEventTypeXMLDOM.XPathFunctionResolver != null) {
                 try {
                     _functionResolver = TypeHelper.Instantiate<IXPathFunctionResolver>(
@@ -97,28 +105,26 @@ namespace com.espertech.esper.common.@internal.@event.xml
             }
         }
 
-        /// <summary>
-        ///     Returns the name of the root element.
-        /// </summary>
-        /// <returns>root element name</returns>
-        public string RootElementName { get; }
-
-        /// <summary>
-        ///     Sets the namespace context for use in XPath expression resolution.
-        /// </summary>
-        /// <value>for XPath expressions</value>
-        internal XPathNamespaceContext NamespaceContext {
-            get => _namespaceContext;
-            set => _namespaceContext = value;
-        }
-
-        public DataInputOutputSerde UnderlyingBindingDIO
-        {
+        public DataInputOutputSerde UnderlyingBindingDIO {
             get => null;
             set => throw new UnsupportedOperationException("XML event type does not receive a serde");
         }
 
+        /// <summary>
+        /// Returns the name of the root element.
+        /// </summary>
+        /// <value>root element name</value>
+        public string RootElementName => _rootElementName;
 
+        /// <summary>
+        /// Sets the namespace context for use in XPath expression resolution.
+        /// </summary>
+        /// <value>for XPath expressions</value>
+        protected XPathNamespaceContext NamespaceContext {
+            get => _namespaceContext;
+            set => _namespaceContext = value;
+        }
+        
         /// <summary>
         /// Creates a new XPath expression object from the text representation.
         /// </summary>
@@ -128,34 +134,16 @@ namespace com.espertech.esper.common.@internal.@event.xml
             return XPathExpression.Compile(xPathExpression, NamespaceContext);
         }
 
-        public override IList<EventType> SuperTypes => null;
-
-        public override IEnumerable<EventType> DeepSuperTypes => null;
-
-        public override ICollection<EventType> DeepSuperTypesCollection => Collections.GetEmptySet<EventType>();
-
         /// <summary>
-        ///     Returns the configuration XML for the XML type.
+        /// Set the preconfigured event properties resolved by XPath expression.
         /// </summary>
-        /// <returns>config XML</returns>
-        public ConfigurationCommonEventTypeXMLDOM ConfigurationEventTypeXMLDOM { get; }
-
-        public override EventPropertyDescriptor[] WriteableProperties => new EventPropertyDescriptor[0];
-
-        public override string StartTimestampPropertyName => _startTimestampPropertyName;
-
-        public override string EndTimestampPropertyName => _endTimestampPropertyName;
-
-        /// <summary>
-        ///     Set the preconfigured event properties resolved by XPath expression.
-        /// </summary>
-        /// <param name="explicitXPathProperties">are preconfigured event properties</param>
-        /// <param name="additionalSchemaProperties">the explicit properties</param>
-        internal void Initialize(
+        /// <param name = "explicitXPathProperties">are preconfigured event properties</param>
+        /// <param name = "additionalSchemaProperties">the explicit properties</param>
+        protected void Initialize(
             ICollection<ConfigurationCommonEventTypeXMLDOM.XPathPropertyDesc> explicitXPathProperties,
             IList<ExplicitPropertyDescriptor> additionalSchemaProperties)
         {
-            // make sure we override those explicitly provided with those derived from a metadata
+            // make sure we override those explicitly provided with those derived from a metadataz
             IDictionary<string, ExplicitPropertyDescriptor> namedProperties =
                 new LinkedHashMap<string, ExplicitPropertyDescriptor>();
             foreach (var desc in additionalSchemaProperties) {
@@ -166,8 +154,8 @@ namespace com.espertech.esper.common.@internal.@event.xml
             try {
                 foreach (var property in explicitXPathProperties) {
                     xpathExpression = property.XPath;
-                    if (Log.IsInfoEnabled) {
-                        Log.Info(
+                    if (Log.IsDebugEnabled) {
+                        Log.Debug(
                             "Compiling XPath expression for property '" +
                             property.Name +
                             "' as '" +
@@ -188,11 +176,6 @@ namespace com.espertech.esper.common.@internal.@event.xml
                         isFragment = true;
                     }
 
-                    var isArray = false;
-                    if (property.Type == XPathResultType.NodeSet) {
-                        isArray = true;
-                    }
-
                     EventPropertyGetterSPI getter = new XPathPropertyGetter(
                         this,
                         property.Name,
@@ -201,21 +184,25 @@ namespace com.espertech.esper.common.@internal.@event.xml
                         property.Type,
                         property.OptionalCastToType,
                         fragmentFactory);
-                    var returnType = SchemaUtil.ToReturnType(property.Type, property.OptionalCastToType);
 
+                    var returnType = SchemaUtil.ToReturnType(property.Type, property.OptionalCastToType);
+                    var isIndexed =
+                        (returnType == typeof(XmlNodeList)) ||
+                        (returnType.IsArray) ||
+                        (returnType.IsGenericEnumerable());
+                    
                     var desc = new EventPropertyDescriptor(
                         property.Name,
                         returnType,
-                        null,
                         false,
                         false,
-                        isArray,
+                        isIndexed,
                         false,
                         isFragment);
                     var @explicit = new ExplicitPropertyDescriptor(
                         desc,
                         getter,
-                        isArray,
+                        isIndexed,
                         property.OptionalEventTypeName);
                     namedProperties.Put(desc.PropertyName, @explicit);
                 }
@@ -226,22 +213,30 @@ namespace com.espertech.esper.common.@internal.@event.xml
                     ex);
             }
 
-            Initialize(new List<ExplicitPropertyDescriptor>(namedProperties.Values));
-
+            base.Initialize(new List<ExplicitPropertyDescriptor>(namedProperties.Values));
             // evaluate start and end timestamp properties if any
-            _startTimestampPropertyName = ConfigurationEventTypeXMLDOM.StartTimestampPropertyName;
-            _endTimestampPropertyName = ConfigurationEventTypeXMLDOM.EndTimestampPropertyName;
+            _startTimestampPropertyName = _configurationEventTypeXMLDOM.StartTimestampPropertyName;
+            _endTimestampPropertyName = _configurationEventTypeXMLDOM.EndTimestampPropertyName;
             EventTypeUtility.ValidateTimestampProperties(this, _startTimestampPropertyName, _endTimestampPropertyName);
         }
 
+        public override IList<EventType> SuperTypes => null;
+        public override IEnumerable<EventType> DeepSuperTypes => null;
+        public override ICollection<EventType> DeepSuperTypesCollection => EmptySet<EventType>.Instance;
+
+        /// <summary>
+        /// Returns the configuration XML for the XML type.
+        /// </summary>
+        /// <value>config XML</value>
+        public ConfigurationCommonEventTypeXMLDOM ConfigurationEventTypeXMLDOM => _configurationEventTypeXMLDOM;
+
         public override ExprValidationException EqualsCompareType(EventType eventType)
         {
-            if (!(eventType is BaseXMLEventType)) {
+            if (!(eventType is BaseXMLEventType other)) {
                 return new ExprValidationException("Expected a base-xml event type but received " + eventType);
             }
 
-            var other = (BaseXMLEventType) eventType;
-            if (!ConfigurationEventTypeXMLDOM.Equals(other.ConfigurationEventTypeXMLDOM)) {
+            if (!_configurationEventTypeXMLDOM.Equals(other._configurationEventTypeXMLDOM)) {
                 return new ExprValidationException("XML configuration mismatches between types");
             }
 
@@ -249,29 +244,30 @@ namespace com.espertech.esper.common.@internal.@event.xml
         }
 
         /// <summary>
-        ///     Same-Root XML types are actually equivalent.
+        /// Same-Root XML types are actually equivalent.
         /// </summary>
-        /// <param name="otherObj">to compare to</param>
+        /// <param name = "otherObj">to compare to</param>
         /// <returns>indicator</returns>
         public override bool Equals(object otherObj)
         {
-            if (!(otherObj is BaseXMLEventType)) {
+            if (!(otherObj is BaseXMLEventType other)) {
                 return false;
             }
 
-            var other = (BaseXMLEventType) otherObj;
-            return ConfigurationEventTypeXMLDOM.Equals(other.ConfigurationEventTypeXMLDOM);
+            return _configurationEventTypeXMLDOM.Equals(other._configurationEventTypeXMLDOM);
         }
 
         public override int GetHashCode()
         {
-            return ConfigurationEventTypeXMLDOM.GetHashCode();
+            return _configurationEventTypeXMLDOM.GetHashCode();
         }
 
         public override EventPropertyWriterSPI GetWriter(string propertyName)
         {
             return null;
         }
+
+        public override EventPropertyDescriptor[] WriteableProperties => Array.Empty<EventPropertyDescriptor>();
 
         public override EventBeanCopyMethodForge GetCopyMethodForge(string[] properties)
         {
@@ -287,5 +283,8 @@ namespace com.espertech.esper.common.@internal.@event.xml
         {
             return null;
         }
+
+        public override string StartTimestampPropertyName => _startTimestampPropertyName;
+        public override string EndTimestampPropertyName => _endTimestampPropertyName;
     }
 } // end of namespace

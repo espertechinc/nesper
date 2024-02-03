@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -11,8 +11,6 @@ using System.Collections.Generic;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.regressionlib.framework;
 
-using NUnit.Framework;
-
 namespace com.espertech.esper.regressionlib.suite.epl.other
 {
     public class EPLOtherNestedClass
@@ -20,7 +18,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            WithNestedClassEnum(execs);
+#if REGRESSION_EXECUTIONS
+            With(NestedClassEnum)(execs);
+#endif
             return execs;
         }
 
@@ -35,17 +35,17 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                string epl =
+                var epl =
                     $"@public @buseventtype create schema MyEventWithColorEnum as {typeof(MyEventWithColorEnum).MaskTypeName()};\n" +
-                    $"@Name('s0') select {typeof(MyEventWithColorEnum).MaskTypeName()}$Color.RED as c0 " +
+                    $"@name('s0') select {typeof(MyEventWithColorEnum).MaskTypeName()}$Color.RED as c0 " +
                     $"from MyEventWithColorEnum(EnumProp={typeof(MyEventWithColorEnum).MaskTypeName()}$Color.GREEN)#firstevent";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new MyEventWithColorEnum(MyEventWithColorEnum.Color.BLUE));
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+                env.AssertListenerNotInvoked("s0");
 
                 env.SendEventBean(new MyEventWithColorEnum(MyEventWithColorEnum.Color.GREEN));
-                Assert.AreEqual(MyEventWithColorEnum.Color.RED, env.Listener("s0").AssertOneGetNewAndReset().Get("c0"));
+                env.AssertEqualsNew("s0", "c0", MyEventWithColorEnum.Color.RED);
 
                 env.UndeployAll();
             }

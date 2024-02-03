@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -22,9 +22,7 @@ namespace com.espertech.esper.common.client.hook.aggfunc
         /// Returns the aggregation method factory.
         /// </summary>
         /// <returns>factory</returns>
-        public AggregatorMethodFactory AggregatorMethodFactory {
-            get => aggregatorMethodFactory;
-        }
+        public AggregatorMethodFactory AggregatorMethodFactory => aggregatorMethodFactory;
 
         /// <summary>
         /// Sets the aggregation method factory

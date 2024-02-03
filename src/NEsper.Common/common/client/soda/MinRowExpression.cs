@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     ///     Minimum-value per-row expression (not aggregating) determines the minimum value among a set of values.
     /// </summary>
-    [Serializable]
     public class MinRowExpression : ExpressionBase
     {
         /// <summary>
@@ -39,8 +38,7 @@ namespace com.espertech.esper.common.client.soda
         {
             AddChild(new PropertyValueExpression(propertyOne));
             AddChild(new PropertyValueExpression(propertyTwo));
-            for (var i = 0; i < moreProperties.Length; i++)
-            {
+            for (var i = 0; i < moreProperties.Length; i++) {
                 AddChild(new PropertyValueExpression(moreProperties[i]));
             }
         }
@@ -58,8 +56,7 @@ namespace com.espertech.esper.common.client.soda
         {
             AddChild(exprOne);
             AddChild(exprTwo);
-            for (var i = 0; i < moreExpressions.Length; i++)
-            {
+            for (var i = 0; i < moreExpressions.Length; i++) {
                 AddChild(moreExpressions[i]);
             }
         }
@@ -104,8 +101,7 @@ namespace com.espertech.esper.common.client.soda
             writer.Write("min(");
 
             var delimiter = "";
-            foreach (var expr in Children)
-            {
+            foreach (var expr in Children) {
                 writer.Write(delimiter);
                 expr.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                 delimiter = ",";

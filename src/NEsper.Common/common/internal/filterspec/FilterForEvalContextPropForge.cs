@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -8,6 +8,7 @@
 
 using System;
 using System.Text;
+using System.Text.Json.Serialization;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -27,10 +28,16 @@ namespace com.espertech.esper.common.@internal.filterspec
     /// </summary>
     public class FilterForEvalContextPropForge : FilterSpecParamInValueForge
     {
-        [NonSerialized] private readonly EventPropertyGetterSPI _getter;
-        [NonSerialized] private readonly Coercer _numberCoercer;
+        [JsonIgnore]
+        [NonSerialized]
+        private readonly EventPropertyGetterSPI _getter;
+        [JsonIgnore]
+        [NonSerialized]
+        private readonly Coercer _numberCoercer;
         private readonly string _propertyName;
-        [NonSerialized] private readonly Type _returnType;
+        [JsonIgnore]
+        [NonSerialized]
+        private readonly Type _returnType;
 
         public FilterForEvalContextPropForge(
             string propertyName,
@@ -49,7 +56,7 @@ namespace com.espertech.esper.common.@internal.filterspec
             CodegenMethodScope parent)
         {
             var method = parent.MakeChild(typeof(object), GetType(), classScope)
-				.AddParam(GET_FILTER_VALUE_FP);
+                .AddParam(GET_FILTER_VALUE_FP);
 
             method.Block
                 .DeclareVar<EventBean>("props", ExprDotName(REF_EXPREVALCONTEXT, "ContextProperties"))
@@ -101,7 +108,7 @@ namespace com.espertech.esper.common.@internal.filterspec
                 return false;
             }
 
-            var that = (FilterForEvalContextPropForge) o;
+            var that = (FilterForEvalContextPropForge)o;
 
             if (!_propertyName.Equals(that._propertyName)) {
                 return false;
@@ -114,7 +121,7 @@ namespace com.espertech.esper.common.@internal.filterspec
         {
             return _propertyName.GetHashCode();
         }
-        
+
         public void ValueToString(StringBuilder @out)
         {
             @out.Append("context property '")

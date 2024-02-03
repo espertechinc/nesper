@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -17,6 +17,7 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -37,15 +38,19 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
             for (var i = 0; i < expressionReturnTypes.Length; i++) {
                 var columnType = expressionReturnTypes[i];
 
-                if (columnType is Type || columnType == null) {
-                    ctorTypes[i] = (Type) expressionReturnTypes[i];
+                if (columnType == null) {
                     forges[i] = exprForges[i];
                     continue;
                 }
 
-                if (columnType is EventType) {
-                    var columnEventType = (EventType) columnType;
-                    var returnType = columnEventType.UnderlyingType;
+                if (columnType is Type) {
+                    ctorTypes[i] = (Type)columnType;
+                    forges[i] = exprForges[i];
+                    continue;
+                }
+
+                if (columnType is EventType type) {
+                    var returnType = type.UnderlyingType;
                     var inner = exprForges[i];
                     forges[i] = new InstanceManufacturerForgeNonArray(returnType, inner);
                     ctorTypes[i] = returnType;
@@ -53,8 +58,8 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
                 }
 
                 // handle case where the select-clause contains an fragment array
-                if (columnType is EventType[]) {
-                    var columnEventType = ((EventType[]) columnType)[0];
+                if (columnType is EventType[] types) {
+                    var columnEventType = types[0];
                     var componentReturnType = columnEventType.UnderlyingType;
                     var inner = exprForges[i];
                     forges[i] = new InstanceManufacturerForgeArray(componentReturnType, inner);
@@ -75,36 +80,41 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
             }
             catch (ImportException ex) {
                 throw new ExprValidationException(
-                    "Failed to find a suitable constructor for class '" + targetClass.Name + "': " + ex.Message,
+                    "Failed to find a suitable constructor for class '" + targetClass.CleanName() + "': " + ex.Message,
                     ex);
             }
         }
 
         public class InstanceManufacturerForgeNonArray : ExprForge
         {
+            private readonly Type returnType;
             private readonly ExprForge innerForge;
 
-            internal InstanceManufacturerForgeNonArray(
+            public InstanceManufacturerForgeNonArray(
                 Type returnType,
                 ExprForge innerForge)
             {
-                EvaluationType = returnType;
+                this.returnType = returnType;
                 this.innerForge = innerForge;
             }
 
             public ExprEvaluator ExprEvaluator {
                 get {
                     var inner = innerForge.ExprEvaluator;
-                    return new ProxyExprEvaluator {
+                    return new ProxyExprEvaluator() {
                         ProcEvaluate = (
                             eventsPerStream,
                             isNewData,
                             exprEvaluatorContext) => {
-                            var @event = (EventBean) inner.Evaluate(
+                            var @event = (EventBean)inner.Evaluate(
                                 eventsPerStream,
                                 isNewData,
                                 exprEvaluatorContext);
-                            return @event?.Underlying;
+                            if (@event != null) {
+                                return @event.Underlying;
+                            }
+
+                            return null;
                         }
                     };
                 }
@@ -119,22 +129,21 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
                 CodegenClassScope codegenClassScope)
             {
                 var methodNode = codegenMethodScope.MakeChild(
-                    EvaluationType,
+                    returnType,
                     typeof(InstanceManufacturerForgeNonArray),
                     codegenClassScope);
 
                 methodNode.Block
-                    .DeclareVar<EventBean>(
-                        "@event",
+                    .DeclareVar<EventBean>("@event",
                         Cast(
                             typeof(EventBean),
                             innerForge.EvaluateCodegen(requiredType, methodNode, exprSymbol, codegenClassScope)))
                     .IfRefNullReturnNull("@event")
-                    .MethodReturn(Cast(EvaluationType, ExprDotUnderlying(Ref("@event"))));
+                    .MethodReturn(Cast(returnType, ExprDotUnderlying(Ref("@event"))));
                 return LocalMethod(methodNode);
             }
 
-            public Type EvaluationType { get; }
+            public Type EvaluationType => returnType;
 
             public ExprNodeRenderable ExprForgeRenderable => innerForge.ExprForgeRenderable;
         }
@@ -145,7 +154,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
             private readonly Type componentReturnType;
             private readonly ExprForge innerForge;
 
-            internal InstanceManufacturerForgeArray(
+            public InstanceManufacturerForgeArray(
                 Type componentReturnType,
                 ExprForge innerForge)
             {
@@ -156,17 +165,16 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
             public ExprEvaluator ExprEvaluator {
                 get {
                     var inner = innerForge.ExprEvaluator;
-                    return new ProxyExprEvaluator {
+                    return new ProxyExprEvaluator() {
                         ProcEvaluate = (
                             eventsPerStream,
                             isNewData,
                             exprEvaluatorContext) => {
                             var result = inner.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
-                            if (!(result is EventBean[])) {
+                            if (!(result is EventBean[] events)) {
                                 return null;
                             }
 
-                            var events = (EventBean[]) result;
                             var values = Arrays.CreateInstanceChecked(componentReturnType, events.Length);
                             for (var i = 0; i < events.Length; i++) {
                                 values.SetValue(events[i].Underlying, i);
@@ -193,8 +201,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
                     codegenClassScope);
 
                 methodNode.Block
-                    .DeclareVar<object>(
-                        "result",
+                    .DeclareVar<object>("result",
                         innerForge.EvaluateCodegen(requiredType, methodNode, exprSymbol, codegenClassScope))
                     .IfCondition(Not(InstanceOf(Ref("result"), typeof(EventBean[]))))
                     .BlockReturn(ConstantNull())
@@ -216,11 +223,12 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
 
             public ExprNodeRenderable ExprForgeRenderable => this;
 
-            public void ToEPL(TextWriter writer,
+            public void ToEPL(
+                TextWriter writer,
                 ExprPrecedenceEnum parentPrecedence,
                 ExprNodeRenderableFlags flags)
             {
-                writer.Write(GetType().GetSimpleName());
+                writer.Write(GetType().Name);
             }
         }
     }

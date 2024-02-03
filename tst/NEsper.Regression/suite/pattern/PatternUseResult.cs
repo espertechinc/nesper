@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -10,26 +10,27 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
-using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.filter;
 using com.espertech.esper.regressionlib.support.patternassert;
 using com.espertech.esper.runtime.client;
 
+using static com.espertech.esper.regressionlib.framework.RegressionFlag; // OBSERVEROPS
 using NUnit.Framework;
-
-using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A;
+using NUnit.Framework.Legacy;
+using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A; // assertEquals
 
 namespace com.espertech.esper.regressionlib.suite.pattern
 {
     public class PatternUseResult
     {
-        public static IList<RegressionExecution> Executions()
+        public static ICollection<RegressionExecution> Executions()
         {
-            var execs = new List<RegressionExecution>();
+            IList<RegressionExecution> execs = new List<RegressionExecution>();
             WithNumeric(execs);
             WithObjectId(execs);
             WithFollowedByFilter(execs);
@@ -39,14 +40,16 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             return execs;
         }
 
-        public static IList<RegressionExecution> WithBooleanExprRemoveConsiderArrayTag(IList<RegressionExecution> execs = null)
+        public static IList<RegressionExecution> WithBooleanExprRemoveConsiderArrayTag(
+            IList<RegressionExecution> execs = null)
         {
             execs = execs ?? new List<RegressionExecution>();
             execs.Add(new PatternBooleanExprRemoveConsiderArrayTag());
             return execs;
         }
 
-        public static IList<RegressionExecution> WithBooleanExprRemoveConsiderTag(IList<RegressionExecution> execs = null)
+        public static IList<RegressionExecution> WithBooleanExprRemoveConsiderTag(
+            IList<RegressionExecution> execs = null)
         {
             execs = execs ?? new List<RegressionExecution>();
             execs.Add(new PatternBooleanExprRemoveConsiderTag());
@@ -81,40 +84,12 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             return execs;
         }
 
-        private static void SendBeanAAssert(
-            RegressionEnvironment env,
-            string id,
-            int intPrimitiveExpected,
-            int numFiltersRemaining)
-        {
-            env.SendEventBean(new SupportBean_A(id));
-            var fields = new[] {"c0"};
-            EPAssertionUtil.AssertProps(
-                env.Listener("s0").AssertOneGetNewAndReset(),
-                fields,
-                new object[] {intPrimitiveExpected});
-            Assert.AreEqual(
-                numFiltersRemaining,
-                SupportFilterServiceHelper.GetFilterSvcCount(env.Statement("s0"), "SupportBean_A"));
-        }
-
-        private static void SendBeanAMiss(
-            RegressionEnvironment env,
-            string idCSV)
-        {
-            foreach (var id in idCSV.SplitCsv()) {
-                env.SendEventBean(new SupportBean_A(id));
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
-            }
-        }
-
         private class PatternBooleanExprRemoveConsiderArrayTag : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@Name('s0') select sb[1].IntPrimitive as c0 " +
-                    " from pattern [every [2] sb=SupportBean -> SupportBean_A(Id like sb[1].TheString)]";
+                    "@name('s0') select sb[1].IntPrimitive as c0 from pattern[every [2] sb=SupportBean -> SupportBean_A(Id like sb[1].TheString)]";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 for (var i = 0; i < 6; i++) {
@@ -156,12 +131,12 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             }
         }
 
-        internal class PatternBooleanExprRemoveConsiderTag : RegressionExecution
+        private class PatternBooleanExprRemoveConsiderTag : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@Name('s0') select sb.IntPrimitive as c0 from pattern[every sb=SupportBean -> SupportBean_A(Id like sb.TheString)]";
+                    "@name('s0') select sb.IntPrimitive as c0 from pattern[every sb=SupportBean -> SupportBean_A(Id like sb.TheString)]";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 for (var i = 0; i < 10; i++) {
@@ -205,34 +180,36 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                     env.SendEventBean(new SupportBean_A("E" + i));
                 }
 
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+                env.AssertListenerNotInvoked("s0");
 
                 env.UndeployAll();
             }
         }
 
-        internal class PatternPatternTypeCacheForRepeat : RegressionExecution
+        private class PatternPatternTypeCacheForRepeat : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 // UEJ-229-28464 bug fix for type reuse for dissimilar types
-                var epl = "create objectarray schema TypeOne(Symbol string, Price double);\n" +
-                          "create objectarray schema TypeTwo(Symbol string, market string, Price double);\n" +
+                var epl = "@public @buseventtype create objectarray schema TypeOne(Symbol string, Price double);\n" +
+                          "@public @buseventtype create objectarray schema TypeTwo(Symbol string, market string, Price double);\n" +
                           "\n" +
-                          "@Name('Out2') select a[0].Symbol from pattern [ [2] a=TypeOne ]\n;" +
-                          "@Name('Out3') select a[0].market from pattern [ [2] a=TypeTwo ];";
-                env.CompileDeployWBusPublicType(epl, new RegressionPath());
+                          "@name('Out2') select a[0].Symbol from pattern [ [2] a=TypeOne ]\n;" +
+                          "@name('Out3') select a[0].market from pattern [ [2] a=TypeTwo ];";
+                env.CompileDeploy(epl, new RegressionPath());
 
                 env.AddListener("Out2");
                 env.AddListener("Out3");
 
-                env.SendEventObjectArray(new object[] {"GE", 10}, "TypeOne");
-                env.SendEventObjectArray(new object[] {"GE", 10}, "TypeOne");
-                Assert.IsTrue(env.Listener("Out2").IsInvokedAndReset());
+                env.SendEventObjectArray(new object[] { "GE", 10 }, "TypeOne");
+                env.SendEventObjectArray(new object[] { "GE", 10 }, "TypeOne");
+                env.AssertListenerInvoked("Out2");
 
-                env.SendEventObjectArray(new object[] {"GE", "m1", 5}, "TypeTwo");
-                env.SendEventObjectArray(new object[] {"GE", "m2", 5}, "TypeTwo");
-                Assert.IsTrue(env.Listener("Out3").IsInvokedAndReset());
+                env.Milestone(0);
+
+                env.SendEventObjectArray(new object[] { "GE", "m1", 5 }, "TypeTwo");
+                env.SendEventObjectArray(new object[] { "GE", "m2", 5 }, "TypeTwo");
+                env.AssertListenerInvoked("Out3");
 
                 env.UndeployAll();
             }
@@ -359,7 +336,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 testCase.Add("N7", "na", events.GetEvent("N1"), "nb", events.GetEvent("N7"));
                 testCaseList.AddTest(testCase);
 
-                var util = new PatternTestHarness(events, testCaseList, GetType());
+                var util = new PatternTestHarness(events, testCaseList);
                 util.RunTest(env);
             }
         }
@@ -408,7 +385,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 testCase.Add("e12", "X1", events.GetEvent("e7"), "X2", events.GetEvent("e12"));
                 testCaseList.AddTest(testCase);
 
-                var util = new PatternTestHarness(events, testCaseList, GetType());
+                var util = new PatternTestHarness(events, testCaseList);
                 util.RunTest(env);
             }
         }
@@ -417,13 +394,13 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         {
             public void Run(RegressionEnvironment env)
             {
-                var expression = "@Name('s0') select * from pattern [" +
+                var expression = "@name('s0') select * from pattern [" +
                                  "every tradeevent1=SupportTradeEvent(UserId in ('U1000','U1001','U1002') ) -> " +
                                  "(tradeevent2=SupportTradeEvent(UserId in ('U1000','U1001','U1002') and " +
                                  "  UserId != tradeevent1.UserId and " +
                                  "  Ccypair = tradeevent1.Ccypair and " +
                                  "  Direction = tradeevent1.Direction) -> " +
-                                 "  tradeevent3=SupportTradeEvent(UserId in ('U1000','U1001','U1002') and " +
+                                 " tradeevent3=SupportTradeEvent(UserId in ('U1000','U1001','U1002') and " +
                                  "  UserId != tradeevent1.UserId and " +
                                  "  UserId != tradeevent2.UserId and " +
                                  "  Ccypair = tradeevent1.Ccypair and " +
@@ -435,9 +412,9 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.Statement("s0").AddListener(listener);
 
                 var random = new Random();
-                string[] users = {"U1000", "U1001", "U1002"};
-                string[] ccy = {"USD", "JPY", "EUR"};
-                string[] direction = {"B", "S"};
+                string[] users = { "U1000", "U1001", "U1002" };
+                string[] ccy = { "USD", "JPY", "EUR" };
+                string[] direction = { "B", "S" };
 
                 for (var i = 0; i < 100; i++) {
                     var theEvent = new
@@ -445,18 +422,27 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                             i,
                             users[random.Next(users.Length)],
                             ccy[random.Next(ccy.Length)],
-                            direction[random.Next(direction.Length)]);
+                            direction[random.Next(
+                                direction.Length
+                            )]);
                     env.SendEventBean(theEvent);
                 }
 
-                Assert.AreEqual(0, listener.BadMatchCount);
+                ClassicAssert.AreEqual(0, listener.BadMatchCount);
                 env.UndeployAll();
+            }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(OBSERVEROPS);
             }
         }
 
         private class MyUpdateListener : UpdateListener
         {
-            internal int BadMatchCount;
+            private int badMatchCount;
+
+            public int BadMatchCount => badMatchCount;
 
             public void Update(
                 object sender,
@@ -471,24 +457,47 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
             private void HandleEvent(EventBean eventBean)
             {
-                var tradeevent1 = (SupportTradeEvent)
-                    eventBean.Get("tradeevent1");
-                var tradeevent2 = (SupportTradeEvent)
-                    eventBean.Get("tradeevent2");
-                var tradeevent3 = (SupportTradeEvent)
-                    eventBean.Get("tradeevent3");
+                var tradeevent1 = (SupportTradeEvent)eventBean.Get("tradeevent1");
+                var tradeevent2 = (SupportTradeEvent)eventBean.Get("tradeevent2");
+                var tradeevent3 = (SupportTradeEvent)eventBean.Get("tradeevent3");
 
                 if (tradeevent1.UserId.Equals(tradeevent2.UserId) ||
                     tradeevent1.UserId.Equals(tradeevent3.UserId) ||
                     tradeevent2.UserId.Equals(tradeevent3.UserId)) {
                     /*
-                    System.out.println("Bad Match : ");
-                    System.out.println(tradeevent1);
-                    System.out.println(tradeevent2);
-                    System.out.println(tradeevent3 + "\n");
+                    Console.WriteLine("Bad Match : ");
+                    Console.WriteLine(tradeevent1);
+                    Console.WriteLine(tradeevent2);
+                    Console.WriteLine(tradeevent3 + "\n");
                     */
-                    BadMatchCount++;
+                    badMatchCount++;
                 }
+            }
+        }
+
+        private static void SendBeanAAssert(
+            RegressionEnvironment env,
+            string id,
+            int intPrimitiveExpected,
+            int numFiltersRemaining)
+        {
+            env.SendEventBean(new SupportBean_A(id));
+            var fields = "c0".SplitCsv();
+            env.AssertPropsNew("s0", fields, new object[] { intPrimitiveExpected });
+            env.AssertStatement(
+                "s0",
+                statement => ClassicAssert.AreEqual(
+                    numFiltersRemaining,
+                    SupportFilterServiceHelper.GetFilterSvcCount(statement, "SupportBean_A")));
+        }
+
+        private static void SendBeanAMiss(
+            RegressionEnvironment env,
+            string idCSV)
+        {
+            foreach (var id in idCSV.SplitCsv()) {
+                env.SendEventBean(new SupportBean_A(id));
+                env.AssertListenerNotInvoked("s0");
             }
         }
     }

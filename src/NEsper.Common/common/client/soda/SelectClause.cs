@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -18,7 +18,6 @@ namespace com.espertech.esper.common.client.soda
     /// A select-clause consists of a list of selection elements (expressions, Wildcard(s), stream wildcard
     /// and the like) and an optional stream selector.
     /// </summary>
-    [Serializable]
     public class SelectClause
     {
         private IList<SelectClauseElement> _selectList;
@@ -34,12 +33,32 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="selectList">is a list of elements in the select-clause</param>
         protected SelectClause(
             StreamSelector streamSelector,
-            List<SelectClauseElement> selectList)
+            IList<SelectClauseElement> selectList)
         {
             _streamSelector = streamSelector;
             _selectList = selectList;
         }
 
+        /// <summary>Returns the list of expressions in the select clause. </summary>
+        /// <value>list of expressions with column names</value>
+        public IList<SelectClauseElement> SelectList {
+            get => _selectList;
+            set => _selectList = value;
+        }
+
+        /// <summary>Returns indicator whether distinct or not. </summary>
+        /// <value>distinct indicator</value>
+        public bool IsDistinct { get; set; }
+
+        /// <summary>
+        /// Gets or sets the stream selector.
+        /// </summary>
+        /// <value>The stream selector.</value>
+        public StreamSelector StreamSelector {
+            get => _streamSelector;
+            set => _streamSelector = value;
+        }
+        
         /// <summary>Creates a wildcard select-clause, additional expressions can still be added. </summary>
         /// <returns>select-clause</returns>
         public static SelectClause CreateWildcard()
@@ -62,8 +81,7 @@ namespace com.espertech.esper.common.client.soda
         public static SelectClause Create(params string[] propertyNames)
         {
             var selectList = new List<SelectClauseElement>();
-            foreach (string name in propertyNames)
-            {
+            foreach (var name in propertyNames) {
                 selectList.Add(new SelectClauseExpression(new PropertyValueExpression(name)));
             }
 
@@ -107,8 +125,7 @@ namespace com.espertech.esper.common.client.soda
             params string[] propertyNames)
         {
             var selectList = new List<SelectClauseElement>();
-            foreach (string name in propertyNames)
-            {
+            foreach (var name in propertyNames) {
                 selectList.Add(new SelectClauseExpression(new PropertyValueExpression(name)));
             }
 
@@ -120,8 +137,7 @@ namespace com.espertech.esper.common.client.soda
         /// <returns>clause</returns>
         public SelectClause Add(params string[] propertyNames)
         {
-            foreach (string name in propertyNames)
-            {
+            foreach (var name in propertyNames) {
                 _selectList.Add(new SelectClauseExpression(new PropertyValueExpression(name)));
             }
 
@@ -159,14 +175,6 @@ namespace com.espertech.esper.common.client.soda
         {
             _selectList.Add(new SelectClauseExpression(expression, asName));
             return this;
-        }
-
-        /// <summary>Returns the list of expressions in the select clause. </summary>
-        /// <value>list of expressions with column names</value>
-        public IList<SelectClauseElement> SelectList
-        {
-            get { return _selectList; }
-            set { _selectList = value; }
         }
 
         /// <summary>Adds to the select-clause a stream wildcard selector (e.g. select streamName.* from MyStream as streamName) </summary>
@@ -213,16 +221,6 @@ namespace com.espertech.esper.common.client.soda
             return this;
         }
 
-        /// <summary>
-        /// Gets or sets the stream selector.
-        /// </summary>
-        /// <value>The stream selector.</value>
-        public StreamSelector StreamSelector
-        {
-            get { return _streamSelector; }
-            set { _streamSelector = value; }
-        }
-
         /// <summary>Add a select expression element. </summary>
         /// <param name="selectClauseElements">to add</param>
         public void AddElements(IEnumerable<SelectClauseElement> selectClauseElements)
@@ -245,48 +243,36 @@ namespace com.espertech.esper.common.client.soda
         {
             formatter.BeginSelect(writer, isTopLevel);
             writer.Write("select ");
-            if (andDelete)
-            {
+            if (andDelete) {
                 writer.Write("and delete ");
             }
 
-            if (IsDistinct)
-            {
+            if (IsDistinct) {
                 writer.Write("distinct ");
             }
 
-            if (_streamSelector == StreamSelector.ISTREAM_ONLY)
-            {
+            if (_streamSelector == StreamSelector.ISTREAM_ONLY) {
                 // the default, no action
             }
-            else if (_streamSelector == StreamSelector.RSTREAM_ONLY)
-            {
+            else if (_streamSelector == StreamSelector.RSTREAM_ONLY) {
                 writer.Write("rstream ");
             }
-            else if (_streamSelector == StreamSelector.RSTREAM_ISTREAM_BOTH)
-            {
+            else if (_streamSelector == StreamSelector.RSTREAM_ISTREAM_BOTH) {
                 writer.Write("irstream ");
             }
 
-            if (_selectList != null && !_selectList.IsEmpty())
-            {
-                string delimiter = "";
-                foreach (SelectClauseElement element in _selectList)
-                {
+            if (_selectList != null && !_selectList.IsEmpty()) {
+                var delimiter = "";
+                foreach (var element in _selectList) {
                     writer.Write(delimiter);
                     element.ToEPLElement(writer);
                     delimiter = ", ";
                 }
             }
-            else
-            {
+            else {
                 writer.Write('*');
             }
         }
-
-        /// <summary>Returns indicator whether distinct or not. </summary>
-        /// <value>distinct indicator</value>
-        public bool IsDistinct { get; set; }
 
         /// <summary>Sets distinct </summary>
         /// <param name="distinct">distinct indicator</param>

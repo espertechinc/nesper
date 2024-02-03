@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -12,6 +12,8 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.context.aifactory.core;
+using com.espertech.esper.common.@internal.epl.expression.codegen;
+using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.output.view;
 using com.espertech.esper.common.@internal.epl.table.compiletime;
 using com.espertech.esper.common.@internal.epl.table.core;
@@ -19,18 +21,18 @@ using com.espertech.esper.compat;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.output.core.OutputProcessViewCodegenNames;
-using static com.espertech.esper.common.@internal.epl.resultset.codegen.ResultSetProcessorCodegenNames;
 
 namespace com.espertech.esper.common.@internal.epl.output.core
 {
     public class OutputStrategyPostProcessForge
     {
-        private readonly bool audit;
-        private readonly SelectClauseStreamSelectorEnum? insertIntoStreamSelector;
         private readonly bool isRouted;
-        private readonly bool routeToFront;
+        private readonly SelectClauseStreamSelectorEnum? insertIntoStreamSelector;
         private readonly SelectClauseStreamSelectorEnum selectStreamSelector;
+        private readonly bool routeToFront;
         private readonly TableMetaData table;
+        private readonly bool audit;
+        private readonly ExprNode eventPrecedence;
 
         public OutputStrategyPostProcessForge(
             bool isRouted,
@@ -38,7 +40,8 @@ namespace com.espertech.esper.common.@internal.epl.output.core
             SelectClauseStreamSelectorEnum selectStreamSelector,
             bool routeToFront,
             TableMetaData table,
-            bool audit)
+            bool audit,
+            ExprNode eventPrecedence)
         {
             this.isRouted = isRouted;
             this.insertIntoStreamSelector = insertIntoStreamSelector;
@@ -46,12 +49,16 @@ namespace com.espertech.esper.common.@internal.epl.output.core
             this.routeToFront = routeToFront;
             this.table = table;
             this.audit = audit;
+            this.eventPrecedence = eventPrecedence;
         }
 
-        public bool HasTable => table != null;
+        public bool HasTable()
+        {
+            return table != null;
+        }
 
         /// <summary>
-        ///     Code for post-process, "result" can be null, "force-update" can be passed in
+        /// Code for post-process, "result" can be null, "force-update" can be passed in
         /// </summary>
         /// <param name="classScope">class scope</param>
         /// <param name="parent">parent</param>
@@ -61,8 +68,8 @@ namespace com.espertech.esper.common.@internal.epl.output.core
             CodegenMethodScope parent)
         {
             var method = parent.MakeChild(typeof(void), typeof(OutputStrategyPostProcessForge), classScope)
-                .AddParam(typeof(bool), "forceUpdate")
-                .AddParam(typeof(UniformPair<EventBean[]>), "result");
+                .AddParam<bool>("forceUpdate")
+                .AddParam<UniformPair<EventBean[]>>("result");
 
             var ifChild = method.Block.IfCondition(NotEqualsNull(MEMBER_CHILD));
 
@@ -73,13 +80,13 @@ namespace com.espertech.esper.common.@internal.epl.output.core
                     if (insertIntoStreamSelector.Value.IsSelectsIStream()) {
                         ifResultNotNull.LocalMethod(
                             RouteCodegen(classScope, parent),
-                            Cast(typeof(EventBean[]), ExprDotName(Ref("result"), "First")));
+                            ExprDotName(Ref("result"), "First"));
                     }
 
                     if (insertIntoStreamSelector.Value.IsSelectsRStream()) {
                         ifResultNotNull.LocalMethod(
                             RouteCodegen(classScope, parent),
-                            Cast(typeof(EventBean[]), ExprDotName(Ref("result"), "Second")));
+                            ExprDotName(Ref("result"), "Second"));
                     }
                 }
             }
@@ -89,7 +96,8 @@ namespace com.espertech.esper.common.@internal.epl.output.core
                     .ExprDotMethod(
                         MEMBER_CHILD,
                         "NewResult",
-                        NewInstance<UniformPair<EventBean[]>>(
+                        NewInstance(
+                            typeof(UniformPair<EventBean[]>),
                             ExprDotName(Ref("result"), "Second"),
                             ConstantNull()))
                     .IfElseIf(Ref("forceUpdate"))
@@ -115,7 +123,8 @@ namespace com.espertech.esper.common.@internal.epl.output.core
                     .ExprDotMethod(
                         MEMBER_CHILD,
                         "NewResult",
-                        NewInstance<UniformPair<EventBean[]>>(
+                        NewInstance(
+                            typeof(UniformPair<EventBean[]>),
                             ExprDotName(Ref("result"), "First"),
                             ConstantNull()))
                     .IfElseIf(Ref("forceUpdate"))
@@ -128,7 +137,10 @@ namespace com.espertech.esper.common.@internal.epl.output.core
             // handle null-result (force-update)
             var ifResultNull = ifResultNotNull.IfElse();
             ifResultNull.IfCondition(Ref("forceUpdate"))
-                .ExprDotMethod(MEMBER_CHILD, "NewResult", PublicConstValue(typeof(UniformPair<EventBean[]>), "EMPTY_PAIR"));
+                .ExprDotMethod(
+                    MEMBER_CHILD,
+                    "NewResult",
+                    PublicConstValue(typeof(UniformPair<EventBean[]>), "EMPTY_PAIR"));
 
             return method;
         }
@@ -138,20 +150,44 @@ namespace com.espertech.esper.common.@internal.epl.output.core
             CodegenMethodScope parent)
         {
             var method = parent.MakeChild(typeof(void), typeof(OutputStrategyPostProcessForge), classScope)
-                .AddParam(typeof(EventBean[]), "events");
+                .AddParam<EventBean[]>("events");
             var forEach = method.Block
                 .IfRefNull("events")
                 .BlockReturnNoValue()
-                .ForEach(typeof(EventBean), "routed", Ref("events"));
+                .ForEach<EventBean>("routed", Ref("events"));
 
             if (audit) {
                 forEach.Expression(
                     ExprDotMethodChain(MEMBER_AGENTINSTANCECONTEXT)
                         .Get("AuditProvider")
-                        .Add(
-                            "Insert",
-                            Ref("routed"),
-                            MEMBER_AGENTINSTANCECONTEXT));
+                        .Add("Insert", Ref("routed"), MEMBER_AGENTINSTANCECONTEXT));
+            }
+
+            // Evaluate event precedence
+            if (eventPrecedence != null) {
+                if (eventPrecedence.Forge.ForgeConstantType == ExprForgeConstantType.COMPILETIMECONST) {
+                    forEach.DeclareVar<int>(
+                        "precedence",
+                        Constant(eventPrecedence.Forge.ExprEvaluator.Evaluate(null, true, null)));
+                }
+                else {
+                    var methodPrecedence = CodegenLegoMethodExpression.CodegenExpression(
+                        eventPrecedence.Forge,
+                        method,
+                        classScope);
+                    CodegenExpression exprEventPrecedence = LocalMethod(
+                        methodPrecedence,
+                        NewArrayWithInit(typeof(EventBean), Ref("routed")),
+                        Constant(true),
+                        MEMBER_AGENTINSTANCECONTEXT);
+                    forEach.DeclareVar<int>("precedence", Constant(0))
+                        .DeclareVar<int?>("precedenceResult", exprEventPrecedence)
+                        .IfRefNotNull("precedenceResult")
+                        .AssignRef("precedence", Ref("precedenceResult"));
+                }
+            }
+            else {
+                forEach.DeclareVar<int>("precedence", Constant(0));
             }
 
             forEach.Expression(
@@ -161,7 +197,8 @@ namespace com.espertech.esper.common.@internal.epl.output.core
                         "Route",
                         Ref("routed"),
                         MEMBER_AGENTINSTANCECONTEXT,
-                        Constant(routeToFront)));
+                        Constant(routeToFront),
+                        Ref("precedence")));
 
             return method;
         }
@@ -174,16 +211,19 @@ namespace com.espertech.esper.common.@internal.epl.output.core
             var resolveTable = table == null
                 ? ConstantNull()
                 : TableDeployTimeResolver.MakeResolveTable(table, symbols.GetAddInitSvc(method));
-            var insertIntoStreamSelectorExpr = insertIntoStreamSelector == null
+            var eventPrecedenceEval = eventPrecedence == null
                 ? ConstantNull()
-                : EnumValue(typeof(SelectClauseStreamSelectorEnum), insertIntoStreamSelector.Value.GetName());
-            
-            return NewInstance<OutputStrategyPostProcessFactory>(
+                : ExprNodeUtilityCodegen.CodegenEvaluator(eventPrecedence.Forge, method, GetType(), classScope);
+            return NewInstance(
+                typeof(OutputStrategyPostProcessFactory),
                 Constant(isRouted),
-                insertIntoStreamSelectorExpr,
+                insertIntoStreamSelector == null
+                    ? ConstantNull()
+                    : EnumValue(typeof(SelectClauseStreamSelectorEnum), insertIntoStreamSelector.Value.GetName()),
                 EnumValue(typeof(SelectClauseStreamSelectorEnum), selectStreamSelector.GetName()),
                 Constant(routeToFront),
-                resolveTable);
+                resolveTable,
+                eventPrecedenceEval);
         }
     }
 } // end of namespace

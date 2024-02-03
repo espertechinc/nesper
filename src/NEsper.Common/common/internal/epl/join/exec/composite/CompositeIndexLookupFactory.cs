@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -28,13 +28,13 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
                 queries.Add(new CompositeIndexLookupKeyed(keyValues, multiKeyTransform));
             }
 
-            for (int i = 0; i < rangeValues.Length; i++) {
+            for (var i = 0; i < rangeValues.Length; i++) {
                 queries.Add(new CompositeIndexLookupRange(rangeValues[i], rangeCoercion[i]));
             }
 
             // Hook up as chain for remove
             CompositeIndexLookup last = null;
-            foreach (CompositeIndexLookup action in queries) {
+            foreach (var action in queries) {
                 if (last != null) {
                     last.Next = action;
                 }

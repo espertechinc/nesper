@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -35,8 +35,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             DateTimeExEval dateTimeExEval,
             TimeAbacus timeAbacus)
         {
-            this._dateTimeExEval = dateTimeExEval;
-            this._timeAbacus = timeAbacus;
+            _dateTimeExEval = dateTimeExEval;
+            _timeAbacus = timeAbacus;
         }
 
         public ReformatOp Op => this;
@@ -50,7 +50,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             CodegenExpression timeZoneField =
                 codegenClassScope.AddOrGetDefaultFieldSharable(RuntimeSettingsTimeZoneField.INSTANCE);
             var method = codegenMethodScope.MakeChild(typeof(int), typeof(ReformatEvalForge), codegenClassScope)
-                .AddParam(typeof(long), "ts");
+                .AddParam<long>("ts");
             method.Block
                 .DeclareVar<DateTimeEx>("dtx", StaticMethod(typeof(DateTimeEx), "GetInstance", timeZoneField))
                 .Expression(_timeAbacus.DateTimeSetCodegen(Ref("ts"), Ref("dtx"), method, codegenClassScope))
@@ -68,13 +68,13 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
                 codegenClassScope.AddOrGetDefaultFieldSharable(RuntimeSettingsTimeZoneField.INSTANCE);
             var methodNode = codegenMethodScope
                 .MakeChild(typeof(int), typeof(ReformatEvalForge), codegenClassScope)
-                .AddParam(typeof(DateTime), "d");
+                .AddParam<DateTime>("d");
 
             methodNode.Block
                 .DeclareVar<DateTimeEx>("dtx", StaticMethod(typeof(DateTimeEx), "GetInstance", timeZoneField))
                 .Expression(ExprDotMethod(Ref("dtx"), "Set", Ref("d")))
                 .MethodReturn(_dateTimeExEval.Codegen(Ref("dtx")));
-            
+
             return LocalMethod(methodNode, inner);
         }
 
@@ -88,7 +88,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
                 codegenClassScope.AddOrGetDefaultFieldSharable(RuntimeSettingsTimeZoneField.INSTANCE);
             var methodNode = codegenMethodScope
                 .MakeChild(typeof(int), typeof(ReformatEvalForge), codegenClassScope)
-                .AddParam(typeof(DateTimeOffset), "d");
+                .AddParam<DateTimeOffset>("d");
 
             methodNode.Block
                 .DeclareVar<DateTimeEx>("dtx", StaticMethod(typeof(DateTimeEx), "GetInstance", timeZoneField))

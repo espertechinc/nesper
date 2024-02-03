@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.Json.Serialization;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration.compiler;
@@ -34,12 +35,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         ExprNodeInnerNodeProvider,
         ExprNodeWithChainSpec
     {
-        private readonly Type clazz;
-        private readonly ImportSingleRowDesc config;
+        private readonly Type _clazz;
+        private readonly ImportSingleRowDesc _config;
 
-        private ExprPlugInSingleRowNodeForge forge;
-        [NonSerialized] private StatementCompileTimeServices compileTimeServices;
-        [NonSerialized] private StatementRawInfo statementRawInfo;
+        private ExprPlugInSingleRowNodeForge _forge;
+        [JsonIgnore]
+        [NonSerialized]
+        private StatementCompileTimeServices _compileTimeServices;
+        [JsonIgnore]
+        [NonSerialized]
+        private StatementRawInfo _statementRawInfo;
 
 
         public ExprPlugInSingleRowNode(
@@ -49,28 +54,26 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             ImportSingleRowDesc config)
         {
             FunctionName = functionName;
-            this.clazz = clazz;
+            _clazz = clazz;
             ChainSpec = chainSpec;
-            this.config = config;
+            _config = config;
         }
 
-        public ImportSingleRowDesc Config => config;
+        public ImportSingleRowDesc Config => _config;
 
-        public bool IsLocalInlinedClass {
-            get => forge.IsLocalInlinedClass;
-        }
+        public bool IsLocalInlinedClass => _forge.IsLocalInlinedClass;
 
         public ExprEvaluator ExprEvaluator {
             get {
-                CheckValidated(forge);
-                return forge.ExprEvaluator;
+                CheckValidated(_forge);
+                return _forge.ExprEvaluator;
             }
         }
 
         public override ExprForge Forge {
             get {
-                CheckValidated(forge);
-                return forge;
+                CheckValidated(_forge);
+                return _forge;
             }
         }
 
@@ -80,15 +83,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 
         public override ExprPrecedenceEnum Precedence => ExprPrecedenceEnum.UNARY;
 
-        public bool FilterLookupEligible {
+        public bool IsFilterLookupEligible {
             get {
-                var eligible = !forge.IsReturnsConstantResult;
+                var eligible = !_forge.IsReturnsConstantResult && _forge.EvaluationType != null;
                 if (eligible) {
                     eligible = ChainSpec.Count == 1;
                 }
 
                 if (eligible) {
-                    eligible = config.FilterOptimizable ==
+                    eligible = _config.FilterOptimizable ==
                                ConfigurationCompilerPlugInSingleRowFunction.FilterOptimizableEnum.ENABLED;
                 }
 
@@ -119,7 +122,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 }
 
                 if (eligible) {
-                    if (forge.HasMethodInvocationContextParam()) {
+                    if (_forge.HasMethodInvocationContextParam()) {
                         eligible = false;
                     }
                 }
@@ -130,13 +133,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 
         public ExprFilterSpecLookupableForge FilterLookupable {
             get {
-                CheckValidated(forge);
-                var filterSerde = compileTimeServices.SerdeResolver.SerdeForFilter(forge.EvaluationType, statementRawInfo);
+                CheckValidated(_forge);
+                var filterSerde = _compileTimeServices.SerdeResolver.SerdeForFilter(
+                    _forge.EvaluationType,
+                    _statementRawInfo);
                 return new ExprFilterSpecLookupableForge(
                     ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(this),
-                    forge,
+                    _forge,
                     null,
-                    forge.EvaluationType,
+                    _forge.EvaluationType,
                     true,
                     filterSerde);
             }
@@ -155,11 +160,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             ExprNode node,
             bool ignoreStreamPrefix)
         {
-            if (!(node is ExprPlugInSingleRowNode)) {
+            if (!(node is ExprPlugInSingleRowNode other)) {
                 return false;
             }
 
-            var other = (ExprPlugInSingleRowNode) node;
             if (other.ChainSpec.Count != ChainSpec.Count) {
                 return false;
             }
@@ -170,19 +174,19 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 }
             }
 
-            return other.clazz == clazz && other.FunctionName.EndsWith(FunctionName);
+            return other._clazz == _clazz && other.FunctionName.EndsWith(FunctionName);
         }
 
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
-            compileTimeServices = validationContext.StatementCompileTimeService;
-            statementRawInfo = validationContext.StatementRawInfo;
-            
+            _compileTimeServices = validationContext.StatementCompileTimeService;
+            _statementRawInfo = validationContext.StatementRawInfo;
+
             ExprNodeUtilityValidate.Validate(ExprNodeOrigin.PLUGINSINGLEROWPARAM, ChainSpec, validationContext);
 
             // get first chain item
             var chainList = new List<Chainable>(ChainSpec);
-            var firstItem = chainList.DeleteAt(0);
+            Chainable firstItem = chainList.DeleteAt(0);
 
             // Get the types of the parameters for the first invocation
             var allowWildcard = validationContext.StreamTypeService.EventTypes.Length == 1;
@@ -192,20 +196,20 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             }
 
             var staticMethodDesc = ExprNodeUtilityResolve.ResolveMethodAllowWildcardAndStream(
-                clazz.FullName,
+                _clazz.FullName,
                 null,
-                firstItem.GetRootNameOrEmptyString(),
-                firstItem.GetParametersOrEmpty(),
+                firstItem.RootNameOrEmptyString,
+                firstItem.ParametersOrEmpty,
                 allowWildcard,
                 streamZeroType,
-                new ExprNodeUtilResolveExceptionHandlerDefault(firstItem.GetRootNameOrEmptyString(), true),
+                new ExprNodeUtilResolveExceptionHandlerDefault(firstItem.RootNameOrEmptyString, true),
                 FunctionName,
                 validationContext.StatementRawInfo,
                 validationContext.StatementCompileTimeService);
 
             var allowValueCache = true;
             bool isReturnsConstantResult;
-            switch (config.ValueCache) {
+            switch (_config.ValueCache) {
                 case ConfigurationCompilerPlugInSingleRowFunction.ValueCacheEnum.DISABLED:
                     isReturnsConstantResult = false;
                     allowValueCache = false;
@@ -224,18 +228,20 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                     break;
 
                 default:
-                    throw new IllegalStateException("Invalid value cache code " + config.ValueCache);
+                    throw new IllegalStateException("Invalid value cache code " + _config.ValueCache);
             }
 
             // this may return a pair of null if there is no lambda or the result cannot be wrapped for lambda-function use
-            ExprDotStaticMethodWrap optionalLambdaWrap = ExprDotStaticMethodWrapFactory.Make(
+            var optionalLambdaWrap = ExprDotStaticMethodWrapFactory.Make(
                 staticMethodDesc.ReflectionMethod,
                 chainList,
-                config.OptionalEventTypeName,
+                _config.OptionalEventTypeName,
                 validationContext);
+
+            var methodReturnClass = staticMethodDesc.ReflectionMethod.ReturnType;
             var typeInfo = optionalLambdaWrap != null
                 ? optionalLambdaWrap.TypeInfo
-                : EPTypeHelper.SingleValue(staticMethodDesc.ReflectionMethod.ReturnType);
+                : EPChainableTypeHelper.SingleValue(methodReturnClass);
 
             var eval = ExprDotNodeUtility.GetChainEvaluators(
                     -1,
@@ -248,23 +254,23 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             var staticMethodForge = new ExprDotNodeForgeStaticMethod(
                 this,
                 isReturnsConstantResult,
-                clazz.Name,
+                _clazz.Name,
                 staticMethodDesc.ReflectionMethod,
                 staticMethodDesc.ChildForges,
                 allowValueCache && staticMethodDesc.IsAllConstants,
                 eval,
                 optionalLambdaWrap,
-                config.IsRethrowExceptions,
+                _config.IsRethrowExceptions,
                 null,
                 validationContext.StatementName,
                 staticMethodDesc.IsLocalInlinedClass);
 
             // If caching the result, evaluate now and return the result.
             if (isReturnsConstantResult) {
-                forge = new ExprPlugInSingleRowNodeForgeConst(this, staticMethodForge);
+                _forge = new ExprPlugInSingleRowNodeForgeConst(this, staticMethodForge);
             }
             else {
-                forge = new ExprPlugInSingleRowNodeForgeNC(this, staticMethodForge);
+                _forge = new ExprPlugInSingleRowNodeForgeNC(this, staticMethodForge);
             }
 
             return null;

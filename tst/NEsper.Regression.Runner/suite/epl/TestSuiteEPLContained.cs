@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -97,6 +97,8 @@ namespace com.espertech.esper.regressionrun.suite.epl
                 configuration.Common.AddEventType(clazz);
             }
 
+            configuration.Common.EventMeta.AvroSettings.IsEnableAvro = true;
+            
             var innerMapDef = Collections.SingletonDataMap("p", typeof(string));
             configuration.Common.AddEventType("MyInnerMap", innerMapDef);
             var outerMapDef = Collections.SingletonDataMap("i", "MyInnerMap[]");
@@ -139,7 +141,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
                     }
 
                     configuration.Compiler.AddPlugInSingleRowFunction(
-                        funcs[i] + "_" + rep.GetName(),
+                        funcs[i] + "_" + rep.GetPublicName(),
                         typeof(EPLContainedEventSplitExpr),
                         methods[i]);
                 }
@@ -152,7 +154,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
             configuration.Common.AddEventType("MediaOrder", config);
             configuration.Common.AddEventType("Cancel", config);
 
-            configuration.Compiler.ByteCode.AllowSubscriber = true;
+            configuration.Compiler.ByteCode.IsAllowSubscriber =true;
             configuration.Compiler.AddPlugInSingleRowFunction(
                 "invalidSentence",
                 typeof(EPLContainedEventSplitExpr),

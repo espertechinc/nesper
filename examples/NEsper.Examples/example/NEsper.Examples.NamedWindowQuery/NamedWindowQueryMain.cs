@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -173,7 +173,7 @@ namespace NEsper.Examples.NamedWindowQuery
             var args = new CompilerArguments();
             args.Path.Add(runtime.RuntimePath);
             args.Options.AccessModifierNamedWindow = env => NameAccessModifier.PUBLIC; // All named windows are visibile
-            args.Configuration.Compiler.ByteCode.AllowSubscriber = true; // allow subscribers
+            args.Configuration.Compiler.ByteCode.IsAllowSubscriber = true; // allow subscribers
 
             var compiled = EPCompilerProvider.Compiler.Compile(epl, args);
             var deployment = runtime.DeploymentService.Deploy(compiled);

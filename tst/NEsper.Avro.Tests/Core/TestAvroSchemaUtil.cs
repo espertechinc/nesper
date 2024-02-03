@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -21,6 +21,7 @@ using NEsper.Avro.Extensions;
 using Newtonsoft.Json.Linq;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace NEsper.Avro.Core
 {
@@ -102,29 +103,29 @@ namespace NEsper.Avro.Core
 			AssertTypeArray(typeof(double?), Schema.Type.Double, true, true, disableRequired);
 			AssertTypeArray(typeof(string), Schema.Type.String, true, false, disableRequired);
 
-			Assert.AreEqual(Schema.Type.Bytes, Assemble(typeof(byte[]), null, defaults, EVENT_ADAPTER_SERVICE).Tag);
+			ClassicAssert.AreEqual(Schema.Type.Bytes, Assemble(typeof(byte[]), null, defaults, EVENT_ADAPTER_SERVICE).Tag);
 			
 			var bytesUnion = Assemble(typeof(byte[]), null, disableRequired, EVENT_ADAPTER_SERVICE).AsUnionSchema();
-			Assert.AreEqual(2, bytesUnion.Count);
-			Assert.AreEqual(Schema.Type.Null, bytesUnion.Schemas[0].Tag);
-			Assert.AreEqual(Schema.Type.Bytes, bytesUnion.Schemas[1].Tag);
+			ClassicAssert.AreEqual(2, bytesUnion.Count);
+			ClassicAssert.AreEqual(Schema.Type.Null, bytesUnion.Schemas[0].Tag);
+			ClassicAssert.AreEqual(Schema.Type.Bytes, bytesUnion.Schemas[1].Tag);
 			
 			foreach (var mapClass in new Type[] {
 				typeof(LinkedHashMap<string, object>),
 				typeof(IDictionary<string, object>)
 			}) {
 				var schemaReq = Assemble(mapClass, null, defaults, EVENT_ADAPTER_SERVICE);
-				Assert.AreEqual(Schema.Type.Map, schemaReq.Tag);
-				Assert.AreEqual(Schema.Type.String, schemaReq.AsMapSchema().ValueSchema.Tag);
+				ClassicAssert.AreEqual(Schema.Type.Map, schemaReq.Tag);
+				ClassicAssert.AreEqual(Schema.Type.String, schemaReq.AsMapSchema().ValueSchema.Tag);
 				
 				Console.Out.WriteLine(schemaReq);
 
 				var schemaOpt = Assemble(mapClass, null, disableRequired, EVENT_ADAPTER_SERVICE);
-				Assert.AreEqual(Schema.Type.Union, schemaOpt.Tag);
+				ClassicAssert.AreEqual(Schema.Type.Union, schemaOpt.Tag);
 				var unionOpt = schemaOpt.AsUnionSchema();
-				Assert.AreEqual(2, unionOpt.Schemas.Count);
-				Assert.AreEqual(Schema.Type.Null, unionOpt.Schemas[0].Tag);
-				Assert.AreEqual(Schema.Type.Map, unionOpt.Schemas[1].Tag);
+				ClassicAssert.AreEqual(2, unionOpt.Schemas.Count);
+				ClassicAssert.AreEqual(Schema.Type.Null, unionOpt.Schemas[0].Tag);
+				ClassicAssert.AreEqual(Schema.Type.Map, unionOpt.Schemas[1].Tag);
 
 				Console.Out.WriteLine(schemaOpt);
 			}
@@ -146,27 +147,27 @@ namespace NEsper.Avro.Core
 			Schema elementSchema;
 			if (!unionOfNull) {
 				var arraySchema = schema.AsArraySchema();
-				Assert.AreEqual(Schema.Type.Array, schema.Tag);
+				ClassicAssert.AreEqual(Schema.Type.Array, schema.Tag);
 				elementSchema = arraySchema.ItemSchema;
 			}
 			else {
 				var unionSchema = schema.AsUnionSchema();
-				Assert.AreEqual(2, unionSchema.Count);
-				Assert.AreEqual(Schema.Type.Null, unionSchema.Schemas[0].Tag);
-				Assert.AreEqual(Schema.Type.Array, unionSchema.Schemas[1].Tag);
+				ClassicAssert.AreEqual(2, unionSchema.Count);
+				ClassicAssert.AreEqual(Schema.Type.Null, unionSchema.Schemas[0].Tag);
+				ClassicAssert.AreEqual(Schema.Type.Array, unionSchema.Schemas[1].Tag);
 				elementSchema = unionSchema.Schemas[1].AsArraySchema().ItemSchema;
 			}
 
 			// assert element type
 			if (!unionOfNullElements) {
-				Assert.AreEqual(expectedElementType, elementSchema.Tag);
+				ClassicAssert.AreEqual(expectedElementType, elementSchema.Tag);
 				AssertStringNative(elementSchema, avroSettings);
 			}
 			else {
 				var unionSchema = elementSchema.AsUnionSchema();
-				Assert.AreEqual(2, unionSchema.Count);
-				Assert.AreEqual(Schema.Type.Null, unionSchema.Schemas[0].Tag);
-				Assert.AreEqual(expectedElementType, unionSchema.Schemas[1].Tag);
+				ClassicAssert.AreEqual(2, unionSchema.Count);
+				ClassicAssert.AreEqual(Schema.Type.Null, unionSchema.Schemas[0].Tag);
+				ClassicAssert.AreEqual(expectedElementType, unionSchema.Schemas[1].Tag);
 			}
 		}
 
@@ -178,15 +179,15 @@ namespace NEsper.Avro.Core
 		{
 			var schema = Assemble(clazz, null, avroSettings, EVENT_ADAPTER_SERVICE);
 			if (!unionOfNull) {
-				Assert.AreEqual(expected, schema.Tag);
+				ClassicAssert.AreEqual(expected, schema.Tag);
 				AssertStringNative(schema, avroSettings);
 			}
 			else {
 				UnionSchema unionSchema = schema.AsUnionSchema();
-				Assert.AreEqual(Schema.Type.Union, schema.Tag);
-				Assert.AreEqual(2, unionSchema.Schemas.Count);
-				Assert.AreEqual(Schema.Type.Null, unionSchema.Schemas[0].Tag);
-				Assert.AreEqual(expected, unionSchema.Schemas[1].Tag);
+				ClassicAssert.AreEqual(Schema.Type.Union, schema.Tag);
+				ClassicAssert.AreEqual(2, unionSchema.Schemas.Count);
+				ClassicAssert.AreEqual(Schema.Type.Null, unionSchema.Schemas[0].Tag);
+				ClassicAssert.AreEqual(expected, unionSchema.Schemas[1].Tag);
 			}
 		}
 
@@ -212,10 +213,10 @@ namespace NEsper.Avro.Core
 
 			var prop = elementType.GetProp(AvroConstant.PROP_STRING_KEY);
 			if (avroSettings.IsEnableNativeString) {
-				Assert.AreEqual(prop, AvroConstant.PROP_STRING_VALUE);
+				ClassicAssert.AreEqual(prop, AvroConstant.PROP_STRING_VALUE);
 			}
 			else {
-				Assert.IsNull(prop);
+				ClassicAssert.IsNull(prop);
 			}
 		}
 	}

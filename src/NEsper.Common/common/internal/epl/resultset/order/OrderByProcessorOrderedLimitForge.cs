@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -43,9 +43,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                 rowLimitProcessorFactoryForge.Make(classScope.NamespaceScope.InitMethod, classScope));
             method.Block.DeclareVar<RowLimitProcessor>(
                     REF_ROWLIMITPROCESSOR.Ref,
-                    ExprDotMethod(rowLimitFactory, "Instantiate", MEMBER_AGENTINSTANCECONTEXT))
+                    ExprDotMethod(rowLimitFactory, "Instantiate", MEMBER_EXPREVALCONTEXT))
                 .MethodReturn(
-                    CodegenExpressionBuilder.NewInstanceInner(CLASSNAME_ORDERBYPROCESSOR, Ref("o"), REF_ROWLIMITPROCESSOR));
+                    NewInstanceInner(CLASSNAME_ORDERBYPROCESSOR, Ref("o"), REF_ROWLIMITPROCESSOR));
         }
 
         public void CtorCodegen(
@@ -122,8 +122,6 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
             OrderByProcessorOrderedLimit.SortTwoKeysCodegen(this, method, classScope, namedMethods);
         }
 
-        protected internal OrderByProcessorForgeImpl OrderByProcessorForge {
-            get { return orderByProcessorForge; }
-        }
+        protected internal OrderByProcessorForgeImpl OrderByProcessorForge => orderByProcessorForge;
     }
 } // end of namespace

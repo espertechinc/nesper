@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -142,7 +142,8 @@ namespace com.espertech.esper.common.@internal.@event.xml
                 if (nodeList.Count > index) {
                     return nodeList.Item(index);
                 }
-            } else if (value is string stringValue) {
+            }
+            else if (value is string stringValue) {
                 if (index <= stringValue.Length) {
                     return stringValue[index];
                 }
@@ -156,7 +157,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
             CodegenClassScope codegenClassScope)
         {
             return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
-                .AddParam(typeof(XmlNode), "node")
+                .AddParam<XmlNode>("node")
                 .Block
                 .DeclareVar<object>(
                     "value",
@@ -173,7 +174,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
                 typeof(FragmentFactory),
                 fragmentFactory.Make(codegenClassScope.NamespaceScope.InitMethod, codegenClassScope));
             return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
-                .AddParam(typeof(XmlNode), "node")
+                .AddParam<XmlNode>("node")
                 .Block
                 .DeclareVar<XmlNode>(
                     "result",

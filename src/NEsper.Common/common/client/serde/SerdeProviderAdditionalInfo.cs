@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -13,12 +13,12 @@ using com.espertech.esper.common.@internal.compile.stage2;
 
 namespace com.espertech.esper.common.client.serde
 {
-	/// <summary>
-	///     For use with high-availability and scale-out only, this class provides additional
-	///     information passed to serde provider, for use with
-	///     <seealso cref="SerdeProvider" />
-	/// </summary>
-	public abstract class SerdeProviderAdditionalInfo
+    /// <summary>
+    ///     For use with high-availability and scale-out only, this class provides additional
+    ///     information passed to serde provider, for use with
+    ///     <seealso cref="SerdeProvider" />
+    /// </summary>
+    public abstract class SerdeProviderAdditionalInfo
     {
         private readonly StatementRawInfo _raw;
 

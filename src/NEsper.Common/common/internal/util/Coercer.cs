@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -18,7 +18,7 @@ namespace com.espertech.esper.common.@internal.util
     /// </summary>
     public interface Coercer
     {
-        Type ReturnType { get; }
+        Type GetReturnType(Type valueType);
 
         /// <summary>
         /// Coerce the given value to a pre-determined type.
@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.@internal.util
 
         CodegenExpression CoerceCodegen(
             CodegenExpression value,
-            Type valueType);
+            Type valueType, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope);
 
         CodegenExpression CoerceCodegenMayNullBoxed(
             CodegenExpression value,

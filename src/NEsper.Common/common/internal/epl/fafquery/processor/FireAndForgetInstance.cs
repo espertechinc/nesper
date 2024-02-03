@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -19,6 +19,9 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.processor
 {
     public abstract class FireAndForgetInstance
     {
+        public abstract AgentInstanceContext AgentInstanceContext { get; }
+
+        public abstract Viewable TailViewInstance { get; }
         public abstract EventBean[] ProcessInsert(FAFQueryMethodIUDInsertInto insert);
 
         public abstract EventBean[] ProcessDelete(FAFQueryMethodIUDDelete delete);
@@ -28,10 +31,6 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.processor
         public abstract ICollection<EventBean> SnapshotBestEffort(
             QueryGraph queryGraph,
             Attribute[] annotations);
-
-        public abstract AgentInstanceContext AgentInstanceContext { get; }
-
-        public abstract Viewable TailViewInstance { get; }
 
         //public abstract VirtualDWView getVirtualDataWindow();
     }

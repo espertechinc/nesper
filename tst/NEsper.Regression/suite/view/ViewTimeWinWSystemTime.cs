@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -17,6 +17,7 @@ using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.view
 {
@@ -27,12 +28,13 @@ namespace com.espertech.esper.regressionlib.suite.view
 
         public void Run(RegressionEnvironment env)
         {
-            var epl = "@Name('s0') select * from SupportMarketDataBean(Symbol='" +
-                      SYMBOL +
-                      "')#time(3.0)#weighted_avg(Price, Volume, Symbol, Feed)";
+            var epl =
+                $"@name('s0') select * from SupportMarketDataBean(Symbol='{SYMBOL}')#time(3.0)#weighted_avg(Price, Volume, Symbol, Feed)";
             env.CompileDeployAddListenerMileZero(epl, "s0");
 
-            Assert.AreEqual(typeof(double?), env.Statement("s0").EventType.GetPropertyType("average"));
+            env.AssertStatement(
+                "s0",
+                statement => { ClassicAssert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("average")); });
 
             // Send 2 events, E1 and E2 at +0sec
             env.SendEventBean(MakeBean(SYMBOL, 10, 500));
@@ -81,15 +83,21 @@ namespace com.espertech.esper.regressionlib.suite.view
             RegressionEnvironment env,
             double avgE)
         {
-            var iterator = env.Statement("s0").GetEnumerator();
-            CheckValue(iterator.Advance(), avgE);
-            Assert.IsTrue(!iterator.MoveNext());
+            env.AssertIterator(
+                "s0",
+                iterator => {
+                    CheckValue(iterator.Advance(), avgE);
+                    ClassicAssert.IsTrue(!iterator.MoveNext());
+                });
 
-            Assert.IsTrue(env.Listener("s0").LastNewData.Length == 1);
-            var listenerValues = env.Listener("s0").LastNewData[0];
-            CheckValue(listenerValues, avgE);
-
-            env.Listener("s0").Reset();
+            env.AssertListener(
+                "s0",
+                listener => {
+                    ClassicAssert.AreEqual(1, listener.LastNewData.Length);
+                    var listenerValues = listener.LastNewData[0];
+                    CheckValue(listenerValues, avgE);
+                    listener.Reset();
+                });
         }
 
         private void CheckValue(
@@ -97,9 +105,9 @@ namespace com.espertech.esper.regressionlib.suite.view
             double avgE)
         {
             var avg = GetDoubleValue(ViewFieldEnum.WEIGHTED_AVERAGE__AVERAGE, values);
-            Assert.IsTrue(DoubleValueAssertionUtil.Equals(avg, avgE, 6));
-            Assert.AreEqual(FEED, values.Get("Feed"));
-            Assert.AreEqual(SYMBOL, values.Get("Symbol"));
+            ClassicAssert.IsTrue(DoubleValueAssertionUtil.Equals(avg, avgE, 6));
+            ClassicAssert.AreEqual(FEED, values.Get("Feed"));
+            ClassicAssert.AreEqual(SYMBOL, values.Get("Symbol"));
         }
 
         private double GetDoubleValue(

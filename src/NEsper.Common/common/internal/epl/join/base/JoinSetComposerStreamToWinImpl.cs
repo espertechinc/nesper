@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -33,8 +33,11 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
         private readonly bool[] selfJoinRepositoryResets;
         private readonly int streamNumber;
 
-        private readonly ISet<MultiKeyArrayOfKeys<EventBean>> emptyResults = new LinkedHashSet<MultiKeyArrayOfKeys<EventBean>>();
-        private readonly ISet<MultiKeyArrayOfKeys<EventBean>> newResults = new LinkedHashSet<MultiKeyArrayOfKeys<EventBean>>();
+        private readonly ISet<MultiKeyArrayOfKeys<EventBean>> emptyResults =
+            new LinkedHashSet<MultiKeyArrayOfKeys<EventBean>>();
+
+        private readonly ISet<MultiKeyArrayOfKeys<EventBean>> newResults =
+            new LinkedHashSet<MultiKeyArrayOfKeys<EventBean>>();
 
         public JoinSetComposerStreamToWinImpl(
             bool allowInitIndex,
@@ -52,7 +55,7 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
             this.selfJoinRepositoryResets = selfJoinRepositoryResets;
             if (isPureSelfJoin) {
                 isResetSelfJoinRepositories = true;
-                CompatExtensions.Fill(selfJoinRepositoryResets, true);
+                selfJoinRepositoryResets.Fill(true);
             }
             else {
                 var flag = false;

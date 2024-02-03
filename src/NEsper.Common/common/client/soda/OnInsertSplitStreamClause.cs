@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -13,7 +13,6 @@ using System.IO;
 namespace com.espertech.esper.common.client.soda
 {
     /// <summary>A clause to insert into zero, one or more streams based on criteria. </summary>
-    [Serializable]
     public class OnInsertSplitStreamClause : OnClause
     {
         /// <summary>Ctor. </summary>
@@ -58,30 +57,25 @@ namespace com.espertech.esper.common.client.soda
             TextWriter writer,
             EPStatementFormatter formatter)
         {
-            foreach (OnInsertSplitStreamItem item in Items)
-            {
+            foreach (var item in Items) {
                 item.InsertInto.ToEPL(writer, formatter, true);
-                item.SelectClause.ToEPL(writer, formatter, true, false);
-                if (item.PropertySelects != null)
-                {
+                item.SelectClause.ToEPL(writer, formatter, false, false);
+                if (item.PropertySelects != null) {
                     writer.Write(" from ");
                     ContainedEventSelect.ToEPL(writer, formatter, item.PropertySelects);
-                    if (item.PropertySelectsStreamName != null)
-                    {
+                    if (item.PropertySelectsStreamName != null) {
                         writer.Write(" as ");
                         writer.Write(item.PropertySelectsStreamName);
                     }
                 }
 
-                if (item.WhereClause != null)
-                {
+                if (item.WhereClause != null) {
                     writer.Write(" where ");
                     item.WhereClause.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                 }
             }
 
-            if (!IsFirst)
-            {
+            if (!IsFirst) {
                 writer.Write(" output all");
             }
         }

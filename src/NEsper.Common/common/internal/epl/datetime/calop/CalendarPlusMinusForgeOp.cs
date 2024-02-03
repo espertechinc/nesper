@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
                 return ActionCalendarPlusMinusNumber(dateTimeEx, factor, value.AsInt64());
             }
             else {
-                return ActionCalendarPlusMinusTimePeriod(dateTimeEx, factor, (TimePeriod) value);
+                return ActionCalendarPlusMinusTimePeriod(dateTimeEx, factor, (TimePeriod)value);
             }
         }
 
@@ -60,7 +60,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
                 return ActionLDTPlusMinusNumber(dateTimeOffset, factor, value.AsInt64());
             }
 
-            return ActionLDTPlusMinusTimePeriod(dateTimeOffset, factor, (TimePeriod) value);
+            return ActionLDTPlusMinusTimePeriod(dateTimeOffset, factor, (TimePeriod)value);
         }
 
         public DateTime Evaluate(
@@ -74,7 +74,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
                 return ActionZDTPlusMinusNumber(dateTime, factor, value.AsInt64());
             }
 
-            return ActionZDTPlusMinusTimePeriod(dateTime, factor, (TimePeriod) value);
+            return ActionZDTPlusMinusTimePeriod(dateTime, factor, (TimePeriod)value);
         }
 
         public static CodegenExpression CodegenCalendar(
@@ -85,7 +85,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             CodegenClassScope codegenClassScope)
         {
             var evaluationType = forge.param.EvaluationType;
-            if (evaluationType.IsNumeric()) {
+            if (evaluationType.IsTypeNumeric()) {
                 var longDuration = SimpleNumberCoercerFactory.CoercerLong.CodegenLong(
                     forge.param.EvaluateCodegen(evaluationType, codegenMethodScope, exprSymbol, codegenClassScope),
                     evaluationType);
@@ -113,7 +113,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             CodegenClassScope codegenClassScope)
         {
             var evaluationType = forge.param.EvaluationType;
-            if (evaluationType.IsNumeric()) {
+            if (evaluationType.IsTypeNumeric()) {
                 var longDuration = SimpleNumberCoercerFactory.CoercerLong.CodegenLongMayNullBox(
                     forge.param.EvaluateCodegen(evaluationType, codegenMethodScope, exprSymbol, codegenClassScope),
                     evaluationType,
@@ -143,7 +143,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             CodegenClassScope codegenClassScope)
         {
             var evaluationType = forge.param.EvaluationType;
-            if (evaluationType.IsNumeric()) {
+            if (evaluationType.IsTypeNumeric()) {
                 var longDuration = SimpleNumberCoercerFactory.CoercerLong.CodegenLongMayNullBox(
                     forge.param.EvaluateCodegen(evaluationType, codegenMethodScope, exprSymbol, codegenClassScope),
                     evaluationType,
@@ -181,12 +181,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             }
 
             if (duration < int.MaxValue) {
-                dtx.AddMilliseconds((int) (factor * duration));
+                dtx.AddMilliseconds((int)(factor * duration));
                 return dtx;
             }
 
-            var days = (int) (duration / (1000L * 60 * 60 * 24));
-            var msec = (int) (duration - days * 1000L * 60 * 60 * 24);
+            var days = (int)(duration / (1000L * 60 * 60 * 24));
+            var msec = (int)(duration - days * 1000L * 60 * 60 * 24);
             dtx.AddMilliseconds(factor * msec);
             dtx.AddDays(factor * days);
 
@@ -213,8 +213,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
                 return dto.AddMilliseconds(factor * duration.Value);
             }
 
-            var days = (int) (duration / (1000L * 60 * 60 * 24));
-            var msec = (int) (duration - days * 1000L * 60 * 60 * 24);
+            var days = (int)(duration / (1000L * 60 * 60 * 24));
+            var msec = (int)(duration - days * 1000L * 60 * 60 * 24);
             dto = dto.AddMilliseconds(factor * msec);
             return dto.AddDays(factor * days);
         }
@@ -239,8 +239,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
                 return dateTime.AddMilliseconds(factor * duration.Value);
             }
 
-            var days = (int) (duration / (1000L * 60 * 60 * 24));
-            var msec = (int) (duration - days * 1000L * 60 * 60 * 24);
+            var days = (int)(duration / (1000L * 60 * 60 * 24));
+            var msec = (int)(duration - days * 1000L * 60 * 60 * 24);
             dateTime = dateTime.AddMilliseconds(factor * msec);
             return dateTime.AddDays(factor * days);
         }

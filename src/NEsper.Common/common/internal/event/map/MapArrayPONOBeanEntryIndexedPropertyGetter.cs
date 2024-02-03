@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.@internal.@event.map
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
             BeanEventTypeFactory beanEventTypeFactory,
             Type returnType)
-            : base(eventBeanTypedEventFactory, beanEventTypeFactory, returnType, null)
+            : base(eventBeanTypedEventFactory, beanEventTypeFactory, returnType)
         {
             this.propertyMap = propertyMap;
             this.index = index;
@@ -49,7 +49,7 @@ namespace com.espertech.esper.common.@internal.@event.map
 
         public override Type TargetType => typeof(IDictionary<string, object>);
 
-        public override Type BeanPropType => typeof(object);
+        // public override Type BeanPropType => typeof(object);
 
         public object GetMap(IDictionary<string, object> map)
         {

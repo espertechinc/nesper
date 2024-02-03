@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -39,9 +39,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         {
             var method = parent.MakeChild(typeof(ContextConditionDescriptorFilter), GetType(), classScope);
             method.Block
-                .DeclareVar<ContextConditionDescriptorFilter>(
-                    "condition",
-                    NewInstance(typeof(ContextConditionDescriptorFilter)))
+                .DeclareVarNewInstance<ContextConditionDescriptorFilter>("condition")
                 .SetProperty(
                     Ref("condition"),
                     "FilterSpecActivatable",
@@ -49,6 +47,11 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
                 .SetProperty(Ref("condition"), "OptionalFilterAsName", Constant(OptionalFilterAsName))
                 .MethodReturn(Ref("condition"));
             return LocalMethod(method);
+        }
+
+        public T Accept<T>(ContextSpecConditionVisitor<T> visitor)
+        {
+            return visitor.Visit(this);
         }
     }
 } // end of namespace

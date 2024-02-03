@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -47,8 +47,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                 bool newData,
                 ExprEvaluatorContext context)
             {
-                long startValue = start.Evaluate(Math.Min(leftStart, rightStart), eventsPerStream, newData, context);
-                long endValue = finish.Evaluate(Math.Min(leftEnd, rightEnd), eventsPerStream, newData, context);
+                var startValue = start.Evaluate(Math.Min(leftStart, rightStart), eventsPerStream, newData, context);
+                var endValue = finish.Evaluate(Math.Min(leftEnd, rightEnd), eventsPerStream, newData, context);
 
                 if (startValue < 0 || endValue < 0) {
                     Log.Warn("The coincides date-time method does not allow negative start and end values");

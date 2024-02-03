@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -14,10 +14,9 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Previous function for obtaining property values of previous events.
     /// </summary>
-    [Serializable]
     public class PreviousExpression : ExpressionBase
     {
-        private PreviousExpressionType type = PreviousExpressionType.PREV;
+        private PreviousExpressionType _type = PreviousExpressionType.PREV;
 
         /// <summary>
         /// Ctor.
@@ -61,32 +60,27 @@ namespace com.espertech.esper.common.client.soda
             PreviousExpressionType type,
             Expression expression)
         {
-            this.type = type;
+            _type = type;
             AddChild(expression);
         }
 
-        public override ExpressionPrecedenceEnum Precedence
-        {
-            get => ExpressionPrecedenceEnum.UNARY;
-        }
+        public override ExpressionPrecedenceEnum Precedence => ExpressionPrecedenceEnum.UNARY;
 
         /// <summary>
         /// Returns the type of the previous expression (tail, first, window, count)
         /// </summary>
         /// <returns>type</returns>
-        public PreviousExpressionType Type
-        {
-            get => type;
-            set => type = value;
+        public PreviousExpressionType Type {
+            get => _type;
+            set => _type = value;
         }
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
-            writer.Write(type.ToString().ToLowerInvariant());
+            writer.Write(_type.ToString().ToLowerInvariant());
             writer.Write("(");
             Children[0].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
-            if (Children.Count > 1)
-            {
+            if (Children.Count > 1) {
                 writer.Write(",");
                 Children[1].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
             }

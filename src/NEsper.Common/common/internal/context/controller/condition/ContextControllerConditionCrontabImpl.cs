@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -52,7 +52,7 @@ namespace com.espertech.esper.common.@internal.context.controller.condition
 
         public bool Activate(
             EventBean optionalTriggeringEvent,
-            ContextControllerEndConditionMatchEventProvider endConditionMatchEventProvider, 
+            ContextControllerEndConditionMatchEventProvider endConditionMatchEventProvider,
             IDictionary<string, object> optionalTriggeringPattern)
         {
             ScheduleHandleCallback scheduleCallback = new ProxyScheduleHandleCallback {
@@ -66,7 +66,7 @@ namespace com.espertech.esper.common.@internal.context.controller.condition
                         inProcAgentInstanceContext,
                         ScheduleObjectType.context,
                         NAME_AUDITPROVIDER_SCHEDULE);
-                    callback.RangeNotification(conditionPath, this, null, null, null, null);
+                    callback.RangeNotification(conditionPath, this, null, null, null, null, null);
 
                     inProcAgentInstanceContext.InstrumentationProvider.AContextScheduledEval();
                 }
@@ -75,8 +75,10 @@ namespace com.espertech.esper.common.@internal.context.controller.condition
             scheduleHandle = new EPStatementHandleCallbackSchedule(
                 agentInstanceContext.EpStatementAgentInstanceHandle,
                 scheduleCallback);
-            long nextScheduledTime = ContextControllerInitTermUtil.ComputeScheduleMinimumDelta(
-                Schedules, agentInstanceContext.TimeProvider.Time, agentInstanceContext.ImportServiceRuntime);
+            var nextScheduledTime = ContextControllerInitTermUtil.ComputeScheduleMinimumDelta(
+                Schedules,
+                agentInstanceContext.TimeProvider.Time,
+                agentInstanceContext.ImportServiceRuntime);
             agentInstanceContext.AuditProvider.ScheduleAdd(
                 nextScheduledTime,
                 agentInstanceContext,

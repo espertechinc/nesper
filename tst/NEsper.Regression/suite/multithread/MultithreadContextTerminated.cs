@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -12,19 +12,22 @@ using System.Threading;
 
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esper.regressionlib.support.client.SupportCompileDeployUtil;
 
 namespace com.espertech.esper.regressionlib.suite.multithread
 {
     public class MultithreadContextTerminated : RegressionExecutionWithConfigure
     {
-        public bool EnableHATest => true;
-        public bool HAWithCOnly => false;
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
+        }
 
         public void Configure(Configuration configuration)
         {
@@ -36,14 +39,15 @@ namespace com.espertech.esper.regressionlib.suite.multithread
         public void Run(RegressionEnvironment env)
         {
             var path = new RegressionPath();
-            var eplStatement = "create context StartThenTwoSeconds start StartContextEvent end after 2 seconds";
+            var eplStatement = "@public create context StartThenTwoSeconds start StartContextEvent end after 2 seconds";
             env.CompileDeploy(eplStatement, path);
 
-            var aggStatement = "@Name('select') context StartThenTwoSeconds " +
-                               "select Account, count(*) as totalCount " +
-                               "from PayloadEvent " +
-                               "group by Account " +
-                               "output snapshot when terminated";
+            var aggStatement =
+                "@name('select') context StartThenTwoSeconds " +
+                "select Account, count(*) as totalCount " +
+                "from PayloadEvent " +
+                "group by Account " +
+                "output snapshot when terminated";
             env.CompileDeploy(aggStatement, path);
             env.Statement("select").Events += (
                 sender,
@@ -73,7 +77,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 
             // assert
             foreach (var runnable in runnables) {
-                Assert.IsNull(runnable.Exception);
+                ClassicAssert.IsNull(runnable.Exception);
             }
 
             env.UndeployAll();

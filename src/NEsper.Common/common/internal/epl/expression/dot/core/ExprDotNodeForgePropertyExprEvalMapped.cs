@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -23,16 +23,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private readonly ExprEvaluator exprEvaluator;
+        private readonly ExprEvaluator _exprEvaluator;
 
-        private readonly ExprDotNodeForgePropertyExpr forge;
+        private readonly ExprDotNodeForgePropertyExpr _forge;
 
         public ExprDotNodeForgePropertyExprEvalMapped(
             ExprDotNodeForgePropertyExpr forge,
             ExprEvaluator exprEvaluator)
         {
-            this.forge = forge;
-            this.exprEvaluator = exprEvaluator;
+            _forge = forge;
+            _exprEvaluator = exprEvaluator;
         }
 
         public object Evaluate(
@@ -40,18 +40,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            var @event = eventsPerStream[forge.StreamNum];
+            var @event = eventsPerStream[_forge.StreamNum];
             if (@event == null) {
                 return null;
             }
 
-            var result = exprEvaluator.Evaluate(eventsPerStream, isNewData, context);
+            var result = _exprEvaluator.Evaluate(eventsPerStream, isNewData, context);
             if (result != null && !(result is string)) {
-                Log.Warn(forge.GetWarningText("string", result));
+                Log.Warn(_forge.GetWarningText("string", result));
                 return null;
             }
 
-            return forge.MappedGetter.Get(@event, (string) result);
+            return _forge.MappedGetter.Get(@event, (string)result);
         }
 
         public static CodegenExpression Codegen(
@@ -64,7 +64,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                 forge.EvaluationType,
                 typeof(ExprDotNodeForgePropertyExprEvalMapped),
                 codegenClassScope);
-            var refEPS = exprSymbol.GetAddEPS(methodNode);
+            var refEPS = exprSymbol.GetAddEps(methodNode);
 
             methodNode.Block
                 .DeclareVar<EventBean>("@event", ArrayAtIndex(refEPS, Constant(forge.StreamNum)))
@@ -72,9 +72,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                 .DeclareVar<string>(
                     "result",
                     forge.ExprForge.EvaluateCodegen(typeof(string), methodNode, exprSymbol, codegenClassScope))
-                .IfRefNullReturnNull("result")
-                .DebugStack();
-                
+                .IfRefNullReturnNull("result");
+
             methodNode.Block
                 .MethodReturn(
                     CodegenLegoCast.CastSafeFromObjectType(

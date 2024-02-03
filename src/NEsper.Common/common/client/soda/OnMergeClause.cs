@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -16,7 +16,6 @@ namespace com.espertech.esper.common.client.soda
     ///     A clause to insert, update or delete to/from a named window based on a triggering event arriving and correlated to
     ///     the named window events to be updated.
     /// </summary>
-    [Serializable]
     public class OnMergeClause : OnClause
     {
         /// <summary>
@@ -97,28 +96,23 @@ namespace com.espertech.esper.common.client.soda
             writer.Write("merge ");
             writer.Write(WindowName);
 
-            if (OptionalAsName != null)
-            {
+            if (OptionalAsName != null) {
                 writer.Write(" as ");
                 writer.Write(OptionalAsName);
             }
 
-            if (InsertNoMatch != null)
-            {
+            if (InsertNoMatch != null) {
                 writer.Write(" ");
                 InsertNoMatch.ToEPL(writer);
             }
-            else
-            {
-                if (optionalWhereClause != null)
-                {
+            else {
+                if (optionalWhereClause != null) {
                     formatter.BeginMergeWhere(writer);
                     writer.Write("where ");
                     optionalWhereClause.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                 }
 
-                foreach (var item in MatchItems)
-                {
+                foreach (var item in MatchItems) {
                     item.ToEPL(writer, formatter);
                 }
             }

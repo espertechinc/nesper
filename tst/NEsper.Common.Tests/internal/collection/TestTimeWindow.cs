@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -13,6 +13,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.collection
 {
@@ -35,110 +36,110 @@ namespace com.espertech.esper.common.@internal.collection
         [Test]
         public void TestAdd()
         {
-            Assert.IsTrue(window.OldestTimestamp == null);
-            Assert.IsTrue(window.IsEmpty());
+            ClassicAssert.IsTrue(window.OldestTimestamp == null);
+            ClassicAssert.IsTrue(window.IsEmpty());
 
             window.Add(19, beans[0]);
-            Assert.IsTrue(window.OldestTimestamp == 19L);
-            Assert.IsFalse(window.IsEmpty());
+            ClassicAssert.IsTrue(window.OldestTimestamp == 19L);
+            ClassicAssert.IsFalse(window.IsEmpty());
             window.Add(19, beans[1]);
-            Assert.IsTrue(window.OldestTimestamp == 19L);
+            ClassicAssert.IsTrue(window.OldestTimestamp == 19L);
             window.Add(20, beans[2]);
-            Assert.IsTrue(window.OldestTimestamp == 19L);
+            ClassicAssert.IsTrue(window.OldestTimestamp == 19L);
             window.Add(20, beans[3]);
             window.Add(21, beans[4]);
             window.Add(22, beans[5]);
-            Assert.IsTrue(window.OldestTimestamp == 19L);
+            ClassicAssert.IsTrue(window.OldestTimestamp == 19L);
 
             ArrayDeque<EventBean> beanList = window.ExpireEvents(19);
-            Assert.IsTrue(beanList == null);
+            ClassicAssert.IsTrue(beanList == null);
 
             beanList = window.ExpireEvents(20);
-            Assert.IsTrue(beanList.Count == 2);
-            Assert.IsTrue(beanList.Poll() == beans[0]);
-            Assert.IsTrue(beanList.Poll() == beans[1]);
+            ClassicAssert.IsTrue(beanList.Count == 2);
+            ClassicAssert.IsTrue(beanList.Poll() == beans[0]);
+            ClassicAssert.IsTrue(beanList.Poll() == beans[1]);
 
             beanList = window.ExpireEvents(21);
-            Assert.IsTrue(beanList.Count == 2);
-            Assert.IsTrue(beanList.Poll() == beans[2]);
-            Assert.IsTrue(beanList.Poll() == beans[3]);
-            Assert.IsFalse(window.IsEmpty());
-            Assert.IsTrue(window.OldestTimestamp == 21);
+            ClassicAssert.IsTrue(beanList.Count == 2);
+            ClassicAssert.IsTrue(beanList.Poll() == beans[2]);
+            ClassicAssert.IsTrue(beanList.Poll() == beans[3]);
+            ClassicAssert.IsFalse(window.IsEmpty());
+            ClassicAssert.IsTrue(window.OldestTimestamp == 21);
 
             beanList = window.ExpireEvents(22);
-            Assert.IsTrue(beanList.Count == 1);
-            Assert.IsTrue(beanList.Poll() == beans[4]);
-            Assert.IsFalse(window.IsEmpty());
-            Assert.IsTrue(window.OldestTimestamp == 22);
+            ClassicAssert.IsTrue(beanList.Count == 1);
+            ClassicAssert.IsTrue(beanList.Poll() == beans[4]);
+            ClassicAssert.IsFalse(window.IsEmpty());
+            ClassicAssert.IsTrue(window.OldestTimestamp == 22);
 
             beanList = window.ExpireEvents(23);
-            Assert.IsTrue(beanList.Count == 1);
-            Assert.IsTrue(beanList.Poll() == beans[5]);
-            Assert.IsTrue(window.IsEmpty());
-            Assert.IsTrue(window.OldestTimestamp == null);
+            ClassicAssert.IsTrue(beanList.Count == 1);
+            ClassicAssert.IsTrue(beanList.Poll() == beans[5]);
+            ClassicAssert.IsTrue(window.IsEmpty());
+            ClassicAssert.IsTrue(window.OldestTimestamp == null);
 
             beanList = window.ExpireEvents(23);
-            Assert.IsTrue(beanList == null);
-            Assert.IsTrue(window.IsEmpty());
-            Assert.IsTrue(window.OldestTimestamp == null);
+            ClassicAssert.IsTrue(beanList == null);
+            ClassicAssert.IsTrue(window.IsEmpty());
+            ClassicAssert.IsTrue(window.OldestTimestamp == null);
         }
 
         [Test]
         public void TestAddRemove()
         {
-            Assert.IsTrue(windowRemovable.OldestTimestamp == null);
-            Assert.IsTrue(windowRemovable.IsEmpty());
+            ClassicAssert.IsTrue(windowRemovable.OldestTimestamp == null);
+            ClassicAssert.IsTrue(windowRemovable.IsEmpty());
 
             windowRemovable.Add(19, beans[0]);
-            Assert.IsTrue(windowRemovable.OldestTimestamp == 19L);
-            Assert.IsFalse(windowRemovable.IsEmpty());
+            ClassicAssert.IsTrue(windowRemovable.OldestTimestamp == 19L);
+            ClassicAssert.IsFalse(windowRemovable.IsEmpty());
             windowRemovable.Add(19, beans[1]);
-            Assert.IsTrue(windowRemovable.OldestTimestamp == 19L);
+            ClassicAssert.IsTrue(windowRemovable.OldestTimestamp == 19L);
             windowRemovable.Add(20, beans[2]);
-            Assert.IsTrue(windowRemovable.OldestTimestamp == 19L);
+            ClassicAssert.IsTrue(windowRemovable.OldestTimestamp == 19L);
             windowRemovable.Add(20, beans[3]);
             windowRemovable.Add(21, beans[4]);
             windowRemovable.Add(22, beans[5]);
-            Assert.IsTrue(windowRemovable.OldestTimestamp == 19L);
+            ClassicAssert.IsTrue(windowRemovable.OldestTimestamp == 19L);
 
             windowRemovable.Remove(beans[4]);
             windowRemovable.Remove(beans[0]);
             windowRemovable.Remove(beans[3]);
 
             ArrayDeque<EventBean> beanList = windowRemovable.ExpireEvents(19);
-            Assert.IsTrue(beanList == null);
+            ClassicAssert.IsTrue(beanList == null);
 
             beanList = windowRemovable.ExpireEvents(20);
-            Assert.IsTrue(beanList.Count == 1);
-            Assert.IsTrue(beanList.First == beans[1]);
+            ClassicAssert.IsTrue(beanList.Count == 1);
+            ClassicAssert.IsTrue(beanList.First == beans[1]);
 
             beanList = windowRemovable.ExpireEvents(21);
-            Assert.IsTrue(beanList.Count == 1);
-            Assert.IsTrue(beanList.First == beans[2]);
-            Assert.IsFalse(windowRemovable.IsEmpty());
-            Assert.IsTrue(windowRemovable.OldestTimestamp == 22);
+            ClassicAssert.IsTrue(beanList.Count == 1);
+            ClassicAssert.IsTrue(beanList.First == beans[2]);
+            ClassicAssert.IsFalse(windowRemovable.IsEmpty());
+            ClassicAssert.IsTrue(windowRemovable.OldestTimestamp == 22);
 
             beanList = windowRemovable.ExpireEvents(22);
-            Assert.IsTrue(beanList.Count == 0);
+            ClassicAssert.IsTrue(beanList.Count == 0);
 
             beanList = windowRemovable.ExpireEvents(23);
-            Assert.IsTrue(beanList.Count == 1);
-            Assert.IsTrue(beanList.First == beans[5]);
-            Assert.IsTrue(windowRemovable.IsEmpty());
-            Assert.IsTrue(windowRemovable.OldestTimestamp == null);
+            ClassicAssert.IsTrue(beanList.Count == 1);
+            ClassicAssert.IsTrue(beanList.First == beans[5]);
+            ClassicAssert.IsTrue(windowRemovable.IsEmpty());
+            ClassicAssert.IsTrue(windowRemovable.OldestTimestamp == null);
 
             beanList = windowRemovable.ExpireEvents(23);
-            Assert.IsTrue(beanList == null);
-            Assert.IsTrue(windowRemovable.IsEmpty());
-            Assert.IsTrue(windowRemovable.OldestTimestamp == null);
+            ClassicAssert.IsTrue(beanList == null);
+            ClassicAssert.IsTrue(windowRemovable.IsEmpty());
+            ClassicAssert.IsTrue(windowRemovable.OldestTimestamp == null);
 
-            Assert.AreEqual(0, windowRemovable.ReverseIndex.Count);
+            ClassicAssert.AreEqual(0, windowRemovable.ReverseIndex.Count);
         }
 
         [Test]
         public void TestTimeWindowPerformance()
         {
-            log.Info(".testTimeWindowPerformance Starting");
+            Log.Info(".testTimeWindowPerformance Starting");
 
             TimeWindow window = new TimeWindow(false);
 
@@ -154,7 +155,7 @@ namespace com.espertech.esper.common.@internal.collection
                 window.ExpireEvents(i - 100);
             }
 
-            log.Info(".testTimeWindowPerformance Done");
+            Log.Info(".testTimeWindowPerformance Done");
         }
 
         private EventBean CreateBean()
@@ -162,6 +163,6 @@ namespace com.espertech.esper.common.@internal.collection
             return SupportEventBeanFactory.CreateObject(supportEventTypeFactory, new SupportBean());
         }
 
-        private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 } // end of namespace

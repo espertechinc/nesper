@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -29,7 +29,6 @@ namespace com.espertech.esper.common.@internal.epl.agg.table
         private readonly int[] accessColumnsZeroOffset;
         internal readonly TableColumnMethodPairEval[] methodPairs;
         internal readonly TableInstanceGrouped tableInstance;
-
         protected AggregationRow currentAggregationRow;
         protected object currentGroupKey;
 
@@ -70,7 +69,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.table
             object groupByKeyUntransformed,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            object groupByKey = tableInstance.Table.PrimaryKeyIntoTableTransform.From(groupByKeyUntransformed);
+            var groupByKey = tableInstance.Table.PrimaryKeyIntoTableTransform.From(groupByKeyUntransformed);
             ApplyEnterTableKey(eventsPerStream, groupByKey, exprEvaluatorContext);
         }
 
@@ -79,7 +78,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.table
             object groupByKeyUntransformed,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            object groupByKey = tableInstance.Table.PrimaryKeyIntoTableTransform.From(groupByKeyUntransformed);
+            var groupByKey = tableInstance.Table.PrimaryKeyIntoTableTransform.From(groupByKeyUntransformed);
             ApplyLeaveTableKey(eventsPerStream, groupByKey, exprEvaluatorContext);
         }
 
@@ -94,69 +93,85 @@ namespace com.espertech.esper.common.@internal.epl.agg.table
 
         protected void ApplyEnterTableKey(
             EventBean[] eventsPerStream,
-            Object tableKey,
+            object tableKey,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            ObjectArrayBackedEventBean bean = tableInstance.GetCreateRowIntoTable(tableKey, exprEvaluatorContext);
-            currentAggregationRow = (AggregationRow) bean.Properties[0];
-
-            InstrumentationCommon instrumentationCommon = exprEvaluatorContext.InstrumentationProvider;
-            instrumentationCommon.QAggregationGroupedApplyEnterLeave(true, methodPairs.Length, accessAgents.Length, tableKey);
-
-            for (int i = 0; i < methodPairs.Length; i++) {
-                TableColumnMethodPairEval methodPair = methodPairs[i];
+            var bean = tableInstance.GetCreateRowIntoTable(tableKey, exprEvaluatorContext);
+            currentAggregationRow = (AggregationRow)bean.Properties[0];
+            var instrumentationCommon = exprEvaluatorContext.InstrumentationProvider;
+            instrumentationCommon.QAggregationGroupedApplyEnterLeave(
+                true,
+                methodPairs.Length,
+                accessAgents.Length,
+                tableKey);
+            for (var i = 0; i < methodPairs.Length; i++) {
+                var methodPair = methodPairs[i];
                 instrumentationCommon.QAggNoAccessEnterLeave(true, i, null, null);
-                Object columnResult = methodPair.Evaluator.Evaluate(eventsPerStream, true, exprEvaluatorContext);
+                var columnResult = methodPair.Evaluator.Evaluate(eventsPerStream, true, exprEvaluatorContext);
                 currentAggregationRow.EnterAgg(methodPair.Column, columnResult);
                 instrumentationCommon.AAggNoAccessEnterLeave(true, i, null);
             }
 
-            for (int i = 0; i < accessAgents.Length; i++) {
+            for (var i = 0; i < accessAgents.Length; i++) {
                 instrumentationCommon.QAggAccessEnterLeave(true, i, null);
-                accessAgents[i].ApplyEnter(eventsPerStream, exprEvaluatorContext, currentAggregationRow, accessColumnsZeroOffset[i]);
+                accessAgents[i]
+                    .ApplyEnter(
+                        eventsPerStream,
+                        exprEvaluatorContext,
+                        currentAggregationRow,
+                        accessColumnsZeroOffset[i]);
                 instrumentationCommon.AAggAccessEnterLeave(true, i);
             }
 
             tableInstance.HandleRowUpdated(bean);
-
             instrumentationCommon.AAggregationGroupedApplyEnterLeave(true);
         }
 
         protected void ApplyLeaveTableKey(
             EventBean[] eventsPerStream,
-            Object tableKey,
+            object tableKey,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            ObjectArrayBackedEventBean bean = tableInstance.GetCreateRowIntoTable(tableKey, exprEvaluatorContext);
-            currentAggregationRow = (AggregationRow) bean.Properties[0];
-
-            InstrumentationCommon instrumentationCommon = exprEvaluatorContext.InstrumentationProvider;
-            instrumentationCommon.QAggregationGroupedApplyEnterLeave(false, methodPairs.Length, accessAgents.Length, tableKey);
-
-            for (int i = 0; i < methodPairs.Length; i++) {
-                TableColumnMethodPairEval methodPair = methodPairs[i];
+            var bean = tableInstance.GetCreateRowIntoTable(tableKey, exprEvaluatorContext);
+            currentAggregationRow = (AggregationRow)bean.Properties[0];
+            var instrumentationCommon = exprEvaluatorContext.InstrumentationProvider;
+            instrumentationCommon.QAggregationGroupedApplyEnterLeave(
+                false,
+                methodPairs.Length,
+                accessAgents.Length,
+                tableKey);
+            for (var i = 0; i < methodPairs.Length; i++) {
+                var methodPair = methodPairs[i];
                 instrumentationCommon.QAggNoAccessEnterLeave(false, i, null, null);
-                Object columnResult = methodPair.Evaluator.Evaluate(eventsPerStream, false, exprEvaluatorContext);
+                var columnResult = methodPair.Evaluator.Evaluate(eventsPerStream, false, exprEvaluatorContext);
                 currentAggregationRow.LeaveAgg(methodPair.Column, columnResult);
                 instrumentationCommon.AAggNoAccessEnterLeave(false, i, null);
             }
 
-            for (int i = 0; i < accessAgents.Length; i++) {
+            for (var i = 0; i < accessAgents.Length; i++) {
                 instrumentationCommon.QAggAccessEnterLeave(false, i, null);
-                accessAgents[i].ApplyLeave(eventsPerStream, exprEvaluatorContext, currentAggregationRow, accessColumnsZeroOffset[i]);
+                accessAgents[i]
+                    .ApplyLeave(
+                        eventsPerStream,
+                        exprEvaluatorContext,
+                        currentAggregationRow,
+                        accessColumnsZeroOffset[i]);
                 instrumentationCommon.AAggAccessEnterLeave(false, i);
             }
 
             tableInstance.HandleRowUpdated(bean);
-
             instrumentationCommon.AAggregationGroupedApplyEnterLeave(false);
         }
 
-        public virtual void SetCurrentAccess(object groupByKeyUntransformed, int agentInstanceId, AggregationGroupByRollupLevel rollupLevel) {
+        public virtual void SetCurrentAccess(
+            object groupByKeyUntransformed,
+            int agentInstanceId,
+            AggregationGroupByRollupLevel rollupLevel)
+        {
             var groupByKey = tableInstance.Table.PrimaryKeyIntoTableTransform.From(groupByKeyUntransformed);
             var bean = tableInstance.GetRowForGroupKey(groupByKey);
             if (bean != null) {
-                currentAggregationRow = (AggregationRow) bean.Properties[0];
+                currentAggregationRow = (AggregationRow)bean.Properties[0];
             }
             else {
                 currentAggregationRow = null;
@@ -242,7 +257,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.table
         {
             return this;
         }
-        
+
         public abstract void ApplyEnterInternal(
             EventBean[] eventsPerStream,
             object groupByKey,
@@ -252,5 +267,6 @@ namespace com.espertech.esper.common.@internal.epl.agg.table
             EventBean[] eventsPerStream,
             object groupByKey,
             ExprEvaluatorContext exprEvaluatorContext);
+
     }
 } // end of namespace

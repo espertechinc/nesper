@@ -1,30 +1,43 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Collections.Generic;
+
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.expr.datetime
 {
     public class ExprDTPerfIntervalOps : RegressionExecution
     {
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.PERFORMANCE);
+        }
+
         public void Run(RegressionEnvironment env)
         {
             var path = new RegressionPath();
-            env.CompileDeploy("@Name('create') create window AWindow#keepall as SupportTimeStartEndA", path);
+            env.CompileDeploy("@name('create') @public create window AWindow#keepall as SupportTimeStartEndA", path);
             env.CompileDeploy("insert into AWindow select * from SupportTimeStartEndA", path);
 
-            var eventTypeNW = env.Statement("create").EventType;
-            Assert.AreEqual("LongdateStart", eventTypeNW.StartTimestampPropertyName);
-            Assert.AreEqual("LongdateEnd", eventTypeNW.EndTimestampPropertyName);
+            env.AssertStatement(
+                "create",
+                statement => {
+                    var eventTypeNW = statement.EventType;
+                    ClassicAssert.AreEqual("LongdateStart", eventTypeNW.StartTimestampPropertyName);
+                    ClassicAssert.AreEqual("LongdateEnd", eventTypeNW.EndTimestampPropertyName);
+                });
 
             // preload
             for (var i = 0; i < 10000; i++) {
@@ -123,13 +136,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             long durationB,
             string expectedAKey)
         {
-            env.CompileDeploy("@Name('s0') " + epl, path).AddListener("s0");
+            env.CompileDeploy("@name('s0') " + epl, path).AddListener("s0");
 
             // query
             var startTime = PerformanceObserver.MilliTime;
             for (var i = 0; i < 1000; i++) {
                 env.SendEventBean(SupportTimeStartEndB.Make("B", timestampB, durationB));
-                Assert.AreEqual(expectedAKey, env.Listener("s0").AssertOneGetNewAndReset().Get("c0"));
+                env.AssertEqualsNew("s0", "c0", expectedAKey);
             }
 
             var endTime = PerformanceObserver.MilliTime;

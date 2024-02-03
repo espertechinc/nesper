@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -16,7 +16,7 @@ using NEsper.Examples.MatchMaker.eventbean;
 using NEsper.Examples.MatchMaker.monitor;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using Configuration = com.espertech.esper.common.client.configuration.Configuration;
 
 namespace NEsper.Examples.MatchMaker
@@ -87,22 +87,22 @@ namespace NEsper.Examples.MatchMaker
                                             Gender.MALE, HairColor.BLONDE, AgeRange.AGE_4);
             sender.SendEvent(user2);
 
-            Assert.AreEqual(1, _listener.GetAndClearEmittedCount());
+            ClassicAssert.AreEqual(1, _listener.GetAndClearEmittedCount());
             _runtime.EventService.SendEventBean(user1.Copy().WithLocation(8.99999, 10), EVENTTYPE);
-            Assert.AreEqual(0, _listener.GetAndClearEmittedCount());
+            ClassicAssert.AreEqual(0, _listener.GetAndClearEmittedCount());
 
             _runtime.EventService.SendEventBean(user1.Copy().WithLocation(9, 10), EVENTTYPE);
-            Assert.AreEqual(1, _listener.GetAndClearEmittedCount());
+            ClassicAssert.AreEqual(1, _listener.GetAndClearEmittedCount());
 
             _runtime.EventService.SendEventBean(user1.Copy().WithLocation(11, 10), EVENTTYPE);
-            Assert.AreEqual(1, _listener.GetAndClearEmittedCount());
+            ClassicAssert.AreEqual(1, _listener.GetAndClearEmittedCount());
 
             _runtime.EventService.SendEventBean(user1.Copy().WithLocation(11.0000001, 10), EVENTTYPE);
-            Assert.AreEqual(0, _listener.GetAndClearEmittedCount());
+            ClassicAssert.AreEqual(0, _listener.GetAndClearEmittedCount());
 
             _runtime.EventService.SendEventBean(user2.Copy().WithLocation(10.0000001, 9), EVENTTYPE);
             
-            Assert.AreEqual(1, _listener.GetAndClearEmittedCount());
+            ClassicAssert.AreEqual(1, _listener.GetAndClearEmittedCount());
         }
 
         [Test]
@@ -125,13 +125,13 @@ namespace NEsper.Examples.MatchMaker
                         sender.SendEvent(userA);
 
                         if (_listener.EmittedList.Count == 1) {
-                            Assert.AreEqual(gender, Gender.MALE);
-                            Assert.AreEqual(color, HairColor.RED);
-                            Assert.AreEqual(age, AgeRange.AGE_6);
+                            ClassicAssert.AreEqual(gender, Gender.MALE);
+                            ClassicAssert.AreEqual(color, HairColor.RED);
+                            ClassicAssert.AreEqual(age, AgeRange.AGE_6);
                             _listener.ClearEmitted();
                         }
                         else {
-                            Assert.AreEqual(0, _listener.GetAndClearEmittedCount());
+                            ClassicAssert.AreEqual(0, _listener.GetAndClearEmittedCount());
                         }
                     }
                 }
@@ -158,13 +158,13 @@ namespace NEsper.Examples.MatchMaker
                         sender.SendEvent(userB);
 
                         if (_listener.EmittedList.Count == 1) {
-                            Assert.AreEqual(gender, Gender.FEMALE);
-                            Assert.AreEqual(color, HairColor.BLACK);
-                            Assert.AreEqual(age, AgeRange.AGE_5);
+                            ClassicAssert.AreEqual(gender, Gender.FEMALE);
+                            ClassicAssert.AreEqual(color, HairColor.BLACK);
+                            ClassicAssert.AreEqual(age, AgeRange.AGE_5);
                             _listener.ClearEmitted();
                         }
                         else {
-                            Assert.AreEqual(0, _listener.GetAndClearEmittedCount());
+                            ClassicAssert.AreEqual(0, _listener.GetAndClearEmittedCount());
                         }
                     }
                 }

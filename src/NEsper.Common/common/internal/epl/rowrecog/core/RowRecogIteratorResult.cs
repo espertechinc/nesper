@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -23,8 +23,8 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
         /// <summary>
         /// Ctor.
         /// </summary>
-        /// <param name="endStates">end states</param>
-        /// <param name="eventSequenceNum">seq num of event</param>
+        /// <param name = "endStates">end states</param>
+        /// <param name = "eventSequenceNum">seq num of event</param>
         public RowRecogIteratorResult(
             IList<RowRecogNFAStateEntry> endStates,
             int eventSequenceNum)
@@ -34,20 +34,11 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
         }
 
         /// <summary>
-        /// Returns the end states
-        /// </summary>
-        /// <returns>end states</returns>
-        public IList<RowRecogNFAStateEntry> GetEndStates()
-        {
-            return endStates;
-        }
-
-        /// <summary>
         /// Returns the event seq num.
         /// </summary>
         /// <returns>seq num</returns>
-        public int EventSequenceNum {
-            get => eventSequenceNum;
-        }
+        public int EventSequenceNum => eventSequenceNum;
+
+        public IList<RowRecogNFAStateEntry> EndStates => endStates;
     }
 } // end of namespace

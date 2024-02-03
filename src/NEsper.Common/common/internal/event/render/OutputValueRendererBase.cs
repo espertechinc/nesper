@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -37,21 +37,19 @@ namespace com.espertech.esper.common.@internal.@event.render
                     buf.Append(".0");
                 }
             }
-            else if (o is DateTimeOffset) {
-                var dateTime = (DateTimeOffset) o;
-                var dateOnly = dateTime.Date;
-                if (dateTime == dateOnly) {
-                    buf.Append(dateTime.ToString("yyyy-MM-dd"));
+            else if (o is DateTimeOffset time) {
+                var dateOnly = time.Date;
+                if (time == dateOnly) {
+                    buf.Append(time.ToString("yyyy-MM-dd"));
                 }
-                else if (dateTime.Millisecond == 0) {
-                    buf.Append(dateTime.ToString("yyyy-MM-dd hh:mm:ss"));
+                else if (time.Millisecond == 0) {
+                    buf.Append(time.ToString("yyyy-MM-dd hh:mm:ss"));
                 }
                 else {
-                    buf.Append(dateTime.ToString("yyyy-MM-dd hh:mm:ss.ffff"));
+                    buf.Append(time.ToString("yyyy-MM-dd hh:mm:ss.ffff"));
                 }
             }
-            else if (o is DateTime) {
-                var dateTime = (DateTime) o;
+            else if (o is DateTime dateTime) {
                 var dateOnly = dateTime.Date;
                 if (dateTime == dateOnly) {
                     buf.Append(dateTime.ToString("yyyy-MM-dd"));

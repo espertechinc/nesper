@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -44,13 +44,13 @@ namespace com.espertech.esper.common.@internal.epl.index.compile
         {
             EventTableIndexMetadata indexMetadata = null;
             if (indexKey.IsNamedWindow) {
-                NamedWindowMetaData localNamedWindow = moduleNamedWindows.Get(indexKey.InfraName);
+                var localNamedWindow = moduleNamedWindows.Get(indexKey.InfraName);
                 if (localNamedWindow != null) {
                     indexMetadata = localNamedWindow.IndexMetadata;
                 }
                 else {
                     if (indexKey.Visibility == NameAccessModifier.PUBLIC) {
-                        NamedWindowMetaData pathNamedWindow = pathNamedWindows.GetWithModule(
+                        var pathNamedWindow = pathNamedWindows.GetWithModule(
                             indexKey.InfraName,
                             indexKey.InfraModuleName);
                         if (pathNamedWindow != null) {
@@ -64,13 +64,13 @@ namespace com.espertech.esper.common.@internal.epl.index.compile
                 }
             }
             else {
-                TableMetaData localTable = moduleTables.Get(indexKey.InfraName);
+                var localTable = moduleTables.Get(indexKey.InfraName);
                 if (localTable != null) {
                     indexMetadata = localTable.IndexMetadata;
                 }
                 else {
                     if (indexKey.Visibility == NameAccessModifier.PUBLIC) {
-                        TableMetaData pathTable = pathTables.GetWithModule(
+                        var pathTable = pathTables.GetWithModule(
                             indexKey.InfraName,
                             indexKey.InfraModuleName);
                         if (pathTable != null) {

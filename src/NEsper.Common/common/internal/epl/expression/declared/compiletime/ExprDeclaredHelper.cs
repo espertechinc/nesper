@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -17,13 +17,16 @@ using com.espertech.esper.common.@internal.context.compile;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.script.core;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.common.@internal.util.serde;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.container;
 
 namespace com.espertech.esper.common.@internal.epl.expression.declared.compiletime
 {
     public class ExprDeclaredHelper
     {
         public static Pair<ExprDeclaredNodeImpl, StatementSpecMapContext> GetExistsDeclaredExpr(
+            IContainer container,
             string name,
             IList<ExprNode> parameters,
             ICollection<ExpressionDeclItem> stmtLocalExpressions,
@@ -59,10 +62,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
                 var expression = found.OptionalSoda;
                 if (expression == null) {
                     var bytes = found.OptionalSodaBytes.Invoke();
-                    expression = (Expression) SerializerUtil.ByteArrToObject(bytes);
+                    expression = (Expression)SerializerUtil.ByteArrToObject(container.SerializerFactory(), bytes);
                 }
 
-                var pair = GetExprDeclaredNode(expression, stmtLocalExpressions, contextCompileTimeDescriptor, mapEnv, plugInAggregations, scripts);
+                var pair = GetExprDeclaredNode(
+                    expression,
+                    stmtLocalExpressions,
+                    contextCompileTimeDescriptor,
+                    mapEnv,
+                    plugInAggregations,
+                    scripts);
                 var declared = new ExprDeclaredNodeImpl(found, parameters, contextCompileTimeDescriptor, pair.First);
                 return new Pair<ExprDeclaredNodeImpl, StatementSpecMapContext>(declared, pair.Second);
             }
@@ -78,7 +87,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             LazyAllocatedMap<HashableMultiKey, AggregationMultiFunctionForge> plugInAggregations,
             IList<ExpressionScriptProvided> scripts)
         {
-            var mapContext = new StatementSpecMapContext(contextCompileTimeDescriptor, mapEnv, plugInAggregations, scripts);
+            var mapContext = new StatementSpecMapContext(
+                contextCompileTimeDescriptor,
+                mapEnv,
+                plugInAggregations,
+                scripts);
             foreach (var item in stmtLocalExpressions) {
                 mapContext.AddExpressionDeclaration(item);
             }

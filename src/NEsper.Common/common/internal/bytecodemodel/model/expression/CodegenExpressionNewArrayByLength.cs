@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -37,14 +37,14 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             int level,
             CodegenIndent indent)
         {
-            int numDimensions = GetNumberOfDimensions(component);
-            Type outermostType = GetComponentTypeOutermost(component);
+            var numDimensions = GetNumberOfDimensions(component);
+            var outermostType = GetComponentTypeOutermost(component);
             builder.Append("new ");
             CodeGenerationHelper.AppendClassName(builder, outermostType);
             builder.Append("[");
             expression.Render(builder, isInnerClass, level, indent);
             builder.Append("]");
-            for (int i = 0; i < numDimensions; i++) {
+            for (var i = 0; i < numDimensions; i++) {
                 builder.Append("[]");
             }
         }
@@ -54,10 +54,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             classes.AddToSet(component);
             expression.MergeClasses(classes);
         }
-        
+
         public void TraverseExpressions(Consumer<CodegenExpression> consumer)
         {
             consumer.Invoke(expression);
-         }
+        }
     }
 } // end of namespace

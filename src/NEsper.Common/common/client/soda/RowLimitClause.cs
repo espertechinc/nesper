@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Specification object for a row limit.
     /// </summary>
-    [Serializable]
     public class RowLimitClause
     {
         /// <summary>
@@ -137,30 +136,24 @@ namespace com.espertech.esper.common.client.soda
         public void ToEPL(TextWriter writer)
         {
             var numRowsVariable = NumRowsVariable;
-            if (numRowsVariable != null)
-            {
+            if (numRowsVariable != null) {
                 writer.Write(numRowsVariable);
             }
-            else
-            {
+            else {
                 var numRows = NumRows;
-                if (numRows != null)
-                {
+                if (numRows != null) {
                     writer.Write(numRows);
                 }
-                else
-                {
+                else {
                     writer.Write(int.MaxValue);
                 }
             }
 
-            if (OptionalOffsetRowsVariable != null)
-            {
+            if (OptionalOffsetRowsVariable != null) {
                 writer.Write(" offset ");
                 writer.Write(OptionalOffsetRowsVariable);
             }
-            else if (OptionalOffsetRows.GetValueOrDefault(0) != 0)
-            {
+            else if (OptionalOffsetRows.GetValueOrDefault(0) != 0) {
                 writer.Write(" offset ");
                 writer.Write(OptionalOffsetRows);
             }

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -27,7 +27,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
             using (var session = RegressionRunner.Session(Container)) {
                 session.Configuration.Common.AddEventType(typeof(SupportBean));
                 session.Configuration.Compiler.Expression.MathContext = MathContext.DECIMAL32;
-                session.Configuration.Compiler.ByteCode.AllowSubscriber = true;
+                session.Configuration.Compiler.ByteCode.IsAllowSubscriber =true;
                 RegressionRunner.Run(session, ExprCoreBigNumberSupportMathContext.Executions());
             }
         }

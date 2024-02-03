@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -109,7 +109,7 @@ namespace com.espertech.esper.common.@internal.@event.variant
             VariantPropertyGetterCache propertyGetterCache,
             string propertyName)
         {
-            var variant = (VariantEvent) eventBean;
+            var variant = (VariantEvent)eventBean;
             var getter = propertyGetterCache.GetGetter(propertyName, variant.UnderlyingEventBean.EventType);
 
             var result = getter?.Get(variant.UnderlyingEventBean);
@@ -128,7 +128,7 @@ namespace com.espertech.esper.common.@internal.@event.variant
             VariantPropertyGetterCache propertyGetterCache,
             string propertyName)
         {
-            var variant = (VariantEvent) eventBean;
+            var variant = (VariantEvent)eventBean;
             var getter = propertyGetterCache.GetGetter(propertyName, variant.UnderlyingEventBean.EventType);
             return getter != null && getter.IsExistsProperty(variant.UnderlyingEventBean);
         }

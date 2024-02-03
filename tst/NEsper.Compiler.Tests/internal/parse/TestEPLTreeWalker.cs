@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -34,6 +34,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.compiler.@internal.parse
 {
@@ -54,58 +55,58 @@ namespace com.espertech.esper.compiler.@internal.parse
 			var expression = "create dataflow MyGraph MyOp((s0, s1) as ST1, s2) -> out1, out2 {}";
 			var walker = SupportParserHelper.ParseAndWalkEPL(container, expression);
 			var graph = walker.StatementSpec.CreateDataFlowDesc;
-			Assert.AreEqual("MyGraph", graph.GraphName);
-			Assert.AreEqual(1, graph.Operators.Count);
+			ClassicAssert.AreEqual("MyGraph", graph.GraphName);
+			ClassicAssert.AreEqual(1, graph.Operators.Count);
 			var op = graph.Operators[0];
-			Assert.AreEqual("MyOp", op.OperatorName);
+			ClassicAssert.AreEqual("MyOp", op.OperatorName);
 
 			// assert input
-			Assert.AreEqual(2, op.Input.StreamNamesAndAliases.Count);
+			ClassicAssert.AreEqual(2, op.Input.StreamNamesAndAliases.Count);
 			var in1 = op.Input.StreamNamesAndAliases[0];
 			EPAssertionUtil.AssertEqualsExactOrder("s0,s1".SplitCsv(), in1.InputStreamNames);
-			Assert.AreEqual("ST1", in1.OptionalAsName);
+			ClassicAssert.AreEqual("ST1", in1.OptionalAsName);
 			var in2 = op.Input.StreamNamesAndAliases[1];
 			EPAssertionUtil.AssertEqualsExactOrder("s2".SplitCsv(), in2.InputStreamNames);
-			Assert.IsNull(in2.OptionalAsName);
+			ClassicAssert.IsNull(in2.OptionalAsName);
 
 			// assert output
-			Assert.AreEqual(2, op.Output.Items.Count);
+			ClassicAssert.AreEqual(2, op.Output.Items.Count);
 			var out1 = op.Output.Items[0];
-			Assert.AreEqual("out1", out1.StreamName);
-			Assert.AreEqual(0, out1.TypeInfo.Count);
+			ClassicAssert.AreEqual("out1", out1.StreamName);
+			ClassicAssert.AreEqual(0, out1.TypeInfo.Count);
 			var out2 = op.Output.Items[1];
-			Assert.AreEqual("out2", out2.StreamName);
-			Assert.AreEqual(0, out1.TypeInfo.Count);
+			ClassicAssert.AreEqual("out2", out2.StreamName);
+			ClassicAssert.AreEqual(0, out1.TypeInfo.Count);
 
 			GraphOperatorOutputItemType type;
 
 			type = TryWalkGraphTypes("out<?>");
-			Assert.IsTrue(type.IsWildcard);
-			Assert.IsNull(type.TypeOrClassname);
-			Assert.IsNull(type.TypeParameters);
+			ClassicAssert.IsTrue(type.IsWildcard);
+			ClassicAssert.IsNull(type.TypeOrClassname);
+			ClassicAssert.IsNull(type.TypeParameters);
 
 			type = TryWalkGraphTypes("out<eventbean<?>>");
-			Assert.IsFalse(type.IsWildcard);
-			Assert.AreEqual("eventbean", type.TypeOrClassname);
-			Assert.AreEqual(1, type.TypeParameters.Count);
-			Assert.IsTrue(type.TypeParameters[0].IsWildcard);
-			Assert.IsNull(type.TypeParameters[0].TypeOrClassname);
-			Assert.IsNull(type.TypeParameters[0].TypeParameters);
+			ClassicAssert.IsFalse(type.IsWildcard);
+			ClassicAssert.AreEqual("eventbean", type.TypeOrClassname);
+			ClassicAssert.AreEqual(1, type.TypeParameters.Count);
+			ClassicAssert.IsTrue(type.TypeParameters[0].IsWildcard);
+			ClassicAssert.IsNull(type.TypeParameters[0].TypeOrClassname);
+			ClassicAssert.IsNull(type.TypeParameters[0].TypeParameters);
 
 			type = TryWalkGraphTypes("out<eventbean<someschema>>");
-			Assert.IsFalse(type.IsWildcard);
-			Assert.AreEqual("eventbean", type.TypeOrClassname);
-			Assert.AreEqual(1, type.TypeParameters.Count);
-			Assert.IsFalse(type.TypeParameters[0].IsWildcard);
-			Assert.AreEqual("someschema", type.TypeParameters[0].TypeOrClassname);
-			Assert.AreEqual(0, type.TypeParameters[0].TypeParameters.Count);
+			ClassicAssert.IsFalse(type.IsWildcard);
+			ClassicAssert.AreEqual("eventbean", type.TypeOrClassname);
+			ClassicAssert.AreEqual(1, type.TypeParameters.Count);
+			ClassicAssert.IsFalse(type.TypeParameters[0].IsWildcard);
+			ClassicAssert.AreEqual("someschema", type.TypeParameters[0].TypeOrClassname);
+			ClassicAssert.AreEqual(0, type.TypeParameters[0].TypeParameters.Count);
 
 			type = TryWalkGraphTypes("out<Map<String, Integer>>");
-			Assert.IsFalse(type.IsWildcard);
-			Assert.AreEqual("Map", type.TypeOrClassname);
-			Assert.AreEqual(2, type.TypeParameters.Count);
-			Assert.AreEqual("String", type.TypeParameters[0].TypeOrClassname);
-			Assert.AreEqual("Integer", type.TypeParameters[1].TypeOrClassname);
+			ClassicAssert.IsFalse(type.IsWildcard);
+			ClassicAssert.AreEqual("Map", type.TypeOrClassname);
+			ClassicAssert.AreEqual(2, type.TypeParameters.Count);
+			ClassicAssert.AreEqual("String", type.TypeParameters[0].TypeOrClassname);
+			ClassicAssert.AreEqual("Integer", type.TypeParameters[1].TypeOrClassname);
 		}
 
 		private GraphOperatorOutputItemType TryWalkGraphTypes(string outstream)
@@ -122,17 +123,17 @@ namespace com.espertech.esper.compiler.@internal.parse
 			var expression = "create schema MyName as com.company.SupportBean";
 			var walker = SupportParserHelper.ParseAndWalkEPL(container, expression);
 			var schema = walker.StatementSpec.CreateSchemaDesc;
-			Assert.AreEqual("MyName", schema.SchemaName);
+			ClassicAssert.AreEqual("MyName", schema.SchemaName);
 			EPAssertionUtil.AssertEqualsExactOrder("com.company.SupportBean".SplitCsv(), schema.Types.ToArray());
-			Assert.IsTrue(schema.Inherits.IsEmpty());
-			Assert.IsTrue(schema.Columns.IsEmpty());
-			Assert.AreEqual(AssignedType.NONE, schema.AssignedType);
+			ClassicAssert.IsTrue(schema.Inherits.IsEmpty());
+			ClassicAssert.IsTrue(schema.Columns.IsEmpty());
+			ClassicAssert.AreEqual(AssignedType.NONE, schema.AssignedType);
 
 			expression = "create schema MyName (col1 string, col2 int, col3 Type[]) inherits InheritedType";
 			walker = SupportParserHelper.ParseAndWalkEPL(container, expression);
 			schema = walker.StatementSpec.CreateSchemaDesc;
-			Assert.AreEqual("MyName", schema.SchemaName);
-			Assert.IsTrue(schema.Types.IsEmpty());
+			ClassicAssert.AreEqual("MyName", schema.SchemaName);
+			ClassicAssert.IsTrue(schema.Types.IsEmpty());
 			EPAssertionUtil.AssertEqualsExactOrder("InheritedType".SplitCsv(), schema.Inherits.ToArray());
 			AssertSchema(schema.Columns[0], "col1", "string", false);
 			AssertSchema(schema.Columns[1], "col2", "int", false);
@@ -141,11 +142,11 @@ namespace com.espertech.esper.compiler.@internal.parse
 			expression = "create variant schema MyName as MyNameTwo,MyNameThree";
 			walker = SupportParserHelper.ParseAndWalkEPL(container, expression);
 			schema = walker.StatementSpec.CreateSchemaDesc;
-			Assert.AreEqual("MyName", schema.SchemaName);
+			ClassicAssert.AreEqual("MyName", schema.SchemaName);
 			EPAssertionUtil.AssertEqualsExactOrder("MyNameTwo,MyNameThree".SplitCsv(), schema.Types.ToArray());
-			Assert.IsTrue(schema.Inherits.IsEmpty());
-			Assert.IsTrue(schema.Columns.IsEmpty());
-			Assert.AreEqual(AssignedType.VARIANT, schema.AssignedType);
+			ClassicAssert.IsTrue(schema.Inherits.IsEmpty());
+			ClassicAssert.IsTrue(schema.Columns.IsEmpty());
+			ClassicAssert.AreEqual(AssignedType.VARIANT, schema.AssignedType);
 		}
 
 		private void AssertSchema(
@@ -154,10 +155,10 @@ namespace com.espertech.esper.compiler.@internal.parse
 			string type,
 			bool isArray)
 		{
-			var clazz = ClassIdentifierWArray.ParseSODA(element.Type);
-			Assert.AreEqual(name, element.Name);
-			Assert.AreEqual(type, clazz.ClassIdentifier);
-			Assert.AreEqual(isArray, clazz.ArrayDimensions > 0);
+			var clazz = ClassDescriptor.ParseTypeText(element.Type);
+			ClassicAssert.AreEqual(name, element.Name);
+			ClassicAssert.AreEqual(type, clazz.ClassIdentifier);
+			ClassicAssert.AreEqual(isArray, clazz.ArrayDimensions > 0);
 		}
 
 		[Test]
@@ -167,49 +168,49 @@ namespace com.espertech.esper.compiler.@internal.parse
 
 			var walker = SupportParserHelper.ParseAndWalkEPL(container, expression);
 			var createIndex = walker.StatementSpec.CreateIndexDesc;
-			Assert.AreEqual("A_INDEX", createIndex.IndexName);
-			Assert.AreEqual("B_NAMEDWIN", createIndex.WindowName);
-			Assert.AreEqual(2, createIndex.Columns.Count);
-			Assert.AreEqual("c", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(createIndex.Columns[0].Expressions[0]));
-			Assert.AreEqual(CreateIndexType.HASH.GetName().ToLowerInvariant(), createIndex.Columns[0].IndexType);
-			Assert.AreEqual("d", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(createIndex.Columns[1].Expressions[0]));
-			Assert.AreEqual(CreateIndexType.BTREE.GetName().ToLowerInvariant(), createIndex.Columns[1].IndexType);
+			ClassicAssert.AreEqual("A_INDEX", createIndex.IndexName);
+			ClassicAssert.AreEqual("B_NAMEDWIN", createIndex.WindowName);
+			ClassicAssert.AreEqual(2, createIndex.Columns.Count);
+			ClassicAssert.AreEqual("c", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(createIndex.Columns[0].Expressions[0]));
+			ClassicAssert.AreEqual(CreateIndexType.HASH.GetName().ToLowerInvariant(), createIndex.Columns[0].IndexType);
+			ClassicAssert.AreEqual("d", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(createIndex.Columns[1].Expressions[0]));
+			ClassicAssert.AreEqual(CreateIndexType.BTREE.GetName().ToLowerInvariant(), createIndex.Columns[1].IndexType);
 		}
 
 		[Test]
 		public void TestWalkViewExpressions()
 		{
 			var className = typeof(SupportBean).FullName;
-			var expression = "select * from " + className + ".win:x(intPrimitive, a.nested)";
+			var expression = "select * from " + className + ".win:x(IntPrimitive, a.Nested)";
 
 			var walker = SupportParserHelper.ParseAndWalkEPL(container, expression);
 			var viewSpecs = walker.StatementSpec.StreamSpecs[0].ViewSpecs;
 			var parameters = viewSpecs[0].ObjectParameters;
-			Assert.AreEqual("intPrimitive", ((ExprIdentNode) parameters[0]).FullUnresolvedName);
-			Assert.AreEqual("a.nested", ((ExprIdentNode) parameters[1]).FullUnresolvedName);
+			ClassicAssert.AreEqual("IntPrimitive", ((ExprIdentNode) parameters[0]).FullUnresolvedName);
+			ClassicAssert.AreEqual("a.Nested", ((ExprIdentNode) parameters[1]).FullUnresolvedName);
 		}
 
 		[Test]
 		public void TestWalkJoinMethodStatement()
 		{
 			var className = typeof(SupportBean).FullName;
-			var expression = "select distinct * from " + className + " unidirectional, method:com.MyClass.myMethod(string, 2*intPrimitive) as s0";
+			var expression = "select distinct * from " + className + " unidirectional, method:com.MyClass.myMethod(string, 2*IntPrimitive) as s0";
 
 			var walker = SupportParserHelper.ParseAndWalkEPL(container, expression);
 			var statementSpec = walker.StatementSpec;
-			Assert.IsTrue(statementSpec.SelectClauseSpec.IsDistinct);
-			Assert.AreEqual(2, statementSpec.StreamSpecs.Count);
-			Assert.IsTrue(statementSpec.StreamSpecs[0].Options.IsUnidirectional);
-			Assert.IsFalse(statementSpec.StreamSpecs[0].Options.IsRetainUnion);
-			Assert.IsFalse(statementSpec.StreamSpecs[0].Options.IsRetainIntersection);
+			ClassicAssert.IsTrue(statementSpec.SelectClauseSpec.IsDistinct);
+			ClassicAssert.AreEqual(2, statementSpec.StreamSpecs.Count);
+			ClassicAssert.IsTrue(statementSpec.StreamSpecs[0].Options.IsUnidirectional);
+			ClassicAssert.IsFalse(statementSpec.StreamSpecs[0].Options.IsRetainUnion);
+			ClassicAssert.IsFalse(statementSpec.StreamSpecs[0].Options.IsRetainIntersection);
 
 			var methodSpec = (MethodStreamSpec) statementSpec.StreamSpecs[1];
-			Assert.AreEqual("method", methodSpec.Ident);
-			Assert.AreEqual("com.MyClass", methodSpec.ClassName);
-			Assert.AreEqual("myMethod", methodSpec.MethodName);
-			Assert.AreEqual(2, methodSpec.Expressions.Count);
-			Assert.IsTrue(methodSpec.Expressions[0] is ExprIdentNode);
-			Assert.IsTrue(methodSpec.Expressions[1] is ExprMathNode);
+			ClassicAssert.AreEqual("method", methodSpec.Ident);
+			ClassicAssert.AreEqual("com.MyClass", methodSpec.ClassName);
+			ClassicAssert.AreEqual("myMethod", methodSpec.MethodName);
+			ClassicAssert.AreEqual(2, methodSpec.Expressions.Count);
+			ClassicAssert.IsTrue(methodSpec.Expressions[0] is ExprIdentNode);
+			ClassicAssert.IsTrue(methodSpec.Expressions[1] is ExprMathNode);
 		}
 
 		[Test]
@@ -220,17 +221,17 @@ namespace com.espertech.esper.compiler.@internal.parse
 
 			var walker = SupportParserHelper.ParseAndWalkEPL(container, expression);
 			var statementSpec = walker.StatementSpec;
-			Assert.AreEqual(1, statementSpec.StreamSpecs.Count);
-			Assert.IsTrue(statementSpec.StreamSpecs[0].Options.IsRetainUnion);
-			Assert.IsFalse(statementSpec.StreamSpecs[0].Options.IsRetainIntersection);
+			ClassicAssert.AreEqual(1, statementSpec.StreamSpecs.Count);
+			ClassicAssert.IsTrue(statementSpec.StreamSpecs[0].Options.IsRetainUnion);
+			ClassicAssert.IsFalse(statementSpec.StreamSpecs[0].Options.IsRetainIntersection);
 
 			expression = "select * from " + className + " retain-intersection";
 
 			walker = SupportParserHelper.ParseAndWalkEPL(container, expression);
 			statementSpec = walker.StatementSpec;
-			Assert.AreEqual(1, statementSpec.StreamSpecs.Count);
-			Assert.IsFalse(statementSpec.StreamSpecs[0].Options.IsRetainUnion);
-			Assert.IsTrue(statementSpec.StreamSpecs[0].Options.IsRetainIntersection);
+			ClassicAssert.AreEqual(1, statementSpec.StreamSpecs.Count);
+			ClassicAssert.IsFalse(statementSpec.StreamSpecs[0].Options.IsRetainUnion);
+			ClassicAssert.IsTrue(statementSpec.StreamSpecs[0].Options.IsRetainIntersection);
 		}
 
 		[Test]
@@ -241,10 +242,10 @@ namespace com.espertech.esper.compiler.@internal.parse
 			var raw = walker.StatementSpec;
 
 			var createVarDesc = raw.CreateVariableDesc;
-			Assert.AreEqual("sometype", createVarDesc.VariableType.ClassIdentifier);
-			Assert.AreEqual("var1", createVarDesc.VariableName);
-			Assert.IsTrue(createVarDesc.Assignment is ExprConstantNode);
-			Assert.IsTrue(createVarDesc.IsConstant);
+			ClassicAssert.AreEqual("sometype", createVarDesc.VariableType.ClassIdentifier);
+			ClassicAssert.AreEqual("var1", createVarDesc.VariableName);
+			ClassicAssert.IsTrue(createVarDesc.Assignment is ExprConstantNode);
+			ClassicAssert.IsTrue(createVarDesc.IsConstant);
 		}
 
 		[Test]
@@ -255,19 +256,19 @@ namespace com.espertech.esper.compiler.@internal.parse
 			var raw = walker.StatementSpec;
 
 			var streamSpec = (FilterStreamSpecRaw) raw.StreamSpecs[0];
-			Assert.AreEqual("com.MyClass", streamSpec.RawFilterSpec.EventTypeName);
-			Assert.AreEqual(0, streamSpec.RawFilterSpec.FilterExpressions.Count);
-			Assert.AreEqual("myevent", streamSpec.OptionalStreamName);
+			ClassicAssert.AreEqual("com.MyClass", streamSpec.RawFilterSpec.EventTypeName);
+			ClassicAssert.AreEqual(0, streamSpec.RawFilterSpec.FilterExpressions.Count);
+			ClassicAssert.AreEqual("myevent", streamSpec.OptionalStreamName);
 
 			var setDesc = (OnTriggerWindowUpdateDesc) raw.OnTriggerDesc;
-			Assert.IsTrue(setDesc.OnTriggerType == OnTriggerType.ON_UPDATE);
-			Assert.AreEqual(2, setDesc.Assignments.Count);
+			ClassicAssert.IsTrue(setDesc.OnTriggerType == OnTriggerType.ON_UPDATE);
+			ClassicAssert.AreEqual(2, setDesc.Assignments.Count);
 
 			var assign = setDesc.Assignments[0];
-			Assert.AreEqual("prop1", ((ExprIdentNode) (assign.Expression.ChildNodes[0])).FullUnresolvedName);
-			Assert.IsTrue(assign.Expression.ChildNodes[1] is ExprConstantNode);
+			ClassicAssert.AreEqual("prop1", ((ExprIdentNode) (assign.Expression.ChildNodes[0])).FullUnresolvedName);
+			ClassicAssert.IsTrue(assign.Expression.ChildNodes[1] is ExprConstantNode);
 
-			Assert.AreEqual("a=b", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(raw.WhereClause));
+			ClassicAssert.AreEqual("a=b", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(raw.WhereClause));
 		}
 
 		[Test]
@@ -278,56 +279,56 @@ namespace com.espertech.esper.compiler.@internal.parse
 			var raw = walker.StatementSpec;
 
 			var streamSpec = (FilterStreamSpecRaw) raw.StreamSpecs[0];
-			Assert.AreEqual("com.MyClass", streamSpec.RawFilterSpec.EventTypeName);
-			Assert.AreEqual(1, streamSpec.RawFilterSpec.FilterExpressions.Count);
-			Assert.AreEqual("myevent", streamSpec.OptionalStreamName);
+			ClassicAssert.AreEqual("com.MyClass", streamSpec.RawFilterSpec.EventTypeName);
+			ClassicAssert.AreEqual(1, streamSpec.RawFilterSpec.FilterExpressions.Count);
+			ClassicAssert.AreEqual("myevent", streamSpec.OptionalStreamName);
 
 			var windowDesc = (OnTriggerWindowDesc) raw.OnTriggerDesc;
-			Assert.AreEqual("MyNamedWindow", windowDesc.WindowName);
-			Assert.AreEqual("mywin", windowDesc.OptionalAsName);
-			Assert.AreEqual(OnTriggerType.ON_SELECT, windowDesc.OnTriggerType);
+			ClassicAssert.AreEqual("MyNamedWindow", windowDesc.WindowName);
+			ClassicAssert.AreEqual("mywin", windowDesc.OptionalAsName);
+			ClassicAssert.AreEqual(OnTriggerType.ON_SELECT, windowDesc.OnTriggerType);
 
-			Assert.IsNull(raw.InsertIntoDesc);
-			Assert.IsTrue(raw.SelectClauseSpec.IsUsingWildcard);
-			Assert.AreEqual(3, raw.SelectClauseSpec.SelectExprList.Count);
-			Assert.IsTrue(raw.SelectClauseSpec.SelectExprList[0] is SelectClauseElementWildcard);
-			Assert.AreEqual("mywin", ((SelectClauseStreamRawSpec) raw.SelectClauseSpec.SelectExprList[1]).StreamName);
-			Assert.AreEqual("mywin", ((SelectClauseStreamRawSpec) raw.SelectClauseSpec.SelectExprList[1]).StreamName);
-			Assert.AreEqual("abc", ((SelectClauseStreamRawSpec) raw.SelectClauseSpec.SelectExprList[1]).OptionalAsName);
-			Assert.AreEqual("myevent", (((SelectClauseStreamRawSpec) raw.SelectClauseSpec.SelectExprList[2]).StreamName));
-			Assert.IsNull(((SelectClauseStreamRawSpec) raw.SelectClauseSpec.SelectExprList[2]).OptionalAsName);
-			Assert.IsTrue(raw.WhereClause is ExprEqualsNode);
+			ClassicAssert.IsNull(raw.InsertIntoDesc);
+			ClassicAssert.IsTrue(raw.SelectClauseSpec.IsUsingWildcard);
+			ClassicAssert.AreEqual(3, raw.SelectClauseSpec.SelectExprList.Count);
+			ClassicAssert.IsTrue(raw.SelectClauseSpec.SelectExprList[0] is SelectClauseElementWildcard);
+			ClassicAssert.AreEqual("mywin", ((SelectClauseStreamRawSpec) raw.SelectClauseSpec.SelectExprList[1]).StreamName);
+			ClassicAssert.AreEqual("mywin", ((SelectClauseStreamRawSpec) raw.SelectClauseSpec.SelectExprList[1]).StreamName);
+			ClassicAssert.AreEqual("abc", ((SelectClauseStreamRawSpec) raw.SelectClauseSpec.SelectExprList[1]).OptionalAsName);
+			ClassicAssert.AreEqual("myevent", (((SelectClauseStreamRawSpec) raw.SelectClauseSpec.SelectExprList[2]).StreamName));
+			ClassicAssert.IsNull(((SelectClauseStreamRawSpec) raw.SelectClauseSpec.SelectExprList[2]).OptionalAsName);
+			ClassicAssert.IsTrue(raw.WhereClause is ExprEqualsNode);
 		}
 
 		[Test]
 		public void TestWalkOnSelectInsert()
 		{
 			var expression = "on pattern [com.MyClass] as pat insert into MyStream(a, b) select c, d from MyNamedWindow as mywin " +
-			                 " where a=b group by symbol having c=d order by e";
+" where a=b group by Symbol having c=d Order by e";
 			var walker = SupportParserHelper.ParseAndWalkEPL(container, expression);
 			var raw = walker.StatementSpec;
 
 			var streamSpec = (PatternStreamSpecRaw) raw.StreamSpecs[0];
-			Assert.IsTrue(streamSpec.EvalForgeNode is EvalFilterForgeNode);
-			Assert.AreEqual("pat", streamSpec.OptionalStreamName);
+			ClassicAssert.IsTrue(streamSpec.EvalForgeNode is EvalFilterForgeNode);
+			ClassicAssert.AreEqual("pat", streamSpec.OptionalStreamName);
 
 			var windowDesc = (OnTriggerWindowDesc) raw.OnTriggerDesc;
-			Assert.AreEqual("MyNamedWindow", windowDesc.WindowName);
-			Assert.AreEqual("mywin", windowDesc.OptionalAsName);
-			Assert.AreEqual(OnTriggerType.ON_SELECT, windowDesc.OnTriggerType);
-			Assert.IsTrue(raw.WhereClause is ExprEqualsNode);
+			ClassicAssert.AreEqual("MyNamedWindow", windowDesc.WindowName);
+			ClassicAssert.AreEqual("mywin", windowDesc.OptionalAsName);
+			ClassicAssert.AreEqual(OnTriggerType.ON_SELECT, windowDesc.OnTriggerType);
+			ClassicAssert.IsTrue(raw.WhereClause is ExprEqualsNode);
 
-			Assert.AreEqual("MyStream", raw.InsertIntoDesc.EventTypeName);
-			Assert.AreEqual(2, raw.InsertIntoDesc.ColumnNames.Count);
-			Assert.AreEqual("a", raw.InsertIntoDesc.ColumnNames[0]);
-			Assert.AreEqual("b", raw.InsertIntoDesc.ColumnNames[1]);
+			ClassicAssert.AreEqual("MyStream", raw.InsertIntoDesc.EventTypeName);
+			ClassicAssert.AreEqual(2, raw.InsertIntoDesc.ColumnNames.Count);
+			ClassicAssert.AreEqual("a", raw.InsertIntoDesc.ColumnNames[0]);
+			ClassicAssert.AreEqual("b", raw.InsertIntoDesc.ColumnNames[1]);
 
-			Assert.IsFalse(raw.SelectClauseSpec.IsUsingWildcard);
-			Assert.AreEqual(2, raw.SelectClauseSpec.SelectExprList.Count);
+			ClassicAssert.IsFalse(raw.SelectClauseSpec.IsUsingWildcard);
+			ClassicAssert.AreEqual(2, raw.SelectClauseSpec.SelectExprList.Count);
 
-			Assert.AreEqual(1, raw.GroupByExpressions.Count);
-			Assert.IsTrue(raw.HavingClause is ExprEqualsNode);
-			Assert.AreEqual(1, raw.OrderByList.Count);
+			ClassicAssert.AreEqual(1, raw.GroupByExpressions.Count);
+			ClassicAssert.IsTrue(raw.HavingClause is ExprEqualsNode);
+			ClassicAssert.AreEqual(1, raw.OrderByList.Count);
 		}
 
 		[Test]
@@ -341,32 +342,32 @@ namespace com.espertech.esper.compiler.@internal.parse
 			var raw = walker.StatementSpec;
 
 			var streamSpec = (FilterStreamSpecRaw) raw.StreamSpecs[0];
-			Assert.AreEqual("pat", streamSpec.OptionalStreamName);
+			ClassicAssert.AreEqual("pat", streamSpec.OptionalStreamName);
 
 			var triggerDesc = (OnTriggerSplitStreamDesc) raw.OnTriggerDesc;
-			Assert.AreEqual(OnTriggerType.ON_SPLITSTREAM, triggerDesc.OnTriggerType);
-			Assert.AreEqual(2, triggerDesc.SplitStreams.Count);
+			ClassicAssert.AreEqual(OnTriggerType.ON_SPLITSTREAM, triggerDesc.OnTriggerType);
+			ClassicAssert.AreEqual(2, triggerDesc.SplitStreams.Count);
 
-			Assert.AreEqual("MyStream", raw.InsertIntoDesc.EventTypeName);
-			Assert.IsTrue(raw.SelectClauseSpec.IsUsingWildcard);
-			Assert.AreEqual(1, raw.SelectClauseSpec.SelectExprList.Count);
-			Assert.IsNotNull((ExprRelationalOpNode) raw.WhereClause);
+			ClassicAssert.AreEqual("MyStream", raw.InsertIntoDesc.EventTypeName);
+			ClassicAssert.IsTrue(raw.SelectClauseSpec.IsUsingWildcard);
+			ClassicAssert.AreEqual(1, raw.SelectClauseSpec.SelectExprList.Count);
+			ClassicAssert.IsNotNull((ExprRelationalOpNode) raw.WhereClause);
 
 			var splitStream = triggerDesc.SplitStreams[0];
-			Assert.AreEqual("BStream", splitStream.InsertInto.EventTypeName);
-			Assert.AreEqual(2, splitStream.InsertInto.ColumnNames.Count);
-			Assert.AreEqual("a", splitStream.InsertInto.ColumnNames[0]);
-			Assert.AreEqual("b", splitStream.InsertInto.ColumnNames[1]);
-			Assert.IsTrue(splitStream.SelectClause.IsUsingWildcard);
-			Assert.AreEqual(1, splitStream.SelectClause.SelectExprList.Count);
-			Assert.IsNotNull((ExprEqualsNode) splitStream.WhereClause);
+			ClassicAssert.AreEqual("BStream", splitStream.InsertInto.EventTypeName);
+			ClassicAssert.AreEqual(2, splitStream.InsertInto.ColumnNames.Count);
+			ClassicAssert.AreEqual("a", splitStream.InsertInto.ColumnNames[0]);
+			ClassicAssert.AreEqual("b", splitStream.InsertInto.ColumnNames[1]);
+			ClassicAssert.IsTrue(splitStream.SelectClause.IsUsingWildcard);
+			ClassicAssert.AreEqual(1, splitStream.SelectClause.SelectExprList.Count);
+			ClassicAssert.IsNotNull((ExprEqualsNode) splitStream.WhereClause);
 
 			splitStream = triggerDesc.SplitStreams[1];
-			Assert.AreEqual("CStream", splitStream.InsertInto.EventTypeName);
-			Assert.AreEqual(0, splitStream.InsertInto.ColumnNames.Count);
-			Assert.IsFalse(splitStream.SelectClause.IsUsingWildcard);
-			Assert.AreEqual(2, splitStream.SelectClause.SelectExprList.Count);
-			Assert.IsNull(splitStream.WhereClause);
+			ClassicAssert.AreEqual("CStream", splitStream.InsertInto.EventTypeName);
+			ClassicAssert.AreEqual(0, splitStream.InsertInto.ColumnNames.Count);
+			ClassicAssert.IsFalse(splitStream.SelectClause.IsUsingWildcard);
+			ClassicAssert.AreEqual(2, splitStream.SelectClause.SelectExprList.Count);
+			ClassicAssert.IsNull(splitStream.WhereClause);
 		}
 
 		[Test]
@@ -378,16 +379,16 @@ namespace com.espertech.esper.compiler.@internal.parse
 			var raw = walker.StatementSpec;
 
 			var streamSpec = (FilterStreamSpecRaw) raw.StreamSpecs[0];
-			Assert.AreEqual("com.MyClass", streamSpec.RawFilterSpec.EventTypeName);
-			Assert.AreEqual(1, streamSpec.RawFilterSpec.FilterExpressions.Count);
-			Assert.AreEqual("myevent", streamSpec.OptionalStreamName);
+			ClassicAssert.AreEqual("com.MyClass", streamSpec.RawFilterSpec.EventTypeName);
+			ClassicAssert.AreEqual(1, streamSpec.RawFilterSpec.FilterExpressions.Count);
+			ClassicAssert.AreEqual("myevent", streamSpec.OptionalStreamName);
 
 			var windowDesc = (OnTriggerWindowDesc) raw.OnTriggerDesc;
-			Assert.AreEqual("MyNamedWindow", windowDesc.WindowName);
-			Assert.AreEqual("mywin", windowDesc.OptionalAsName);
-			Assert.AreEqual(OnTriggerType.ON_DELETE, windowDesc.OnTriggerType);
+			ClassicAssert.AreEqual("MyNamedWindow", windowDesc.WindowName);
+			ClassicAssert.AreEqual("mywin", windowDesc.OptionalAsName);
+			ClassicAssert.AreEqual(OnTriggerType.ON_DELETE, windowDesc.OnTriggerType);
 
-			Assert.IsTrue(raw.WhereClause is ExprEqualsNode);
+			ClassicAssert.IsTrue(raw.WhereClause is ExprEqualsNode);
 
 			// try a pattern
 			expression = "on pattern [every MyClass] as myevent delete from MyNamedWindow";
@@ -395,37 +396,37 @@ namespace com.espertech.esper.compiler.@internal.parse
 			raw = walker.StatementSpec;
 
 			var patternSpec = (PatternStreamSpecRaw) raw.StreamSpecs[0];
-			Assert.IsTrue(patternSpec.EvalForgeNode is EvalEveryForgeNode);
+			ClassicAssert.IsTrue(patternSpec.EvalForgeNode is EvalEveryForgeNode);
 		}
 
 		[Test]
 		public void TestWalkCreateWindow()
 		{
-			var expression = "create window MyWindow#groupwin(symbol)#length(20) as select *, aprop, bprop as someval from com.MyClass insert where a=b";
+			var expression = "create window MyWindow#groupwin(Symbol)#length(20) as select *, aprop, bprop as someval from com.MyClass insert where a=b";
 			var walker = SupportParserHelper.ParseAndWalkEPL(container, expression);
 			var raw = walker.StatementSpec;
 
 			// window name
-			Assert.AreEqual("MyWindow", raw.CreateWindowDesc.WindowName);
-			Assert.IsTrue(raw.CreateWindowDesc.IsInsert);
-			Assert.IsTrue(raw.CreateWindowDesc.InsertFilter is ExprEqualsNode);
+			ClassicAssert.AreEqual("MyWindow", raw.CreateWindowDesc.WindowName);
+			ClassicAssert.IsTrue(raw.CreateWindowDesc.IsInsert);
+			ClassicAssert.IsTrue(raw.CreateWindowDesc.InsertFilter is ExprEqualsNode);
 
 			// select clause
-			Assert.IsTrue(raw.SelectClauseSpec.IsUsingWildcard);
+			ClassicAssert.IsTrue(raw.SelectClauseSpec.IsUsingWildcard);
 			var selectSpec = raw.SelectClauseSpec.SelectExprList;
-			Assert.AreEqual(3, selectSpec.Count);
-			Assert.IsTrue(raw.SelectClauseSpec.SelectExprList[0] is SelectClauseElementWildcard);
+			ClassicAssert.AreEqual(3, selectSpec.Count);
+			ClassicAssert.IsTrue(raw.SelectClauseSpec.SelectExprList[0] is SelectClauseElementWildcard);
 			var rawSpec = (SelectClauseExprRawSpec) selectSpec[1];
-			Assert.AreEqual("aprop", ((ExprIdentNode) rawSpec.SelectExpression).UnresolvedPropertyName);
+			ClassicAssert.AreEqual("aprop", ((ExprIdentNode) rawSpec.SelectExpression).UnresolvedPropertyName);
 			rawSpec = (SelectClauseExprRawSpec) selectSpec[2];
-			Assert.AreEqual("bprop", ((ExprIdentNode) rawSpec.SelectExpression).UnresolvedPropertyName);
-			Assert.AreEqual("someval", rawSpec.OptionalAsName);
+			ClassicAssert.AreEqual("bprop", ((ExprIdentNode) rawSpec.SelectExpression).UnresolvedPropertyName);
+			ClassicAssert.AreEqual("someval", rawSpec.OptionalAsName);
 
 			// 2 views
-			Assert.AreEqual(2, raw.CreateWindowDesc.ViewSpecs.Count);
-			Assert.AreEqual("groupwin", raw.CreateWindowDesc.ViewSpecs[0].ObjectName);
-			Assert.AreEqual(null, raw.CreateWindowDesc.ViewSpecs[0].ObjectNamespace);
-			Assert.AreEqual("length", raw.CreateWindowDesc.ViewSpecs[1].ObjectName);
+			ClassicAssert.AreEqual(2, raw.CreateWindowDesc.ViewSpecs.Count);
+			ClassicAssert.AreEqual("groupwin", raw.CreateWindowDesc.ViewSpecs[0].ObjectName);
+			ClassicAssert.AreEqual(null, raw.CreateWindowDesc.ViewSpecs[0].ObjectNamespace);
+			ClassicAssert.AreEqual("length", raw.CreateWindowDesc.ViewSpecs[1].ObjectName);
 		}
 
 		[Test]
@@ -444,14 +445,14 @@ namespace com.espertech.esper.compiler.@internal.parse
 				var walker = SupportParserHelper.ParseAndWalkEPL(container, expression);
 				var raw = walker.StatementSpec;
 
-				Assert.AreEqual(1, raw.MatchRecognizeSpec.Measures.Count);
-				Assert.AreEqual(1, raw.MatchRecognizeSpec.Defines.Count);
-				Assert.AreEqual(1, raw.MatchRecognizeSpec.PartitionByExpressions.Count);
+				ClassicAssert.AreEqual(1, raw.MatchRecognizeSpec.Measures.Count);
+				ClassicAssert.AreEqual(1, raw.MatchRecognizeSpec.Defines.Count);
+				ClassicAssert.AreEqual(1, raw.MatchRecognizeSpec.PartitionByExpressions.Count);
 
 				var writer = new StringWriter();
 				raw.MatchRecognizeSpec.Pattern.ToEPL(writer, RowRecogExprNodePrecedenceEnum.MINIMUM);
 				var received = writer.ToString();
-				Assert.AreEqual(patternTests[i], received);
+				ClassicAssert.AreEqual(patternTests[i], received);
 			}
 		}
 
@@ -463,7 +464,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 			var walker = SupportParserHelper.ParseAndWalkEPL(container, expression);
 			walker.End();
 			var raw = walker.StatementSpec;
-			Assert.AreEqual(2, raw.SubstitutionParameters.Count);
+			ClassicAssert.AreEqual(2, raw.SubstitutionParameters.Count);
 
 			var streamSpec = (FilterStreamSpecRaw) raw.StreamSpecs[0];
 			var equalsFilter = (ExprEqualsNode) streamSpec.RawFilterSpec.FilterExpressions[0];
@@ -477,47 +478,47 @@ namespace com.espertech.esper.compiler.@internal.parse
 			var raw = walker.StatementSpec;
 			var a = (PatternStreamSpecRaw) raw.StreamSpecs[0];
 			var matchNode = (EvalMatchUntilForgeNode) a.EvalForgeNode;
-			Assert.AreEqual(2, matchNode.ChildNodes.Count);
-			Assert.IsTrue(matchNode.ChildNodes[0] is EvalFilterForgeNode);
-			Assert.IsTrue(matchNode.ChildNodes[1] is EvalOrForgeNode);
+			ClassicAssert.AreEqual(2, matchNode.ChildNodes.Count);
+			ClassicAssert.IsTrue(matchNode.ChildNodes[0] is EvalFilterForgeNode);
+			ClassicAssert.IsTrue(matchNode.ChildNodes[1] is EvalOrForgeNode);
 
 			var spec = GetMatchUntilSpec("A until (B or C)");
-			Assert.IsNull(spec.LowerBounds);
-			Assert.IsNull(spec.UpperBounds);
+			ClassicAssert.IsNull(spec.LowerBounds);
+			ClassicAssert.IsNull(spec.UpperBounds);
 
 			spec = GetMatchUntilSpec("[1:10] A until (B or C)");
-			Assert.AreEqual(1, spec.LowerBounds.Forge.ExprEvaluator.Evaluate(null, true, null));
-			Assert.AreEqual(10, spec.UpperBounds.Forge.ExprEvaluator.Evaluate(null, true, null));
+			ClassicAssert.AreEqual(1, spec.LowerBounds.Forge.ExprEvaluator.Evaluate(null, true, null));
+			ClassicAssert.AreEqual(10, spec.UpperBounds.Forge.ExprEvaluator.Evaluate(null, true, null));
 
 			spec = GetMatchUntilSpec("[1 : 10] A until (B or C)");
-			Assert.AreEqual(1, spec.LowerBounds.Forge.ExprEvaluator.Evaluate(null, true, null));
-			Assert.AreEqual(10, spec.UpperBounds.Forge.ExprEvaluator.Evaluate(null, true, null));
+			ClassicAssert.AreEqual(1, spec.LowerBounds.Forge.ExprEvaluator.Evaluate(null, true, null));
+			ClassicAssert.AreEqual(10, spec.UpperBounds.Forge.ExprEvaluator.Evaluate(null, true, null));
 
 			spec = GetMatchUntilSpec("[1:10] A until (B or C)");
-			Assert.AreEqual(1, spec.LowerBounds.Forge.ExprEvaluator.Evaluate(null, true, null));
-			Assert.AreEqual(10, spec.UpperBounds.Forge.ExprEvaluator.Evaluate(null, true, null));
+			ClassicAssert.AreEqual(1, spec.LowerBounds.Forge.ExprEvaluator.Evaluate(null, true, null));
+			ClassicAssert.AreEqual(10, spec.UpperBounds.Forge.ExprEvaluator.Evaluate(null, true, null));
 
 			spec = GetMatchUntilSpec("[1:] A until (B or C)");
-			Assert.AreEqual(1, spec.LowerBounds.Forge.ExprEvaluator.Evaluate(null, true, null));
-			Assert.AreEqual(null, spec.UpperBounds);
+			ClassicAssert.AreEqual(1, spec.LowerBounds.Forge.ExprEvaluator.Evaluate(null, true, null));
+			ClassicAssert.AreEqual(null, spec.UpperBounds);
 
 			spec = GetMatchUntilSpec("[1 :] A until (B or C)");
-			Assert.AreEqual(1, spec.LowerBounds.Forge.ExprEvaluator.Evaluate(null, true, null));
-			Assert.AreEqual(null, spec.UpperBounds);
-			Assert.AreEqual(null, spec.SingleBound);
+			ClassicAssert.AreEqual(1, spec.LowerBounds.Forge.ExprEvaluator.Evaluate(null, true, null));
+			ClassicAssert.AreEqual(null, spec.UpperBounds);
+			ClassicAssert.AreEqual(null, spec.SingleBound);
 
 			spec = GetMatchUntilSpec("[:2] A until (B or C)");
-			Assert.AreEqual(null, spec.LowerBounds);
-			Assert.AreEqual(null, spec.SingleBound);
-			Assert.AreEqual(2, spec.UpperBounds.Forge.ExprEvaluator.Evaluate(null, true, null));
+			ClassicAssert.AreEqual(null, spec.LowerBounds);
+			ClassicAssert.AreEqual(null, spec.SingleBound);
+			ClassicAssert.AreEqual(2, spec.UpperBounds.Forge.ExprEvaluator.Evaluate(null, true, null));
 
 			spec = GetMatchUntilSpec("[: 2] A until (B or C)");
-			Assert.AreEqual(null, spec.LowerBounds);
-			Assert.AreEqual(null, spec.SingleBound);
-			Assert.AreEqual(2, spec.UpperBounds.Forge.ExprEvaluator.Evaluate(null, true, null));
+			ClassicAssert.AreEqual(null, spec.LowerBounds);
+			ClassicAssert.AreEqual(null, spec.SingleBound);
+			ClassicAssert.AreEqual(2, spec.UpperBounds.Forge.ExprEvaluator.Evaluate(null, true, null));
 
 			spec = GetMatchUntilSpec("[2] A until (B or C)");
-			Assert.AreEqual(2, spec.SingleBound.Forge.ExprEvaluator.Evaluate(null, true, null));
+			ClassicAssert.AreEqual(2, spec.SingleBound.Forge.ExprEvaluator.Evaluate(null, true, null));
 		}
 
 		private EvalMatchUntilForgeNode GetMatchUntilSpec(string text)
@@ -535,29 +536,29 @@ namespace com.espertech.esper.compiler.@internal.parse
 
 			var walker = SupportParserHelper.ParseAndWalkEPL(container, expression);
 
-			Assert.AreEqual(2, walker.StatementSpec.StreamSpecs.Count);
+			ClassicAssert.AreEqual(2, walker.StatementSpec.StreamSpecs.Count);
 
 			var streamSpec = (FilterStreamSpecRaw) walker.StatementSpec.StreamSpecs[0];
-			Assert.AreEqual(2, streamSpec.ViewSpecs.Length);
-			Assert.AreEqual(typeof(SupportBean).FullName, streamSpec.RawFilterSpec.EventTypeName);
-			Assert.AreEqual("length", streamSpec.ViewSpecs[0].ObjectName);
-			Assert.AreEqual("lastevent", streamSpec.ViewSpecs[1].ObjectName);
-			Assert.AreEqual("win1", streamSpec.OptionalStreamName);
+			ClassicAssert.AreEqual(2, streamSpec.ViewSpecs.Length);
+			ClassicAssert.AreEqual(typeof(SupportBean).FullName, streamSpec.RawFilterSpec.EventTypeName);
+			ClassicAssert.AreEqual("length", streamSpec.ViewSpecs[0].ObjectName);
+			ClassicAssert.AreEqual("lastevent", streamSpec.ViewSpecs[1].ObjectName);
+			ClassicAssert.AreEqual("win1", streamSpec.OptionalStreamName);
 
 			streamSpec = (FilterStreamSpecRaw) walker.StatementSpec.StreamSpecs[1];
-			Assert.AreEqual("win2", streamSpec.OptionalStreamName);
+			ClassicAssert.AreEqual("win2", streamSpec.OptionalStreamName);
 
 			// Join expression tree validation
-			Assert.IsTrue(walker.StatementSpec.WhereClause is ExprEqualsNode);
+			ClassicAssert.IsTrue(walker.StatementSpec.WhereClause is ExprEqualsNode);
 			var equalsNode = (walker.StatementSpec.WhereClause);
-			Assert.AreEqual(2, equalsNode.ChildNodes.Length);
+			ClassicAssert.AreEqual(2, equalsNode.ChildNodes.Length);
 
 			var identNode = (ExprIdentNode) equalsNode.ChildNodes[0];
-			Assert.AreEqual("win1", identNode.StreamOrPropertyName);
-			Assert.AreEqual("f1", identNode.UnresolvedPropertyName);
+			ClassicAssert.AreEqual("win1", identNode.StreamOrPropertyName);
+			ClassicAssert.AreEqual("f1", identNode.UnresolvedPropertyName);
 			identNode = (ExprIdentNode) equalsNode.ChildNodes[1];
-			Assert.AreEqual("win2", identNode.StreamOrPropertyName);
-			Assert.AreEqual("f2", identNode.UnresolvedPropertyName);
+			ClassicAssert.AreEqual("win2", identNode.StreamOrPropertyName);
+			ClassicAssert.AreEqual("f2", identNode.UnresolvedPropertyName);
 		}
 
 		[Test]
@@ -575,90 +576,90 @@ namespace com.espertech.esper.compiler.@internal.parse
 			var walker = SupportParserHelper.ParseAndWalkEPL(container, expression);
 
 			// ProjectedStream spec validation
-			Assert.AreEqual(3, walker.StatementSpec.StreamSpecs.Count);
-			Assert.AreEqual("win1", walker.StatementSpec.StreamSpecs[0].OptionalStreamName);
-			Assert.AreEqual("win2", walker.StatementSpec.StreamSpecs[1].OptionalStreamName);
-			Assert.AreEqual("win3", walker.StatementSpec.StreamSpecs[2].OptionalStreamName);
+			ClassicAssert.AreEqual(3, walker.StatementSpec.StreamSpecs.Count);
+			ClassicAssert.AreEqual("win1", walker.StatementSpec.StreamSpecs[0].OptionalStreamName);
+			ClassicAssert.AreEqual("win2", walker.StatementSpec.StreamSpecs[1].OptionalStreamName);
+			ClassicAssert.AreEqual("win3", walker.StatementSpec.StreamSpecs[2].OptionalStreamName);
 
 			var streamSpec = (FilterStreamSpecRaw) walker.StatementSpec.StreamSpecs[2];
-			Assert.AreEqual(2, streamSpec.ViewSpecs.Length);
-			Assert.AreEqual(typeof(SupportBean).FullName, streamSpec.RawFilterSpec.EventTypeName);
-			Assert.AreEqual("length", streamSpec.ViewSpecs[0].ObjectName);
-			Assert.AreEqual("lastevent", streamSpec.ViewSpecs[1].ObjectName);
+			ClassicAssert.AreEqual(2, streamSpec.ViewSpecs.Length);
+			ClassicAssert.AreEqual(typeof(SupportBean).FullName, streamSpec.RawFilterSpec.EventTypeName);
+			ClassicAssert.AreEqual("length", streamSpec.ViewSpecs[0].ObjectName);
+			ClassicAssert.AreEqual("lastevent", streamSpec.ViewSpecs[1].ObjectName);
 
 			// Join expression tree validation
-			Assert.IsTrue(walker.StatementSpec.WhereClause is ExprAndNode);
-			Assert.AreEqual(2, walker.StatementSpec.WhereClause.ChildNodes.Length);
+			ClassicAssert.IsTrue(walker.StatementSpec.WhereClause is ExprAndNode);
+			ClassicAssert.AreEqual(2, walker.StatementSpec.WhereClause.ChildNodes.Length);
 			var equalsNode = (walker.StatementSpec.WhereClause.ChildNodes[0]);
-			Assert.AreEqual(2, equalsNode.ChildNodes.Length);
+			ClassicAssert.AreEqual(2, equalsNode.ChildNodes.Length);
 
 			var identNode = (ExprIdentNode) equalsNode.ChildNodes[0];
-			Assert.AreEqual("win1", identNode.StreamOrPropertyName);
-			Assert.AreEqual("f1", identNode.UnresolvedPropertyName);
+			ClassicAssert.AreEqual("win1", identNode.StreamOrPropertyName);
+			ClassicAssert.AreEqual("f1", identNode.UnresolvedPropertyName);
 			identNode = (ExprIdentNode) equalsNode.ChildNodes[1];
-			Assert.AreEqual("win2", identNode.StreamOrPropertyName);
-			Assert.AreEqual("f2", identNode.UnresolvedPropertyName);
+			ClassicAssert.AreEqual("win2", identNode.StreamOrPropertyName);
+			ClassicAssert.AreEqual("f2", identNode.UnresolvedPropertyName);
 
 			equalsNode = (walker.StatementSpec.WhereClause.ChildNodes[1]);
 			identNode = (ExprIdentNode) equalsNode.ChildNodes[0];
-			Assert.AreEqual("win3", identNode.StreamOrPropertyName);
-			Assert.AreEqual("f3", identNode.UnresolvedPropertyName);
+			ClassicAssert.AreEqual("win3", identNode.StreamOrPropertyName);
+			ClassicAssert.AreEqual("f3", identNode.UnresolvedPropertyName);
 			identNode = (ExprIdentNode) equalsNode.ChildNodes[1];
-			Assert.IsNull(identNode.StreamOrPropertyName);
-			Assert.AreEqual("f4", identNode.UnresolvedPropertyName);
+			ClassicAssert.IsNull(identNode.StreamOrPropertyName);
+			ClassicAssert.AreEqual("f4", identNode.UnresolvedPropertyName);
 
-			Assert.AreEqual(5, (int) walker.StatementSpec.RowLimitSpec.NumRows);
-			Assert.AreEqual(10, (int) walker.StatementSpec.RowLimitSpec.OptionalOffset);
+			ClassicAssert.AreEqual(5, (int) walker.StatementSpec.RowLimitSpec.NumRows);
+			ClassicAssert.AreEqual(10, (int) walker.StatementSpec.RowLimitSpec.OptionalOffset);
 		}
 
 		[Test]
 		public void TestWalkPerRowFunctions()
 		{
-			Assert.AreEqual(9, TryExpression("max(6, 9)"));
-			Assert.AreEqual(6.11, TryExpression("min(6.11, 6.12)"));
-			Assert.AreEqual(6.10, TryExpression("min(6.11, 6.12, 6.1)"));
-			Assert.AreEqual("ab", TryExpression("'a'||'b'"));
-			Assert.AreEqual(null, TryExpression("coalesce(null, null)"));
-			Assert.AreEqual(1, TryExpression("coalesce(null, 1)"));
-			Assert.AreEqual(1L, TryExpression("coalesce(null, 1l)"));
-			Assert.AreEqual("a", TryExpression("coalesce(null, 'a', 'b')"));
-			Assert.AreEqual(13.5d, TryExpression("coalesce(null, null, 3*4.5)"));
-			Assert.AreEqual(true, TryExpression("coalesce(null, true)"));
-			Assert.AreEqual(5, TryExpression("coalesce(5, null, 6)"));
-			Assert.AreEqual(2, TryExpression("(case 1 when 1 then 2 end)"));
+			ClassicAssert.AreEqual(9, TryExpression("max(6, 9)"));
+			ClassicAssert.AreEqual(6.11, TryExpression("min(6.11, 6.12)"));
+			ClassicAssert.AreEqual(6.10, TryExpression("min(6.11, 6.12, 6.1)"));
+			ClassicAssert.AreEqual("ab", TryExpression("'a'||'b'"));
+			ClassicAssert.AreEqual(null, TryExpression("coalesce(null, null)"));
+			ClassicAssert.AreEqual(1, TryExpression("coalesce(null, 1)"));
+			ClassicAssert.AreEqual(1L, TryExpression("coalesce(null, 1l)"));
+			ClassicAssert.AreEqual("a", TryExpression("coalesce(null, 'a', 'b')"));
+			ClassicAssert.AreEqual(13.5d, TryExpression("coalesce(null, null, 3*4.5)"));
+			ClassicAssert.AreEqual(true, TryExpression("coalesce(null, true)"));
+			ClassicAssert.AreEqual(5, TryExpression("coalesce(5, null, 6)"));
+			ClassicAssert.AreEqual(2, TryExpression("(case 1 when 1 then 2 end)"));
 		}
 
 		[Test]
 		public void TestWalkMath()
 		{
-			Assert.AreEqual(32.0, TryExpression("5*6-3+15/3"));
-			Assert.AreEqual(-5, TryExpression("1-1-1-2-1-1"));
-			Assert.AreEqual(2.8d, TryExpression("1.4 + 1.4"));
-			Assert.AreEqual(1d, TryExpression("55.5/5/11.1"));
-			Assert.AreEqual(2 / 3d, TryExpression("2/3"));
-			Assert.AreEqual(2 / 3d, TryExpression("2.0/3"));
-			Assert.AreEqual(10, TryExpression("(1+4)*2"));
-			Assert.AreEqual(12, TryExpression("(3*(6-4))*2"));
-			Assert.AreEqual(8.5, TryExpression("(1+(4*3)+2)/2+1"));
-			Assert.AreEqual(1, TryExpression("10%3"));
-			Assert.AreEqual(10.1 % 3, TryExpression("10.1%3"));
+			ClassicAssert.AreEqual(32.0, TryExpression("5*6-3+15/3"));
+			ClassicAssert.AreEqual(-5, TryExpression("1-1-1-2-1-1"));
+			ClassicAssert.AreEqual(2.8d, TryExpression("1.4 + 1.4"));
+			ClassicAssert.AreEqual(1d, TryExpression("55.5/5/11.1"));
+			ClassicAssert.AreEqual(2 / 3d, TryExpression("2/3"));
+			ClassicAssert.AreEqual(2 / 3d, TryExpression("2.0/3"));
+			ClassicAssert.AreEqual(10, TryExpression("(1+4)*2"));
+			ClassicAssert.AreEqual(12, TryExpression("(3*(6-4))*2"));
+			ClassicAssert.AreEqual(8.5, TryExpression("(1+(4*3)+2)/2+1"));
+			ClassicAssert.AreEqual(1, TryExpression("10%3"));
+			ClassicAssert.AreEqual(10.1 % 3, TryExpression("10.1%3"));
 		}
 
 		[Test]
 		public void TestWalkRelationalOp()
 		{
-			Assert.AreEqual(true, TryRelationalOp("3>2"));
-			Assert.AreEqual(true, TryRelationalOp("3*5/2 >= 7.5"));
-			Assert.AreEqual(true, TryRelationalOp("3*5/2.0 >= 7.5"));
-			Assert.AreEqual(false, TryRelationalOp("1.1 + 2.2 < 3.2"));
-			Assert.AreEqual(false, TryRelationalOp("3<=2"));
-			Assert.AreEqual(true, TryRelationalOp("4*(3+1)>=16"));
+			ClassicAssert.AreEqual(true, TryRelationalOp("3>2"));
+			ClassicAssert.AreEqual(true, TryRelationalOp("3*5/2 >= 7.5"));
+			ClassicAssert.AreEqual(true, TryRelationalOp("3*5/2.0 >= 7.5"));
+			ClassicAssert.AreEqual(false, TryRelationalOp("1.1 + 2.2 < 3.2"));
+			ClassicAssert.AreEqual(false, TryRelationalOp("3<=2"));
+			ClassicAssert.AreEqual(true, TryRelationalOp("4*(3+1)>=16"));
 
-			Assert.AreEqual(false, TryRelationalOp("(4>2) and (2>3)"));
-			Assert.AreEqual(true, TryRelationalOp("(4>2) or (2>3)"));
+			ClassicAssert.AreEqual(false, TryRelationalOp("(4>2) and (2>3)"));
+			ClassicAssert.AreEqual(true, TryRelationalOp("(4>2) or (2>3)"));
 
-			Assert.AreEqual(false, TryRelationalOp("not 3>2"));
-			Assert.AreEqual(true, TryRelationalOp("not (not 3>2)"));
+			ClassicAssert.AreEqual(false, TryRelationalOp("not 3>2"));
+			ClassicAssert.AreEqual(true, TryRelationalOp("not (not 3>2)"));
 		}
 
 		[Test]
@@ -673,9 +674,9 @@ namespace com.espertech.esper.compiler.@internal.parse
 			var walker = SupportParserHelper.ParseAndWalkEPL(container, expression);
 
 			var desc = walker.StatementSpec.InsertIntoDesc;
-			Assert.AreEqual(SelectClauseStreamSelectorEnum.ISTREAM_ONLY, desc.StreamSelector);
-			Assert.AreEqual("MyAlias", desc.EventTypeName);
-			Assert.AreEqual(0, desc.ColumnNames.Count);
+			ClassicAssert.AreEqual(SelectClauseStreamSelectorEnum.ISTREAM_ONLY, desc.StreamSelector);
+			ClassicAssert.AreEqual("MyAlias", desc.EventTypeName);
+			ClassicAssert.AreEqual(0, desc.ColumnNames.Count);
 
 			expression = "insert rstream into MyAlias(a, b, c) select * from " +
 			             CLASSNAME +
@@ -686,51 +687,51 @@ namespace com.espertech.esper.compiler.@internal.parse
 			walker = SupportParserHelper.ParseAndWalkEPL(container, expression);
 
 			desc = walker.StatementSpec.InsertIntoDesc;
-			Assert.AreEqual(SelectClauseStreamSelectorEnum.RSTREAM_ONLY, desc.StreamSelector);
-			Assert.AreEqual("MyAlias", desc.EventTypeName);
-			Assert.AreEqual(3, desc.ColumnNames.Count);
-			Assert.AreEqual("a", desc.ColumnNames[0]);
-			Assert.AreEqual("b", desc.ColumnNames[1]);
-			Assert.AreEqual("c", desc.ColumnNames[2]);
+			ClassicAssert.AreEqual(SelectClauseStreamSelectorEnum.RSTREAM_ONLY, desc.StreamSelector);
+			ClassicAssert.AreEqual("MyAlias", desc.EventTypeName);
+			ClassicAssert.AreEqual(3, desc.ColumnNames.Count);
+			ClassicAssert.AreEqual("a", desc.ColumnNames[0]);
+			ClassicAssert.AreEqual("b", desc.ColumnNames[1]);
+			ClassicAssert.AreEqual("c", desc.ColumnNames[2]);
 
 			expression = "insert irstream into Test2 select * from " + CLASSNAME + "()#length(10)";
 			walker = SupportParserHelper.ParseAndWalkEPL(container, expression);
 			desc = walker.StatementSpec.InsertIntoDesc;
-			Assert.AreEqual(SelectClauseStreamSelectorEnum.RSTREAM_ISTREAM_BOTH, desc.StreamSelector);
-			Assert.AreEqual("Test2", desc.EventTypeName);
-			Assert.AreEqual(0, desc.ColumnNames.Count);
+			ClassicAssert.AreEqual(SelectClauseStreamSelectorEnum.RSTREAM_ISTREAM_BOTH, desc.StreamSelector);
+			ClassicAssert.AreEqual("Test2", desc.EventTypeName);
+			ClassicAssert.AreEqual(0, desc.ColumnNames.Count);
 		}
 
 		[Test]
 		public void TestWalkView()
 		{
-			var text = "select * from " + typeof(SupportBean).FullName + "(string=\"IBM\").win:lenght(10, 1.1, \"a\").stat:uni(price, false)";
+			var text = "select * from " + typeof(SupportBean).FullName + "(string=\"IBM\").win:lenght(10, 1.1, \"a\").stat:uni(Price, false)";
 
 			var walker = SupportParserHelper.ParseAndWalkEPL(container, text);
 			var filterSpec = ((FilterStreamSpecRaw) walker.StatementSpec.StreamSpecs[0]).RawFilterSpec;
 
 			// Check filter spec properties
-			Assert.AreEqual(typeof(SupportBean).FullName, filterSpec.EventTypeName);
-			Assert.AreEqual(1, filterSpec.FilterExpressions.Count);
+			ClassicAssert.AreEqual(typeof(SupportBean).FullName, filterSpec.EventTypeName);
+			ClassicAssert.AreEqual(1, filterSpec.FilterExpressions.Count);
 
 			// Check views
 			var viewSpecs = walker.StatementSpec.StreamSpecs[0].ViewSpecs;
-			Assert.AreEqual(2, viewSpecs.Length);
+			ClassicAssert.AreEqual(2, viewSpecs.Length);
 
 			var specOne = viewSpecs[0];
-			Assert.AreEqual("win", specOne.ObjectNamespace);
-			Assert.AreEqual("lenght", specOne.ObjectName);
-			Assert.AreEqual(3, specOne.ObjectParameters.Count);
-			Assert.AreEqual(10, ((ExprConstantNode) specOne.ObjectParameters[0]).ConstantValue);
-			Assert.AreEqual(1.1d, ((ExprConstantNode) specOne.ObjectParameters[1]).ConstantValue);
-			Assert.AreEqual("a", ((ExprConstantNode) specOne.ObjectParameters[2]).ConstantValue);
+			ClassicAssert.AreEqual("win", specOne.ObjectNamespace);
+			ClassicAssert.AreEqual("lenght", specOne.ObjectName);
+			ClassicAssert.AreEqual(3, specOne.ObjectParameters.Count);
+			ClassicAssert.AreEqual(10, ((ExprConstantNode) specOne.ObjectParameters[0]).ConstantValue);
+			ClassicAssert.AreEqual(1.1d, ((ExprConstantNode) specOne.ObjectParameters[1]).ConstantValue);
+			ClassicAssert.AreEqual("a", ((ExprConstantNode) specOne.ObjectParameters[2]).ConstantValue);
 
 			var specTwo = viewSpecs[1];
-			Assert.AreEqual("stat", specTwo.ObjectNamespace);
-			Assert.AreEqual("uni", specTwo.ObjectName);
-			Assert.AreEqual(2, specTwo.ObjectParameters.Count);
-			Assert.AreEqual("price", ((ExprIdentNode) specTwo.ObjectParameters[0]).FullUnresolvedName);
-			Assert.AreEqual(false, ((ExprConstantNode) specTwo.ObjectParameters[1]).ConstantValue);
+			ClassicAssert.AreEqual("stat", specTwo.ObjectNamespace);
+			ClassicAssert.AreEqual("uni", specTwo.ObjectName);
+			ClassicAssert.AreEqual(2, specTwo.ObjectParameters.Count);
+			ClassicAssert.AreEqual("Price", ((ExprIdentNode) specTwo.ObjectParameters[0]).FullUnresolvedName);
+			ClassicAssert.AreEqual(false, ((ExprConstantNode) specTwo.ObjectParameters[1]).ConstantValue);
 		}
 
 		[Test]
@@ -740,49 +741,49 @@ namespace com.espertech.esper.compiler.@internal.parse
 
 			var walker = SupportParserHelper.ParseAndWalkEPL(container, text);
 			var filterSpec = ((FilterStreamSpecRaw) walker.StatementSpec.StreamSpecs[0]).RawFilterSpec;
-			Assert.AreEqual(2, filterSpec.OptionalPropertyEvalSpec.Atoms.Count);
-			Assert.AreEqual("a.b", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(filterSpec.OptionalPropertyEvalSpec.Atoms[0].SplitterExpression));
-			Assert.AreEqual(0, filterSpec.OptionalPropertyEvalSpec.Atoms[0].OptionalSelectClause.SelectExprList.Count);
+			ClassicAssert.AreEqual(2, filterSpec.OptionalPropertyEvalSpec.Atoms.Count);
+			ClassicAssert.AreEqual("a.b", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(filterSpec.OptionalPropertyEvalSpec.Atoms[0].SplitterExpression));
+			ClassicAssert.AreEqual(0, filterSpec.OptionalPropertyEvalSpec.Atoms[0].OptionalSelectClause.SelectExprList.Count);
 
 			var atomTwo = filterSpec.OptionalPropertyEvalSpec.Atoms[1];
-			Assert.AreEqual("e", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(atomTwo.SplitterExpression));
-			Assert.AreEqual("f", atomTwo.OptionalAsName);
-			Assert.IsNotNull(atomTwo.OptionalWhereClause);
+			ClassicAssert.AreEqual("e", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(atomTwo.SplitterExpression));
+			ClassicAssert.AreEqual("f", atomTwo.OptionalAsName);
+			ClassicAssert.IsNotNull(atomTwo.OptionalWhereClause);
 			var list = atomTwo.OptionalSelectClause.SelectExprList;
-			Assert.AreEqual(3, list.Count);
-			Assert.IsTrue(list[0] is SelectClauseExprRawSpec);
-			Assert.IsTrue(list[1] is SelectClauseStreamRawSpec);
-			Assert.IsTrue(list[2] is SelectClauseElementWildcard);
+			ClassicAssert.AreEqual(3, list.Count);
+			ClassicAssert.IsTrue(list[0] is SelectClauseExprRawSpec);
+			ClassicAssert.IsTrue(list[1] is SelectClauseStreamRawSpec);
+			ClassicAssert.IsTrue(list[2] is SelectClauseElementWildcard);
 		}
 
 		[Test]
 		public void TestSelectList()
 		{
-			var text = "select intPrimitive, 2 * intBoxed, 5 as myConst, stream0.string as theString from " +
+			var text = "select IntPrimitive, 2 * IntBoxed, 5 as myConst, stream0.string as TheString from "+
 			           typeof(SupportBean).FullName +
 			           "().win:lenght(10) as stream0";
 			var walker = SupportParserHelper.ParseAndWalkEPL(container, text);
 			var selectExpressions = walker.StatementSpec.SelectClauseSpec.SelectExprList;
-			Assert.AreEqual(4, selectExpressions.Count);
+			ClassicAssert.AreEqual(4, selectExpressions.Count);
 
 			var rawSpec = (SelectClauseExprRawSpec) selectExpressions[0];
-			Assert.IsTrue(rawSpec.SelectExpression is ExprIdentNode);
+			ClassicAssert.IsTrue(rawSpec.SelectExpression is ExprIdentNode);
 
 			rawSpec = (SelectClauseExprRawSpec) selectExpressions[1];
-			Assert.IsTrue(rawSpec.SelectExpression is ExprMathNode);
+			ClassicAssert.IsTrue(rawSpec.SelectExpression is ExprMathNode);
 
 			rawSpec = (SelectClauseExprRawSpec) selectExpressions[2];
-			Assert.IsTrue(rawSpec.SelectExpression is ExprConstantNode);
-			Assert.AreEqual("myConst", rawSpec.OptionalAsName);
+			ClassicAssert.IsTrue(rawSpec.SelectExpression is ExprConstantNode);
+			ClassicAssert.AreEqual("myConst", rawSpec.OptionalAsName);
 
 			rawSpec = (SelectClauseExprRawSpec) selectExpressions[3];
-			Assert.IsTrue(rawSpec.SelectExpression is ExprIdentNode);
-			Assert.AreEqual("theString", rawSpec.OptionalAsName);
-			Assert.IsNull(walker.StatementSpec.InsertIntoDesc);
+			ClassicAssert.IsTrue(rawSpec.SelectExpression is ExprIdentNode);
+			ClassicAssert.AreEqual("TheString", rawSpec.OptionalAsName);
+			ClassicAssert.IsNull(walker.StatementSpec.InsertIntoDesc);
 
 			text = "select * from " + typeof(SupportBean).FullName + "().win:lenght(10)";
 			walker = SupportParserHelper.ParseAndWalkEPL(container, text);
-			Assert.AreEqual(1, walker.StatementSpec.SelectClauseSpec.SelectExprList.Count);
+			ClassicAssert.AreEqual(1, walker.StatementSpec.SelectClauseSpec.SelectExprList.Count);
 		}
 
 		[Test]
@@ -796,9 +797,9 @@ namespace com.espertech.esper.compiler.@internal.parse
 			var node = viewSpecs[0].ObjectParameters[0];
 			node.Validate(SupportExprValidationContextFactory.MakeEmpty(container));
 			var intParams = ((ExprArrayNode) node).Forge.ExprEvaluator.Evaluate(null, true, null).UnwrapIntoArray<int>();
-			Assert.AreEqual(10, intParams[0]);
-			Assert.AreEqual(11, intParams[1]);
-			Assert.AreEqual(12, intParams[2]);
+			ClassicAssert.AreEqual(10, intParams[0]);
+			ClassicAssert.AreEqual(11, intParams[1]);
+			ClassicAssert.AreEqual(12, intParams[2]);
 
 			// Check a list of objects
 			text = "select * from " + typeof(SupportBean).FullName + "().win:lenght({false, 11.2, 's'})";
@@ -807,9 +808,9 @@ namespace com.espertech.esper.compiler.@internal.parse
 			var param = viewSpecs[0].ObjectParameters[0];
 			param.Validate(SupportExprValidationContextFactory.MakeEmpty(container));
 			var objParams = ((ExprArrayNode) param).Forge.ExprEvaluator.Evaluate(null, true, null).UnwrapIntoArray<object>();
-			Assert.AreEqual(false, objParams[0]);
-			Assert.AreEqual(11.2, objParams[1]);
-			Assert.AreEqual("s", objParams[2]);
+			ClassicAssert.AreEqual(false, objParams[0]);
+			ClassicAssert.AreEqual(11.2, objParams[1]);
+			ClassicAssert.AreEqual("s", objParams[2]);
 		}
 
 		[Test]
@@ -823,7 +824,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 		[Test]
 		public void TestNoPackageName()
 		{
-			var text = "select intPrimitive from SupportBean_N().win:lenght(10) as win1";
+			var text = "select IntPrimitive from SupportBean_N().win:lenght(10) as win1";
 			SupportParserHelper.ParseAndWalkEPL(container, text);
 		}
 
@@ -831,33 +832,33 @@ namespace com.espertech.esper.compiler.@internal.parse
 		public void TestAggregateFunction()
 		{
 			var fromClause = "from " + typeof(SupportBean_N).FullName + "().win:lenght(10) as win1";
-			var text = "select max(distinct intPrimitive) " + fromClause;
+			var text = "select max(distinct IntPrimitive) "+ fromClause;
 			SupportParserHelper.ParseAndWalkEPL(container, text);
 
-			text = "select sum(intPrimitive)," +
-			       "sum(distinct doubleBoxed)," +
-			       "avg(doubleBoxed)," +
-			       "avg(distinct doubleBoxed)," +
+			text = "select sum(IntPrimitive),"+
+"sum(distinct DoubleBoxed),"+
+"avg(DoubleBoxed),"+
+"avg(distinct DoubleBoxed),"+
 			       "count(*)," +
-			       "count(intPrimitive)," +
-			       "count(distinct intPrimitive)," +
-			       "max(distinct intPrimitive)," +
-			       "min(distinct intPrimitive)," +
-			       "max(intPrimitive)," +
-			       "min(intPrimitive), " +
-			       "median(intPrimitive), " +
-			       "median(distinct intPrimitive)," +
-			       "stddev(intPrimitive), " +
-			       "stddev(distinct intPrimitive)," +
-			       "avedev(intPrimitive)," +
-			       "avedev(distinct intPrimitive) " +
+"count(IntPrimitive),"+
+"count(distinct IntPrimitive),"+
+"max(distinct IntPrimitive),"+
+"min(distinct IntPrimitive),"+
+"max(IntPrimitive),"+
+"min(IntPrimitive), "+
+"median(IntPrimitive), "+
+"median(distinct IntPrimitive),"+
+"stddev(IntPrimitive), "+
+"stddev(distinct IntPrimitive),"+
+"avedev(IntPrimitive),"+
+"avedev(distinct IntPrimitive) "+
 			       fromClause;
 			SupportParserHelper.ParseAndWalkEPL(container, text);
 
 			// try min-max aggregate versus row functions
-			text = "select max(intPrimitive), min(intPrimitive)," +
-			       "max(intPrimitive,intBoxed), min(intPrimitive,intBoxed)," +
-			       "max(distinct intPrimitive), min(distinct intPrimitive)" +
+			text = "select max(IntPrimitive), min(IntPrimitive),"+
+"max(IntPrimitive,IntBoxed), min(IntPrimitive,IntBoxed),"+
+"max(distinct IntPrimitive), min(distinct IntPrimitive)"+
 			       fromClause;
 			SupportParserHelper.ParseAndWalkEPL(container, text);
 		}
@@ -865,56 +866,56 @@ namespace com.espertech.esper.compiler.@internal.parse
 		[Test]
 		public void TestGroupBy()
 		{
-			var text = "select sum(intPrimitive) from SupportBean_N().win:lenght(10) as win1 where intBoxed > 5 " +
-			           "group by intBoxed, 3 * doubleBoxed, max(2, doublePrimitive)";
+			var text = "select sum(IntPrimitive) from SupportBean_N().win:lenght(10) as win1 where IntBoxed > 5 "+
+"group by IntBoxed, 3 * DoubleBoxed, max(2, DoublePrimitive)";
 			var walker = SupportParserHelper.ParseAndWalkEPL(container, text);
 
 			var groupByList = walker.StatementSpec.GroupByExpressions;
-			Assert.AreEqual(3, groupByList.Count);
+			ClassicAssert.AreEqual(3, groupByList.Count);
 
 			var node = ((GroupByClauseElementExpr) groupByList[0]).Expr;
-			Assert.IsTrue(node is ExprIdentNode);
+			ClassicAssert.IsTrue(node is ExprIdentNode);
 
 			node = ((GroupByClauseElementExpr) groupByList[1]).Expr;
-			Assert.IsTrue(node is ExprMathNode);
-			Assert.IsTrue(node.ChildNodes[0] is ExprConstantNode);
-			Assert.IsTrue(node.ChildNodes[1] is ExprIdentNode);
+			ClassicAssert.IsTrue(node is ExprMathNode);
+			ClassicAssert.IsTrue(node.ChildNodes[0] is ExprConstantNode);
+			ClassicAssert.IsTrue(node.ChildNodes[1] is ExprIdentNode);
 
 			node = ((GroupByClauseElementExpr) groupByList[2]).Expr;
-			Assert.IsTrue(node is ExprMinMaxRowNode);
+			ClassicAssert.IsTrue(node is ExprMinMaxRowNode);
 		}
 
 		[Test]
 		public void TestHaving()
 		{
-			var text = "select sum(intPrimitive) from SupportBean_N().win:lenght(10) as win1 where intBoxed > 5 " +
-			           "group by intBoxed having sum(intPrimitive) > 5";
+			var text = "select sum(IntPrimitive) from SupportBean_N().win:lenght(10) as win1 where IntBoxed > 5 "+
+"group by IntBoxed having sum(IntPrimitive) > 5";
 			var walker = SupportParserHelper.ParseAndWalkEPL(container, text);
 
 			var havingNode = walker.StatementSpec.HavingClause;
 
-			Assert.IsTrue(havingNode is ExprRelationalOpNode);
-			Assert.IsTrue(havingNode.ChildNodes[0] is ExprSumNode);
-			Assert.IsTrue(havingNode.ChildNodes[1] is ExprConstantNode);
+			ClassicAssert.IsTrue(havingNode is ExprRelationalOpNode);
+			ClassicAssert.IsTrue(havingNode.ChildNodes[0] is ExprSumNode);
+			ClassicAssert.IsTrue(havingNode.ChildNodes[1] is ExprConstantNode);
 
-			text = "select sum(intPrimitive) from SupportBean_N().win:lenght(10) as win1 where intBoxed > 5 " +
-			       "having intPrimitive < avg(intPrimitive)";
+			text = "select sum(IntPrimitive) from SupportBean_N().win:lenght(10) as win1 where IntBoxed > 5 "+
+"having IntPrimitive < avg(IntPrimitive)";
 			walker = SupportParserHelper.ParseAndWalkEPL(container, text);
 
 			havingNode = walker.StatementSpec.HavingClause;
-			Assert.IsTrue(havingNode is ExprRelationalOpNode);
+			ClassicAssert.IsTrue(havingNode is ExprRelationalOpNode);
 		}
 
 		[Test]
 		public void TestDistinct()
 		{
-			var text = "select sum(distinct intPrimitive) from SupportBean_N().win:lenght(10) as win1";
+			var text = "select sum(distinct IntPrimitive) from SupportBean_N().win:lenght(10) as win1";
 			var walker = SupportParserHelper.ParseAndWalkEPL(container, text);
 
 			var rawElement = walker.StatementSpec.SelectClauseSpec.SelectExprList[0];
 			var exprSpec = (SelectClauseExprRawSpec) rawElement;
 			ExprAggregateNodeBase aggrNode = (ExprAggregateNodeBase) exprSpec.SelectExpression;
-			Assert.IsTrue(aggrNode.IsDistinct);
+			ClassicAssert.IsTrue(aggrNode.IsDistinct);
 		}
 
 		[Test]
@@ -922,46 +923,46 @@ namespace com.espertech.esper.compiler.@internal.parse
 		{
 			var text = "select array [ 1 ],s0.map('a'),nested.nested2, a[1].b as x, nested.abcdef? " +
 			           " from SupportBean_N().win:lenght(10) as win1 " +
-			           " where a[1].b('a').nested.c[0] = 4";
+			           " where a[1].b('a').Nested.c[0] = 4";
 			var walker = SupportParserHelper.ParseAndWalkEPL(container, text);
 
 			var identNode = (ExprIdentNode) GetSelectExprSpec(walker.StatementSpec, 0).SelectExpression;
-			Assert.AreEqual("array[1]", identNode.UnresolvedPropertyName);
-			Assert.IsNull(identNode.StreamOrPropertyName);
+			ClassicAssert.AreEqual("array[1]", identNode.UnresolvedPropertyName);
+			ClassicAssert.IsNull(identNode.StreamOrPropertyName);
 
 			identNode = (ExprIdentNode) GetSelectExprSpec(walker.StatementSpec, 1).SelectExpression;
-			Assert.AreEqual("map('a')", identNode.UnresolvedPropertyName);
-			Assert.AreEqual("s0", identNode.StreamOrPropertyName);
+			ClassicAssert.AreEqual("map('a')", identNode.UnresolvedPropertyName);
+			ClassicAssert.AreEqual("s0", identNode.StreamOrPropertyName);
 
 			identNode = (ExprIdentNode) GetSelectExprSpec(walker.StatementSpec, 2).SelectExpression;
-			Assert.AreEqual("nested2", identNode.UnresolvedPropertyName);
-			Assert.AreEqual("nested", identNode.StreamOrPropertyName);
+			ClassicAssert.AreEqual("nested2", identNode.UnresolvedPropertyName);
+			ClassicAssert.AreEqual("nested", identNode.StreamOrPropertyName);
 
 			identNode = (ExprIdentNode) GetSelectExprSpec(walker.StatementSpec, 3).SelectExpression;
-			Assert.AreEqual("a[1].b", identNode.UnresolvedPropertyName);
-			Assert.AreEqual(null, identNode.StreamOrPropertyName);
+			ClassicAssert.AreEqual("a[1].b", identNode.UnresolvedPropertyName);
+			ClassicAssert.AreEqual(null, identNode.StreamOrPropertyName);
 
 			identNode = (ExprIdentNode) GetSelectExprSpec(walker.StatementSpec, 4).SelectExpression;
-			Assert.AreEqual("abcdef?", identNode.UnresolvedPropertyName);
-			Assert.AreEqual("nested", identNode.StreamOrPropertyName);
+			ClassicAssert.AreEqual("abcdef?", identNode.UnresolvedPropertyName);
+			ClassicAssert.AreEqual("nested", identNode.StreamOrPropertyName);
 
 			identNode = (ExprIdentNode) walker.StatementSpec.WhereClause.ChildNodes[0];
-			Assert.AreEqual("a[1].b('a').nested.c[0]", identNode.UnresolvedPropertyName);
-			Assert.AreEqual(null, identNode.StreamOrPropertyName);
+			ClassicAssert.AreEqual("a[1].b('a').Nested.c[0]", identNode.UnresolvedPropertyName);
+			ClassicAssert.AreEqual(null, identNode.StreamOrPropertyName);
 		}
 
 		[Test]
 		public void TestBitWise()
 		{
-			var text = "select intPrimitive & intBoxed from " + typeof(SupportBean).FullName + "().win:lenght(10) as stream0";
+			var text = "select IntPrimitive & IntBoxed from "+ typeof(SupportBean).FullName + "().win:lenght(10) as stream0";
 			var walker = SupportParserHelper.ParseAndWalkEPL(container, text);
 			var selectExpressions = walker.StatementSpec.SelectClauseSpec.SelectExprList;
-			Assert.AreEqual(1, selectExpressions.Count);
-			Assert.IsTrue(GetSelectExprSpec(walker.StatementSpec, 0).SelectExpression is ExprBitWiseNode);
+			ClassicAssert.AreEqual(1, selectExpressions.Count);
+			ClassicAssert.IsTrue(GetSelectExprSpec(walker.StatementSpec, 0).SelectExpression is ExprBitWiseNode);
 
-			Assert.AreEqual(0, TryBitWise("1&2"));
-			Assert.AreEqual(3, TryBitWise("1|2"));
-			Assert.AreEqual(8, TryBitWise("10^2"));
+			ClassicAssert.AreEqual(0, TryBitWise("1&2"));
+			ClassicAssert.AreEqual(3, TryBitWise("1|2"));
+			ClassicAssert.AreEqual(8, TryBitWise("10^2"));
 		}
 
 		[Test]
@@ -971,28 +972,28 @@ namespace com.espertech.esper.compiler.@internal.parse
 
 			// Test simple case, one pattern and no "as streamName"
 			var walker = SupportParserHelper.ParseAndWalkEPL(container, "select * from pattern [" + patternOne + "]");
-			Assert.AreEqual(1, walker.StatementSpec.StreamSpecs.Count);
+			ClassicAssert.AreEqual(1, walker.StatementSpec.StreamSpecs.Count);
 			var patternStreamSpec = (PatternStreamSpecRaw) walker.StatementSpec.StreamSpecs[0];
 
-			Assert.AreEqual(typeof(EvalFollowedByForgeNode), patternStreamSpec.EvalForgeNode.GetType());
-			Assert.IsNull(patternStreamSpec.OptionalStreamName);
+			ClassicAssert.AreEqual(typeof(EvalFollowedByForgeNode), patternStreamSpec.EvalForgeNode.GetType());
+			ClassicAssert.IsNull(patternStreamSpec.OptionalStreamName);
 
 			// Test case with "as s0"
 			walker = SupportParserHelper.ParseAndWalkEPL(container, "select * from pattern [" + patternOne + "] as s0");
 			patternStreamSpec = (PatternStreamSpecRaw) walker.StatementSpec.StreamSpecs[0];
-			Assert.AreEqual("s0", patternStreamSpec.OptionalStreamName);
+			ClassicAssert.AreEqual("s0", patternStreamSpec.OptionalStreamName);
 
 			// Test case with multiple patterns
 			var patternTwo = "c=" + typeof(SupportBean).FullName + " or " + typeof(SupportBean).FullName;
 			walker = SupportParserHelper.ParseAndWalkEPL(container, "select * from pattern [" + patternOne + "] as s0, pattern [" + patternTwo + "] as s1");
-			Assert.AreEqual(2, walker.StatementSpec.StreamSpecs.Count);
+			ClassicAssert.AreEqual(2, walker.StatementSpec.StreamSpecs.Count);
 			patternStreamSpec = (PatternStreamSpecRaw) walker.StatementSpec.StreamSpecs[0];
-			Assert.AreEqual("s0", patternStreamSpec.OptionalStreamName);
-			Assert.AreEqual(typeof(EvalFollowedByForgeNode), patternStreamSpec.EvalForgeNode.GetType());
+			ClassicAssert.AreEqual("s0", patternStreamSpec.OptionalStreamName);
+			ClassicAssert.AreEqual(typeof(EvalFollowedByForgeNode), patternStreamSpec.EvalForgeNode.GetType());
 
 			patternStreamSpec = (PatternStreamSpecRaw) walker.StatementSpec.StreamSpecs[1];
-			Assert.AreEqual("s1", patternStreamSpec.OptionalStreamName);
-			Assert.AreEqual(typeof(EvalOrForgeNode), patternStreamSpec.EvalForgeNode.GetType());
+			ClassicAssert.AreEqual("s1", patternStreamSpec.OptionalStreamName);
+			ClassicAssert.AreEqual(typeof(EvalOrForgeNode), patternStreamSpec.EvalForgeNode.GetType());
 
 			// Test 3 patterns
 			walker = SupportParserHelper.ParseAndWalkEPL(
@@ -1005,46 +1006,46 @@ namespace com.espertech.esper.compiler.@internal.parse
 				"pattern[x=" +
 				typeof(SupportBean_S2).FullName +
 				"] as s2");
-			Assert.AreEqual(3, walker.StatementSpec.StreamSpecs.Count);
+			ClassicAssert.AreEqual(3, walker.StatementSpec.StreamSpecs.Count);
 			patternStreamSpec = (PatternStreamSpecRaw) walker.StatementSpec.StreamSpecs[2];
-			Assert.AreEqual("s2", patternStreamSpec.OptionalStreamName);
+			ClassicAssert.AreEqual("s2", patternStreamSpec.OptionalStreamName);
 
 			// Test patterns with views
 			walker = SupportParserHelper.ParseAndWalkEPL(
 				container,
 				"select * from pattern [" + patternOne + "]#time(1), pattern [" + patternTwo + "]#length(1)#lastevent as s1");
-			Assert.AreEqual(2, walker.StatementSpec.StreamSpecs.Count);
+			ClassicAssert.AreEqual(2, walker.StatementSpec.StreamSpecs.Count);
 			patternStreamSpec = (PatternStreamSpecRaw) walker.StatementSpec.StreamSpecs[0];
-			Assert.AreEqual(1, patternStreamSpec.ViewSpecs.Length);
-			Assert.AreEqual("time", patternStreamSpec.ViewSpecs[0].ObjectName);
+			ClassicAssert.AreEqual(1, patternStreamSpec.ViewSpecs.Length);
+			ClassicAssert.AreEqual("time", patternStreamSpec.ViewSpecs[0].ObjectName);
 			patternStreamSpec = (PatternStreamSpecRaw) walker.StatementSpec.StreamSpecs[1];
-			Assert.AreEqual(2, patternStreamSpec.ViewSpecs.Length);
-			Assert.AreEqual("length", patternStreamSpec.ViewSpecs[0].ObjectName);
-			Assert.AreEqual("lastevent", patternStreamSpec.ViewSpecs[1].ObjectName);
+			ClassicAssert.AreEqual(2, patternStreamSpec.ViewSpecs.Length);
+			ClassicAssert.AreEqual("length", patternStreamSpec.ViewSpecs[0].ObjectName);
+			ClassicAssert.AreEqual("lastevent", patternStreamSpec.ViewSpecs[1].ObjectName);
 		}
 
 		[Test]
 		public void TestIfThenElseCase()
 		{
 			string text;
-			text = "select case when intPrimitive > shortPrimitive then count(intPrimitive) end from " + typeof(SupportBean).FullName + "().win:lenght(10) as win";
+			text = "select case when IntPrimitive > ShortPrimitive then count(IntPrimitive) end from "+ typeof(SupportBean).FullName + "().win:lenght(10) as win";
 			SupportParserHelper.ParseAndWalkEPL(container, text);
-			text = "select case when intPrimitive > shortPrimitive then count(intPrimitive) end as p1 from " +
+			text = "select case when IntPrimitive > ShortPrimitive then count(IntPrimitive) end as p1 from "+
 			       typeof(SupportBean).FullName +
 			       "().win:lenght(10) as win";
 			SupportParserHelper.ParseAndWalkEPL(container, text);
-			text = "select case when intPrimitive > shortPrimitive then count(intPrimitive) else shortPrimitive end from " +
+			text = "select case when IntPrimitive > ShortPrimitive then count(IntPrimitive) else ShortPrimitive end from "+
 			       typeof(SupportBean).FullName +
 			       "().win:lenght(10) as win";
 			SupportParserHelper.ParseAndWalkEPL(container, text);
 			text =
-				"select case when intPrimitive > shortPrimitive then count(intPrimitive) when longPrimitive > intPrimitive then count(longPrimitive) else shortPrimitive end from " +
+"select case when IntPrimitive > ShortPrimitive then count(IntPrimitive) when LongPrimitive > IntPrimitive then count(LongPrimitive) else ShortPrimitive end from "+
 				typeof(SupportBean).FullName +
 				"().win:lenght(10) as win";
 			SupportParserHelper.ParseAndWalkEPL(container, text);
-			text = "select case intPrimitive  when 1 then count(intPrimitive) end from " + typeof(SupportBean).FullName + "().win:lenght(10) as win";
+			text = "select case IntPrimitive  when 1 then count(IntPrimitive) end from "+ typeof(SupportBean).FullName + "().win:lenght(10) as win";
 			SupportParserHelper.ParseAndWalkEPL(container, text);
-			text = "select case intPrimitive when longPrimitive then (intPrimitive + longPrimitive) end" +
+			text = "select case IntPrimitive when LongPrimitive then (IntPrimitive + LongPrimitive) end"+
 			       " from " +
 			       typeof(SupportBean).FullName +
 			       "#length(3)";
@@ -1055,7 +1056,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 			string outerType,
 			OuterJoinType typeExpected)
 		{
-			var text = "select intPrimitive from " +
+			var text = "select IntPrimitive from "+
 			           typeof(SupportBean_A).FullName +
 			           "().win:lenght(10) as win1 " +
 			           outerType +
@@ -1066,15 +1067,15 @@ namespace com.espertech.esper.compiler.@internal.parse
 			var walker = SupportParserHelper.ParseAndWalkEPL(container, text);
 
 			var descList = walker.StatementSpec.OuterJoinDescList;
-			Assert.AreEqual(1, descList.Count);
+			ClassicAssert.AreEqual(1, descList.Count);
 			var desc = descList[0];
-			Assert.AreEqual(typeExpected, desc.OuterJoinType);
-			Assert.AreEqual("f1", desc.OptLeftNode.UnresolvedPropertyName);
-			Assert.AreEqual("win1", desc.OptLeftNode.StreamOrPropertyName);
-			Assert.AreEqual("f2[1]", desc.OptRightNode.UnresolvedPropertyName);
-			Assert.AreEqual("win2", desc.OptRightNode.StreamOrPropertyName);
+			ClassicAssert.AreEqual(typeExpected, desc.OuterJoinType);
+			ClassicAssert.AreEqual("f1", desc.OptLeftNode.UnresolvedPropertyName);
+			ClassicAssert.AreEqual("win1", desc.OptLeftNode.StreamOrPropertyName);
+			ClassicAssert.AreEqual("f2[1]", desc.OptRightNode.UnresolvedPropertyName);
+			ClassicAssert.AreEqual("win2", desc.OptRightNode.StreamOrPropertyName);
 
-			text = "select intPrimitive from " +
+			text = "select IntPrimitive from "+
 			       typeof(SupportBean_A).FullName +
 			       "().win:lenght(10) as win1 " +
 			       outerType +
@@ -1090,28 +1091,28 @@ namespace com.espertech.esper.compiler.@internal.parse
 			walker = SupportParserHelper.ParseAndWalkEPL(container, text);
 
 			descList = walker.StatementSpec.OuterJoinDescList;
-			Assert.AreEqual(2, descList.Count);
+			ClassicAssert.AreEqual(2, descList.Count);
 
 			desc = descList[0];
-			Assert.AreEqual(typeExpected, desc.OuterJoinType);
-			Assert.AreEqual("f1", desc.OptLeftNode.UnresolvedPropertyName);
-			Assert.AreEqual("win1", desc.OptLeftNode.StreamOrPropertyName);
-			Assert.AreEqual("f2", desc.OptRightNode.UnresolvedPropertyName);
-			Assert.AreEqual("win2", desc.OptRightNode.StreamOrPropertyName);
+			ClassicAssert.AreEqual(typeExpected, desc.OuterJoinType);
+			ClassicAssert.AreEqual("f1", desc.OptLeftNode.UnresolvedPropertyName);
+			ClassicAssert.AreEqual("win1", desc.OptLeftNode.StreamOrPropertyName);
+			ClassicAssert.AreEqual("f2", desc.OptRightNode.UnresolvedPropertyName);
+			ClassicAssert.AreEqual("win2", desc.OptRightNode.StreamOrPropertyName);
 
 			desc = descList[1];
-			Assert.AreEqual(typeExpected, desc.OuterJoinType);
-			Assert.AreEqual("f1", desc.OptLeftNode.UnresolvedPropertyName);
-			Assert.AreEqual("win1", desc.OptLeftNode.StreamOrPropertyName);
-			Assert.AreEqual("f3", desc.OptRightNode.UnresolvedPropertyName);
-			Assert.AreEqual("win3", desc.OptRightNode.StreamOrPropertyName);
+			ClassicAssert.AreEqual(typeExpected, desc.OuterJoinType);
+			ClassicAssert.AreEqual("f1", desc.OptLeftNode.UnresolvedPropertyName);
+			ClassicAssert.AreEqual("win1", desc.OptLeftNode.StreamOrPropertyName);
+			ClassicAssert.AreEqual("f3", desc.OptRightNode.UnresolvedPropertyName);
+			ClassicAssert.AreEqual("win3", desc.OptRightNode.StreamOrPropertyName);
 
-			Assert.AreEqual(1, desc.AdditionalLeftNodes.Length);
-			Assert.AreEqual("f11", desc.AdditionalLeftNodes[0].UnresolvedPropertyName);
-			Assert.AreEqual("win1", desc.AdditionalLeftNodes[0].StreamOrPropertyName);
-			Assert.AreEqual(1, desc.AdditionalRightNodes.Length);
-			Assert.AreEqual("f31", desc.AdditionalRightNodes[0].UnresolvedPropertyName);
-			Assert.AreEqual("win3", desc.AdditionalRightNodes[0].StreamOrPropertyName);
+			ClassicAssert.AreEqual(1, desc.AdditionalLeftNodes.Length);
+			ClassicAssert.AreEqual("f11", desc.AdditionalLeftNodes[0].UnresolvedPropertyName);
+			ClassicAssert.AreEqual("win1", desc.AdditionalLeftNodes[0].StreamOrPropertyName);
+			ClassicAssert.AreEqual(1, desc.AdditionalRightNodes.Length);
+			ClassicAssert.AreEqual("f31", desc.AdditionalRightNodes[0].UnresolvedPropertyName);
+			ClassicAssert.AreEqual("win3", desc.AdditionalRightNodes[0].StreamOrPropertyName);
 		}
 
 		[Test]
@@ -1131,62 +1132,62 @@ namespace com.espertech.esper.compiler.@internal.parse
 
 			var spec = SupportParserHelper.ParseAndWalkEPL(container, text).StatementSpec;
 			var merge = (OnTriggerMergeDesc) spec.OnTriggerDesc;
-			Assert.AreEqual(2, merge.Items.Count);
-			Assert.IsTrue(spec.WhereClause is ExprInNode);
+			ClassicAssert.AreEqual(2, merge.Items.Count);
+			ClassicAssert.IsTrue(spec.WhereClause is ExprInNode);
 
 			var first = merge.Items[0];
-			Assert.AreEqual(4, first.Actions.Count);
-			Assert.IsTrue(first.IsMatchedUnmatched);
-			Assert.IsTrue(first.OptionalMatchCond is ExprEqualsNode);
+			ClassicAssert.AreEqual(4, first.Actions.Count);
+			ClassicAssert.IsTrue(first.IsMatchedUnmatched);
+			ClassicAssert.IsTrue(first.OptionalMatchCond is ExprEqualsNode);
 
 			var insertOne = (OnTriggerMergeActionInsert) first.Actions[0];
-			Assert.AreEqual("xyz1", insertOne.OptionalStreamName);
-			Assert.AreEqual(0, insertOne.Columns.Count);
-			Assert.AreEqual(2, insertOne.SelectClause.Count);
-			Assert.IsTrue(insertOne.OptionalWhereClause is ExprRelationalOpNode);
+			ClassicAssert.AreEqual("xyz1", insertOne.OptionalStreamName);
+			ClassicAssert.AreEqual(0, insertOne.Columns.Count);
+			ClassicAssert.AreEqual(2, insertOne.SelectClause.Count);
+			ClassicAssert.IsTrue(insertOne.OptionalWhereClause is ExprRelationalOpNode);
 
 			var updateOne = (OnTriggerMergeActionUpdate) first.Actions[1];
-			Assert.AreEqual(1, updateOne.Assignments.Count);
-			Assert.IsTrue(updateOne.OptionalWhereClause is ExprLikeNode);
+			ClassicAssert.AreEqual(1, updateOne.Assignments.Count);
+			ClassicAssert.IsTrue(updateOne.OptionalWhereClause is ExprLikeNode);
 
 			var delOne = (OnTriggerMergeActionDelete) first.Actions[2];
-			Assert.IsTrue(delOne.OptionalWhereClause is ExprIdentNode);
+			ClassicAssert.IsTrue(delOne.OptionalWhereClause is ExprIdentNode);
 
 			var delTwo = (OnTriggerMergeActionDelete) first.Actions[3];
-			Assert.IsNull(delTwo.OptionalWhereClause);
+			ClassicAssert.IsNull(delTwo.OptionalWhereClause);
 
 			var second = merge.Items[1];
-			Assert.IsFalse(second.IsMatchedUnmatched);
-			Assert.IsTrue(second.OptionalMatchCond is ExprEqualsNode);
-			Assert.AreEqual(2, second.Actions.Count);
+			ClassicAssert.IsFalse(second.IsMatchedUnmatched);
+			ClassicAssert.IsTrue(second.OptionalMatchCond is ExprEqualsNode);
+			ClassicAssert.AreEqual(2, second.Actions.Count);
 		}
 
 		[Test]
 		public void TestWalkPattern()
 		{
-			var text = "every g=" + typeof(SupportBean).FullName + "(string=\"IBM\", intPrimitive != 1) where timer:within(20)";
+			var text = "every g=" + typeof(SupportBean).FullName + "(string=\"IBM\", IntPrimitive != 1) where timer:within(20)";
 
 			var walker = SupportParserHelper.ParseAndWalkEPL(container, "select * from pattern[" + text + "]");
 
-			Assert.AreEqual(1, walker.StatementSpec.StreamSpecs.Count);
+			ClassicAssert.AreEqual(1, walker.StatementSpec.StreamSpecs.Count);
 			var patternStreamSpec = (PatternStreamSpecRaw) walker.StatementSpec.StreamSpecs[0];
 
 			var rootNode = patternStreamSpec.EvalForgeNode;
 
 			var everyNode = (EvalEveryForgeNode) rootNode;
 
-			Assert.IsTrue(everyNode.ChildNodes[0] is EvalGuardForgeNode);
+			ClassicAssert.IsTrue(everyNode.ChildNodes[0] is EvalGuardForgeNode);
 			var guardNode = (EvalGuardForgeNode) everyNode.ChildNodes[0];
 
-			Assert.AreEqual(1, guardNode.ChildNodes.Count);
-			Assert.IsTrue(guardNode.ChildNodes[0] is EvalFilterForgeNode);
+			ClassicAssert.AreEqual(1, guardNode.ChildNodes.Count);
+			ClassicAssert.IsTrue(guardNode.ChildNodes[0] is EvalFilterForgeNode);
 			var filterNode = (EvalFilterForgeNode) guardNode.ChildNodes[0];
 
-			Assert.AreEqual("g", filterNode.EventAsName);
-			Assert.AreEqual(0, filterNode.ChildNodes.Count);
-			Assert.AreEqual(2, filterNode.RawFilterSpec.FilterExpressions.Count);
+			ClassicAssert.AreEqual("g", filterNode.EventAsName);
+			ClassicAssert.AreEqual(0, filterNode.ChildNodes.Count);
+			ClassicAssert.AreEqual(2, filterNode.RawFilterSpec.FilterExpressions.Count);
 			var equalsNode = (ExprEqualsNode) filterNode.RawFilterSpec.FilterExpressions[1];
-			Assert.AreEqual(2, equalsNode.ChildNodes.Length);
+			ClassicAssert.AreEqual(2, equalsNode.ChildNodes.Length);
 		}
 
 		[Test]
@@ -1194,19 +1195,19 @@ namespace com.espertech.esper.compiler.@internal.parse
 		{
 			var EVENT = typeof(SupportBeanComplexProps).FullName;
 			var property = TryWalkGetPropertyPattern(EVENT + "(Mapped ( 'key' )  = 'value')");
-			Assert.AreEqual("Mapped('key')", property);
+			ClassicAssert.AreEqual("Mapped('key')", property);
 
 			property = TryWalkGetPropertyPattern(EVENT + "(Indexed [ 1 ]  = 1)");
-			Assert.AreEqual("Indexed[1]", property);
+			ClassicAssert.AreEqual("Indexed[1]", property);
 			property = TryWalkGetPropertyPattern(EVENT + "(Nested . NestedValue  = 'value')");
-			Assert.AreEqual("NestedValue", property);
+			ClassicAssert.AreEqual("NestedValue", property);
 		}
 
 		[Test]
 		public void TestWalkPatternUseResult()
 		{
 			var EVENT = typeof(SupportBean_N).FullName;
-			var text = "na=" + EVENT + "() -> every nb=" + EVENT + "(doublePrimitive in [0:na.doublePrimitive])";
+			var text = "na=" + EVENT + "() -> every nb=" + EVENT + "(DoublePrimitive in [0:na.DoublePrimitive])";
 			SupportParserHelper.ParseAndWalkEPL(container, "select * from pattern[" + text + "]");
 		}
 
@@ -1215,19 +1216,19 @@ namespace com.espertech.esper.compiler.@internal.parse
 		{
 			var text = "select rstream 'a' from " + typeof(SupportBean_N).FullName;
 			var walker = SupportParserHelper.ParseAndWalkEPL(container, text);
-			Assert.AreEqual(SelectClauseStreamSelectorEnum.RSTREAM_ONLY, walker.StatementSpec.SelectStreamSelectorEnum);
+			ClassicAssert.AreEqual(SelectClauseStreamSelectorEnum.RSTREAM_ONLY, walker.StatementSpec.SelectStreamSelectorEnum);
 
 			text = "select istream 'a' from " + typeof(SupportBean_N).FullName;
 			walker = SupportParserHelper.ParseAndWalkEPL(container, text);
-			Assert.AreEqual(SelectClauseStreamSelectorEnum.ISTREAM_ONLY, walker.StatementSpec.SelectStreamSelectorEnum);
+			ClassicAssert.AreEqual(SelectClauseStreamSelectorEnum.ISTREAM_ONLY, walker.StatementSpec.SelectStreamSelectorEnum);
 
 			text = "select 'a' from " + typeof(SupportBean_N).FullName;
 			walker = SupportParserHelper.ParseAndWalkEPL(container, text);
-			Assert.AreEqual(SelectClauseStreamSelectorEnum.ISTREAM_ONLY, walker.StatementSpec.SelectStreamSelectorEnum);
+			ClassicAssert.AreEqual(SelectClauseStreamSelectorEnum.ISTREAM_ONLY, walker.StatementSpec.SelectStreamSelectorEnum);
 
 			text = "select irstream 'a' from " + typeof(SupportBean_N).FullName;
 			walker = SupportParserHelper.ParseAndWalkEPL(container, text);
-			Assert.AreEqual(SelectClauseStreamSelectorEnum.RSTREAM_ISTREAM_BOTH, walker.StatementSpec.SelectStreamSelectorEnum);
+			ClassicAssert.AreEqual(SelectClauseStreamSelectorEnum.RSTREAM_ISTREAM_BOTH, walker.StatementSpec.SelectStreamSelectorEnum);
 		}
 
 		[Test]
@@ -1288,7 +1289,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 				var result = TryInterval(interval);
 				var expected = (Double) intervals[i][1];
 				var delta = result - expected;
-				Assert.IsTrue(Math.Abs(delta) < 0.0000001, "Interval '" + interval + "' expected=" + expected + " actual=" + result);
+				ClassicAssert.IsTrue(Math.Abs(delta) < 0.0000001, "Interval '" + interval + "' expected=" + expected + " actual=" + result);
 			}
 
 			TryIntervalInvalid(
@@ -1299,65 +1300,65 @@ namespace com.espertech.esper.compiler.@internal.parse
 		[Test]
 		public void TestWalkInAndBetween()
 		{
-			Assert.IsTrue((Boolean) TryRelationalOp("1 between 0 and 2"));
-			Assert.IsFalse((Boolean) TryRelationalOp("-1 between 0 and 2"));
-			Assert.IsFalse((Boolean) TryRelationalOp("1 not between 0 and 2"));
-			Assert.IsTrue((Boolean) TryRelationalOp("-1 not between 0 and 2"));
+			ClassicAssert.IsTrue((Boolean) TryRelationalOp("1 between 0 and 2"));
+			ClassicAssert.IsFalse((Boolean) TryRelationalOp("-1 between 0 and 2"));
+			ClassicAssert.IsFalse((Boolean) TryRelationalOp("1 not between 0 and 2"));
+			ClassicAssert.IsTrue((Boolean) TryRelationalOp("-1 not between 0 and 2"));
 
-			Assert.IsFalse((Boolean) TryRelationalOp("1 in (2,3)"));
-			Assert.IsTrue((Boolean) TryRelationalOp("1 in (2,3,1)"));
-			Assert.IsTrue((Boolean) TryRelationalOp("1 not in (2,3)"));
+			ClassicAssert.IsFalse((Boolean) TryRelationalOp("1 in (2,3)"));
+			ClassicAssert.IsTrue((Boolean) TryRelationalOp("1 in (2,3,1)"));
+			ClassicAssert.IsTrue((Boolean) TryRelationalOp("1 not in (2,3)"));
 		}
 
 		[Test]
 		public void TestWalkLikeRegex()
 		{
-			Assert.IsTrue((Boolean) TryRelationalOp("'abc' like 'a__'"));
-			Assert.IsFalse((Boolean) TryRelationalOp("'abcd' like 'a__'"));
+			ClassicAssert.IsTrue((Boolean) TryRelationalOp("'abc' like 'a__'"));
+			ClassicAssert.IsFalse((Boolean) TryRelationalOp("'abcd' like 'a__'"));
 
-			Assert.IsFalse((Boolean) TryRelationalOp("'abcde' not like 'a%'"));
-			Assert.IsTrue((Boolean) TryRelationalOp("'bcde' not like 'a%'"));
+			ClassicAssert.IsFalse((Boolean) TryRelationalOp("'abcde' not like 'a%'"));
+			ClassicAssert.IsTrue((Boolean) TryRelationalOp("'bcde' not like 'a%'"));
 
-			Assert.IsTrue((Boolean) TryRelationalOp("'a_' like 'a!_' escape '!'"));
-			Assert.IsFalse((Boolean) TryRelationalOp("'ab' like 'a!_' escape '!'"));
+			ClassicAssert.IsTrue((Boolean) TryRelationalOp("'a_' like 'a!_' escape '!'"));
+			ClassicAssert.IsFalse((Boolean) TryRelationalOp("'ab' like 'a!_' escape '!'"));
 
-			Assert.IsFalse((Boolean) TryRelationalOp("'a' not like 'a'"));
-			Assert.IsTrue((Boolean) TryRelationalOp("'a' not like 'ab'"));
+			ClassicAssert.IsFalse((Boolean) TryRelationalOp("'a' not like 'a'"));
+			ClassicAssert.IsTrue((Boolean) TryRelationalOp("'a' not like 'ab'"));
 		}
 
 		[Test]
 		public void TestWalkDBJoinStatement()
 		{
 			var className = typeof(SupportBean).FullName;
-			var sql = "select a from b where $x.id=c.d";
+			var sql = "select a from b where $x.Id=c.d";
 			var expression = "select * from " + className + ", sql:mydb ['" + sql + "']";
 
 			var walker = SupportParserHelper.ParseAndWalkEPL(container, expression);
 			var statementSpec = walker.StatementSpec;
-			Assert.AreEqual(2, statementSpec.StreamSpecs.Count);
+			ClassicAssert.AreEqual(2, statementSpec.StreamSpecs.Count);
 			var dbSpec = (DBStatementStreamSpec) statementSpec.StreamSpecs[1];
-			Assert.AreEqual("mydb", dbSpec.DatabaseName);
-			Assert.AreEqual(sql, dbSpec.SqlWithSubsParams);
+			ClassicAssert.AreEqual("mydb", dbSpec.DatabaseName);
+			ClassicAssert.AreEqual(sql, dbSpec.SqlWithSubsParams);
 
 			expression = "select * from " + className + ", sql:mydb ['" + sql + "' metadatasql 'select * from B']";
 
 			walker = SupportParserHelper.ParseAndWalkEPL(container, expression);
 			statementSpec = walker.StatementSpec;
-			Assert.AreEqual(2, statementSpec.StreamSpecs.Count);
+			ClassicAssert.AreEqual(2, statementSpec.StreamSpecs.Count);
 			dbSpec = (DBStatementStreamSpec) statementSpec.StreamSpecs[1];
-			Assert.AreEqual("mydb", dbSpec.DatabaseName);
-			Assert.AreEqual(sql, dbSpec.SqlWithSubsParams);
-			Assert.AreEqual("select * from B", dbSpec.MetadataSQL);
+			ClassicAssert.AreEqual("mydb", dbSpec.DatabaseName);
+			ClassicAssert.AreEqual(sql, dbSpec.SqlWithSubsParams);
+			ClassicAssert.AreEqual("select * from B", dbSpec.MetadataSQL);
 		}
 
 		[Test]
 		public void TestRangeBetweenAndIn()
 		{
 			var className = typeof(SupportBean).FullName;
-			var expression = "select * from " + className + "(intPrimitive in [1:2], intBoxed in (1,2), doubleBoxed between 2 and 3)";
+			var expression = "select * from " + className + "(IntPrimitive in [1:2], IntBoxed in (1,2), DoubleBoxed between 2 and 3)";
 			SupportParserHelper.ParseAndWalkEPL(container, expression);
 
-			expression = "select * from " + className + "(intPrimitive not in [1:2], intBoxed not in (1,2), doubleBoxed not between 2 and 3)";
+			expression = "select * from " + className + "(IntPrimitive not in [1:2], IntBoxed not in (1,2), DoubleBoxed not between 2 and 3)";
 			SupportParserHelper.ParseAndWalkEPL(container, expression);
 		}
 
@@ -1371,16 +1372,16 @@ namespace com.espertech.esper.compiler.@internal.parse
 
 			// check select expressions
 			var spec = exprNode.StatementSpecRaw;
-			Assert.AreEqual(1, spec.SelectClauseSpec.SelectExprList.Count);
+			ClassicAssert.AreEqual(1, spec.SelectClauseSpec.SelectExprList.Count);
 
 			// check filter
-			Assert.AreEqual(1, spec.StreamSpecs.Count);
+			ClassicAssert.AreEqual(1, spec.StreamSpecs.Count);
 			var filter = (FilterStreamSpecRaw) spec.StreamSpecs[0];
-			Assert.AreEqual("B", filter.RawFilterSpec.EventTypeName);
-			Assert.AreEqual(1, filter.RawFilterSpec.FilterExpressions.Count);
+			ClassicAssert.AreEqual("B", filter.RawFilterSpec.EventTypeName);
+			ClassicAssert.AreEqual(1, filter.RawFilterSpec.FilterExpressions.Count);
 
 			// check where clause
-			Assert.IsTrue(spec.WhereClause is ExprEqualsNode);
+			ClassicAssert.IsTrue(spec.WhereClause is ExprEqualsNode);
 		}
 
 		[Test]
@@ -1402,7 +1403,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 				Assert.Fail();
 			}
 			catch (Exception ex) {
-				Assert.AreEqual(message, ex.Message);
+				ClassicAssert.AreEqual(message, ex.Message);
 			}
 		}
 
@@ -1412,9 +1413,9 @@ namespace com.espertech.esper.compiler.@internal.parse
 
 			var walker = SupportParserHelper.ParseAndWalkEPL(container, text);
 			var viewSpec = walker.StatementSpec.StreamSpecs[0].ViewSpecs[0];
-			Assert.AreEqual("win", viewSpec.ObjectNamespace);
-			Assert.AreEqual("time", viewSpec.ObjectName);
-			Assert.AreEqual(1, viewSpec.ObjectParameters.Count);
+			ClassicAssert.AreEqual("win", viewSpec.ObjectNamespace);
+			ClassicAssert.AreEqual("time", viewSpec.ObjectName);
+			ClassicAssert.AreEqual(1, viewSpec.ObjectParameters.Count);
 			var exprNode = (ExprTimePeriod) viewSpec.ObjectParameters[0];
 			exprNode.Validate(SupportExprValidationContextFactory.MakeEmpty(container));
 			return exprNode.EvaluateAsSeconds(null, true, null);
@@ -1424,11 +1425,11 @@ namespace com.espertech.esper.compiler.@internal.parse
 		{
 			var walker = SupportParserHelper.ParseAndWalkEPL(container, "select * from pattern[" + stmt + "]");
 
-			Assert.AreEqual(1, walker.StatementSpec.StreamSpecs.Count);
+			ClassicAssert.AreEqual(1, walker.StatementSpec.StreamSpecs.Count);
 			var patternStreamSpec = (PatternStreamSpecRaw) walker.StatementSpec.StreamSpecs[0];
 
 			var filterNode = (EvalFilterForgeNode) patternStreamSpec.EvalForgeNode;
-			Assert.AreEqual(1, filterNode.RawFilterSpec.FilterExpressions.Count);
+			ClassicAssert.AreEqual(1, filterNode.RawFilterSpec.FilterExpressions.Count);
 			var node = filterNode.RawFilterSpec.FilterExpressions[0];
 			var identNode = (ExprIdentNode) node.ChildNodes[0];
 			return identNode.UnresolvedPropertyName;

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -47,19 +47,18 @@ namespace com.espertech.esper.common.client.soda
         /// </returns>
         public static string GetSyntax(this ScheduleItemType value)
         {
-            switch (value)
-            {
+            switch (value) {
                 case ScheduleItemType.WILDCARD:
-                    return ("*");
+                    return "*";
 
                 case ScheduleItemType.LASTDAY:
-                    return ("last");
+                    return "last";
 
                 case ScheduleItemType.WEEKDAY:
-                    return ("weekday");
+                    return "weekday";
 
                 case ScheduleItemType.LASTWEEKDAY:
-                    return ("lastweekday");
+                    return "lastweekday";
             }
 
             throw new ArgumentException();

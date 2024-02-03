@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -16,12 +16,13 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.support.multithread
 {
     public class StmtNamedWindowQueryCallable : ICallable<object>
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private readonly RegressionEnvironment env;
         private readonly int numRepeats;
         private readonly RegressionPath path;
@@ -54,13 +55,13 @@ namespace com.espertech.esper.regressionlib.support.multithread
 
                     prepared.SetObject(1, loop);
                     var queryResult = env.Runtime.FireAndForgetService.ExecuteQuery(prepared);
-                    Assert.AreEqual(1, queryResult.Array.Length);
-                    Assert.AreEqual(threadKey, queryResult.Array[0].Get("TheString"));
-                    Assert.AreEqual((long) loop, queryResult.Array[0].Get("LongPrimitive"));
+                    ClassicAssert.AreEqual(1, queryResult.Array.Length);
+                    ClassicAssert.AreEqual(threadKey, queryResult.Array[0].Get("TheString"));
+                    ClassicAssert.AreEqual((long) loop, queryResult.Array[0].Get("LongPrimitive"));
                 }
             }
             catch (Exception ex) {
-                log.Error("Error in thread " + Thread.CurrentThread.ManagedThreadId, ex);
+                Log.Error("Error in thread " + Thread.CurrentThread.ManagedThreadId, ex);
                 return false;
             }
 

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -62,7 +62,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
                     "OperatorAnnotations",
                     OperatorAnnotations == null
                         ? ConstantNull()
-                        : LocalMethod(MakeAnnotations(typeof(Attribute[]), OperatorAnnotations, method, classScope)))
+                        : MakeAnnotations(typeof(Attribute[]), OperatorAnnotations, method, classScope))
                 .SetProperty(Ref("op"), "NumOutputPorts", Constant(NumOutputPorts))
                 .SetProperty(Ref("op"), "OperatorName", Constant(OperatorName))
                 .MethodReturn(Ref("op"));

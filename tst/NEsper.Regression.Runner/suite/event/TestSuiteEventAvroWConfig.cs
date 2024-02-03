@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -43,6 +43,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
                 session.Configuration.Common.AddEventType(clazz);
             }
 
+            session.Configuration.Common.EventMeta.AvroSettings.IsEnableAvro = true;
             session.Configuration.Common.EventMeta.AvroSettings.TypeRepresentationMapperClass =
                 typeof(EventAvroHook.MyTypeRepresentationMapper).FullName;
             session.Configuration.Common.EventMeta.AvroSettings.ObjectValueTypeWidenerFactoryClass =

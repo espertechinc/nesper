@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -41,7 +41,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
 
         public void MergeClasses(ISet<Type> classes)
         {
-            classes.AddToSet(ReturnType);
+            if (ReturnType != null) {
+                classes.AddToSet(ReturnType);
+            }
+
             foreach (var param in Params) {
                 param.MergeClasses(classes);
             }

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.scopetest;
@@ -17,6 +18,7 @@ using com.espertech.esper.common.@internal.supportunit.@event;
 using com.espertech.esper.compat.collections;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.@event.core
 {
@@ -81,7 +83,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             // test empty vector
             eventVector.Clear();
             events = EventBeanUtility.FlattenList(eventVector);
-            Assert.IsNull(events);
+            ClassicAssert.IsNull(events);
         }
 
         [Test]
@@ -96,22 +98,22 @@ namespace com.espertech.esper.common.@internal.@event.core
             eventVector.Add(new[] { testEvents[6] });
 
             var events = EventBeanUtility.Flatten(eventVector);
-            Assert.AreEqual(7, events.Length);
+            ClassicAssert.AreEqual(7, events.Length);
             for (var i = 0; i < testEvents.Length; i++)
             {
-                Assert.AreEqual(events[i], testEvents[i]);
+                ClassicAssert.AreEqual(events[i], testEvents[i]);
             }
 
             // test just one array
             eventVector.Clear();
             eventVector.Add(new[] { testEvents[2] });
             events = EventBeanUtility.Flatten(eventVector);
-            Assert.AreEqual(events[0], testEvents[2]);
+            ClassicAssert.AreEqual(events[0], testEvents[2]);
 
             // test empty vector
             eventVector.Clear();
             events = EventBeanUtility.Flatten(eventVector);
-            Assert.IsNull(events);
+            ClassicAssert.IsNull(events);
         }
 
         [Test]
@@ -119,20 +121,20 @@ namespace com.espertech.esper.common.@internal.@event.core
         {
             var setOne = MakeEventArray(new[] { "a1", "a2" });
             var setTwo = MakeEventArray(new[] { "b1", "b2", "b3" });
-            var total = EventBeanUtility.Append(setOne, setTwo);
+            var total = setOne.Concat(setTwo).ToArray();
 
-            Assert.AreEqual(setOne[0], total[0]);
-            Assert.AreEqual(setOne[1], total[1]);
-            Assert.AreEqual(setTwo[0], total[2]);
-            Assert.AreEqual(setTwo[1], total[3]);
-            Assert.AreEqual(setTwo[2], total[4]);
+            ClassicAssert.AreEqual(setOne[0], total[0]);
+            ClassicAssert.AreEqual(setOne[1], total[1]);
+            ClassicAssert.AreEqual(setTwo[0], total[2]);
+            ClassicAssert.AreEqual(setTwo[1], total[3]);
+            ClassicAssert.AreEqual(setTwo[2], total[4]);
 
             setOne = MakeEventArray(new[] { "a1" });
             setTwo = MakeEventArray(new[] { "b1" });
-            total = EventBeanUtility.Append(setOne, setTwo);
+            total = setOne.Concat(setTwo).ToArray();
 
-            Assert.AreEqual(setOne[0], total[0]);
-            Assert.AreEqual(setTwo[0], total[1]);
+            ClassicAssert.AreEqual(setOne[0], total[0]);
+            ClassicAssert.AreEqual(setTwo[0], total[1]);
         }
 
         [Test]
@@ -141,24 +143,24 @@ namespace com.espertech.esper.common.@internal.@event.core
             // Test list with 2 elements
             var eventList = MakeEventList(new[] { "a1", "a2" });
             var array = eventList.ToArrayOrNull();
-            Assert.AreEqual(2, array.Length);
-            Assert.AreEqual(eventList[0], array[0]);
-            Assert.AreEqual(eventList[1], array[1]);
+            ClassicAssert.AreEqual(2, array.Length);
+            ClassicAssert.AreEqual(eventList[0], array[0]);
+            ClassicAssert.AreEqual(eventList[1], array[1]);
 
             // Test list with 1 element
             eventList = MakeEventList(new[] { "a1" });
             array = eventList.ToArrayOrNull();
-            Assert.AreEqual(1, array.Length);
-            Assert.AreEqual(eventList[0], array[0]);
+            ClassicAssert.AreEqual(1, array.Length);
+            ClassicAssert.AreEqual(eventList[0], array[0]);
 
             // Test empty list
             eventList = MakeEventList(new string[0]);
             array = eventList.ToArrayOrNull();
-            Assert.IsNull(array);
+            ClassicAssert.IsNull(array);
 
             // Test null
             array = eventList.ToArrayOrNull();
-            Assert.IsNull(array);
+            ClassicAssert.IsNull(array);
         }
 
         [Test]
@@ -168,13 +170,13 @@ namespace com.espertech.esper.common.@internal.@event.core
             var getters = MakeGetters();
             var theEvent = SupportEventBeanFactory.CreateObject(supportEventTypeFactory, new SupportBean("a", 10));
             var properties = EventBeanUtility.GetPropertyArray(theEvent, getters);
-            Assert.AreEqual(2, properties.Length);
-            Assert.AreEqual("a", properties[0]);
-            Assert.AreEqual(10, properties[1]);
+            ClassicAssert.AreEqual(2, properties.Length);
+            ClassicAssert.AreEqual("a", properties[0]);
+            ClassicAssert.AreEqual(10, properties[1]);
 
             // try no properties
             properties = EventBeanUtility.GetPropertyArray(theEvent, new EventPropertyGetter[0]);
-            Assert.AreEqual(0, properties.Length);
+            ClassicAssert.AreEqual(0, properties.Length);
         }
 
         private EventPropertyGetter[] MakeGetters()

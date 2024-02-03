@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -20,7 +20,8 @@ using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
-using static com.espertech.esper.common.@internal.epl.expression.agg.accessagg.ExprAggMultiFunctionCountMinSketchNode; //MSG_NAME
+using static
+    com.espertech.esper.common.@internal.epl.expression.agg.accessagg.ExprAggMultiFunctionCountMinSketchNode; //MSG_NAME
 
 namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
 {
@@ -50,9 +51,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
         {
             AggregationValidationUtil.ValidateAggregationType(this, tableExpression, intoTableAgg, intoExpression);
 
-            if (factory is AggregationForgeFactoryAccessCountMinSketchAdd) {
-                var add =
-                    (AggregationForgeFactoryAccessCountMinSketchAdd) factory;
+            if (factory is AggregationForgeFactoryAccessCountMinSketchAdd add) {
                 var aggType = add.Parent.AggType;
                 if (aggType == CountMinSketchAggType.ADD) {
                     var clazz = add.AddOrFrequencyEvaluatorReturnType;
@@ -81,12 +80,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
         {
             var method = parent.MakeChild(
                 typeof(AggregationPortableValidationCountMinSketch),
-                this.GetType(),
+                GetType(),
                 classScope);
             method.Block
-                .DeclareVar<AggregationPortableValidationCountMinSketch>(
-                    "v",
-                    NewInstance(typeof(AggregationPortableValidationCountMinSketch)))
+                .DeclareVarNewInstance<AggregationPortableValidationCountMinSketch>("v")
                 .SetProperty(Ref("v"), "AcceptableValueTypes", Constant(acceptableValueTypes))
                 .MethodReturn(Ref("v"));
             return LocalMethod(method);
@@ -110,25 +107,28 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
             AggregationMethodForge forge;
             if (aggMethod == CountMinSketchAggMethod.FREQ) {
                 if (@params.Length == 0 || @params.Length > 1) {
-                    throw new ExprValidationException(GetMessagePrefix(aggMethod.Value) + "requires a single parameter expression");
+                    throw new ExprValidationException(
+                        GetMessagePrefix(aggMethod.Value) + "requires a single parameter expression");
                 }
 
                 ExprNodeUtilityValidate.GetValidatedSubtree(ExprNodeOrigin.AGGPARAM, @params, validationContext);
                 var frequencyEval = @params[0];
-                forge = new AgregationMethodCountMinSketchFreqForge(frequencyEval);
+                forge = new AggregationMethodCountMinSketchFreqForge(frequencyEval);
             }
             else {
                 if (@params.Length != 0) {
-                    throw new ExprValidationException(GetMessagePrefix(aggMethod.Value) + "requires a no parameter expressions");
+                    throw new ExprValidationException(
+                        GetMessagePrefix(aggMethod.Value) + "requires a no parameter expressions");
                 }
 
-                forge = new AgregationMethodCountMinSketchTopKForge();
+                forge = new AggregationMethodCountMinSketchTopKForge();
             }
 
             return new AggregationMultiFunctionMethodDesc(forge, null, null, null);
         }
 
-        private string GetMessagePrefix(CountMinSketchAggMethod aggType) {
+        private string GetMessagePrefix(CountMinSketchAggMethod aggType)
+        {
             return MSG_NAME + " aggregation function '" + aggType.GetMethodName() + "' ";
         }
     }

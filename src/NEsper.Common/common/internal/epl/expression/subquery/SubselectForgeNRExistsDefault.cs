@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -49,13 +49,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 throw new UnsupportedOperationException();
             }
 
-            var filter = CodegenLegoMethodExpression.CodegenExpression(filterEval, method, classScope, true);
+            var filter = CodegenLegoMethodExpression.CodegenExpression(filterEval, method, classScope);
             method.Block
-                .ForEach(typeof(EventBean), "subselectEvent", symbols.GetAddMatchingEvents(method))
+                .ForEach<EventBean>("subselectEvent", symbols.GetAddMatchingEvents(method))
                 .AssignArrayElement(REF_EVENTS_SHIFTED, Constant(0), Ref("subselectEvent"))
-                .DeclareVar<bool?>(
-                    "pass",
-                    LocalMethod(filter, REF_EVENTS_SHIFTED, ConstantTrue(), symbols.GetAddExprEvalCtx(method)))
+                .DeclareVar<bool?>("pass", LocalMethod(filter, REF_EVENTS_SHIFTED, ConstantTrue(), symbols.GetAddExprEvalCtx(method)))
                 .IfCondition(And(NotEqualsNull(Ref("pass")), Unbox(Ref("pass"))))
                 .BlockReturn(ConstantTrue())
                 .BlockEnd()

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -20,9 +20,9 @@ namespace com.espertech.esper.common.client.dataflow.core
         /// <summary>
         /// Ctor.
         /// </summary>
-        /// <param name="deploymentId">deployment id</param>
-        /// <param name="statementName">statement name</param>
-        /// <param name="epStatement">statement</param>
+        /// <param name = "deploymentId">deployment id</param>
+        /// <param name = "statementName">statement name</param>
+        /// <param name = "epStatement">statement</param>
         public EPDataFlowEPStatementFilterContext(
             string deploymentId,
             string statementName,
@@ -33,31 +33,10 @@ namespace com.espertech.esper.common.client.dataflow.core
             this.epStatement = epStatement;
         }
 
-        /// <summary>
-        /// Returns the deployment id
-        /// </summary>
-        /// <returns>deployment id</returns>
-        public string GetDeploymentId()
-        {
-            return deploymentId;
-        }
+        public string DeploymentId => deploymentId;
 
-        /// <summary>
-        /// Returns the statement name
-        /// </summary>
-        /// <returns>statement name</returns>
-        public string GetStatementName()
-        {
-            return statementName;
-        }
+        public string StatementName => statementName;
 
-        /// <summary>
-        /// Returns the statement, can safely be cast to EPStatement
-        /// </summary>
-        /// <returns>statement</returns>
-        public object GetEpStatement()
-        {
-            return epStatement;
-        }
+        public object EpStatement => epStatement;
     }
 } // end of namespace

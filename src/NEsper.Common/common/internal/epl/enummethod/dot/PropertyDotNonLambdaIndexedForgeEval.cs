@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                 return null;
             }
 
-            var key = (int) paramEval.Evaluate(eventsPerStream, isNewData, context);
+            var key = (int)paramEval.Evaluate(eventsPerStream, isNewData, context);
             return forge.IndexedGetter.Get(@event, key);
         }
 
@@ -55,10 +55,14 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                 typeof(PropertyDotNonLambdaIndexedForgeEval),
                 codegenClassScope);
 
-            var refEPS = exprSymbol.GetAddEPS(methodNode);
+            var refEPS = exprSymbol.GetAddEps(methodNode);
             var keyEvaluationType = forge.ParamForge.EvaluationType.GetUnboxedType();
-            var keyEvaluation = forge.ParamForge.EvaluateCodegen(keyEvaluationType, methodNode, exprSymbol, codegenClassScope);
-            
+            var keyEvaluation = forge.ParamForge.EvaluateCodegen(
+                keyEvaluationType,
+                methodNode,
+                exprSymbol,
+                codegenClassScope);
+
             methodNode.Block
                 .DeclareVar<EventBean>("@event", ArrayAtIndex(refEPS, Constant(forge.StreamId)))
                 .IfRefNullReturnNull("@event")

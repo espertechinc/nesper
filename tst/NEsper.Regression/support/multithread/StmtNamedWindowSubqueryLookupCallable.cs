@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -23,11 +23,12 @@ namespace com.espertech.esper.regressionlib.support.multithread
 {
     public class StmtNamedWindowSubqueryLookupCallable : ICallable<bool?>
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-        private readonly int numRepeats;
-        private readonly EPRuntime runtime;
-        private readonly EPStatement targetStatement;
-        private readonly int threadNum;
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        
+        private readonly int _numRepeats;
+        private readonly EPRuntime _runtime;
+        private readonly EPStatement _targetStatement;
+        private readonly int _threadNum;
 
         public StmtNamedWindowSubqueryLookupCallable(
             int threadNum,
@@ -35,30 +36,30 @@ namespace com.espertech.esper.regressionlib.support.multithread
             int numRepeats,
             EPStatement targetStatement)
         {
-            this.numRepeats = numRepeats;
-            this.threadNum = threadNum;
-            this.runtime = runtime;
-            this.targetStatement = targetStatement;
+            _numRepeats = numRepeats;
+            _threadNum = threadNum;
+            _runtime = runtime;
+            _targetStatement = targetStatement;
         }
 
         public bool? Call()
         {
             try {
                 var listener = new SupportMTUpdateListener();
-                targetStatement.AddListener(listener);
+                _targetStatement.AddListener(listener);
 
-                for (var loop = 0; loop < numRepeats; loop++) {
-                    var threadKey = "K" + loop + "_" + threadNum;
-                    var valueExpected = threadNum * 1000000000 + loop + 1;
+                for (var loop = 0; loop < _numRepeats; loop++) {
+                    var threadKey = "K" + loop + "_" + _threadNum;
+                    var valueExpected = _threadNum * 1000000000 + loop + 1;
 
                     // send insert event with string-value specific to thread
                     SendEvent(threadKey, valueExpected);
 
                     // send subquery trigger event with string-value specific to thread
-                    runtime.EventService.SendEventBean(new SupportBean(threadKey, -1), "SupportBean");
+                    _runtime.EventService.SendEventBean(new SupportBean(threadKey, -1), "SupportBean");
 
                     // assert trigger event received
-                    var events = listener.GetNewDataListCopy();
+                    var events = listener.NewDataListCopy;
                     var found = false;
                     foreach (var arr in events) {
                         found = arr
@@ -80,7 +81,7 @@ namespace com.espertech.esper.regressionlib.support.multithread
                 }
             }
             catch (Exception ex) {
-                log.Error("Error in thread " + Thread.CurrentThread.ManagedThreadId, ex);
+                Log.Error("Error in thread " + Thread.CurrentThread.ManagedThreadId, ex);
                 return false;
             }
 
@@ -94,7 +95,7 @@ namespace com.espertech.esper.regressionlib.support.multithread
             IDictionary<string, object> theEvent = new Dictionary<string, object>();
             theEvent.Put("key", key);
             theEvent.Put("intupd", intupd);
-            runtime.EventService.SendEventMap(theEvent, "MyUpdateEvent");
+            _runtime.EventService.SendEventMap(theEvent, "MyUpdateEvent");
         }
     }
 } // end of namespace

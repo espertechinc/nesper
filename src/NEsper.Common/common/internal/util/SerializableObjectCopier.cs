@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -13,6 +13,9 @@ using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters;
 using System.Runtime.Serialization.Formatters.Binary;
 
+using com.espertech.esper.common.client.util;
+using com.espertech.esper.common.@internal.util.serde;
+using com.espertech.esper.compat;
 using com.espertech.esper.container;
 
 namespace com.espertech.esper.common.@internal.util
@@ -22,7 +25,7 @@ namespace com.espertech.esper.common.@internal.util
     /// </summary>
     public class SerializableObjectCopier : IObjectCopier
     {
-        private readonly IContainer container;
+        private readonly IContainer _container;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SerializableObjectCopier"/> class.
@@ -30,7 +33,7 @@ namespace com.espertech.esper.common.@internal.util
         /// <param name="container">The container.</param>
         public SerializableObjectCopier(IContainer container)
         {
-            this.container = container;
+            _container = container;
         }
 
         /// <summary>
@@ -42,7 +45,11 @@ namespace com.espertech.esper.common.@internal.util
         /// </returns>
         public bool IsSupported(Type type)
         {
-            return type.IsSerializable || type.IsInterface;
+            // previously, we only allowed objects marked with the "Serializable" attribute to
+            // be serialized, but now we basically allow anything.
+            // return type.IsSerializable || type.IsInterface;
+            
+            return true;
         }
 
         /// <summary>
@@ -54,6 +61,29 @@ namespace com.espertech.esper.common.@internal.util
         /// <throws>TypeLoadException if the de-serialize fails</throws>
         public T Copy<T>(T orig)
         {
+#if NET6_0_OR_GREATER
+            TypeResolver typeResolver;
+
+            if (_container.Has<TypeResolver>()) {
+                typeResolver = _container.Resolve<TypeResolver>();
+            } else if (_container.Has<TypeResolverProvider>()) {
+                typeResolver = _container.Resolve<TypeResolverProvider>().TypeResolver;
+            } else {
+                typeResolver = TypeResolverDefault.INSTANCE;
+            }
+
+            lock (_container) {
+                if (!_container.Has<ObjectSerializer>()) {
+                    _container.Register<ObjectSerializer>(ic => new ObjectSerializer(typeResolver), Lifespan.Singleton);
+                }
+            }
+
+            var serializer = _container.Resolve<ObjectSerializer>();
+            //var serializer = new ObjectSerializer(typeResolver);
+            var serialized = serializer.SerializeAny(orig);
+            var deserialized = serializer.DeserializeAny(serialized);
+            return (T)deserialized;
+#else
             // Create the formatter
             var formatter = new BinaryFormatter();
             formatter.FilterLevel = TypeFilterLevel.Full;
@@ -63,14 +93,15 @@ namespace com.espertech.esper.common.@internal.util
             formatter.Binder = new TypeSerializationBinder();
             formatter.SurrogateSelector = new TypeSurrogateSelector();
 
-            using (MemoryStream stream = new MemoryStream()) {
+            using (var stream = new MemoryStream()) {
                 // Serialize the object graph to the stream
                 formatter.Serialize(stream, orig);
                 // Rewind the stream
                 stream.Seek(0, SeekOrigin.Begin);
                 // Deserialize the object graph from the stream
-                return (T) formatter.Deserialize(stream);
+                return (T)formatter.Deserialize(stream);
             }
+#endif
         }
 
         public static IObjectCopier GetInstance(IContainer container)
@@ -101,7 +132,7 @@ namespace com.espertech.esper.common.@internal.util
                 if (simpleResolve != null) {
                     return simpleResolve;
                 }
-                
+
                 var assembly = AppDomain.CurrentDomain
                     .GetAssemblies()
                     .FirstOrDefault(_ => _.FullName == assemblyName);
@@ -156,9 +187,15 @@ namespace com.espertech.esper.common.@internal.util
         /// </summary>
         public class TypeSurrogateSelector : ISurrogateSelector
         {
-            public virtual void ChainSelector(ISurrogateSelector selector) => throw new NotSupportedException();
+            public virtual void ChainSelector(ISurrogateSelector selector)
+            {
+                throw new NotSupportedException();
+            }
 
-            public virtual ISurrogateSelector GetNextSelector() => throw new NotSupportedException();
+            public virtual ISurrogateSelector GetNextSelector()
+            {
+                throw new NotSupportedException();
+            }
 
             public virtual ISerializationSurrogate GetSurrogate(
                 Type type,

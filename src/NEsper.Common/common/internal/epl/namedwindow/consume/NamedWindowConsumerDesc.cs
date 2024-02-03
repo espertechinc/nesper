@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -31,20 +31,12 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.consume
             this.agentInstanceContext = agentInstanceContext;
         }
 
-        public int NamedWindowConsumerId {
-            get => namedWindowConsumerId;
-        }
+        public int NamedWindowConsumerId => namedWindowConsumerId;
 
-        public ExprEvaluator FilterEvaluator {
-            get => filterEvaluator;
-        }
+        public ExprEvaluator FilterEvaluator => filterEvaluator;
 
-        public PropertyEvaluator OptPropertyEvaluator {
-            get => optPropertyEvaluator;
-        }
+        public PropertyEvaluator OptPropertyEvaluator => optPropertyEvaluator;
 
-        public AgentInstanceContext AgentInstanceContext {
-            get => agentInstanceContext;
-        }
+        public AgentInstanceContext AgentInstanceContext => agentInstanceContext;
     }
 } // end of namespace

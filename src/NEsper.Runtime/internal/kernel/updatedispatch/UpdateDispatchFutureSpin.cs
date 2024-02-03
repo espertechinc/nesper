@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -86,10 +86,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.updatedispatch
 
         /// <summary>Returns true if the dispatch completed for this future. </summary>
         /// <returns>true for completed, false if not</returns>
-        public bool IsCompleted()
-        {
-            return _isCompleted;
-        }
+        public bool IsCompleted => _isCompleted;
 
         public void Cancelled()
         {

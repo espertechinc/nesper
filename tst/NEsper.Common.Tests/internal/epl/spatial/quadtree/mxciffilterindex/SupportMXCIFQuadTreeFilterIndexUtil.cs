@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -15,6 +15,7 @@ using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilterindex
 {
@@ -54,7 +55,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
                 IList<object> received = new List<object>();
                 MXCIFQuadTreeFilterIndexCollect<ICollection<object>>
                     .CollectRange(tree, x, y, width, height, null, received, COLLECTION_COLLECTOR, null);
-                // Comment-me-in: System.out.println("// query(tree, " + x + ", " + y + ", " + width + ", " + height + "); -=> " + received);
+                // Comment-me-in: Console.WriteLine("// query(tree, " + x + ", " + y + ", " + width + ", " + height + "); -=> " + received);
                 return received.IsEmpty() ? null : received;
             };
 
@@ -74,7 +75,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
             String value,
             MXCIFQuadTree tree)
         {
-            // Comment-me-in: System.out.println("set(" + x + ", " + y + ", " + width + ", " + height + ", \"" + value + "\", tree);");
+            // Comment-me-in: Console.WriteLine("set(" + x + ", " + y + ", " + width + ", " + height + ", \"" + value + "\", tree);");
             MXCIFQuadTreeFilterIndexSet.Set(x, y, width, height, value, tree);
         }
 
@@ -84,8 +85,8 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
         {
             BoundingBox bb = tree.Root.Bb;
             AssertCollect(tree, bb.MinX, bb.MinY, bb.MaxX - bb.MinX, bb.MaxY - bb.MinY, expected);
-            Assert.AreEqual(expected.Length == 0 ? 0 : expected.SplitCsv().Length, MXCIFQuadTreeFilterIndexCount.Count(tree));
-            Assert.AreEqual(expected.Length == 0, MXCIFQuadTreeFilterIndexEmpty.IsEmpty(tree));
+            ClassicAssert.AreEqual(expected.Length == 0 ? 0 : expected.SplitCsv().Length, MXCIFQuadTreeFilterIndexCount.Count(tree));
+            ClassicAssert.AreEqual(expected.Length == 0, MXCIFQuadTreeFilterIndexEmpty.IsEmpty(tree));
         }
 
         internal static void AssertCollect(
@@ -113,8 +114,8 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
                 joiner.Add(value);
             }
 
-            Assert.AreEqual(expected, joiner.ToString());
-            Assert.IsTrue((expected.Length == 0 ? 0 : expected.SplitCsv().Length) <= MXCIFQuadTreeFilterIndexCount.Count(tree));
+            ClassicAssert.AreEqual(expected, joiner.ToString());
+            ClassicAssert.IsTrue((expected.Length == 0 ? 0 : expected.SplitCsv().Length) <= MXCIFQuadTreeFilterIndexCount.Count(tree));
         }
 
         internal static void Compare(
@@ -125,11 +126,11 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
             object expected,
             XYWHRectangleWValue rectangle)
         {
-            Assert.AreEqual(x, rectangle.X);
-            Assert.AreEqual(y, rectangle.Y);
-            Assert.AreEqual(width, rectangle.W);
-            Assert.AreEqual(height, rectangle.H);
-            Assert.AreEqual(expected, rectangle.Value);
+            ClassicAssert.AreEqual(x, rectangle.X);
+            ClassicAssert.AreEqual(y, rectangle.Y);
+            ClassicAssert.AreEqual(width, rectangle.W);
+            ClassicAssert.AreEqual(height, rectangle.H);
+            ClassicAssert.AreEqual(expected, rectangle.Value);
         }
     }
 } // end of namespace

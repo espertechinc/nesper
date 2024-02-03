@@ -1,16 +1,13 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
-
-using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.epl.join
 {
@@ -19,48 +16,45 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         public void Run(RegressionEnvironment env)
         {
             var text =
-                "@Name('s0') select irstream S0.Price, S1.Price from SupportMarketDataBean(Symbol='S0')#length(3) as S0," +
-                "SupportMarketDataBean(Symbol='S1')#length(3) as S1 " +
-                " where S0.Volume = S1.Volume";
+                "@name('s0') select irstream s0.Price, s1.Price from SupportMarketDataBean(Symbol='S0')#length(3) as s0," +
+                "SupportMarketDataBean(Symbol='S1')#length(3) as s1 " +
+                " where s0.Volume = s1.Volume";
             env.CompileDeployAddListenerMileZero(text, "s0");
 
             env.SendEventBean(MakeMarketDataEvent("S0", 100, 1));
-            Assert.IsFalse(env.Listener("s0").IsInvoked);
+            env.AssertListenerNotInvoked("s0");
 
             env.Milestone(1);
 
             env.SendEventBean(MakeMarketDataEvent("S1", 20, 1));
-            EPAssertionUtil.AssertPropsPerRow(
-                env.Listener("s0").NewDataListFlattened,
-                new[] {"S0.Price", "S1.Price"},
-                new[] {new object[] {100.0, 20.0}});
-            Assert.AreEqual(0, env.Listener("s0").OldDataListFlattened.Length);
-            env.Listener("s0").Reset();
+            env.AssertPropsPerRowIRPairFlattened(
+                "s0",
+                new string[] { "s0.Price", "s1.Price" },
+                new object[][] { new object[] { 100.0, 20.0 } },
+                null);
 
             env.Milestone(2);
 
             env.SendEventBean(MakeMarketDataEvent("S1", 21, 1));
-            EPAssertionUtil.AssertPropsPerRow(
-                env.Listener("s0").NewDataListFlattened,
-                new[] {"S0.Price", "S1.Price"},
-                new[] {new object[] {100.0, 21.0}});
-            Assert.AreEqual(0, env.Listener("s0").OldDataListFlattened.Length);
-            env.Listener("s0").Reset();
+            env.AssertPropsPerRowIRPairFlattened(
+                "s0",
+                new string[] { "s0.Price", "s1.Price" },
+                new object[][] { new object[] { 100.0, 21.0 } },
+                null);
 
             env.Milestone(3);
 
             env.SendEventBean(MakeMarketDataEvent("S1", 22, 2));
-            Assert.IsFalse(env.Listener("s0").IsInvoked);
+            env.AssertListenerNotInvoked("s0");
 
             env.Milestone(4);
 
             env.SendEventBean(MakeMarketDataEvent("S1", 23, 3));
-            Assert.AreEqual(0, env.Listener("s0").NewDataListFlattened.Length);
-            EPAssertionUtil.AssertPropsPerRow(
-                env.Listener("s0").OldDataListFlattened,
-                new[] {"S0.Price", "S1.Price"},
-                new[] {new object[] {100.0, 20.0}});
-            env.Listener("s0").Reset();
+            env.AssertPropsPerRowIRPairFlattened(
+                "s0",
+                new string[] { "s0.Price", "s1.Price" },
+                null,
+                new object[][] { new object[] { 100.0, 20.0 } });
 
             env.Milestone(5);
 

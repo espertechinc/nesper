@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            var timestamp = getter.Get((EventBean) target);
+            var timestamp = getter.Get((EventBean)target);
             if (timestamp == null) {
                 return null;
             }
@@ -55,23 +55,28 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
         {
             var methodNode = codegenMethodScope
                 .MakeChild(forge.returnType, typeof(DTLocalBeanIntervalNoEndTSEval), codegenClassScope)
-                .AddParam(typeof(EventBean), "target");
+                .AddParam<EventBean>("target");
 
-            methodNode.Block
-                .DeclareVar(
+
+            var block = methodNode.Block;
+            block.DeclareVar(
+                forge.getterResultType,
+                "timestamp",
+                CodegenLegoCast.CastSafeFromObjectType(
                     forge.getterResultType,
-                    "timestamp",
-                    CodegenLegoCast.CastSafeFromObjectType(
-                        forge.getterResultType,
-                        forge.getter.EventBeanGetCodegen(Ref("target"), methodNode, codegenClassScope)))
-                .IfRefNullReturnNull("timestamp")
-                .MethodReturn(
-                    forge.inner.Codegen(
-                        Ref("timestamp"),
-                        forge.getterResultType,
-                        methodNode,
-                        exprSymbol,
-                        codegenClassScope));
+                    forge.getter.EventBeanGetCodegen(Ref("target"), methodNode, codegenClassScope)));
+            if (!forge.getterResultType.IsPrimitive) {
+                block.IfRefNullReturnNull("timestamp");
+            }
+
+            block.MethodReturn(
+                forge.inner.Codegen(
+                    Ref("timestamp"),
+                    forge.getterResultType,
+                    methodNode,
+                    exprSymbol,
+                    codegenClassScope));
+
             return LocalMethod(methodNode, inner);
         }
     }

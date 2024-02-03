@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.collection
 {
@@ -18,42 +19,42 @@ namespace com.espertech.esper.common.@internal.collection
         {
             RefCountedSetAtomicInteger<string> set = new RefCountedSetAtomicInteger<string>();
 
-            Assert.IsFalse(set.Remove("K1"));
-            Assert.IsTrue(set.IsEmpty());
+            ClassicAssert.IsFalse(set.Remove("K1"));
+            ClassicAssert.IsTrue(set.IsEmpty());
 
-            Assert.IsTrue(set.Add("K1"));
-            Assert.IsFalse(set.IsEmpty());
-            Assert.IsTrue(set.Remove("K1"));
-            Assert.IsTrue(set.IsEmpty());
-            Assert.IsFalse(set.Remove("K1"));
+            ClassicAssert.IsTrue(set.Add("K1"));
+            ClassicAssert.IsFalse(set.IsEmpty());
+            ClassicAssert.IsTrue(set.Remove("K1"));
+            ClassicAssert.IsTrue(set.IsEmpty());
+            ClassicAssert.IsFalse(set.Remove("K1"));
 
-            Assert.IsTrue(set.Add("K1"));
-            Assert.IsFalse(set.IsEmpty());
-            Assert.IsFalse(set.Add("K1"));
-            Assert.IsFalse(set.Remove("K1"));
-            Assert.IsFalse(set.IsEmpty());
-            Assert.IsTrue(set.Remove("K1"));
-            Assert.IsFalse(set.Remove("K1"));
-            Assert.IsTrue(set.IsEmpty());
+            ClassicAssert.IsTrue(set.Add("K1"));
+            ClassicAssert.IsFalse(set.IsEmpty());
+            ClassicAssert.IsFalse(set.Add("K1"));
+            ClassicAssert.IsFalse(set.Remove("K1"));
+            ClassicAssert.IsFalse(set.IsEmpty());
+            ClassicAssert.IsTrue(set.Remove("K1"));
+            ClassicAssert.IsFalse(set.Remove("K1"));
+            ClassicAssert.IsTrue(set.IsEmpty());
 
-            Assert.IsTrue(set.Add("K1"));
-            Assert.IsFalse(set.Add("K1"));
-            Assert.IsFalse(set.Add("K1"));
-            Assert.IsFalse(set.Remove("K1"));
-            Assert.IsFalse(set.Remove("K1"));
-            Assert.IsFalse(set.IsEmpty());
-            Assert.IsTrue(set.Remove("K1"));
-            Assert.IsFalse(set.Remove("K1"));
-            Assert.IsTrue(set.IsEmpty());
+            ClassicAssert.IsTrue(set.Add("K1"));
+            ClassicAssert.IsFalse(set.Add("K1"));
+            ClassicAssert.IsFalse(set.Add("K1"));
+            ClassicAssert.IsFalse(set.Remove("K1"));
+            ClassicAssert.IsFalse(set.Remove("K1"));
+            ClassicAssert.IsFalse(set.IsEmpty());
+            ClassicAssert.IsTrue(set.Remove("K1"));
+            ClassicAssert.IsFalse(set.Remove("K1"));
+            ClassicAssert.IsTrue(set.IsEmpty());
 
-            Assert.IsTrue(set.Add("K1"));
-            Assert.IsFalse(set.Add("K1"));
-            Assert.IsTrue(set.Add("K2"));
+            ClassicAssert.IsTrue(set.Add("K1"));
+            ClassicAssert.IsFalse(set.Add("K1"));
+            ClassicAssert.IsTrue(set.Add("K2"));
             set.RemoveAll("K1");
-            Assert.IsFalse(set.IsEmpty());
+            ClassicAssert.IsFalse(set.IsEmpty());
             set.RemoveAll("K2");
-            Assert.IsTrue(set.Add("K1"));
-            Assert.IsTrue(set.Remove("K1"));
+            ClassicAssert.IsTrue(set.Add("K1"));
+            ClassicAssert.IsTrue(set.Remove("K1"));
         }
     }
 } // end of namespace

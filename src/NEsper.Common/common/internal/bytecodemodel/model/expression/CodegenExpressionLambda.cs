@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -18,8 +18,8 @@ using com.espertech.esper.compat.function;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 {
-    public class CodegenExpressionLambda : CodegenStatementWBlockBase 
-        , CodegenExpression
+    public class CodegenExpressionLambda : CodegenStatementWBlockBase,
+        CodegenExpression
     {
         public CodegenExpressionLambda(CodegenBlock parent) : base(parent)
         {
@@ -65,7 +65,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             return this;
         }
 
-        public CodegenExpressionLambda WithParam(Type paramType, string paramName)
+        public CodegenExpressionLambda WithParam(
+            Type paramType,
+            string paramName)
         {
             ParamNames.Add(new CodegenNamedParam(paramType, paramName));
             return this;
@@ -110,8 +112,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
             builder.Append("}");
 
-            if (LambdaType != null)
-            {
+            if (LambdaType != null) {
                 builder.Append(")");
             }
         }
@@ -125,9 +126,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
         public override void TraverseExpressions(Consumer<CodegenExpression> consumer)
         {
             // TODO
-            Block.Statements.ForEach(statement => {
-                statement.TraverseExpressions(consumer);
-            });
+            Block.Statements.ForEach(statement => { statement.TraverseExpressions(consumer); });
         }
     }
 } // end of namespace

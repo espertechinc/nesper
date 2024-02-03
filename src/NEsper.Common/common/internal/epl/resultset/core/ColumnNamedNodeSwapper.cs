@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -77,12 +77,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
             ExprNode node,
             string name)
         {
-            if (node is ExprIdentNode) {
-                if (node.ChildNodes.Length > 0) {
+            if (node is ExprIdentNode identNode) {
+                if (identNode.ChildNodes.Length > 0) {
                     throw new IllegalStateException("Ident node has unexpected child nodes");
                 }
 
-                var identNode = (ExprIdentNode) node;
                 return identNode.UnresolvedPropertyName.Equals(name) && identNode.StreamOrPropertyName == null;
             }
 

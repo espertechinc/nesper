@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -50,11 +50,11 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             }
 
             var @event = getterFragment.GetFragment(theEvent);
-            if (!(@event is EventBean)) {
+            if (!(@event is EventBean bean)) {
                 return null;
             }
 
-            return getterTimestamp.Get((EventBean) @event);
+            return getterTimestamp.Get(bean);
         }
 
         public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
@@ -71,7 +71,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                 typeof(long?),
                 typeof(ExprEvaluatorStreamDTPropFragment),
                 codegenClassScope);
-            var refEPS = exprSymbol.GetAddEPS(methodNode);
+            var refEPS = exprSymbol.GetAddEps(methodNode);
 
             methodNode.Block
                 .DeclareVar<EventBean>("theEvent", ArrayAtIndex(refEPS, Constant(streamId)))
@@ -95,7 +95,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
 
         public ExprNodeRenderable ExprForgeRenderable => this;
 
-        public void ToEPL(TextWriter writer,
+        public void ToEPL(
+            TextWriter writer,
             ExprPrecedenceEnum parentPrecedence,
             ExprNodeRenderableFlags flags)
         {

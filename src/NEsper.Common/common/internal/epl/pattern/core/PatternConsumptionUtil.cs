@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -37,8 +37,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
                         break;
                     }
                 }
-                else if (aPartial is EventBean[]) {
-                    var events = (EventBean[]) aPartial;
+                else if (aPartial is EventBean[] events) {
                     foreach (var @event in events) {
                         if (matchEvent.Contains(@event)) {
                             quit = true;

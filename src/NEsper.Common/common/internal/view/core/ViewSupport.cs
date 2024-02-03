@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -15,26 +15,23 @@ namespace com.espertech.esper.common.@internal.view.core
 {
     public abstract class ViewSupport : View
     {
-        protected internal View child;
-        protected internal Viewable parent;
+        private View _child;
+        private Viewable _parent;
 
         public virtual Viewable Parent {
-            get => parent;
-            set => parent = value;
+            get => _parent;
+            set => _parent = value;
         }
 
         public virtual View Child {
-            get => child;
-            set => child = value;
+            get => _child;
+            set => _child = value;
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
         }
-
-
-
 
         public abstract IEnumerator<EventBean> GetEnumerator();
         public abstract EventType EventType { get; }

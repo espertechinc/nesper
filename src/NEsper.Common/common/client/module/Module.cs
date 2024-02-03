@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -26,7 +26,6 @@ namespace com.espertech.esper.common.client.module
     /// The archive name and user object are opportunities to attach additional deployment
     /// information.
     /// </summary>
-    [Serializable]
     public class Module
     {
         /// <summary>Ctor. </summary>

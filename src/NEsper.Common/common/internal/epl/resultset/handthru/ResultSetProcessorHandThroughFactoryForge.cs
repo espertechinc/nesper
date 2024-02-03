@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -13,156 +13,162 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.epl.resultset.core;
-using com.espertech.esper.common.@internal.epl.resultset.select.core;
+using com.espertech.esper.compat;
 
-using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.resultset.handthru
 {
     /// <summary>
-    ///     Result set processor prototye for the hand-through case:
-    ///     no aggregation functions used in the select clause, and no group-by, no having and ordering.
+    /// Result set processor prototype for the hand-through case:
+    /// no aggregation functions used in the select clause, and no group-by, no having and ordering.
     /// </summary>
-    public class ResultSetProcessorHandThroughFactoryForge : ResultSetProcessorFactoryForge
+    public class ResultSetProcessorHandThroughFactoryForge : ResultSetProcessorFactoryForgeBase
     {
-        private readonly SelectExprProcessorForge selectExprProcessorForge;
-
         public ResultSetProcessorHandThroughFactoryForge(
             EventType resultEventType,
-            SelectExprProcessorForge selectExprProcessorForge,
-            bool selectRStream)
+            EventType[] typesPerStream,
+            bool isSelectRStream) : base(resultEventType, typesPerStream)
         {
-            ResultEventType = resultEventType;
-            this.selectExprProcessorForge = selectExprProcessorForge;
-            IsSelectRStream = selectRStream;
+            IsSelectRStream = isSelectRStream;
         }
-
-        public EventType ResultEventType { get; }
 
         public bool IsSelectRStream { get; }
 
-        public Type InterfaceClass => typeof(ResultSetProcessor);
+        public override Type InterfaceClass => typeof(ResultSetProcessor);
 
-        public void InstanceCodegen(
+        public override void InstanceCodegen(
             CodegenInstanceAux instance,
             CodegenClassScope classScope,
             CodegenCtor factoryCtor,
             IList<CodegenTypedParam> factoryMembers)
         {
+            throw NotImplemented();
         }
 
-        public void ProcessViewResultCodegen(
+        public override void ProcessViewResultCodegen(
             CodegenClassScope classScope,
             CodegenMethod method,
             CodegenInstanceAux instance)
         {
-            ResultSetProcessorHandThrough.ProcessViewResultCodegen(this, method);
+            throw NotImplemented();
         }
 
-        public void ProcessJoinResultCodegen(
+        public override void ProcessJoinResultCodegen(
             CodegenClassScope classScope,
             CodegenMethod method,
             CodegenInstanceAux instance)
         {
-            ResultSetProcessorHandThrough.ProcessJoinResultCodegen(this, method);
+            throw NotImplemented();
         }
 
-        public void GetEnumeratorViewCodegen(
+        public override void GetEnumeratorViewCodegen(
             CodegenClassScope classScope,
             CodegenMethod method,
             CodegenInstanceAux instance)
         {
-            ResultSetProcessorHandThrough.GetEnumeratorViewCodegen(method);
+            throw NotImplemented();
         }
 
-        public void GetEnumeratorJoinCodegen(
+        public override void GetEnumeratorJoinCodegen(
             CodegenClassScope classScope,
             CodegenMethod method,
             CodegenInstanceAux instance)
         {
-            ResultSetProcessorHandThrough.GetEnumeratorJoinCodegen(method);
+            throw NotImplemented();
         }
 
-        public void ProcessOutputLimitedViewCodegen(
+        public override void ProcessOutputLimitedViewCodegen(
             CodegenClassScope classScope,
             CodegenMethod method,
             CodegenInstanceAux instance)
         {
-            method.Block.MethodReturn(ConstantNull());
+            throw NotImplemented();
         }
 
-        public void ProcessOutputLimitedJoinCodegen(
+        public override void ProcessOutputLimitedJoinCodegen(
             CodegenClassScope classScope,
             CodegenMethod method,
             CodegenInstanceAux instance)
         {
-            method.Block.MethodReturn(ConstantNull());
+            throw NotImplemented();
         }
 
-        public void ApplyViewResultCodegen(
+        public override void ApplyViewResultCodegen(
             CodegenClassScope classScope,
             CodegenMethod method,
             CodegenInstanceAux instance)
         {
+            throw NotImplemented();
         }
 
-        public void ApplyJoinResultCodegen(
+        public override void ApplyJoinResultCodegen(
             CodegenClassScope classScope,
             CodegenMethod method,
             CodegenInstanceAux instance)
         {
+            throw NotImplemented();
         }
 
-        public void ContinueOutputLimitedLastAllNonBufferedViewCodegen(
+        public override void ContinueOutputLimitedLastAllNonBufferedViewCodegen(
             CodegenClassScope classScope,
             CodegenMethod method,
             CodegenInstanceAux instance)
         {
-            method.Block.MethodReturn(ConstantNull());
+            throw NotImplemented();
         }
 
-        public void ContinueOutputLimitedLastAllNonBufferedJoinCodegen(
+        public override void ContinueOutputLimitedLastAllNonBufferedJoinCodegen(
             CodegenClassScope classScope,
             CodegenMethod method,
             CodegenInstanceAux instance)
         {
-            method.Block.MethodReturn(ConstantNull());
+            throw NotImplemented();
         }
 
-        public void ProcessOutputLimitedLastAllNonBufferedViewCodegen(
+        public override void ProcessOutputLimitedLastAllNonBufferedViewCodegen(
             CodegenClassScope classScope,
             CodegenMethod method,
             CodegenInstanceAux instance)
         {
+            throw NotImplemented();
         }
 
-        public void ProcessOutputLimitedLastAllNonBufferedJoinCodegen(
+        public override void ProcessOutputLimitedLastAllNonBufferedJoinCodegen(
             CodegenClassScope classScope,
             CodegenMethod method,
             CodegenInstanceAux instance)
         {
+            throw NotImplemented();
         }
 
-        public void AcceptHelperVisitorCodegen(
+        public override void AcceptHelperVisitorCodegen(
             CodegenClassScope classScope,
             CodegenMethod method,
             CodegenInstanceAux instance)
         {
+            throw NotImplemented();
         }
 
-        public void StopMethodCodegen(
+        public override void StopMethodCodegen(
             CodegenClassScope classScope,
             CodegenMethod method,
             CodegenInstanceAux instance)
         {
+            throw NotImplemented();
         }
 
-        public void ClearMethodCodegen(
+        public override void ClearMethodCodegen(
             CodegenClassScope classScope,
             CodegenMethod method)
         {
+            throw NotImplemented();
         }
 
-        public string InstrumentedQName => "ResultSetProcessSimple";
+        public override string InstrumentedQName => "ResultSetProcessSimple";
+
+        private UnsupportedOperationException NotImplemented()
+        {
+            throw new UnsupportedOperationException("Implemented by " + typeof(ResultSetProcessorHandThroughImpl));
+        }
     }
 } // end of namespace

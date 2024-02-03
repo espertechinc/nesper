@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -11,31 +11,38 @@ using System.Threading;
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.compat;
+using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.util;
 using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esper.regressionlib.support.client.SupportCompileDeployUtil;
 
 namespace com.espertech.esper.regressionlib.suite.multithread
 {
-    public class MultithreadStmtNamedWindowUniqueTwoWJoinConsumer
+    public class MultithreadStmtNamedWindowUniqueTwoWJoinConsumer : RegressionExecutionPreConfigured
     {
         private int _count;
         private EPRuntimeProvider _runtimeProvider;
+        private readonly Configuration _configuration;
 
-        public void Run(Configuration configuration)
+        public MultithreadStmtNamedWindowUniqueTwoWJoinConsumer(Configuration configuration)
+        {
+            _configuration = configuration;
+        }
+
+        public void Run()
         {
             _runtimeProvider = new EPRuntimeProvider();
-            
-            configuration.Common.AddEventType(typeof(EventOne));
-            configuration.Common.AddEventType(typeof(EventTwo));
-            
-            RunAssertion(1, true, null, null, configuration);
-            RunAssertion(2, false, true, Locking.SPIN, configuration);
-            RunAssertion(3, false, true, Locking.SUSPEND, configuration);
-            RunAssertion(4, false, false, null, configuration);
+
+            _configuration.Common.AddEventType(typeof(EventOne));
+            _configuration.Common.AddEventType(typeof(EventTwo));
+
+            RunAssertion(1, true, null, null, _configuration);
+            RunAssertion(2, false, true, Locking.SPIN, _configuration);
+            RunAssertion(3, false, true, Locking.SUSPEND, _configuration);
+            RunAssertion(4, false, false, null, _configuration);
         }
 
         private void RunAssertion(
@@ -69,7 +76,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                       "insert into EventOneWindow select * from EventOne;\n" +
                       "create window EventTwoWindow#unique(Key) as EventTwo;\n" +
                       "insert into EventTwoWindow select * from EventTwo;\n" +
-                      "@Name('out') select * from EventOneWindow as e1, EventTwoWindow as e2 where e1.Key = e2.Key";
+                      "@name('out') select * from EventOneWindow as e1, EventTwoWindow as e2 where e1.Key = e2.Key";
             var deployed = CompileDeploy(epl, runtime, config);
 
             var listener = new SupportMTUpdateListener();
@@ -136,7 +143,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             foreach (var events in delivered) {
                 var idE1 = events[0].Get("e1.Instance").AsInt64();
                 var idE2 = events[0].Get("e2.Instance").AsInt64();
-                // comment-in when needed: System.out.println("Received " + IdE1 + " " + IdE2);
+                // comment-in when needed: Console.WriteLine("Received " + IdE1 + " " + IdE2);
 
                 if (previousIdE1 != null) {
                     var incorrect = idE1 != previousIdE1 && idE2 != previousIdE2;
@@ -146,7 +153,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                     }
 
                     if (incorrect) {
-                        // comment-in when needed: System.out.println("Non-Monotone increase (this is still correct but noteworthy)");
+                        // comment-in when needed: Console.WriteLine("Non-Monotone increase (this is still correct but noteworthy)");
                         countNotMonotone++;
                     }
                 }
@@ -156,16 +163,16 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             }
 
             if (useDefault || preserve.GetValueOrDefault()) {
-                Assert.AreEqual(0, countMultiDeliveries, "multiple row deliveries: " + countMultiDeliveries);
+                ClassicAssert.AreEqual(0, countMultiDeliveries, "multiple row deliveries: " + countMultiDeliveries);
                 // the number of non-monotone delivers should be small but not zero
                 // this is because when the event get generated and when the event actually gets processed may not be in the same order
-                Assert.IsTrue(countNotMonotone < 100, "count not monotone: " + countNotMonotone);
-                Assert.IsTrue(
+                ClassicAssert.IsTrue(countNotMonotone < 100, "count not monotone: " + countNotMonotone);
+                ClassicAssert.IsTrue(
                     delivered.Count >=
                     197); // its possible to not have 199 since there may not be events on one side of the join
             }
             else {
-                Assert.IsTrue(countNotMonotone > 5, "count not monotone: " + countNotMonotone);
+                ClassicAssert.IsTrue(countNotMonotone > 5, "count not monotone: " + countNotMonotone);
             }
 
             runtime.Destroy();
@@ -195,7 +202,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                     return false;
                 }
 
-                var eventOne = (EventOne) o;
+                var eventOne = (EventOne)o;
 
                 return Key.Equals(eventOne.Key);
             }
@@ -230,7 +237,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                     return false;
                 }
 
-                var eventTwo = (EventTwo) o;
+                var eventTwo = (EventTwo)o;
 
                 return Key.Equals(eventTwo.Key);
             }

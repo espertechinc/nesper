@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 
+using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -25,7 +26,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
 
         public static readonly CodegenExpressionRef REF_MATCHINGEVENTS = Ref(NAME_MATCHINGEVENTS);
 
-        private CodegenExpressionRef optionalMatchingEventRef;
+        private CodegenExpressionRef _optionalMatchingEventRef;
 
         public ExprSubselectEvalMatchSymbol()
             : base(false, null)
@@ -34,18 +35,21 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
 
         public CodegenExpressionRef GetAddMatchingEvents(CodegenMethodScope scope)
         {
-            if (optionalMatchingEventRef == null) {
-                optionalMatchingEventRef = REF_MATCHINGEVENTS;
+            if (_optionalMatchingEventRef == null) {
+                _optionalMatchingEventRef = REF_MATCHINGEVENTS;
             }
 
-            scope.AddSymbol(optionalMatchingEventRef);
-            return optionalMatchingEventRef;
+            scope.AddSymbol(_optionalMatchingEventRef);
+            return _optionalMatchingEventRef;
         }
 
         public override void Provide(IDictionary<string, Type> symbols)
         {
-            if (optionalMatchingEventRef != null) {
-                symbols.Put(optionalMatchingEventRef.Ref, typeof(FlexCollection));
+            if (_optionalMatchingEventRef != null) {
+                // NOTE: AJ - changed this from FlexCollection to ICollection<EventBean>
+                //   - the typing system is more exact and so the need for FlexCollection
+                //   - here seems a bit too broad.
+                symbols.Put(_optionalMatchingEventRef.Ref, typeof(ICollection<EventBean>));
             }
 
             base.Provide(symbols);

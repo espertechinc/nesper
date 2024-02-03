@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -185,21 +185,6 @@ namespace com.espertech.esper.runtime.@internal.namedwindow
                         return result;
                     },
                     work.Add);
-
-#if false
-                var enumerator = dispatches.GetEnumerator();
-                while (enumerator.MoveNext()) {
-                    var next = enumerator.Current;
-                    var earlier = next.Earlier;
-                    if (earlier == null || work.Contains(earlier)) {
-                        work.Add(next);
-                        enumerator.Remove();
-                    }
-                    else {
-                        break;
-                    }
-                }
-#endif
 
                 ProcessDispatches(work, dispatchesPerStmt);
             }

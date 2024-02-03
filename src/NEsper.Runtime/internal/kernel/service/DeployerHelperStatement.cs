@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -29,7 +29,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 {
 	public class DeployerHelperStatement
 	{
-		private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
 		internal static EPStatement[] DeployStatements(
 			int rolloutItemNumber,
@@ -40,40 +40,57 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 			string deploymentId,
 			EPRuntimeSPI epRuntime)
 		{
-			var statements = new EPStatement[lightweights.Count];
-			var count = 0;
-			foreach (var lightweight in lightweights) {
-
-				EPStatementSPI stmt;
-				try {
-					stmt = DeployerHelperStatement.DeployStatement(recovery, lightweight, epRuntime);
-				}
-				catch (Exception ex) {
-					try {
-						ReverseDeployment(deploymentId, modulePaths.DeploymentTypes, lightweights, statements, provider, epRuntime.ServicesContext);
-					}
-					catch (Exception udex) {
-						log.Warn(udex.Message, udex);
-					}
-
-					throw new EPDeployException("Failed to deploy: " + ex.Message, ex, rolloutItemNumber);
-				}
-
-				statements[count++] = stmt;
-
-				if (InstrumentationHelper.ENABLED) {
-					InstrumentationHelper.Get()
-						.QaEngineManagementStmtStarted(
-							epRuntime.URI,
-							deploymentId,
-							lightweight.StatementContext.StatementId,
-							stmt.Name,
-							(string) stmt.GetProperty(StatementProperty.EPL),
-							epRuntime.EventService.CurrentTime);
-				}
+			if (InstrumentationHelper.ENABLED) {
+				InstrumentationHelper.Get().QRuntimeManagementDeploy(epRuntime.URI, deploymentId, lightweights.Count);
 			}
 
-			return statements;
+			try {
+				var statements = new EPStatement[lightweights.Count];
+				var count = 0;
+				foreach (var lightweight in lightweights) {
+
+					EPStatementSPI stmt;
+					try {
+						stmt = DeployerHelperStatement.DeployStatement(recovery, lightweight, epRuntime);
+					}
+					catch (Exception ex) {
+						try {
+							ReverseDeployment(
+								deploymentId,
+								modulePaths.DeploymentTypes,
+								lightweights,
+								statements,
+								provider,
+								epRuntime.ServicesContext);
+						}
+						catch (Exception udex) {
+							Log.Warn(udex.Message, udex);
+						}
+
+						throw new EPDeployException("Failed to deploy: " + ex.Message, ex, rolloutItemNumber);
+					}
+
+					statements[count++] = stmt;
+
+					if (InstrumentationHelper.ENABLED) {
+						InstrumentationHelper.Get()
+							.QaEngineManagementStmtStarted(
+								epRuntime.URI,
+								deploymentId,
+								lightweight.StatementContext.StatementId,
+								stmt.Name,
+								(string)stmt.GetProperty(StatementProperty.EPL),
+								epRuntime.EventService.CurrentTime);
+					}
+				}
+
+				return statements;
+			}
+			finally {
+				if (InstrumentationHelper.ENABLED) {
+					InstrumentationHelper.Get().ARuntimeManagementDeploy(epRuntime.URI);
+				}
+			}
 		}
 
 		private static EPStatementSPI DeployStatement(
@@ -82,7 +99,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 			EPRuntimeSPI epRuntime)
 		{
 			// statement-create: safe operation for registering things
-			var statementAgentInstanceFactory = lightweight.StatementContext.StatementAIFactoryProvider.Factory;
+			StatementAgentInstanceFactory statementAgentInstanceFactory = lightweight.StatementContext.StatementAIFactoryProvider.Factory;
 			statementAgentInstanceFactory.StatementCreate(lightweight.StatementContext);
 
 			// add statement

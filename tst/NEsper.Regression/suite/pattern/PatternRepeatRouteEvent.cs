@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -9,10 +9,12 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.pattern
 {
@@ -21,9 +23,11 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
+#if REGRESSION_EXECUTIONS
             WithSingle(execs);
             WithCascade(execs);
-            WithTimer(execs);
+            With(Timer)(execs);
+#endif
             return execs;
         }
 
@@ -73,9 +77,14 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         /// </summary>
         internal class PatternRouteSingle : RegressionExecution
         {
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.OBSERVEROPS);
+            }
+
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select * from pattern[every tag=SupportBean]";
+                var epl = "@name('s0') select * from pattern[every tag=SupportBean]";
                 env.CompileDeploy(epl);
 
                 var listener = new SingleRouteUpdateListener(env.Runtime);
@@ -85,7 +94,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 SendEvent(env.Runtime, 0);
 
                 // Should have fired X times
-                Assert.AreEqual(1000, listener.Count);
+                ClassicAssert.AreEqual(1000, listener.Count);
 
                 env.UndeployAll();
             }
@@ -98,9 +107,14 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         /// </summary>
         internal class PatternRouteCascade : RegressionExecution
         {
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.OBSERVEROPS);
+            }
+
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select * from pattern[every tag=SupportBean]";
+                var epl = "@name('s0') select * from pattern[every tag=SupportBean]";
                 env.CompileDeploy(epl);
 
                 var listener = new CascadeRouteUpdateListener(env.Runtime);
@@ -110,8 +124,8 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 SendEvent(env.Runtime, 2); // the 2 translates to number of new events routed
 
                 // Should have fired X times
-                Assert.AreEqual(9, listener.CountReceived);
-                Assert.AreEqual(8, listener.CountRouted);
+                ClassicAssert.AreEqual(9, listener.CountReceived);
+                ClassicAssert.AreEqual(8, listener.CountRouted);
 
                 //  Num    Received         Routes      Num
                 //  2             1           2         3
@@ -124,25 +138,30 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
         internal class PatternRouteTimer : RegressionExecution
         {
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.OBSERVEROPS);
+            }
+
             public void Run(RegressionEnvironment env)
             {
                 env.AdvanceTime(0);
 
-                var epl = "@Name('s0') select * from pattern[every tag=SupportBean]";
+                var epl = "@name('s0') select * from pattern[every tag=SupportBean]";
                 var eventListener = new SingleRouteUpdateListener(env.Runtime);
                 env.CompileDeploy(epl).Statement("s0").AddListener(eventListener);
 
-                epl = "@Name('s1') select * from pattern[every timer:at(*,*,*,*,*,*)]";
+                epl = "@name('s1') select * from pattern[every timer:at(*,*,*,*,*,*)]";
                 var timeListener = new SingleRouteUpdateListener(env.Runtime);
                 env.CompileDeploy(epl).Statement("s1").AddListener(timeListener);
 
-                Assert.AreEqual(0, timeListener.Count);
-                Assert.AreEqual(0, eventListener.Count);
+                ClassicAssert.AreEqual(0, timeListener.Count);
+                ClassicAssert.AreEqual(0, eventListener.Count);
 
                 env.AdvanceTime(10000);
 
-                Assert.AreEqual(1, timeListener.Count);
-                Assert.AreEqual(1000, eventListener.Count);
+                ClassicAssert.AreEqual(1, timeListener.Count);
+                ClassicAssert.AreEqual(1000, eventListener.Count);
 
                 env.UndeployAll();
             }
@@ -189,7 +208,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             {
                 CountReceived++;
                 var newEvents = eventArgs.NewEvents;
-                var theEvent = (SupportBean) newEvents[0].Get("tag");
+                var theEvent = (SupportBean)newEvents[0].Get("tag");
                 var numNewEvents = theEvent.IntPrimitive;
 
                 for (var i = 0; i < numNewEvents; i++) {

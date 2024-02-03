@@ -1,11 +1,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
@@ -16,10 +17,12 @@ using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.epl.expression.agg.@base;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.ops;
+using com.espertech.esper.common.@internal.epl.expression.subquery;
 using com.espertech.esper.common.@internal.epl.expression.visitor;
 using com.espertech.esper.common.@internal.epl.namedwindow.core;
 using com.espertech.esper.common.@internal.epl.output.condition;
 using com.espertech.esper.common.@internal.epl.streamtype;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.common.@internal.view.access;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.compat;
@@ -41,7 +44,9 @@ namespace com.espertech.esper.common.@internal.statement.helper
 
             var visitorProps = new ExprNodeIdentifierCollectVisitor();
             foreach (var node in visitorSubselects.Subselects) {
-                node.StatementSpecCompiled.Raw.WhereClause?.Accept(visitorProps);
+                if (node.StatementSpecCompiled.Raw.WhereClause != null) {
+                    node.StatementSpecCompiled.Raw.WhereClause.Accept(visitorProps);
+                }
             }
 
             foreach (var node in visitorProps.ExprProperties) {
@@ -63,9 +68,9 @@ namespace com.espertech.esper.common.@internal.statement.helper
             StatementCompileTimeServices compileTimeServices)
         {
             var validationContext = new ExprValidationContextBuilder(streamTypeService, raw, compileTimeServices)
-                    .WithAllowBindingConsumption(allowTableConsumption)
-                    .WithAllowTableAggReset(allowTableAggReset)
-                    .Build();
+                .WithAllowBindingConsumption(allowTableConsumption)
+                .WithAllowTableAggReset(allowTableAggReset)
+                .Build();
             var validated = ExprNodeUtilityValidate.GetValidatedSubtree(exprNodeOrigin, exprNode, validationContext);
             ValidateNoAggregations(validated, errorMsg);
             return validated;
@@ -74,21 +79,20 @@ namespace com.espertech.esper.common.@internal.statement.helper
         public static void ValidateNoDataWindowOnNamedWindow(IList<ViewFactoryForge> forges)
         {
             var hasDataWindow = new AtomicBoolean();
-            ViewForgeVisitor visitor = new ProxyViewForgeVisitor {
-                ProcVisit = forge => {
-                    if (forge is DataWindowViewForge) {
+            var visitor = new ProxyViewForgeVisitor() {
+                ProcVisit = factoryForge => {
+                    if (factoryForge is DataWindowViewForge) {
                         hasDataWindow.Set(true);
                     }
                 }
             };
-
+            
             foreach (var forge in forges) {
                 forge.Accept(visitor);
             }
 
             if (hasDataWindow.Get()) {
-                throw new ExprValidationException(
-                    NamedWindowManagementServiceConstants.ERROR_MSG_NO_DATAWINDOW_ALLOWED);
+                throw new ExprValidationException(NamedWindowManagementServiceConstants.ERROR_MSG_NO_DATAWINDOW_ALLOWED);
             }
         }
 
@@ -99,7 +103,7 @@ namespace com.espertech.esper.common.@internal.statement.helper
             StatementRawInfo statementRawInfo,
             StatementCompileTimeServices compileTimeServices)
         {
-            var intoTableName = statementSpec.IntoTableSpec == null ? null : statementSpec.IntoTableSpec.Name;
+            var intoTableName = statementSpec.IntoTableSpec?.Name;
 
             ExprNode whereClauseValidated = null;
             if (statementSpec.WhereClause != null) {
@@ -119,8 +123,7 @@ namespace com.espertech.esper.common.@internal.statement.helper
                         ExprNodeOrigin.FILTER,
                         whereClause,
                         validationContext);
-                    if (whereClause.Forge.EvaluationType != typeof(bool) &&
-                        whereClause.Forge.EvaluationType != typeof(bool?)) {
+                    if (!whereClause.Forge.EvaluationType.IsTypeBoolean()) {
                         throw new ExprValidationException(
                             "The where-clause filter expression must return a boolean value");
                     }
@@ -140,18 +143,18 @@ namespace com.espertech.esper.common.@internal.statement.helper
                 }
             }
 
-            if ((statementSpec.OutputLimitSpec != null) && 
-                (statementSpec.OutputLimitSpec.WhenExpressionNode != null || 
-                 statementSpec.OutputLimitSpec.AndAfterTerminateExpr != null || 
+            if (statementSpec.OutputLimitSpec != null &&
+                (statementSpec.OutputLimitSpec.WhenExpressionNode != null ||
+                 statementSpec.OutputLimitSpec.AndAfterTerminateExpr != null ||
                  statementSpec.OutputLimitSpec.AndAfterTerminateThenExpressions != null)) {
                 // Validate where clause, initializing nodes to the stream ids used
-                EventType outputLimitType = OutputConditionExpressionTypeUtil.GetBuiltInEventType(
+                var outputLimitType = OutputConditionExpressionTypeUtil.GetBuiltInEventType(
                     statementRawInfo.ModuleName,
                     compileTimeServices.BeanEventTypeFactoryPrivate);
                 StreamTypeService typeServiceOutputWhen = new StreamTypeServiceImpl(
-                    new[] {outputLimitType},
-                    new string[] {null},
-                    new[] {true},
+                    new EventType[] { outputLimitType },
+                    new string[] { null },
+                    new bool[] { true },
                     false,
                     false);
                 var validationContext = new ExprValidationContextBuilder(
@@ -168,8 +171,7 @@ namespace com.espertech.esper.common.@internal.statement.helper
                         outputLimitWhenNode,
                         validationContext);
                     statementSpec.OutputLimitSpec.WhenExpressionNode = outputLimitWhenNode;
-
-                    if (outputLimitWhenNode.Forge.EvaluationType.GetBoxedType() != typeof(bool?)) {
+                    if (!outputLimitWhenNode.Forge.EvaluationType.IsTypeBoolean()) {
                         throw new ExprValidationException(
                             "The when-trigger expression in the OUTPUT WHEN clause must return a boolean-type value");
                     }
@@ -192,8 +194,7 @@ namespace com.espertech.esper.common.@internal.statement.helper
                         statementSpec.OutputLimitSpec.AndAfterTerminateExpr,
                         validationContext);
                     statementSpec.OutputLimitSpec.AndAfterTerminateExpr = validated;
-
-                    if (validated.Forge.EvaluationType.GetBoxedType() != typeof(bool?)) {
+                    if (!validated.Forge.EvaluationType.IsTypeBoolean()) {
                         throw new ExprValidationException(
                             "The terminated-and expression must return a boolean-type value");
                     }
@@ -204,10 +205,12 @@ namespace com.espertech.esper.common.@internal.statement.helper
                 }
 
                 // validate then-expression
-                ValidateThenSetAssignments(statementSpec.OutputLimitSpec.ThenExpressions, validationContext, false);
+                ValidateThenSetAssignments(statementSpec.OutputLimitSpec.ThenExpressions, validationContext);
 
                 // validate after-terminated then-expression
-                ValidateThenSetAssignments(statementSpec.OutputLimitSpec.AndAfterTerminateThenExpressions, validationContext, false);
+                ValidateThenSetAssignments(
+                    statementSpec.OutputLimitSpec.AndAfterTerminateThenExpressions,
+                    validationContext);
             }
 
             for (var outerJoinCount = 0; outerJoinCount < statementSpec.OuterJoinDescList.Count; outerJoinCount++) {
@@ -226,7 +229,7 @@ namespace com.espertech.esper.common.@internal.statement.helper
                     );
 
                     if (outerJoinDesc.AdditionalLeftNodes != null) {
-                        ISet<int> streamSet = new HashSet<int>();
+                        ISet<int?> streamSet = new HashSet<int?>();
                         streamSet.Add(streamIdPair.First);
                         streamSet.Add(streamIdPair.Second);
                         for (var i = 0; i < outerJoinDesc.AdditionalLeftNodes.Length; i++) {
@@ -246,7 +249,8 @@ namespace com.espertech.esper.common.@internal.statement.helper
                                 var message =
                                     "Outer join ON-clause columns must refer to properties of the same joined streams" +
                                     " when using multiple columns in the on-clause";
-                                throw new ExprValidationException("Failed to validate outer-join expression: " + message);
+                                throw new ExprValidationException(
+                                    "Failed to validate outer-join expression: " + message);
                             }
                         }
                     }
@@ -256,7 +260,7 @@ namespace com.espertech.esper.common.@internal.statement.helper
             return whereClauseValidated;
         }
 
-        protected internal static UniformPair<int> ValidateOuterJoinPropertyPair(
+        internal static UniformPair<int?> ValidateOuterJoinPropertyPair(
             ExprIdentNode leftNode,
             ExprIdentNode rightNode,
             int outerJoinCount,
@@ -321,7 +325,7 @@ namespace com.espertech.esper.common.@internal.statement.helper
                 throw new ExprValidationException("Failed to validate outer-join expression: " + message);
             }
 
-            return new UniformPair<int>(streamIdLeft, streamIdRight);
+            return new UniformPair<int?>(streamIdLeft, streamIdRight);
         }
 
         public static void ValidateNoAggregations(
@@ -338,15 +342,18 @@ namespace com.espertech.esper.common.@internal.statement.helper
 
         private static void ValidateThenSetAssignments(
             IList<OnTriggerSetAssignment> assignments,
-            ExprValidationContext validationContext,
-            bool allowRHSAggregation)
+            ExprValidationContext validationContext)
         {
             if (assignments == null || assignments.IsEmpty()) {
                 return;
             }
 
             foreach (var assign in assignments) {
-                ExprNodeUtilityValidate.ValidateAssignment(true, ExprNodeOrigin.UPDATEASSIGN, assign, validationContext);
+                ExprNodeUtilityValidate.ValidateAssignment(
+                    true,
+                    ExprNodeOrigin.UPDATEASSIGN,
+                    assign,
+                    validationContext);
             }
         }
     }

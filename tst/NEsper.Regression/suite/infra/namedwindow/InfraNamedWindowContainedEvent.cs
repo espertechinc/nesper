@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -7,8 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.regressionlib.framework;
-
-using static com.espertech.esper.regressionlib.framework.SupportMessageAssertUtil;
 
 namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 {
@@ -21,19 +19,17 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
         {
             string epl;
             var path = new RegressionPath();
-            env.CompileDeploy("create window BookWindow#time(30) as BookDesc", path);
+            env.CompileDeploy("@public create window BookWindow#time(30) as BookDesc", path);
 
             epl = "select * from SupportBean unidirectional, BookWindow[Reviews]";
-            TryInvalidCompile(
-                env,
+            env.TryInvalidCompile(
                 path,
                 epl,
-                "Failed to validate named window use in join, Contained-event is only allowed for named windows when marked as unidirectional");
+                "Failed to validate named window use in join, contained-event is only allowed for named windows when marked as unidirectional");
 
             epl = "select *, (select * from BookWindow[Reviews] where sb.TheString = Comment) " +
                   "from SupportBean sb";
-            TryInvalidCompile(
-                env,
+            env.TryInvalidCompile(
                 path,
                 epl,
                 "Failed to plan subquery number 1 querying BookWindow: Failed to validate named window use in subquery, contained-event is only allowed for named windows when not correlated ");

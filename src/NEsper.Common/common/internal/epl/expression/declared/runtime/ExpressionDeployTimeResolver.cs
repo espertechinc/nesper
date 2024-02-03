@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -32,11 +32,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.runtime
                 // for private expression that cache key is simply an Object shared by the name of the
                 // expression (fields are per-statement already so its safe)
                 return classScope.NamespaceScope.AddOrGetInstanceFieldSharable(
-                    instance, new ExprDeclaredCacheKeyLocalCodegenField(expression.Name));
+                    instance,
+                    new ExprDeclaredCacheKeyLocalCodegenField(expression.Name));
             }
 
             // global expressions need a cache key that derives from the deployment id of the expression and the expression name
-            CodegenMethod keyInit = classScope.NamespaceScope.InitMethod
+            var keyInit = classScope.NamespaceScope.InitMethod
                 .MakeChild(typeof(ExprDeclaredCacheKeyGlobal), generator, classScope)
                 .AddParam(
                     typeof(EPStatementInitServices),

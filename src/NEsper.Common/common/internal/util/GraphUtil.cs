@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -45,10 +45,8 @@ namespace com.espertech.esper.common.@internal.util
 
                 var originalValue = original.Get(name);
 
-                if (originalValue is DataMap &&
-                    additionalValue is DataMap) {
-                    var innerAdditional = (DataMap) additionalValue;
-                    var innerOriginal = (DataMap) originalValue;
+                if (originalValue is DataMap innerOriginal &&
+                    additionalValue is DataMap innerAdditional) {
                     object newValue = MergeNestableMap(innerOriginal, innerAdditional);
                     result.Put(name, newValue);
                     continue;

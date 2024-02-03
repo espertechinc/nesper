@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -23,7 +23,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.adder
         {
         }
 
-        public double Compute(Double value)
+        public double Compute(double value)
         {
             return value * MULTIPLIER;
         }
@@ -35,9 +35,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.adder
             dtx.AddDays(7 * value);
         }
 
-        public bool IsMicroseconds {
-            get => false;
-        }
+        public bool IsMicroseconds => false;
 
         public CodegenExpression ComputeCodegen(CodegenExpression doubleValue)
         {

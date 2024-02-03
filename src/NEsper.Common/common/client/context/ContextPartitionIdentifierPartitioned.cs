@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -15,7 +15,6 @@ namespace com.espertech.esper.common.client.context
     /// <summary>
     /// Context partition identifier for segmented contexts.
     /// </summary>
-    [Serializable]
     public class ContextPartitionIdentifierPartitioned : ContextPartitionIdentifier
     {
         private object[] _keys;
@@ -35,24 +34,24 @@ namespace com.espertech.esper.common.client.context
         /// <summary>Returns the partition keys. </summary>
         /// <value>keys</value>
         public object[] Keys {
-            get { return _keys; }
-            set { _keys = value; }
+            get => _keys;
+            set => _keys = value;
         }
 
         public override bool CompareTo(ContextPartitionIdentifier other)
         {
-            if (!(other is ContextPartitionIdentifierPartitioned)) {
+            if (!(other is ContextPartitionIdentifierPartitioned partitioned)) {
                 return false;
             }
 
-            return Collections.AreEqual(_keys, ((ContextPartitionIdentifierPartitioned) other)._keys);
+            return Collections.AreEqual(_keys, partitioned._keys);
         }
 
         public override string ToString()
         {
             return "ContextPartitionIdentifierPartitioned{" +
                    "keys=" +
-                   (_keys) +
+                   _keys +
                    '}';
         }
     }

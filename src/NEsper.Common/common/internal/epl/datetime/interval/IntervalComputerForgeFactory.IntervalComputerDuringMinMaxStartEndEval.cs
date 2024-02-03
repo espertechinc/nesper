@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -47,10 +47,10 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                 bool newData,
                 ExprEvaluatorContext context)
             {
-                long minStart = minStartEval.Evaluate(rightStart, eventsPerStream, newData, context);
-                long maxStart = maxStartEval.Evaluate(rightStart, eventsPerStream, newData, context);
-                long minEnd = minEndEval.Evaluate(rightEnd, eventsPerStream, newData, context);
-                long maxEnd = maxEndEval.Evaluate(rightEnd, eventsPerStream, newData, context);
+                var minStart = minStartEval.Evaluate(rightStart, eventsPerStream, newData, context);
+                var maxStart = maxStartEval.Evaluate(rightStart, eventsPerStream, newData, context);
+                var minEnd = minEndEval.Evaluate(rightEnd, eventsPerStream, newData, context);
+                var maxEnd = maxEndEval.Evaluate(rightEnd, eventsPerStream, newData, context);
 
                 if (during) {
                     return IntervalComputerDuringAndIncludesMinMaxEval.ComputeIntervalDuring(

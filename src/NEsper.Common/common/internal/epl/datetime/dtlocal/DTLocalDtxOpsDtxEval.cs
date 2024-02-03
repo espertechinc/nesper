@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -35,10 +35,10 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            var dtxValue = (DateTimeEx) target;
+            var dtxValue = (DateTimeEx)target;
             var dtx = dtxValue.Clone();
 
-            DTLocalUtil.EvaluateCalOpsDtx(calendarOps, dtx, eventsPerStream, isNewData, exprEvaluatorContext);
+            EvaluateCalOpsDtx(calendarOps, dtx, eventsPerStream, isNewData, exprEvaluatorContext);
 
             return dtx;
         }
@@ -50,12 +50,13 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenMethod methodNode = codegenMethodScope
+            var methodNode = codegenMethodScope
                 .MakeChild(typeof(DateTimeEx), typeof(DTLocalDtxOpsDtxEval), codegenClassScope)
-                .AddParam(typeof(DateTimeEx), "target");
+                .AddParam<DateTimeEx>("target");
 
-            CodegenBlock block = methodNode.Block.DeclareVar<DateTimeEx>(
-                "dtx", ExprDotMethod(Ref("target"), "Clone"));
+            var block = methodNode.Block.DeclareVar<DateTimeEx>(
+                "dtx",
+                ExprDotMethod(Ref("target"), "Clone"));
             EvaluateCalOpsDtxCodegen(
                 block,
                 forge.calendarForges,

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -75,19 +75,18 @@ namespace com.espertech.esper.common.@internal.collection
                 return;
             }
 
-            TimeWindowPair lastPair = _window.Last;
+            var lastPair = _window.Last;
 
             // Windows last timestamp matches the one supplied
             if (lastPair.Timestamp == timestamp) {
-                if (lastPair.EventHolder is IList<EventBean>) {
-                    var list = (IList<EventBean>) lastPair.EventHolder;
-                    list.Add(bean);
+                if (lastPair.EventHolder is IList<EventBean> beans) {
+                    beans.Add(bean);
                 }
                 else if (lastPair.EventHolder == null) {
                     lastPair.EventHolder = bean;
                 }
                 else {
-                    var existing = (EventBean) lastPair.EventHolder;
+                    var existing = (EventBean)lastPair.EventHolder;
                     IList<EventBean> list = new List<EventBean>(4);
                     list.Add(existing);
                     list.Add(bean);
@@ -127,7 +126,7 @@ namespace com.espertech.esper.common.@internal.collection
                     _size--;
                 }
                 else if (pair.EventHolder != null) {
-                    var list = (IList<EventBean>) pair.EventHolder;
+                    var list = (IList<EventBean>)pair.EventHolder;
                     var removed = list.Remove(theEvent);
                     if (removed) {
                         _size--;
@@ -163,11 +162,11 @@ namespace com.espertech.esper.common.@internal.collection
             // Repeat until the window is empty or the timestamp is above the expiry time
             do {
                 if (pair.EventHolder != null) {
-                    if (pair.EventHolder is EventBean) {
-                        resultBeans.Add((EventBean) pair.EventHolder);
+                    if (pair.EventHolder is EventBean bean) {
+                        resultBeans.Add(bean);
                     }
                     else {
-                        resultBeans.AddAll((IList<EventBean>) pair.EventHolder);
+                        resultBeans.AddAll((IList<EventBean>)pair.EventHolder);
                     }
                 }
 
@@ -245,13 +244,11 @@ namespace com.espertech.esper.common.@internal.collection
         /// <summary>Returns the reverse index, for testing purposes. </summary>
         /// <value>reverse index</value>
         public IDictionary<EventBean, TimeWindowPair> ReverseIndex {
-            get { return _reverseIndex; }
-            set { _reverseIndex = value; }
+            get => _reverseIndex;
+            set => _reverseIndex = value;
         }
 
-        public ArrayDeque<TimeWindowPair> Window {
-            get { return _window; }
-        }
+        public ArrayDeque<TimeWindowPair> Window => _window;
 
         public void SetWindow(
             ArrayDeque<TimeWindowPair> window,

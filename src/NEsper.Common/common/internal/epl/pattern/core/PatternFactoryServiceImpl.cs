@@ -1,11 +1,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.epl.pattern.and;
 using com.espertech.esper.common.@internal.epl.pattern.every;
 using com.espertech.esper.common.@internal.epl.pattern.everydistinct;
@@ -17,6 +18,7 @@ using com.espertech.esper.common.@internal.epl.pattern.not;
 using com.espertech.esper.common.@internal.epl.pattern.observer;
 using com.espertech.esper.common.@internal.epl.pattern.or;
 
+
 namespace com.espertech.esper.common.@internal.epl.pattern.core
 {
     public class PatternFactoryServiceImpl : PatternFactoryService
@@ -27,17 +29,17 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
         {
         }
 
-        public EvalRootFactoryNode Root()
+        public EvalRootFactoryNode Root(StateMgmtSetting stateMgmtSettings)
         {
             return new EvalRootFactoryNode();
         }
 
-        public EvalObserverFactoryNode Observer()
+        public EvalObserverFactoryNode Observer(StateMgmtSetting stateMgmtSettings)
         {
             return new EvalObserverFactoryNode();
         }
 
-        public EvalGuardFactoryNode Guard()
+        public EvalGuardFactoryNode Guard(StateMgmtSetting stateMgmtSettings)
         {
             return new EvalGuardFactoryNode();
         }
@@ -52,37 +54,37 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
             return new TimerIntervalObserverFactory();
         }
 
-        public EvalAndFactoryNode And()
+        public EvalAndFactoryNode And(StateMgmtSetting stateMgmtSettings)
         {
             return new EvalAndFactoryNode();
         }
 
-        public EvalOrFactoryNode Or()
+        public EvalOrFactoryNode Or(StateMgmtSetting stateMgmtSettings)
         {
             return new EvalOrFactoryNode();
         }
 
-        public EvalFilterFactoryNode Filter()
+        public EvalFilterFactoryNode Filter(StateMgmtSetting stateMgmtSettings)
         {
             return new EvalFilterFactoryNode();
         }
 
-        public EvalEveryFactoryNode Every()
+        public EvalEveryFactoryNode Every(StateMgmtSetting stateMgmtSettings)
         {
             return new EvalEveryFactoryNode();
         }
 
-        public EvalNotFactoryNode Not()
+        public EvalNotFactoryNode Not(StateMgmtSetting stateMgmtSettings)
         {
             return new EvalNotFactoryNode();
         }
 
-        public EvalFollowedByFactoryNode Followedby()
+        public EvalFollowedByFactoryNode Followedby(StateMgmtSetting stateMgmtSettings)
         {
             return new EvalFollowedByFactoryNode();
         }
 
-        public EvalMatchUntilFactoryNode MatchUntil()
+        public EvalMatchUntilFactoryNode MatchUntil(StateMgmtSetting stateMgmtSettings)
         {
             return new EvalMatchUntilFactoryNode();
         }
@@ -92,7 +94,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
             return new TimerWithinOrMaxCountGuardFactory();
         }
 
-        public EvalEveryDistinctFactoryNode EveryDistinct()
+        public EvalEveryDistinctFactoryNode EveryDistinct(StateMgmtSetting stateMgmtSettings)
         {
             return new EvalEveryDistinctFactoryNode();
         }

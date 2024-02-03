@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -78,7 +78,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            ValueRange<int> range = dateTimeOffset.Range(_field);
+            var range = dateTimeOffset.Range(_field);
             return dateTimeOffset.With(_field, range.Maximum);
         }
 
@@ -88,7 +88,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            ValueRange<int> range = dateTime.Range(_field);
+            var range = dateTime.Range(_field);
             return dateTime.With(_field, range.Maximum);
         }
 

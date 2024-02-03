@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -19,9 +19,11 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
     {
         protected internal static void ValidateFAFQuery(StatementSpecCompiled statementSpec)
         {
-            for (int i = 0; i < statementSpec.StreamSpecs.Length; i++) {
-                StreamSpecCompiled streamSpec = statementSpec.StreamSpecs[i];
-                if (!(streamSpec is NamedWindowConsumerStreamSpec || streamSpec is TableQueryStreamSpec)) {
+            for (var i = 0; i < statementSpec.StreamSpecs.Length; i++) {
+                var streamSpec = statementSpec.StreamSpecs[i];
+                if (!(streamSpec is NamedWindowConsumerStreamSpec ||
+                      streamSpec is TableQueryStreamSpec ||
+                      streamSpec is DBStatementStreamSpec)) {
                     throw new ExprValidationException(
                         "On-demand queries require tables or named windows and do not allow event streams or patterns");
                 }

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -12,6 +12,7 @@ using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.epl.database
 {
@@ -20,9 +21,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
+#if REGRESSION_EXECUTIONS
             WithNoMetaLexAnalysis(execs);
             WithNoMetaLexAnalysisGroup(execs);
-            WithPlaceholderWhere(execs);
+            With(PlaceholderWhere)(execs);
+#endif
             return execs;
         }
 
@@ -51,20 +54,22 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
             RegressionEnvironment env,
             string sql)
         {
-            var stmtText = "@Name('s0') select mydouble from " +
+            var stmtText = "@name('s0') select mydouble from " +
                            " sql:MyDBPlain ['" +
                            sql +
                            "'] as S0," +
                            "SupportBean#length(100) as S1";
             env.CompileDeploy(stmtText).AddListener("s0");
 
-            Assert.AreEqual(typeof(double?), env.Statement("s0").EventType.GetPropertyType("mydouble"));
+            env.AssertStatement(
+                "s0",
+                statement => ClassicAssert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("mydouble")));
 
             SendSupportBeanEvent(env, 10);
-            Assert.AreEqual(1.2, env.Listener("s0").AssertOneGetNewAndReset().Get("mydouble"));
+            env.AssertEqualsNew("s0", "mydouble", 1.2);
 
             SendSupportBeanEvent(env, 80);
-            Assert.AreEqual(8.2, env.Listener("s0").AssertOneGetNewAndReset().Get("mydouble"));
+            env.AssertEqualsNew("s0", "mydouble", 8.2);
 
             env.UndeployAll();
         }

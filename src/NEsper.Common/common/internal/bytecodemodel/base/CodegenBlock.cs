@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
@@ -53,9 +52,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             CodegenMethod parentMethodNode,
             CodegenStatementWBlockBase parentWBlock)
         {
-            this._parentCtor = parentCtor;
-            this._parentMethodNode = parentMethodNode;
-            this._parentWBlock = parentWBlock;
+            _parentCtor = parentCtor;
+            _parentMethodNode = parentMethodNode;
+            _parentWBlock = parentWBlock;
         }
 
         public CodegenBlock()
@@ -320,6 +319,20 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             return this;
         }
 
+        public CodegenBlock DeclareVarNewInstance(
+            Type clazz,
+            string var)
+        {
+            CheckClosed();
+            _statements.Add(new CodegenStatementDeclareVar(clazz, var, NewInstance(clazz)));
+            return this;
+        }
+
+        public CodegenBlock DeclareVarNewInstance<T>(string var)
+        {
+            return DeclareVarNewInstance(typeof(T), var);
+        }
+
 #if DEBUG && STACKTRACE
         private CodegenBlock IncludeMinStack(Predicate<StackFrame> stackFramePredicate)
         {
@@ -499,6 +512,13 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             return this;
         }
 
+        public CodegenBlock IfRefNullReturnDefault(string @ref)
+        {
+            CheckClosed();
+            _statements.Add(new CodegenStatementIfNullReturnDefault(Ref(@ref)));
+            return this;
+        }
+        
         public CodegenBlock IfRefNullReturnNull(string @ref)
         {
             CheckClosed();
@@ -575,14 +595,14 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
                 throw new IllegalStateException("No codeblock parent, use 'params methodReturn[] instead");
             }
 
-            if (!(_parentWBlock is CodegenStatementTryCatch)) {
+            if (!(_parentWBlock is CodegenStatementTryCatch @catch)) {
                 throw new IllegalStateException("Codeblock parent is not try-catch");
             }
 
             CheckClosed();
             _closed = true;
             _statements.Add(new CodegenStatementReturnExpression(expression));
-            return (CodegenStatementTryCatch) _parentWBlock;
+            return (CodegenStatementTryCatch)_parentWBlock;
         }
 
         public CodegenStatementTryCatch TryEnd()
@@ -591,12 +611,12 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
                 throw new IllegalStateException("No codeblock parent, use 'params methodReturn[] instead");
             }
 
-            if (!(_parentWBlock is CodegenStatementTryCatch)) {
+            if (!(_parentWBlock is CodegenStatementTryCatch @catch)) {
                 throw new IllegalStateException("Codeblock parent is not try-catch");
             }
 
             _closed = true;
-            return (CodegenStatementTryCatch) _parentWBlock;
+            return @catch;
         }
 
         public CodegenBlock BlockThrow(CodegenExpression expression)
@@ -622,7 +642,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             return _parentWBlock.Parent;
         }
 
-        public CodegenMethod MethodThrowUnsupported()
+        public CodegenMethod MethodThrowUnsupported(string text = null)
         {
             if (_parentMethodNode == null) {
                 throw new IllegalStateException("No method parent, use 'blockReturn...' instead");
@@ -630,7 +650,13 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
 
             CheckClosed();
             _closed = true;
-            _statements.Add(new CodegenStatementThrow(NewInstance(typeof(UnsupportedOperationException))));
+
+            var @params = text == null
+                ? Array.Empty<CodegenExpression>()
+                : new CodegenExpression[] { Constant(text) };
+            var instance = NewInstance(typeof(UnsupportedOperationException), @params);
+            _statements.Add(new CodegenStatementThrow(instance));
+
             return _parentMethodNode;
         }
 
@@ -686,16 +712,14 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
         public CodegenBlock IfElseIf(CodegenExpression condition)
         {
             CheckClosed();
-            _closed = true;
             if (_parentMethodNode != null) {
                 throw new IllegalStateException("If-block-end in method?");
             }
 
-            if (!(_parentWBlock is CodegenStatementIf)) {
+            if (!(_parentWBlock is CodegenStatementIf ifBuilder)) {
                 throw new IllegalStateException("If-block-end in method?");
             }
 
-            var ifBuilder = (CodegenStatementIf) _parentWBlock;
             return ifBuilder.AddElseIf(condition);
         }
 
@@ -706,11 +730,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
                 throw new IllegalStateException("If-block-end in method?");
             }
 
-            if (!(_parentWBlock is CodegenStatementIf)) {
+            if (!(_parentWBlock is CodegenStatementIf ifBuilder)) {
                 throw new IllegalStateException("If-block-end in method?");
             }
 
-            var ifBuilder = (CodegenStatementIf) _parentWBlock;
             return ifBuilder.AddElse();
         }
 
@@ -759,11 +782,12 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
         public CodegenBlock[] SwitchBlockOfLength(
             CodegenExpression switchExpression,
             int length,
-            bool blocksReturnValues)
+            bool blocksReturnValues,
+            int offset = 0)
         {
             var expressions = new CodegenExpression[length];
             for (var i = 0; i < length; i++) {
-                expressions[i] = Constant(i);
+                expressions[i] = Constant(i + offset);
             }
 
             return SwitchBlockExpressions(switchExpression, expressions, blocksReturnValues, true).Blocks;
@@ -832,7 +856,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
 
         public CodegenBlock AssignCompound(
             CodegenExpression expression,
-            String @operator,
+            string @operator,
             CodegenExpression assignment)
         {
             CheckClosed();
@@ -922,7 +946,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
 
         public BlockSyntax CodegenSyntax()
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         public CodegenBlock Debug(
@@ -935,8 +959,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             // Console.WriteLine -
             return StaticMethod(typeof(CompatExtensions), "Debug", passThroughParams);
         }
-        
-        public bool HasInstanceAccess(Func<CodegenMethod, bool> permittedMethods) {
+
+        public bool HasInstanceAccess(Func<CodegenMethod, bool> permittedMethods)
+        {
             var consumer = new InstanceAccessConsumer(permittedMethods);
             foreach (var statement in _statements) {
                 statement.TraverseExpressions(consumer.Accept);
@@ -944,10 +969,12 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
                     return true;
                 }
             }
+
             return false;
         }
 
-        public void TraverseExpressions(Consumer<CodegenExpression> consumer) {
+        public void TraverseExpressions(Consumer<CodegenExpression> consumer)
+        {
             foreach (var statement in _statements) {
                 statement.TraverseExpressions(consumer);
             }
@@ -970,15 +997,14 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
                     return;
                 }
 
-                if (codegenExpression is CodegenExpressionLocalMethod) {
-                    var localMethod = (CodegenExpressionLocalMethod) codegenExpression;
+                if (codegenExpression is CodegenExpressionLocalMethod localMethod) {
                     if (!permittedMethod.Invoke(localMethod.MethodNode)) {
                         hasInstanceAccess = true;
                         return;
                     }
                 }
 
-                codegenExpression.TraverseExpressions(this.Accept);
+                codegenExpression.TraverseExpressions(Accept);
             }
         }
     }

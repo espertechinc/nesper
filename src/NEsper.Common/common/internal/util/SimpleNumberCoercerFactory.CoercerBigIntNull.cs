@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -28,7 +28,7 @@ namespace com.espertech.esper.common.@internal.util
 
             public CodegenExpression CoerceBoxedBigIntCodegen(
                 CodegenExpression expr,
-                Type type)
+                Type type, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope)
             {
                 return expr;
             }
@@ -43,11 +43,11 @@ namespace com.espertech.esper.common.@internal.util
                 return value;
             }
 
-            public Type ReturnType => typeof(BigInteger?);
+            public Type GetReturnType(Type valueType) => typeof(BigInteger?);
 
             public CodegenExpression CoerceCodegen(
                 CodegenExpression value,
-                Type valueType)
+                Type valueType, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope)
             {
                 return value;
             }

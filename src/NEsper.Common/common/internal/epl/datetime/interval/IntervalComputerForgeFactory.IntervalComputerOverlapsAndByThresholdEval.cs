@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -39,11 +39,11 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                 ExprEvaluatorContext context)
             {
                 if (overlaps) {
-                    long threshold = thresholdExpr.Evaluate(leftStart, eventsPerStream, newData, context);
+                    var threshold = thresholdExpr.Evaluate(leftStart, eventsPerStream, newData, context);
                     return ComputeIntervalOverlaps(leftStart, leftEnd, rightStart, rightEnd, 0, threshold);
                 }
                 else {
-                    long threshold = thresholdExpr.Evaluate(rightStart, eventsPerStream, newData, context);
+                    var threshold = thresholdExpr.Evaluate(rightStart, eventsPerStream, newData, context);
                     return ComputeIntervalOverlaps(rightStart, rightEnd, leftStart, leftEnd, 0, threshold);
                 }
             }

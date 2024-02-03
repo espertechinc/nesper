@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -76,11 +76,11 @@ namespace com.espertech.esper.common.@internal.collection
         public EventBean[] ToArray()
         {
             if (FirstEvent == null) {
-                return new EventBean[0];
+                return Array.Empty<EventBean>();
             }
 
             if (AdditionalEvents == null) {
-                return new[] {FirstEvent};
+                return new[] { FirstEvent };
             }
 
             var events = new EventBean[1 + AdditionalEvents.Count];

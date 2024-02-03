@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.Json.Serialization;
 
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -16,12 +17,11 @@ using com.espertech.esper.compat.collections;
 namespace com.espertech.esper.common.client.soda
 {
     /// <summary>Create an index on a named window.</summary>
-    [Serializable]
     public class CreateIndexColumn
     {
-        private IList<Expression> columns;
-        private string indexType;
-        private IList<Expression> parameters;
+        private IList<Expression> _columns;
+        private string _indexType;
+        private IList<Expression> _parameters;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CreateIndexColumn"/> class.
@@ -41,24 +41,25 @@ namespace com.espertech.esper.common.client.soda
             string columnName,
             CreateIndexColumnType type)
         {
-            columns = Collections.SingletonList<Expression>(Expressions.Property(columnName));
-            indexType = type.GetName();
+            _columns = Collections.SingletonList<Expression>(Expressions.Property(columnName));
+            _indexType = type.GetName();
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CreateIndexColumn" /> class.
         /// </summary>
         /// <param name="columns">The columns.</param>
-        /// <param name="type">The type.</param>
+        /// <param name="indexType">The type.</param>
         /// <param name="parameters">The parameters.</param>
+        [JsonConstructor]
         public CreateIndexColumn(
             IList<Expression> columns,
-            string type,
+            string indexType,
             IList<Expression> parameters)
         {
-            this.columns = columns;
-            indexType = type;
-            this.parameters = parameters;
+            _columns = columns;
+            _indexType = indexType;
+            _parameters = parameters;
         }
 
         /// <summary>
@@ -67,31 +68,27 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="writer">The writer.</param>
         public virtual void ToEPL(TextWriter writer)
         {
-            if (columns.Count > 1)
-            {
+            if (_columns.Count > 1) {
                 writer.Write("(");
             }
 
-            ExpressionBase.ToPrecedenceFreeEPL(columns, writer);
-            if (columns.Count > 1)
-            {
+            ExpressionBase.ToPrecedenceFreeEPL(_columns, writer);
+            if (_columns.Count > 1) {
                 writer.Write(")");
             }
 
-            if ((indexType != null) &&
+            if (_indexType != null &&
                 !string.Equals(
-                    indexType,
+                    _indexType,
                     CreateIndexColumnType.HASH.GetName(),
-                    StringComparison.InvariantCultureIgnoreCase))
-            {
+                    StringComparison.InvariantCultureIgnoreCase)) {
                 writer.Write(' ');
-                writer.Write(indexType.ToLowerInvariant());
+                writer.Write(_indexType.ToLowerInvariant());
             }
 
-            if (!parameters.IsEmpty())
-            {
+            if (!_parameters.IsEmpty()) {
                 writer.Write("(");
-                ExpressionBase.ToPrecedenceFreeEPL(parameters, writer);
+                ExpressionBase.ToPrecedenceFreeEPL(_parameters, writer);
                 writer.Write(")");
             }
         }
@@ -99,10 +96,9 @@ namespace com.espertech.esper.common.client.soda
         /// <summary>
         /// Returns index column expressions
         /// </summary>
-        public IList<Expression> Columns
-        {
-            get => columns;
-            set => columns = value;
+        public IList<Expression> Columns {
+            get => _columns;
+            set => _columns = value;
         }
 
         /// <summary>
@@ -111,10 +107,9 @@ namespace com.espertech.esper.common.client.soda
         /// <value>
         /// The type of the index.
         /// </value>
-        public string IndexType
-        {
-            get => indexType;
-            set => indexType = value;
+        public string IndexType {
+            get => _indexType;
+            set => _indexType = value;
         }
 
         /// <summary>
@@ -123,10 +118,9 @@ namespace com.espertech.esper.common.client.soda
         /// <value>
         /// The parameters.
         /// </value>
-        public IList<Expression> Parameters
-        {
-            get => parameters;
-            set => parameters = value;
+        public IList<Expression> Parameters {
+            get => _parameters;
+            set => _parameters = value;
         }
     }
 } // end of namespace

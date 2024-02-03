@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -34,8 +34,9 @@ namespace com.espertech.esper.common.@internal.epl.table.core
         public IDisposable AddAcquiredLock(ILockable @lock)
         {
             var table = _threadLocal.GetOrCreate();
-            if (table.ContainsKey(@lock))
+            if (table.ContainsKey(@lock)) {
                 return null;
+            }
 
             var latch = @lock.Acquire();
             return table[@lock] = latch;
@@ -58,7 +59,7 @@ namespace com.espertech.esper.common.@internal.epl.table.core
         public int LockHeldCount {
             get {
                 var table = _threadLocal.Value;
-                return table != null ? table.Count : 0;
+                return table?.Count ?? 0;
             }
         }
     }

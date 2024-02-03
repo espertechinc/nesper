@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -16,7 +16,6 @@ namespace com.espertech.esper.common.client.soda
     ///     Context dimension descriptor for a start-and-end temporal (single instance) or initiated-terminated (overlapping)
     ///     context
     /// </summary>
-    [Serializable]
     public class ContextDescriptorInitiatedTerminated : ContextDescriptor
     {
         private ContextDescriptorCondition endCondition;
@@ -70,8 +69,7 @@ namespace com.espertech.esper.common.client.soda
         ///     Returns the condition that starts/initiates a context partition
         /// </summary>
         /// <returns>start condition</returns>
-        public ContextDescriptorCondition InitCondition
-        {
+        public ContextDescriptorCondition InitCondition {
             get => startCondition;
             set => startCondition = value;
         }
@@ -80,20 +78,17 @@ namespace com.espertech.esper.common.client.soda
         ///     Returns the condition that ends/terminates a context partition
         /// </summary>
         /// <returns>end condition</returns>
-        public ContextDescriptorCondition TermCondition
-        {
+        public ContextDescriptorCondition TermCondition {
             get => endCondition;
             set => endCondition = value;
         }
 
-        public ContextDescriptorCondition StartCondition
-        {
+        public ContextDescriptorCondition StartCondition {
             get => startCondition;
             set => startCondition = value;
         }
 
-        public ContextDescriptorCondition EndCondition
-        {
+        public ContextDescriptorCondition EndCondition {
             get => endCondition;
             set => endCondition = value;
         }
@@ -102,8 +97,7 @@ namespace com.espertech.esper.common.client.soda
         ///     Returns true for overlapping context, false for non-overlapping.
         /// </summary>
         /// <returns>overlap indicator</returns>
-        public bool IsOverlapping
-        {
+        public bool IsOverlapping {
             get => overlapping;
             set => overlapping = value;
         }
@@ -112,8 +106,7 @@ namespace com.espertech.esper.common.client.soda
         ///     Returns the list of expressions providing distinct keys, if any
         /// </summary>
         /// <returns>distinct expressions</returns>
-        public IList<Expression> OptionalDistinctExpressions
-        {
+        public IList<Expression> OptionalDistinctExpressions {
             get => optionalDistinctExpressions;
             set => optionalDistinctExpressions = value;
         }
@@ -123,12 +116,10 @@ namespace com.espertech.esper.common.client.soda
             EPStatementFormatter formatter)
         {
             writer.Write(overlapping ? "initiated by " : "start ");
-            if (optionalDistinctExpressions != null && optionalDistinctExpressions.Count > 0)
-            {
+            if (optionalDistinctExpressions != null && optionalDistinctExpressions.Count > 0) {
                 writer.Write("distinct(");
                 var delimiter = "";
-                foreach (var expression in optionalDistinctExpressions)
-                {
+                foreach (var expression in optionalDistinctExpressions) {
                     writer.Write(delimiter);
                     expression.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                     delimiter = ", ";
@@ -138,8 +129,7 @@ namespace com.espertech.esper.common.client.soda
             }
 
             startCondition.ToEPL(writer, formatter);
-            if (!(endCondition is ContextDescriptorConditionNever))
-            {
+            if (!(endCondition is ContextDescriptorConditionNever)) {
                 writer.Write(" ");
                 writer.Write(overlapping ? "terminated " : "end ");
                 endCondition.ToEPL(writer, formatter);

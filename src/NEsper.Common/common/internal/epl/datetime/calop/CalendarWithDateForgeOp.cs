@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -84,7 +84,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
         {
             var methodNode = codegenMethodScope
                 .MakeChild(typeof(DateTimeEx), typeof(CalendarWithDateForgeOp), codegenClassScope)
-                .AddParam(typeof(DateTimeEx), "value");
+                .AddParam<DateTimeEx>("value");
 
             var block = methodNode.Block;
             CodegenDeclareInts(block, forge, methodNode, exprSymbol, codegenClassScope);
@@ -109,7 +109,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
         {
             var methodNode = codegenMethodScope
                 .MakeChild(typeof(DateTimeOffset), typeof(CalendarWithDateForgeOp), codegenClassScope)
-                .AddParam(typeof(DateTimeOffset), "value");
+                .AddParam<DateTimeOffset>("value");
 
             var block = methodNode.Block;
             CodegenDeclareInts(block, forge, methodNode, exprSymbol, codegenClassScope);
@@ -133,7 +133,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
         {
             var methodNode = codegenMethodScope
                 .MakeChild(typeof(DateTime), typeof(CalendarWithDateForgeOp), codegenClassScope)
-                .AddParam(typeof(DateTime), "value");
+                .AddParam<DateTime>("value");
 
             var block = methodNode.Block;
             CodegenDeclareInts(block, forge, methodNode, exprSymbol, codegenClassScope);
@@ -155,7 +155,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             ExprEvaluatorContext context)
         {
             var result = expr.Evaluate(eventsPerStream, isNewData, context);
-            return (int?) result;
+            return (int?)result;
         }
 
         /// <summary>

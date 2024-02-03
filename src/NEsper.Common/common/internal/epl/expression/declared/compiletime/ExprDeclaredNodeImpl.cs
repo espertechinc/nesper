@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -9,41 +9,46 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.Json.Serialization;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.annotation;
-using com.espertech.esper.common.@internal.bytecodemodel.@base;
-using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.context.compile;
 using com.espertech.esper.common.@internal.epl.enummethod.dot;
-using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.dot.core;
 using com.espertech.esper.common.@internal.epl.expression.visitor;
 using com.espertech.esper.common.@internal.epl.streamtype;
 using com.espertech.esper.common.@internal.@event.arr;
+using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
-using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.declared.compiletime
 {
     /// <summary>
-    ///     Expression instance as declared elsewhere.
+    /// Expression instance as declared elsewhere.
     /// </summary>
-    public class ExprDeclaredNodeImpl : ExprNodeBase,
+    public partial class ExprDeclaredNodeImpl : ExprNodeBase,
         ExprDeclaredNode,
         ExprDeclaredOrLambdaNode,
         ExprFilterOptimizableNode,
         ExprNodeInnerNodeProvider,
         ExprConstantNode
     {
-        private static String INTERNAL_VALUE_STREAMNAME = "esper_declared_expr_internal";
-
-        [NonSerialized] private ExprForge forge;
-        [NonSerialized] private ExprValidationContext exprValidationContext;
+        private const string INTERNAL_VALUE_STREAMNAME = "esper_declared_expr_internal";
+        
+        private readonly ExpressionDeclItem prototypeWVisibility;
+        private IList<ExprNode> chainParameters;
+        [JsonIgnore]
+        [NonSerialized]
+        private ExprForge forge;
+        private ExprNode expressionBodyCopy;
+        [JsonIgnore]
+        [NonSerialized]
+        private ExprValidationContext exprValidationContext;
         private bool allStreamIdsMatch;
 
         public ExprDeclaredNodeImpl(
@@ -52,10 +57,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             ContextCompileTimeDescriptor contextDescriptor,
             ExprNode expressionBodyCopy)
         {
-            PrototypeWVisibility = prototype;
-            ChainParameters = chainParameters;
-            ExpressionBodyCopy = expressionBodyCopy;
-
+            prototypeWVisibility = prototype;
+            this.chainParameters = chainParameters;
+            this.expressionBodyCopy = expressionBodyCopy;
             // replace context-properties where they are currently identifiers
             if (contextDescriptor == null) {
                 return;
@@ -67,10 +71,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
                 var streamOrProp = pair.Second.StreamOrPropertyName;
                 if (streamOrProp != null &&
                     contextDescriptor.ContextPropertyRegistry.IsContextPropertyPrefix(streamOrProp)) {
-                    var context =
-                        new ExprContextPropertyNodeImpl(pair.Second.UnresolvedPropertyName);
+                    var context = new ExprContextPropertyNodeImpl(pair.Second.UnresolvedPropertyName);
                     if (pair.First == null) {
-                        ExpressionBodyCopy = context;
+                        this.expressionBodyCopy = context;
                     }
                     else {
                         ExprNodeUtilityModify.ReplaceChildNode(pair.First, pair.Second, context);
@@ -79,54 +82,25 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             }
         }
 
+        public bool IsValidated => forge != null;
+
+        public bool ConstantAvailable => forge != null;
+
         public string StringConstantWhenProvided => null;
         
-        public bool IsConstantResult => false;
-
-        public ExprNode ExpressionBodyCopy { get; private set; }
-
-        public ExpressionDeclItem PrototypeWVisibility { get; }
-
-        public ExprEvaluator ExprEvaluator {
-            get {
-                CheckValidated(forge);
-                return forge.ExprEvaluator;
-            }
-        }
-
-        public Type ConstantType {
-            get {
-                CheckValidated(forge);
-                return forge.EvaluationType;
-            }
-        }
-
-        public object ConstantValue => forge.ExprEvaluator.Evaluate(null, true, null);
-
-        public override ExprForge Forge {
-            get {
-                CheckValidated(forge);
-                return forge;
-            }
-        }
-
-        public ExprNode Body => ExpressionBodyCopy;
-
         public IDictionary<string, int> GetOuterStreamNames(IDictionary<string, int> outerStreamNames)
         {
             CheckParameterCount();
-            var prototype = PrototypeWVisibility;
-
+            var prototype = prototypeWVisibility;
             // determine stream ids for each parameter
             var streamParameters = new LinkedHashMap<string, int>();
-            for (var param = 0; param < ChainParameters.Count; param++) {
-                if (!(ChainParameters[param] is ExprIdentNode)) {
+            for (var param = 0; param < chainParameters.Count; param++) {
+                if (!(chainParameters[param] is ExprIdentNode)) {
                     throw new ExprValidationException(
                         "Sub-selects in an expression declaration require passing only stream names as parameters");
                 }
 
-                var parameterName = ((ExprIdentNode) ChainParameters[param]).UnresolvedPropertyName;
-
+                var parameterName = ((ExprIdentNode)chainParameters[param]).UnresolvedPropertyName;
                 if (!outerStreamNames.TryGetValue(parameterName, out var streamIdFound)) {
                     throw new ExprValidationException(
                         "Failed validation of expression declaration '" +
@@ -145,17 +119,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
 
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
-            this.exprValidationContext = validationContext;
-
-            var prototype = PrototypeWVisibility;
+            exprValidationContext = validationContext;
+            var prototype = prototypeWVisibility;
             if (prototype.IsAlias) {
-                if (!ChainParameters.IsEmpty()) {
-                    throw new ExprValidationException("Expression '" + prototype.Name + " is an expression-alias and does not allow parameters");
+                if (!chainParameters.IsEmpty()) {
+                    throw new ExprValidationException(
+                        "Expression '" + prototype.Name + " is an expression-alias and does not allow parameters");
                 }
+
                 try {
-                    ExpressionBodyCopy = ExprNodeUtilityValidate.GetValidatedSubtree(
+                    expressionBodyCopy = ExprNodeUtilityValidate.GetValidatedSubtree(
                         ExprNodeOrigin.ALIASEXPRBODY,
-                        ExpressionBodyCopy,
+                        expressionBodyCopy,
                         validationContext);
                 }
                 catch (ExprValidationException ex) {
@@ -163,7 +138,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
                     throw new ExprValidationException(message, ex);
                 }
 
-                forge = ExpressionBodyCopy.Forge;
+                forge = expressionBodyCopy.Forge;
                 return null;
             }
 
@@ -177,7 +152,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
 
             // validate chain
             IList<ExprNode> validated = new List<ExprNode>();
-            foreach (var expr in ChainParameters) {
+            foreach (var expr in chainParameters) {
                 validated.Add(
                     ExprNodeUtilityValidate.GetValidatedSubtree(
                         ExprNodeOrigin.DECLAREDEXPRPARAM,
@@ -185,57 +160,60 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
                         validationContext));
             }
 
-            ChainParameters = validated;
-
+            chainParameters = validated;
             // validate parameter count
             CheckParameterCount();
-
             // collect event and value (non-event) parameters
-            List<int> valueParameters = new List<int>();
-            List<int> eventParameters = new List<int>();
-            for (int i = 0; i < prototype.ParametersNames.Length; i++) {
-                ExprNode parameter = ChainParameters[i];
+            IList<int?> valueParameters = new List<int?>();
+            IList<int?> eventParameters = new List<int?>();
+            for (var i = 0; i < prototype.ParametersNames.Length; i++) {
+                var parameter = chainParameters[i];
                 if (parameter is ExprWildcard) {
                     if (validationContext.StreamTypeService.EventTypes.Length != 1) {
-                        throw new ExprValidationException("Expression '" + prototype.Name + "' only allows a wildcard parameter if there is a single stream available, please use a stream or tag name instead");
+                        throw new ExprValidationException(
+                            "Expression '" +
+                            prototype.Name +
+                            "' only allows a wildcard parameter if there is a single stream available, please use a stream or tag name instead");
                     }
                 }
+
                 if (IsEventProviding(parameter, validationContext)) {
                     eventParameters.Add(i);
-                } else {
+                }
+                else {
                     valueParameters.Add(i);
                 }
             }
 
             // determine value event type for holding non-event parameter values, if any
             ObjectArrayEventType valueEventType = null;
-            List<ExprNode> valueExpressions = new List<ExprNode>(valueParameters.Count);
+            IList<ExprNode> valueExpressions = new List<ExprNode>(valueParameters.Count);
             if (!valueParameters.IsEmpty()) {
-                var valuePropertyTypes = new LinkedHashMap<string, object>();
+                IDictionary<string, object> valuePropertyTypes = new LinkedHashMap<string, object>();
                 foreach (int index in valueParameters) {
-                    String name = prototype.ParametersNames[index];
-                    ExprNode expr = ChainParameters[index];
-                    var result = Boxing.GetBoxedType(expr.Forge.EvaluationType);
+                    var name = prototype.ParametersNames[index];
+                    var expr = chainParameters[index];
+                    var type = expr.Forge.EvaluationType;
+                    var result = type.GetBoxedType();
                     valuePropertyTypes.Put(name, result);
                     valueExpressions.Add(expr);
                 }
 
                 valueEventType = ExprDotNodeUtility.MakeTransientOAType(
-                    PrototypeWVisibility.Name,
+                    prototypeWVisibility.Name,
                     valuePropertyTypes,
                     validationContext.StatementRawInfo,
                     validationContext.StatementCompileTimeService);
             }
 
             // create context for expression body
-            int numEventTypes = eventParameters.Count + (valueEventType == null ? 0 : 1);
-            EventType[] eventTypes = new EventType[numEventTypes];
-            String[] streamNames = new String[numEventTypes];
-            bool[] isIStreamOnly = new bool[numEventTypes];
-            ExprEnumerationForge[] eventEnumerationForges = new ExprEnumerationForge[numEventTypes];
+            var numEventTypes = eventParameters.Count + (valueEventType == null ? 0 : 1);
+            var eventTypes = new EventType[numEventTypes];
+            var streamNames = new string[numEventTypes];
+            var isIStreamOnly = new bool[numEventTypes];
+            var eventEnumerationForges = new ExprEnumerationForge[numEventTypes];
             allStreamIdsMatch = true;
-
-            int offsetEventType = 0;
+            var offsetEventType = 0;
             if (valueEventType != null) {
                 offsetEventType = 1;
                 eventTypes[0] = valueEventType;
@@ -244,35 +222,38 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
                 allStreamIdsMatch = false;
             }
 
-            bool forceOptionalStream = false;
+            var forceOptionalStream = false;
             foreach (int index in eventParameters) {
-                ExprNode parameter = ChainParameters[index];
+                var parameter = chainParameters[index];
                 streamNames[offsetEventType] = prototype.ParametersNames[index];
                 int streamId;
                 bool istreamOnlyFlag;
                 ExprEnumerationForge forge;
-
-                if (parameter is ExprEnumerationForgeProvider) {
-                    ExprEnumerationForgeProvider enumerationForgeProvider = (ExprEnumerationForgeProvider) parameter;
-                    ExprEnumerationForgeDesc desc = enumerationForgeProvider.GetEnumerationForge(
-                        validationContext.StreamTypeService, validationContext.ContextDescriptor);
+                if (parameter is ExprEnumerationForgeProvider enumerationForgeProvider) {
+                    var desc = enumerationForgeProvider.GetEnumerationForge(
+                        validationContext.StreamTypeService,
+                        validationContext.ContextDescriptor);
                     forge = desc.Forge;
                     streamId = desc.DirectIndexStreamNumber;
                     istreamOnlyFlag = desc.IsIstreamOnly;
-                } else {
-                    forge = (ExprEnumerationForge) parameter.Forge;
+                }
+                else {
+                    forge = (ExprEnumerationForge)parameter.Forge;
                     istreamOnlyFlag = false;
                     streamId = -1;
-                    forceOptionalStream = true; // since they may return null, i.e. subquery returning no row or multiple rows etc.
+                    forceOptionalStream =
+                        true; // since they may return null, i.e. subquery returning no row or multiple rows etc.
                 }
 
                 isIStreamOnly[offsetEventType] = istreamOnlyFlag;
                 eventEnumerationForges[offsetEventType] = forge;
-                eventTypes[offsetEventType] = forge.GetEventTypeSingle(validationContext.StatementRawInfo, validationContext.StatementCompileTimeService);
-
+                eventTypes[offsetEventType] = forge.GetEventTypeSingle(
+                    validationContext.StatementRawInfo,
+                    validationContext.StatementCompileTimeService);
                 if (streamId != index) {
                     allStreamIdsMatch = false;
                 }
+
                 offsetEventType++;
             }
 
@@ -284,15 +265,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
                 isIStreamOnly,
                 streamTypeService.IsOnDemandStreams,
                 optionalStream);
-
             copyTypes.RequireStreamNames = true;
-
             // validate expression body in this context
             try {
                 var expressionBodyContext = new ExprValidationContext(copyTypes, validationContext);
-                ExpressionBodyCopy = ExprNodeUtilityValidate.GetValidatedSubtree(
+                expressionBodyCopy = ExprNodeUtilityValidate.GetValidatedSubtree(
                     ExprNodeOrigin.DECLAREDEXPRBODY,
-                    ExpressionBodyCopy,
+                    expressionBodyCopy,
                     expressionBodyContext);
             }
             catch (ExprValidationException ex) {
@@ -302,38 +281,46 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
 
             // analyze child node
             var summaryVisitor = new ExprNodeSummaryVisitor();
-            ExpressionBodyCopy.Accept(summaryVisitor);
+            expressionBodyCopy.Accept(summaryVisitor);
             var isCache = !(summaryVisitor.HasAggregation || summaryVisitor.HasPreviousPrior);
             isCache &= validationContext.StatementCompileTimeService.Configuration.Compiler.Execution
                 .IsEnabledDeclaredExprValueCache;
-
             // determine a suitable evaluation
             var audit = AuditEnum.EXPRDEF.GetAudit(validationContext.Annotations) != null;
             var statementName = validationContext.StatementName;
-            if (ExpressionBodyCopy.Forge.ForgeConstantType.IsConstant) {
+            if (expressionBodyCopy.Forge.ForgeConstantType.IsConstant) {
                 // pre-evaluated
                 forge = new ExprDeclaredForgeConstant(
                     this,
-                    ExpressionBodyCopy.Forge.EvaluationType,
+                    expressionBodyCopy.Forge.EvaluationType,
                     prototype,
-                    ExpressionBodyCopy.Forge.ExprEvaluator.Evaluate(null, true, null),
+                    expressionBodyCopy.Forge.ExprEvaluator.Evaluate(null, true, null),
                     audit,
                     statementName);
             }
-            else if (valueEventType == null &&
-                     prototype.ParametersNames.Length == 0 ||
-                     allStreamIdsMatch && prototype.ParametersNames.Length == streamTypeService.EventTypes.Length) {
-                forge = new ExprDeclaredForgeNoRewrite(
-                    this, ExpressionBodyCopy.Forge, isCache, audit, statementName);
+            else if ((valueEventType == null && prototype.ParametersNames.Length == 0) || allStreamIdsMatch) {
+                forge = new ExprDeclaredForgeNoRewrite(this, expressionBodyCopy.Forge, isCache, audit, statementName);
             }
             else if (valueEventType == null) {
                 forge = new ExprDeclaredForgeRewrite(
-                    this, ExpressionBodyCopy.Forge, isCache, eventEnumerationForges, audit, statementName);
+                    this,
+                    expressionBodyCopy.Forge,
+                    isCache,
+                    eventEnumerationForges,
+                    audit,
+                    statementName);
             }
             else {
                 // cache is always false
                 forge = new ExprDeclaredForgeRewriteWValue(
-                    this, ExpressionBodyCopy.Forge, false, audit, statementName, eventEnumerationForges, valueEventType, valueExpressions);
+                    this,
+                    expressionBodyCopy.Forge,
+                    false,
+                    audit,
+                    statementName,
+                    eventEnumerationForges,
+                    valueEventType,
+                    valueExpressions);
             }
 
             return null;
@@ -343,46 +330,57 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             ExprNode parameter,
             ExprValidationContext validationContext)
         {
-            if (parameter is ExprEnumerationForgeProvider) {
-                ExprEnumerationForgeProvider provider = (ExprEnumerationForgeProvider) parameter;
-                ExprEnumerationForgeDesc desc = provider.GetEnumerationForge(
+            if (parameter is ExprEnumerationForgeProvider provider) {
+                var desc = provider.GetEnumerationForge(
                     validationContext.StreamTypeService,
                     validationContext.ContextDescriptor);
+                if (desc == null) {
+                    return false;
+                }
 
-                EventType eventType = desc?.Forge.GetEventTypeSingle(validationContext.StatementRawInfo, validationContext.StatementCompileTimeService);
+                var eventType = desc.Forge.GetEventTypeSingle(
+                    validationContext.StatementRawInfo,
+                    validationContext.StatementCompileTimeService);
                 return eventType != null;
             }
 
-            ExprForge forge = parameter.Forge;
-            ExprEnumerationForge enumerationForge = forge as ExprEnumerationForge;
-            return enumerationForge?.GetEventTypeSingle(
-                validationContext.StatementRawInfo, validationContext.StatementCompileTimeService) != null;
+            var forge = parameter.Forge;
+            if (forge is ExprEnumerationForge enumerationForge) {
+                return enumerationForge.GetEventTypeSingle(
+                           validationContext.StatementRawInfo,
+                           validationContext.StatementCompileTimeService) !=
+                       null;
+            }
+
+            return false;
         }
+
+        public bool IsConstantResult => false;
 
         public override bool EqualsNode(
             ExprNode node,
             bool ignoreStreamPrefix)
         {
-            if (!(node is ExprDeclaredNodeImpl)) {
+            if (!(node is ExprDeclaredNodeImpl otherExprCaseNode)) {
                 return false;
             }
 
-            var otherExprCaseNode = (ExprDeclaredNodeImpl) node;
-            return ExprNodeUtilityCompare.DeepEquals(ExpressionBodyCopy, otherExprCaseNode, false);
+            return ExprNodeUtilityCompare.DeepEquals(expressionBodyCopy, otherExprCaseNode, false);
         }
 
         public override void Accept(ExprNodeVisitor visitor)
         {
             AcceptNoVisitParams(visitor);
             if (WalkParams(visitor)) {
-                ExprNodeUtilityQuery.AcceptParams(visitor, ChainParameters);
+                ExprNodeUtilityQuery.AcceptParams(visitor, chainParameters);
             }
         }
 
-        public void AcceptNoVisitParams(ExprNodeVisitor visitor) {
+        public void AcceptNoVisitParams(ExprNodeVisitor visitor)
+        {
             base.Accept(visitor);
-            if (ChildNodes.Length == 0) {
-                ExpressionBodyCopy.Accept(visitor);
+            if (visitor.IsVisit(this) && ChildNodes.Length == 0) {
+                expressionBodyCopy.Accept(visitor);
             }
         }
 
@@ -390,14 +388,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
         {
             AcceptNoVisitParams(visitor);
             if (WalkParams(visitor)) {
-                ExprNodeUtilityQuery.AcceptParams(visitor, ChainParameters);
+                ExprNodeUtilityQuery.AcceptParams(visitor, chainParameters);
             }
         }
 
-        public void AcceptNoVisitParams(ExprNodeVisitorWithParent visitor) {
+        public void AcceptNoVisitParams(ExprNodeVisitorWithParent visitor)
+        {
             base.Accept(visitor);
             if (ChildNodes.Length == 0) {
-                ExpressionBodyCopy.Accept(visitor);
+                expressionBodyCopy.Accept(visitor);
             }
         }
 
@@ -407,53 +406,21 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
         {
             base.AcceptChildnodes(visitor, parent);
             if (visitor.IsVisit(this) && ChildNodes.Length == 0) {
-                ExpressionBodyCopy.Accept(visitor);
+                expressionBodyCopy.Accept(visitor);
             }
         }
-
-        public ExpressionDeclItem Prototype => PrototypeWVisibility;
-
-        public IList<ExprNode> ChainParameters { get; private set; }
-
-        public override ExprPrecedenceEnum Precedence => ExprPrecedenceEnum.UNARY;
-
-        public bool IsValidated => forge != null;
-
-        public bool FilterLookupEligible => forge is ExprDeclaredForgeBase;
-
-        public ExprFilterSpecLookupableForge FilterLookupable {
-            get {
-                if (!(forge is ExprDeclaredForgeBase)) {
-                    return null;
-                }
-
-                var declaredForge = (ExprDeclaredForgeBase) forge;
-                var forgeX = declaredForge.InnerForge;
-                var serde = exprValidationContext.SerdeResolver.SerdeForFilter(
-                    forgeX.EvaluationType, exprValidationContext.StatementRawInfo);
-                return new ExprFilterSpecLookupableForge(
-                    ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(this),
-                    new DeclaredNodeEventPropertyGetterForge(forgeX),
-                    null, 
-                    forgeX.EvaluationType,
-                    true,
-                    serde);
-            }
-        }
-
-        public IList<ExprNode> AdditionalNodes => ChainParameters;
 
         private void CheckParameterCount()
         {
-            var prototype = PrototypeWVisibility;
-            if (ChainParameters.Count != prototype.ParametersNames.Length) {
+            var prototype = prototypeWVisibility;
+            if (chainParameters.Count != prototype.ParametersNames.Length) {
                 throw new ExprValidationException(
                     "Parameter count mismatches for declared expression '" +
                     prototype.Name +
                     "', expected " +
                     prototype.ParametersNames.Length +
                     " parameters but received " +
-                    ChainParameters.Count +
+                    chainParameters.Count +
                     " parameters");
             }
         }
@@ -462,16 +429,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             TextWriter writer,
             ExprNodeRenderableFlags flags)
         {
-            var prototype = PrototypeWVisibility;
+            var prototype = prototypeWVisibility;
             writer.Write(prototype.Name);
-
             if (prototype.IsAlias) {
                 return;
             }
 
             writer.Write("(");
             var delimiter = "";
-            foreach (var parameter in ChainParameters) {
+            foreach (var parameter in chainParameters) {
                 writer.Write(delimiter);
                 parameter.ToEPL(writer, ExprPrecedenceEnum.MINIMUM, flags);
                 delimiter = ",";
@@ -479,6 +445,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
 
             writer.Write(")");
         }
+
+        public override ExprPrecedenceEnum Precedence => ExprPrecedenceEnum.UNARY;
 
         private bool WalkParams(ExprNodeVisitor visitor)
         {
@@ -494,32 +462,61 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             return visitor.IsWalkDeclExprParam || !allStreamIdsMatch;
         }
 
-
-        private class DeclaredNodeEventPropertyGetterForge : ExprEventEvaluatorForge
-        {
-            private readonly ExprForge exprForge;
-
-            public DeclaredNodeEventPropertyGetterForge(ExprForge exprForge)
-            {
-                this.exprForge = exprForge;
+        public override ExprForge Forge {
+            get {
+                CheckValidated(forge);
+                return forge;
             }
+        }
 
-            public CodegenExpression EventBeanWithCtxGet(
-                CodegenExpression beanExpression,
-                CodegenExpression ctxExpression,
-                CodegenMethodScope parent,
-                CodegenClassScope classScope)
-            {
-                var method = parent.MakeChild(exprForge.EvaluationType, GetType(), classScope)
-                    .AddParam<EventBean>("bean");
-                var exprMethod = CodegenLegoMethodExpression.CodegenExpression(exprForge, method, classScope);
+        public ExprNode Body => expressionBodyCopy;
 
-                method.Block
-                    .DeclareVar<EventBean[]>("events", NewArrayByLength(typeof(EventBean), Constant(1)))
-                    .AssignArrayElement(Ref("events"), Constant(0), Ref("bean"))
-                    .MethodReturn(LocalMethod(exprMethod, Ref("events"), ConstantTrue(), ConstantNull()));
+        public IList<ExprNode> AdditionalNodes => chainParameters;
 
-                return LocalMethod(method, beanExpression);
+        public Type ConstantType {
+            get {
+                CheckValidated(forge);
+                return forge.EvaluationType;
+            }
+        }
+
+        public object ConstantValue => forge.ExprEvaluator.Evaluate(null, true, null);
+
+        public bool IsFilterLookupEligible => forge is ExprDeclaredForgeBase;
+
+        public ExprFilterSpecLookupableForge FilterLookupable {
+            get {
+                if (!(Forge is ExprDeclaredForgeBase) || Forge.EvaluationType == null) {
+                    return null;
+                }
+
+                var declaredForge = (ExprDeclaredForgeBase) Forge;
+                var forge = declaredForge.InnerForge;
+                var serde = exprValidationContext.SerdeResolver.SerdeForFilter(
+                    forge.EvaluationType,
+                    exprValidationContext.StatementRawInfo);
+                return new ExprFilterSpecLookupableForge(
+                    ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(this),
+                    new DeclaredNodeEventPropertyGetterForge(forge),
+                    null,
+                    forge.EvaluationType,
+                    true,
+                    serde);
+            }
+        }
+
+        public ExprNode ExpressionBodyCopy => expressionBodyCopy;
+
+        public ExpressionDeclItem Prototype => prototypeWVisibility;
+
+        public ExpressionDeclItem PrototypeWVisibility => prototypeWVisibility;
+
+        public IList<ExprNode> ChainParameters => chainParameters;
+
+        public ExprEvaluator ExprEvaluator {
+            get {
+                CheckValidated(forge);
+                return forge.ExprEvaluator;
             }
         }
     }

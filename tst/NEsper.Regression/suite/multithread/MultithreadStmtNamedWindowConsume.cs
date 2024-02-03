@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -21,6 +21,7 @@ using com.espertech.esper.regressionlib.support.util;
 using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.multithread
 {
@@ -29,11 +30,16 @@ namespace com.espertech.esper.regressionlib.suite.multithread
     /// </summary>
     public class MultithreadStmtNamedWindowConsume : RegressionExecution
     {
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
+        }
+
         public void Run(RegressionEnvironment env)
         {
             var path = new RegressionPath();
             env.CompileDeploy(
-                "@Name('window') create window MyWindow#keepall as select TheString, LongPrimitive from SupportBean",
+                "@name('window') @public create window MyWindow#keepall as select TheString, LongPrimitive from SupportBean",
                 path);
             var listenerWindow = new SupportMTUpdateListener();
             env.Statement("window").AddListener(listenerWindow);
@@ -92,7 +98,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             IList<string> expectedIdsList = new List<string>();
             for (var i = 0; i < numThreads; i++) {
                 try {
-                    expectedIdsList.AddAll((IList<string>) future[i].Get());
+                    expectedIdsList.AddAll((IList<string>)future[i].Get());
                 }
                 catch (Exception t) {
                     throw new EPException(t);
@@ -101,17 +107,17 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 
             var expectedIds = expectedIdsList.ToArray();
 
-            Assert.AreEqual(numThreads * numRepeats, listenerWindow.NewDataList.Count); // old and new each
+            ClassicAssert.AreEqual(numThreads * numRepeats, listenerWindow.NewDataList.Count); // old and new each
 
             // compute list of received
             for (var i = 0; i < listenerConsumers.Length; i++) {
-                var newEvents = listenerConsumers[i].GetNewDataListFlattened();
+                var newEvents = listenerConsumers[i].NewDataListFlattened;
                 var receivedIds = new string[newEvents.Length];
                 for (var j = 0; j < newEvents.Length; j++) {
-                    receivedIds[j] = (string) newEvents[j].Get("TheString");
+                    receivedIds[j] = (string)newEvents[j].Get("TheString");
                 }
 
-                Assert.AreEqual(receivedIds.Length, expectedIds.Length);
+                ClassicAssert.AreEqual(receivedIds.Length, expectedIds.Length);
 
                 Array.Sort(receivedIds);
                 Array.Sort(expectedIds);

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -14,6 +14,7 @@ using com.espertech.esper.common.@internal.supportunit.util;
 using com.espertech.esper.compat.datetime;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.epl.pattern.observer
 {
@@ -46,14 +47,14 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
             TimePeriod expectedTimePeriod)
         {
             var spec = TimerScheduleISO8601Parser.Parse(text);
-            Assert.AreEqual(expectedNumRepeats, spec.OptionalRepeatCount);
+            ClassicAssert.AreEqual(expectedNumRepeats, spec.OptionalRepeatCount);
             if (expectedTimePeriod == null)
             {
-                Assert.IsNull(spec.OptionalTimePeriod);
+                ClassicAssert.IsNull(spec.OptionalTimePeriod);
             }
             else
             {
-                Assert.AreEqual(
+                ClassicAssert.AreEqual(
                     expectedTimePeriod,
                     spec.OptionalTimePeriod,
                     "expected '" + expectedTimePeriod.ToStringISO8601() + "' got '" + spec.OptionalTimePeriod.ToStringISO8601() + "'");
@@ -61,11 +62,11 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
 
             if (expectedDate == null)
             {
-                Assert.IsNull(spec.OptionalDate);
+                ClassicAssert.IsNull(spec.OptionalDate);
             }
             else
             {
-                Assert.AreEqual(DateTimeParsingFunctions.ParseDefaultMSecWZone(expectedDate), spec.OptionalDate.UtcMillis);
+                ClassicAssert.AreEqual(DateTimeParsingFunctions.ParseDefaultMSecWZone(expectedDate), spec.OptionalDate.UtcMillis);
             }
         }
 
@@ -82,7 +83,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
         {
             var spec = TimerScheduleISO8601Parser.Parse(date);
             SupportDateTimeUtil.CompareDate(spec.OptionalDate, year, month, day, hour, minute, second, millis);
-            Assert.AreEqual(zone, spec.OptionalDate.TimeZone.DisplayName);
+            ClassicAssert.AreEqual(zone, spec.OptionalDate.TimeZone.DisplayName);
         }
 
         private void TryInvalidPeriod(string period)
@@ -103,7 +104,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
             }
             catch (ScheduleParameterException ex)
             {
-                Assert.AreEqual(message, ex.Message);
+                ClassicAssert.AreEqual(message, ex.Message);
             }
         }
 

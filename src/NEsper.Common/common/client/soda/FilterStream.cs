@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -15,10 +15,9 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// A stream upon which projections (views) can be added that selects events by name and filter expression.
     /// </summary>
-    [Serializable]
     public class FilterStream : ProjectedStream
     {
-        private Filter filter;
+        private Filter _filter;
 
         /// <summary>
         /// Ctor.
@@ -108,7 +107,7 @@ namespace com.espertech.esper.common.client.soda
         public FilterStream(Filter filter)
             : base(new List<View>(), null)
         {
-            this.filter = filter;
+            this._filter = filter;
         }
 
         /// <summary>
@@ -121,7 +120,7 @@ namespace com.espertech.esper.common.client.soda
             string name)
             : base(new List<View>(), name)
         {
-            this.filter = filter;
+            this._filter = filter;
         }
 
         /// <summary>
@@ -136,29 +135,28 @@ namespace com.espertech.esper.common.client.soda
             IList<View> views)
             : base(views, name)
         {
-            this.filter = filter;
+            this._filter = filter;
         }
 
         /// <summary>
         /// Returns the filter.
         /// </summary>
         /// <returns>filter</returns>
-        public Filter Filter
-        {
-            get => filter;
-            set => filter = value;
+        public Filter Filter {
+            get => _filter;
+            set => _filter = value;
         }
 
         public override void ToEPLProjectedStream(
             TextWriter writer,
             EPStatementFormatter formatter)
         {
-            filter.ToEPL(writer, formatter);
+            _filter.ToEPL(writer, formatter);
         }
 
         public override void ToEPLProjectedStreamType(TextWriter writer)
         {
-            writer.Write(filter.EventTypeName);
+            writer.Write(_filter.EventTypeName);
         }
     }
 } // end of namespace

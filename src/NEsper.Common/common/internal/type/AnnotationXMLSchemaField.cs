@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -23,12 +23,17 @@ namespace com.espertech.esper.common.@internal.type
             CodegenMethod parent,
             CodegenClassScope scope)
         {
-            return new CodegenSetterBuilder(typeof(AnnotationXMLSchemaField), typeof(AnnotationXMLSchemaField), "field", parent, scope)
-                .Constant("Name", field.Name)
-                .Constant("XPath", field.XPath)
-                .Constant("Type", field.Type)
-                .Constant("EventTypeName", field.EventTypeName)
-                .Constant("CastToType", field.CastToType)
+            return new CodegenSetterBuilder(
+                    typeof(AnnotationXMLSchemaField),
+                    typeof(AnnotationXMLSchemaField),
+                    "field",
+                    parent,
+                    scope)
+                .ConstantExplicit("Name", field.Name)
+                .ConstantExplicit("XPath", field.XPath)
+                .ConstantExplicit("Type", field.Type)
+                .ConstantExplicit("EventTypeName", field.EventTypeName)
+                .ConstantExplicit("CastToType", field.CastToType)
                 .Build();
         }
     }

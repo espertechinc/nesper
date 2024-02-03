@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -11,6 +11,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.epl.join
 {
@@ -18,7 +19,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
     {
         public void Run(RegressionEnvironment env)
         {
-            var joinStatement = "@Name('s0') select * from " +
+            var joinStatement = "@name('s0') select * from " +
                                 "SupportMarketDataBean#length(3)," +
                                 "SupportBean#length(3)" +
                                 " where Symbol=TheString and Volume=LongBoxed";
@@ -38,7 +39,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
             SendEvent(env, setOne[0]);
             SendEvent(env, setTwo[0]);
-            Assert.IsNotNull(env.Listener("s0").LastNewData);
+            env.AssertListener("s0", listener => ClassicAssert.IsNotNull(listener.LastNewData));
 
             env.UndeployAll();
         }

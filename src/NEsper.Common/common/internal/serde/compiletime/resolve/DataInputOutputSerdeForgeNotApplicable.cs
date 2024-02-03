@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -10,29 +10,28 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.serde.serdeset.builtin;
 
-using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder; // publicConstValue;
+using static
+    com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder; // publicConstValue;
 
 namespace com.espertech.esper.common.@internal.serde.compiletime.resolve
 {
-	public class DataInputOutputSerdeForgeNotApplicable : DataInputOutputSerdeForge
-	{
-		public static readonly DataInputOutputSerdeForgeNotApplicable INSTANCE = new DataInputOutputSerdeForgeNotApplicable();
+    public class DataInputOutputSerdeForgeNotApplicable : DataInputOutputSerdeForge
+    {
+        public static readonly DataInputOutputSerdeForgeNotApplicable INSTANCE =
+            new DataInputOutputSerdeForgeNotApplicable();
 
-		private DataInputOutputSerdeForgeNotApplicable()
-		{
-		}
+        private DataInputOutputSerdeForgeNotApplicable()
+        {
+        }
 
-		public CodegenExpression Codegen(
-			CodegenMethod method,
-			CodegenClassScope classScope,
-			CodegenExpression optionalEventTypeResolver)
-		{
-			return PublicConstValue(typeof(DIOSkipSerde), "INSTANCE");
-		}
+        public CodegenExpression Codegen(
+            CodegenMethod method,
+            CodegenClassScope classScope,
+            CodegenExpression optionalEventTypeResolver)
+        {
+            return PublicConstValue(typeof(DIOSkipSerde), "INSTANCE");
+        }
 
-		public string ForgeClassName()
-		{
-			return nameof(DIOSkipSerde);
-		}
-	}
+        public string ForgeClassName => nameof(DIOSkipSerde);
+    }
 } // end of namespace

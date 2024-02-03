@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -117,7 +117,7 @@ namespace com.espertech.esper.common.@internal.view.exttimedbatch
                 viewUpdatedCollection?.Update(batchNewData, lastBatch);
 
                 agentInstanceContext.InstrumentationProvider.QViewIndicate(factory, batchNewData, lastBatch);
-                child.Update(batchNewData, lastBatch);
+                Child.Update(batchNewData, lastBatch);
                 agentInstanceContext.InstrumentationProvider.AViewIndicate();
 
                 lastBatch = batchNewData;
@@ -128,7 +128,7 @@ namespace com.espertech.esper.common.@internal.view.exttimedbatch
                 viewUpdatedCollection?.Update(null, oldData);
 
                 agentInstanceContext.InstrumentationProvider.QViewIndicate(factory, null, oldData);
-                child.Update(null, oldData);
+                Child.Update(null, oldData);
                 agentInstanceContext.InstrumentationProvider.AViewIndicate();
             }
 

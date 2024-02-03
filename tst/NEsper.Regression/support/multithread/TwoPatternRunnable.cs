@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -14,6 +14,7 @@ using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.runtime.client.scopetest;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.support.multithread
 {
@@ -36,7 +37,7 @@ namespace com.espertech.esper.regressionlib.support.multithread
         public void Run()
         {
             var stmtText =
-                "@Name('s0') select * from pattern[every event1=SupportTradeEvent(UserId in ('100','101'),Amount>=1000)]";
+                "@name('s0') select * from pattern[every event1=SupportTradeEvent(UserId in ('100','101'),Amount>=1000)]";
             env.CompileDeploy(stmtText);
             env.Statement("s0").AddListener(listener);
 
@@ -62,12 +63,12 @@ namespace com.espertech.esper.regressionlib.support.multithread
 
                 // check results
                 var received = listener.NewDataListFlattened;
-                Assert.AreEqual(matches.Count, received.Length);
+                ClassicAssert.AreEqual(matches.Count, received.Length);
                 for (var i = 0; i < received.Length; i++) {
-                    Assert.AreSame(matches[i], received[i].Get("event1"));
+                    ClassicAssert.AreSame(matches[i], received[i].Get("event1"));
                 }
 
-                // System.out.println("Found " + received.Length + " matches in loop #" + countLoops);
+                // Console.WriteLine("Found " + received.Length + " matches in loop #" + countLoops);
                 listener.Reset();
             }
         }

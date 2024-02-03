@@ -1,10 +1,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
+
+using System;
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -16,10 +18,16 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 namespace com.espertech.esper.common.@internal.epl.pattern.core
 {
     /// <summary>
-    ///     Contains handles to implementations of services needed by evaluation nodes.
+    /// Contains handles to implementations of services needed by evaluation nodes.
     /// </summary>
     public class PatternContext
     {
+        private int streamNumber;
+        private MatchedEventMapMeta matchedEventMapMeta;
+        private bool isContextDeclaration;
+        private int nestingLevel;
+        private bool startCondition;
+
         public PatternContext()
         {
         }
@@ -29,24 +37,18 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
             MatchedEventMapMeta matchedEventMapMeta,
             bool isContextDeclaration,
             int nestingLevel,
-            bool isStartCondition)
+            bool startCondition)
         {
-            StreamNumber = streamNumber;
-            MatchedEventMapMeta = matchedEventMapMeta;
-            IsContextDeclaration = isContextDeclaration;
-            NestingLevel = nestingLevel;
-            IsStartCondition = isStartCondition;
+            this.streamNumber = streamNumber;
+            this.matchedEventMapMeta = matchedEventMapMeta;
+            this.isContextDeclaration = isContextDeclaration;
+            this.nestingLevel = nestingLevel;
+            this.startCondition = startCondition;
         }
 
-        public int StreamNumber { get; set; }
+        public bool IsContextDeclaration => isContextDeclaration;
 
-        public MatchedEventMapMeta MatchedEventMapMeta { get; set; }
-
-        public bool IsContextDeclaration { get; set; }
-
-        public int NestingLevel { get; set; }
-
-        public bool IsStartCondition { get; set; }
+        public bool IsStartCondition => startCondition;
 
         public CodegenExpression Make(
             CodegenMethodScope parent,
@@ -54,25 +56,49 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
             CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(PatternContext), GetType(), classScope);
-            method.Block
-                .DeclareVar<PatternContext>("ctx", NewInstance(typeof(PatternContext)))
+            method.Block.DeclareVar<PatternContext>("ctx", NewInstance(typeof(PatternContext)))
                 .SetProperty(
                     Ref("ctx"),
                     "MatchedEventMapMeta",
-                    LocalMethod(MatchedEventMapMeta.MakeCodegen(classScope, method, symbols)));
-            if (StreamNumber != 0) {
-                method.Block.SetProperty(Ref("ctx"), "StreamNumber", Constant(StreamNumber));
+                    LocalMethod(matchedEventMapMeta.MakeCodegen(classScope, method, symbols)));
+            if (streamNumber != 0) {
+                method.Block.SetProperty(Ref("ctx"), "StreamNumber", Constant(streamNumber));
             }
 
-            if (IsContextDeclaration) {
-                method.Block
-                    .SetProperty(Ref("ctx"), "IsContextDeclaration", Constant(IsContextDeclaration))
-                    .SetProperty(Ref("ctx"), "NestingLevel", Constant(NestingLevel))
-                    .SetProperty(Ref("ctx"), "IsStartCondition", Constant(IsStartCondition));
+            if (isContextDeclaration) {
+                method.Block.SetProperty(Ref("ctx"), "ContextDeclaration", Constant(isContextDeclaration))
+                    .SetProperty(Ref("ctx"), "NestingLevel", Constant(nestingLevel))
+                    .SetProperty(Ref("ctx"), "StartCondition", Constant(startCondition));
             }
 
             method.Block.MethodReturn(Ref("ctx"));
             return LocalMethod(method);
+        }
+
+        public int StreamNumber {
+            get => streamNumber;
+
+            set => streamNumber = value;
+        }
+
+        public MatchedEventMapMeta MatchedEventMapMeta {
+            get => matchedEventMapMeta;
+
+            set => matchedEventMapMeta = value;
+        }
+
+        public bool ContextDeclaration {
+            set => isContextDeclaration = value;
+        }
+
+        public int NestingLevel {
+            get => nestingLevel;
+
+            set => nestingLevel = value;
+        }
+
+        public bool StartCondition {
+            set => startCondition = value;
         }
     }
 } // end of namespace

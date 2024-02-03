@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -13,7 +13,6 @@ namespace com.espertech.esper.common.client.configuration.compiler
     /// <summary>
     ///     Configuration information for plugging in a custom aggregation function.
     /// </summary>
-    [Serializable]
     public class ConfigurationCompilerPlugInAggregationFunction
     {
         /// <summary>
@@ -58,9 +57,9 @@ namespace com.espertech.esper.common.client.configuration.compiler
                 return false;
             }
 
-            var that = (ConfigurationCompilerPlugInAggregationFunction) o;
+            var that = (ConfigurationCompilerPlugInAggregationFunction)o;
 
-            if (ForgeClassName != null ? !ForgeClassName.Equals(that.ForgeClassName) : that.ForgeClassName != null) {
+            if (!ForgeClassName?.Equals(that.ForgeClassName) ?? that.ForgeClassName != null) {
                 return false;
             }
 

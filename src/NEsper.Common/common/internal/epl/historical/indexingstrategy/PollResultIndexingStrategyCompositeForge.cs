@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -21,13 +21,13 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
 {
     public class PollResultIndexingStrategyCompositeForge : PollResultIndexingStrategyForge
     {
+        private readonly int streamNum;
         private readonly EventType eventType;
-        private readonly Type[] optHashCoercedTypes;
         private readonly string[] optHashPropertyNames;
+        private readonly Type[] optHashCoercedTypes;
         private readonly MultiKeyClassRef optHashMultiKeyClasses;
         private readonly string[] rangeProps;
         private readonly Type[] rangeTypes;
-        private readonly int streamNum;
 
         public PollResultIndexingStrategyCompositeForge(
             int streamNum,
@@ -78,7 +78,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
                 NewArrayByLength(typeof(EventPropertyValueGetter), Constant(rangeProps.Length)));
             for (var i = 0; i < rangeProps.Length; i++) {
                 var propertyType = eventType.GetPropertyType(rangeProps[i]);
-                var getterSPI = ((EventTypeSPI) eventType).GetGetterSPI(rangeProps[i]);
+                var getterSPI = ((EventTypeSPI)eventType).GetGetterSPI(rangeProps[i]);
                 var getter = EventTypeUtility.CodegenGetterWCoerce(
                     getterSPI,
                     propertyType,
@@ -90,9 +90,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
             }
 
             method.Block
-                .DeclareVar<PollResultIndexingStrategyComposite>(
-                    "strat",
-                    NewInstance(typeof(PollResultIndexingStrategyComposite)))
+                .DeclareVarNewInstance(typeof(PollResultIndexingStrategyComposite), "strat")
                 .SetProperty(Ref("strat"), "StreamNum", Constant(streamNum))
                 .SetProperty(Ref("strat"), "OptionalKeyedProps", Constant(optHashPropertyNames))
                 .SetProperty(Ref("strat"), "OptKeyCoercedTypes", Constant(optHashCoercedTypes))

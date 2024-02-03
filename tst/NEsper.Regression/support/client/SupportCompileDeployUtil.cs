@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -12,7 +12,6 @@ using System.Threading;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration;
-using com.espertech.esper.common.client.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.concurrency;
@@ -116,12 +115,7 @@ namespace com.espertech.esper.regressionlib.support.client
                     .Compile(
                         epl,
                         new CompilerArguments(configuration)
-                            .SetPath(new CompilerPath().AddAll(path.Compileds))
-                            .SetOptions(
-                                new CompilerOptions()
-                                    .SetAccessModifierContext(ctx => NameAccessModifier.PUBLIC)
-                                    .SetAccessModifierEventType(ctx => NameAccessModifier.PUBLIC)
-                            ));
+                            .SetPath(new CompilerPath().AddAll(path.Compileds)));
             }
             catch (Exception t) {
                 throw new EPException(t);

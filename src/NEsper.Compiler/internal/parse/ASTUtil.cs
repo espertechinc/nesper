@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -125,7 +125,7 @@ namespace com.espertech.esper.compiler.@internal.parse
             {
                 var writer = new StringWriter();
 
-                RenderNode(new char[0], ast, writer);
+                RenderNode(Array.Empty<char>(), ast, writer);
                 DumpAST(writer, ast, 2);
 
                 Log.Info(".dumpAST ANTLR Tree dump follows...\n" + writer.ToString());

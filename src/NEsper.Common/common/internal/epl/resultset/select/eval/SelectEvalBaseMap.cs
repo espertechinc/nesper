@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -50,29 +50,31 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenMethod methodNode = codegenMethodScope.MakeChild(
+            var methodNode = codegenMethodScope.MakeChild(
                 typeof(EventBean),
-                this.GetType(),
+                GetType(),
                 codegenClassScope);
-            CodegenBlock block = methodNode.Block;
-            if (this.context.ExprForges.Length == 0) {
+            var block = methodNode.Block;
+            if (context.ExprForges.Length == 0) {
                 block.DeclareVar<IDictionary<string, object>>(
-                    "props", StaticMethod(typeof(Collections), "GetEmptyMap", new[] { typeof(string), typeof(object) }));
+                    "props",
+                    StaticMethod(typeof(Collections), "GetEmptyMap", new[] { typeof(string), typeof(object) }));
             }
             else {
                 block.DeclareVar<IDictionary<string, object>>(
-                    "props", NewInstance(typeof(HashMap<string, object>)));
+                    "props",
+                    NewInstance(typeof(HashMap<string, object>)));
             }
 
-            for (int i = 0; i < this.context.ColumnNames.Length; i++) {
-                CodegenExpression expression = CodegenLegoMayVoid.ExpressionMayVoid(
+            for (var i = 0; i < context.ColumnNames.Length; i++) {
+                var expression = CodegenLegoMayVoid.ExpressionMayVoid(
                     typeof(object),
-                    this.context.ExprForges[i],
+                    context.ExprForges[i],
                     methodNode,
                     exprSymbol,
                     codegenClassScope);
                 block.Expression(
-                    ExprDotMethod(Ref("props"), "Put", Constant(this.context.ColumnNames[i]), expression));
+                    ExprDotMethod(Ref("props"), "Put", Constant(context.ColumnNames[i]), expression));
             }
 
             block.MethodReturn(

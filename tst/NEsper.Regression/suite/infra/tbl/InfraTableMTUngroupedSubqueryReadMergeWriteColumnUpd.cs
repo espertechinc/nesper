@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -7,17 +7,20 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.runtime.client.scopetest;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.infra.tbl
 {
@@ -26,7 +29,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
     /// </summary>
     public class InfraTableMTUngroupedSubqueryReadMergeWriteColumnUpd : RegressionExecution
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
+        }
 
         /// <summary>
         ///     Tests column-consistency for subquery:
@@ -56,7 +64,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 "  when not matched then insert select '1' as p0, '1' as p1, '1' as p2, '1' as p3, '1' as p4;\n" +
                 "on SupportBean_S0 merge MyTable " +
                 "  when matched then update set p0=P00, p1=P00, p2=P00, p3=P00, p4=P00;\n" +
-                "@Name('out') select " +
+                "@name('out') select " +
                 "(select p0 from MyTable where " +
                 "  (p0='1' and p1='1' and p2='1' and p3='1' and p4='1') " +
                 "  or (p0='2' and p1='2' and p2='2' and p3='2' and p4='2')) as c0 " +
@@ -85,17 +93,17 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             readRunnable.Shutdown = true;
 
             // join
-            log.Info("Waiting for completion");
+            Log.Info("Waiting for completion");
             threadWrite.Join();
             threadRead.Join();
 
             env.UndeployAll();
-            Assert.IsNull(writeRunnable.Exception);
-            Assert.IsNull(readRunnable.Exception);
+            ClassicAssert.IsNull(writeRunnable.Exception);
+            ClassicAssert.IsNull(readRunnable.Exception);
             Console.Out.WriteLine(
                 "Write loops " + writeRunnable.NumLoops + " and performed " + readRunnable.numQueries + " reads");
-            Assert.IsTrue(writeRunnable.NumLoops > 1);
-            Assert.IsTrue(readRunnable.numQueries > 100);
+            ClassicAssert.IsTrue(writeRunnable.NumLoops > 1);
+            ClassicAssert.IsTrue(readRunnable.numQueries > 100);
         }
 
         public class ReadRunnable : IRunnable
@@ -121,7 +129,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
             public void Run()
             {
-                log.Info("Started event send for read");
+                Log.Info("Started event send for read");
 
                 try {
                     while (!shutdown) {
@@ -135,11 +143,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     }
                 }
                 catch (Exception ex) {
-                    log.Error("Exception encountered: " + ex.Message, ex);
+                    Log.Error("Exception encountered: " + ex.Message, ex);
                     Exception = ex;
                 }
 
-                log.Info("Completed event send for read");
+                Log.Info("Completed event send for read");
             }
         }
     }

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -9,8 +9,6 @@
 using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
-
-using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.expr.datetime
 {
@@ -71,15 +69,15 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             string condition,
             string tsa,
             string tsb,
-            bool IsInvoked,
+            bool isInvoked,
             AtomicLong milestone)
         {
-            var epl = "@Name('s0') select * from pattern [a=A -> b=B] as abc where " + condition;
+            var epl = "@name('s0') select * from pattern [a=A -> b=B] as abc where " + condition;
             env.CompileDeploy(epl).AddListener("s0").MilestoneInc(milestone);
 
             env.SendEventBean(SupportTimeStartEndA.Make("E1", tsa, 0), "A");
             env.SendEventBean(SupportTimeStartEndB.Make("E2", tsb, 0), "B");
-            Assert.AreEqual(IsInvoked, env.Listener("s0").GetAndClearIsInvoked());
+            env.AssertListenerInvokedFlag("s0", isInvoked);
 
             env.UndeployAll();
         }

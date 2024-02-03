@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -15,13 +15,12 @@ namespace com.espertech.esper.common.client.configuration.runtime
     /// <summary>
     ///     Time source configuration, the default in MILLI (millisecond resolution from System.currentTimeMillis).
     /// </summary>
-    [Serializable]
     public class ConfigurationRuntimeTimeSource
     {
         /// <summary>
         ///     Ctor.
         /// </summary>
-        internal ConfigurationRuntimeTimeSource()
+        public ConfigurationRuntimeTimeSource()
         {
             TimeSourceType = TimeSourceType.MILLI;
         }

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -49,17 +49,13 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.consume
             earlier = null;
         }
 
-        public override NamedWindowConsumerLatch Earlier {
-            get => earlier;
-        }
+        public override NamedWindowConsumerLatch Earlier => earlier;
 
         /// <summary>
         /// Returns true if the dispatch completed for this future.
         /// </summary>
         /// <returns>true for completed, false if not</returns>
-        public bool IsCompleted {
-            get => isCompleted;
-        }
+        public bool IsCompleted => isCompleted;
 
         /// <summary>
         /// Blocking call that returns only when the earlier latch completed.
@@ -70,10 +66,10 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.consume
                 return;
             }
 
-            long spinStartTime = factory.TimeSourceService.TimeMillis;
+            var spinStartTime = factory.TimeSourceService.TimeMillis;
             while (!earlier.isCompleted) {
                 Thread.Yield();
-                long spinDelta = factory.TimeSourceService.TimeMillis - spinStartTime;
+                var spinDelta = factory.TimeSourceService.TimeMillis - spinStartTime;
                 if (spinDelta > factory.MsecWait) {
                     Log.Info(
                         "Spin wait timeout exceeded in named window '" +

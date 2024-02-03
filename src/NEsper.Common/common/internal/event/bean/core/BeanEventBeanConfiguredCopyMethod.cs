@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -37,9 +37,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             EventBeanTypedEventFactory eventAdapterService,
             MethodInfo copyMethod)
         {
-            this._beanEventType = beanEventType;
-            this._eventAdapterService = eventAdapterService;
-            this._copyMethod = copyMethod;
+            _beanEventType = beanEventType;
+            _eventAdapterService = eventAdapterService;
+            _copyMethod = copyMethod;
         }
 
         public EventBean Copy(EventBean theEvent)

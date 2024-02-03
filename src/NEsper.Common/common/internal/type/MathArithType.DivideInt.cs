@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -19,7 +19,6 @@ namespace com.espertech.esper.common.@internal.type
         /// <summary>
         ///     Computer for type-specific arith. operations.
         /// </summary>
-        [Serializable]
         public class DivideInt : Computer
         {
             public object Compute(
@@ -50,13 +49,11 @@ namespace com.espertech.esper.common.@internal.type
                     .AddParam(typeof(int?), "i1")
                     .AddParam(typeof(int?), "i2")
                     .Block
-                    
                     .IfCondition(
                         CodegenExpressionBuilder.EqualsIdentity(
                             CodegenExpressionBuilder.Ref("i2"),
                             CodegenExpressionBuilder.Constant(0)))
                     .BlockReturn(CodegenExpressionBuilder.ConstantNull())
-
                     .MethodReturn(
                         CodegenExpressionBuilder.Op(
                             CodegenExpressionBuilder.Ref("i1"),

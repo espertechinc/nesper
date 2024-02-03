@@ -1,32 +1,30 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
 using Avro.Generic;
 
 using com.espertech.esper.common.client;
-using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
-using com.espertech.esper.runtime.client;
 
 using NEsper.Avro.Extensions;
 
+using Newtonsoft.Json.Linq;
+
+// record
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static NEsper.Avro.Extensions.TypeBuilder;
-
-using JObject = Newtonsoft.Json.Linq.JObject;
 
 namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 {
@@ -43,7 +41,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             }
 
             foreach (var rep in EventRepresentationChoiceExtensions.Values()) {
-                RunAssertPopulateFromNamedWindow(env, rep);
+                if (rep.IsAvroEvent()) {
+                    env.AssertThat(() => RunAssertPopulateFromNamedWindow(env, rep));
+                }
+                else {
+                    RunAssertPopulateFromNamedWindow(env, rep);
+                }
             }
 
             RunAssertionObjectArrPropertyReorder(env);
@@ -53,13 +56,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
         {
             var epl = "create objectarray schema MyInner (p_inner string);\n" +
                       "create objectarray schema MyOATarget (unfilled string, p0 string, p1 string, i0 MyInner);\n" +
-                      "create objectarray schema MyOASource (p0 string, p1 string, i0 MyInner);\n" +
+                      "@Public @buseventtype create objectarray schema MyOASource (p0 string, p1 string, i0 MyInner);\n" +
                       "insert into MyOATarget select p0, p1, i0, null as unfilled from MyOASource;\n" +
-                      "@Name('s0') select * from MyOATarget;\n";
-            env.CompileDeployWBusPublicType(epl, new RegressionPath()).AddListener("s0");
+                      "@name('s0') select * from MyOATarget;\n";
+            env.CompileDeploy(epl, new RegressionPath()).AddListener("s0");
 
-            env.SendEventObjectArray(new object[] {"p0value", "p1value", new object[] {"i"}}, "MyOASource");
-            EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), "p0,p1".SplitCsv(), new object[] {"p0value", "p1value"});
+            env.SendEventObjectArray(new object[] { "p0value", "p1value", new object[] { "i" } }, "MyOASource");
+            env.AssertPropsNew("s0", "p0,p1".SplitCsv(), new object[] { "p0value", "p1value" });
 
             env.UndeployAll();
         }
@@ -69,18 +72,23 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             EventRepresentationChoice type)
         {
             var path = new RegressionPath();
-            var schemaEPL = type.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedNode>() + "create schema Node(nid string)";
-            env.CompileDeployWBusPublicType(schemaEPL, path);
+            var schemaEPL = type.GetAnnotationTextWJsonProvided(typeof(MyLocalJsonProvidedNode)) +
+                            "@Public @buseventtype create schema Node(nid string)";
+            env.CompileDeploy(schemaEPL, path);
 
-            env.CompileDeploy("create window NodeWindow#unique(nid) as Node", path);
+            env.CompileDeploy("@Public create window NodeWindow#unique(nid) as Node", path);
             env.CompileDeploy("insert into NodeWindow select * from Node", path);
             env.CompileDeploy(
-                type.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedNodePlus>() + "create schema NodePlus(npid string, node Node)",
+                type.GetAnnotationTextWJsonProvided(typeof(MyLocalJsonProvidedNodePlus)) +
+                "create schema NodePlus(npid string, node Node)",
                 path);
-            env.CompileDeploy("@Name('s0') insert into NodePlus select 'E1' as npid, n1 as node from NodeWindow n1", path).AddListener("s0");
+            env.CompileDeploy(
+                    "@name('s0') insert into NodePlus select 'E1' as npid, n1 as node from NodeWindow n1",
+                    path)
+                .AddListener("s0");
 
             if (type.IsObjectArrayEvent()) {
-                env.SendEventObjectArray(new object[] {"n1"}, "Node");
+                env.SendEventObjectArray(new object[] { "n1" }, "Node");
             }
             else if (type.IsMapEvent()) {
                 env.SendEventMap(Collections.SingletonDataMap("nid", "n1"), "Node");
@@ -99,11 +107,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 Assert.Fail();
             }
 
-            var @event = env.Listener("s0").AssertOneGetNewAndReset();
-            Assert.AreEqual("E1", @event.Get("npid"));
-            Assert.AreEqual("n1", @event.Get("node.nid"));
-            var fragment = (EventBean) @event.GetFragment("node");
-            Assert.AreEqual("Node", fragment.EventType.Name);
+            env.AssertEventNew(
+                "s0",
+                @event => {
+                    ClassicAssert.AreEqual("E1", @event.Get("npid"));
+                    ClassicAssert.AreEqual("n1", @event.Get("node.nid"));
+                    var fragment = (EventBean)@event.GetFragment("node");
+                    ClassicAssert.AreEqual("Node", fragment.EventType.Name);
+                });
 
             env.UndeployAll();
         }
@@ -112,16 +123,16 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             RegressionEnvironment env,
             EventRepresentationChoice representation)
         {
-            var epl = representation.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedMyEvent>() +
-                      " create schema MyEvent(myId int);\n" +
-                      representation.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedCompositeEvent>() +
-                      " create schema CompositeEvent(c1 MyEvent, c2 MyEvent, rule string);\n" +
+            var epl = representation.GetAnnotationTextWJsonProvided(typeof(MyLocalJsonProvidedMyEvent)) +
+                      " @buseventtype @public create schema MyEvent(myId int);\n" +
+                      representation.GetAnnotationTextWJsonProvided(typeof(MyLocalJsonProvidedCompositeEvent)) +
+                      " @buseventtype @public create schema CompositeEvent(c1 MyEvent, c2 MyEvent, rule string);\n" +
                       "insert into MyStream select c, 'additionalValue' as value from MyEvent c;\n" +
                       "insert into CompositeEvent select e1.c as c1, e2.c as c2, '4' as rule " +
                       "  from pattern [e1=MyStream -> e2=MyStream];\n" +
-                      representation.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedCompositeEvent>() +
+                      representation.GetAnnotationTextWJsonProvided(typeof(MyLocalJsonProvidedCompositeEvent)) +
                       " @Name('Target') select * from CompositeEvent;\n";
-            env.CompileDeployWBusPublicType(epl, new RegressionPath()).AddListener("Target");
+            env.CompileDeploy(epl, new RegressionPath()).AddListener("Target");
 
             if (representation.IsObjectArrayEvent()) {
                 env.SendEventObjectArray(MakeEvent(10).Values.ToArray(), "MyEvent");
@@ -143,10 +154,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 Assert.Fail();
             }
 
-            var theEvent = env.Listener("Target").AssertOneGetNewAndReset();
-            Assert.AreEqual(10, theEvent.Get("c1.myId"));
-            Assert.AreEqual(11, theEvent.Get("c2.myId"));
-            Assert.AreEqual("4", theEvent.Get("rule"));
+            env.AssertEventNew(
+                "Target",
+                theEvent => {
+                    ClassicAssert.AreEqual(10, theEvent.Get("c1.myId"));
+                    ClassicAssert.AreEqual(11, theEvent.Get("c2.myId"));
+                    ClassicAssert.AreEqual("4", theEvent.Get("rule"));
+                });
 
             env.UndeployAll();
         }
@@ -156,25 +170,28 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             EventRepresentationChoice eventRepresentationEnum)
         {
             var path = new RegressionPath();
-            var epl = eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedMyEvent>() +
-                      " create schema MyEvent(myId int)\n;" +
-                      eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedAllMyEvent>() +
-                      " create schema AllMyEvent as (myEvent MyEvent, clazz String, reverse boolean);\n" +
-                      eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedSuspectMyEvent>() +
-                      " create schema SuspectMyEvent as (myEvent MyEvent, clazz String);\n";
-            env.CompileDeployWBusPublicType(epl, path);
+            var epl = eventRepresentationEnum.GetAnnotationTextWJsonProvided(typeof(MyLocalJsonProvidedMyEvent)) +
+                      " @public @buseventtype create schema MyEvent(myId int)\n;" +
+                      eventRepresentationEnum.GetAnnotationTextWJsonProvided(typeof(MyLocalJsonProvidedAllMyEvent)) +
+                      " @public @buseventtype create schema AllMyEvent as (myEvent MyEvent, clazz String, reverse boolean);\n" +
+                      eventRepresentationEnum.GetAnnotationTextWJsonProvided(
+                          typeof(MyLocalJsonProvidedSuspectMyEvent)) +
+                      " @public @buseventtype create schema SuspectMyEvent as (myEvent MyEvent, clazz String);\n";
+            env.CompileDeploy(epl, path);
 
             env.CompileDeploy(
-                    "@Name('s0') insert into AllMyEvent " +
+                    "@name('s0') insert into AllMyEvent " +
                     "select c as myEvent, 'test' as clazz, false as reverse " +
                     "from MyEvent(myId=1) c",
                     path)
                 .AddListener("s0");
 
-            Assert.IsTrue(eventRepresentationEnum.MatchesClass(env.Statement("s0").EventType.UnderlyingType));
+            env.AssertStatement(
+                "s0",
+                statement => ClassicAssert.IsTrue(eventRepresentationEnum.MatchesClass(statement.EventType.UnderlyingType)));
 
             env.CompileDeploy(
-                    "@Name('s1') insert into SuspectMyEvent " +
+                    "@name('s1') insert into SuspectMyEvent " +
                     "select c.myEvent as myEvent, clazz " +
                     "from AllMyEvent(not reverse) c",
                     path)
@@ -196,26 +213,25 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 Assert.Fail();
             }
 
-            AssertCreateStreamTwo(eventRepresentationEnum, env.Listener("s0").AssertOneGetNewAndReset(), env.Statement("s0"));
-            AssertCreateStreamTwo(eventRepresentationEnum, env.Listener("s1").AssertOneGetNewAndReset(), env.Statement("s1"));
+            env.AssertEventNew("s0", @event => AssertCreateStreamTwo(eventRepresentationEnum, @event));
+            env.AssertEventNew("s1", @event => AssertCreateStreamTwo(eventRepresentationEnum, @event));
 
             env.UndeployAll();
         }
 
         private static void AssertCreateStreamTwo(
             EventRepresentationChoice eventRepresentationEnum,
-            EventBean eventBean,
-            EPStatement statement)
+            EventBean eventBean)
         {
             if (eventRepresentationEnum.IsAvroOrJsonEvent()) {
-                Assert.AreEqual(1, eventBean.Get("myEvent.myId"));
+                ClassicAssert.AreEqual(1, eventBean.Get("myEvent.myId"));
             }
             else {
-                Assert.IsTrue(eventBean.Get("myEvent") is EventBean);
-                Assert.AreEqual(1, ((EventBean) eventBean.Get("myEvent")).Get("myId"));
+                ClassicAssert.IsTrue(eventBean.Get("myEvent") is EventBean);
+                ClassicAssert.AreEqual(1, ((EventBean)eventBean.Get("myEvent")).Get("myId"));
             }
 
-            Assert.IsNotNull(statement.EventType.GetFragmentType("myEvent"));
+            ClassicAssert.IsNotNull(eventBean.EventType.GetFragmentType("myEvent"));
         }
 
         private static IDictionary<string, object> MakeEvent(int myId)
@@ -225,19 +241,17 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 
         private static GenericRecord MakeEventAvro(int myId)
         {
-            var schema = SchemaBuilder.Record("schema", RequiredInt("myId"));
+            var schema = SchemaBuilder.Record("schema", Field("myId", RequiredInt("myId")));
             var record = new GenericRecord(schema);
             record.Put("myId", myId);
             return record;
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedMyEvent
         {
             public int? myId;
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedCompositeEvent
         {
             public MyLocalJsonProvidedMyEvent c1;
@@ -245,7 +259,6 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             public string rule;
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedAllMyEvent
         {
             public MyLocalJsonProvidedMyEvent myEvent;
@@ -253,20 +266,17 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             public bool reverse;
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedSuspectMyEvent
         {
             public MyLocalJsonProvidedMyEvent myEvent;
             public string clazz;
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedNode
         {
             public string nid;
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedNodePlus
         {
             public string npid;

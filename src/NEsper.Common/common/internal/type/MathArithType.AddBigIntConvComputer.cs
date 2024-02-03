@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -19,7 +19,6 @@ namespace com.espertech.esper.common.@internal.type
         /// <summary>
         ///     Computer for math op.
         /// </summary>
-        [Serializable]
         public class AddBigIntConvComputer : Computer
         {
             private readonly BigIntegerCoercer _convOne;
@@ -34,8 +33,8 @@ namespace com.espertech.esper.common.@internal.type
                 BigIntegerCoercer convOne,
                 BigIntegerCoercer convTwo)
             {
-                this._convOne = convOne;
-                this._convTwo = convTwo;
+                _convOne = convOne;
+                _convTwo = convTwo;
             }
 
             public object Compute(
@@ -55,8 +54,8 @@ namespace com.espertech.esper.common.@internal.type
                 Type ltype,
                 Type rtype)
             {
-                var leftAsBig = _convOne.CoerceBoxedBigIntCodegen(left, ltype);
-                var rightAsBig = _convTwo.CoerceBoxedBigIntCodegen(right, rtype);
+                var leftAsBig = _convOne.CoerceBoxedBigIntCodegen(left, ltype, codegenMethodScope, codegenClassScope);
+                var rightAsBig = _convTwo.CoerceBoxedBigIntCodegen(right, rtype, codegenMethodScope, codegenClassScope);
                 return CodegenExpressionBuilder.Op(leftAsBig, "+", rightAsBig);
             }
         }

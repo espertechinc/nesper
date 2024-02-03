@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -21,10 +21,7 @@ namespace com.espertech.esper.regressionlib.support.patternassert
             eventProperties = new Dictionary<string, object>();
         }
 
-        public IDictionary<string, object> GetEventProperties()
-        {
-            return eventProperties;
-        }
+        public IDictionary<string, object> EventProperties => eventProperties;
 
         public void Put(
             string propertyName,

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -15,7 +15,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Specification for the Update clause.
     /// </summary>
-    [Serializable]
     public class UpdateClause
     {
         /// <summary>
@@ -97,8 +96,7 @@ namespace com.espertech.esper.common.client.soda
         {
             writer.Write("update istream ");
             writer.Write(EventType);
-            if (OptionalAsClauseStreamName != null)
-            {
+            if (OptionalAsClauseStreamName != null) {
                 writer.Write(" as ");
                 writer.Write(OptionalAsClauseStreamName);
             }
@@ -106,8 +104,7 @@ namespace com.espertech.esper.common.client.soda
             writer.Write(" ");
             RenderEPLAssignments(writer, Assignments);
 
-            if (OptionalWhereClause != null)
-            {
+            if (OptionalWhereClause != null) {
                 writer.Write(" where ");
                 OptionalWhereClause.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
             }
@@ -123,9 +120,8 @@ namespace com.espertech.esper.common.client.soda
             IList<Assignment> assignments)
         {
             writer.Write("set ");
-            string delimiter = "";
-            foreach (Assignment pair in assignments)
-            {
+            var delimiter = "";
+            foreach (var pair in assignments) {
                 writer.Write(delimiter);
                 pair.Value.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                 delimiter = ", ";

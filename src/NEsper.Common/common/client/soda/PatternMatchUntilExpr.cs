@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Match-Until construct for use in pattern expressions.
     /// </summary>
-    [Serializable]
     public class PatternMatchUntilExpr : PatternExprBase
     {
         /// <summary>Ctor - for use to create a pattern expression tree, without pattern child expression. </summary>
@@ -72,39 +71,30 @@ namespace com.espertech.esper.common.client.soda
         /// <value>single-bound expression</value>
         public Expression Single { get; set; }
 
-        public override PatternExprPrecedenceEnum Precedence
-        {
-            get { return PatternExprPrecedenceEnum.MATCH_UNTIL; }
-        }
+        public override PatternExprPrecedenceEnum Precedence => PatternExprPrecedenceEnum.MATCH_UNTIL;
 
         public override void ToPrecedenceFreeEPL(
             TextWriter writer,
             EPStatementFormatter formatter)
         {
-            if (Single != null)
-            {
+            if (Single != null) {
                 writer.Write("[");
                 Single.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                 writer.Write("]");
             }
-            else
-            {
-                if (Low != null || High != null)
-                {
+            else {
+                if (Low != null || High != null) {
                     writer.Write("[");
-                    if ((Low != null) && (High != null))
-                    {
+                    if (Low != null && High != null) {
                         Low.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                         writer.Write(":");
                         High.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                     }
-                    else if (Low != null)
-                    {
+                    else if (Low != null) {
                         Low.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                         writer.Write(":");
                     }
-                    else
-                    {
+                    else {
                         writer.Write(":");
                         High.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                     }
@@ -113,16 +103,14 @@ namespace com.espertech.esper.common.client.soda
                 }
             }
 
-            PatternExprPrecedenceEnum precedence = Precedence;
-            if (Children[0] is PatternMatchUntilExpr)
-            {
+            var precedence = Precedence;
+            if (Children[0] is PatternMatchUntilExpr) {
                 precedence = PatternExprPrecedenceEnum.MAXIMIM;
             }
 
             Children[0].ToEPL(writer, precedence, formatter);
 
-            if (Children.Count > 1)
-            {
+            if (Children.Count > 1) {
                 writer.Write(" until ");
                 Children[1].ToEPL(writer, Precedence, formatter);
             }

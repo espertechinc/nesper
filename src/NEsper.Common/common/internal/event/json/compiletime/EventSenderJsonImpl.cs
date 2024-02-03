@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -15,13 +15,13 @@ using com.espertech.esper.common.@internal.statement.thread;
 
 namespace com.espertech.esper.common.@internal.@event.json.compiletime
 {
-	/// <summary>
-	///     Event sender for json-backed events.
-	///     <para>
-	///         Allows sending only event objects of type string, does not check contents. Any other event object generates an error.
-	///     </para>
-	/// </summary>
-	public class EventSenderJsonImpl : EventSenderJson
+    /// <summary>
+    ///     Event sender for json-backed events.
+    ///     <para>
+    ///         Allows sending only event objects of type string, does not check contents. Any other event object generates an error.
+    ///     </para>
+    /// </summary>
+    public class EventSenderJsonImpl : EventSenderJson
     {
         private readonly EventBeanTypedEventFactory _eventBeanTypedEventFactory;
         private readonly JsonEventType _eventType;

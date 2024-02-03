@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -14,10 +14,10 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.agg.method.core;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.fabric;
 using com.espertech.esper.common.@internal.schedule;
 using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.io;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.agg.method.core.AggregatorCodegenUtil;
@@ -25,27 +25,30 @@ using static com.espertech.esper.common.@internal.epl.agg.method.core.Aggregator
 namespace com.espertech.esper.common.@internal.epl.agg.method.rate
 {
     /// <summary>
-    ///     Aggregation computing an event arrival rate for with and without data window.
+    /// Aggregation computing an event arrival rate for with and without data window.
     /// </summary>
     public class AggregatorRateEver : AggregatorMethodWDistinctWFilterBase
     {
         private readonly AggregationForgeFactoryRate _factory;
-        private readonly CodegenExpressionMember _hasLeave;
-        private readonly CodegenExpressionMember _points;
+        private CodegenExpressionMember _points;
+        private CodegenExpressionMember _hasLeave;
 
         public AggregatorRateEver(
             AggregationForgeFactoryRate factory,
-            int col,
-            CodegenCtor rowCtor,
-            CodegenMemberCol membersColumnized,
-            CodegenClassScope classScope,
             Type optionalDistinctValueType,
             DataInputOutputSerdeForge optionalDistinctSerde,
             bool hasFilter,
-            ExprNode optionalFilter)
-            : base(factory, col, rowCtor, membersColumnized, classScope, optionalDistinctValueType, optionalDistinctSerde, hasFilter, optionalFilter)
+            ExprNode optionalFilter) : base(optionalDistinctValueType, optionalDistinctSerde, hasFilter, optionalFilter)
         {
             _factory = factory;
+        }
+
+        public override void InitForgeFiltered(
+            int col,
+            CodegenCtor rowCtor,
+            CodegenMemberCol membersColumnized,
+            CodegenClassScope classScope)
+        {
             _points = membersColumnized.AddMember(col, typeof(Deque<long>), "points");
             _hasLeave = membersColumnized.AddMember(col, typeof(bool), "hasLeave");
             rowCtor.Block.AssignRef(_points, NewInstance(typeof(ArrayDeque<long>)));
@@ -106,7 +109,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.rate
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            method.Block.IfCondition(Not(ExprDotMethod(_points, "IsEmpty")))
+            method.Block
+                .IfCondition(Not(ExprDotMethod(_points, "IsEmpty")))
                 .DeclareVar<long>("newest", ExprDotMethod(ExprDotName(_points, "Last"), "AsInt64"))
                 .DeclareVar<bool>(
                     "leave",
@@ -143,7 +147,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.rate
         {
             method.Block
                 .Apply(WriteBoolean(output, row, _hasLeave))
-                .StaticMethod(GetType(), "WritePoints", output, RowDotMember(row, _points));
+                .StaticMethod(typeof(AggregatorRateEverSerde), "WritePoints", output, RowDotMember(row, _points));
         }
 
         protected override void ReadWODistinct(
@@ -156,23 +160,15 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.rate
         {
             method.Block
                 .Apply(ReadBoolean(row, _hasLeave, input))
-                .AssignRef(RowDotMember(row, _points), StaticMethod(GetType(), "ReadPoints", input));
+                .AssignRef(
+                    RowDotMember(row, _points),
+                    StaticMethod(typeof(AggregatorRateEverSerde), "ReadPoints", input));
         }
 
-        /// <summary>
-        ///     NOTE: Code-generation-invoked method, method name and parameter order matters
-        /// </summary>
-        /// <param name="output">out</param>
-        /// <param name="points">points</param>
-        /// <throws>IOException io error</throws>
-        public static void WritePoints(
-            DataOutput output,
-            Deque<long> points)
+        protected override void AppendFormatWODistinct(FabricTypeCollector collector)
         {
-            output.WriteInt(points.Count);
-            foreach (long value in points) {
-                output.WriteLong(value);
-            }
+            collector.Builtin(typeof(bool));
+            collector.AggregatorRateEver(AggregatorRateEverSerde.SERDE_VERSION);
         }
 
         protected void Apply(
@@ -180,7 +176,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.rate
             CodegenClassScope classScope)
         {
             CodegenExpression timeProvider = classScope.AddOrGetDefaultFieldSharable(TimeProviderField.INSTANCE);
-            method.Block.DeclareVar<long>("timestamp", ExprDotName(timeProvider, "Time"))
+            method.Block
+                .DeclareVar<long>("timestamp", ExprDotName(timeProvider, "Time"))
                 .ExprDotMethod(_points, "Add", Ref("timestamp"))
                 .DeclareVar<bool>(
                     "leave",
@@ -192,26 +189,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.rate
                         Constant(_factory.IntervalTime)))
                 .AssignCompound(_hasLeave, "|", Ref("leave"));
         }
-
+        
         /// <summary>
-        ///     NOTE: Code-generation-invoked method, method name and parameter order matters
-        /// </summary>
-        /// <param name="input">input</param>
-        /// <returns>points</returns>
-        /// <throws>IOException io error</throws>
-        public static Deque<long> ReadPoints(DataInput input)
-        {
-            var points = new ArrayDeque<long>();
-            var size = input.ReadInt();
-            for (var i = 0; i < size; i++) {
-                points.Add(input.ReadLong());
-            }
-
-            return points;
-        }
-
-        /// <summary>
-        ///     NOTE: Code-generation-invoked method, method name and parameter order matters
+        /// NOTE: Code-generation-invoked method, method name and parameter order matters
         /// </summary>
         /// <param name="points">points</param>
         /// <param name="timestamp">timestamp</param>
@@ -225,11 +205,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.rate
             var hasLeave = false;
             if (points.Count > 1) {
                 while (true) {
-                    long first = points.First;
+                    var first = points.First;
                     var delta = timestamp - first;
                     if (delta >= interval) {
                         points.RemoveFirst();
-                        //points.Remove();
                         hasLeave = true;
                     }
                     else {

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -70,7 +70,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
             VirtualDWView[] viewExternal,
             ILockable[] tableSecondaryIndexLocks)
         {
-            var viewable = (HistoricalEventViewable) streamViews[streamNum];
+            var viewable = (HistoricalEventViewable)streamViews[streamNum];
             return new HistoricalDataExecNode(viewable, indexingStrategy, lookupStrategy, numStreams, streamNum);
         }
 
@@ -81,7 +81,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
         /// <returns>strategy</returns>
         public HistoricalTableLookupStrategy MakeOuterJoinStategy(Viewable[] streamViews)
         {
-            var viewable = (HistoricalEventViewable) streamViews[streamNum];
+            var viewable = (HistoricalEventViewable)streamViews[streamNum];
             return new HistoricalTableLookupStrategy(
                 viewable,
                 indexingStrategy,

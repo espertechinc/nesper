@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -32,10 +32,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             bool unidirectionalJoin)
         {
             // Determine whether all streams are istream-only or irstream
-            bool[] isIStreamOnly = streamTypeService.IStreamOnly;
-            bool isAllIStream = true; // all true?
-            bool isAllIRStream = true; // all false?
-            foreach (bool anIsIStreamOnly in isIStreamOnly) {
+            var isIStreamOnly = streamTypeService.IStreamOnly;
+            var isAllIStream = true; // all true?
+            var isAllIRStream = true; // all false?
+            foreach (var anIsIStreamOnly in isIStreamOnly) {
                 if (!anIsIStreamOnly) {
                     isAllIStream = false;
                 }
@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             }
 
             // determine if a data-window applies to this max function
-            bool hasDataWindows = true;
+            var hasDataWindows = true;
             if (isAllIStream) {
                 hasDataWindows = false;
             }
@@ -60,9 +60,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 else {
                     hasDataWindows = false;
                     // get all aggregated properties to determine if any is from a windowed stream
-                    ExprNodeIdentifierCollectVisitor visitor = new ExprNodeIdentifierCollectVisitor();
+                    var visitor = new ExprNodeIdentifierCollectVisitor();
                     child.Accept(visitor);
-                    foreach (ExprIdentNode node in visitor.ExprProperties) {
+                    foreach (var node in visitor.ExprProperties) {
                         if (!isIStreamOnly[node.StreamId]) {
                             hasDataWindows = true;
                             break;
@@ -77,12 +77,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         public static ExprNodePropOrStreamSet GetAggregatedProperties(IList<ExprAggregateNode> aggregateNodes)
         {
             // Get a list of properties being aggregated in the clause.
-            ExprNodePropOrStreamSet propertiesAggregated = new ExprNodePropOrStreamSet();
-            ExprNodeIdentifierAndStreamRefVisitor visitor = new ExprNodeIdentifierAndStreamRefVisitor(true);
+            var propertiesAggregated = new ExprNodePropOrStreamSet();
+            var visitor = new ExprNodeIdentifierAndStreamRefVisitor(true);
             foreach (ExprNode selectAggExprNode in aggregateNodes) {
                 visitor.Reset();
                 selectAggExprNode.Accept(visitor);
-                IList<ExprNodePropOrStreamDesc> properties = visitor.Refs;
+                var properties = visitor.Refs;
                 propertiesAggregated.AddAll(properties);
             }
 
@@ -95,7 +95,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             EventType[] types,
             ContextPropertyRegistry contextPropertyRegistry)
         {
-            ExprNodeIdentifierAndStreamRefVisitor visitor = new ExprNodeIdentifierAndStreamRefVisitor(false);
+            var visitor = new ExprNodeIdentifierAndStreamRefVisitor(false);
             exprNode.Accept(visitor);
             AddNonAggregatedProps(set, visitor.Refs, types, contextPropertyRegistry);
         }
@@ -106,9 +106,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             ContextPropertyRegistry contextPropertyRegistry)
         {
             // Determine all event properties in the clause
-            ExprNodePropOrStreamSet nonAggProps = new ExprNodePropOrStreamSet();
-            ExprNodeIdentifierAndStreamRefVisitor visitor = new ExprNodeIdentifierAndStreamRefVisitor(false);
-            foreach (ExprNode node in exprNodes) {
+            var nonAggProps = new ExprNodePropOrStreamSet();
+            var visitor = new ExprNodeIdentifierAndStreamRefVisitor(false);
+            foreach (var node in exprNodes) {
                 visitor.Reset();
                 node.Accept(visitor);
                 AddNonAggregatedProps(nonAggProps, visitor.Refs, types, contextPropertyRegistry);
@@ -120,13 +120,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         public static ExprNodePropOrStreamSet GetGroupByPropertiesValidateHasOne(ExprNode[] groupByNodes)
         {
             // Get the set of properties refered to by all group-by expression nodes.
-            ExprNodePropOrStreamSet propertiesGroupBy = new ExprNodePropOrStreamSet();
-            ExprNodeIdentifierAndStreamRefVisitor visitor = new ExprNodeIdentifierAndStreamRefVisitor(true);
+            var propertiesGroupBy = new ExprNodePropOrStreamSet();
+            var visitor = new ExprNodeIdentifierAndStreamRefVisitor(true);
 
-            foreach (ExprNode groupByNode in groupByNodes) {
+            foreach (var groupByNode in groupByNodes) {
                 visitor.Reset();
                 groupByNode.Accept(visitor);
-                IList<ExprNodePropOrStreamDesc> propertiesNode = visitor.Refs;
+                var propertiesNode = visitor.Refs;
                 propertiesGroupBy.AddAll(propertiesNode);
 
                 // For each group-by expression node, require at least one property.
@@ -144,14 +144,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             EventType[] types,
             ContextPropertyRegistry contextPropertyRegistry)
         {
-            foreach (ExprNodePropOrStreamDesc pair in refs) {
-                if (pair is ExprNodePropOrStreamPropDesc) {
-                    ExprNodePropOrStreamPropDesc propDesc = (ExprNodePropOrStreamPropDesc) pair;
-                    EventType originType = types.Length > pair.StreamNum ? types[pair.StreamNum] : null;
+            foreach (var pair in refs) {
+                if (pair is ExprNodePropOrStreamPropDesc propDesc) {
+                    var originType = types.Length > pair.StreamNum ? types[pair.StreamNum] : null;
                     if (originType == null ||
                         contextPropertyRegistry == null ||
                         !contextPropertyRegistry.IsPartitionProperty(originType, propDesc.PropertyName)) {
-                        nonAggProps.Add(pair);
+                        nonAggProps.Add(propDesc);
                     }
                 }
                 else {

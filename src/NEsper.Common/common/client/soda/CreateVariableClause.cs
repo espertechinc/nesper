@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Represents a create-variable syntax for creating a new variable.
     /// </summary>
-    [Serializable]
     public class CreateVariableClause
     {
         /// <summary>
@@ -124,23 +123,18 @@ namespace com.espertech.esper.common.client.soda
         public virtual void ToEPL(TextWriter writer)
         {
             writer.Write("create");
-            if (IsConstant)
-            {
+            if (IsConstant) {
                 writer.Write(" constant");
             }
 
             writer.Write(" variable ");
-            if (VariableType != null)
-            {
+            if (VariableType != null) {
                 writer.Write(VariableType);
-                if (IsArray)
-                {
-                    if (IsArrayOfPrimitive)
-                    {
+                if (IsArray) {
+                    if (IsArrayOfPrimitive) {
                         writer.Write("[primitive]");
                     }
-                    else
-                    {
+                    else {
                         writer.Write("[]");
                     }
                 }
@@ -149,8 +143,7 @@ namespace com.espertech.esper.common.client.soda
             }
 
             writer.Write(VariableName);
-            if (OptionalAssignment != null)
-            {
+            if (OptionalAssignment != null) {
                 writer.Write(" = ");
                 OptionalAssignment.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
             }

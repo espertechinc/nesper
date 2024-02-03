@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -79,10 +79,10 @@ namespace com.espertech.esper.regressionlib.support.extend.view
                 }
             }
 
-            if (child != null) {
+            if (Child != null) {
                 var newDataPost = PopulateMap(trendcount);
                 lastInsertStreamEvent = newDataPost;
-                child.Update(new[] {newDataPost}, removeStreamToPost);
+                Child.Update(new[] {newDataPost}, removeStreamToPost);
             }
         }
 

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -34,7 +34,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.handthru
         {
             newData[0] = theEvent;
             var pair = resultSetProcessor.ProcessViewResult(newData, null, true);
-            return pair == null ? null : pair.First == null ? null : pair.First[0];
+            return pair?.First?[0];
         }
     }
 } // end of namespace

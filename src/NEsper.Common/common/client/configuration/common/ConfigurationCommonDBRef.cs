@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -9,10 +9,12 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Text.Json.Serialization;
 
 using com.espertech.esper.common.client.db;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.common.@internal.util.serde;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
@@ -23,7 +25,6 @@ namespace com.espertech.esper.common.client.configuration.common
     ///     options around getting a database connection and options to control the lifecycle
     ///     of connections and set connection parameters.
     /// </summary>
-    [Serializable]
     public class ConfigurationCommonDBRef
     {
         /// <summary>
@@ -36,6 +37,21 @@ namespace com.espertech.esper.common.client.configuration.common
             MetadataRetrievalEnum = MetadataOriginEnum.DEFAULT;
             ColumnChangeCase = ColumnChangeCaseEnum.NONE;
             DataTypesMapping = new Dictionary<Type, Type>();
+        }
+
+        [JsonConstructor]
+        public ConfigurationCommonDBRef(
+            ConnectionSettings connectionSettings,
+            ConnectionLifecycleEnum connectionLifecycleEnum,
+            MetadataOriginEnum metadataRetrievalEnum,
+            ColumnChangeCaseEnum columnChangeCase,
+            IDictionary<Type, Type> dataTypesMapping)
+        {
+            ConnectionSettings = connectionSettings;
+            ConnectionLifecycleEnum = connectionLifecycleEnum;
+            MetadataRetrievalEnum = metadataRetrievalEnum;
+            ColumnChangeCase = columnChangeCase;
+            DataTypesMapping = dataTypesMapping;
         }
 
         /// <summary>
@@ -55,6 +71,7 @@ namespace com.espertech.esper.common.client.configuration.common
         ///     Returns the descriptor controlling connection creation settings.
         /// </summary>
         /// <returns>connection factory settings</returns>
+        [JsonConverter(typeof(JsonConverterAbstract<ConnectionFactoryDesc>))]
         public ConnectionFactoryDesc ConnectionFactoryDesc { get; set; }
 
         /// <summary>
@@ -66,7 +83,7 @@ namespace com.espertech.esper.common.client.configuration.common
         /// <summary>
         ///     Returns an enumeration indicating how the runtime retrieves metadata about the columns
         ///     that a given SQL query returns.
-        ///     <para />
+        ///     <para/>
         ///     The runtime requires to retrieve result column names and types in order to build a resulting
         ///     event type and perform expression type checking.
         /// </summary>
@@ -87,7 +104,8 @@ namespace com.espertech.esper.common.client.configuration.common
         ///     is true to set auto-commit to true, or false to set auto-commit to false, or null to accepts the
         ///     default
         /// </value>
-        public bool ConnectionAutoCommit {
+        public bool? ConnectionAutoCommit {
+            get => ConnectionSettings.AutoCommit;
             set => ConnectionSettings.AutoCommit = value;
         }
 
@@ -122,25 +140,28 @@ namespace com.espertech.esper.common.client.configuration.common
         ///     Returns the mapping of types that the runtime must perform
         ///     when receiving output columns of that sql types.
         /// </summary>
+
+        [JsonConverter(typeof(JsonConverterTypeTypeDictionary))]
         public IDictionary<Type, Type> DataTypesMapping { get; }
 
         /// <summary>
         ///     Sets and indicator how the runtime should retrieve metadata about the columns
         ///     that a given SQL query returns.
-        ///     <para />
+        ///     <para/>
         ///     The runtime requires to retrieve result column names and types in order to build a resulting
         ///     event type and perform expression type checking.
         /// </summary>
         /// <value>indication how to retrieve metadata</value>
         public MetadataOriginEnum MetadataOrigin {
+            get => MetadataRetrievalEnum;
             set => MetadataRetrievalEnum = value;
         }
 
         /// <summary>
         ///     Set the connection factory to use a factory class.
         /// </summary>
-        /// <param name="dataSourceFactoryClassName">the classname of the data source factory</param>
-        /// <param name="properties">passed to the createDataSource method of the data source factory class</param>
+        /// <param name = "dataSourceFactoryClassName">the classname of the data source factory</param>
+        /// <param name = "properties">passed to the createDataSource method of the data source factory class</param>
         public void SetDataSourceFactory(
             Properties properties,
             string dataSourceFactoryClassName)
@@ -151,8 +172,8 @@ namespace com.espertech.esper.common.client.configuration.common
         /// <summary>
         ///     Sets the connection factory to use to obtain a connection.
         /// </summary>
-        /// <param name="contextLookupName">is the object name to look up</param>
-        /// <param name="environmentProps">are the optional properties to pass to the context</param>
+        /// <param name = "contextLookupName">is the object name to look up</param>
+        /// <param name = "environmentProps">are the optional properties to pass to the context</param>
         public void SetDataSourceConnection(
             string contextLookupName,
             Properties environmentProps)
@@ -168,11 +189,11 @@ namespace com.espertech.esper.common.client.configuration.common
         {
             ConnectionFactoryDesc = driverConnectionFactoryDesc;
         }
-
+        
         /// <summary>Sets the database driver.</summary>
-        /// <param name="driverName">Name of the driver.</param>
-        /// <param name="connectionString">A specific connection string.</param>
-        /// <param name="properties">The properties.</param>
+        /// <param name = "driverName">Name of the driver.</param>
+        /// <param name = "connectionString">A specific connection string.</param>
+        /// <param name = "properties">The properties.</param>
         public void SetDatabaseDriver(
             string driverName,
             string connectionString,
@@ -193,9 +214,8 @@ namespace com.espertech.esper.common.client.configuration.common
         }
 
         /// <summary>Sets the database driver.</summary>
-        /// <param name="driverName">Name of the driver.</param>
-        /// <param name="properties">The properties.</param>
-
+        /// <param name = "driverName">Name of the driver.</param>
+        /// <param name = "properties">The properties.</param>
         public void SetDatabaseDriver(
             string driverName,
             Properties properties)
@@ -204,25 +224,16 @@ namespace com.espertech.esper.common.client.configuration.common
         }
 
         /// <summary>
-        ///     Configures a LRU cache of the given size for the database.
-        /// </summary>
-        /// <param name="size">is the maximum number of entries before query results are evicted</param>
-        public void SetLRUCache(int size)
-        {
-            DataCacheDesc = new ConfigurationCommonCacheLRU(size);
-        }
-
-        /// <summary>
         ///     Configures an expiry-time cache of the given maximum age in seconds and purge interval in seconds.
-        ///     <para />
+        ///     <para/>
         ///     Specifies the cache reference type to be weak references. Weak reference cache entries become
         ///     eligible for garbage collection and are removed from cache when the garbage collection requires so.
         /// </summary>
-        /// <param name="maxAgeSeconds">
+        /// <param name = "maxAgeSeconds">
         ///     is the maximum number of seconds before a query result is considered stale (also known as
         ///     time-to-live)
         /// </param>
-        /// <param name="purgeIntervalSeconds">is the interval at which the runtime purges stale data from the cache</param>
+        /// <param name = "purgeIntervalSeconds">is the interval at which the runtime purges stale data from the cache</param>
         public void SetExpiryTimeCache(
             double maxAgeSeconds,
             double purgeIntervalSeconds)
@@ -237,12 +248,12 @@ namespace com.espertech.esper.common.client.configuration.common
         ///     Configures an expiry-time cache of the given maximum age in seconds and purge interval in seconds. Also allows
         ///     setting the reference type indicating whether garbage collection may remove entries from cache.
         /// </summary>
-        /// <param name="maxAgeSeconds">
+        /// <param name = "maxAgeSeconds">
         ///     is the maximum number of seconds before a query result is considered stale (also known as
         ///     time-to-live)
         /// </param>
-        /// <param name="purgeIntervalSeconds">is the interval at which the runtime purges stale data from the cache</param>
-        /// <param name="cacheReferenceType">specifies the reference type to use</param>
+        /// <param name = "purgeIntervalSeconds">is the interval at which the runtime purges stale data from the cache</param>
+        /// <param name = "cacheReferenceType">specifies the reference type to use</param>
         public void SetExpiryTimeCache(
             double maxAgeSeconds,
             double purgeIntervalSeconds,
@@ -257,8 +268,8 @@ namespace com.espertech.esper.common.client.configuration.common
         /// <summary>
         /// Adds the SQL types binding.
         /// </summary>
-        /// <param name="sqlType">Type of the SQL.</param>
-        /// <param name="desiredType">The desired type.</param>
+        /// <param name = "sqlType">Type of the SQL.</param>
+        /// <param name = "desiredType">The desired type.</param>
         public void AddTypeBinding(
             Type sqlType,
             Type desiredType)
@@ -272,6 +283,16 @@ namespace com.espertech.esper.common.client.configuration.common
                 throw new ConfigurationException(
                     "Unsupported type '" + desiredType.FullName + "' when expecting any of: " + supported);
             }
+        }
+
+        [JsonIgnore]
+        public DriverConnectionFactoryDesc DatabaseDriver {
+            set => ConnectionFactoryDesc = value;
+        }
+
+        [JsonIgnore]
+        public int LRUCache {
+            set => DataCacheDesc = new ConfigurationCommonCacheLRU(value);
         }
     }
 } // end of namespace

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -29,9 +29,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             ExprEvaluator left,
             ExprEvaluator right)
         {
-            this._forge = forge;
-            this._left = left;
-            this._right = right;
+            _forge = forge;
+            _left = left;
+            _right = right;
         }
 
         public object Evaluate(
@@ -60,7 +60,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         {
             var lhs = forge.ForgeRenderable.ChildNodes[0].Forge;
             var rhs = forge.ForgeRenderable.ChildNodes[1].Forge;
-            
+
             var lhsType = lhs.EvaluationType;
             if (lhsType == null) {
                 return ConstantNull();
@@ -72,7 +72,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             }
 
             var chsType = forge.CoercionType;
-            
+
             var methodNode = codegenMethodScope.MakeChild(
                 typeof(bool?),
                 typeof(ExprRelationalOpNodeForgeEval),
@@ -80,7 +80,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
             CodegenExpression lhsRef = Ref("left");
             CodegenExpression rhsRef = Ref("right");
-            
+
             var block = methodNode.Block;
 
             block.DeclareVar(chsType, "left", lhs.EvaluateCodegen(chsType, methodNode, exprSymbol, codegenClassScope));
@@ -101,7 +101,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 }
             }
 
-            block.MethodReturn(forge.Computer.Codegen(lhsRef, lhsType, rhsRef, rhsType));
+            block.MethodReturn(forge.Computer.Codegen(lhsRef, lhsType, rhsRef, rhsType, methodNode, codegenClassScope));
             return LocalMethod(methodNode);
         }
     }

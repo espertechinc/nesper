@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -18,8 +18,10 @@ using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.common.@internal.util.serde;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.common.@internal.view.util;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -29,6 +31,7 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
     public class VirtualDWViewFactoryForge : ViewFactoryForge,
         DataWindowViewForge
     {
+        private readonly SerializerFactory _serializerFactory;
         private readonly object _customConfigs;
         private readonly VirtualDataWindowForge _forge;
         private readonly string _namedWindowName;
@@ -46,21 +49,23 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
         public string ViewName => "virtual-data-window";
 
         public VirtualDWViewFactoryForge(
+            SerializerFactory serializerFactory,
             Type clazz,
             string namedWindowName,
             object customConfigs)
         {
-            if (!clazz.IsImplementsInterface(typeof(VirtualDataWindowForge))) {
+            if (!TypeHelper.IsImplementsInterface(clazz, typeof(VirtualDataWindowForge))) {
                 throw new ViewProcessingException(
                     "Virtual data window forge class " +
-                    clazz.Name +
+                    clazz.CleanName() +
                     " does not implement the interface " +
-                    nameof(VirtualDataWindowForge));
+                    typeof(VirtualDataWindowForge).CleanName());
             }
 
             _forge = TypeHelper.Instantiate<VirtualDataWindowForge>(clazz);
             _namedWindowName = namedWindowName;
             _customConfigs = customConfigs;
+            _serializerFactory = serializerFactory;
         }
 
         public virtual IList<ViewFactoryForge> InnerForges => EmptyList<ViewFactoryForge>.Instance;
@@ -82,7 +87,6 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
 
         public void Attach(
             EventType parentEventType,
-            int streamNumber,
             ViewForgeEnv viewForgeEnv)
         {
             EventType = parentEventType;
@@ -92,8 +96,7 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
                 parentEventType,
                 _parameters,
                 true,
-                viewForgeEnv,
-                streamNumber);
+                viewForgeEnv);
             _parameterValues = new object[_validatedParameterExpressions.Length];
             for (var i = 0; i < _validatedParameterExpressions.Length; i++) {
                 try {
@@ -133,7 +136,7 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
             CodegenSymbolProvider symbols,
             CodegenClassScope classScope)
         {
-            return Make(parent, (SAIFFInitializeSymbol) symbols, classScope);
+            return Make(parent, (SAIFFInitializeSymbol)symbols, classScope);
         }
 
         public CodegenExpression Make(
@@ -142,12 +145,11 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
             CodegenClassScope classScope)
         {
             var mode = _forge.FactoryMode;
-            if (!(mode is VirtualDataWindowFactoryModeManaged)) {
+            if (!(mode is VirtualDataWindowFactoryModeManaged managed)) {
                 throw new ArgumentException("Unexpected factory mode " + mode);
             }
 
-            var managed = (VirtualDataWindowFactoryModeManaged) mode;
-            var injectionStrategy = (InjectionStrategyClassNewInstance) managed.InjectionStrategyFactoryFactory;
+            var injectionStrategy = (InjectionStrategyClassNewInstance)managed.InjectionStrategyFactoryFactory;
             var factoryField = classScope.AddDefaultFieldUnshared(
                 true,
                 typeof(VirtualDataWindowFactoryFactory),
@@ -179,14 +181,13 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
                 .Constant("NamedWindowName", _namedWindowName)
                 .Expression(
                     "compileTimeConfiguration",
-                    SerializerUtil.ExpressionForUserObject(_customConfigs));
+                    SerializerUtil.ExpressionForUserObject(_serializerFactory, _customConfigs));
             return builder.Build();
         }
 
-
-        public void Accept(ViewForgeVisitor visitor)
+        public T Accept<T>(ViewFactoryForgeVisitor<T> visitor)
         {
-            visitor.Visit(this);
+            return visitor.Visit(this);
         }
     }
 } // end of namespace

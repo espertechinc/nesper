@@ -1,17 +1,17 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.@event.xml
 {
@@ -20,8 +20,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
         public static List<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
+#if REGRESSION_EXECUTIONS
             WithPreconfig(execs);
-            WithCreateSchema(execs);
+            With(CreateSchema)(execs);
+#endif
             return execs;
         }
 
@@ -62,10 +64,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
 
         private static void RunAssertion(
             RegressionEnvironment env,
-            String eventTypeName,
+            string eventTypeName,
             RegressionPath path)
         {
-            var stmt = "@Name('s0') select " +
+            var stmt = "@name('s0') select " +
                        "element1, " +
                        "invalidelement, " +
                        "element4.element41 as nestedElement," +
@@ -92,27 +94,31 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             string element1,
             bool isInvalidReturnsEmptyString)
         {
-            Assert.IsNotNull(env.Listener("s0").LastNewData);
-            var theEvent = env.Listener("s0").LastNewData[0];
+            env.AssertListener(
+                "s0",
+                listener => {
+                    ClassicAssert.IsNotNull(listener.LastNewData);
+                    var theEvent = listener.LastNewData[0];
 
-            Assert.AreEqual(element1, theEvent.Get("element1"));
-            Assert.AreEqual("VAL4-1", theEvent.Get("nestedElement"));
-            Assert.AreEqual("VAL21-2", theEvent.Get("mappedElement"));
-            Assert.AreEqual("VAL21-2", theEvent.Get("indexedElement"));
+                    ClassicAssert.AreEqual(element1, theEvent.Get("element1"));
+                    ClassicAssert.AreEqual("VAL4-1", theEvent.Get("nestedElement"));
+                    ClassicAssert.AreEqual("VAL21-2", theEvent.Get("mappedElement"));
+                    ClassicAssert.AreEqual("VAL21-2", theEvent.Get("indexedElement"));
 
 #if true
-            Assert.AreEqual(null, theEvent.Get("invalidelement"));
-            Assert.AreEqual(null, theEvent.Get("invalidattribute"));
+                    ClassicAssert.AreEqual(null, theEvent.Get("invalidelement"));
+                    ClassicAssert.AreEqual(null, theEvent.Get("invalidattribute"));
 #else
-            if (isInvalidReturnsEmptyString) {
-                Assert.AreEqual("", theEvent.Get("invalidelement"));
-                Assert.AreEqual("", theEvent.Get("invalidattribute"));
-            }
-            else {
-                Assert.AreEqual(null, theEvent.Get("invalidelement"));
-                Assert.AreEqual(null, theEvent.Get("invalidattribute"));
-            }
+                    if (isInvalidReturnsEmptyString) {
+                        ClassicAssert.AreEqual("", theEvent.Get("invalidelement"));
+                        ClassicAssert.AreEqual("", theEvent.Get("invalidattribute"));
+                    }
+                    else {
+                        ClassicAssert.AreEqual(null, theEvent.Get("invalidelement"));
+                        ClassicAssert.AreEqual(null, theEvent.Get("invalidattribute"));
+                    }
 #endif
+                });
         }
     }
 } // end of namespace

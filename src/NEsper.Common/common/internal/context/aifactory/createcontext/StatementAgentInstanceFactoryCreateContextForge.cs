@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -35,9 +35,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
         {
             var method = parent.MakeChild(typeof(StatementAgentInstanceFactoryCreateContext), GetType(), classScope);
             method.Block
-                .DeclareVar<StatementAgentInstanceFactoryCreateContext>(
-                    "saiff",
-                    NewInstance(typeof(StatementAgentInstanceFactoryCreateContext)))
+                .DeclareVarNewInstance<StatementAgentInstanceFactoryCreateContext>("saiff")
                 .SetProperty(Ref("saiff"), "ContextName", Constant(contextName))
                 .SetProperty(
                     Ref("saiff"),

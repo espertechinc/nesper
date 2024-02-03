@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -24,7 +24,6 @@ namespace com.espertech.esper.common.client.soda
     /// adding an unlimited number of additional sub-expressions to an expression. For those expressions
     /// there are additional add methods provided.
     /// </summary>
-    [Serializable]
     public class Expressions
     {
         /// <summary>
@@ -501,7 +500,7 @@ namespace com.espertech.esper.common.client.soda
             Expression value,
             params Expression[] set)
         {
-            return new InExpression(value, true, (object) set);
+            return new InExpression(value, true, (object)set);
         }
 
         /// <summary>
@@ -608,7 +607,7 @@ namespace com.espertech.esper.common.client.soda
             Expression expression,
             string property)
         {
-            PreviousExpression expr = new PreviousExpression(expression, property);
+            var expr = new PreviousExpression(expression, property);
             expr.Type = PreviousExpressionType.PREVTAIL;
             return expr;
         }
@@ -623,7 +622,7 @@ namespace com.espertech.esper.common.client.soda
             int index,
             string property)
         {
-            PreviousExpression expr = new PreviousExpression(index, property);
+            var expr = new PreviousExpression(index, property);
             expr.Type = PreviousExpressionType.PREVTAIL;
             return expr;
         }
@@ -1475,7 +1474,7 @@ namespace com.espertech.esper.common.client.soda
         /// <returns>expression</returns>
         public static CountStarProjectionExpression CountStar()
         {
-            CountStarProjectionExpression expr = new CountStarProjectionExpression();
+            var expr = new CountStarProjectionExpression();
             expr.AddChild(new WildcardExpression());
             return expr;
         }
@@ -1755,7 +1754,7 @@ namespace com.espertech.esper.common.client.soda
             string property,
             params string[] properties)
         {
-            ConcatExpression concat = new ConcatExpression();
+            var concat = new ConcatExpression();
             concat.Children.Add(new PropertyValueExpression(property));
             concat.Children.AddAll(ToPropertyExpressions(properties));
             return concat;
@@ -1850,11 +1849,11 @@ namespace com.espertech.esper.common.client.soda
             double? seconds,
             double? milliseconds)
         {
-            Expression daysExpr = (days != null) ? Constant(days) : null;
-            Expression hoursExpr = (hours != null) ? Constant(hours) : null;
-            Expression minutesExpr = (minutes != null) ? Constant(minutes) : null;
-            Expression secondsExpr = (seconds != null) ? Constant(seconds) : null;
-            Expression millisecondsExpr = (milliseconds != null) ? Constant(milliseconds) : null;
+            Expression daysExpr = days != null ? Constant(days) : null;
+            Expression hoursExpr = hours != null ? Constant(hours) : null;
+            Expression minutesExpr = minutes != null ? Constant(minutes) : null;
+            Expression secondsExpr = seconds != null ? Constant(seconds) : null;
+            Expression millisecondsExpr = milliseconds != null ? Constant(milliseconds) : null;
             return new TimePeriodExpression(daysExpr, hoursExpr, minutesExpr, secondsExpr, millisecondsExpr);
         }
 
@@ -1876,11 +1875,11 @@ namespace com.espertech.esper.common.client.soda
             object seconds,
             object milliseconds)
         {
-            Expression daysExpr = ConvertVariableNumeric(days);
-            Expression hoursExpr = ConvertVariableNumeric(hours);
-            Expression minutesExpr = ConvertVariableNumeric(minutes);
-            Expression secondsExpr = ConvertVariableNumeric(seconds);
-            Expression millisecondsExpr = ConvertVariableNumeric(milliseconds);
+            var daysExpr = ConvertVariableNumeric(days);
+            var hoursExpr = ConvertVariableNumeric(hours);
+            var minutesExpr = ConvertVariableNumeric(minutes);
+            var secondsExpr = ConvertVariableNumeric(seconds);
+            var millisecondsExpr = ConvertVariableNumeric(milliseconds);
             return new TimePeriodExpression(daysExpr, hoursExpr, minutesExpr, secondsExpr, millisecondsExpr);
         }
 
@@ -1903,9 +1902,8 @@ namespace com.espertech.esper.common.client.soda
             int? parameter,
             ScheduleItemType type)
         {
-            CrontabParameterExpression param = new CrontabParameterExpression(type);
-            if (parameter != null)
-            {
+            var param = new CrontabParameterExpression(type);
+            if (parameter != null) {
                 param.AddChild(Constant(parameter));
             }
 
@@ -1943,8 +1941,7 @@ namespace com.espertech.esper.common.client.soda
         protected internal static IList<PropertyValueExpression> ToPropertyExpressions(params string[] properties)
         {
             IList<PropertyValueExpression> expr = new List<PropertyValueExpression>();
-            foreach (string property in properties)
-            {
+            foreach (var property in properties) {
                 expr.Add(GetPropExpr(property));
             }
 
@@ -1963,18 +1960,15 @@ namespace com.espertech.esper.common.client.soda
 
         private static Expression ConvertVariableNumeric(object @object)
         {
-            if (@object == null)
-            {
+            if (@object == null) {
                 return null;
             }
 
-            if (@object is string)
-            {
+            if (@object is string) {
                 return Property(@object.ToString());
             }
 
-            if (@object.IsNumber())
-            {
+            if (@object.IsNumber()) {
                 return Constant(@object);
             }
 

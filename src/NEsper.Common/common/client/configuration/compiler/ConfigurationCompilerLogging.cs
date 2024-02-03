@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -13,13 +13,12 @@ namespace com.espertech.esper.common.client.configuration.compiler
     /// <summary>
     ///     Holds view logging settings other then the Apache commons or Log4J settings.
     /// </summary>
-    [Serializable]
     public class ConfigurationCompilerLogging
     {
         /// <summary>
         ///     Ctor - sets up defaults.
         /// </summary>
-        internal ConfigurationCompilerLogging()
+        public ConfigurationCompilerLogging()
         {
             IsEnableCode = false;
             IsEnableFilterPlan = false;
@@ -30,12 +29,12 @@ namespace com.espertech.esper.common.client.configuration.compiler
         /// </summary>
         /// <value>indicator</value>
         public bool IsEnableCode { get; private set; }
-        
+
         /// <summary>
         /// Returns indicator whether filter plan logging is enabled or not.
         /// </summary>
         public bool IsEnableFilterPlan { get; set; }
-        
+
         /// <summary>
         /// Gets or sets the location for audit code to be written.
         /// </summary>

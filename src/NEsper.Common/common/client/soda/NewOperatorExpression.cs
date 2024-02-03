@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -20,7 +20,6 @@ namespace com.espertech.esper.common.client.soda
     ///     Column names are part of the state and the number of column names must match the number of sub-expressions to the
     ///     expression.
     /// </summary>
-    [Serializable]
     public class NewOperatorExpression : ExpressionBase
     {
         private IList<string> columnNames;
@@ -47,8 +46,7 @@ namespace com.espertech.esper.common.client.soda
         ///     Returns the column names.
         /// </summary>
         /// <returns>colum names</returns>
-        public IList<string> ColumnNames
-        {
+        public IList<string> ColumnNames {
             get => columnNames;
             set => columnNames = value;
         }
@@ -59,24 +57,19 @@ namespace com.espertech.esper.common.client.soda
         {
             writer.Write("new{");
             var delimiter = "";
-            for (var i = 0; i < Children.Count; i++)
-            {
+            for (var i = 0; i < Children.Count; i++) {
                 writer.Write(delimiter);
                 writer.Write(columnNames[i]);
                 var expr = Children[i];
 
                 var outputexpr = true;
-                if (expr is PropertyValueExpression)
-                {
-                    var prop = (PropertyValueExpression) expr;
-                    if (prop.PropertyName.Equals(columnNames[i]))
-                    {
+                if (expr is PropertyValueExpression prop) {
+                    if (prop.PropertyName.Equals(columnNames[i])) {
                         outputexpr = false;
                     }
                 }
 
-                if (outputexpr)
-                {
+                if (outputexpr) {
                     writer.Write("=");
                     expr.ToEPL(writer, Precedence);
                 }

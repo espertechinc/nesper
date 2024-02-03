@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -14,7 +14,6 @@ namespace com.espertech.esper.compiler.client
     /// <summary>
     ///     Indicates a syntax exception
     /// </summary>
-    [Serializable]
     public class EPCompileExceptionSyntaxItem : EPCompileExceptionItem
     {
         /// <summary>
@@ -25,9 +24,10 @@ namespace com.espertech.esper.compiler.client
         /// <param name="lineNumber">line number</param>
         public EPCompileExceptionSyntaxItem(
             string message,
+            Exception innerException,
             string expression,
             int lineNumber)
-            : base(message, expression, lineNumber)
+            : base(message, innerException, expression, lineNumber)
         {
         }
 

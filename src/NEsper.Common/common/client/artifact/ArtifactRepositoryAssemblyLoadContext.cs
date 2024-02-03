@@ -1,12 +1,8 @@
-﻿using System.Diagnostics;
-using System;
+﻿using System;
 using System.IO;
-using System.Linq;
 
 using com.espertech.esper.common.client.util;
-using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
 using com.espertech.esper.compat.logging;
 
@@ -18,10 +14,11 @@ using System.Runtime.Loader;
 namespace com.espertech.esper.common.client.artifact
 {
 #if NETCOREAPP3_0_OR_GREATER
-    public class ArtifactRepositoryAssemblyLoadContext : BaseArtifactRepository, IDisposable
+    public class ArtifactRepositoryAssemblyLoadContext : BaseArtifactRepository,
+        IDisposable
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-
+        
         private AssemblyLoadContext _assemblyLoadContext;
         private readonly TypeResolver _typeResolver;
 
@@ -106,7 +103,9 @@ namespace com.espertech.esper.common.client.artifact
         {
             var repositoryReference = new System.WeakReference<IArtifactRepository>(repository);
             var assemblyLoadContext = new AssemblyLoadContext(contextName, isCollectable);
-            assemblyLoadContext.Resolving += (context, assemblyName) => {
+            assemblyLoadContext.Resolving += (
+                context,
+                assemblyName) => {
                 //Console.WriteLine("Resolve: {0} {1}", context, assemblyName);
                 using (context.EnterContextualReflection()) {
                     if (repositoryReference.TryGetTarget(out var repositoryInstance)) {
@@ -116,14 +115,14 @@ namespace com.espertech.esper.common.client.artifact
                         if (assembly == null) {
                             assembly = assemblyResolver?.Invoke(assemblyName);
                         }
-                        
+
                         return assembly;
                     }
 
                     throw new IllegalStateException("repository is no longer in scope");
                 }
             };
-            
+
             return assemblyLoadContext;
         }
 

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -35,16 +35,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             Type coercionType,
             bool hasCollectionOrArray)
         {
-            this._parent = parent;
-            this._mustCoerce = mustCoerce;
-            this._coercer = coercer;
-            this._coercionType = coercionType;
-            this._hasCollectionOrArray = hasCollectionOrArray;
+            _parent = parent;
+            _mustCoerce = mustCoerce;
+            _coercer = coercer;
+            _coercionType = coercionType;
+            _hasCollectionOrArray = hasCollectionOrArray;
         }
 
         public ExprEvaluator ExprEvaluator {
             get {
-                ExprEvaluator[] evaluators = ExprNodeUtilityQuery.GetEvaluatorsNoCompile(_parent.ChildNodes);
+                var evaluators = ExprNodeUtilityQuery.GetEvaluatorsNoCompile(_parent.ChildNodes);
                 if (_hasCollectionOrArray) {
                     return new ExprInNodeForgeEvalWColl(this, evaluators);
                 }
@@ -79,34 +79,20 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 .Build();
         }
 
-        public Type EvaluationType {
-            get => typeof(bool?);
-        }
+        public Type EvaluationType => typeof(bool?);
 
         ExprNodeRenderable ExprForge.ExprForgeRenderable => ForgeRenderable;
 
-        public ExprInNodeImpl ForgeRenderable {
-            get => _parent;
-        }
+        public ExprInNodeImpl ForgeRenderable => _parent;
 
-        public bool IsMustCoerce {
-            get => _mustCoerce;
-        }
+        public bool IsMustCoerce => _mustCoerce;
 
-        public Coercer Coercer {
-            get => _coercer;
-        }
+        public Coercer Coercer => _coercer;
 
-        public Type CoercionType {
-            get => _coercionType;
-        }
+        public Type CoercionType => _coercionType;
 
-        public bool HasCollectionOrArray {
-            get => _hasCollectionOrArray;
-        }
+        public bool HasCollectionOrArray => _hasCollectionOrArray;
 
-        public ExprForgeConstantType ForgeConstantType {
-            get => ExprForgeConstantType.NONCONST;
-        }
+        public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
     }
 } // end of namespace

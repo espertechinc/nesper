@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -30,41 +30,35 @@ namespace com.espertech.esper.common.@internal.view.intersect
             this.oldEventsPerView = oldEventsPerView;
         }
 
-        public EventBean[][] OldEventsPerView {
-            get => oldEventsPerView;
-        }
+        public EventBean[][] OldEventsPerView => oldEventsPerView;
 
-        public ISet<EventBean> RemovalEvents {
-            get => removalEvents;
-        }
+        public ISet<EventBean> RemovalEvents => removalEvents;
 
-        public ArrayDeque<EventBean> NewEvents {
-            get => newEvents;
-        }
+        public ArrayDeque<EventBean> NewEvents => newEvents;
 
         public EventBean[] NewDataChildView {
             get => newDataChildView;
-            set { this.newDataChildView = value; }
+            set => newDataChildView = value;
         }
 
         public bool HasRemovestreamData {
-            set { this.hasRemovestreamData = value; }
-            get { return hasRemovestreamData; }
+            set => hasRemovestreamData = value;
+            get => hasRemovestreamData;
         }
 
         public bool IsRetainObserverEvents {
             get => retainObserverEvents;
-            set { this.retainObserverEvents = value; }
+            set => retainObserverEvents = value;
         }
 
         public bool IsDiscardObserverEvents {
             get => discardObserverEvents;
-            set { this.discardObserverEvents = value; }
+            set => discardObserverEvents = value;
         }
 
         public ISet<EventBean> OldEvents {
             get => oldEvents;
-            set { this.oldEvents = value; }
+            set => oldEvents = value;
         }
     }
 } // end of namespace

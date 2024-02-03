@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -10,9 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using Avro.Generic;
-
-using com.espertech.esper.common.client;
-using com.espertech.esper.common.client.scopetest;
+using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -20,115 +18,133 @@ using com.espertech.esper.compat.function;
 using com.espertech.esper.regressionlib.framework;
 
 using NEsper.Avro.Extensions;
-using NEsper.Avro.Util.Support;
 
 using Newtonsoft.Json.Linq;
 
 namespace com.espertech.esper.regressionlib.suite.@event.infra
 {
-	public class EventInfraPropertyMappedRuntimeKey : RegressionExecution
-	{
-		public void Run(RegressionEnvironment env)
-		{
-			// Bean
-			BiConsumer<EventType, IDictionary<string, string>> bean = (
-				type,
-				entries) => {
-				env.SendEventBean(new LocalEvent(entries));
-			};
-			var beanepl = $"@public @buseventtype create schema LocalEvent as {typeof(LocalEvent).MaskTypeName()};\n";
-			RunAssertion(env, beanepl, bean);
+    public class EventInfraPropertyMappedRuntimeKey : RegressionExecution
+    {
+        private readonly EventRepresentationChoice _eventRepresentationChoice;
+        
+        /// <summary>
+        /// Constructor for test
+        /// </summary>
+        /// <param name="eventRepresentationChoice"></param>
+        public EventInfraPropertyMappedRuntimeKey(EventRepresentationChoice eventRepresentationChoice)
+        {
+            _eventRepresentationChoice = eventRepresentationChoice;
+        }
+        
+        public void Run(RegressionEnvironment env)
+        {
+            var mapType = typeof(IDictionary<string, object>).CleanName();
 
-			// Map
-			BiConsumer<EventType, IDictionary<string, string>> map = (
-				type,
-				entries) => {
-				env.SendEventMap(Collections.SingletonDataMap("Mapped", entries), "LocalEvent");
-			};
-			var mapType = typeof(IDictionary<string, object>).CleanName();
-			var mapepl = $"@public @buseventtype create schema LocalEvent(Mapped `{mapType}`);\n";
-			RunAssertion(env, mapepl, map);
+            // Local function to send a json object given a set of entries
+            void SendEventJson(IDictionary<string, string> entries)
+            {
+                var mapValues = new JObject();
+                foreach (var entry in entries)
+                {
+                    mapValues.Add(entry.Key, entry.Value);
+                }
 
-			// Object-array
-			BiConsumer<EventType, IDictionary<string, string>> oa = (
-				type,
-				entries) => {
-				env.SendEventObjectArray(new object[] {entries}, "LocalEvent");
-			};
-			var oaepl = $"@public @buseventtype create objectarray schema LocalEvent(Mapped `{mapType}`);\n";
-			RunAssertion(env, oaepl, oa);
+                var @event = new JObject(new JProperty("Mapped", mapValues));
+                env.SendEventJson(@event.ToString(), "LocalEvent");
+            }
 
-			// Json
-			BiConsumer<EventType, IDictionary<string, string>> json = (
-				type,
-				entries) => {
-				var mapValues = new JObject();
-				foreach (var entry in entries) {
-					mapValues.Add(entry.Key, entry.Value);
-				}
+            switch (_eventRepresentationChoice)
+            {
+                case EventRepresentationChoice.OBJECTARRAY:
+                    // Object-array
+                    Consumer<IDictionary<string, string>> oa = entries => {
+                        env.SendEventObjectArray(new object[] { entries }, "LocalEvent");
+                    };
+                    var oaepl = $"@public @buseventtype create objectarray schema LocalEvent(Mapped `{mapType}`);\n";
+                    RunAssertion(env, oaepl, oa);
+                    break;
 
-				var @event = new JObject(new JProperty("Mapped", mapValues));
-				env.SendEventJson(@event.ToString(), "LocalEvent");
-			};
-			var jsonepl = $"@public @buseventtype create json schema LocalEvent(Mapped `{mapType}`);\n";
-			RunAssertion(env, jsonepl, json);
+                case EventRepresentationChoice.MAP:
+                    // Map
+                    Consumer<IDictionary<string, string>> map = entries => {
+                        env.SendEventMap(Collections.SingletonDataMap("Mapped", entries), "LocalEvent");
+                    };
+                    var mapepl = $"@public @buseventtype create schema LocalEvent(Mapped `{mapType}`);\n";
+                    RunAssertion(env, mapepl, map);
+                    break;
+                
+                case EventRepresentationChoice.AVRO:
+                    // Avro
+                    Consumer<IDictionary<string, string>> avro = entries => {
+                        var schema = env.RuntimeAvroSchemaByDeployment("schema", "LocalEvent");
+                        var @event = new GenericRecord(schema.AsRecordSchema());
+                        @event.Put("Mapped", entries);
+                        env.SendEventAvro(@event, "LocalEvent");
+                    };
+                    var avroepl = $"@name('schema') @public @buseventtype create avro schema LocalEvent(Mapped `{mapType}`);\n";
+                    RunAssertion(env, avroepl, avro);
+                    break;
+                
+                case EventRepresentationChoice.JSON:
+                    // Json
+                    var jsonepl = $"@public @buseventtype create json schema LocalEvent(Mapped `{mapType}`);\n";
+                    RunAssertion(env, jsonepl, SendEventJson);
 
-			// Json-Class-Provided
-			var jsonProvidedType = typeof(MyLocalJsonProvided).MaskTypeName();
-			var jsonProvidedEpl = $"@JsonSchema(ClassName='{jsonProvidedType}') @public @buseventtype create json schema LocalEvent();\n";
-			RunAssertion(env, jsonProvidedEpl, json);
+                    break;
+                case EventRepresentationChoice.JSONCLASSPROVIDED:
+                    // Json-Class-Provided
+                    var jsonProvidedType = typeof(MyLocalJsonProvided).MaskTypeName();
+                    var jsonProvidedEpl = $"@JsonSchema(ClassName='{jsonProvidedType}') @public @buseventtype create json schema LocalEvent();\n";
+                    RunAssertion(env, jsonProvidedEpl, SendEventJson);
+                    
+                    break;
+                case EventRepresentationChoice.DEFAULT:
+                    // Bean
+                    Consumer<IDictionary<string, string>> bean = entries => { env.SendEventBean(new LocalEvent(entries)); };
+                    var beanepl = $"@Public @buseventtype create schema LocalEvent as {typeof(LocalEvent).MaskTypeName()};\n";
+                    RunAssertion(env, beanepl, bean);
 
-			// Avro
-			BiConsumer<EventType, IDictionary<string, string>> avro = (
-				type,
-				entries) => {
-				var @event = new GenericRecord(SupportAvroUtil.GetAvroSchema(type).AsRecordSchema());
-				@event.Put("Mapped", entries);
-				env.SendEventAvro(@event, "LocalEvent");
-			};
-			var avroepl = $"@public @buseventtype create avro schema LocalEvent(Mapped `{mapType}`);\n";
-			RunAssertion(env, avroepl, avro);
-		}
+                    break;
 
-		public void RunAssertion(
-			RegressionEnvironment env,
-			string createSchemaEPL,
-			BiConsumer<EventType, IDictionary<string, string>> sender)
-		{
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
 
-			env.CompileDeploy(
-					createSchemaEPL +
-					"create constant variable string keyChar = 'a';" +
-					"@Name('s0') select Mapped(keyChar||'1') as c0, Mapped(keyChar||'2') as c1 from LocalEvent as e;\n"
-				)
-				.AddListener("s0");
-			var eventType = env.Runtime.EventTypeService.GetEventType(env.DeploymentId("s0"), "LocalEvent");
+        public void RunAssertion(
+            RegressionEnvironment env,
+            string createSchemaEPL,
+            Consumer<IDictionary<string, string>> sender)
+        {
+            env.CompileDeploy(
+                    createSchemaEPL +
+                    "create constant variable string keyChar = 'a';" +
+                    "@name('s0') select Mapped(keyChar||'1') as c0, Mapped(keyChar||'2') as c1 from LocalEvent as e;\n"
+                )
+                .AddListener("s0");
 
-			IDictionary<string, string> values = new Dictionary<string, string>();
-			values.Put("a1", "x");
-			values.Put("a2", "y");
-			sender.Invoke(eventType, values);
-			EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), "c0,c1".SplitCsv(), new object[] {"x", "y"});
+            IDictionary<string, string> values = new Dictionary<string, string>();
+            values.Put("a1", "x");
+            values.Put("a2", "y");
+            sender.Invoke(values);
+            env.AssertPropsNew("s0", "c0,c1".SplitCsv(), new object[] { "x", "y" });
 
-			env.UndeployAll();
-		}
+            env.UndeployAll();
+        }
 
-		public class LocalEvent
-		{
-			private IDictionary<string, string> mapped;
+        public class LocalEvent
+        {
+            public LocalEvent(IDictionary<string, string> mapped)
+            {
+                this.Mapped = mapped;
+            }
 
-			public LocalEvent(IDictionary<string, string> mapped)
-			{
-				this.mapped = mapped;
-			}
+            public IDictionary<string, string> Mapped { get; }
+        }
 
-			public IDictionary<string, string> Mapped => mapped;
-		}
-
-		[Serializable]
-		public class MyLocalJsonProvided
-		{
-			public IDictionary<string, string> Mapped;
-		}
-	}
+        public class MyLocalJsonProvided
+        {
+            public IDictionary<string, string> Mapped;
+        }
+    }
 } // end of namespace

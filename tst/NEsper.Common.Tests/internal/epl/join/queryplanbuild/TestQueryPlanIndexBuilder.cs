@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -16,6 +16,7 @@ using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
 {
@@ -86,7 +87,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
             // Test no index, should have a single entry with a zero-length property name array
             queryGraph = new QueryGraphForge(3, null, false);
             indexes = QueryPlanIndexBuilder.BuildIndexSpec(queryGraph, types, new string[queryGraph.NumStreams][][]);
-            Assert.AreEqual(1, indexes[1].IndexProps.Length);
+            ClassicAssert.AreEqual(1, indexes[1].IndexProps.Length);
         }
 
         [Test]

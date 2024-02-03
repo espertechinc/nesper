@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -37,7 +37,10 @@ namespace com.espertech.esper.common.@internal.view.unique
     {
         private readonly AgentInstanceContext _agentInstanceContext;
         private readonly EventBean[] _eventsPerStream = new EventBean[1];
-        private readonly IDictionary<object, EventBean> _mostRecentEvents = new Dictionary<object, EventBean>().WithNullKeySupport();
+
+        private readonly IDictionary<object, EventBean> _mostRecentEvents =
+            new Dictionary<object, EventBean>().WithNullKeySupport();
+
         private readonly UniqueByPropertyViewFactory _viewFactory;
 
         public UniqueByPropertyView(
@@ -67,17 +70,17 @@ namespace com.espertech.esper.common.@internal.view.unique
                 // Shortcut
                 var key = GetUniqueKey(newData[0]);
                 var lastValue = _mostRecentEvents.Push(key, newData[0]);
-                if (child != null) {
-                    var oldDataToPost = lastValue == null ? null : new[] {lastValue};
+                if (Child != null) {
+                    var oldDataToPost = lastValue == null ? null : new[] { lastValue };
                     _agentInstanceContext.InstrumentationProvider.QViewIndicate(_viewFactory, newData, oldDataToPost);
-                    child.Update(newData, oldDataToPost);
+                    Child.Update(newData, oldDataToPost);
                     _agentInstanceContext.InstrumentationProvider.AViewIndicate();
                 }
             }
             else {
                 OneEventCollection postOldData = null;
 
-                if (child != null) {
+                if (Child != null) {
                     postOldData = new OneEventCollection();
                 }
 
@@ -87,7 +90,7 @@ namespace com.espertech.esper.common.@internal.view.unique
                         var key = GetUniqueKey(newData[i]);
 
                         // If there are no child views, just update the own collection
-                        if (child == null) {
+                        if (Child == null) {
                             _mostRecentEvents.Put(key, newData[i]);
                             continue;
                         }
@@ -120,19 +123,19 @@ namespace com.espertech.esper.common.@internal.view.unique
                 }
 
                 // If there are child views, fireStatementStopped update method
-                if (child != null) {
+                if (Child != null) {
                     if (postOldData.IsEmpty()) {
                         _agentInstanceContext.InstrumentationProvider.QViewIndicate(_viewFactory, newData, null);
-                        child.Update(newData, null);
+                        Child.Update(newData, null);
                         _agentInstanceContext.InstrumentationProvider.AViewIndicate();
                     }
                     else {
-                        EventBean[] postOldDataArray = postOldData.ToArray();
+                        var postOldDataArray = postOldData.ToArray();
                         _agentInstanceContext.InstrumentationProvider.QViewIndicate(
                             _viewFactory,
                             newData,
                             postOldDataArray);
-                        child.Update(newData, postOldDataArray);
+                        Child.Update(newData, postOldDataArray);
                         _agentInstanceContext.InstrumentationProvider.AViewIndicate();
                     }
                 }
@@ -151,12 +154,9 @@ namespace com.espertech.esper.common.@internal.view.unique
                 _mostRecentEvents.Count);
         }
 
-        public override EventType EventType {
-            get {
-                // The schema is the parent view's schema
-                return Parent.EventType;
-            }
-        }
+        public override EventType EventType =>
+            // The schema is the parent view's schema
+            Parent.EventType;
 
         public override IEnumerator<EventBean> GetEnumerator()
         {

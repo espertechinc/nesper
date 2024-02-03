@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
             AggregationService aggregationService,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            EventBean[] eventsPerStream = new EventBean[1];
+            var eventsPerStream = new EventBean[1];
 
             while (sourceIterator.MoveNext()) {
                 eventsPerStream[0] = sourceIterator.Current;

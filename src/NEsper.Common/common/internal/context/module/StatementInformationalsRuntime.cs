@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -69,7 +69,7 @@ namespace com.espertech.esper.common.@internal.context.module
 
         public bool HasMatchRecognize { get; set; }
 
-        public AuditProvider AuditProvider { get; set; }
+        public AuditProvider AuditProvider { get; set; } = AuditProviderDefault.INSTANCE;
 
         public bool IsInstrumented { get; set; }
 
@@ -84,7 +84,7 @@ namespace com.espertech.esper.common.@internal.context.module
         public IDictionary<StatementProperty, object> Properties { get; set; }
 
         public IDictionary<string, int> SubstitutionParamNames { get; set; }
-        
+
         public ExpressionScriptProvided[] OnScripts { get; set; }
     }
 } // end of namespace

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -79,18 +79,18 @@ namespace com.espertech.esper.common.@internal.view.expression
             EventBean oldestEvent,
             EventBean newestEvent)
         {
-            properties[(int) ExpressionViewOAFieldEnum.CURRENT_COUNT] = windowSize;
-            properties[(int) ExpressionViewOAFieldEnum.OLDEST_TIMESTAMP] = oldestEventTimestamp;
-            properties[(int) ExpressionViewOAFieldEnum.NEWEST_TIMESTAMP] = newestEventTimestamp;
-            properties[(int) ExpressionViewOAFieldEnum.VIEW_REFERENCE] = viewReference;
-            properties[(int) ExpressionViewOAFieldEnum.EXPIRED_COUNT] = expiredCount;
-            properties[(int) ExpressionViewOAFieldEnum.OLDEST_EVENT] = oldestEvent;
-            properties[(int) ExpressionViewOAFieldEnum.NEWEST_EVENT] = newestEvent;
+            properties[(int)ExpressionViewOAFieldEnum.CURRENT_COUNT] = windowSize;
+            properties[(int)ExpressionViewOAFieldEnum.OLDEST_TIMESTAMP] = oldestEventTimestamp;
+            properties[(int)ExpressionViewOAFieldEnum.NEWEST_TIMESTAMP] = newestEventTimestamp;
+            properties[(int)ExpressionViewOAFieldEnum.VIEW_REFERENCE] = viewReference;
+            properties[(int)ExpressionViewOAFieldEnum.EXPIRED_COUNT] = expiredCount;
+            properties[(int)ExpressionViewOAFieldEnum.OLDEST_EVENT] = oldestEvent;
+            properties[(int)ExpressionViewOAFieldEnum.NEWEST_EVENT] = newestEvent;
         }
 
         public static object[] GetPrototypeOA()
         {
-            int valuesCount = EnumHelper.GetValues<ExpressionViewOAFieldEnum>().Count();
+            var valuesCount = EnumHelper.GetValues<ExpressionViewOAFieldEnum>().Count();
             return new object[valuesCount];
         }
     }

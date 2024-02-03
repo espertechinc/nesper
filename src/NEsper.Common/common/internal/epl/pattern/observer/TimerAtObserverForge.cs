@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -14,6 +14,7 @@ using System.Reflection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.common.@internal.compile.util;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -33,8 +34,8 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
         ScheduleHandleCallbackProvider
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        
         private MatchedEventConvertorForge convertor;
-
         private IList<ExprNode> parameters;
         private int scheduleCallbackId = -1;
         private ScheduleSpec spec;
@@ -123,12 +124,16 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
             return LocalMethod(method);
         }
 
-        public void CollectSchedule(IList<ScheduleHandleCallbackProvider> schedules)
+        public void CollectSchedule(
+            short factoryNodeId,
+            Func<short, CallbackAttribution> callbackAttribution,
+            IList<ScheduleHandleTracked> schedules)
         {
-            schedules.Add(this);
+            schedules.Add(new ScheduleHandleTracked(callbackAttribution.Invoke(factoryNodeId), this));
         }
 
         public int ScheduleCallbackId {
+            get => scheduleCallbackId;
             set => scheduleCallbackId = value;
         }
 

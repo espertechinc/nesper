@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -60,5 +60,12 @@ namespace com.espertech.esper.common.@internal.context.cpidsvc
         {
             // no action, service discarded and GC'd
         }
+
+        public void ClearCaches()
+        {
+            // not memory-managed
+        }
+
+        public long Count => cpids.Count;
     }
 } // end of namespace

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -14,25 +14,20 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// For use in pattern expression as a placeholder to represent its child nodes.
     /// </summary>
-    [Serializable]
     public class PatternExprPlaceholder : PatternExprBase
     {
         public override void ToPrecedenceFreeEPL(
             TextWriter writer,
             EPStatementFormatter formatter)
         {
-            if ((Children == null) || (Children.Count == 0))
-            {
+            if (Children == null || Children.Count == 0) {
                 return;
             }
 
-            PatternExpr patternExpr = Children[0];
+            var patternExpr = Children[0];
             patternExpr?.ToEPL(writer, Precedence, formatter);
         }
 
-        public override PatternExprPrecedenceEnum Precedence
-        {
-            get { return PatternExprPrecedenceEnum.MINIMUM; }
-        }
+        public override PatternExprPrecedenceEnum Precedence => PatternExprPrecedenceEnum.MINIMUM;
     }
 }

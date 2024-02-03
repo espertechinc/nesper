@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -33,20 +33,20 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
             StreamSpecCompiled[] streamSpecs,
             Attribute[] annotations)
         {
-            this.SelectClauseStreamSelector = selectClauseStreamSelector;
-            this.OrderByList = orderByList;
-            this.SelectClauseSpec = selectClauseSpec;
-            this.InsertIntoDesc = insertIntoDesc;
-            this.GroupByClauseExpressions = groupByClauseExpressions;
-            this.WhereClause = whereClause;
-            this.HavingClause = havingClause;
-            this.OptionalOutputLimitSpec = optionalOutputLimitSpec;
-            this.RowLimitSpec = rowLimitSpec;
-            this.ContextName = contextName;
-            this.ForClauseSpec = forClauseSpec;
-            this.IntoTableSpec = intoTableSpec;
-            this.StreamSpecs = streamSpecs;
-            this.Annotations = annotations;
+            SelectClauseStreamSelector = selectClauseStreamSelector;
+            OrderByList = orderByList;
+            SelectClauseSpec = selectClauseSpec;
+            InsertIntoDesc = insertIntoDesc;
+            GroupByClauseExpressions = groupByClauseExpressions;
+            WhereClause = whereClause;
+            HavingClause = havingClause;
+            OptionalOutputLimitSpec = optionalOutputLimitSpec;
+            RowLimitSpec = rowLimitSpec;
+            ContextName = contextName;
+            ForClauseSpec = forClauseSpec;
+            IntoTableSpec = intoTableSpec;
+            StreamSpecs = streamSpecs;
+            Annotations = annotations;
         }
 
         public ResultSetSpec(StatementSpecCompiled statementSpec)

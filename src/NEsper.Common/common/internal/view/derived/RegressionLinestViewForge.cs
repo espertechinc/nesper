@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.compile.stage3;
@@ -27,49 +28,44 @@ namespace com.espertech.esper.common.@internal.view.derived
     /// <summary>
     /// Factory for <seealso cref="RegressionLinestView" /> instances.
     /// </summary>
-    public class RegressionLinestViewForge : ViewFactoryForgeBase
+    public class RegressionLinestViewForge : ViewFactoryForgeBaseDerived
     {
-        private IList<ExprNode> viewParameters;
-
         private ExprNode expressionX;
         private ExprNode expressionY;
-        internal StatViewAdditionalPropsForge additionalProps;
 
         public override void SetViewParameters(
             IList<ExprNode> parameters,
             ViewForgeEnv viewForgeEnv,
             int streamNumber)
         {
-            this.viewParameters = parameters;
+            ViewParameters = parameters;
         }
 
-        public override void Attach(
+        public override void AttachValidate(
             EventType parentEventType,
-            int streamNumber,
             ViewForgeEnv viewForgeEnv)
         {
-            ExprNode[] validated = ViewForgeSupport.Validate(
+            var validated = ViewForgeSupport.Validate(
                 ViewName,
                 parentEventType,
-                viewParameters,
+                ViewParameters,
                 true,
-                viewForgeEnv,
-                streamNumber);
+                viewForgeEnv);
 
             if (validated.Length < 2) {
                 throw new ViewParameterException(ViewParamMessage);
             }
 
-            if ((!TypeHelper.IsNumeric(validated[0].Forge.EvaluationType)) ||
-                (!TypeHelper.IsNumeric(validated[1].Forge.EvaluationType))) {
+            if (!validated[0].Forge.EvaluationType.IsTypeNumeric() ||
+                !validated[1].Forge.EvaluationType.IsTypeNumeric()) {
                 throw new ViewParameterException(ViewParamMessage);
             }
 
             expressionX = validated[0];
             expressionY = validated[1];
 
-            additionalProps = StatViewAdditionalPropsForge.Make(validated, 2, parentEventType, streamNumber, viewForgeEnv);
-            eventType = RegressionLinestView.CreateEventType(additionalProps, viewForgeEnv, streamNumber);
+            AdditionalProps = StatViewAdditionalPropsForge.Make(validated, 2, parentEventType, viewForgeEnv);
+            eventType = RegressionLinestView.CreateEventType(AdditionalProps, viewForgeEnv);
         }
 
         public override IList<StmtClassForgeableFactory> InitAdditionalForgeables(ViewForgeEnv viewForgeEnv)
@@ -78,18 +74,13 @@ namespace com.espertech.esper.common.@internal.view.derived
                 eventType,
                 viewForgeEnv.StatementRawInfo,
                 viewForgeEnv.SerdeEventTypeRegistry,
-                viewForgeEnv.SerdeResolver);
+                viewForgeEnv.SerdeResolver,
+                viewForgeEnv.StateMgmtSettingsProvider);
         }
 
-        internal override Type TypeOfFactory()
-        {
-            return typeof(RegressionLinestViewFactory);
-        }
+        internal override Type TypeOfFactory => typeof(RegressionLinestViewFactory);
 
-        internal override string FactoryMethod()
-        {
-            return "Regression";
-        }
+        internal override string FactoryMethod => "Regression";
 
         internal override void Assign(
             CodegenMethod method,
@@ -97,27 +88,34 @@ namespace com.espertech.esper.common.@internal.view.derived
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            if (additionalProps != null) {
-                method.Block.SetProperty(factory, "AdditionalProps", additionalProps.Codegen(method, classScope));
+            if (AdditionalProps != null) {
+                method.Block.SetProperty(factory, "AdditionalProps", AdditionalProps.Codegen(method, classScope));
             }
 
             method.Block
                 .SetProperty(
                     factory,
                     "ExpressionXEval",
-                    CodegenEvaluator(expressionX.Forge, method, this.GetType(), classScope))
+                    CodegenEvaluator(expressionX.Forge, method, GetType(), classScope))
                 .SetProperty(
                     factory,
                     "ExpressionYEval",
-                    CodegenEvaluator(expressionY.Forge, method, this.GetType(), classScope));
+                    CodegenEvaluator(expressionY.Forge, method, GetType(), classScope));
         }
 
-        public override string ViewName {
-            get => "Regression";
+        public override string ViewName => "Regression";
+
+        private string ViewParamMessage =>
+            ViewName + " view requires two expressions providing x and y values as properties";
+
+        public override AppliesTo AppliesTo()
+        {
+            return client.annotation.AppliesTo.WINDOW_REGRESSIONLINEST;
         }
 
-        private string ViewParamMessage {
-            get { return ViewName + " view requires two expressions providing x and y values as properties"; }
+        public override T Accept<T>(ViewFactoryForgeVisitor<T> visitor)
+        {
+            return visitor.Visit(this);
         }
     }
 } // end of namespace

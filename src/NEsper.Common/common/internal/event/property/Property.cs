@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -47,16 +47,6 @@ namespace com.espertech.esper.common.@internal.@event.property
         /// <param name="beanEventTypeFactory">bean factory</param>
         /// <returns>property type class</returns>
         Type GetPropertyType(
-            BeanEventType eventType,
-            BeanEventTypeFactory beanEventTypeFactory);
-
-        /// <summary>
-        ///     Returns the property type plus its generic type parameter, if any.
-        /// </summary>
-        /// <param name="eventType">is the event type representing the value</param>
-        /// <param name="beanEventTypeFactory">bean factory</param>
-        /// <returns>type and generic descriptor</returns>
-        GenericPropertyDesc GetPropertyTypeGeneric(
             BeanEventType eventType,
             BeanEventTypeFactory beanEventTypeFactory);
 

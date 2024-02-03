@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -23,13 +23,13 @@ namespace com.espertech.esper.common.@internal.epl.pattern.every
     /// </summary>
     public class EvalEveryStateSpawnEvaluator : Evaluator
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(EvalEveryStateSpawnEvaluator));
+        private static readonly ILog Log = LogManager.GetLogger(typeof(EvalEveryStateSpawnEvaluator));
 
-        private readonly string statementName;
+        private readonly string _statementName;
 
         public EvalEveryStateSpawnEvaluator(string statementName)
         {
-            this.statementName = statementName;
+            _statementName = statementName;
         }
 
         public bool IsEvaluatedTrue { get; private set; }
@@ -40,9 +40,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.every
             bool isQuitted,
             EventBean optionalTriggeringEvent)
         {
-            log.Warn(
+            Log.Warn(
                 "Event/request processing: Uncontrolled pattern matching of \"every\" operator - infinite loop when using EVERY operator on expression(s) containing a not operator, for statement '" +
-                statementName +
+                _statementName +
                 "'");
             IsEvaluatedTrue = true;
         }
@@ -51,9 +51,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.every
             EvalStateNode fromNode,
             bool restartable)
         {
-            log.Warn(
+            Log.Warn(
                 "Event/request processing: Uncontrolled pattern matching of \"every\" operator - infinite loop when using EVERY operator on expression(s) containing a not operator, for statement '" +
-                statementName +
+                _statementName +
                 "'");
             IsEvaluatedTrue = true;
         }

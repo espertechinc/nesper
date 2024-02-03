@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -65,6 +65,10 @@ namespace com.espertech.esper.regressionrun.suite.infra
                 configuration.Common.AddEventType(clazz);
             }
 
+            configuration.Common.AddImportType(typeof(SupportBean_S0));
+            
+            configuration.Common.EventMeta.AvroSettings.IsEnableAvro = true;
+            
             IDictionary<string, object> outerMapInnerType = new Dictionary<string, object>();
             outerMapInnerType.Put("key", typeof(string));
             configuration.Common.AddEventType("InnerMap", outerMapInnerType);
@@ -284,7 +288,12 @@ namespace com.espertech.esper.regressionrun.suite.infra
             public void WithCreateSchemaModelAfter() => RegressionRunner.Run(_session, InfraNamedWindowTypes.WithCreateSchemaModelAfter());
 
             [Test, RunInApplicationDomain]
-            public void WithEventTypeColumnDef() => RegressionRunner.Run(_session, InfraNamedWindowTypes.WithEventTypeColumnDef());
+            [TestCase(EventRepresentationChoice.MAP)]
+            [TestCase(EventRepresentationChoice.AVRO)]
+            [TestCase(EventRepresentationChoice.JSON)]
+            [TestCase(EventRepresentationChoice.JSONCLASSPROVIDED)]
+            [TestCase(EventRepresentationChoice.OBJECTARRAY)]
+            public void WithEventTypeColumnDef(EventRepresentationChoice rep) => RegressionRunner.Run(_session, InfraNamedWindowTypes.WithEventTypeColumnDef(rep));
 
             [Test, RunInApplicationDomain]
             public void WithCreateTableArray() => RegressionRunner.Run(_session, InfraNamedWindowTypes.WithCreateTableArray());
@@ -398,7 +407,12 @@ namespace com.espertech.esper.regressionrun.suite.infra
             public void WithOrderedDeleteAndSelect() => RegressionRunner.Run(_session, InfraNamedWindowProcessingOrder.WithOrderedDeleteAndSelect());
 
             [Test, RunInApplicationDomain]
-            public void WithDispatchBackQueue() => RegressionRunner.Run(_session, InfraNamedWindowProcessingOrder.WithDispatchBackQueue());
+            [TestCase(EventRepresentationChoice.MAP)]
+            [TestCase(EventRepresentationChoice.AVRO)]
+            [TestCase(EventRepresentationChoice.JSON)]
+            [TestCase(EventRepresentationChoice.JSONCLASSPROVIDED)]
+            [TestCase(EventRepresentationChoice.OBJECTARRAY)]
+            public void WithDispatchBackQueue(EventRepresentationChoice rep) => RegressionRunner.Run(_session, InfraNamedWindowProcessingOrder.WithDispatchBackQueue(rep));
         }
 
         /// <summary>
@@ -628,6 +642,7 @@ namespace com.espertech.esper.regressionrun.suite.infra
             public void WithRightOuterJoinLateStart() => RegressionRunner.Run(_session, InfraNamedWindowJoin.WithRightOuterJoinLateStart());
 
             [Test, RunInApplicationDomain]
+            [Parallelizable(ParallelScope.None)]
             public void WithJoinIndexChoice() => RegressionRunner.Run(_session, InfraNamedWindowJoin.WithJoinIndexChoice());
         }
     }

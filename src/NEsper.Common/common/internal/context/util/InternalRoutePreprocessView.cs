@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -53,9 +53,9 @@ namespace com.espertech.esper.common.@internal.context.util
                 Log.Debug(
                     ".Update Received Update, " +
                     "  newData.Length==" +
-                    (newData == null ? 0 : newData.Length) +
+                    (newData?.Length ?? 0) +
                     "  oldData.Length==" +
-                    (oldData == null ? 0 : oldData.Length));
+                    (oldData?.Length ?? 0));
             }
         }
 
@@ -73,12 +73,12 @@ namespace com.espertech.esper.common.@internal.context.util
         {
             try {
                 if (StatementResultService.IsMakeNatural) {
-                    var natural = new NaturalEventBean(_eventType, new[] {newEvent.Underlying}, newEvent);
-                    var naturalOld = new NaturalEventBean(_eventType, new[] {oldEvent.Underlying}, oldEvent);
-                    child.Update(new[] {natural}, new[] {naturalOld});
+                    var natural = new NaturalEventBean(_eventType, new[] { newEvent.Underlying }, newEvent);
+                    var naturalOld = new NaturalEventBean(_eventType, new[] { oldEvent.Underlying }, oldEvent);
+                    Child.Update(new[] { natural }, new[] { naturalOld });
                 }
                 else {
-                    child.Update(new[] {newEvent}, new[] {oldEvent});
+                    Child.Update(new[] { newEvent }, new[] { oldEvent });
                 }
             }
             catch (Exception ex) {

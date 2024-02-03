@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -48,17 +48,13 @@ namespace com.espertech.esper.common.@internal.util
         public static readonly IOrderedDictionary<object, object> EMPTY_SORTED_MAP =
             new OrderedListDictionary<object, object>();
 
-        public static readonly EventBean[] EVENTBEANARRAY_EMPTY = new EventBean[0];
-        public static readonly EventBean[][] EVENTBEANARRAYARRAY_EMPTY = new EventBean[0][];
+        public static readonly EventBean[] EVENTBEANARRAY_EMPTY = Array.Empty<EventBean>();
+        public static readonly EventBean[][] EVENTBEANARRAYARRAY_EMPTY = Array.Empty<EventBean[]>();
         public static readonly ISet<EventBean> SINGLE_NULL_ROW_EVENT_SET = new HashSet<EventBean>();
-        public static readonly string[] STRINGARRAY_EMPTY = new string[0];
+        public static readonly string[] STRINGARRAY_EMPTY = Array.Empty<string>();
 
-        public static readonly object[] OBJECTARRAY_EMPTY = new object[0];
-        public static readonly object[][] OBJECTARRAYARRAY_EMPTY = new object[0][];
-
-        public static readonly CodegenExpression EMPTY_LIST_EXPRESSION = EnumValue(
-            typeof(FlexCollection),
-            "Empty");
+        public static readonly object[] OBJECTARRAY_EMPTY = Array.Empty<object>();
+        public static readonly object[][] OBJECTARRAYARRAY_EMPTY = Array.Empty<object[]>();
 
         public static readonly StopCallback STOP_CALLBACK_NONE;
 
@@ -218,7 +214,7 @@ namespace com.espertech.esper.common.@internal.util
         public static int[] IntArray(ICollection<int> set)
         {
             if (set == null) {
-                return new int[0];
+                return Array.Empty<int>();
             }
 
             return set.ToArray();
@@ -323,8 +319,8 @@ namespace com.espertech.esper.common.@internal.util
                 if (t == null) {
                     buf.Append("null");
                 }
-                else if (t is object[]) {
-                    buf.Append(ToStringArray((object[]) t));
+                else if (t is object[] objects) {
+                    buf.Append(ToStringArray(objects));
                 }
                 else {
                     buf.Append(t);
@@ -348,12 +344,11 @@ namespace com.espertech.esper.common.@internal.util
             for (var i = 0; i < count; i++) {
                 var index = i * 2;
                 var keyValue = values[index];
-                if (!(keyValue is string)) {
+                if (!(keyValue is string key)) {
                     throw new ArgumentException(
                         "Expected string-type key value at index " + index + " but found " + keyValue);
                 }
 
-                var key = (string) keyValue;
                 var value = values[index + 1];
                 if (result.ContainsKey(key)) {
                     throw new ArgumentException("Found two or more values for key '" + key + "'");
@@ -385,8 +380,8 @@ namespace com.espertech.esper.common.@internal.util
                 return first;
             }
 
-            var firstArray = (Array) first;
-            var secondArray = (Array) second;
+            var firstArray = (Array)first;
+            var secondArray = (Array)second;
             var firstLength = firstArray.Length;
             var secondLength = secondArray.Length;
             var total = firstLength + secondLength;
@@ -433,7 +428,7 @@ namespace com.espertech.esper.common.@internal.util
                     return arrayOne;
                 }
 
-                return new[] {arrayOne[0], arrayOne[0]};
+                return new[] { arrayOne[0], arrayOne[0] };
             }
 
             if (arrayOne.Length == 1 && arrayTwo.Length > 1) {
@@ -551,6 +546,32 @@ namespace com.espertech.esper.common.@internal.util
             return false;
         }
 
+
+        public static bool RemoveEventUnkeyedLazyListMap(
+            EventBean bean,
+            IDictionary<object, object> eventMap)
+        {
+            // TODO: ConcurrentModificationException
+            foreach (var entry in eventMap) {
+                if (entry.Value is IList<EventBean> existingListLocal) {
+                    var result = existingListLocal.Remove(bean);
+                    if (result) {
+                        if (existingListLocal.IsEmpty()) {
+                            eventMap.Remove(entry.Key);
+                        }
+
+                        return true;
+                    }
+                }
+                else if (entry.Value != null && entry.Value.Equals(bean)) {
+                    eventMap.Remove(entry.Key);
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         public static void AddEventByKeyLazyListMapBack(
             object sortKey,
             EventBean eventBean,
@@ -566,7 +587,7 @@ namespace com.espertech.esper.common.@internal.util
                 }
                 else {
                     IList<EventBean> existingList = new List<EventBean>();
-                    existingList.Add((EventBean) existing);
+                    existingList.Add((EventBean)existing);
                     existingList.Add(eventBean);
                     eventMap.Put(sortKey, existingList);
                 }
@@ -584,7 +605,7 @@ namespace com.espertech.esper.common.@internal.util
                     eventsLocal.Insert(0, bean); // add to front, newest are listed first
                 }
                 else {
-                    var theEvent = (EventBean) current;
+                    var theEvent = (EventBean)current;
                     IList<EventBean> events = new List<EventBean>();
                     events.Add(bean);
                     events.Add(theEvent);
@@ -607,13 +628,13 @@ namespace com.espertech.esper.common.@internal.util
             return false;
         }
 
-        public static IDictionary<K, V> TwoEntryMap<K, V>(
-            K k1,
-            V v1,
-            K k2,
-            V v2)
+        public static IDictionary<TK, TV> TwoEntryMap<TK, TV>(
+            TK k1,
+            TV v1,
+            TK k2,
+            TV v2)
         {
-            IDictionary<K, V> map = new LinkedHashMap<K, V>();
+            IDictionary<TK, TV> map = new LinkedHashMap<TK, TV>();
             map.Put(k1, v1);
             map.Put(k2, v2);
             return map;
@@ -632,7 +653,7 @@ namespace com.espertech.esper.common.@internal.util
             if (array == null) {
                 return null;
             }
-            
+
             if (array.Length <= index) {
                 return null;
             }
@@ -667,7 +688,7 @@ namespace com.espertech.esper.common.@internal.util
             IDictionary<string, T> map,
             string key)
         {
-            if ((map != null) && map.TryGetValue(key, out var value)) {
+            if (map != null && map.TryGetValue(key, out var value)) {
                 return value;
             }
 
@@ -700,12 +721,12 @@ namespace com.espertech.esper.common.@internal.util
             }
 
             if (len == 1) {
-                return Collections.SingletonList((T) asArray.GetValue(0));
+                return Collections.SingletonList((T)asArray.GetValue(0));
             }
 
             Deque<T> dq = new ArrayDeque<T>(len);
             for (var i = 0; i < len; i++) {
-                dq.Add((T) asArray.GetValue(i));
+                dq.Add((T)asArray.GetValue(i));
             }
 
             return dq;
@@ -721,38 +742,16 @@ namespace com.espertech.esper.common.@internal.util
                 throw new ArgumentException("Expected array type and received " + arrayType);
             }
 
-            var block = codegenMethodScope
-                .MakeChild(typeof(FlexCollection), typeof(CollectionUtil), codegenClassScope)
-                .AddParam(arrayType, "array")
-                .Block
-                .IfRefNullReturnNull("array");
-            if (!arrayType.GetElementType().IsValueType) {
-                return LocalMethodBuild(
-                        block.MethodReturn(FlexWrap(Ref("array"))))
-                    .Pass(array)
-                    .Call();
-            }
+            var arrayElementType = arrayType.GetComponentType();
 
-            var method = block
-                .IfCondition(EqualsIdentity(ArrayLength(Ref("array")), Constant(0)))
-                .BlockReturn(EnumValue(typeof(FlexCollection), "Empty"))
-                .IfCondition(EqualsIdentity(ArrayLength(Ref("array")), Constant(1)))
-                .BlockReturn(
-                    FlexWrap(
-                        StaticMethod(
-                            typeof(Collections),
-                            "SingletonList",
-                            new[] {typeof(object)},
-                            ArrayAtIndex(Ref("array"), Constant(0)))))
-                .DeclareVar<ArrayDeque<object>>(
-                    "dq",
-                    NewInstance<ArrayDeque<object>>(ArrayLength(Ref("array"))))
-                .ForLoopIntSimple("i", ArrayLength(Ref("array")))
-                .Expression(ExprDotMethod(Ref("dq"), "Add", ArrayAtIndex(Ref("array"), Ref("i"))))
-                .BlockEnd()
-                .MethodReturn(FlexWrap(Ref("dq")));
-            return LocalMethodBuild(method).Pass(array).Call();
+            return StaticMethod(
+                        typeof(CompatExtensions),
+                        "Unwrap",
+                        new[] { arrayElementType },
+                        array,
+                        ConstantTrue());
         }
+
 
         /// <summary>
         ///     NOTE: Code-generation-invoked method, method name and parameter order matters
@@ -774,7 +773,7 @@ namespace com.espertech.esper.common.@internal.util
                 // This is the calculation used in JDK8 to resize when a putAll
                 // happens; it seems to be the most conservative calculation we
                 // can make.  0.75 is the default load factor.
-                return (int) (expectedSize / 0.75F + 1.0F);
+                return (int)(expectedSize / 0.75F + 1.0F);
             }
 
             return int.MaxValue; // any large value
@@ -782,7 +781,7 @@ namespace com.espertech.esper.common.@internal.util
 
         public static EventBean[] ToArrayMayNull(EventBean @event)
         {
-            return @event != null ? new[] {@event} : null;
+            return @event != null ? new[] { @event } : null;
         }
 
         /// <summary>
@@ -891,7 +890,7 @@ namespace com.espertech.esper.common.@internal.util
 
             IDictionary<string, object> result = new Dictionary<string, object>();
             for (var i = 0; i < pairs.Length / 2; i++) {
-                result.Put((string) pairs[i * 2], pairs[i * 2 + 1]);
+                result.Put((string)pairs[i * 2], pairs[i * 2 + 1]);
             }
 
             return result;
@@ -905,7 +904,7 @@ namespace com.espertech.esper.common.@internal.util
             }
 
             for (var i = 0; i < entries.Length; i++) {
-                result.Put((string) entries[i][0], entries[i][1]);
+                result.Put((string)entries[i][0], entries[i][1]);
             }
 
             return result;
@@ -989,8 +988,8 @@ namespace com.espertech.esper.common.@internal.util
             }
 
             IComparable comparable1;
-            if (valueOne is IComparable) {
-                comparable1 = (IComparable) valueOne;
+            if (valueOne is IComparable one) {
+                comparable1 = one;
             }
             else {
                 throw new InvalidCastException("Cannot sort objects of type " + valueOne.GetType());
@@ -1032,10 +1031,10 @@ namespace com.espertech.esper.common.@internal.util
             string appended)
         {
             if (!test) {
-                return new[] {appendedTo};
+                return new[] { appendedTo };
             }
 
-            return new[] {appendedTo, appended};
+            return new[] { appendedTo, appended };
         }
 
         /// <summary>
@@ -1061,6 +1060,19 @@ namespace com.espertech.esper.common.@internal.util
             return result;
         }
 
+        public static T[] AppendArray<T>(
+            T[] a,
+            T[] b)
+        {
+            var aLen = a.Length;
+            var bLen = b.Length;
+            var c = new T[aLen + bLen];
+
+            Array.Copy(a, 0, c, 0, aLen);
+            Array.Copy(b, 0, c, aLen, bLen);
+
+            return c;
+        }
 
         public static IList<IList<T>> Subdivide<T>(
             IList<T> items,
@@ -1075,8 +1087,8 @@ namespace com.espertech.esper.common.@internal.util
             }
 
             IList<IList<T>> lists = new List<IList<T>>();
-            int start = 0;
-            int remainder = items.Count;
+            var start = 0;
+            var remainder = items.Count;
             while (remainder > size) {
                 lists.Add(items.SubList(start, start + size));
                 start += size;
@@ -1093,7 +1105,7 @@ namespace com.espertech.esper.common.@internal.util
                 return true;
             }
 
-            for (int i = 0; i < array.Length; i++) {
+            for (var i = 0; i < array.Length; i++) {
                 if (array.GetValue(i) != null) {
                     return false;
                 }
@@ -1114,7 +1126,7 @@ namespace com.espertech.esper.common.@internal.util
                 return false;
             }
 
-            for (int i = 0; i < arrayOne.Length; i++) {
+            for (var i = 0; i < arrayOne.Length; i++) {
                 if (arrayOne.GetValue(i) != arrayTwo.GetValue(i)) {
                     return false;
                 }

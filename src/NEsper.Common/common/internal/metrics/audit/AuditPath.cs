@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -46,6 +46,11 @@ namespace com.espertech.esper.common.@internal.metrics.audit
         ///     Logger destination for the audit logging.
         /// </summary>
         public const string AUDIT_LOG = "com.espertech.esper.audit";
+        
+        /// <summary>
+        /// Logger destination for the Lock activity logging.
+        /// </summary>
+        public const string LOCK_LOG = "com.espertech.esper.lock";
 
         private static readonly ILog AUDIT_LOG_DESTINATION = LogManager.GetLogger(AUDIT_LOG);
 
@@ -58,7 +63,7 @@ namespace com.espertech.esper.common.@internal.metrics.audit
         /// </summary>
         public static bool isAuditEnabled = false;
 
-        private static readonly ILockable _lock = new MonitorLock(60000);
+        private static readonly ILockable Lock = new MonitorLock(60000);
 
         public static bool IsInfoEnabled => AUDIT_LOG_DESTINATION.IsInfoEnabled || auditCallback != null;
 
@@ -183,7 +188,7 @@ namespace com.espertech.esper.common.@internal.metrics.audit
         {
             if (IsInfoEnabled) {
                 var message = new StringWriter();
-                message.Write("remove");
+                message.Write("Remove");
                 PrintScheduleObjectType(message, objectType, name, scheduleHandle);
                 AuditLog(agentInstanceContext, AuditEnum.SCHEDULE, message.ToString());
             }
@@ -317,7 +322,7 @@ namespace com.espertech.esper.common.@internal.metrics.audit
             EvalFactoryNode factoryNode,
             AgentInstanceContext agentInstanceContext)
         {
-            using (_lock.Acquire()) {
+            using (Lock.Acquire()) {
                 if (IsInfoEnabled) {
                     if (patternInstanceCounts == null) {
                         patternInstanceCounts = new LRUCache<AuditPatternInstanceKey, int>(100);
@@ -485,7 +490,7 @@ namespace com.espertech.esper.common.@internal.metrics.audit
             string name)
         {
             message.Write(" ");
-            message.Write(EnumHelper.GetName(objectType));
+            message.Write(objectType.GetName());
             message.Write(" '");
             message.Write(name);
             message.Write("'");
@@ -507,8 +512,7 @@ namespace com.espertech.esper.common.@internal.metrics.audit
             TextWriter message,
             ScheduleHandle handle)
         {
-            if (handle is EPStatementHandleCallbackSchedule) {
-                var callback = (EPStatementHandleCallbackSchedule) handle;
+            if (handle is EPStatementHandleCallbackSchedule callback) {
                 TypeHelper.WriteInstance(message, callback.ScheduleCallback, false);
             }
             else {
@@ -539,11 +543,11 @@ namespace com.espertech.esper.common.@internal.metrics.audit
                 writer.Write(delimiter);
                 writer.Write(name);
                 writer.Write("=");
-                if (value is EventBean) {
-                    writer.Write(((EventBean) value).Underlying.ToString());
+                if (value is EventBean bean) {
+                    writer.Write(bean.Underlying.ToString());
                 }
-                else if (value is EventBean[]) {
-                    writer.Write(EventBeanSummarizer.Summarize((EventBean[]) value));
+                else if (value is EventBean[] beans) {
+                    writer.Write(EventBeanSummarizer.Summarize(beans));
                 }
 
                 delimiter = ", ";
@@ -575,7 +579,7 @@ namespace com.espertech.esper.common.@internal.metrics.audit
             TextWriter message,
             object value)
         {
-            CompatExtensions.RenderAny(value, message);
+            value.RenderAny(message);
         }
 
         private static void WriteDataflow(
@@ -586,7 +590,7 @@ namespace com.espertech.esper.common.@internal.metrics.audit
             message.Write("dataflow ");
             message.Write(dataflowName);
             message.Write(" instance ");
-            message.Write(dataFlowInstanceId == null ? "(unnamed)" : dataFlowInstanceId);
+            message.Write(dataFlowInstanceId ?? "(unnamed)");
         }
 
         private static void WriteDataflowOp(

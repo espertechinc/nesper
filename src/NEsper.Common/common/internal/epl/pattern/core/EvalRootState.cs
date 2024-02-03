@@ -1,10 +1,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
+
+using System;
 
 using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.common.@internal.util;
@@ -32,6 +34,6 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
 
     public static class EvalRootStateConstants
     {
-        public static EvalRootState[] EMPTY_ARRAY = new EvalRootState[0];
+        public static EvalRootState[] EMPTY_ARRAY = Array.Empty<EvalRootState>();
     }
 } // end of namespace

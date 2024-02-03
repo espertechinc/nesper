@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 using com.espertech.esper.common.@internal.@event.util;
 using com.espertech.esper.compat.collections;
@@ -17,16 +18,23 @@ namespace com.espertech.esper.common.client.dataflow.core
     /// <summary>
     ///     Options for use when instantiating a data flow in <seealso cref="EPDataFlowService" />.
     /// </summary>
-    [Serializable]
     public class EPDataFlowInstantiationOptions
     {
         private bool _cpuStatistics;
         private string _dataFlowInstanceId;
         private object _dataFlowInstanceUserObject;
-        [NonSerialized] private EPDataFlowOperatorProvider _operatorProvider;
-        [NonSerialized] private EPDataFlowOperatorParameterProvider _parameterProvider;
-        [NonSerialized] private EPDataFlowExceptionHandler _exceptionHandler;
-        [NonSerialized] private EPRuntimeEventProcessWrapped _surrogateEventSender;
+        [JsonIgnore]
+        [NonSerialized]
+        private EPDataFlowOperatorProvider _operatorProvider;
+        [JsonIgnore]
+        [NonSerialized]
+        private EPDataFlowOperatorParameterProvider _parameterProvider;
+        [JsonIgnore]
+        [NonSerialized]
+        private EPDataFlowExceptionHandler _exceptionHandler;
+        [JsonIgnore]
+        [NonSerialized]
+        private EPRuntimeEventProcessWrapped _surrogateEventSender;
         private bool _operatorStatistics;
         private IDictionary<string, object> _parametersUrIs;
 

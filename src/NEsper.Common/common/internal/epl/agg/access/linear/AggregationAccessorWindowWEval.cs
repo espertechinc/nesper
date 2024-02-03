@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -37,23 +37,30 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
             var childExpr = CodegenLegoMethodExpression.CodegenExpression(
                 forge.ChildNode,
                 context.Method,
-                context.ClassScope,
-                false);
+                context.ClassScope);
             var childExprType = forge.ChildNode.EvaluationType;
+            CodegenExpression invokeChild = LocalMethod(
+                childExpr,
+                Ref("eventsPerStreamBuf"),
+                Constant(true),
+                Ref(ExprForgeCodegenNames.NAME_EXPREVALCONTEXT));
 
-            CodegenExpression invokeChild = LocalMethod(childExpr, Ref("eventsPerStreamBuf"), Constant(true), ConstantNull());
-            if (forge.ComponentType != childExprType) {
+            var componentType = forge.ComponentType;
+            if (componentType != childExprType) {
                 invokeChild = Unbox(invokeChild);
             }
 
+            var arrayType = TypeHelper.GetArrayType(componentType);
             context.Method.Block
                 .IfCondition(EqualsIdentity(size, Constant(0)))
                 .BlockReturn(ConstantNull())
-                .DeclareVar(TypeHelper.GetArrayType(forge.ComponentType), "array", NewArrayByLength(forge.ComponentType, size))
+                .DeclareVar(arrayType, "array", NewArrayByLength(componentType, size))
                 .DeclareVar<int>("count", Constant(0))
                 .DeclareVar<IEnumerator<EventBean>>("enumerator", enumerator)
                 .DebugStack()
-                .DeclareVar<EventBean[]>("eventsPerStreamBuf", NewArrayByLength(typeof(EventBean), Constant(forge.StreamNum + 1)))
+                .DeclareVar<EventBean[]>(
+                    "eventsPerStreamBuf",
+                    NewArrayByLength(typeof(EventBean), Constant(forge.StreamNum + 1)))
                 .WhileLoop(ExprDotMethod(Ref("enumerator"), "MoveNext"))
                 .DeclareVar<EventBean>("bean", Cast(typeof(EventBean), ExprDotName(Ref("enumerator"), "Current")))
                 .AssignArrayElement("eventsPerStreamBuf", Constant(forge.StreamNum), Ref("bean"))
@@ -107,11 +114,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                         CodegenLegoMethodExpression.CodegenExpression(
                             forge.ChildNode,
                             context.Method,
-                            context.ClassScope,
-                            true),
+                            context.ClassScope),
                         Ref("eventsPerStreamBuf"),
                         ConstantTrue(),
-                        ConstantNull()))
+                        Ref(ExprForgeCodegenNames.NAME_EXPREVALCONTEXT)))
                 .ExprDotMethod(Ref("values"), "Add", Ref("value"))
                 .BlockEnd()
                 .MethodReturn(Ref("values"));

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -14,7 +14,7 @@ namespace com.espertech.esper.common.@internal.collection
     {
         private readonly T[] _keys;
         private readonly int _hash;
-        
+
         public MultiKeyArrayBase(T[] keys)
         {
             _keys = keys;
@@ -35,11 +35,14 @@ namespace com.espertech.esper.common.@internal.collection
                 return false;
             }
 
-            var that = (MultiKeyArrayBase<T>) o;
+            var that = (MultiKeyArrayBase<T>)o;
             return Arrays.DeepEquals(Keys, that.Keys);
         }
 
-        public override int GetHashCode() => _hash;
+        public override int GetHashCode()
+        {
+            return _hash;
+        }
 
         public override string ToString()
         {

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -21,10 +21,11 @@ using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
+
 namespace com.espertech.esper.common.@internal.@event.core
 {
     /// <summary>
-    ///     Method to getSelectListEvents events in collections to other collections or other event types.
+    /// Method to getSelectListEvents events in collections to other collections or other event types.
     /// </summary>
     public class EventBeanUtility
     {
@@ -32,7 +33,7 @@ namespace com.espertech.esper.common.@internal.@event.core
         public const string METHOD_FLATTENBATCHSTREAM = "FlattenBatchStream";
 
         /// <summary>
-        ///     Code-generation-invoked method, method name and parameter order matters
+        /// Code-generation-invoked method, method name and parameter order matters
         /// </summary>
         /// <param name="eventsPerStream">events</param>
         /// <returns>shifted</returns>
@@ -44,7 +45,7 @@ namespace com.espertech.esper.common.@internal.@event.core
         }
 
         /// <summary>
-        ///     NOTE: Code-generation-invoked method, method name and parameter order matters
+        /// NOTE: Code-generation-invoked method, method name and parameter order matters
         /// </summary>
         /// <param name="matchingEvents">matching</param>
         /// <returns>first</returns>
@@ -54,13 +55,8 @@ namespace com.espertech.esper.common.@internal.@event.core
             return @event.Underlying;
         }
 
-        public static object GetNonemptyFirstEventUnderlying(FlexCollection matchingEvents)
-        {
-            return GetNonemptyFirstEventUnderlying(matchingEvents.EventBeanCollection);
-        }
-        
         /// <summary>
-        ///     NOTE: Code-generation-invoked method, method name and parameter order matters
+        /// NOTE: Code-generation-invoked method, method name and parameter order matters
         /// </summary>
         /// <param name="matchingEvents">events</param>
         /// <returns>event</returns>
@@ -75,16 +71,6 @@ namespace com.espertech.esper.common.@internal.@event.core
             }
 
             return matchingEvents.First();
-        }
-
-        /// <summary>
-        ///     NOTE: Code-generation-invoked method, method name and parameter order matters
-        /// </summary>
-        /// <param name="matchingEvents">events</param>
-        /// <returns>event</returns>
-        public static EventBean GetNonemptyFirstEvent(FlexCollection matchingEvents)
-        {
-            return GetNonemptyFirstEvent(matchingEvents.EventBeanCollection);
         }
 
         public static EventPropertyGetter GetAssertPropertyGetter(
@@ -108,9 +94,8 @@ namespace com.espertech.esper.common.@internal.@event.core
         }
 
         /// <summary>
-        ///     Resizes an array of events to a new size.
-        ///     <para />
-        ///     Returns the same array reference if the size is the same.
+        /// Resizes an array of events to a new size.
+        /// <para />Returns the same array reference if the size is the same.
         /// </summary>
         /// <param name="oldArray">array to resize</param>
         /// <param name="newSize">new array size</param>
@@ -137,8 +122,8 @@ namespace com.espertech.esper.common.@internal.@event.core
         }
 
         /// <summary>
-        ///     Flatten the vector of arrays to an array. Return null if an empty vector was passed, else
-        ///     return an array containing all the events.
+        /// Flatten the vector of arrays to an array. Return null if an empty vector was passed, else
+        /// return an array containing all the events.
         /// </summary>
         /// <param name="eventVector">vector</param>
         /// <returns>array with all events</returns>
@@ -200,8 +185,8 @@ namespace com.espertech.esper.common.@internal.@event.core
         }
 
         /// <summary>
-        ///     Flatten the vector of arrays to an array. Return null if an empty vector was passed, else
-        ///     return an array containing all the events.
+        /// Flatten the vector of arrays to an array. Return null if an empty vector was passed, else
+        /// return an array containing all the events.
         /// </summary>
         /// <param name="eventVector">vector</param>
         /// <returns>array with all events</returns>
@@ -239,9 +224,9 @@ namespace com.espertech.esper.common.@internal.@event.core
         }
 
         /// <summary>
-        ///     NOTE: Code-generation-invoked method, method name and parameter order matters
-        ///     Flatten the vector of arrays to an array. Return null if an empty vector was passed, else
-        ///     return an array containing all the events.
+        /// NOTE: Code-generation-invoked method, method name and parameter order matters
+        /// Flatten the vector of arrays to an array. Return null if an empty vector was passed, else
+        /// return an array containing all the events.
         /// </summary>
         /// <param name="updateVector">is a list of updates of old and new events</param>
         /// <returns>array with all events</returns>
@@ -304,12 +289,12 @@ namespace com.espertech.esper.common.@internal.@event.core
         }
 
         /// <summary>
-        ///     Append arrays.
+        /// Append arrays.
         /// </summary>
         /// <param name="source">array</param>
         /// <param name="append">array</param>
         /// <returns>appended array</returns>
-        public static EventBean[] Append(
+        internal static EventBean[] Append(
             EventBean[] source,
             EventBean[] append)
         {
@@ -320,7 +305,7 @@ namespace com.espertech.esper.common.@internal.@event.core
         }
 
         /// <summary>
-        ///     Convert list of events to array, returning null for empty or null lists.
+        /// Convert list of events to array, returning null for empty or null lists.
         /// </summary>
         /// <param name="eventList">is a list of events to convert</param>
         /// <returns>array of events</returns>
@@ -334,8 +319,8 @@ namespace com.espertech.esper.common.@internal.@event.core
         }
 
         /// <summary>
-        ///     Returns object array containing property values of given properties, retrieved via EventPropertyGetter
-        ///     instances.
+        /// Returns object array containing property values of given properties, retrieved via EventPropertyGetter
+        /// instances.
         /// </summary>
         /// <param name="theEvent">event to get property values from</param>
         /// <param name="propertyGetters">getters to use for getting property values</param>
@@ -396,7 +381,7 @@ namespace com.espertech.esper.common.@internal.@event.core
         }
 
         /// <summary>
-        ///     Format the event and return a string representation.
+        /// Format the event and return a string representation.
         /// </summary>
         /// <param name="theEvent">is the event to format.</param>
         /// <returns>string representation of event</returns>
@@ -433,7 +418,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                     printProperty = "null";
                 }
                 else if (property is object[]) {
-                    printProperty = "Array :" + ((object[]) property).RenderAny();
+                    printProperty = "Array :" + ((object[])property).RenderAny();
                 }
                 else if (property is Array propertyArray) {
                     printProperty = "Array :" + PrintArray(propertyArray);
@@ -470,7 +455,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                     printProperty = "null";
                 }
                 else if (property.GetType().IsArray) {
-                    printProperty = "Array :" + ((object[]) property).RenderAny();
+                    printProperty = "Array :" + ((object[])property).RenderAny();
                 }
                 else {
                     printProperty = property.ToString();
@@ -485,8 +470,8 @@ namespace com.espertech.esper.common.@internal.@event.core
         }
 
         /// <summary>
-        ///     NOTE: Code-generation-invoked method, method name and parameter order matters
-        ///     Flattens a list of pairs of join result sets.
+        /// NOTE: Code-generation-invoked method, method name and parameter order matters
+        /// Flattens a list of pairs of join result sets.
         /// </summary>
         /// <param name="joinPostings">is the list</param>
         /// <returns>is the consolidate sets</returns>
@@ -523,7 +508,7 @@ namespace com.espertech.esper.common.@internal.@event.core
         }
 
         /// <summary>
-        ///     Expand the array passed in by the single element to add.
+        /// Expand the array passed in by the single element to add.
         /// </summary>
         /// <param name="array">to expand</param>
         /// <param name="eventToAdd">element to add</param>
@@ -534,12 +519,12 @@ namespace com.espertech.esper.common.@internal.@event.core
         {
             var newArray = new EventBean[array.Length + 1];
             Array.Copy(array, 0, newArray, 0, array.Length);
-            newArray[newArray.Length - 1] = eventToAdd;
+            newArray[^1] = eventToAdd;
             return newArray;
         }
 
         /// <summary>
-        ///     Expand the array passed in by the multiple elements to add.
+        /// Expand the array passed in by the multiple elements to add.
         /// </summary>
         /// <param name="array">to expand</param>
         /// <param name="eventsToAdd">elements to add</param>
@@ -560,49 +545,47 @@ namespace com.espertech.esper.common.@internal.@event.core
         }
 
         /// <summary>
-        ///     Create a fragment event type.
+        /// Create a fragment event type.
         /// </summary>
-        /// <param name="propertyType">property return type</param>
-        /// <param name="genericType">property generic type parameter, or null if none</param>
+        /// <param name="type">property type</param>
         /// <param name="beanEventTypeFactory">for event types</param>
         /// <param name="publicFields">indicator whether classes are public-field-property-accessible</param>
         /// <returns>fragment type</returns>
         public static FragmentEventType CreateNativeFragmentType(
-            Type propertyType,
-            Type genericType,
+            Type type,
             BeanEventTypeFactory beanEventTypeFactory,
             bool publicFields)
         {
+            if (!(type is Type propertyType)) {
+                return null;
+            }
+
             var isIndexed = false;
+            Type fragmentableType = null;
 
             if (propertyType.IsArray) {
                 isIndexed = true;
-                propertyType = propertyType.GetElementType();
+                fragmentableType = propertyType.GetElementType();
             }
             else if (propertyType.IsGenericDictionary()) {
                 // Ignore this - technically enumerable
             }
             else if (propertyType.IsGenericEnumerable()) {
-                propertyType = GenericExtensions
-                    .FindGenericEnumerationInterface(propertyType)
-                    .GetGenericArguments()[0];
                 isIndexed = true;
-
-#if false
-                if (genericType == null) {
-                    return null;
-                }
-
-                propertyType = genericType;
-#endif
+                fragmentableType = propertyType
+                    .FindGenericEnumerationInterface()
+                    .GetGenericArguments()[0];
+            }
+            else {
+                fragmentableType = propertyType;
             }
 
-            if (!propertyType.IsFragmentableType()) {
+            if (!fragmentableType.IsFragmentableType()) {
                 return null;
             }
 
-            EventType type = beanEventTypeFactory.GetCreateBeanType(propertyType, publicFields);
-            return new FragmentEventType(type, isIndexed, true);
+            EventType eventType = beanEventTypeFactory.GetCreateBeanType(fragmentableType, publicFields);
+            return new FragmentEventType(eventType, isIndexed, true, false);
         }
 
         public static ICollection<EventBean> GetDistinctByProp(
@@ -610,7 +593,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             EventPropertyValueGetter getter)
         {
             if (events == null || events.IsEmpty()) {
-                return new EventBean[0];
+                return Array.Empty<EventBean>();
             }
 
             if (events.Count < 2) {
@@ -620,7 +603,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             var map = new LinkedHashMap<object, EventBean>();
             if (events.First is NaturalEventBean) {
                 foreach (var theEvent in events) {
-                    var inner = ((NaturalEventBean) theEvent).OptionalSynthetic;
+                    var inner = ((NaturalEventBean)theEvent).OptionalSynthetic;
                     var key = getter.Get(inner);
                     map[key] = inner;
                 }
@@ -636,7 +619,7 @@ namespace com.espertech.esper.common.@internal.@event.core
         }
 
         /// <summary>
-        ///     Returns the distinct events by properties.
+        /// Returns the distinct events by properties.
         /// </summary>
         /// <param name="events">to inspect</param>
         /// <param name="getter">for retrieving properties</param>
@@ -649,10 +632,10 @@ namespace com.espertech.esper.common.@internal.@event.core
                 return events;
             }
 
-            var map = new Dictionary<object, EventBean>();
+            var map = new LinkedHashMap<object, EventBean>();
             if (events[0] is NaturalEventBean) {
                 foreach (var theEvent in events) {
-                    var inner = ((NaturalEventBean) theEvent).OptionalSynthetic;
+                    var inner = ((NaturalEventBean)theEvent).OptionalSynthetic;
                     var key = getter.Get(inner);
                     map[key] = theEvent;
                 }
@@ -678,12 +661,12 @@ namespace com.espertech.esper.common.@internal.@event.core
             }
 
             if (naturals.Length == 1) {
-                return new[] {((NaturalEventBean) naturals[0]).OptionalSynthetic};
+                return new[] { ((NaturalEventBean)naturals[0]).OptionalSynthetic };
             }
 
             var result = new EventBean[naturals.Length];
             for (var i = 0; i < naturals.Length; i++) {
-                result[i] = ((NaturalEventBean) naturals[i]).OptionalSynthetic;
+                result[i] = ((NaturalEventBean)naturals[i]).OptionalSynthetic;
             }
 
             return result;
@@ -781,7 +764,7 @@ namespace com.espertech.esper.common.@internal.@event.core
         }
 
         /// <summary>
-        ///     Renders a map of elements, in which elements can be events or event arrays interspersed with other objects,
+        /// Renders a map of elements, in which elements can be events or event arrays interspersed with other objects,
         /// </summary>
         /// <param name="map">to render</param>
         /// <returns>comma-separated list of map entry name-value pairs</returns>
@@ -801,11 +784,11 @@ namespace com.espertech.esper.common.@internal.@event.core
                 buf.Append(delimiter);
                 buf.Append(entry.Key);
                 buf.Append("=");
-                if (entry.Value is EventBean) {
-                    buf.Append(EventBeanSummarizer.Summarize((EventBean) entry.Value));
+                if (entry.Value is EventBean bean) {
+                    buf.Append(EventBeanSummarizer.Summarize(bean));
                 }
-                else if (entry.Value is EventBean[]) {
-                    buf.Append(EventBeanSummarizer.Summarize((EventBean[]) entry.Value));
+                else if (entry.Value is EventBean[] beans) {
+                    buf.Append(EventBeanSummarizer.Summarize(beans));
                 }
                 else if (entry.Value == null) {
                     buf.Append("null");
@@ -851,7 +834,8 @@ namespace com.espertech.esper.common.@internal.@event.core
             return events.ToArray();
         }
 
-        public static ISet<MultiKeyArrayOfKeys<EventBean>> ToLinkedHashSetNullIfEmpty(ICollection<MultiKeyArrayOfKeys<EventBean>> events)
+        public static ISet<MultiKeyArrayOfKeys<EventBean>> ToLinkedHashSetNullIfEmpty(
+            ICollection<MultiKeyArrayOfKeys<EventBean>> events)
         {
             if (events == null || events.IsEmpty()) {
                 return null;
@@ -892,7 +876,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                 return null;
             }
 
-            return new[] {optionalEvent};
+            return new[] { optionalEvent };
         }
 
         public static bool CompareEventReferences(
@@ -920,7 +904,7 @@ namespace com.espertech.esper.common.@internal.@event.core
         }
 
         /// <summary>
-        ///     NOTE: Code-generation-invoked method, method name and parameter order matters
+        /// NOTE: Code-generation-invoked method, method name and parameter order matters
         /// </summary>
         /// <param name="eventsZeroSubselect">events</param>
         /// <param name="newData">new data flag</param>
@@ -951,21 +935,6 @@ namespace com.espertech.esper.common.@internal.@event.core
             }
 
             return subSelectResult;
-        }
-
-        public static EventBean EvaluateFilterExpectSingleMatch(
-            EventBean[] eventsZeroSubselect,
-            bool newData,
-            FlexCollection matchingEvents,
-            ExprEvaluatorContext exprEvaluatorContext,
-            ExprEvaluator filter)
-        {
-            return EvaluateFilterExpectSingleMatch(
-                eventsZeroSubselect,
-                newData,
-                matchingEvents.EventBeanCollection,
-                exprEvaluatorContext,
-                filter);
         }
 
         private static bool FindEvent(

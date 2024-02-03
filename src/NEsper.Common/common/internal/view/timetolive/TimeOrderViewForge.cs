@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
@@ -31,19 +32,10 @@ namespace com.espertech.esper.common.@internal.view.timetolive
         DataWindowViewForgeWithPrevious,
         ScheduleHandleCallbackProvider
     {
-        internal int scheduleCallbackId = -1;
-        internal TimePeriodComputeForge timePeriodCompute;
-        private ExprNode timestampExpression;
         private IList<ExprNode> viewParameters;
-
-        public override string ViewName => "Time-Order";
-
-        private string ViewParamMessage => ViewName +
-                                           " view requires the expression supplying timestamp values, and a numeric or time period parameter for interval size";
-
-        public int ScheduleCallbackId {
-            set => scheduleCallbackId = value;
-        }
+        private ExprNode timestampExpression;
+        protected TimePeriodComputeForge timePeriodCompute;
+        protected int scheduleCallbackId = -1;
 
         public override void SetViewParameters(
             IList<ExprNode> parameters,
@@ -53,24 +45,16 @@ namespace com.espertech.esper.common.@internal.view.timetolive
             viewParameters = parameters;
         }
 
-        public override void Attach(
+        public override void AttachValidate(
             EventType parentEventType,
-            int streamNumber,
             ViewForgeEnv viewForgeEnv)
         {
-            var validated = ViewForgeSupport.Validate(
-                ViewName,
-                parentEventType,
-                viewParameters,
-                true,
-                viewForgeEnv,
-                streamNumber);
-
+            var validated = ViewForgeSupport.Validate(ViewName, parentEventType, viewParameters, true, viewForgeEnv);
             if (viewParameters.Count != 2) {
                 throw new ViewParameterException(ViewParamMessage);
             }
 
-            if (!validated[0].Forge.EvaluationType.IsNumeric()) {
+            if (!validated[0].Forge.EvaluationType.IsTypeNumeric()) {
                 throw new ViewParameterException(ViewParamMessage);
             }
 
@@ -80,20 +64,12 @@ namespace com.espertech.esper.common.@internal.view.timetolive
                 viewParameters[1],
                 ViewParamMessage,
                 1,
-                viewForgeEnv,
-                streamNumber);
+                viewForgeEnv);
             eventType = parentEventType;
         }
 
-        internal override Type TypeOfFactory()
-        {
-            return typeof(TimeOrderViewFactory);
-        }
-
-        internal override string FactoryMethod()
-        {
-            return "Timeorder";
-        }
+        internal override Type TypeOfFactory => typeof(TimeOrderViewFactory);
+        internal override string FactoryMethod => "Timeorder";
 
         internal override void Assign(
             CodegenMethod method,
@@ -114,5 +90,26 @@ namespace com.espertech.esper.common.@internal.view.timetolive
                 .SetProperty(factory, "TimePeriodCompute", Ref("eval"))
                 .SetProperty(factory, "ScheduleCallbackId", Constant(scheduleCallbackId));
         }
+
+        public override AppliesTo AppliesTo()
+        {
+            return client.annotation.AppliesTo.WINDOW_TIMEORDER;
+        }
+
+        public override T Accept<T>(ViewFactoryForgeVisitor<T> visitor)
+        {
+            return visitor.Visit(this);
+        }
+
+        public override string ViewName => "Time-Order";
+
+        public int ScheduleCallbackId {
+            get => scheduleCallbackId;
+
+            set => scheduleCallbackId = value;
+        }
+
+        public string ViewParamMessage => ViewName +
+                                          " view requires the expression supplying timestamp values, and a numeric or time period parameter for interval size";
     }
 } // end of namespace

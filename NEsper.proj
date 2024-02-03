@@ -8,7 +8,7 @@
     <SolutionDir>$(MSBuildProjectDirectory)</SolutionDir>
     <!-- Distribution version -->
     <Version Condition=" '$(CCNetLabel)' != '' ">$(CCNetLabel)</Version>
-    <Version Condition=" '$(Version)' == '' ">8.5.8</Version>
+    <Version Condition=" '$(Version)' == '' ">8.9.0</Version>
 
     <!-- Build Directories -->
     <BuildPath>$(MSBuildProjectDirectory)\build</BuildPath>
@@ -176,7 +176,7 @@
 
   <Target Name="Copy-Binaries-All">
     <MSBuild Projects="NEsper.proj" Properties="Configuration=$(Configuration);Platform=$(Platform);Framework=net6.0" Targets="Copy-Binaries-Main"/>
-    <MSBuild Projects="NEsper.proj" Properties="Configuration=$(Configuration);Platform=$(Platform);Framework=netcoreapp3.1" Targets="Copy-Binaries-Main"/>
+    <MSBuild Projects="NEsper.proj" Properties="Configuration=$(Configuration);Platform=$(Platform);Framework=net7.0" Targets="Copy-Binaries-Main"/>
   </Target>
 
   <!-- SECTION BREAK -->

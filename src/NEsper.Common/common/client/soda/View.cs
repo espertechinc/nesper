@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -18,7 +18,6 @@ namespace com.espertech.esper.common.client.soda
     /// A view provides a projection upon a stream, such as a data window, grouping or unique.
     /// For views, the namespace is an optional value and can be null for any-namespace.
     /// </summary>
-    [Serializable]
     public class View : EPBaseNamedObject
     {
         /// <summary>
@@ -91,12 +90,10 @@ namespace com.espertech.esper.common.client.soda
             string name,
             params Expression[] parameters)
         {
-            if (parameters != null)
-            {
+            if (parameters != null) {
                 return new View(@namespace, name, parameters);
             }
-            else
-            {
+            else {
                 return new View(@namespace, name, new List<Expression>());
             }
         }
@@ -111,12 +108,10 @@ namespace com.espertech.esper.common.client.soda
             string name,
             params Expression[] parameters)
         {
-            if (parameters != null)
-            {
+            if (parameters != null) {
                 return new View(null, name, parameters);
             }
-            else
-            {
+            else {
                 return new View(null, name, new List<Expression>());
             }
         }
@@ -142,8 +137,7 @@ namespace com.espertech.esper.common.client.soda
         public void ToEPLWithHash(TextWriter writer)
         {
             writer.Write(Name);
-            if (!Parameters.IsEmpty())
-            {
+            if (!Parameters.IsEmpty()) {
                 writer.Write('(');
                 ExpressionBase.ToPrecedenceFreeEPL(Parameters, writer);
                 writer.Write(')');

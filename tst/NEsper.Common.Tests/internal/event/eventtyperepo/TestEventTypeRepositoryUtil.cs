@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -12,6 +12,7 @@ using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.compat.collections;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.@event.eventtyperepo
 {
@@ -33,7 +34,7 @@ namespace com.espertech.esper.common.@internal.@event.eventtyperepo
             configs["b_sub"] = config;
 
             var result = EventTypeRepositoryUtil.GetCreationOrder(setOne, setTwo, configs);
-            Assert.AreEqual("[\"a\", \"b_super\", \"y\", \"b_sub\"]", result.RenderAny());
+            ClassicAssert.AreEqual("[\"a\", \"b_super\", \"y\", \"b_sub\"]", result.RenderAny());
         }
     }
 } // end of namespace

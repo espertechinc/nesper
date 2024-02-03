@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.sorted
             PropertySortedEventTable index,
             ExprEvaluatorContext context)
         {
-            return index.LookupGreaterEqual(base.EvaluateLookup(theEvent, context));
+            return index.LookupGreaterEqual(EvaluateLookup(theEvent, context));
         }
 
         public ISet<EventBean> LookupCollectKeys(
@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.sorted
             ExprEvaluatorContext context,
             List<object> keys)
         {
-            object point = base.EvaluateLookup(theEvent, context);
+            var point = EvaluateLookup(theEvent, context);
             keys.Add(point);
             return index.LookupGreaterEqual(point);
         }
@@ -50,7 +50,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.sorted
             PropertySortedEventTable index,
             ExprEvaluatorContext context)
         {
-            return index.LookupGreaterEqualColl(base.EvaluatePerStream(eventsPerStream, context));
+            return index.LookupGreaterEqualColl(EvaluatePerStream(eventsPerStream, context));
         }
 
         public ICollection<EventBean> LookupCollectKeys(
@@ -59,7 +59,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.sorted
             ExprEvaluatorContext context,
             List<object> keys)
         {
-            object point = base.EvaluatePerStream(eventsPerStream, context);
+            var point = EvaluatePerStream(eventsPerStream, context);
             keys.Add(point);
             return index.LookupGreaterEqualColl(point);
         }

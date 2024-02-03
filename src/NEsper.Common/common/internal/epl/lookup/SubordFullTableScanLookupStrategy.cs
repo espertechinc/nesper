@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -28,7 +28,7 @@ namespace com.espertech.esper.common.@internal.epl.lookup
         /// <param name="eventIndex">table to use</param>
         public SubordFullTableScanLookupStrategy(UnindexedEventTable eventIndex)
         {
-            this._eventIndex = eventIndex;
+            _eventIndex = eventIndex;
         }
 
         public string ToQueryPlan()
@@ -54,7 +54,7 @@ namespace com.espertech.esper.common.@internal.epl.lookup
 
         private ISet<EventBean> LookupInternal()
         {
-            ISet<EventBean> result = _eventIndex.EventSet;
+            var result = _eventIndex.EventSet;
             if (result.IsEmpty()) {
                 return null;
             }

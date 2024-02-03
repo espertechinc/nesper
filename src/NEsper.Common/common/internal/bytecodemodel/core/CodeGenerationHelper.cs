@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -10,6 +10,7 @@ using System;
 using System.Reflection;
 using System.Text;
 
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 
@@ -25,6 +26,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
             AppendClassName(stringBuilder, clazz);
             return stringBuilder.ToString();
         }
+
         public static StringBuilder AppendClassName(
             StringBuilder builder,
             Type clazz)
@@ -33,27 +35,38 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
 
             if (clazz == typeof(void)) {
                 return builder.Append("void");
-            } else if (clazz == typeof(short)) {
+            }
+            else if (clazz == typeof(short)) {
                 return builder.Append("short");
-            } else if (clazz == typeof(int)) {
+            }
+            else if (clazz == typeof(int)) {
                 return builder.Append("int");
-            } else if (clazz == typeof(long)) {
+            }
+            else if (clazz == typeof(long)) {
                 return builder.Append("long");
-            } else if (clazz == typeof(float)) {
+            }
+            else if (clazz == typeof(float)) {
                 return builder.Append("float");
-            } else if (clazz == typeof(double)) {
+            }
+            else if (clazz == typeof(double)) {
                 return builder.Append("double");
-            } else if (clazz == typeof(decimal)) {
+            }
+            else if (clazz == typeof(decimal)) {
                 return builder.Append("decimal");
-            } else if (clazz == typeof(byte)) {
+            }
+            else if (clazz == typeof(byte)) {
                 return builder.Append("byte");
-            } else if (clazz == typeof(char)) {
+            }
+            else if (clazz == typeof(char)) {
                 return builder.Append("char");
-            } else if (clazz == typeof(bool)) {
+            }
+            else if (clazz == typeof(bool)) {
                 return builder.Append("bool");
-            } else if (clazz == typeof(object)) {
+            }
+            else if (clazz == typeof(object)) {
                 return builder.Append("object");
-            } else if (clazz == typeof(string)) {
+            }
+            else if (clazz == typeof(string)) {
                 return builder.Append("string");
             }
 
@@ -68,7 +81,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
                     AppendClassName(builder, clazz.DeclaringType);
                     builder.Append('.');
                 }
-                
+
                 AppendClassName(builder, clazz.GetElementType());
                 builder.Append("[]");
                 return builder;
@@ -79,15 +92,16 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
                     AppendClassName(builder, clazz.DeclaringType);
                     builder.Append('.');
                 }
-                
+
                 var nameWithoutArgCount = clazz.Name.Substring(0, clazz.Name.IndexOf('`'));
                 builder.Append(nameWithoutArgCount);
-            } else if (clazz.IsGenericType) {
+            }
+            else if (clazz.IsGenericType) {
                 if (clazz.IsNested) {
                     AppendClassName(builder, clazz.DeclaringType);
                     builder.Append('.');
                 }
-                
+
                 var delimiter = "";
                 var nameWithoutArgCount = clazz.Name.Substring(0, clazz.Name.IndexOf('`'));
 
@@ -119,7 +133,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
             Type clazz,
             Type optionalTypeParam)
         {
-            if (clazz == typeof(void)) {
+            if (clazz.IsVoid()) {
                 builder.Append("void");
                 return builder;
             }

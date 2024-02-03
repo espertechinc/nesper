@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -35,7 +35,9 @@ namespace com.espertech.esper.common.@internal.epl.table.core
             throw new UnsupportedOperationException("Ungrouped tables do not allow explicit indexes");
         }
 
-        public override void RemoveExplicitIndex(string indexName)
+        public override void RemoveExplicitIndex(
+            string indexName,
+            string indexModuleName)
         {
             throw new UnsupportedOperationException("Ungrouped tables do not allow explicit indexes");
         }

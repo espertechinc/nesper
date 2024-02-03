@@ -1,16 +1,18 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.runtime.client;
@@ -24,7 +26,12 @@ namespace com.espertech.esper.regressionlib.suite.multithread
     /// </summary>
     public class MultithreadStmtFilterSubquery : RegressionExecution
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
+        }
 
         public void Run(RegressionEnvironment env)
         {
@@ -35,7 +42,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
         private static void TryNamedWindowFilterSubquery(RegressionEnvironment env)
         {
             var path = new RegressionPath();
-            env.CompileDeploy("create window MyWindow#keepall as SupportBean_S0", path);
+            env.CompileDeploy("@public create window MyWindow#keepall as SupportBean_S0", path);
             env.CompileDeploy("insert into MyWindow select * from SupportBean_S0", path);
 
             var epl =
@@ -48,11 +55,11 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             var filterThread = new Thread(new FilterRunnable(env.Runtime, 1000).Run);
             filterThread.Name = nameof(MultithreadStmtFilterSubquery) + "-filter";
 
-            log.Info("Starting threads");
+            Log.Info("Starting threads");
             insertThread.Start();
             filterThread.Start();
 
-            log.Info("Waiting for join");
+            Log.Info("Waiting for join");
             ThreadJoin(insertThread);
             ThreadJoin(filterThread);
 
@@ -73,11 +80,11 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                 new FilterRunnable(env.Runtime, 1000).Run);
             filterThread.Name = nameof(MultithreadStmtFilterSubquery) + "-filter";
 
-            log.Info("Starting threads");
+            Log.Info("Starting threads");
             insertThread.Start();
             filterThread.Start();
 
-            log.Info("Waiting for join");
+            Log.Info("Waiting for join");
             ThreadJoin(insertThread);
             ThreadJoin(filterThread);
 
@@ -99,12 +106,12 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 
             public void Run()
             {
-                log.Info("Starting insert thread");
+                Log.Info("Starting insert thread");
                 for (var i = 0; i < numInserts; i++) {
                     runtime.EventService.SendEventBean(new SupportBean_S0(i, "E"), "SupportBean_S0");
                 }
 
-                log.Info("Completed insert thread, " + numInserts + " inserted");
+                Log.Info("Completed insert thread, " + numInserts + " inserted");
             }
         }
 
@@ -123,12 +130,12 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 
             public void Run()
             {
-                log.Info("Starting filter thread");
+                Log.Info("Starting filter thread");
                 for (var i = 0; i < numEvents; i++) {
                     runtime.EventService.SendEventBean(new SupportBean("G" + i, i), "SupportBean");
                 }
 
-                log.Info("Completed filter thread, " + numEvents + " completed");
+                Log.Info("Completed filter thread, " + numEvents + " completed");
             }
         }
     }

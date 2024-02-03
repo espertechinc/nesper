@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -19,6 +19,7 @@ using com.espertech.esper.regressionlib.support.multithread;
 using com.espertech.esper.regressionlib.support.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.multithread
 {
@@ -27,6 +28,11 @@ namespace com.espertech.esper.regressionlib.suite.multithread
     /// </summary>
     public class MultithreadStmtTimeWindow : RegressionExecution
     {
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
+        }
+
         public void Run(RegressionEnvironment env)
         {
             TrySend(env, 10, 5000);
@@ -46,7 +52,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 
             var listener = new SupportMTUpdateListener();
             env.CompileDeploy(
-                "@Name('s0') select irstream IntPrimitive, TheString as key from SupportBean#time(1 sec)");
+                "@name('s0') select irstream IntPrimitive, TheString as key from SupportBean#time(1 sec)");
             env.Statement("s0").AddListener(listener);
 
             var threadPool = Executors.NewFixedThreadPool(
@@ -75,14 +81,14 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             var totalExpected = numThreads * numRepeats;
 
             // assert new data
-            var resultNewData = listener.GetNewDataListFlattened();
-            Assert.AreEqual(totalExpected, resultNewData.Length);
+            var resultNewData = listener.NewDataListFlattened;
+            ClassicAssert.AreEqual(totalExpected, resultNewData.Length);
             var resultsNewData = SortPerIntKey(resultNewData);
             AssertResult(numRepeats, numThreads, resultsNewData);
 
             // assert old data
-            var resultOldData = listener.GetOldDataListFlattened();
-            Assert.AreEqual(totalExpected, resultOldData.Length);
+            var resultOldData = listener.OldDataListFlattened;
+            ClassicAssert.AreEqual(totalExpected, resultOldData.Length);
             var resultsOldData = SortPerIntKey(resultOldData);
             AssertResult(numRepeats, numThreads, resultsOldData);
 
@@ -94,7 +100,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             IDictionary<int, IList<string>> results = new Dictionary<int, IList<string>>();
             foreach (var theEvent in result) {
                 var count = theEvent.Get("IntPrimitive").AsInt32();
-                var key = (string) theEvent.Get("key");
+                var key = (string)theEvent.Get("key");
 
                 var entries = results.Get(count);
                 if (entries == null) {
@@ -116,9 +122,9 @@ namespace com.espertech.esper.regressionlib.suite.multithread
         {
             for (var i = 0; i < numRepeats; i++) {
                 var values = results.Get(i);
-                Assert.AreEqual(numThreads, values.Count);
+                ClassicAssert.AreEqual(numThreads, values.Count);
                 foreach (var value in values) {
-                    Assert.AreEqual(Convert.ToString(i), value);
+                    ClassicAssert.AreEqual(Convert.ToString(i), value);
                 }
             }
         }

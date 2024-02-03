@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -40,9 +40,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
                 optionalFilter = positionalParams[1];
             }
 
-            var childType = base.ValidateNumericChildAllowFilter(HasFilter);
-            var distinctSerde = isDistinct ? validationContext.SerdeResolver.SerdeForAggregationDistinct(childType, validationContext.StatementRawInfo) : null;
-            return new AggregationForgeFactoryAvg(this, childType, distinctSerde, validationContext.ImportService.DefaultMathContext);
+            var childType = ValidateNumericChildAllowFilter(HasFilter);
+            var distinctSerde = isDistinct
+                ? validationContext.SerdeResolver.SerdeForAggregationDistinct(
+                    childType,
+                    validationContext.StatementRawInfo)
+                : null;
+            return new AggregationForgeFactoryAvg(
+                this,
+                childType,
+                distinctSerde,
+                validationContext.ImportService.DefaultMathContext);
         }
 
         public override bool EqualsNodeAggregateMethodOnly(ExprAggregateNode node)

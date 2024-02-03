@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Reflection;
 
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.concurrency;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.threading.locks;
@@ -21,6 +22,7 @@ using com.espertech.esper.runtime.client;
 using com.espertech.esper.runtime.client.scopetest;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.multithread
 {
@@ -29,7 +31,12 @@ namespace com.espertech.esper.regressionlib.suite.multithread
     /// </summary>
     public class MultithreadDeterminismInsertInto : RegressionExecution
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
+        }
 
         public void Run(RegressionEnvironment env)
         {
@@ -50,11 +57,12 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             var path = new RegressionPath();
             var insertIntoStmts = new EPStatement[numStatements];
             for (var i = 0; i < numStatements; i++) {
-                var epl = $"@Name('s{i}') insert into MyStream select {i} as ident,count(*) as cnt from SupportBean";
+                var epl =
+                    $"@name('s{i}') @public insert into MyStream select {i} as ident,count(*) as cnt from SupportBean";
                 insertIntoStmts[i] = env.CompileDeploy(epl, path).Statement("s" + i);
             }
 
-            env.CompileDeploy("@Name('final') select ident, sum(cnt) as mysum from MyStream group by ident", path);
+            env.CompileDeploy("@name('final') select ident, sum(cnt) as mysum from MyStream group by ident", path);
             var listener = new SupportMTUpdateListener();
             env.Statement("final").AddListener(listener);
 
@@ -82,8 +90,8 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             SupportCompileDeployUtil.AssertFutures(future);
 
             // assert result
-            var newEvents = listener.GetNewDataListFlattened();
-            IList<long>[] resultsPerIdent = new List<long>[numStatements];
+            var newEvents = listener.NewDataListFlattened;
+            var resultsPerIdent = new IList<long>[numStatements];
             foreach (var theEvent in newEvents) {
                 var ident = theEvent.Get("ident").AsInt32();
                 if (resultsPerIdent[ident] == null) {
@@ -97,7 +105,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             for (var statement = 0; statement < numStatements; statement++) {
                 for (var i = 0; i < numEvents - 1; i++) {
                     var expected = Total(i + 1);
-                    Assert.AreEqual(
+                    ClassicAssert.AreEqual(
                         expected,
                         resultsPerIdent[statement][i],
                         "Failed for statement " + statement);
@@ -114,8 +122,8 @@ namespace com.espertech.esper.regressionlib.suite.multithread
         {
             // setup statements
             var path = new RegressionPath();
-            env.CompileDeploy("insert into MyStreamOne select count(*) as cnt from SupportBean", path);
-            env.CompileDeploy("@Name('s0') insert into MyStreamTwo select sum(cnt) as mysum from MyStreamOne", path);
+            env.CompileDeploy("@public insert into MyStreamOne select count(*) as cnt from SupportBean", path);
+            env.CompileDeploy("@name('s0') insert into MyStreamTwo select sum(cnt) as mysum from MyStreamOne", path);
             var listener = new SupportUpdateListener();
             env.Statement("s0").AddListener(listener);
 
@@ -146,7 +154,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             var newEvents = listener.NewDataListFlattened;
             for (var i = 0; i < numEvents - 1; i++) {
                 var expected = Total(i + 1);
-                Assert.AreEqual(expected, newEvents[i].Get("mysum"));
+                ClassicAssert.AreEqual(expected, newEvents[i].Get("mysum"));
             }
 
             env.UndeployAll();

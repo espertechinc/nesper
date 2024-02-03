@@ -1,12 +1,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using com.espertech.esper.common.@internal.context.util;
+using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.time.eval;
 
 namespace com.espertech.esper.common.@internal.epl.output.polled
@@ -20,17 +20,17 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
             this.timePeriodCompute = timePeriodCompute;
         }
 
-        public OutputConditionPolled MakeNew(AgentInstanceContext agentInstanceContext)
+        public OutputConditionPolled MakeNew(ExprEvaluatorContext exprEvaluatorContext)
         {
-            return new OutputConditionPolledTime(this, agentInstanceContext, new OutputConditionPolledTimeState(null));
+            return new OutputConditionPolledTime(this, exprEvaluatorContext, new OutputConditionPolledTimeState(null));
         }
 
         public OutputConditionPolled MakeFromState(
-            AgentInstanceContext agentInstanceContext,
+            ExprEvaluatorContext exprEvaluatorContext,
             OutputConditionPolledState state)
         {
-            OutputConditionPolledTimeState timeState = (OutputConditionPolledTimeState) state;
-            return new OutputConditionPolledTime(this, agentInstanceContext, timeState);
+            var timeState = (OutputConditionPolledTimeState)state;
+            return new OutputConditionPolledTime(this, exprEvaluatorContext, timeState);
         }
     }
 } // end of namespace

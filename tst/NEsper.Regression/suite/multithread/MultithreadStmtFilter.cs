@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -19,6 +19,7 @@ using com.espertech.esper.regressionlib.support.multithread;
 using com.espertech.esper.regressionlib.support.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.multithread
 {
@@ -27,9 +28,14 @@ namespace com.espertech.esper.regressionlib.suite.multithread
     /// </summary>
     public class MultithreadStmtFilter : RegressionExecution
     {
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
+        }
+
         public void Run(RegressionEnvironment env)
         {
-            var plainFilter = "@Name('s0') select count(*) as mycount from SupportBean";
+            var plainFilter = "@name('s0') select count(*) as mycount from SupportBean";
             tryCount(env, 2, 1000, plainFilter, GeneratorEnumerator.DEFAULT_SUPPORTEBEAN_CB);
             tryCount(env, 4, 1000, plainFilter, GeneratorEnumerator.DEFAULT_SUPPORTEBEAN_CB);
 
@@ -42,7 +48,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             };
 
             var enumFilter =
-                "@Name('s0') select count(*) as mycount from SupportCollection(Strvals.anyOf(v -> v = 'j'))";
+                "@name('s0') select count(*) as mycount from SupportCollection(Strvals.anyOf(v -> v = 'j'))";
             tryCount(env, 4, 1000, enumFilter, enumCallback);
         }
 
@@ -74,15 +80,15 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             SupportCompileDeployUtil.AssertFutures(future);
 
             // verify results
-            Assert.AreEqual(numMessages * numThreads, listener.Values.Count);
+            ClassicAssert.AreEqual(numMessages * numThreads, listener.Values.Count);
             var result = new SortedSet<int>();
             foreach (var row in listener.Values) {
                 result.Add(row.AsInt32());
             }
 
-            Assert.AreEqual(numMessages * numThreads, result.Count);
-            Assert.AreEqual(1, result.First());
-            Assert.AreEqual(numMessages * numThreads, result.Last());
+            ClassicAssert.AreEqual(numMessages * numThreads, result.Count);
+            ClassicAssert.AreEqual(1, result.First());
+            ClassicAssert.AreEqual(numMessages * numThreads, result.Last());
 
             env.UndeployAll();
         }

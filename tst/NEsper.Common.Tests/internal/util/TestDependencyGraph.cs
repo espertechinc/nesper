@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -11,6 +11,7 @@ using System.Linq;
 using com.espertech.esper.common.client.scopetest;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.util
 {
@@ -26,7 +27,7 @@ namespace com.espertech.esper.common.@internal.util
             graph.AddDependency(1, 3);
             graph.AddDependency(2, 0);
             EPAssertionUtil.AssertEqualsAnyOrder(new int[] { 1, 2 }, graph.RootNodes);
-            Assert.IsNull(graph.FirstCircularDependency);
+            ClassicAssert.IsNull(graph.FirstCircularDependency);
 
             // 2 need 0, 3, 4
             graph = new DependencyGraph(5, false);
@@ -34,7 +35,7 @@ namespace com.espertech.esper.common.@internal.util
             graph.AddDependency(2, 3);
             graph.AddDependency(2, 4);
             EPAssertionUtil.AssertEqualsAnyOrder(new int[] { 1, 2 }, graph.RootNodes);
-            Assert.IsNull(graph.FirstCircularDependency);
+            ClassicAssert.IsNull(graph.FirstCircularDependency);
 
             // 2 need 0, 3, 4; 1 needs 2
             graph = new DependencyGraph(5, false);
@@ -43,7 +44,7 @@ namespace com.espertech.esper.common.@internal.util
             graph.AddDependency(2, 4);
             graph.AddDependency(1, 2);
             EPAssertionUtil.AssertEqualsAnyOrder(new int[] { 1 }, graph.RootNodes);
-            Assert.IsNull(graph.FirstCircularDependency);
+            ClassicAssert.IsNull(graph.FirstCircularDependency);
 
             // circular among 3 nodes
             graph = new DependencyGraph(3, false);

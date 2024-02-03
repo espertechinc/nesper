@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.common.client;
-using com.espertech.esper.common.client.configuration.runtime;
 using com.espertech.esper.common.client.serde;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.rowrecog.nfa;
@@ -45,23 +44,23 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             ViewFactoryContext viewFactoryContext,
             EPStatementInitServices services)
         {
-            ConfigurationRuntimeMatchRecognize matchRecognize =
+            var matchRecognize =
                 services.RuntimeSettingsService.ConfigurationRuntime.MatchRecognize;
-            this._trackMaxStates = matchRecognize != null && matchRecognize.MaxStates != null;
+            _trackMaxStates = matchRecognize != null && matchRecognize.MaxStates != null;
 
             // build start states
-            this._startStates = new RowRecogNFAState[_desc.StartStates.Length];
-            for (int i = 0; i < _desc.StartStates.Length; i++) {
-                this._startStates[i] = _desc.StatesOrdered[_desc.StartStates[i]];
+            _startStates = new RowRecogNFAState[_desc.StartStates.Length];
+            for (var i = 0; i < _desc.StartStates.Length; i++) {
+                _startStates[i] = _desc.StatesOrdered[_desc.StartStates[i]];
             }
 
             // build all states and state links
             foreach (Pair<int, int[]> stateLink in _desc.NextStatesPerState) {
-                RowRecogNFAStateBase state = _desc.StatesOrdered[stateLink.First];
-                RowRecogNFAState[] nextStates = new RowRecogNFAState[stateLink.Second.Length];
+                var state = _desc.StatesOrdered[stateLink.First];
+                var nextStates = new RowRecogNFAState[stateLink.Second.Length];
                 state.NextStates = nextStates;
-                for (int i = 0; i < stateLink.Second.Length; i++) {
-                    int nextNum = stateLink.Second[i];
+                for (var i = 0; i < stateLink.Second.Length; i++) {
+                    var nextNum = stateLink.Second[i];
                     RowRecogNFAState nextState;
                     if (nextNum == -1) {
                         nextState = new RowRecogNFAStateEndEval();
@@ -74,7 +73,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                 }
             }
 
-            this._allStates = _desc.StatesOrdered;
+            _allStates = _desc.StatesOrdered;
         }
 
         public View MakeView(AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext)
@@ -84,7 +83,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                 scheduler = new RowRecogNFAViewSchedulerImpl();
             }
 
-            RowRecogNFAView view = new RowRecogNFAView(
+            var view = new RowRecogNFAView(
                 this,
                 agentInstanceViewFactoryContext.AgentInstanceContext,
                 scheduler);
@@ -94,29 +93,19 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             return view;
         }
 
-        public bool IsTrackMaxStates {
-            get => _trackMaxStates;
-        }
+        public bool IsTrackMaxStates => _trackMaxStates;
 
-        public RowRecogNFAState[] StartStates {
-            get => _startStates;
-        }
+        public RowRecogNFAState[] StartStates => _startStates;
 
-        public RowRecogNFAState[] AllStates {
-            get => _allStates;
-        }
+        public RowRecogNFAState[] AllStates => _allStates;
 
-        public DataInputOutputSerde PartitionKeySerde {
-            get => _partitionKeySerde;
-        }
+        public DataInputOutputSerde PartitionKeySerde => _partitionKeySerde;
 
         public int ScheduleCallbackId {
             get => _scheduleCallbackId;
             set => _scheduleCallbackId = value;
         }
 
-        public string ViewName {
-            get => "rowrecog";
-        }
+        public string ViewName => "rowrecog";
     }
 } // end of namespace

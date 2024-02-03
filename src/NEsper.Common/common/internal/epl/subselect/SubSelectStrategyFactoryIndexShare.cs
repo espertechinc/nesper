@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -64,7 +64,7 @@ namespace com.espertech.esper.common.@internal.epl.subselect
 
         public SubSelectStrategyRealization Instantiate(
             Viewable viewableRoot,
-            AgentInstanceContext agentInstanceContext,
+            ExprEvaluatorContext exprEvaluatorContext,
             IList<AgentInstanceMgmtCallback> stopCallbackList,
             int subqueryNumber,
             bool isRecoveringResilient)
@@ -74,9 +74,8 @@ namespace com.espertech.esper.common.@internal.epl.subselect
             AggregationService aggregationService = null;
             if (aggregationServiceFactory != null) {
                 aggregationService = aggregationServiceFactory.MakeService(
-                    agentInstanceContext,
-                    agentInstanceContext.ImportServiceRuntime,
-                    true,
+                    exprEvaluatorContext,
+                    null,
                     subqueryNumber,
                     null);
 
@@ -118,11 +117,11 @@ namespace com.espertech.esper.common.@internal.epl.subselect
 
             SubordTableLookupStrategy subqueryLookup;
             if (namedWindow != null) {
-                var instance = namedWindow.GetNamedWindowInstance(agentInstanceContext);
+                var instance = namedWindow.GetNamedWindowInstance(exprEvaluatorContext);
                 if (queryPlan == null) {
                     subqueryLookup = new SubordFullTableScanLookupStrategyLocking(
                         instance.RootViewInstance.DataWindowContents,
-                        agentInstanceContext.EpStatementAgentInstanceHandle.StatementAgentInstanceLock);
+                        exprEvaluatorContext.AgentInstanceLock);
                 }
                 else {
                     var indexes = new EventTable[queryPlan.IndexDescs.Length];
@@ -134,7 +133,7 @@ namespace com.espertech.esper.common.@internal.epl.subselect
 
                     subqueryLookup = queryPlan.LookupStrategyFactory.MakeStrategy(
                         indexes,
-                        agentInstanceContext,
+                        exprEvaluatorContext,
                         instance.RootViewInstance.VirtualDataWindow);
                     subqueryLookup = new SubordIndexedTableLookupStrategyLocking(
                         subqueryLookup,
@@ -142,8 +141,8 @@ namespace com.espertech.esper.common.@internal.epl.subselect
                 }
             }
             else {
-                var instance = table.GetTableInstance(agentInstanceContext.AgentInstanceId);
-                var @lock = agentInstanceContext.StatementContext.StatementInformationals.IsWritesToTables
+                var instance = table.GetTableInstance(exprEvaluatorContext.AgentInstanceId);
+                var @lock = exprEvaluatorContext.IsWritesToTables
                     ? instance.TableLevelRWLock.WriteLock
                     : instance.TableLevelRWLock.ReadLock;
                 if (queryPlan == null) {
@@ -155,7 +154,7 @@ namespace com.espertech.esper.common.@internal.epl.subselect
                         indexes[i] = instance.IndexRepository.GetIndexByDesc(queryPlan.IndexDescs[i].IndexMultiKey);
                     }
 
-                    subqueryLookup = queryPlan.LookupStrategyFactory.MakeStrategy(indexes, agentInstanceContext, null);
+                    subqueryLookup = queryPlan.LookupStrategyFactory.MakeStrategy(indexes, exprEvaluatorContext, null);
                     subqueryLookup = new SubordIndexedTableLookupTableStrategy(subqueryLookup, @lock);
                 }
             }

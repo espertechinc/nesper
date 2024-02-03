@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -33,14 +33,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             bool resultWhenNoMatchingEvents,
             bool isNotIn,
             Coercer coercer,
-            ExprForge havingEval)
-            : base(
-                subselect,
-                valueEval,
-                selectEval,
-                resultWhenNoMatchingEvents,
-                isNotIn,
-                coercer)
+            ExprForge havingEval) : base(subselect, valueEval, selectEval, resultWhenNoMatchingEvents, isNotIn, coercer)
         {
             this.havingEval = havingEval;
         }
@@ -50,7 +43,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             SubselectForgeNRSymbol symbols,
             CodegenClassScope classScope)
         {
-            CodegenExpression aggService = classScope.NamespaceScope.AddOrGetDefaultFieldWellKnown(
+            if (subselect.EvaluationType == null) {
+                return ConstantNull();
+            }
+
+            var aggService = classScope.NamespaceScope.AddOrGetDefaultFieldWellKnown(
                 new CodegenFieldNameSubqueryAgg(subselect.SubselectNumber),
                 typeof(AggregationResultFuture));
 
@@ -70,7 +67,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                     ExprDotMethod(Ref("aggregationService"), "GetGroupKeys", evalCtx))
                 .DeclareVar<bool>("hasNullRow", ConstantFalse());
 
-            var forEach = method.Block.ForEach(typeof(object), "groupKey", Ref("groupKeys"));
+            var forEach = method.Block.ForEach<object>("groupKey", Ref("groupKeys"));
             {
                 forEach.ExprDotMethod(
                     Ref("aggregationService"),
@@ -99,7 +96,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                     forEach.DeclareVar(
                         valueRightType,
                         "valueRight",
-                        ExprDotUnderlying(ArrayAtIndex(symbols.GetAddEPS(method), Constant(0))));
+                        ExprDotUnderlying(ArrayAtIndex(symbols.GetAddEps(method), Constant(0))));
                 }
 
                 var ifRightNotNull = forEach.IfCondition(EqualsNull(Ref("valueRight")))
@@ -112,11 +109,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                     else {
                         ifRightNotNull.DeclareVar<object>(
                                 "left",
-                                coercer.CoerceCodegen(left, symbols.LeftResultType))
+                                coercer.CoerceCodegen(left, symbols.LeftResultType, method, classScope))
                             .DeclareVar<object>(
                                 "right",
-                                coercer.CoerceCodegen(Ref("valueRight"), valueRightType))
-                            .DeclareVar<bool>("eq", StaticMethod<object>("Equals", Ref("left"), Ref("right")));
+                                coercer.CoerceCodegen(Ref("valueRight"), valueRightType, method, classScope))
+                            .DeclareVar<bool>("eq", ExprDotMethod(Ref("left"), "Equals", Ref("right")));
                     }
 
                     ifRightNotNull.IfCondition(Ref("eq")).BlockReturn(Constant(!isNotIn));

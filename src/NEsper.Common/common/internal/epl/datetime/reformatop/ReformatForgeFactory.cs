@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -23,7 +23,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
         private static readonly ReformatForge FORMAT_STRING = new ReformatStringFormatForge();
 
         public ReformatForge GetForge(
-            EPType inputType,
+            EPChainableType inputType,
             TimeAbacus timeAbacus,
             DatetimeMethodDesc desc,
             string methodNameUsed,
@@ -40,7 +40,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
                     return FORMAT_STRING;
                 }
 
-                var formatterType = CalendarOpUtil.ValidateGetFormatterType(inputType, methodNameUsed, parameters[0]);
+                var formatterType = CalendarOpUtil.ValidateGetFormatterType(
+                    inputType, methodNameUsed, parameters[0]);
                 return new ReformatFormatForge(formatterType, parameters[0].Forge, timeAbacus);
             }
 

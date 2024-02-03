@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -23,11 +23,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.inner
 {
     public class InnerDotArrObjectToCollEval : ExprDotEvalRootChildInnerEval
     {
-        private readonly ExprEvaluator rootEvaluator;
+        private readonly ExprEvaluator _rootEvaluator;
 
         public InnerDotArrObjectToCollEval(ExprEvaluator rootEvaluator)
         {
-            this.rootEvaluator = rootEvaluator;
+            _rootEvaluator = rootEvaluator;
         }
 
         public object Evaluate(
@@ -35,12 +35,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.inner
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            object array = rootEvaluator.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+            var array = _rootEvaluator.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
             if (array == null) {
                 return null;
             }
 
-            return Arrays.AsList((object[]) array);
+            return Arrays.AsList((object[])array);
         }
 
         public static CodegenExpression CodegenEvaluate(
@@ -49,20 +49,21 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.inner
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenMethod methodNode = codegenMethodScope.MakeChild(
-                typeof(ICollection<object>),
+            var evalType = forge.rootForge.EvaluationType;
+            var elementType = evalType.GetComponentType();
+
+            var methodNode = codegenMethodScope.MakeChild(
+                typeof(ICollection<>).MakeGenericType(elementType),
                 typeof(InnerDotArrObjectToCollEval),
                 codegenClassScope);
 
-            Type evalType = forge.rootForge.EvaluationType;
             methodNode.Block
                 .DeclareVar(
-                    forge.rootForge.EvaluationType,
+                    evalType,
                     "array",
                     forge.rootForge.EvaluateCodegen(evalType, methodNode, exprSymbol, codegenClassScope))
                 .IfRefNullReturnNull("array")
-                .MethodReturn(
-                    Unwrap<object>(Ref("array")));
+                .MethodReturn(Unwrap(elementType, Ref("array")));
             return LocalMethod(methodNode);
         }
 

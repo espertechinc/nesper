@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -15,14 +15,13 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     ///     Represents a contained-event selection.
     /// </summary>
-    [Serializable]
     public class ContainedEventSelect
     {
-        private string optionalAsName;
-        private string optionalSplitExpressionTypeName;
-        private SelectClause selectClause;
-        private Expression splitExpression;
-        private Expression whereClause;
+        private string _optionalAsName;
+        private string _optionalSplitExpressionTypeName;
+        private SelectClause _selectClause;
+        private Expression _splitExpression;
+        private Expression _whereClause;
 
         /// <summary>
         ///     Ctor.
@@ -37,57 +36,52 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="splitExpression">the property expression or other expression for splitting the event</param>
         public ContainedEventSelect(Expression splitExpression)
         {
-            this.splitExpression = splitExpression;
+            _splitExpression = splitExpression;
         }
 
         /// <summary>
         ///     Returns the property alias.
         /// </summary>
         /// <returns>alias</returns>
-        public string OptionalAsName
-        {
-            get => optionalAsName;
-            set => optionalAsName = value;
+        public string OptionalAsName {
+            get => _optionalAsName;
+            set => _optionalAsName = value;
         }
 
         /// <summary>
         ///     Returns the select clause.
         /// </summary>
         /// <returns>select clause</returns>
-        public SelectClause SelectClause
-        {
-            get => selectClause;
-            set => selectClause = value;
+        public SelectClause SelectClause {
+            get => _selectClause;
+            set => _selectClause = value;
         }
 
         /// <summary>
         ///     Returns the where clause.
         /// </summary>
         /// <returns>where clause</returns>
-        public Expression WhereClause
-        {
-            get => whereClause;
-            set => whereClause = value;
+        public Expression WhereClause {
+            get => _whereClause;
+            set => _whereClause = value;
         }
 
         /// <summary>
         ///     Returns the event type name assigned to events that result by applying the split (contained event) expression.
         /// </summary>
         /// <returns>type name, or null if none assigned</returns>
-        public string OptionalSplitExpressionTypeName
-        {
-            get => optionalSplitExpressionTypeName;
-            set => optionalSplitExpressionTypeName = value;
+        public string OptionalSplitExpressionTypeName {
+            get => _optionalSplitExpressionTypeName;
+            set => _optionalSplitExpressionTypeName = value;
         }
 
         /// <summary>
         ///     Returns the expression that returns the contained events.
         /// </summary>
         /// <returns>contained event expression</returns>
-        public Expression SplitExpression
-        {
-            get => splitExpression;
-            set => splitExpression = value;
+        public Expression SplitExpression {
+            get => _splitExpression;
+            set => _splitExpression = value;
         }
 
         /// <summary>
@@ -99,30 +93,26 @@ namespace com.espertech.esper.common.client.soda
             TextWriter writer,
             EPStatementFormatter formatter)
         {
-            if (selectClause != null)
-            {
-                selectClause.ToEPL(writer, formatter, false, false);
+            if (_selectClause != null) {
+                _selectClause.ToEPL(writer, formatter, false, false);
                 writer.Write(" from ");
             }
 
-            splitExpression.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
-            if (optionalSplitExpressionTypeName != null)
-            {
+            _splitExpression.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
+            if (_optionalSplitExpressionTypeName != null) {
                 writer.Write("@type(");
-                writer.Write(optionalSplitExpressionTypeName);
+                writer.Write(_optionalSplitExpressionTypeName);
                 writer.Write(")");
             }
 
-            if (optionalAsName != null)
-            {
+            if (_optionalAsName != null) {
                 writer.Write(" as ");
-                writer.Write(optionalAsName);
+                writer.Write(_optionalAsName);
             }
 
-            if (whereClause != null)
-            {
+            if (_whereClause != null) {
                 writer.Write(" where ");
-                whereClause.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
+                _whereClause.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
             }
         }
 
@@ -137,8 +127,7 @@ namespace com.espertech.esper.common.client.soda
             EPStatementFormatter formatter,
             IList<ContainedEventSelect> items)
         {
-            foreach (var propertySelect in items)
-            {
+            foreach (var propertySelect in items) {
                 writer.Write('[');
                 propertySelect.ToEPL(writer, formatter);
                 writer.Write(']');

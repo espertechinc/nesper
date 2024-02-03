@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -20,19 +20,18 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createexpressio
         {
         }
 
-        protected override string Register(
-            StatementCompileTimeServices services)
+        protected override StmtForgeMethodRegisterResult Register(StatementCompileTimeServices services)
         {
-            var spec = Base.StatementSpec.Raw.CreateExpressionDesc;
+            var spec = _base.StatementSpec.Raw.CreateExpressionDesc;
 
             string expressionName;
             if (spec.Expression != null) {
                 // register expression
                 expressionName = spec.Expression.Name;
-                var visibility = services.ModuleVisibilityRules.GetAccessModifierExpression(Base, expressionName);
+                var visibility = services.ModuleVisibilityRules.GetAccessModifierExpression(_base, expressionName);
                 CheckAlreadyDeclared(expressionName, services, -1);
                 var item = spec.Expression;
-                item.ModuleName = Base.ModuleName;
+                item.ModuleName = _base.ModuleName;
                 item.Visibility = visibility;
                 services.ExprDeclaredCompileTimeRegistry.NewExprDeclared(item);
             }
@@ -42,25 +41,26 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createexpressio
                 var numParameters = spec.Script.ParameterNames.Length;
                 CheckAlreadyDeclared(expressionName, services, numParameters);
                 var visibility =
-                    services.ModuleVisibilityRules.GetAccessModifierScript(Base, expressionName, numParameters);
+                    services.ModuleVisibilityRules.GetAccessModifierScript(_base, expressionName, numParameters);
                 var item = spec.Script;
-                item.ModuleName = Base.ModuleName;
+                item.ModuleName = _base.ModuleName;
                 item.Visibility = visibility;
                 services.ScriptCompileTimeRegistry.NewScript(item);
             }
-            
-            return expressionName;
+
+            return new StmtForgeMethodRegisterResult(expressionName, services.StateMgmtSettingsProvider.NewCharge());
         }
+
         protected override StmtClassForgeable AiFactoryForgable(
             string className,
             CodegenNamespaceScope namespaceScope,
             EventType statementEventType,
             string objectName)
         {
-            StatementAgentInstanceFactoryCreateExpressionForge forge = new StatementAgentInstanceFactoryCreateExpressionForge(statementEventType, objectName);
+            var forge = new StatementAgentInstanceFactoryCreateExpressionForge(statementEventType, objectName);
             return new StmtClassForgeableAIFactoryProviderCreateExpression(className, namespaceScope, forge);
         }
-        
+
         private void CheckAlreadyDeclared(
             string expressionName,
             StatementCompileTimeServices services,

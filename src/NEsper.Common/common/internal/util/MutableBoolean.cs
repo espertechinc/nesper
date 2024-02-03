@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -12,14 +12,10 @@ namespace com.espertech.esper.common.@internal.util
     {
         private bool value;
 
-        public bool IsValue()
-        {
-            return value;
-        }
+        public bool IsValue => value;
 
-        public void SetValue(bool value)
-        {
-            this.value = value;
+        public bool Value {
+            set => this.value = value;
         }
     }
 } // end of namespace

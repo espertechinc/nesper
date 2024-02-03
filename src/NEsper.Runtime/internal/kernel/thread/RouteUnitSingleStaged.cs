@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -21,12 +21,12 @@ namespace com.espertech.esper.runtime.@internal.kernel.thread
     /// </summary>
     public class RouteUnitSingleStaged : RouteUnitRunnable
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private readonly EPStageEventServiceImpl epRuntime;
-        private readonly long filterVersion;
-        private readonly EPStatementHandleCallbackFilter handleCallback;
-        private readonly EventBean theEvent;
+        private readonly EPStageEventServiceImpl _epRuntime;
+        private readonly long _filterVersion;
+        private readonly EPStatementHandleCallbackFilter _handleCallback;
+        private readonly EventBean _theEvent;
 
         /// <summary>
         ///     Ctor.
@@ -41,23 +41,23 @@ namespace com.espertech.esper.runtime.@internal.kernel.thread
             EventBean theEvent,
             long filterVersion)
         {
-            this.epRuntime = epRuntime;
-            this.theEvent = theEvent;
-            this.handleCallback = handleCallback;
-            this.filterVersion = filterVersion;
+            this._epRuntime = epRuntime;
+            this._theEvent = theEvent;
+            this._handleCallback = handleCallback;
+            this._filterVersion = filterVersion;
         }
 
         public void Run()
         {
             try {
-                epRuntime.ProcessStatementFilterSingle(handleCallback.AgentInstanceHandle, handleCallback, theEvent, filterVersion, 0);
+                _epRuntime.ProcessStatementFilterSingle(_handleCallback.AgentInstanceHandle, _handleCallback, _theEvent, _filterVersion, 0);
 
-                epRuntime.Dispatch();
+                _epRuntime.Dispatch();
 
-                epRuntime.ProcessThreadWorkQueue();
+                _epRuntime.ProcessThreadWorkQueue();
             }
             catch (Exception e) {
-                log.Error("Unexpected error processing route execution: " + e.Message, e);
+                Log.Error("Unexpected error processing route execution: " + e.Message, e);
             }
         }
     }

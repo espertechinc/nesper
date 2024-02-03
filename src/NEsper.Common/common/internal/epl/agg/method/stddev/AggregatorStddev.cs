@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -11,10 +11,10 @@ using System;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
-using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.agg.method.core;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.fabric;
 using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.function;
@@ -27,29 +27,31 @@ using static com.espertech.esper.common.@internal.epl.agg.method.core.Aggregator
 namespace com.espertech.esper.common.@internal.epl.agg.method.stddev
 {
     /// <summary>
-    ///     Standard deviation always generates double-typed numbers.
+    /// Standard deviation always generates double-typed numbers.
     /// </summary>
     public class AggregatorStddev : AggregatorMethodWDistinctWFilterWValueBase
     {
-        private readonly CodegenExpressionMember _cnt;
-        private readonly CodegenExpressionMember _mean;
-        private readonly CodegenExpressionMember _qn;
+        private CodegenExpressionMember mean;
+        private CodegenExpressionMember qn;
+        private CodegenExpressionMember cnt;
 
         public AggregatorStddev(
-            AggregationForgeFactory factory,
-            int col,
-            CodegenCtor rowCtor,
-            CodegenMemberCol membersColumnized,
-            CodegenClassScope classScope,
             Type optionalDistinctValueType,
             DataInputOutputSerdeForge optionalDistinctSerde,
             bool hasFilter,
-            ExprNode optionalFilter)
-            : base(factory, col, rowCtor, membersColumnized, classScope, optionalDistinctValueType, optionalDistinctSerde, hasFilter, optionalFilter)
+            ExprNode optionalFilter) : base(optionalDistinctValueType, optionalDistinctSerde, hasFilter, optionalFilter)
         {
-            _mean = membersColumnized.AddMember(col, typeof(double), "mean");
-            _qn = membersColumnized.AddMember(col, typeof(double), "qn");
-            _cnt = membersColumnized.AddMember(col, typeof(long), "cnt");
+        }
+
+        public override void InitForgeFiltered(
+            int col,
+            CodegenCtor rowCtor,
+            CodegenMemberCol membersColumnized,
+            CodegenClassScope classScope)
+        {
+            mean = membersColumnized.AddMember(col, typeof(double), "mean");
+            qn = membersColumnized.AddMember(col, typeof(double), "qn");
+            cnt = membersColumnized.AddMember(col, typeof(long), "cnt");
         }
 
         protected override void ApplyEvalEnterNonNull(
@@ -60,9 +62,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.stddev
             ExprForge[] forges,
             CodegenClassScope classScope)
         {
-            ApplyEvalEnterNonNull(
-                method,
-                SimpleNumberCoercerFactory.CoercerDouble.CodegenDouble(value, valueType));
+            ApplyEvalEnterNonNull(method, SimpleNumberCoercerFactory.CoercerDouble.CodegenDouble(value, valueType));
         }
 
         protected override void ApplyEvalLeaveNonNull(
@@ -73,9 +73,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.stddev
             ExprForge[] forges,
             CodegenClassScope classScope)
         {
-            ApplyEvalLeaveNonNull(
-                method,
-                SimpleNumberCoercerFactory.CoercerDouble.CodegenDouble(value, valueType));
+            ApplyEvalLeaveNonNull(method, SimpleNumberCoercerFactory.CoercerDouble.CodegenDouble(value, valueType));
         }
 
         protected override void ApplyTableEnterNonNull(
@@ -84,7 +82,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.stddev
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            ApplyEvalEnterNonNull(method, ExprDotMethod(Cast(typeof(object), value), "AsDouble"));
+            ApplyEvalEnterNonNull(method, ExprDotMethod(value, "AsDouble"));
         }
 
         protected override void ApplyTableLeaveNonNull(
@@ -93,23 +91,23 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.stddev
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            ApplyEvalLeaveNonNull(method, ExprDotMethod(Cast(typeof(object), value), "AsDouble"));
+            ApplyEvalLeaveNonNull(method, ExprDotMethod(value, "AsDouble"));
         }
 
         protected override void ClearWODistinct(
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            method.Block.Apply(GetClear());
+            method.Block.Apply(Clear);
         }
 
         public override void GetValueCodegen(
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            method.Block.IfCondition(Relational(_cnt, LT, Constant(2)))
+            method.Block.IfCondition(Relational(cnt, LT, Constant(2)))
                 .BlockReturn(ConstantNull())
-                .MethodReturn(StaticMethod(typeof(Math), "Sqrt", Op(_qn, "/", Op(_cnt, "-", Constant(1)))));
+                .MethodReturn(StaticMethod(typeof(Math), "Sqrt", Op(qn, "/", Op(cnt, "-", Constant(1)))));
         }
 
         protected override void WriteWODistinct(
@@ -121,9 +119,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.stddev
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            method.Block.Apply(WriteDouble(output, row, _mean))
-                .Apply(WriteDouble(output, row, _qn))
-                .Apply(WriteLong(output, row, _cnt));
+            method.Block.Apply(WriteDouble(output, row, mean))
+                .Apply(WriteDouble(output, row, qn))
+                .Apply(WriteLong(output, row, cnt));
         }
 
         protected override void ReadWODistinct(
@@ -134,9 +132,14 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.stddev
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            method.Block.Apply(ReadDouble(row, _mean, input))
-                .Apply(ReadDouble(row, _qn, input))
-                .Apply(ReadLong(row, _cnt, input));
+            method.Block.Apply(ReadDouble(row, mean, input))
+                .Apply(ReadDouble(row, qn, input))
+                .Apply(ReadLong(row, cnt, input));
+        }
+
+        protected override void AppendFormatWODistinct(FabricTypeCollector collector)
+        {
+            collector.Builtin(typeof(double), typeof(double), typeof(long));
         }
 
         private void ApplyEvalEnterNonNull(
@@ -144,15 +147,15 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.stddev
             CodegenExpression doubleExpression)
         {
             method.Block.DeclareVar<double>("p", doubleExpression)
-                .IfCondition(EqualsIdentity(_cnt, Constant(0)))
-                .AssignRef(_mean, Ref("p"))
-                .AssignRef(_qn, Constant(0))
-                .AssignRef(_cnt, Constant(1))
+                .IfCondition(EqualsIdentity(cnt, Constant(0)))
+                .AssignRef(mean, Ref("p"))
+                .AssignRef(qn, Constant(0))
+                .AssignRef(cnt, Constant(1))
                 .IfElse()
-                .Increment(_cnt)
-                .DeclareVar<double>("oldmean", _mean)
-                .AssignCompound(_mean, "+", Op(Op(Ref("p"), "-", _mean), "/", _cnt))
-                .AssignCompound(_qn, "+", Op(Op(Ref("p"), "-", Ref("oldmean")), "*", Op(Ref("p"), "-", _mean)));
+                .Increment(cnt)
+                .DeclareVar<double>("oldmean", mean)
+                .AssignCompound(mean, "+", Op(Op(Ref("p"), "-", mean), "/", cnt))
+                .AssignCompound(qn, "+", Op(Op(Ref("p"), "-", Ref("oldmean")), "*", Op(Ref("p"), "-", mean)));
         }
 
         private void ApplyEvalLeaveNonNull(
@@ -160,22 +163,21 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.stddev
             CodegenExpression doubleExpression)
         {
             method.Block.DeclareVar<double>("p", doubleExpression)
-                .IfCondition(Relational(_cnt, LE, Constant(1)))
-                .Apply(GetClear())
+                .IfCondition(Relational(cnt, LE, Constant(1)))
+                .Apply(Clear)
                 .IfElse()
-                .Decrement(_cnt)
-                .DeclareVar<double>("oldmean", _mean)
-                .AssignCompound(_mean, "-", Op(Op(Ref("p"), "-", _mean), "/", _cnt))
-                .AssignCompound(_qn, "-", Op(Op(Ref("p"), "-", Ref("oldmean")), "*", Op(Ref("p"), "-", _mean)));
+                .Decrement(cnt)
+                .DeclareVar<double>("oldmean", mean)
+                .AssignCompound(mean, "-", Op(Op(Ref("p"), "-", mean), "/", cnt))
+                .AssignCompound(qn, "-", Op(Op(Ref("p"), "-", Ref("oldmean")), "*", Op(Ref("p"), "-", mean)));
         }
 
-        private Consumer<CodegenBlock> GetClear()
-        {
-            return block => {
-                block.AssignRef(_mean, Constant(0))
-                    .AssignRef(_qn, Constant(0))
-                    .AssignRef(_cnt, Constant(0));
-            };
+        public Consumer<CodegenBlock> Clear {
+            get {
+                return block => {
+                    block.AssignRef(mean, Constant(0)).AssignRef(qn, Constant(0)).AssignRef(cnt, Constant(0));
+                };
+            }
         }
     }
 } // end of namespace

@@ -1,12 +1,15 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Collections.Generic;
+
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.concurrency;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.client;
@@ -14,6 +17,7 @@ using com.espertech.esper.regressionlib.support.multithread;
 using com.espertech.esper.regressionlib.support.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.multithread
 {
@@ -22,6 +26,11 @@ namespace com.espertech.esper.regressionlib.suite.multithread
     /// </summary>
     public class MultithreadStmtNamedWindowMerge : RegressionExecution
     {
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
+        }
+
         public void Run(RegressionEnvironment env)
         {
             TrySend(env, 3, 100);
@@ -35,7 +44,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
         {
             // setup statements
             var path = new RegressionPath();
-            env.CompileDeploy("create window MyWindow#keepall as select * from SupportBean", path);
+            env.CompileDeploy("@public create window MyWindow#keepall as select * from SupportBean", path);
             env.CompileDeploy(
                 "on SupportBean sb " +
                 "merge MyWindow nw where nw.TheString = sb.TheString " +
@@ -58,13 +67,13 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 
             // compare
             var rows = env.CompileExecuteFAF("select * from MyWindow", path).Array;
-            Assert.AreEqual(numEventsPerThread, rows.Length);
+            ClassicAssert.AreEqual(numEventsPerThread, rows.Length);
             foreach (var row in rows) {
-                Assert.AreEqual(numThreads - 1, row.Get("IntPrimitive"));
+                ClassicAssert.AreEqual(numThreads - 1, row.Get("IntPrimitive"));
             }
 
             //long deltaTime = endTime - startTime;
-            //System.out.println("Totals updated: " + totalUpdates + "  Delta cumu: " + deltaCumulative + "  Delta pooled: " + deltaTime);
+            //Console.WriteLine("Totals updated: " + totalUpdates + "  Delta cumu: " + deltaCumulative + "  Delta pooled: " + deltaTime);
             env.UndeployAll();
         }
     }

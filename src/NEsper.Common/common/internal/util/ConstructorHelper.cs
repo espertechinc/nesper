@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -16,7 +16,7 @@ namespace com.espertech.esper.common.@internal.util
     /// </summary>
     public static class ConstructorHelper
     {
-        private static Type[] EMPTY_OBJECT_ARRAY_TYPE = new[] {typeof(object[])};
+        private static Type[] EMPTY_OBJECT_ARRAY_TYPE = new[] { typeof(object[]) };
 
         /// <summary>
         /// Find and invoke constructor matching the argument number and types returning an instance of given class.
@@ -32,13 +32,13 @@ namespace com.espertech.esper.common.@internal.util
             Type type,
             object[] arguments)
         {
-            Type[] parameterTypes = new Type[arguments.Length];
-            for (int i = 0; i < arguments.Length; i++) {
+            var parameterTypes = new Type[arguments.Length];
+            for (var i = 0; i < arguments.Length; i++) {
                 parameterTypes[i] = arguments[i].GetType();
             }
 
             // Find a constructor that matches exactly
-            ConstructorInfo ctor = GetRegularConstructor(type, parameterTypes);
+            var ctor = GetRegularConstructor(type, parameterTypes);
             if (ctor != null) {
                 return ctor.Invoke(arguments);
             }
@@ -55,17 +55,17 @@ namespace com.espertech.esper.common.@internal.util
                 throw new MissingMethodException();
             }
 
-            return ctor.Invoke(new object[] {arguments});
+            return ctor.Invoke(new object[] { arguments });
         }
 
         private static ConstructorInfo FindMatchingConstructor(
             this Type type,
             Type[] parameterTypes)
         {
-            ConstructorInfo[] ctors = type.GetConstructors();
+            var ctors = type.GetConstructors();
 
-            for (int i = 0; i < ctors.Length; i++) {
-                ParameterInfo[] ctorParams = ctors[i].GetParameters();
+            for (var i = 0; i < ctors.Length; i++) {
+                var ctorParams = ctors[i].GetParameters();
 
                 if (IsAssignmentCompatible(parameterTypes, ctorParams)) {
                     return ctors[i];
@@ -83,7 +83,7 @@ namespace com.espertech.esper.common.@internal.util
                 return false;
             }
 
-            for (int i = 0; i < parameterTypes.Length; i++) {
+            for (var i = 0; i < parameterTypes.Length; i++) {
                 if (!ctorParams[i].ParameterType.IsAssignmentCompatible(parameterTypes[i])) {
                     return false;
                 }
@@ -97,7 +97,7 @@ namespace com.espertech.esper.common.@internal.util
             Type[] parameterTypes)
         {
             // Try to find the matching constructor
-            ConstructorInfo ctor = type.GetConstructor(parameterTypes);
+            var ctor = type.GetConstructor(parameterTypes);
             return ctor;
         }
 
@@ -106,10 +106,10 @@ namespace com.espertech.esper.common.@internal.util
         {
             return clazz.GetConstructor(EMPTY_OBJECT_ARRAY_TYPE);
         }
-        
+
         public static ConstructorInfo GetDefaultConstructor(this Type clazz)
         {
-            var constructor = clazz.GetConstructor(new Type[0]);
+            var constructor = clazz.GetConstructor(Type.EmptyTypes);
             if (constructor != null && constructor.IsPublic) {
                 return constructor;
             }

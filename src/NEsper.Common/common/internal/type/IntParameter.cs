@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -15,7 +15,6 @@ namespace com.espertech.esper.common.@internal.type
     /// <summary>
     /// Parameter supplying a single int value is a set of numbers.
     /// </summary>
-    [Serializable]
     public class IntParameter : NumberSetParameter
     {
         /// <summary> Returns int value.</summary>
@@ -50,7 +49,7 @@ namespace com.espertech.esper.common.@internal.type
             int min,
             int max)
         {
-            if ((IntValue == min) && (IntValue == max)) {
+            if (IntValue == min && IntValue == max) {
                 return true;
             }
 
@@ -69,7 +68,7 @@ namespace com.espertech.esper.common.@internal.type
         {
             ICollection<int> values = new HashSet<int>();
 
-            if ((IntValue >= min) && (IntValue <= max)) {
+            if (IntValue >= min && IntValue <= max) {
                 values.Add(IntValue);
             }
 

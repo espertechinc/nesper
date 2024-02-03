@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -36,8 +36,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             DateTimeFieldEnum fieldNum,
             TimeAbacus timeAbacus)
         {
-            this._fieldNum = fieldNum;
-            this._timeAbacus = timeAbacus;
+            _fieldNum = fieldNum;
+            _timeAbacus = timeAbacus;
         }
 
         public ReformatOp Op => this;
@@ -49,7 +49,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             CodegenClassScope codegenClassScope)
         {
             var methodNode = codegenMethodScope.MakeChild(typeof(int), typeof(ReformatGetFieldForge), codegenClassScope)
-                .AddParam(typeof(long), "ts");
+                .AddParam<long>("ts");
             var timeZoneField =
                 codegenClassScope.AddOrGetDefaultFieldSharable(RuntimeSettingsTimeZoneField.INSTANCE);
             methodNode.Block
@@ -211,7 +211,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
                     return dateTime.Millisecond;
 
                 case DateTimeFieldEnum.WEEK:
-                    return DateTimeMath.GetWeekOfYear(dateTime);
+                    return dateTime.GetWeekOfYear();
             }
 
             throw new ArgumentOutOfRangeException(nameof(fieldEnum), fieldEnum, "unknown field");

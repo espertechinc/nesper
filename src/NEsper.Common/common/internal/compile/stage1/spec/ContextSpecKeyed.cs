@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         public ContextSpecCondition OptionalTermination { get; set; }
 
         public IList<ContextSpecConditionFilter> OptionalInit { get; }
-        
+
         public MultiKeyClassRef MultiKeyClassRef { get; set; }
 
         public CodegenExpression MakeCodegen(
@@ -60,7 +60,10 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
             method.Block
                 .DeclareVar<ContextControllerDetailKeyed>("detail", NewInstance(typeof(ContextControllerDetailKeyed)))
                 .SetProperty(Ref("detail"), "Items", Ref("items"))
-                .SetProperty(Ref("detail"), "MultiKeyFromObjectArray", MultiKeyCodegen.CodegenMultiKeyFromArrayTransform(MultiKeyClassRef, method, classScope));
+                .SetProperty(
+                    Ref("detail"),
+                    "MultiKeyFromObjectArray",
+                    MultiKeyCodegen.CodegenMultiKeyFromArrayTransform(MultiKeyClassRef, method, classScope));
 
             if (OptionalInit != null && !OptionalInit.IsEmpty()) {
                 method.Block.DeclareVar<ContextConditionDescriptorFilter[]>(

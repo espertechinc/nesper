@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -22,7 +22,7 @@ using NEsper.Avro.Extensions;
 using NEsper.Avro.Util.Support;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static NEsper.Avro.Core.AvroConstant;
 using static NEsper.Avro.Extensions.TypeBuilder;
 
@@ -35,14 +35,14 @@ namespace NEsper.Avro.Core
         {
             var lvl2Schema = SchemaBuilder.Record(
                 "lvl2Schema",
-                Field("nestedValue", StringType(Property(PROP_STRING_KEY, PROP_STRING_VALUE))),
-                Field("nestedIndexed", Array(IntType())),
-                Field("nestedMapped", Map(StringType(Property(PROP_STRING_KEY, PROP_STRING_VALUE)))));
+                Field("NestedValue", StringType(Property(PROP_STRING_KEY, PROP_STRING_VALUE))),
+                Field("NestedIndexed", Array(IntType())),
+                Field("NestedMapped", Map(StringType(Property(PROP_STRING_KEY, PROP_STRING_VALUE)))));
 
             var lvl1Schema = SchemaBuilder.Record(
                 "lvl1Schema",
                 Field("lvl2", lvl2Schema),
-                RequiredInt("intPrimitive"),
+                RequiredInt("IntPrimitive"),
                 Field("indexed", Array(IntType())),
                 Field("mapped", Map(StringType(Property(PROP_STRING_KEY, PROP_STRING_VALUE)))));
 
@@ -59,35 +59,37 @@ namespace NEsper.Avro.Core
             AssertPropertyType(typeof(int), null, eventType, "myInt");
             AssertPropertyType(typeof(int?), null, eventType, "myIntBoxed");
             AssertPropertyType(typeof(string), typeof(char), eventType, "myString");
-            AssertPropertyType(null, null, eventType, "myNullValue");
+            AssertPropertyType(typeof(object), null, eventType, "myNullValue");
             AssertPropertyType(typeof(GenericRecord), null, eventType, "lvl1");
-            AssertPropertyType(typeof(int), null, eventType, "lvl1.intPrimitive");
-            AssertPropertyType(typeof(string), typeof(char), eventType, "lvl1.lvl2.nestedValue");
+            AssertPropertyType(typeof(int), null, eventType, "lvl1.IntPrimitive");
+            AssertPropertyType(typeof(string), typeof(char), eventType, "lvl1.lvl2.NestedValue");
             AssertPropertyType(typeof(int), null, eventType, "lvl1.indexed[1]");
             AssertPropertyType(typeof(string), typeof(char), eventType, "lvl1.mapped('a')");
-            AssertPropertyType(typeof(string), typeof(char), eventType, "lvl1.lvl2.nestedMapped('a')");
-            AssertPropertyType(typeof(int), null, eventType, "lvl1.lvl2.nestedIndexed[1]");
+            AssertPropertyType(typeof(string), typeof(char), eventType, "lvl1.lvl2.NestedMapped('a')");
+            AssertPropertyType(typeof(int), null, eventType, "lvl1.lvl2.NestedIndexed[1]");
 
             AssertNotAProperty(eventType, "dummy");
             AssertNotAProperty(eventType, "lvl1.dfgdg");
-            AssertNotAProperty(eventType, "xxx.intPrimitive");
-            AssertNotAProperty(eventType, "lvl1.lvl2.nestedValueXXX");
+            AssertNotAProperty(eventType, "xxx.IntPrimitive");
+            AssertNotAProperty(eventType, "lvl1.lvl2.NestedValueXXX");
             AssertNotAProperty(eventType, "myInt[1]");
-            AssertNotAProperty(eventType, "lvl1.intPrimitive[1]");
+            AssertNotAProperty(eventType, "lvl1.IntPrimitive[1]");
             AssertNotAProperty(eventType, "myInt('a')");
-            AssertNotAProperty(eventType, "lvl1.intPrimitive('a')");
-            AssertNotAProperty(eventType, "lvl1.lvl2.nestedIndexed('a')");
-            AssertNotAProperty(eventType, "lvl1.lvl2.nestedMapped[1]");
+            AssertNotAProperty(eventType, "lvl1.IntPrimitive('a')");
+            AssertNotAProperty(eventType, "lvl1.lvl2.NestedIndexed('a')");
+            AssertNotAProperty(eventType, "lvl1.lvl2.NestedMapped[1]");
 
             var lvl2Rec = new GenericRecord(lvl2Schema);
-            lvl2Rec.Put("nestedValue", 100);
-            lvl2Rec.Put("nestedIndexed", Collections.List(19, 21));
-            lvl2Rec.Put("nestedMapped", Collections.SingletonDataMap("nestedkey", "nestedvalue"));
+            lvl2Rec.Put("NestedValue", 100);
+            lvl2Rec.Put("NestedIndexed", Collections.List(19, 21));
+            lvl2Rec.Put("NestedMapped", Collections.SingletonDataMap("Nestedkey", "Nestedvalue"));
+            
             var lvl1Rec = new GenericRecord(lvl1Schema);
             lvl1Rec.Put("lvl2", lvl2Rec);
-            lvl1Rec.Put("intPrimitive", 10);
+            lvl1Rec.Put("IntPrimitive", 10);
             lvl1Rec.Put("indexed", Collections.List(1, 2, 3));
             lvl1Rec.Put("mapped", Collections.SingletonDataMap("key", "value"));
+            
             var record = new GenericRecord(schema);
             record.Put("lvl1", lvl1Rec);
             record.Put("myInt", 99);
@@ -96,17 +98,17 @@ namespace NEsper.Avro.Core
             record.Put("myNullValue", null);
 
             var eventBean = new AvroGenericDataEventBean(record, eventType);
-            Assert.AreEqual(99, eventBean.Get("myInt"));
-            Assert.AreEqual(554, eventBean.Get("myIntBoxed"));
-            Assert.AreEqual("hugo", eventBean.Get("myString"));
-            Assert.AreEqual(lvl1Rec, eventBean.Get("lvl1"));
-            Assert.AreEqual(10, eventBean.Get("lvl1.intPrimitive"));
-            Assert.AreEqual(100, eventBean.Get("lvl1.lvl2.nestedValue"));
-            Assert.AreEqual(2, eventBean.Get("lvl1.indexed[1]"));
-            Assert.AreEqual("value", eventBean.Get("lvl1.mapped('key')"));
-            Assert.AreEqual(null, eventBean.Get("myNullValue"));
-            Assert.AreEqual("nestedvalue", eventBean.Get("lvl1.lvl2.nestedMapped('nestedkey')"));
-            Assert.AreEqual(21, eventBean.Get("lvl1.lvl2.nestedIndexed[1]"));
+            ClassicAssert.AreEqual(99, eventBean.Get("myInt"));
+            ClassicAssert.AreEqual(554, eventBean.Get("myIntBoxed"));
+            ClassicAssert.AreEqual("hugo", eventBean.Get("myString"));
+            ClassicAssert.AreEqual(lvl1Rec, eventBean.Get("lvl1"));
+            ClassicAssert.AreEqual(10, eventBean.Get("lvl1.IntPrimitive"));
+            ClassicAssert.AreEqual(100, eventBean.Get("lvl1.lvl2.NestedValue"));
+            ClassicAssert.AreEqual(2, eventBean.Get("lvl1.indexed[1]"));
+            ClassicAssert.AreEqual("value", eventBean.Get("lvl1.mapped('key')"));
+            ClassicAssert.AreEqual(null, eventBean.Get("myNullValue"));
+            ClassicAssert.AreEqual("Nestedvalue", eventBean.Get("lvl1.lvl2.NestedMapped('Nestedkey')"));
+            ClassicAssert.AreEqual(21, eventBean.Get("lvl1.lvl2.NestedIndexed[1]"));
         }
 
         [Test]
@@ -126,19 +128,19 @@ namespace NEsper.Avro.Core
             var propNames = "myInt,myCharSeq,myString,myBoolean,myBytes,myDouble,myFloat,myLong".SplitCsv();
             EventType eventType = SupportAvroUtil.MakeAvroSupportEventType(schema);
             EPAssertionUtil.AssertEqualsExactOrder(eventType.PropertyNames, propNames);
-            Assert.AreEqual(typeof(GenericRecord), eventType.UnderlyingType);
-            Assert.IsNull(eventType.SuperTypes);
+            ClassicAssert.AreEqual(typeof(GenericRecord), eventType.UnderlyingType);
+            ClassicAssert.IsNull(eventType.SuperTypes);
 
             AssertPropertyType(typeof(int), null, eventType, "myInt");
             AssertPropertyType(typeof(string), typeof(char), eventType, "myString");
             AssertPropertyType(typeof(bool), null, eventType, "myBoolean");
-            AssertPropertyType(typeof(byte[]), null, eventType, "myBytes");
+            AssertPropertyType(typeof(byte[]), typeof(byte), eventType, "myBytes");
             AssertPropertyType(typeof(double), null, eventType, "myDouble");
             AssertPropertyType(typeof(float), null, eventType, "myFloat");
             AssertPropertyType(typeof(long), null, eventType, "myLong");
 
             foreach (var propName in propNames) {
-                Assert.IsTrue(eventType.IsProperty(propName));
+                ClassicAssert.IsTrue(eventType.IsProperty(propName));
             }
 
             var datum = GetRecordWithValues(schema);
@@ -196,7 +198,7 @@ namespace NEsper.Avro.Core
                              "      'name' : 'innerEventTypeName'," +
                              "      'fields' : [ {" +
                              "        'name' : 'innerValue'," +
-                             "        'type' : {'type':'string','avro.string':'String'}" +
+                             "        'type' : {'type':'string','avro.string':'System.String'}" +
                              "      } ]" +
                              "    }" +
                              "  }]" +
@@ -209,7 +211,7 @@ namespace NEsper.Avro.Core
 
             var propNames = "innerEvent".SplitCsv();
             EPAssertionUtil.AssertEqualsExactOrder(eventType.PropertyNames, propNames);
-            Assert.IsTrue(eventType.IsProperty("innerEvent"));
+            ClassicAssert.IsTrue(eventType.IsProperty("innerEvent"));
 
             var datumInner = new GenericRecord(schema.GetField("innerEvent").Schema.AsRecordSchema());
             datumInner.Put("innerValue", "i1");
@@ -234,10 +236,10 @@ namespace NEsper.Avro.Core
             AssertPropertyType(typeof(int[]), typeof(int), eventType, "intArray");
 
             Consumer<EventBean> asserter = eventBean => {
-                    Assert.AreEqual(1, eventBean.Get("intArray[0]"));
-                    Assert.AreEqual(2, eventBean.Get("intArray[1]"));
-                    Assert.AreEqual(1, eventType.GetGetter("intArray[0]").Get(eventBean));
-                    Assert.AreEqual(2, eventType.GetGetter("intArray[1]").Get(eventBean));
+                    ClassicAssert.AreEqual(1, eventBean.Get("intArray[0]"));
+                    ClassicAssert.AreEqual(2, eventBean.Get("intArray[1]"));
+                    ClassicAssert.AreEqual(1, eventType.GetGetter("intArray[0]").Get(eventBean));
+                    ClassicAssert.AreEqual(2, eventType.GetGetter("intArray[1]").Get(eventBean));
                 };
 
             var datum = new GenericRecord(schema);
@@ -266,8 +268,8 @@ namespace NEsper.Avro.Core
             AssertPropertyType(typeof(IDictionary<string, string>), typeof(string), eventType, "anMap");
 
             Consumer<EventBean> asserter = eventBean => {
-                Assert.AreEqual("myValue", eventBean.Get("anMap('myKey')"));
-                Assert.AreEqual("myValue", eventType.GetGetter("anMap('myKey')").Get(eventBean));
+                ClassicAssert.AreEqual("myValue", eventBean.Get("anMap('myKey')"));
+                ClassicAssert.AreEqual("myValue", eventType.GetGetter("anMap('myKey')").Get(eventBean));
             };
 
             var datum = new GenericRecord(schema);
@@ -297,7 +299,7 @@ namespace NEsper.Avro.Core
 
             Consumer<EventBean> asserter = eventBean => {
                     var @fixed = (GenericFixed) eventBean.Get("aFixed");
-                    Assert.IsTrue(Arrays.AreEqual(@fixed.Bytes, new byte[] {1, 2}));
+                    ClassicAssert.IsTrue(Arrays.AreEqual(@fixed.Bytes, new byte[] {1, 2}));
                 };
 
             var datum = new GenericRecord(schema);
@@ -330,7 +332,7 @@ namespace NEsper.Avro.Core
 
             Consumer<EventBean> asserter = eventBean => {
                 GenericEnum v = (GenericEnum) eventBean.Get("aEnum");
-                Assert.AreEqual("b", v.ToString());
+                ClassicAssert.AreEqual("b", v.ToString());
             };
 
             var datum = new GenericRecord(schema);
@@ -362,7 +364,7 @@ namespace NEsper.Avro.Core
             Consumer<Object> asserterFromDatum = (value) => {
                 var datum = new GenericRecord(schema);
                 datum.Put("anUnion", value);
-                Assert.AreEqual(value, new AvroGenericDataEventBean(datum, eventType).Get("anUnion"));
+                ClassicAssert.AreEqual(value, new AvroGenericDataEventBean(datum, eventType).Get("anUnion"));
             };
             
             asserterFromDatum.Invoke("a");
@@ -373,7 +375,7 @@ namespace NEsper.Avro.Core
                     json,
                     value) => {
                     var datum = SupportAvroUtil.ParseQuoted(schema, json);
-                    Assert.AreEqual(value, new AvroGenericDataEventBean(datum, eventType).Get("anUnion"));
+                    ClassicAssert.AreEqual(value, new AvroGenericDataEventBean(datum, eventType).Get("anUnion"));
                 }
                 ;
             asserterFromJson.Invoke("{'anUnion':{'int':1}}", 1);
@@ -395,7 +397,7 @@ namespace NEsper.Avro.Core
             Consumer<Object> asserterFromDatum = (value) => {
                 var datum = new GenericRecord(schema);
                 datum.Put("anUnion", value);
-                Assert.AreEqual(value, new AvroGenericDataEventBean(datum, eventType).Get("anUnion"));
+                ClassicAssert.AreEqual(value, new AvroGenericDataEventBean(datum, eventType).Get("anUnion"));
             };
 
             asserterFromDatum.Invoke(1);
@@ -405,7 +407,7 @@ namespace NEsper.Avro.Core
                 json,
                 value) => {
                 var datum = SupportAvroUtil.ParseQuoted(schema, json);
-                Assert.AreEqual(value, new AvroGenericDataEventBean(datum, eventType).Get("anUnion"));
+                ClassicAssert.AreEqual(value, new AvroGenericDataEventBean(datum, eventType).Get("anUnion"));
             };
 
             asserterFromJson.Invoke("{'anUnion':{'int':1}}", 1);
@@ -416,11 +418,11 @@ namespace NEsper.Avro.Core
             GenericRecord datum,
             AvroGenericDataEventBean bean)
         {
-            Assert.AreEqual("i1", bean.Get("innerEvent.innerValue"));
-            Assert.AreEqual("i1", bean.EventType.GetGetter("innerEvent.innerValue").Get(bean));
+            ClassicAssert.AreEqual("i1", bean.Get("innerEvent.innerValue"));
+            ClassicAssert.AreEqual("i1", bean.EventType.GetGetter("innerEvent.innerValue").Get(bean));
 
-            Assert.AreSame(datum.Get("innerEvent"), bean.Get("innerEvent"));
-            Assert.AreSame(datum.Get("innerEvent"), bean.EventType.GetGetter("innerEvent").Get(bean));
+            ClassicAssert.AreSame(datum.Get("innerEvent"), bean.Get("innerEvent"));
+            ClassicAssert.AreSame(datum.Get("innerEvent"), bean.EventType.GetGetter("innerEvent").Get(bean));
         }
 
         private void RunAssertionNullableOrOptTypes(RecordSchema schema)
@@ -486,9 +488,9 @@ namespace NEsper.Avro.Core
                 AreEqualsBytes((byte[]) expected, (byte[]) getter.Get(bean));
             }
             else {
-                Assert.AreEqual(expected, bean.Get(propertyName));
+                ClassicAssert.AreEqual(expected, bean.Get(propertyName));
                 var getter = bean.EventType.GetGetter(propertyName);
-                Assert.AreEqual(expected, getter.Get(bean));
+                ClassicAssert.AreEqual(expected, getter.Get(bean));
             }
         }
 
@@ -498,13 +500,13 @@ namespace NEsper.Avro.Core
             EventType eventType,
             String propertyName)
         {
-            Assert.AreEqual(expectedType, eventType.GetPropertyType(propertyName));
-            Assert.IsTrue(eventType.IsProperty(propertyName));
+            ClassicAssert.AreEqual(expectedType, eventType.GetPropertyType(propertyName));
+            ClassicAssert.IsTrue(eventType.IsProperty(propertyName));
 
             if (!propertyName.Contains(".")) {
                 var descriptor = eventType.GetPropertyDescriptor(propertyName);
-                Assert.AreEqual(expectedType, descriptor.PropertyType);
-                Assert.AreEqual(expectedComponentType, descriptor.PropertyComponentType);
+                ClassicAssert.AreEqual(expectedType, descriptor.PropertyType);
+                ClassicAssert.AreEqual(expectedComponentType, descriptor.PropertyComponentType);
             }
         }
 
@@ -533,7 +535,7 @@ namespace NEsper.Avro.Core
             AssertPropertyType(typeof(int?), null, eventType, "myInt");
             AssertPropertyType(typeof(string), typeof(char), eventType, "myString");
             AssertPropertyType(typeof(bool?), null, eventType, "myBoolean");
-            AssertPropertyType(typeof(byte[]), null, eventType, "myBytes");
+            AssertPropertyType(typeof(byte[]), typeof(byte), eventType, "myBytes");
             AssertPropertyType(typeof(double?), null, eventType, "myDouble");
             AssertPropertyType(typeof(float?), null, eventType, "myFloat");
             AssertPropertyType(typeof(long?), null, eventType, "myLong");
@@ -543,10 +545,10 @@ namespace NEsper.Avro.Core
             EventType type,
             String propertyName)
         {
-            Assert.IsFalse(type.IsProperty(propertyName));
-            Assert.IsNull(type.GetPropertyType(propertyName));
-            Assert.IsNull(type.GetGetter(propertyName));
-            Assert.IsNull(type.GetPropertyDescriptor(propertyName));
+            ClassicAssert.IsFalse(type.IsProperty(propertyName));
+            ClassicAssert.IsNull(type.GetPropertyType(propertyName));
+            ClassicAssert.IsNull(type.GetGetter(propertyName));
+            ClassicAssert.IsNull(type.GetPropertyDescriptor(propertyName));
         }
     }
 }

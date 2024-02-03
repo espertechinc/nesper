@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -28,10 +28,10 @@ namespace com.espertech.esper.common.@internal.context.activator
 {
     public class ViewableActivatorPatternForge : ViewableActivatorForge
     {
-        private readonly EventType _eventType;
-        private readonly bool _isCanIterate;
-        private readonly PatternContext _patternContext;
-        private readonly PatternStreamSpecCompiled _spec;
+        private readonly EventType eventType;
+        private readonly PatternStreamSpecCompiled spec;
+        private readonly PatternContext patternContext;
+        private readonly bool isCanIterate;
 
         public ViewableActivatorPatternForge(
             EventType eventType,
@@ -39,10 +39,10 @@ namespace com.espertech.esper.common.@internal.context.activator
             PatternContext patternContext,
             bool isCanIterate)
         {
-            _eventType = eventType;
-            _spec = spec;
-            _patternContext = patternContext;
-            _isCanIterate = isCanIterate;
+            this.eventType = eventType;
+            this.spec = spec;
+            this.patternContext = patternContext;
+            this.isCanIterate = isCanIterate;
         }
 
         public CodegenExpression MakeCodegen(
@@ -52,7 +52,7 @@ namespace com.espertech.esper.common.@internal.context.activator
         {
             var method = parent.MakeChild(typeof(ViewableActivator), typeof(ViewableActivatorPatternForge), classScope);
 
-            var childCode = _spec.Root.MakeCodegen(method, symbols, classScope);
+            var childCode = spec.Root.MakeCodegen(method, symbols, classScope);
             method.Block
                 .DeclareVar<EvalRootFactoryNode>("root", LocalMethod(childCode))
                 .DeclareVar<ViewableActivatorPattern>(
@@ -68,28 +68,32 @@ namespace com.espertech.esper.common.@internal.context.activator
                         .Get(EPStatementInitServicesConstants.EVENTBEANTYPEDEVENTFACTORY))
                 .DeclareVar<EventType>(
                     "eventType",
-                    EventTypeUtility.ResolveTypeCodegen(_eventType, symbols.GetAddInitSvc(method)))
+                    EventTypeUtility.ResolveTypeCodegen(eventType, symbols.GetAddInitSvc(method)))
                 .SetProperty(Ref("activator"), "EventType", Ref("eventType"))
-                .SetProperty(Ref("activator"), "PatternContext", _patternContext.Make(method, symbols, classScope))
-                .SetProperty(Ref("activator"), "HasConsumingFilter", Constant(_spec.IsConsumingFilters))
-                .SetProperty(Ref("activator"), "SuppressSameEventMatches", Constant(_spec.IsSuppressSameEventMatches))
-                .SetProperty(Ref("activator"), "DiscardPartialsOnMatch", Constant(_spec.IsDiscardPartialsOnMatch))
-                .SetProperty(Ref("activator"), "CanIterate", Constant(_isCanIterate))
+                .SetProperty(Ref("activator"), "PatternContext", patternContext.Make(method, symbols, classScope))
+                .SetProperty(Ref("activator"), "HasConsumingFilter", Constant(spec.IsConsumingFilters))
+                .SetProperty(
+                    Ref("activator"),
+                    "SuppressSameEventMatches",
+                    Constant(spec.IsSuppressSameEventMatches))
+                .SetProperty(Ref("activator"), "DiscardPartialsOnMatch", Constant(spec.IsDiscardPartialsOnMatch))
+                .SetProperty(Ref("activator"), "CanIterate", Constant(isCanIterate))
                 .MethodReturn(Ref("activator"));
 
             return LocalMethod(method);
         }
 
         public static MapEventType MakeRegisterPatternType(
-            StatementBaseInfo @base,
+            string moduleName,
             int stream,
+            ISet<string> onlyIncludeTheseTags,
             PatternStreamSpecCompiled patternStreamSpec,
             StatementCompileTimeServices services)
         {
             var patternEventTypeName = services.EventTypeNameGeneratorStatement.GetPatternTypeName(stream);
             var metadata = new EventTypeMetadata(
                 patternEventTypeName,
-                @base.ModuleName,
+                moduleName,
                 EventTypeTypeClass.STREAM,
                 EventTypeApplicationType.MAP,
                 NameAccessModifier.PRIVATE,
@@ -98,11 +102,19 @@ namespace com.espertech.esper.common.@internal.context.activator
                 EventTypeIdPair.Unassigned());
             IDictionary<string, object> propertyTypes = new LinkedHashMap<string, object>();
             foreach (var entry in patternStreamSpec.TaggedEventTypes) {
+                if (onlyIncludeTheseTags != null && !onlyIncludeTheseTags.Contains(entry.Key)) {
+                    continue;
+                }
+
                 propertyTypes.Put(entry.Key, entry.Value.First);
             }
 
             foreach (var entry in patternStreamSpec.ArrayEventTypes) {
-                propertyTypes.Put(entry.Key, new[] {entry.Value.First});
+                if (onlyIncludeTheseTags != null && !onlyIncludeTheseTags.Contains(entry.Key)) {
+                    continue;
+                }
+
+                propertyTypes.Put(entry.Key, new EventType[] { entry.Value.First });
             }
 
             var patternType = BaseNestableEventUtil.MakeMapTypeCompileTime(

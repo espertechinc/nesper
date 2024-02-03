@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -22,7 +22,7 @@ using NEsper.Examples.StockTicker.monitor;
 using NEsper.Examples.Support;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using Configuration = com.espertech.esper.common.client.configuration.Configuration;
 
 namespace NEsper.Examples.StockTicker
@@ -101,7 +101,7 @@ namespace NEsper.Examples.StockTicker
 
             // Check results : make sure the given ratio of out-of-limit stock prices was reported
             var expectedNumEmitted = numberOfTicksToSend / ratioPriceOutOfLimit + 1;
-            Assert.IsTrue(_listener.Count == expectedNumEmitted);
+            ClassicAssert.IsTrue(_listener.Count == expectedNumEmitted);
 
             Log.Info(".performTest Done test");
         }

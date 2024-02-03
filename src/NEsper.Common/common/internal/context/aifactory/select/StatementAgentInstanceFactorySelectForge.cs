@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
+using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.context.activator;
 using com.espertech.esper.common.@internal.context.aifactory.core;
@@ -16,6 +17,7 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.subquery;
 using com.espertech.esper.common.@internal.epl.expression.table;
 using com.espertech.esper.common.@internal.epl.join.@base;
+using com.espertech.esper.common.@internal.epl.output.core;
 using com.espertech.esper.common.@internal.epl.subselect;
 using com.espertech.esper.common.@internal.epl.table.strategy;
 using com.espertech.esper.common.@internal.view.access;
@@ -30,11 +32,12 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
     public class StatementAgentInstanceFactorySelectForge : StatementAgentInstanceFactoryForge
     {
         private const string RSPFACTORYPROVIDER = "rspFactoryProvider";
-        private const string OPVFACTORYPROVIDER = "opvFactoryProvider";
+        private const string STATEMENTFIELDS = "statementFields";
 
         private readonly JoinSetComposerPrototypeForge _joinSetComposerPrototypeForge;
         private readonly bool _orderByWithoutOutputRateLimit;
         private readonly string _outputProcessViewProviderClassName;
+        private readonly bool _outputProcessViewDirectSimple;
         private readonly string _resultSetProcessorProviderClassName;
 
         private readonly string[] _streamNames;
@@ -55,6 +58,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
             ExprForge whereClauseForge,
             JoinSetComposerPrototypeForge joinSetComposerPrototypeForge,
             string outputProcessViewProviderClassName,
+            bool outputProcessViewDirectSimple,
             IDictionary<ExprSubselectNode, SubSelectFactoryForge> subselects,
             IDictionary<ExprTableAccessNode, ExprTableEvalStrategyFactoryForge> tableAccesses,
             bool orderByWithoutOutputRateLimit,
@@ -68,6 +72,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
             _whereClauseForge = whereClauseForge;
             _joinSetComposerPrototypeForge = joinSetComposerPrototypeForge;
             _outputProcessViewProviderClassName = outputProcessViewProviderClassName;
+            _outputProcessViewDirectSimple = outputProcessViewDirectSimple;
             _subselects = subselects;
             _tableAccesses = tableAccesses;
             _orderByWithoutOutputRateLimit = orderByWithoutOutputRateLimit;
@@ -81,9 +86,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
         {
             var method = parent.MakeChild(typeof(StatementAgentInstanceFactorySelect), GetType(), classScope);
             method.Block
-                .DeclareVar<StatementAgentInstanceFactorySelect>(
-                    "saiff",
-                    NewInstance(typeof(StatementAgentInstanceFactorySelect)));
+                .DeclareVarNewInstance(typeof(StatementAgentInstanceFactorySelect), "saiff");
 
             // stream names
             method.Block.SetProperty(Ref("saiff"), "StreamNames", Constant(_streamNames));
@@ -102,44 +105,47 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
             method.Block.SetProperty(Ref("saiff"), "ViewableActivators", Ref("activators"));
 
             // views
-            method.Block.DeclareVar<ViewFactory[][]>(
-                "viewFactories",
-                NewArrayByLength(typeof(ViewFactory[]), Constant(_views.Length)));
-            for (var i = 0; i < _views.Length; i++) {
-                if (_views[i] != null) {
-                    var array = ViewFactoryForgeUtil.CodegenForgesWInit(
-                        _views[i],
-                        i,
-                        null,
-                        method,
-                        symbols,
-                        classScope);
-                    method.Block.AssignArrayElement("viewFactories", Constant(i), array);
-                }
+            if (_views.Length == 1 && _views[0].IsEmpty()) {
+                method.Block.SetProperty(
+                    Ref("saiff"),
+                    "ViewFactories",
+                    PublicConstValue(typeof(ViewFactory), "SINGLE_ELEMENT_ARRAY"));
             }
+            else {
+                method.Block.DeclareVar<ViewFactory[][]>(
+                    "viewFactories",
+                    NewArrayByLength(typeof(ViewFactory[]), Constant(_views.Length)));
+                for (var i = 0; i < _views.Length; i++) {
+                    if (_views[i] != null) {
+                        var array = ViewFactoryForgeUtil.CodegenForgesWInit(
+                            _views[i],
+                            i,
+                            null,
+                            method,
+                            symbols,
+                            classScope);
+                        method.Block.AssignArrayElement("viewFactories", Constant(i), array);
+                    }
+                }
 
-            method.Block.SetProperty(Ref("saiff"), "ViewFactories", Ref("viewFactories"));
+                method.Block.SetProperty(Ref("saiff"), "ViewFactories", Ref("viewFactories"));
+            }
 
             // view delegate information ('prior' and 'prev')
-            method.Block.DeclareVar<ViewResourceDelegateDesc[]>(
-                "viewResourceDelegates",
-                NewArrayByLength(typeof(ViewResourceDelegateDesc), Constant(_viewResourceDelegates.Length)));
-            for (var i = 0; i < _viewResourceDelegates.Length; i++) {
-                method.Block.AssignArrayElement(
-                    "viewResourceDelegates",
-                    Constant(i),
-                    _viewResourceDelegates[i].ToExpression());
-            }
-
-            method.Block.SetProperty(Ref("saiff"), "ViewResourceDelegates", Ref("viewResourceDelegates"));
+            method.Block.SetProperty(
+                Ref("saiff"),
+                "ViewResourceDelegates",
+                ViewResourceDelegateDesc.ToExpression(_viewResourceDelegates));
 
             // result set processor
-            method.Block.DeclareVar(
+            method.Block
+                .DeclareVar(
                     _resultSetProcessorProviderClassName,
                     RSPFACTORYPROVIDER,
-                    NewInstanceInner(_resultSetProcessorProviderClassName, 
-                        symbols.GetAddInitSvc(method), 
-                        Ref(StmtClassForgeableAIFactoryProviderBase.MEMBERNAME_STATEMENT_FIELDS)))
+                    NewInstanceInner(
+                        _resultSetProcessorProviderClassName,
+                        symbols.GetAddInitSvc(method),
+                        Ref(STATEMENTFIELDS)))
                 .SetProperty(Ref("saiff"), "ResultSetProcessorFactoryProvider", Ref(RSPFACTORYPROVIDER));
 
             // where-clause evaluator
@@ -163,11 +169,19 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
             }
 
             // output process view
-            method.Block.DeclareVar(
+            CodegenExpression opv;
+            if (_outputProcessViewDirectSimple) {
+                opv = PublicConstValue(typeof(OutputProcessViewDirectSimpleFactoryProvider), "INSTANCE");
+            }
+            else {
+                opv = NewInstanceInner(
                     _outputProcessViewProviderClassName,
-                    OPVFACTORYPROVIDER,
-                    NewInstanceInner(_outputProcessViewProviderClassName, symbols.GetAddInitSvc(method), Ref("statementFields")))
-                .SetProperty(Ref("saiff"), "OutputProcessViewFactoryProvider", Ref(OPVFACTORYPROVIDER));
+                    symbols.GetAddInitSvc(method),
+                    Ref(StmtClassForgeableStmtProvider.MEMBERNAME_STATEMENT_FIELDS)
+                );
+            }
+
+            method.Block.SetProperty(Ref("saiff"), "OutputProcessViewFactoryProvider", opv);
 
             // subselects
             if (!_subselects.IsEmpty()) {
@@ -186,13 +200,18 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
             }
 
             // order-by with no output-limit
-            method.Block.SetProperty(
-                Ref("saiff"),
-                "OrderByWithoutOutputRateLimit",
-                Constant(_orderByWithoutOutputRateLimit));
+            if (_orderByWithoutOutputRateLimit) {
+                method.Block.SetProperty(
+                    Ref("saiff"),
+                    "OrderByWithoutOutputRateLimit",
+                    Constant(_orderByWithoutOutputRateLimit));
+            }
 
             // unidirectional join
-            method.Block.SetProperty(Ref("saiff"), "IsUnidirectionalJoin", Constant(_unidirectionalJoin));
+            if (_unidirectionalJoin) {
+                method.Block.SetProperty(Ref("saiff"), "UnidirectionalJoin", Constant(_unidirectionalJoin));
+            }
+
             method.Block.MethodReturn(Ref("saiff"));
 
             return method;

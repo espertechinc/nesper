@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -17,8 +17,6 @@ namespace com.espertech.esper.common.@internal.context.activator
 {
     public class ViewableActivatorFilter : ViewableActivator
     {
-        public IContainer Container { get; set; }
-
         public FilterSpecActivatable FilterSpec { get; set; }
 
         public bool CanIterate { get; set; }
@@ -58,7 +56,7 @@ namespace com.espertech.esper.common.@internal.context.activator
                     !agentInstanceContext.InstrumentationProvider.Activated()) {
                     theStream = CanIterate
                         ? new ZeroDepthStreamIterable(FilterSpec.ResultEventType)
-                        : (EventStream) new ZeroDepthStreamNoIterate(FilterSpec.ResultEventType);
+                        : (EventStream)new ZeroDepthStreamNoIterate(FilterSpec.ResultEventType);
                 }
                 else {
                     var streamNum = StreamNumFromClause ?? -1;
@@ -70,7 +68,7 @@ namespace com.espertech.esper.common.@internal.context.activator
                             streamNum,
                             isSubselect,
                             SubselectNumber)
-                        : (EventStream) new ZeroDepthStreamNoIterateWAudit(
+                        : (EventStream)new ZeroDepthStreamNoIterateWAudit(
                             FilterSpec.ResultEventType,
                             agentInstanceContext,
                             FilterSpec,
@@ -120,7 +118,11 @@ namespace com.espertech.esper.common.@internal.context.activator
                         filterHandle);
             }
 
-            ViewableActivatorFilterMgmtCallback stopCallback = new ViewableActivatorFilterMgmtCallback(Container, filterHandle, FilterSpec);
+            var stopCallback = new ViewableActivatorFilterMgmtCallback(
+                agentInstanceContext.StatementContext.Container,
+                filterHandle,
+                FilterSpec);
+            
             return new ViewableActivationResult(theStream, stopCallback, null, false, false, null, null, null);
         }
     }

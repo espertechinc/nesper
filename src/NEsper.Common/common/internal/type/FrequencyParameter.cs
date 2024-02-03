@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -15,7 +15,6 @@ namespace com.espertech.esper.common.@internal.type
     /// <summary>
     /// Encapsulates a parameter specifying a frequency, i.e. '* / 5'.
     /// </summary>
-    [Serializable]
     public class FrequencyParameter : NumberSetParameter
     {
         private readonly int _frequency;
@@ -23,9 +22,7 @@ namespace com.espertech.esper.common.@internal.type
         /// <summary> Returns frequency.</summary>
         /// <returns> frequency divisor
         /// </returns>
-        public int Frequency {
-            get { return _frequency; }
-        }
+        public int Frequency => _frequency;
 
         /// <summary> Ctor.</summary>
         /// <param name="frequency">divisor specifying frequency
@@ -68,7 +65,7 @@ namespace com.espertech.esper.common.@internal.type
             int max)
         {
             ICollection<int> values = new HashSet<int>();
-            int start = min - min % _frequency;
+            var start = min - min % _frequency;
 
             do {
                 if (start >= min) {
@@ -89,7 +86,7 @@ namespace com.espertech.esper.common.@internal.type
 
         public string Formatted()
         {
-            return "*/" + _frequency;
+            return $"*/{_frequency}";
         }
     }
 }

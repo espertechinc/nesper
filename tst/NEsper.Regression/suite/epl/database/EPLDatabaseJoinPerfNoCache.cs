@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -7,18 +7,25 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
-using com.espertech.esper.common.client.scopetest;
+using System.Collections.Generic;
+using System.Globalization;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.epl.database
 {
     public class EPLDatabaseJoinPerfNoCache : RegressionExecution
     {
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.PERFORMANCE);
+        }
+
         public void Run(RegressionEnvironment env)
         {
             RunAssertion100EventsRetained(env, "MyDBWithRetain");
@@ -50,11 +57,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
             RegressionEnvironment env,
             string dbname)
         {
-            var stmtText = "@Name('s0') select rstream myvarchar from " +
-                           "SupportBean_S0#length(1000) as S0," +
+            var stmtText = "@name('s0') select rstream myvarchar from " +
+                           "SupportBean_S0#length(1000) as s0," +
                            " sql:" +
                            dbname +
-                           "['select myvarchar from mytesttable where ${Id} = mytesttable.myBigint'] as S1";
+                           "['select myvarchar from mytesttable where ${Id} = mytesttable.mybigint'] as s1";
             env.CompileDeploy(stmtText).AddListener("s0");
 
             // 1000 events should enter the window fast, no joins
@@ -62,17 +69,17 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
             for (var i = 0; i < 1000; i++) {
                 var beanX = new SupportBean_S0(10);
                 env.SendEventBean(beanX);
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+                env.AssertListenerNotInvoked("s0");
             }
 
             var endTime = PerformanceObserver.MilliTime;
             var delta = endTime - startTime;
-            Assert.IsTrue(endTime - startTime < 1000, "delta=" + delta);
+            Assert.That(endTime - startTime, Is.LessThan(1000), "delta=" + delta);
 
             // 1001st event should finally join and produce a result
             var bean = new SupportBean_S0(10);
             env.SendEventBean(bean);
-            Assert.AreEqual("J", env.Listener("s0").AssertOneGetNewAndReset().Get("myvarchar"));
+            env.AssertEqualsNew("s0", "myvarchar", "J");
 
             env.UndeployAll();
         }
@@ -84,18 +91,18 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
             // set time to zero
             env.AdvanceTime(0);
 
-            var stmtText = "@Name('s0') select istream myvarchar from " +
-                           "SupportBean_S0#time(1 sec) as S0," +
+            var stmtText = "@name('s0') select istream myvarchar from " +
+                           "SupportBean_S0#time(1 sec) as s0," +
                            " sql:" +
                            dbname +
-                           " ['select myvarchar from mytesttable where ${Id} = mytesttable.myBigint'] as S1";
+                           " ['select myvarchar from mytesttable where ${Id} = mytesttable.mybigint'] as s1";
             env.CompileDeploy(stmtText).AddListener("s0");
 
             // Send 100 events which all fireStatementStopped a join
             for (var i = 0; i < 100; i++) {
                 var bean = new SupportBean_S0(5);
                 env.SendEventBean(bean);
-                Assert.AreEqual("E", env.Listener("s0").AssertOneGetNewAndReset().Get("myvarchar"));
+                env.AssertEqualsNew("s0", "myvarchar", "E");
             }
 
             // now advance the time, this should not produce events or join
@@ -104,8 +111,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
             var endTime = PerformanceObserver.MilliTime;
 
             // log.info(".testSelectIStream delta=" + (endTime - startTime));
-            Assert.IsTrue(endTime - startTime < 200);
-            Assert.IsFalse(env.Listener("s0").IsInvoked);
+            ClassicAssert.IsTrue(endTime - startTime < 200);
+            env.AssertListenerNotInvoked("s0");
 
             env.UndeployAll();
         }
@@ -114,22 +121,18 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
             RegressionEnvironment env,
             string dbname)
         {
-            var stmtText = "@Name('s0') select Id, mycol3, mycol2 from " +
-                           "SupportBean_S0#keepall as S0," +
-                           " sql:" +
-                           dbname +
-                           "['select mycol3, mycol2 from mytesttable_large'] as S1 where S0.Id = S1.mycol3";
+            var stmtText =
+                "@name('s0') select Id, mycol3, mycol2 from " +
+                "SupportBean_S0#keepall as s0," +
+                " sql:" + dbname + "['select mycol3, mycol2 from mytesttable_large'] as s1 where s0.Id = s1.mycol3";
             env.CompileDeploy(stmtText).AddListener("s0");
 
             for (var i = 0; i < 20; i++) {
                 var num = i + 1;
-                var col2 = Convert.ToString(Math.Round((float) num / 10));
+                var col2 = Convert.ToString(Math.Round(num / 10.0, MidpointRounding.AwayFromZero), CultureInfo.InvariantCulture);
                 var bean = new SupportBean_S0(num);
                 env.SendEventBean(bean);
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    new[] {"Id", "mycol3", "mycol2"},
-                    new object[] {num, num, col2});
+                env.AssertPropsNew("s0", new string[] { "Id", "mycol3", "mycol2" }, new object[] { num, num, col2 });
             }
 
             env.UndeployAll();
@@ -139,11 +142,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
             RegressionEnvironment env,
             string dbname)
         {
-            var stmtText = "@Name('s0') select myint from " +
-                           "SupportBean_S0 as S0," +
+            var stmtText = "@name('s0') select myint from " +
+                           "SupportBean_S0 as s0," +
                            " sql:" +
                            dbname +
-                           " ['select myint from mytesttable where ${Id} = mytesttable.myBigint'] as S1";
+                           " ['select myint from mytesttable where ${Id} = mytesttable.mybigint'] as s1";
             env.CompileDeploy(stmtText).AddListener("s0");
 
             for (var i = 0; i < 100; i++) {
@@ -152,8 +155,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 var bean = new SupportBean_S0(id);
                 env.SendEventBean(bean);
 
-                var received = env.Listener("s0").AssertOneGetNewAndReset();
-                Assert.AreEqual(id * 10, received.Get("myint"));
+                env.AssertEqualsNew("s0", "myint", id * 10);
             }
 
             env.UndeployAll();

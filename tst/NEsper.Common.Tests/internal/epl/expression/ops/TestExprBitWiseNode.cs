@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -15,6 +15,7 @@ using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.compat.logging;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.epl.expression.ops
 {
@@ -29,34 +30,34 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
         private ExprBitWiseNode _bitWiseNode;
 
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         [Test]
         public void TestEqualsNode()
         {
-            log.Debug(".testEqualsNode");
+            Log.Debug(".testEqualsNode");
             _bitWiseNode = new ExprBitWiseNode(BitWiseOpEnum.BAND);
-            Assert.IsTrue(_bitWiseNode.EqualsNode(_bitWiseNode, false));
-            Assert.IsFalse(_bitWiseNode.EqualsNode(new ExprBitWiseNode(BitWiseOpEnum.BXOR), false));
+            ClassicAssert.IsTrue(_bitWiseNode.EqualsNode(_bitWiseNode, false));
+            ClassicAssert.IsFalse(_bitWiseNode.EqualsNode(new ExprBitWiseNode(BitWiseOpEnum.BXOR), false));
         }
 
         [Test]
         public void TestEvaluate()
         {
-            log.Debug(".testEvaluate");
+            Log.Debug(".testEvaluate");
             _bitWiseNode.AddChildNode(new SupportExprNode(10));
             _bitWiseNode.AddChildNode(new SupportExprNode(12));
             ExprNodeUtilityValidate.GetValidatedSubtree(
                 ExprNodeOrigin.SELECT,
                 _bitWiseNode,
                 SupportExprValidationContextFactory.MakeEmpty(container));
-            Assert.AreEqual(8, _bitWiseNode.Forge.ExprEvaluator.Evaluate(null, false, null));
+            ClassicAssert.AreEqual(8, _bitWiseNode.Forge.ExprEvaluator.Evaluate(null, false, null));
         }
 
         [Test]
         public void TestGetType()
         {
-            log.Debug(".testGetType");
+            Log.Debug(".testGetType");
             _bitWiseNode = new ExprBitWiseNode(BitWiseOpEnum.BAND);
             _bitWiseNode.AddChildNode(new SupportExprNode(typeof(double?)));
             _bitWiseNode.AddChildNode(new SupportExprNode(typeof(int?)));
@@ -77,17 +78,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 ExprNodeOrigin.SELECT,
                 _bitWiseNode,
                 SupportExprValidationContextFactory.MakeEmpty(container));
-            Assert.AreEqual(typeof(long?), _bitWiseNode.Forge.EvaluationType);
+            ClassicAssert.AreEqual(typeof(long?), _bitWiseNode.Forge.EvaluationType);
         }
 
         [Test]
         public void TestToExpressionString()
         {
-            log.Debug(".testToExpressionString");
+            Log.Debug(".testToExpressionString");
             _bitWiseNode = new ExprBitWiseNode(BitWiseOpEnum.BAND);
             _bitWiseNode.AddChildNode(new SupportExprNode(4));
             _bitWiseNode.AddChildNode(new SupportExprNode(2));
-            Assert.AreEqual("4&2", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(_bitWiseNode));
+            ClassicAssert.AreEqual("4&2", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(_bitWiseNode));
         }
 
         [Test]
@@ -102,7 +103,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             catch (ExprValidationException)
             {
                 // Expected
-                log.Debug("No nodes in the expression");
+                Log.Debug("No nodes in the expression");
             }
 
             // Must have only number or boolean-type subnodes

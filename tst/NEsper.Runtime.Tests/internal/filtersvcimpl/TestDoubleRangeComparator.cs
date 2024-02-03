@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -13,13 +13,14 @@ using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.compat.logging;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 {
     [TestFixture]
     public class TestDoubleRangeComparator : AbstractRuntimeTest
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         [Test, RunInApplicationDomain]
         public void TestComparator()
@@ -54,7 +55,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
                 var indexExpected = EXPECTED_INDEX[count];
                 var expected = ranges[indexExpected];
 
-                log.Debug(
+                Log.Debug(
                     ".testComparator count=" +
                     count +
                     " range=" +
@@ -62,11 +63,11 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
                     " expected=" +
                     expected);
 
-                Assert.AreEqual(range, expected);
+                ClassicAssert.AreEqual(range, expected);
                 count++;
             }
 
-            Assert.AreEqual(count, TEST_SET.Length);
+            ClassicAssert.AreEqual(count, TEST_SET.Length);
         }
     }
 } // end of namespace

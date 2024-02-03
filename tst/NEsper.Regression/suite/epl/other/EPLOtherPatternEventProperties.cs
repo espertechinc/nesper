@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -11,7 +11,7 @@ using System.Collections.Generic;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using SupportBean = com.espertech.esper.common.@internal.support.SupportBean;
 using SupportBeanComplexProps = com.espertech.esper.regressionlib.support.bean.SupportBeanComplexProps;
 
@@ -22,10 +22,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
+#if REGRESSION_EXECUTIONS
             WithWildcardSimplePattern(execs);
             WithWildcardOrPattern(execs);
             WithPropertiesSimplePattern(execs);
-            WithPropertiesOrPattern(execs);
+            With(PropertiesOrPattern)(execs);
+#endif
             return execs;
         }
 
@@ -57,26 +59,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             return execs;
         }
 
-        private static void SetupSimplePattern(
-            RegressionEnvironment env,
-            string selectCriteria)
-        {
-            var stmtText = "@Name('s0') select " + selectCriteria + " from pattern [a=SupportBean]";
-            env.CompileDeploy(stmtText).AddListener("s0");
-        }
-
-        private static void SetupOrPattern(
-            RegressionEnvironment env,
-            string selectCriteria)
-        {
-            var stmtText = "@Name('s0') select " +
-                           selectCriteria +
-                           " from pattern [every(a=SupportBean" +
-                           " or b=SupportBeanComplexProps)]";
-            env.CompileDeploy(stmtText).AddListener("s0");
-        }
-
-        internal class EPLOtherWildcardSimplePattern : RegressionExecution
+        private class EPLOtherWildcardSimplePattern : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
@@ -85,92 +68,125 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 object theEvent = new SupportBean();
                 env.SendEventBean(theEvent);
 
-                var eventBean = env.Listener("s0").AssertOneGetNewAndReset();
-                Assert.AreSame(theEvent, eventBean.Get("a"));
+                env.AssertEventNew("s0", @event => ClassicAssert.AreSame(theEvent, @event.Get("a")));
 
                 env.UndeployAll();
             }
         }
 
-        internal class EPLOtherWildcardOrPattern : RegressionExecution
+        private class EPLOtherWildcardOrPattern : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 SetupOrPattern(env, "*");
 
-                object theEvent = new SupportBean();
-                env.SendEventBean(theEvent);
-                var eventBean = env.Listener("s0").AssertOneGetNewAndReset();
-                Assert.AreSame(theEvent, eventBean.Get("a"));
-                Assert.IsNull(eventBean.Get("b"));
+                object eventOne = new SupportBean();
+                env.SendEventBean(eventOne);
+                env.AssertEventNew(
+                    "s0",
+                    eventBean => {
+                        ClassicAssert.AreSame(eventOne, eventBean.Get("a"));
+                        ClassicAssert.IsNull(eventBean.Get("b"));
+                    });
 
-                theEvent = SupportBeanComplexProps.MakeDefaultBean();
-                env.SendEventBean(theEvent);
-                eventBean = env.Listener("s0").AssertOneGetNewAndReset();
-                Assert.AreSame(theEvent, eventBean.Get("b"));
-                Assert.IsNull(eventBean.Get("a"));
+                object eventTwo = SupportBeanComplexProps.MakeDefaultBean();
+                env.SendEventBean(eventTwo);
+                env.AssertEventNew(
+                    "s0",
+                    eventBean => {
+                        ClassicAssert.AreSame(eventTwo, eventBean.Get("b"));
+                        ClassicAssert.IsNull(eventBean.Get("a"));
+                    });
 
                 env.UndeployAll();
             }
         }
 
-        internal class EPLOtherPropertiesSimplePattern : RegressionExecution
+        private class EPLOtherPropertiesSimplePattern : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
-                SetupSimplePattern(env, "a, a as myEvent, a.IntPrimitive as myInt, a.TheString");
+                SetupSimplePattern(env, "a, a as myEvent, a.IntPrimitive as MyInt, a.TheString");
 
                 var theEvent = new SupportBean();
                 theEvent.IntPrimitive = 1;
                 theEvent.TheString = "test";
                 env.SendEventBean(theEvent);
 
-                var eventBean = env.Listener("s0").AssertOneGetNewAndReset();
-                Assert.AreSame(theEvent, eventBean.Get("a"));
-                Assert.AreSame(theEvent, eventBean.Get("myEvent"));
-                Assert.AreEqual(1, eventBean.Get("myInt"));
-                Assert.AreEqual("test", eventBean.Get("a.TheString"));
+                env.AssertEventNew(
+                    "s0",
+                    eventBean => {
+                        ClassicAssert.AreSame(theEvent, eventBean.Get("a"));
+                        ClassicAssert.AreSame(theEvent, eventBean.Get("myEvent"));
+                        ClassicAssert.AreEqual(1, eventBean.Get("MyInt"));
+                        ClassicAssert.AreEqual("test", eventBean.Get("a.TheString"));
+                    });
 
                 env.UndeployAll();
             }
         }
 
-        internal class EPLOtherPropertiesOrPattern : RegressionExecution
+        private class EPLOtherPropertiesOrPattern : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 SetupOrPattern(
                     env,
-                    "a, a as myAEvent, b, b as myBEvent, a.IntPrimitive as myInt, " +
-                    "a.TheString, b.SimpleProperty as simple, b.Indexed[0] as indexed, b.Nested.NestedValue as nestedVal");
+                    "a, a as myAEvent, b, b as myBEvent, a.IntPrimitive as MyInt, " +
+                    "a.TheString, b.SimpleProperty as simple, b.Indexed[0] as Indexed, b.Nested.NestedValue as NestedValue");
 
                 object theEvent = SupportBeanComplexProps.MakeDefaultBean();
                 env.SendEventBean(theEvent);
-                var eventBean = env.Listener("s0").AssertOneGetNewAndReset();
-                Assert.AreSame(theEvent, eventBean.Get("b"));
-                Assert.AreEqual("Simple", eventBean.Get("simple"));
-                Assert.AreEqual(1, eventBean.Get("indexed"));
-                Assert.AreEqual("NestedValue", eventBean.Get("nestedVal"));
-                Assert.IsNull(eventBean.Get("a"));
-                Assert.IsNull(eventBean.Get("myAEvent"));
-                Assert.IsNull(eventBean.Get("myInt"));
-                Assert.IsNull(eventBean.Get("a.TheString"));
+                env.AssertEventNew(
+                    "s0",
+                    eventBean => {
+                        ClassicAssert.AreSame(theEvent, eventBean.Get("b"));
+                        ClassicAssert.AreEqual("Simple", eventBean.Get("simple"));
+                        ClassicAssert.AreEqual(1, eventBean.Get("Indexed"));
+                        ClassicAssert.AreEqual("NestedValue", eventBean.Get("NestedValue"));
+                        ClassicAssert.IsNull(eventBean.Get("a"));
+                        ClassicAssert.IsNull(eventBean.Get("myAEvent"));
+                        ClassicAssert.IsNull(eventBean.Get("MyInt"));
+                        ClassicAssert.IsNull(eventBean.Get("a.TheString"));
+                    });
 
                 var eventTwo = new SupportBean();
                 eventTwo.IntPrimitive = 2;
                 eventTwo.TheString = "test2";
                 env.SendEventBean(eventTwo);
-                eventBean = env.Listener("s0").AssertOneGetNewAndReset();
-                Assert.AreEqual(2, eventBean.Get("myInt"));
-                Assert.AreEqual("test2", eventBean.Get("a.TheString"));
-                Assert.IsNull(eventBean.Get("b"));
-                Assert.IsNull(eventBean.Get("myBEvent"));
-                Assert.IsNull(eventBean.Get("simple"));
-                Assert.IsNull(eventBean.Get("indexed"));
-                Assert.IsNull(eventBean.Get("nestedVal"));
+                env.AssertEventNew(
+                    "s0",
+                    eventBean => {
+                        ClassicAssert.AreEqual(2, eventBean.Get("MyInt"));
+                        ClassicAssert.AreEqual("test2", eventBean.Get("a.TheString"));
+                        ClassicAssert.IsNull(eventBean.Get("b"));
+                        ClassicAssert.IsNull(eventBean.Get("myBEvent"));
+                        ClassicAssert.IsNull(eventBean.Get("simple"));
+                        ClassicAssert.IsNull(eventBean.Get("Indexed"));
+                        ClassicAssert.IsNull(eventBean.Get("NestedValue"));
+                    });
 
                 env.UndeployAll();
             }
+        }
+
+        private static void SetupSimplePattern(
+            RegressionEnvironment env,
+            string selectCriteria)
+        {
+            var stmtText = "@name('s0') select " + selectCriteria + " from pattern [a=SupportBean]";
+            env.CompileDeploy(stmtText).AddListener("s0");
+        }
+
+        private static void SetupOrPattern(
+            RegressionEnvironment env,
+            string selectCriteria)
+        {
+            var stmtText = "@name('s0') select " +
+                           selectCriteria +
+                           " from pattern [every(a=SupportBean" +
+                           " or b=SupportBeanComplexProps)]";
+            env.CompileDeploy(stmtText).AddListener("s0");
         }
     }
 } // end of namespace

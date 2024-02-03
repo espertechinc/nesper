@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -18,6 +18,7 @@ using com.espertech.esper.compat;
 using com.espertech.esper.compat.logging;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.epl.historical.database.connection
 {
@@ -26,22 +27,16 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.connectio
     [Category("IntegrationTest")]
     public class TestDatabaseDmConnFactory : AbstractCommonTest
     {
-#if false
-        private readonly DriverConnectionFactoryDesc _databaseDmConnConnectionFactoryOne;
-        private readonly DriverConnectionFactoryDesc _databaseDmConnConnectionFactoryTwo;
-        private readonly DriverConnectionFactoryDesc _databaseDmConnConnectionFactoryThree;
-#endif
-
         [SetUp]
         public void SetUp()
         {
-            ImportService engineImportService = SupportClasspathImport.GetInstance(container);
+            ImportService engineImportService = SupportImport.GetInstance(container);
 
             // driver-manager config 1
             var config = new ConfigurationCommonDBRef();
             config.SetDatabaseDriver(SupportDatabaseService.GetInstance(container).DriverConnectionFactoryNative);
             config.ConnectionAutoCommit = true;
-            config.ConnectionCatalog = "test";
+            config.ConnectionCatalog = "esper";
             config.ConnectionTransactionIsolation = IsolationLevel.Serializable;
             config.ConnectionReadOnly = true;
 
@@ -76,7 +71,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.connectio
                 () => {
                     var properties = supportDatabaseService.DefaultProperties;
                     var config = supportDatabaseService.CreateDefaultConfig(properties);
-                    config.ConnectionCatalog = "test";
+                    config.ConnectionCatalog = "esper";
                     config.ConnectionAutoCommit = false; // not supported yet
                     config.ConnectionTransactionIsolation = IsolationLevel.Unspecified;
                     return new DatabaseDriverConnFactory(
@@ -131,8 +126,8 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.connectio
 
                 using (DbDataReader result = stmt.ExecuteReader())
                 {
-                    Assert.IsTrue(result.Read());
-                    Assert.AreEqual(1, result.GetInt32(0));
+                    ClassicAssert.IsTrue(result.Read());
+                    ClassicAssert.AreEqual(1, result.GetInt32(0));
                 }
             }
 
@@ -140,6 +135,6 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.connectio
             connection.Dispose();
         }
 
-        private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 } // end of namespace

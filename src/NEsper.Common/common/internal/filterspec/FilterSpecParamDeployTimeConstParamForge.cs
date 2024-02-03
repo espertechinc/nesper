@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.@internal.filterspec
             _numberCoercer = numberCoercer;
         }
 
-        public override CodegenMethod MakeCodegen(
+        public override CodegenExpression MakeCodegen(
             CodegenClassScope classScope,
             CodegenMethodScope parent,
             SAIFFInitializeSymbolWEventType symbols)
@@ -76,10 +76,13 @@ namespace com.espertech.esper.common.@internal.filterspec
             getFilterValue.Block.BlockReturn(FilterValueSetParamImpl.CodegenNew(value));
 
             method.Block.MethodReturn(param);
-            return method;
+            return LocalMethod(method);
         }
-        
-        public override void ValueExprToString(StringBuilder @out, int i) {
+
+        public override void ValueExprToString(
+            StringBuilder @out,
+            int i)
+        {
             @out.Append("deploy-time constant ");
             _deployTimeConstant.RenderForFilterPlan(@out);
         }

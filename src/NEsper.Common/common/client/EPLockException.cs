@@ -3,7 +3,6 @@ using System.Runtime.Serialization;
 
 namespace com.espertech.esper.common.client
 {
-    [Serializable]
     public class EPLockException : EPRuntimeException
     {
         public EPLockException(string message) : base(message)

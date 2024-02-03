@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -9,17 +9,27 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.Json.Serialization;
 
 namespace com.espertech.esper.common.client.soda
 {
     /// <summary>
     /// Generic single-row method call consists of a method name and parameters, possibly chained.
     /// </summary>
-    [Serializable]
     public class SingleRowMethodExpression : ExpressionBase
     {
-        private IList<DotExpressionItem> chain = new List<DotExpressionItem>();
+        private IList<DotExpressionItem> _chain = new List<DotExpressionItem>();
 
+        /// <summary>
+        /// Ctor.
+        /// </summary>
+        /// <param name="chain">of method invocations with at least one element, each pair a method name and list of parameter expressions</param>
+        [JsonConstructor]
+        public SingleRowMethodExpression(IList<DotExpressionItem> chain)
+        {
+            _chain = chain;
+        }
+        
         /// <summary>
         /// Ctor.
         /// </summary>
@@ -30,19 +40,16 @@ namespace com.espertech.esper.common.client.soda
             object[] parameters)
         {
             IList<Expression> parameterList = new List<Expression>();
-            for (int i = 0; i < parameters.Length; i++)
-            {
-                if (parameters[i] is Expression)
-                {
-                    parameterList.Add((Expression) parameters[i]);
+            for (var i = 0; i < parameters.Length; i++) {
+                if (parameters[i] is Expression) {
+                    parameterList.Add((Expression)parameters[i]);
                 }
-                else
-                {
+                else {
                     parameterList.Add(new ConstantExpression(parameters[i]));
                 }
             }
 
-            chain.Add(new DotExpressionItemCall(method, parameterList));
+            _chain.Add(new DotExpressionItemCall(method, parameterList));
         }
 
         /// <summary>
@@ -50,28 +57,13 @@ namespace com.espertech.esper.common.client.soda
         /// pairs of method name and list of parameters.
         /// </summary>
         /// <returns>chain of method invocations</returns>
-        public IList<DotExpressionItem> Chain
-        {
-            get => chain;
-        }
+        public IList<DotExpressionItem> Chain => _chain;
 
-        /// <summary>
-        /// Ctor.
-        /// </summary>
-        /// <param name="chain">of method invocations with at least one element, each pair a method name and list of parameter expressions</param>
-        public SingleRowMethodExpression(IList<DotExpressionItem> chain)
-        {
-            this.chain = chain;
-        }
-
-        public override ExpressionPrecedenceEnum Precedence
-        {
-            get => ExpressionPrecedenceEnum.UNARY;
-        }
+        public override ExpressionPrecedenceEnum Precedence => ExpressionPrecedenceEnum.UNARY;
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
-            DotExpressionItem.Render(chain, writer, false);
+            DotExpressionItem.Render(_chain, writer, false);
         }
     }
 } // end of namespace

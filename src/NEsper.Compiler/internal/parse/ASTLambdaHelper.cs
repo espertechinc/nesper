@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -23,11 +23,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 			EsperEPL2GrammarParser.LibFunctionArgsContext ctx,
 			IDictionary<ITree, ExprNode> astExprNodeMap)
 		{
-			if (ctx == null) {
-				return EmptyList<ExprNode>.Instance;
-			}
-
-			IList<EsperEPL2GrammarParser.LibFunctionArgItemContext> args = ctx.libFunctionArgItem();
+			IList<EsperEPL2GrammarParser.LibFunctionArgItemContext> args = ctx?.libFunctionArgItem();
 			if (args == null || args.IsEmpty()) {
 				return EmptyList<ExprNode>.Instance;
 			}

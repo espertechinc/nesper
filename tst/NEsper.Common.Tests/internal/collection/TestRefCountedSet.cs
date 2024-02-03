@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.collection
 {
@@ -24,14 +25,14 @@ namespace com.espertech.esper.common.@internal.collection
         [Test]
         public void TestAdd()
         {
-            Assert.IsTrue(refSet.Add("a"));
-            Assert.AreEqual(1, refSet.Count);
+            ClassicAssert.IsTrue(refSet.Add("a"));
+            ClassicAssert.AreEqual(1, refSet.Count);
 
-            Assert.IsFalse(refSet.Add("a"));
-            Assert.AreEqual(2, refSet.Count);
+            ClassicAssert.IsFalse(refSet.Add("a"));
+            ClassicAssert.AreEqual(2, refSet.Count);
 
-            Assert.IsTrue(refSet.Add("A"));
-            Assert.AreEqual(3, refSet.Count);
+            ClassicAssert.IsTrue(refSet.Add("A"));
+            ClassicAssert.AreEqual(3, refSet.Count);
         }
 
         [Test]
@@ -40,26 +41,26 @@ namespace com.espertech.esper.common.@internal.collection
             refSet.Add("a");
             refSet.Add("a");
             refSet.Add("a");
-            Assert.AreEqual(3, refSet.Count);
-            Assert.IsFalse(refSet.Remove("a"));
-            Assert.AreEqual(2, refSet.Count);
-            Assert.IsFalse(refSet.Remove("a"));
-            Assert.AreEqual(1, refSet.Count);
-            Assert.IsTrue(refSet.Remove("a"));
-            Assert.AreEqual(0, refSet.Count);
+            ClassicAssert.AreEqual(3, refSet.Count);
+            ClassicAssert.IsFalse(refSet.Remove("a"));
+            ClassicAssert.AreEqual(2, refSet.Count);
+            ClassicAssert.IsFalse(refSet.Remove("a"));
+            ClassicAssert.AreEqual(1, refSet.Count);
+            ClassicAssert.IsTrue(refSet.Remove("a"));
+            ClassicAssert.AreEqual(0, refSet.Count);
 
             refSet.Add("a");
-            Assert.IsTrue(refSet.Remove("a"));
+            ClassicAssert.IsTrue(refSet.Remove("a"));
 
             refSet.Add("b");
             refSet.Add("b");
-            Assert.IsFalse(refSet.Remove("b"));
-            Assert.IsTrue(refSet.Remove("b"));
+            ClassicAssert.IsFalse(refSet.Remove("b"));
+            ClassicAssert.IsTrue(refSet.Remove("b"));
 
             refSet.Add("C");
             refSet.Add("C");
-            Assert.IsTrue(refSet.RemoveAll("C"));
-            Assert.IsFalse(refSet.RemoveAll("C"));
+            ClassicAssert.IsTrue(refSet.RemoveAll("C"));
+            ClassicAssert.IsFalse(refSet.RemoveAll("C"));
         }
     }
 } // end of namespace

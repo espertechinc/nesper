@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -10,6 +10,7 @@ using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.supportunit.bean;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.util
 {
@@ -27,11 +28,11 @@ namespace com.espertech.esper.common.@internal.util
         [Test]
         public void TestCast()
         {
-            Assert.IsNull(caster.Cast(new object()));
-            Assert.IsNull(caster.Cast(new SupportBean()));
-            Assert.IsNotNull(caster.Cast(new ISupportABCImpl("", "", "", "")));
-            Assert.IsNotNull(caster.Cast(new ISupportABCImpl("", "", "", "")));
-            Assert.IsNull(caster.Cast(new ISupportBCImpl("", "", "")));
+            ClassicAssert.IsNull(caster.Cast(new object()));
+            ClassicAssert.IsNull(caster.Cast(new SupportBean()));
+            ClassicAssert.IsNotNull(caster.Cast(new ISupportABCImpl("", "", "", "")));
+            ClassicAssert.IsNotNull(caster.Cast(new ISupportABCImpl("", "", "", "")));
+            ClassicAssert.IsNull(caster.Cast(new ISupportBCImpl("", "", "")));
         }
     }
 } // end of namespace

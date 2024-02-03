@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -44,21 +44,25 @@ namespace com.espertech.esper.common.@internal.context.controller.category
         {
             if (!forStatement) {
                 if (!EventTypeUtility.IsTypeOrSubTypeOf(
-                    filterSpec.FilterForEventType,
-                    CategorySpec.FilterSpecActivatable.FilterForEventType)) {
+                        filterSpec.FilterForEventType,
+                        CategorySpec.FilterSpecActivatable.FilterForEventType)) {
                     return null;
                 }
             }
 
             var categoryNum = partitionKey.AsInt32();
             var item = CategorySpec.Items[categoryNum];
-            FilterValueSetParam[][] filters = item.FilterPlan.EvaluateValueSet(
+            var filters = item.FilterPlan.EvaluateValueSet(
                 null,
                 agentInstanceContextStatement,
                 agentInstanceContextStatement.StatementContextFilterEvalEnv);
             if (filters == null) {
                 throw new EPException(
-                    "Category context '" + ContextName + "' for category '" + item.Name + "' has evaluated to a condition that cannot become true");
+                    "Category context '" +
+                    ContextName +
+                    "' for category '" +
+                    item.Name +
+                    "' has evaluated to a condition that cannot become true");
             }
 
             return filters;

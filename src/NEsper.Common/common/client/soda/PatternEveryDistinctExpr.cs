@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -15,7 +15,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Every-Distinct construct for use in pattern expressions.
     /// </summary>
-    [Serializable]
     public class PatternEveryDistinctExpr : PatternExprBase
     {
         /// <summary>
@@ -38,19 +37,15 @@ namespace com.espertech.esper.common.client.soda
         /// <value>expr</value>
         public IList<Expression> Expressions { get; set; }
 
-        public override PatternExprPrecedenceEnum Precedence
-        {
-            get { return PatternExprPrecedenceEnum.EVERY_NOT; }
-        }
+        public override PatternExprPrecedenceEnum Precedence => PatternExprPrecedenceEnum.EVERY_NOT;
 
         public override void ToPrecedenceFreeEPL(
             TextWriter writer,
             EPStatementFormatter formatter)
         {
             writer.Write("every-distinct(");
-            string delimiter = "";
-            foreach (Expression expr in Expressions)
-            {
+            var delimiter = "";
+            foreach (var expr in Expressions) {
                 writer.Write(delimiter);
                 expr.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                 delimiter = ",";

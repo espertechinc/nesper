@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -9,6 +9,7 @@
 using System;
 using System.IO;
 using System.Reflection;
+using System.Text.Json.Serialization;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -37,7 +38,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
         public const string METHOD_HANDLENUMBERSETCRONPARAMNULLVALUE = "HandleNumberSetCronParamNullValue";
 
-        [NonSerialized] private ExprEvaluator evaluator;
+        [JsonIgnore]
+        [NonSerialized]
+        private ExprEvaluator evaluator;
 
         /// <summary>
         ///     Ctor.
@@ -73,7 +76,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 return new CronParameter(CronOperator, null);
             }
 
-            int intValue = value.AsInt32();
+            var intValue = value.AsInt32();
             return new CronParameter(CronOperator, intValue);
         }
 
@@ -146,11 +149,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             ExprNode node,
             bool ignoreStreamPrefix)
         {
-            if (!(node is ExprNumberSetCronParam)) {
+            if (!(node is ExprNumberSetCronParam other)) {
                 return false;
             }
 
-            var other = (ExprNumberSetCronParam) node;
             return other.CronOperator.Equals(CronOperator);
         }
 
@@ -161,7 +163,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             }
 
             var forge = ChildNodes[0].Forge;
-            if (!forge.EvaluationType.IsNumericNonFP()) {
+            if (!forge.EvaluationType.IsTypeNumericNonFP()) {
                 throw new ExprValidationException("Frequency operator requires an integer-type parameter");
             }
 

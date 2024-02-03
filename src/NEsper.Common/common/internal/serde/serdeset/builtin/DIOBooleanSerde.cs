@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -11,10 +11,10 @@ using com.espertech.esper.compat.io;
 
 namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 {
-	/// <summary>
-	///     Binding for non-null boolean values.
-	/// </summary>
-	public class DIOBooleanSerde : DataInputOutputSerdeBase<bool>
+    /// <summary>
+    ///     Binding for non-null boolean values.
+    /// </summary>
+    public class DIOBooleanSerde : DataInputOutputSerdeBase<bool>
     {
         public static readonly DIOBooleanSerde INSTANCE = new DIOBooleanSerde();
 

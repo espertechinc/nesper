@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -42,9 +42,9 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
             : base(outputCallback)
         {
             this.context = context;
-            this.parent = outputConditionTimeFactory;
+            parent = outputConditionTimeFactory;
 
-            this.scheduleSlot = context.StatementContext.ScheduleBucket.AllocateSlot();
+            scheduleSlot = context.StatementContext.ScheduleBucket.AllocateSlot();
             if (isStartConditionOnCreation) {
                 UpdateOutputCondition(0, 0);
             }
@@ -60,8 +60,8 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
 
             // If we pull the interval from a variable, then we may need to reschedule
             if (parent.IsVariable) {
-                long now = context.StatementContext.SchedulingService.Time;
-                TimePeriodDeltaResult delta = parent.TimePeriodCompute.DeltaAddWReference(
+                var now = context.StatementContext.SchedulingService.Time;
+                var delta = parent.TimePeriodCompute.DeltaAddWReference(
                     now,
                     currentReferencePoint.Value,
                     null,
@@ -89,25 +89,25 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
 
         public override string ToString()
         {
-            return this.GetType().Name;
+            return GetType().Name;
         }
 
         private void ScheduleCallback()
         {
             isCallbackScheduled = true;
-            long current = context.StatementContext.SchedulingService.Time;
-            TimePeriodDeltaResult delta = parent.TimePeriodCompute.DeltaAddWReference(
+            var current = context.StatementContext.SchedulingService.Time;
+            var delta = parent.TimePeriodCompute.DeltaAddWReference(
                 current,
                 currentReferencePoint.Value,
                 null,
                 true,
                 context);
-            long deltaTime = delta.Delta;
+            var deltaTime = delta.Delta;
             currentReferencePoint = delta.LastReference;
             currentScheduledTime = deltaTime;
 
-            if ((ExecutionPathDebugLog.IsDebugEnabled) && (log.IsDebugEnabled)) {
-                log.Debug(
+            if (ExecutionPathDebugLog.IsDebugEnabled && Log.IsDebugEnabled) {
+                Log.Debug(
                     ".scheduleCallback Scheduled new callback for " +
                     " afterMsec=" +
                     deltaTime +
@@ -124,11 +124,11 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
                         context,
                         ScheduleObjectType.outputratelimiting,
                         NAME_AUDITPROVIDER_SCHEDULE);
-                    this.isCallbackScheduled = false;
-                    this.outputCallback.Invoke(DO_OUTPUT, FORCE_UPDATE);
+                    isCallbackScheduled = false;
+                    outputCallback.Invoke(DO_OUTPUT, FORCE_UPDATE);
                     ScheduleCallback();
                     context.InstrumentationProvider.AOutputRateConditionScheduledEval();
-                },
+                }
             };
             handle = new EPStatementHandleCallbackSchedule(context.EpStatementAgentInstanceHandle, callback);
             context.AuditProvider.ScheduleAdd(
@@ -152,6 +152,6 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
             }
         }
 
-        private static readonly ILog log = LogManager.GetLogger(typeof(OutputConditionTime));
+        private static readonly ILog Log = LogManager.GetLogger(typeof(OutputConditionTime));
     }
 } // end of namespace

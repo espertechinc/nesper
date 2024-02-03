@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -15,7 +15,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     ///     Base expression.
     /// </summary>
-    [Serializable]
     public abstract class ExpressionBase : Expression
     {
         /// <summary>
@@ -40,14 +39,12 @@ namespace com.espertech.esper.common.client.soda
             TextWriter writer,
             ExpressionPrecedenceEnum parentPrecedence)
         {
-            if (Precedence < parentPrecedence)
-            {
+            if (Precedence < parentPrecedence) {
                 writer.Write("(");
                 ToPrecedenceFreeEPL(writer);
                 writer.Write(")");
             }
-            else
-            {
+            else {
                 ToPrecedenceFreeEPL(writer);
             }
         }
@@ -88,8 +85,7 @@ namespace com.espertech.esper.common.client.soda
             TextWriter writer)
         {
             var delimiter = "";
-            foreach (var expr in children)
-            {
+            foreach (var expr in children) {
                 writer.Write(delimiter);
                 expr.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                 delimiter = ",";
@@ -111,14 +107,12 @@ namespace com.espertech.esper.common.client.soda
         {
             writer.Write(name);
             writer.Write("(");
-            if (distinct)
-            {
+            if (distinct) {
                 writer.Write("distinct ");
             }
 
             var delimiter = "";
-            foreach (var param in children)
-            {
+            foreach (var param in children) {
                 writer.Write(delimiter);
                 delimiter = ",";
                 param.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);

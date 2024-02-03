@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -32,19 +32,14 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
         public NestedPropertyGetter(
             IList<EventPropertyGetter> getterChain,
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
-            Type finalPropertyType,
-            Type finalGenericType,
+            Type type,
             BeanEventTypeFactory beanEventTypeFactory)
-            : base(
-                eventBeanTypedEventFactory,
-                beanEventTypeFactory,
-                finalPropertyType,
-                finalGenericType)
+            : base(eventBeanTypedEventFactory, beanEventTypeFactory, type)
         {
             _getterChain = new BeanEventPropertyGetter[getterChain.Count];
 
             for (var i = 0; i < getterChain.Count; i++) {
-                _getterChain[i] = (BeanEventPropertyGetter) getterChain[i];
+                _getterChain[i] = (BeanEventPropertyGetter)getterChain[i];
             }
         }
 
@@ -96,7 +91,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             return IsBeanExistsProperty(eventBean.Underlying);
         }
 
-        public override Type BeanPropType => _getterChain[_getterChain.Length - 1].BeanPropType;
+        // public override Type BeanPropType => _getterChain[_getterChain.Length - 1].BeanPropType;
 
         public override Type TargetType => _getterChain[0].TargetType;
 
@@ -143,11 +138,14 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             CodegenClassScope codegenClassScope,
             bool exists)
         {
+            var beanEventPropertyGetter = _getterChain[^1];
+            var beanPropType = beanEventPropertyGetter.BeanPropType;
+            var targetType = _getterChain[0].TargetType;
             var block = codegenMethodScope.MakeChild(
-                    exists ? typeof(bool) : _getterChain[_getterChain.Length - 1].BeanPropType.GetBoxedType(),
+                    exists ? typeof(bool) : beanPropType.GetBoxedType(),
                     GetType(),
                     codegenClassScope)
-                .AddParam(_getterChain[0].TargetType, "value")
+                .AddParam(targetType, "value")
                 .Block;
             if (!exists) {
                 block.IfRefNullReturnNull("value");
@@ -174,7 +172,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 
             if (!exists) {
                 return block.MethodReturn(
-                    _getterChain[_getterChain.Length - 1]
+                    beanEventPropertyGetter
                         .UnderlyingGetCodegen(
                             Ref(lastName),
                             codegenMethodScope,
@@ -182,7 +180,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             }
 
             return block.MethodReturn(
-                _getterChain[_getterChain.Length - 1]
+                beanEventPropertyGetter
                     .UnderlyingExistsCodegen(
                         Ref(lastName),
                         codegenMethodScope,

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -15,7 +15,6 @@ namespace com.espertech.esper.common.client.configuration.compiler
     /// <summary>
     ///     Configuration information for plugging in a custom date-time-method.
     /// </summary>
-    [Serializable]
     public class ConfigurationCompilerPlugInDateTimeMethod
     {
         private string _forgeClassName;
@@ -74,11 +73,11 @@ namespace com.espertech.esper.common.client.configuration.compiler
                 return true;
             }
 
-            if (obj.GetType() != this.GetType()) {
+            if (obj.GetType() != GetType()) {
                 return false;
             }
 
-            return Equals((ConfigurationCompilerPlugInDateTimeMethod) obj);
+            return Equals((ConfigurationCompilerPlugInDateTimeMethod)obj);
         }
 
         public override int GetHashCode()

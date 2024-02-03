@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -13,7 +13,6 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.@event.core;
-using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -21,10 +20,10 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
 {
     public class DTLocalBeanReformatForge : DTLocalForge
     {
-        private readonly EventPropertyGetterSPI getter;
-        private readonly Type getterResultType;
-        private readonly DTLocalForge inner;
-        private readonly Type returnType;
+        private readonly EventPropertyGetterSPI _getter;
+        private readonly Type _getterResultType;
+        private readonly DTLocalForge _inner;
+        private readonly Type _returnType;
 
         public DTLocalBeanReformatForge(
             EventPropertyGetterSPI getter,
@@ -32,15 +31,13 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             DTLocalForge inner,
             Type returnType)
         {
-            this.getter = getter;
-            this.getterResultType = getterResultType;
-            this.inner = inner;
-            this.returnType = returnType;
+            _getter = getter;
+            _getterResultType = getterResultType;
+            _inner = inner;
+            _returnType = returnType;
         }
 
-        public DTLocalEvaluator DTEvaluator {
-            get => new DTLocalBeanReformatEval(getter, inner.DTEvaluator);
-        }
+        public DTLocalEvaluator DTEvaluator => new DTLocalBeanReformatEval(_getter, _inner.DTEvaluator);
 
         public CodegenExpression Codegen(
             CodegenExpression target,
@@ -49,23 +46,24 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenMethod methodNode = codegenMethodScope
-                .MakeChild(returnType, typeof(DTLocalBeanReformatForge), codegenClassScope)
-                .AddParam(typeof(EventBean), "target");
+            var methodNode = codegenMethodScope
+                .MakeChild(_returnType, typeof(DTLocalBeanReformatForge), codegenClassScope)
+                .AddParam<EventBean>("target");
 
-            CodegenBlock block = methodNode.Block
+            var block = methodNode.Block
                 .DeclareVar(
-                    getterResultType,
+                    _getterResultType,
                     "timestamp",
-                    getter.EventBeanGetCodegen(Ref("target"), methodNode, codegenClassScope));
-            if (getterResultType.CanBeNull()) {
+                    _getter.EventBeanGetCodegen(Ref("target"), methodNode, codegenClassScope));
+            if (!_getterResultType.IsPrimitive) {
                 block.IfRefNullReturnNull("timestamp");
             }
 
-            CodegenExpression derefTimestamp = Unbox(Ref("timestamp"), getterResultType);
+            var derefTimestamp = Unbox(Ref("timestamp"), _getterResultType);
 
             block.MethodReturn(
-                inner.Codegen(derefTimestamp, getterResultType, methodNode, exprSymbol, codegenClassScope));
+                _inner.Codegen(
+                    derefTimestamp, _getterResultType, methodNode, exprSymbol, codegenClassScope));
             return LocalMethod(methodNode, target);
         }
     }

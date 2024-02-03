@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -45,9 +45,9 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
             StatementRawInfo statementRawInfo,
             StatementCompileTimeServices services)
         {
-            string methodName = ".getPlan ";
+            var methodName = ".getPlan ";
 
-            int numStreams = typesPerStream.Length;
+            var numStreams = typesPerStream.Length;
             if (numStreams < 2) {
                 throw new ArgumentException("Number of join stream types is less then 2");
             }
@@ -62,7 +62,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                     outerJoinType = outerJoinDescList[0].OuterJoinType;
                 }
 
-                QueryPlanForgeDesc queryPlan = TwoStreamQueryPlanBuilder.Build(
+                var queryPlan = TwoStreamQueryPlanBuilder.Build(
                     typesPerStream,
                     queryGraph,
                     outerJoinType,
@@ -77,13 +77,13 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                 return queryPlan;
             }
 
-            bool hasPreferMergeJoin = HintEnum.PREFER_MERGE_JOIN.GetHint(statementRawInfo.Annotations) != null;
-            bool hasForceNestedIter = HintEnum.FORCE_NESTED_ITER.GetHint(statementRawInfo.Annotations) != null;
-            bool isAllInnerJoins = outerJoinDescList.Length == 0 ||
-                                   OuterJoinDesc.ConsistsOfAllInnerJoins(outerJoinDescList);
+            var hasPreferMergeJoin = HintEnum.PREFER_MERGE_JOIN.GetHint(statementRawInfo.Annotations) != null;
+            var hasForceNestedIter = HintEnum.FORCE_NESTED_ITER.GetHint(statementRawInfo.Annotations) != null;
+            var isAllInnerJoins = outerJoinDescList.Length == 0 ||
+                                  OuterJoinDesc.ConsistsOfAllInnerJoins(outerJoinDescList);
 
             if (isAllInnerJoins && !hasPreferMergeJoin) {
-                QueryPlanForgeDesc queryPlan = NStreamQueryPlanBuilder.Build(
+                var queryPlan = NStreamQueryPlanBuilder.Build(
                     queryGraph,
                     typesPerStream,
                     historicalViewableDesc,
@@ -111,7 +111,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                 }
             }
 
-            QueryPlanForgeDesc queryPlanX = NStreamOuterQueryPlanBuilder.Build(
+            var queryPlanX = NStreamOuterQueryPlanBuilder.Build(
                 queryGraph,
                 outerJoinDescList,
                 streamNames,
@@ -133,15 +133,15 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
             QueryPlanForge queryPlan,
             StreamJoinAnalysisResultCompileTime streamJoinAnalysisResult)
         {
-            bool allUnidirectional = streamJoinAnalysisResult.IsUnidirectionalAll;
-            for (int streamNum = 0; streamNum < queryPlan.ExecNodeSpecs.Length; streamNum++) {
+            var allUnidirectional = streamJoinAnalysisResult.IsUnidirectionalAll;
+            for (var streamNum = 0; streamNum < queryPlan.ExecNodeSpecs.Length; streamNum++) {
                 if (allUnidirectional) {
                     queryPlan.ExecNodeSpecs[streamNum] = new QueryPlanNodeForgeAllUnidirectionalOuter(streamNum);
                 }
                 else {
-                    bool unidirectional = streamJoinAnalysisResult.IsUnidirectional &&
-                                          !streamJoinAnalysisResult.UnidirectionalInd[streamNum];
-                    bool table = streamJoinAnalysisResult.TablesPerStream[streamNum] != null;
+                    var unidirectional = streamJoinAnalysisResult.IsUnidirectional &&
+                                         !streamJoinAnalysisResult.UnidirectionalInd[streamNum];
+                    var table = streamJoinAnalysisResult.TablesPerStream[streamNum] != null;
                     if (unidirectional || table) {
                         queryPlan.ExecNodeSpecs[streamNum] = QueryPlanNodeNoOpForge.INSTANCE;
                     }

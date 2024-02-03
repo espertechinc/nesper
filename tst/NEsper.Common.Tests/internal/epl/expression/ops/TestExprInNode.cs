@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -13,6 +13,7 @@ using com.espertech.esper.common.@internal.supportunit.@event;
 using com.espertech.esper.common.@internal.supportunit.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.epl.expression.ops
 {
@@ -55,41 +56,41 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             var otherInNodeNormal = supportExprNodeFactory.MakeInSetNode(false);
             var otherInNodeNotIn = supportExprNodeFactory.MakeInSetNode(true);
 
-            Assert.IsTrue(inNodeNormal.EqualsNode(otherInNodeNormal, false));
-            Assert.IsTrue(inNodeNotIn.EqualsNode(otherInNodeNotIn, false));
+            ClassicAssert.IsTrue(inNodeNormal.EqualsNode(otherInNodeNormal, false));
+            ClassicAssert.IsTrue(inNodeNotIn.EqualsNode(otherInNodeNotIn, false));
 
-            Assert.IsFalse(inNodeNormal.EqualsNode(otherInNodeNotIn, false));
-            Assert.IsFalse(inNodeNotIn.EqualsNode(otherInNodeNormal, false));
-            Assert.IsFalse(inNodeNotIn.EqualsNode(supportExprNodeFactory.MakeCaseSyntax1Node(), false));
-            Assert.IsFalse(inNodeNormal.EqualsNode(supportExprNodeFactory.MakeCaseSyntax1Node(), false));
+            ClassicAssert.IsFalse(inNodeNormal.EqualsNode(otherInNodeNotIn, false));
+            ClassicAssert.IsFalse(inNodeNotIn.EqualsNode(otherInNodeNormal, false));
+            ClassicAssert.IsFalse(inNodeNotIn.EqualsNode(supportExprNodeFactory.MakeCaseSyntax1Node(), false));
+            ClassicAssert.IsFalse(inNodeNormal.EqualsNode(supportExprNodeFactory.MakeCaseSyntax1Node(), false));
         }
 
         [Test]
         public void TestEvaluate()
         {
-            Assert.IsFalse((bool) inNodeNormal.Forge.ExprEvaluator.Evaluate(MakeEvent(0), false, null));
-            Assert.IsTrue((bool) inNodeNormal.Forge.ExprEvaluator.Evaluate(MakeEvent(1), false, null));
-            Assert.IsTrue((bool) inNodeNormal.Forge.ExprEvaluator.Evaluate(MakeEvent(2), false, null));
-            Assert.IsFalse((bool) inNodeNormal.Forge.ExprEvaluator.Evaluate(MakeEvent(3), false, null));
+            ClassicAssert.IsFalse((bool) inNodeNormal.Forge.ExprEvaluator.Evaluate(MakeEvent(0), false, null));
+            ClassicAssert.IsTrue((bool) inNodeNormal.Forge.ExprEvaluator.Evaluate(MakeEvent(1), false, null));
+            ClassicAssert.IsTrue((bool) inNodeNormal.Forge.ExprEvaluator.Evaluate(MakeEvent(2), false, null));
+            ClassicAssert.IsFalse((bool) inNodeNormal.Forge.ExprEvaluator.Evaluate(MakeEvent(3), false, null));
 
-            Assert.IsTrue((bool) inNodeNotIn.Forge.ExprEvaluator.Evaluate(MakeEvent(0), false, null));
-            Assert.IsFalse((bool) inNodeNotIn.Forge.ExprEvaluator.Evaluate(MakeEvent(1), false, null));
-            Assert.IsFalse((bool) inNodeNotIn.Forge.ExprEvaluator.Evaluate(MakeEvent(2), false, null));
-            Assert.IsTrue((bool) inNodeNotIn.Forge.ExprEvaluator.Evaluate(MakeEvent(3), false, null));
+            ClassicAssert.IsTrue((bool) inNodeNotIn.Forge.ExprEvaluator.Evaluate(MakeEvent(0), false, null));
+            ClassicAssert.IsFalse((bool) inNodeNotIn.Forge.ExprEvaluator.Evaluate(MakeEvent(1), false, null));
+            ClassicAssert.IsFalse((bool) inNodeNotIn.Forge.ExprEvaluator.Evaluate(MakeEvent(2), false, null));
+            ClassicAssert.IsTrue((bool) inNodeNotIn.Forge.ExprEvaluator.Evaluate(MakeEvent(3), false, null));
         }
 
         [Test]
         public void TestGetType()
         {
-            Assert.AreEqual(typeof(bool?), inNodeNormal.Forge.EvaluationType);
-            Assert.AreEqual(typeof(bool?), inNodeNotIn.Forge.EvaluationType);
+            ClassicAssert.AreEqual(typeof(bool?), inNodeNormal.Forge.EvaluationType);
+            ClassicAssert.AreEqual(typeof(bool?), inNodeNotIn.Forge.EvaluationType);
         }
 
         [Test]
         public void TestToExpressionString()
         {
-            Assert.AreEqual("s0.IntPrimitive in (1,2)", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(inNodeNormal));
-            Assert.AreEqual("s0.IntPrimitive not in (1,2)", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(inNodeNotIn));
+            ClassicAssert.AreEqual("s0.IntPrimitive in (1,2)", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(inNodeNormal));
+            ClassicAssert.AreEqual("s0.IntPrimitive not in (1,2)", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(inNodeNotIn));
         }
 
         [Test]

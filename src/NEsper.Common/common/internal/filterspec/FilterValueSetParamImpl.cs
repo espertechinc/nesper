@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -20,7 +20,6 @@ namespace com.espertech.esper.common.@internal.filterspec
     /// <summary>
     ///     Filter parameter value defining the event property to filter, the filter operator, and the filter value.
     /// </summary>
-    [Serializable]
     public class FilterValueSetParamImpl : FilterValueSetParam
     {
         /// <summary>
@@ -67,7 +66,10 @@ namespace com.espertech.esper.common.@internal.filterspec
 
         public static CodegenExpression CodegenNew(CodegenExpression filterForValue)
         {
-            return NewInstance<FilterValueSetParamImpl>(REF_LOOKUPABLE, REF_FILTEROPERATOR, filterForValue);
+            return NewInstance<FilterValueSetParamImpl>(
+                REF_LOOKUPABLE,
+                REF_FILTEROPERATOR,
+                filterForValue);
         }
     }
 } // end of namespace

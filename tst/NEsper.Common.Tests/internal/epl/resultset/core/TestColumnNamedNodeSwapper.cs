@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -10,6 +10,7 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.ops;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.epl.resultset.core
 {
@@ -44,29 +45,29 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
             alias = "IntPrimitive";
             resultingTree = ColumnNamedNodeSwapper.Swap(exprTree, alias, fullExpr);
 
-            Assert.IsTrue(resultingTree == exprTree);
+            ClassicAssert.IsTrue(resultingTree == exprTree);
             var childNodes = resultingTree.ChildNodes;
             var oldChildNodes = exprTree.ChildNodes;
-            Assert.IsTrue(childNodes.Length == 2);
-            Assert.IsTrue(childNodes[0] == fullExpr);
-            Assert.IsTrue(childNodes[1] == oldChildNodes[1]);
+            ClassicAssert.IsTrue(childNodes.Length == 2);
+            ClassicAssert.IsTrue(childNodes[0] == fullExpr);
+            ClassicAssert.IsTrue(childNodes[1] == oldChildNodes[1]);
 
             exprTree = resultingTree;
             alias = "IntBoxed";
             resultingTree = ColumnNamedNodeSwapper.Swap(exprTree, alias, fullExpr);
             childNodes = resultingTree.ChildNodes;
-            Assert.IsTrue(childNodes.Length == 2);
-            Assert.IsTrue(childNodes[0] == fullExpr);
-            Assert.IsTrue(childNodes[1] == fullExpr);
+            ClassicAssert.IsTrue(childNodes.Length == 2);
+            ClassicAssert.IsTrue(childNodes[0] == fullExpr);
+            ClassicAssert.IsTrue(childNodes[1] == fullExpr);
 
             exprTree = resultingTree;
             ExprNode newFullExpr = new ExprIdentNodeImpl("new full expr");
             alias = "full expression";
             resultingTree = ColumnNamedNodeSwapper.Swap(exprTree, alias, newFullExpr);
             childNodes = resultingTree.ChildNodes;
-            Assert.IsTrue(childNodes.Length == 2);
-            Assert.IsTrue(childNodes[0] == newFullExpr);
-            Assert.IsTrue(childNodes[1] == newFullExpr);
+            ClassicAssert.IsTrue(childNodes.Length == 2);
+            ClassicAssert.IsTrue(childNodes[0] == newFullExpr);
+            ClassicAssert.IsTrue(childNodes[1] == newFullExpr);
         }
 
         [Test]
@@ -75,7 +76,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
             exprTree = new ExprIdentNodeImpl("swapped");
             alias = "swapped";
             resultingTree = ColumnNamedNodeSwapper.Swap(exprTree, alias, fullExpr);
-            Assert.IsTrue(resultingTree == fullExpr);
+            ClassicAssert.IsTrue(resultingTree == fullExpr);
         }
     }
 } // end of namespace

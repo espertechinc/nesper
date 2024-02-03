@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -8,17 +8,18 @@
 
 namespace com.espertech.esper.common.@internal.compile.stage3
 {
-	public enum StmtClassForgeableType {
-	    FIELDS,
-	    AIFACTORYPROVIDER,
-	    STMTPROVIDER,
-	    RSPPROVIDER,
-	    OPVPROVIDER,
-	    FAF,
-	    MULTIKEY,
-	    JSONEVENT,
-	    JSON_DELEGATE,
-	    JSON_DESERIALIZER,
-	    JSON_SERIALIZER
-	}
+    public enum StmtClassForgeableType
+    {
+        FIELDS,
+        AIFACTORYPROVIDER,
+        STMTPROVIDER,
+        RSPPROVIDER,
+        OPVPROVIDER,
+        FAF,
+        MULTIKEY,
+        JSONEVENT,
+        JSON_DELEGATE,
+        JSON_DESERIALIZER,
+        JSON_SERIALIZER
+    }
 } // end of namespace

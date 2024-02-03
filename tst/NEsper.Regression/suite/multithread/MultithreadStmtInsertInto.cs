@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -18,6 +18,7 @@ using com.espertech.esper.regressionlib.support.multithread;
 using com.espertech.esper.regressionlib.support.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.multithread
 {
@@ -26,23 +27,28 @@ namespace com.espertech.esper.regressionlib.suite.multithread
     /// </summary>
     public class MultithreadStmtInsertInto : RegressionExecution
     {
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
+        }
+
         public void Run(RegressionEnvironment env)
         {
             var path = new RegressionPath();
             env.CompileDeploy(
-                "insert into XStream " +
+                "@public insert into XStream " +
                 " select TheString as key, count(*) as mycount\n" +
                 " from SupportBean#time(5 min)" +
                 " group by TheString",
                 path);
             env.CompileDeploy(
-                "insert into XStream " +
+                "@public insert into XStream " +
                 " select Symbol as key, count(*) as mycount\n" +
                 " from SupportMarketDataBean#time(5 min)" +
                 " group by Symbol",
                 path);
 
-            env.CompileDeploy("@Name('s0') select key, mycount from XStream", path);
+            env.CompileDeploy("@name('s0') select key, mycount from XStream", path);
             var listener = new SupportMTUpdateListener();
             env.Statement("s0").AddListener(listener);
 
@@ -73,12 +79,12 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 
             // Assert results
             var totalExpected = numThreads * numRepeats * 2;
-            var result = listener.GetNewDataListFlattened();
-            Assert.AreEqual(totalExpected, result.Length);
+            var result = listener.NewDataListFlattened;
+            ClassicAssert.AreEqual(totalExpected, result.Length);
             IDictionary<long, ICollection<string>> results = new Dictionary<long, ICollection<string>>();
             foreach (var theEvent in result) {
                 var count = theEvent.Get("mycount").AsInt64();
-                var key = (string) theEvent.Get("key");
+                var key = (string)theEvent.Get("key");
 
                 var entries = results.Get(count);
                 if (entries == null) {
@@ -89,12 +95,12 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                 entries.Add(key);
             }
 
-            Assert.AreEqual(numRepeats, results.Count);
+            ClassicAssert.AreEqual(numRepeats, results.Count);
             foreach (var value in results.Values) {
-                Assert.AreEqual(2 * numThreads, value.Count);
+                ClassicAssert.AreEqual(2 * numThreads, value.Count);
                 for (var i = 0; i < numThreads; i++) {
-                    Assert.IsTrue(value.Contains("E1_" + i));
-                    Assert.IsTrue(value.Contains("E2_" + i));
+                    ClassicAssert.IsTrue(value.Contains("E1_" + i));
+                    ClassicAssert.IsTrue(value.Contains("E2_" + i));
                 }
             }
 

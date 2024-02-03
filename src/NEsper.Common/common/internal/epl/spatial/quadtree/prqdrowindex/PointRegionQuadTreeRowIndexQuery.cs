@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -42,7 +42,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex
                 return Visit(leaf, x, y, width, height, result);
             }
 
-            var branch = (PointRegionQuadTreeNodeBranch) node;
+            var branch = (PointRegionQuadTreeNodeBranch)node;
             result = QueryNode(branch.Nw, x, y, width, height, result);
             result = QueryNode(branch.Ne, x, y, width, height, result);
             result = QueryNode(branch.Sw, x, y, width, height, result);
@@ -58,18 +58,17 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex
             double height,
             ICollection<object> result)
         {
-            object points = node.Points;
+            var points = node.Points;
             if (points == null) {
                 return result;
             }
 
-            if (points is XYPointMultiType) {
-                XYPointMultiType point = (XYPointMultiType) points;
-                return Visit(point, x, y, width, height, result);
+            if (points is XYPointMultiType type) {
+                return Visit(type, x, y, width, height, result);
             }
 
-            ICollection<XYPointMultiType> collection = (ICollection<XYPointMultiType>) points;
-            foreach (XYPointMultiType point in collection) {
+            var collection = (ICollection<XYPointMultiType>)points;
+            foreach (var point in collection) {
                 result = Visit(point, x, y, width, height, result);
             }
 

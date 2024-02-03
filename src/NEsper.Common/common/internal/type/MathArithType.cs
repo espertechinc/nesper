@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -126,10 +126,10 @@ namespace com.espertech.esper.common.@internal.type
                 coercedType != typeof(short?) &&
                 coercedType != typeof(byte)) {
                 throw new ArgumentException(
-                    "Expected base numeric type for computation result but got type " + coercedType);
+                    $"Expected base numeric type for computation result but got type {coercedType}");
             }
 
-            if (coercedType.IsDecimal()) {
+            if (coercedType.IsTypeDecimal()) {
                 return MakeDecimalComputer(
                     operation,
                     typeOne,
@@ -138,7 +138,7 @@ namespace com.espertech.esper.common.@internal.type
                     optionalMathContext);
             }
 
-            if (coercedType.IsBigInteger()) {
+            if (coercedType.IsTypeBigInteger()) {
                 return MakeBigIntegerComputer(
                     operation,
                     typeOne,
@@ -150,7 +150,7 @@ namespace com.espertech.esper.common.@internal.type
                 var computer = computers.Get(key);
                 if (computer == null) {
                     throw new ArgumentException(
-                        "Could not determine process or type " + operation + " type " + coercedType);
+                        $"Could not determine process or type {operation} type {coercedType}");
                 }
 
                 return computer;
@@ -181,7 +181,7 @@ namespace com.espertech.esper.common.@internal.type
                 return new DivideInt();
             }
 
-            throw new ArgumentException("Could not determine process or type " + operation + " type " + coercedType);
+            throw new ArgumentException($"Could not determine process or type {operation} type {coercedType}");
         }
 
         private static Computer MakeDecimalComputer(
@@ -191,7 +191,7 @@ namespace com.espertech.esper.common.@internal.type
             bool divisionByZeroReturnsNull,
             MathContext optionalMathContext)
         {
-            if (typeOne.IsDecimal() && typeTwo.IsDecimal()) {
+            if (typeOne.IsTypeDecimal() && typeTwo.IsTypeDecimal()) {
                 if (operation == MathArithTypeEnum.DIVIDE) {
                     if (optionalMathContext != null) {
                         return new DivideDecimalWMathContext(divisionByZeroReturnsNull, optionalMathContext);
@@ -240,11 +240,11 @@ namespace com.espertech.esper.common.@internal.type
             Type typeOne,
             Type typeTwo)
         {
-            if (typeOne.IsDecimal() && typeTwo.IsDecimal()) {
+            if (typeOne.IsTypeDecimal() && typeTwo.IsTypeDecimal()) {
                 return computers.Get(new MathArithDesc(typeof(decimal?), operation));
             }
 
-            if (typeOne.IsBigInteger() && typeTwo.IsBigInteger()) {
+            if (typeOne.IsTypeBigInteger() && typeTwo.IsTypeBigInteger()) {
                 var computer = computers.Get(new MathArithDesc(typeof(BigInteger), operation));
                 if (computer != null) {
                     return computer;

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -42,9 +42,7 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
             Func<ExprForge, CodegenExpression> expr = forge =>
                 ExprNodeUtilityCodegen.CodegenEvaluator(forge, method, GetType(), classScope);
             method.Block
-                .DeclareVar<AdvancedIndexConfigStatementPointRegionQuadtree>(
-                    "factory",
-                    NewInstance(typeof(AdvancedIndexConfigStatementPointRegionQuadtree)))
+                .DeclareVarNewInstance<AdvancedIndexConfigStatementPointRegionQuadtree>("factory")
                 .SetProperty(Ref("factory"), "XEval", expr.Invoke(XEval))
                 .SetProperty(Ref("factory"), "YEval", expr.Invoke(YEval))
                 .MethodReturn(Ref("factory"));

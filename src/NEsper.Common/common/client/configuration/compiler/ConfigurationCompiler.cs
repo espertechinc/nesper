@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -16,7 +16,6 @@ namespace com.espertech.esper.common.client.configuration.compiler
     /// <summary>
     ///     Contains settings that apply to the compiler only (and that do not apply at runtime).
     /// </summary>
-    [Serializable]
     public class ConfigurationCompiler
     {
         /// <summary>
@@ -31,53 +30,56 @@ namespace com.espertech.esper.common.client.configuration.compiler
         ///     Returns the list of plug-in views.
         /// </summary>
         /// <value>plug-in views</value>
-        public IList<ConfigurationCompilerPlugInView> PlugInViews { get; private set; }
+        public IList<ConfigurationCompilerPlugInView> PlugInViews { get; set; }
 
         /// <summary>
         ///     Returns the list of plug-in virtual data windows.
         /// </summary>
         /// <value>plug-in virtual data windows</value>
-        public IList<ConfigurationCompilerPlugInVirtualDataWindow> PlugInVirtualDataWindows { get; private set; }
+        public IList<ConfigurationCompilerPlugInVirtualDataWindow> PlugInVirtualDataWindows { get; set; }
 
         /// <summary>
         ///     Returns the list of plug-in aggregation functions.
         /// </summary>
         /// <value>plug-in aggregation functions</value>
-        public IList<ConfigurationCompilerPlugInAggregationFunction> PlugInAggregationFunctions { get; private set; }
+        public IList<ConfigurationCompilerPlugInAggregationFunction> PlugInAggregationFunctions { get; set; }
 
         /// <summary>
         ///     Returns the list of plug-in aggregation multi-functions.
         /// </summary>
         /// <value>plug-in aggregation multi-functions</value>
-        public IList<ConfigurationCompilerPlugInAggregationMultiFunction> PlugInAggregationMultiFunctions { get; private set; }
+        public IList<ConfigurationCompilerPlugInAggregationMultiFunction> PlugInAggregationMultiFunctions {
+            get;
+            set;
+        }
 
         /// <summary>
         ///     Returns the list of plug-in single-row functions.
         /// </summary>
         /// <value>plug-in single-row functions</value>
-        public IList<ConfigurationCompilerPlugInSingleRowFunction> PlugInSingleRowFunctions { get; private set; }
+        public IList<ConfigurationCompilerPlugInSingleRowFunction> PlugInSingleRowFunctions { get; set; }
 
         /// <summary>
         ///     Returns the list of plug-in pattern objects.
         /// </summary>
         /// <value>plug-in pattern objects</value>
-        public IList<ConfigurationCompilerPlugInPatternObject> PlugInPatternObjects { get; private set; }
+        public IList<ConfigurationCompilerPlugInPatternObject> PlugInPatternObjects { get; set; }
 
 
         /// <summary>
         ///     Returns the list of configured plug-in date-time-methods.
         /// </summary>
-        public IList<ConfigurationCompilerPlugInDateTimeMethod> PlugInDateTimeMethods { get; private set; }
+        public IList<ConfigurationCompilerPlugInDateTimeMethod> PlugInDateTimeMethods { get; set; }
 
         /// <summary>
         ///     Returns the list of configured plug-in enum-methods.
         /// </summary>
-        public IList<ConfigurationCompilerPlugInEnumMethod> PlugInEnumMethods { get; private set; }
+        public IList<ConfigurationCompilerPlugInEnumMethod> PlugInEnumMethods { get; set; }
 
         /// <summary>
         ///     Returns the compiler serializer-deserializer configuration.
         /// </summary>
-        public ConfigurationCompilerSerde Serde { get; private set; }
+        public ConfigurationCompilerSerde Serde { get; set; }
 
         /// <summary>
         ///     Returns code generation settings
@@ -89,20 +91,20 @@ namespace com.espertech.esper.common.client.configuration.compiler
         ///     Returns settings applicable to streams (insert and remove, insert only or remove only) selected for a statement.
         /// </summary>
         /// <value>stream selection defaults</value>
-        public ConfigurationCompilerStreamSelection StreamSelection { get; private set; }
+        public ConfigurationCompilerStreamSelection StreamSelection { get; set; }
 
         /// <summary>
         ///     Returns view resources defaults.
         /// </summary>
         /// <value>view resources defaults</value>
-        public ConfigurationCompilerViewResources ViewResources { get; private set; }
+        public ConfigurationCompilerViewResources ViewResources { get; set; }
 
         /// <summary>
         ///     Returns logging settings applicable to compiler.
         /// </summary>
         /// <value>logging settings</value>
-        public ConfigurationCompilerLogging Logging { get; private set; }
-        
+        public ConfigurationCompilerLogging Logging { get; set; }
+
         /// <summary>
         /// Returns true if the compiler should set optimization to debug.
         /// </summary>
@@ -112,7 +114,7 @@ namespace com.espertech.esper.common.client.configuration.compiler
         ///     Returns the expression-related settings for compiler.
         /// </summary>
         /// <value>expression-related settings</value>
-        public ConfigurationCompilerExpression Expression { get; private set; }
+        public ConfigurationCompilerExpression Expression { get; set; }
 
         /// <summary>
         ///     Returns statement execution-related settings, settings that
@@ -551,7 +553,8 @@ namespace com.espertech.esper.common.client.configuration.compiler
             string enumMethodName,
             Type enumMethodForgeFactoryClass)
         {
-            PlugInEnumMethods.Add(new ConfigurationCompilerPlugInEnumMethod(enumMethodName, enumMethodForgeFactoryClass.FullName));
+            PlugInEnumMethods.Add(
+                new ConfigurationCompilerPlugInEnumMethod(enumMethodName, enumMethodForgeFactoryClass.FullName));
         }
 
         /// <summary>

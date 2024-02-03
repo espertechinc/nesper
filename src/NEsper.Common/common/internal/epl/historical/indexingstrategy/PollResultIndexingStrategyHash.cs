@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using com.espertech.esper.common.client;
-using com.espertech.esper.common.@internal.context.util;
+using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.index.@base;
 using com.espertech.esper.common.@internal.epl.index.hash;
 
@@ -29,15 +29,15 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
         public EventTable[] Index(
             IList<EventBean> pollResult,
             bool isActiveCache,
-            AgentInstanceContext agentInstanceContext)
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             if (!isActiveCache) {
-                return new EventTable[] {new UnindexedEventTableList(pollResult, StreamNum)};
+                return new EventTable[] { new UnindexedEventTableList(pollResult, StreamNum) };
             }
 
-            var tables = factory.MakeEventTables(agentInstanceContext, null);
+            var tables = factory.MakeEventTables(exprEvaluatorContext, null);
             foreach (var table in tables) {
-                table.Add(pollResult.ToArray(), agentInstanceContext);
+                table.Add(pollResult.ToArray(), exprEvaluatorContext);
             }
 
             return tables;

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -12,6 +12,7 @@ using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.supportunit.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.epl.expression.funcs
 {
@@ -52,8 +53,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         [Test]
         public void TestEquals()
         {
-            Assert.IsFalse(coalesceNodes[0].EqualsNode(new ExprEqualsNodeImpl(true, false), false));
-            Assert.IsTrue(coalesceNodes[0].EqualsNode(coalesceNodes[1], false));
+            ClassicAssert.IsFalse(coalesceNodes[0].EqualsNode(new ExprEqualsNodeImpl(true, false), false));
+            ClassicAssert.IsTrue(coalesceNodes[0].EqualsNode(coalesceNodes[1], false));
         }
 
         [Test]
@@ -64,11 +65,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 coalesceNodes[i].Validate(SupportExprValidationContextFactory.MakeEmpty(container));
             }
 
-            Assert.AreEqual(4L, coalesceNodes[0].Forge.ExprEvaluator.Evaluate(null, false, null));
-            Assert.AreEqual("a", coalesceNodes[1].Forge.ExprEvaluator.Evaluate(null, false, null));
-            Assert.AreEqual(true, coalesceNodes[2].Forge.ExprEvaluator.Evaluate(null, false, null));
-            Assert.AreEqual('b', coalesceNodes[3].Forge.ExprEvaluator.Evaluate(null, false, null));
-            Assert.AreEqual(5D, coalesceNodes[4].Forge.ExprEvaluator.Evaluate(null, false, null));
+            ClassicAssert.AreEqual(4L, coalesceNodes[0].Forge.ExprEvaluator.Evaluate(null, false, null));
+            ClassicAssert.AreEqual("a", coalesceNodes[1].Forge.ExprEvaluator.Evaluate(null, false, null));
+            ClassicAssert.AreEqual(true, coalesceNodes[2].Forge.ExprEvaluator.Evaluate(null, false, null));
+            ClassicAssert.AreEqual('b', coalesceNodes[3].Forge.ExprEvaluator.Evaluate(null, false, null));
+            ClassicAssert.AreEqual(5D, coalesceNodes[4].Forge.ExprEvaluator.Evaluate(null, false, null));
         }
 
         [Test]
@@ -79,18 +80,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 coalesceNodes[i].Validate(SupportExprValidationContextFactory.MakeEmpty(container));
             }
 
-            Assert.AreEqual(typeof(long?), coalesceNodes[0].Forge.EvaluationType);
-            Assert.AreEqual(typeof(string), coalesceNodes[1].Forge.EvaluationType);
-            Assert.AreEqual(typeof(bool?), coalesceNodes[2].Forge.EvaluationType);
-            Assert.AreEqual(typeof(char?), coalesceNodes[3].Forge.EvaluationType);
-            Assert.AreEqual(typeof(double?), coalesceNodes[4].Forge.EvaluationType);
+            ClassicAssert.AreEqual(typeof(long?), coalesceNodes[0].Forge.EvaluationType);
+            ClassicAssert.AreEqual(typeof(string), coalesceNodes[1].Forge.EvaluationType);
+            ClassicAssert.AreEqual(typeof(bool?), coalesceNodes[2].Forge.EvaluationType);
+            ClassicAssert.AreEqual(typeof(char?), coalesceNodes[3].Forge.EvaluationType);
+            ClassicAssert.AreEqual(typeof(double?), coalesceNodes[4].Forge.EvaluationType);
         }
 
         [Test]
         public void TestToExpressionString()
         {
             coalesceNodes[0].Validate(SupportExprValidationContextFactory.MakeEmpty(container));
-            Assert.AreEqual("coalesce(null,null,4)", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(coalesceNodes[0]));
+            ClassicAssert.AreEqual("coalesce(null,null,4)", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(coalesceNodes[0]));
         }
 
         [Test]

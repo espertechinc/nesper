@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -16,24 +16,25 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.rettype;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
-using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.CodegenRelational;
+using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.
+    CodegenRelational;
 
 namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 {
     public class ExprDotForgeGetArrayEval : ExprDotEval
     {
-        private readonly ExprDotForgeGetArray forge;
-        private readonly ExprEvaluator indexExpression;
+        private readonly ExprDotForgeGetArray _forge;
+        private readonly ExprEvaluator _indexExpression;
 
         public ExprDotForgeGetArrayEval(
             ExprDotForgeGetArray forge,
             ExprEvaluator indexExpression)
         {
-            this.forge = forge;
-            this.indexExpression = indexExpression;
+            _forge = forge;
+            _indexExpression = indexExpression;
         }
 
-        public EPType TypeInfo => forge.TypeInfo;
+        public EPChainableType TypeInfo => _forge.TypeInfo;
 
         public object Evaluate(
             object target,
@@ -46,7 +47,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                 return null;
             }
 
-            var index = indexExpression.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+            var index = _indexExpression.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
             if (index == null) {
                 return null;
             }
@@ -62,7 +63,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             return array.GetValue(indexNum);
         }
 
-        public ExprDotForge DotForge => forge;
+        public ExprDotForge DotForge => _forge;
 
         public static CodegenExpression Codegen(
             ExprDotForgeGetArray forge,
@@ -72,7 +73,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            var methodNode = codegenMethodScope.MakeChild(forge.TypeInfo.GetNormalizedClass(), typeof(ExprDotForgeGetArrayEval), codegenClassScope)
+            var returnType = forge.TypeInfo.GetNormalizedType();
+            if (returnType == null) {
+                return ConstantNull();
+            }
+
+            var methodNode = codegenMethodScope.MakeChild(
+                    forge.TypeInfo.GetNormalizedType(),
+                    typeof(ExprDotForgeGetArrayEval),
+                    codegenClassScope)
                 .AddParam(innerType, "target");
 
             var block = methodNode.Block;
@@ -81,10 +90,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             }
 
             var targetType = forge.TypeInfo.GetCodegenReturnType();
-            block.DeclareVar<int>("index", forge.IndexExpression.EvaluateCodegen(typeof(int), methodNode, exprSymbol, codegenClassScope))
+            block.DeclareVar<int>(
+                    "index",
+                    forge.IndexExpression.EvaluateCodegen(typeof(int), methodNode, exprSymbol, codegenClassScope))
                 .IfCondition(Relational(ArrayLength(Ref("target")), LE, Ref("index")))
                 .BlockReturn(ConstantNull())
-                .MethodReturn(CodegenLegoCast.CastSafeFromObjectType(targetType, ArrayAtIndex(Ref("target"), Ref("index"))));
+                .MethodReturn(
+                    CodegenLegoCast.CastSafeFromObjectType(targetType, ArrayAtIndex(Ref("target"), Ref("index"))));
             return LocalMethod(methodNode, inner);
         }
     }

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -11,6 +11,7 @@ using System;
 using com.espertech.esper.compat.logging;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.util
 {
@@ -40,7 +41,7 @@ namespace com.espertech.esper.common.@internal.util
         private void TryValid(string strLong, long expected)
         {
             long result = LongValue.ParseString(strLong);
-            Assert.IsTrue(result == expected);
+            ClassicAssert.IsTrue(result == expected);
         }
 
         private void TryInvalid(string strLong)
@@ -48,14 +49,14 @@ namespace com.espertech.esper.common.@internal.util
             try
             {
                 LongValue.ParseString(strLong);
-                Assert.IsTrue(false);
+                ClassicAssert.IsTrue(false);
             }
             catch (Exception ex)
             {
-                log.Debug("Expected exception caught, msg=" + ex.Message);
+                Log.Debug("Expected exception caught, msg=" + ex.Message);
             }
         }
 
-        private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 } // end of namespace

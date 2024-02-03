@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -17,7 +17,17 @@ namespace com.espertech.esper.regressionlib.support.extend.aggmultifunc
 {
     public class SupportAggMFEventsAsListState : AggregationMultiFunctionState
     {
-        public IList<SupportBean> Events { get; } = new List<SupportBean>();
+        public IList<SupportBean> Events { get; }
+
+        public SupportAggMFEventsAsListState()
+        {
+            Events = new List<SupportBean>();
+        }
+
+        public SupportAggMFEventsAsListState(IList<SupportBean> events)
+        {
+            Events = events;
+        }
 
         public void ApplyEnter(
             EventBean[] eventsPerStream,

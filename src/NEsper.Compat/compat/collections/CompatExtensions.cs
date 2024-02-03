@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -316,6 +316,15 @@ namespace com.espertech.esper.compat.collections
                         action.Invoke(item);
                     }
                 }
+            }
+        }
+
+        public static void ForEachRemaining<T>(
+            this IEnumerator<T> enumThis,
+            Action<T> action)
+        {
+            while (enumThis.MoveNext()) {
+                action.Invoke(enumThis.Current);
             }
         }
 
@@ -1196,6 +1205,33 @@ namespace com.espertech.esper.compat.collections
             return Unwrap<T>(value, includeNullValues).ToArray();
         }
 
+        public static Array UnwrapIntoArray(
+            this object value,
+            Type componentType,
+            bool includeNullValues = true)
+        {
+            if (value == null) {
+                return null;
+            }
+
+            if (value is Array valueAsArray)
+            {
+                var arrayType = value.GetType();
+                if (arrayType.GetComponentType() == componentType)
+                {
+                    return valueAsArray;
+                }
+            }
+
+            var method = typeof(CompatExtensions)
+                .GetMethod("UnwrapIntoArray", new[] { typeof(object), typeof(bool) })?
+                .MakeGenericMethod(componentType);
+            var result = (Array) method
+                .Invoke(null, new object[] { value, includeNullValues });
+
+            return result;
+        }
+
         public static IList<T> UnwrapIntoList<T>(
             this object value,
             bool includeNullValues = true)
@@ -1268,22 +1304,17 @@ namespace com.espertech.esper.compat.collections
                 return enumerableT;
             }
 
-            if (value is IEnumerable<object>) {
-                var expression = (IEnumerable<object>) value;
-                expression = includeNullValues
-                    ? expression.Where(o => o == null || o is T)
-                    : expression.Where(o => o is T);
-
-                return expression.Cast<T>();
+            if (value is IEnumerable<object> enumerableOfObject) {
+                return includeNullValues
+                    ? enumerableOfObject.Where(o => o == null || o is T).Cast<T>()
+                    : enumerableOfObject.OfType<T>();
             }
 
             if (value is IEnumerable enumerable) {
                 var expression = enumerable.Cast<object>();
-                expression = includeNullValues
-                    ? expression.Where(o => o == null || o is T)
-                    : expression.Where(o => o is T);
-
-                return expression.Cast<T>();
+                return includeNullValues
+                    ? expression.Where(o => o == null || o is T).Cast<T>()
+                    : expression.OfType<T>();
             }
 
             if (value is IEnumerator enumerator) {
@@ -1295,8 +1326,8 @@ namespace com.espertech.esper.compat.collections
                             result.Add(currentAsT);
                         }
                     }
-                    else if (current is T) {
-                        result.Add((T) current);
+                    else if (current is T currentAsT) {
+                        result.Add(currentAsT);
                     }
                 }
 
@@ -1640,6 +1671,24 @@ namespace com.espertech.esper.compat.collections
             var stringResult = stringBuilder.ToString();
 
             Console.WriteLine(stringResult);
+        }
+
+        public static IDisposable Trace(
+            string className,
+            string methodName,
+            params object[] arguments)
+        {
+            Console.WriteLine("Enter: ClassName={0}, Method={1}, Args={2}",
+                className,
+                methodName,
+                RenderAny(arguments));
+
+            return new TrackedDisposable(() => {
+                Console.WriteLine("Exit: ClassName={0}, Method={1}, Args={2}",
+                    className,
+                    methodName,
+                    RenderAny(arguments));
+            });
         }
     }
 }

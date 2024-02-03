@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -21,7 +21,7 @@ using com.espertech.esper.runtime.client.scopetest;
 using com.espertech.esperio.file;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esperio.support.util.CompileUtil;
 
 namespace com.espertech.esperio.regression.adapter
@@ -63,7 +63,7 @@ namespace com.espertech.esperio.regression.adapter
                 Assert.Fail();
             }
             catch (EPDataFlowInstantiationException ex) {
-                Assert.AreEqual(message, ex.Message);
+                ClassicAssert.AreEqual(message, ex.Message);
             }
             finally {
                 UndeployAll(_runtime);
@@ -167,8 +167,8 @@ namespace com.espertech.esperio.regression.adapter
                 options.AddParameterURI("FileSource/file", filename);
                 var instance = _runtime.DataFlowService.Instantiate(deployment.DeploymentId, "MyEOFEventFileReader", options);
                 instance.Run();
-                Assert.AreEqual(1, instance.Parameters.Count);
-                Assert.AreEqual(filename, instance.Parameters.Get("FileSource/file"));
+                ClassicAssert.AreEqual(1, instance.Parameters.Count);
+                ClassicAssert.AreEqual(filename, instance.Parameters.Get("FileSource/file"));
             }
 
             EPAssertionUtil.AssertPropsPerRowAnyOrder(
@@ -191,7 +191,7 @@ namespace com.espertech.esperio.regression.adapter
                         "}" +
                         "DefaultSupportCaptureOp(mystream) {}";
             var received = RunDataFlow(graph);
-            Assert.AreEqual(1, received.Count);
+            ClassicAssert.AreEqual(1, received.Count);
             var compare = received[0].ToArray();
             EPAssertionUtil.AssertEqualsExactOrder(
                 compare,
@@ -237,7 +237,7 @@ namespace com.espertech.esperio.regression.adapter
                         "FileSource -> mystream<MyLine> { file: '../../../etc/regression/ints.csv', numLoops: 3, format: 'line'}" +
                         "DefaultSupportCaptureOp(mystream) {}";
             var received = RunDataFlow(graph);
-            Assert.AreEqual(1, received.Count);
+            ClassicAssert.AreEqual(1, received.Count);
             var compare = received[0].ToArray();
             EPAssertionUtil.AssertEqualsExactOrder(compare, new object[] {new object[] {"1, 0"}, new object[] {"2, 0"}, new object[] {"3, 0"}});
         }
@@ -250,7 +250,7 @@ namespace com.espertech.esperio.regression.adapter
                         "FileSource -> mystream<MyLine> { file: '../../../etc/regression/myzippedtext.zip', format: 'line'}" +
                         "DefaultSupportCaptureOp(mystream) {}";
             var received = RunDataFlow(graph);
-            Assert.AreEqual(1, received.Count);
+            ClassicAssert.AreEqual(1, received.Count);
             var compare = received[0].ToArray();
             EPAssertionUtil.AssertEqualsExactOrder(
                 compare,

@@ -1,13 +1,14 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+
 using com.espertech.esper.common.client;
-using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -18,15 +19,21 @@ using static com.espertech.esper.common.@internal.epl.expression.codegen.ExprFor
 using static com.espertech.esper.common.@internal.epl.expression.subquery.ExprSubselectEvalMatchSymbol;
 using static com.espertech.esper.common.@internal.epl.expression.subquery.SubselectForgeCodegenUtil;
 using static com.espertech.esper.common.@internal.epl.expression.subquery.SubselectForgeNRSymbol;
+using static com.espertech.esper.common.@internal.epl.util.EPTypeCollectionConst;
 
 namespace com.espertech.esper.common.@internal.epl.expression.subquery
 {
     public abstract class SubselectForgeNRBase : SubselectForgeNR
     {
+        protected readonly ExprSubselectNode subselect;
+        protected readonly ExprForge valueEval;
+        protected readonly ExprForge selectEval;
         private readonly bool resultWhenNoMatchingEvents;
-        internal readonly ExprForge selectEval;
-        internal readonly ExprSubselectNode subselect;
-        internal readonly ExprForge valueEval;
+
+        protected abstract CodegenExpression CodegenEvaluateInternal(
+            CodegenMethodScope parent,
+            SubselectForgeNRSymbol symbols,
+            CodegenClassScope classScope);
 
         public SubselectForgeNRBase(
             ExprSubselectNode subselect,
@@ -45,7 +52,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             ExprSubselectEvalMatchSymbol symbols,
             CodegenClassScope classScope)
         {
-            var leftResultType = valueEval.EvaluationType.GetBoxedType();
+            if (subselect.EvaluationType == null || valueEval.EvaluationType == null) {
+                return ConstantNull();
+            }
+
             var method = parent.MakeChild(subselect.EvaluationType, GetType(), classScope);
             method.Block
                 .ApplyTri(
@@ -53,19 +63,19 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                     method,
                     symbols)
                 .DeclareVar(
-                    leftResultType,
+                    valueEval.EvaluationType,
                     "leftResult",
                     valueEval.EvaluateCodegen(valueEval.EvaluationType, parent, symbols, classScope))
                 .ApplyTri(DECLARE_EVENTS_SHIFTED, method, symbols);
 
+            var leftResultType = valueEval.EvaluationType.GetBoxedType();
             var nrSymbols = new SubselectForgeNRSymbol(leftResultType);
-            var child = parent
-                .MakeChildWithScope(subselect.EvaluationType, GetType(), nrSymbols, classScope)
+            var child = parent.MakeChildWithScope(subselect.EvaluationType, GetType(), nrSymbols, classScope)
                 .AddParam(leftResultType, NAME_LEFTRESULT)
-                .AddParam(typeof(EventBean[]), NAME_EPS)
-                .AddParam(typeof(bool), NAME_ISNEWDATA)
-                .AddParam(typeof(FlexCollection), NAME_MATCHINGEVENTS)
-                .AddParam(typeof(ExprEvaluatorContext), NAME_EXPREVALCONTEXT);
+                .AddParam<EventBean[]>(NAME_EPS)
+                .AddParam<bool>(NAME_ISNEWDATA)
+                .AddParam(EPTYPE_COLLECTION_EVENTBEAN, NAME_MATCHINGEVENTS)
+                .AddParam<ExprEvaluatorContext>(NAME_EXPREVALCONTEXT);
             child.Block.MethodReturn(CodegenEvaluateInternal(child, nrSymbols, classScope));
             method.Block.MethodReturn(
                 LocalMethod(
@@ -78,10 +88,5 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
 
             return LocalMethod(method);
         }
-
-        protected abstract CodegenExpression CodegenEvaluateInternal(
-            CodegenMethodScope parent,
-            SubselectForgeNRSymbol symbols,
-            CodegenClassScope classScope);
     }
 } // end of namespace

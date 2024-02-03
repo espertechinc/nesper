@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -19,7 +19,8 @@ using com.espertech.esper.common.@internal.util;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.expression.codegen.ExprForgeCodegenNames; // REF_EXPREVALCONTEXT;
-using static com.espertech.esper.common.@internal.filterspec.FilterSpecParam; // GET_FILTER_VALUE_FP, GET_FILTER_VALUE_REFS;
+using static
+    com.espertech.esper.common.@internal.filterspec.FilterSpecParam; // GET_FILTER_VALUE_FP, GET_FILTER_VALUE_REFS;
 
 namespace com.espertech.esper.common.@internal.filterspec
 {
@@ -49,7 +50,11 @@ namespace com.espertech.esper.common.@internal.filterspec
 
             CodegenExpression valueExpr = LocalMethod(rhsExpression, Ref("eps"), ConstantTrue(), REF_EXPREVALCONTEXT);
             if (numberCoercer != null) {
-                valueExpr = numberCoercer.CoerceCodegenMayNullBoxed(valueExpr, value.Forge.EvaluationType, method, classScope);
+                valueExpr = numberCoercer.CoerceCodegenMayNullBoxed(
+                    valueExpr,
+                    value.Forge.EvaluationType,
+                    method,
+                    classScope);
             }
 
             method.Block

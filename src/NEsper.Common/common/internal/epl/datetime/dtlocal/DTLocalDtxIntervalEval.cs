@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            var time = ((DateTimeEx) target).UtcMillis;
+            var time = ((DateTimeEx)target).UtcMillis;
             return intervalOp.Evaluate(time, time, eventsPerStream, isNewData, exprEvaluatorContext);
         }
 
@@ -44,7 +44,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
         {
             var methodNode = codegenMethodScope
                 .MakeChild(typeof(bool?), typeof(DTLocalDtxIntervalEval), codegenClassScope)
-                .AddParam(typeof(DateTimeEx), "target");
+                .AddParam<DateTimeEx>("target");
 
             methodNode.Block
                 .DeclareVar<long>("time", ExprDotName(Ref("target"), "UtcMillis"))
@@ -60,8 +60,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            var start = ((DateTimeEx) startTimestamp).UtcMillis;
-            var end = ((DateTimeEx) endTimestamp).UtcMillis;
+            var start = ((DateTimeEx)startTimestamp).UtcMillis;
+            var end = ((DateTimeEx)endTimestamp).UtcMillis;
             return intervalOp.Evaluate(start, end, eventsPerStream, isNewData, exprEvaluatorContext);
         }
 
@@ -75,8 +75,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
         {
             var methodNode = codegenMethodScope
                 .MakeChild(typeof(bool?), typeof(DTLocalDtxIntervalEval), codegenClassScope)
-                .AddParam(typeof(DateTimeEx), "start")
-                .AddParam(typeof(DateTimeEx), "end");
+                .AddParam<DateTimeEx>("start")
+                .AddParam<DateTimeEx>("end");
 
             methodNode.Block.MethodReturn(
                 forge.intervalForge.Codegen(

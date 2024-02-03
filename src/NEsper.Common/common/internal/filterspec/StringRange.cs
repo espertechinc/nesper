@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -13,7 +13,6 @@ namespace com.espertech.esper.common.@internal.filterspec
     /// <summary>
     ///     Holds a range of double values with a minimum (start) value and a maximum (end) value.
     /// </summary>
-    [Serializable]
     public class StringRange : Range
     {
         private readonly int _hashCode;
@@ -75,17 +74,17 @@ namespace com.espertech.esper.common.@internal.filterspec
                 return false;
             }
 
-            var that = (StringRange) o;
+            var that = (StringRange)o;
 
             if (_hashCode != that._hashCode) {
                 return false;
             }
 
-            if (Max != null ? !Max.Equals(that.Max) : that.Max != null) {
+            if (!Max?.Equals(that.Max) ?? that.Max != null) {
                 return false;
             }
 
-            if (Min != null ? !Min.Equals(that.Min) : that.Min != null) {
+            if (!Min?.Equals(that.Min) ?? that.Min != null) {
                 return false;
             }
 

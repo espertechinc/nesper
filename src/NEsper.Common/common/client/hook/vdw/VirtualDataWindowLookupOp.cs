@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -62,43 +62,43 @@ namespace com.espertech.esper.common.client.hook.vdw
         {
             switch (enumValue) {
                 case VirtualDataWindowLookupOp.EQUALS:
-                    return ("=");
+                    return "=";
 
                 case VirtualDataWindowLookupOp.LESS:
-                    return ("<");
+                    return "<";
 
                 case VirtualDataWindowLookupOp.LESS_OR_EQUAL:
-                    return ("<=");
+                    return "<=";
 
                 case VirtualDataWindowLookupOp.GREATER_OR_EQUAL:
-                    return (">=");
+                    return ">=";
 
                 case VirtualDataWindowLookupOp.GREATER:
-                    return (">");
+                    return ">";
 
                 case VirtualDataWindowLookupOp.RANGE_OPEN:
-                    return ("(,)");
+                    return "(,)";
 
                 case VirtualDataWindowLookupOp.RANGE_CLOSED:
-                    return ("[,]");
+                    return "[,]";
 
                 case VirtualDataWindowLookupOp.RANGE_HALF_OPEN:
-                    return ("[,)");
+                    return "[,)";
 
                 case VirtualDataWindowLookupOp.RANGE_HALF_CLOSED:
-                    return ("(,]");
+                    return "(,]";
 
                 case VirtualDataWindowLookupOp.NOT_RANGE_OPEN:
-                    return ("-(,)");
+                    return "-(,)";
 
                 case VirtualDataWindowLookupOp.NOT_RANGE_CLOSED:
-                    return ("-[,]");
+                    return "-[,]";
 
                 case VirtualDataWindowLookupOp.NOT_RANGE_HALF_OPEN:
-                    return ("-[,)");
+                    return "-[,)";
 
                 case VirtualDataWindowLookupOp.NOT_RANGE_HALF_CLOSED:
-                    return ("-(,]");
+                    return "-(,]";
 
                 default:
                     throw new ArgumentException("invalid value", nameof(enumValue));
@@ -112,43 +112,43 @@ namespace com.espertech.esper.common.client.hook.vdw
         public static VirtualDataWindowLookupOp FromOpString(this string stringOp)
         {
             switch (stringOp) {
-                case ("="):
+                case "=":
                     return VirtualDataWindowLookupOp.EQUALS;
 
-                case ("<"):
+                case "<":
                     return VirtualDataWindowLookupOp.LESS;
 
-                case ("<="):
+                case "<=":
                     return VirtualDataWindowLookupOp.LESS_OR_EQUAL;
 
-                case (">="):
+                case ">=":
                     return VirtualDataWindowLookupOp.GREATER_OR_EQUAL;
 
-                case (">"):
+                case ">":
                     return VirtualDataWindowLookupOp.GREATER;
 
-                case ("(,)"):
+                case "(,)":
                     return VirtualDataWindowLookupOp.RANGE_OPEN;
 
-                case ("[,]"):
+                case "[,]":
                     return VirtualDataWindowLookupOp.RANGE_CLOSED;
 
-                case ("[,)"):
+                case "[,)":
                     return VirtualDataWindowLookupOp.RANGE_HALF_OPEN;
 
-                case ("(,]"):
+                case "(,]":
                     return VirtualDataWindowLookupOp.RANGE_HALF_CLOSED;
 
-                case ("-(,)"):
+                case "-(,)":
                     return VirtualDataWindowLookupOp.NOT_RANGE_OPEN;
 
-                case ("-[,]"):
+                case "-[,]":
                     return VirtualDataWindowLookupOp.NOT_RANGE_CLOSED;
 
-                case ("-[,)"):
+                case "-[,)":
                     return VirtualDataWindowLookupOp.NOT_RANGE_HALF_OPEN;
 
-                case ("-(,]"):
+                case "-(,]":
                     return VirtualDataWindowLookupOp.NOT_RANGE_HALF_CLOSED;
 
                 default:

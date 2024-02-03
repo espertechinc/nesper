@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -10,9 +10,11 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.client.runtime
 {
@@ -21,9 +23,11 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
+#if REGRESSION_EXECUTIONS
             WithSendEvent(execs);
             WithCreateStatement(execs);
-            WithInsertInto(execs);
+            With(InsertInto)(execs);
+#endif
             return execs;
         }
 
@@ -62,44 +66,49 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
         {
             public void Run(RegressionEnvironment env)
             {
-                var compiled = env.Compile("@Name('s0') select * from SupportBean");
+                var compiled = env.Compile("@name('s0') select * from SupportBean");
                 var listener = new MyUnmatchedListener();
                 env.EventService.UnmatchedListener = listener.Update;
 
                 // no statement, should be unmatched
                 var theEvent = SendEvent(env, "E1");
-                Assert.AreEqual(1, listener.Received.Count);
-                Assert.AreSame(theEvent, listener.Received[0].Underlying);
+                ClassicAssert.AreEqual(1, listener.Received.Count);
+                ClassicAssert.AreSame(theEvent, listener.Received[0].Underlying);
                 listener.Reset();
 
                 // no unmatched listener
                 env.EventService.UnmatchedListener = null;
                 SendEvent(env, "E1");
-                Assert.AreEqual(0, listener.Received.Count);
+                ClassicAssert.AreEqual(0, listener.Received.Count);
 
                 // create statement and re-register unmatched listener
                 env.Deploy(compiled);
                 env.EventService.UnmatchedListener = listener.Update;
                 SendEvent(env, "E1");
-                Assert.AreEqual(0, listener.Received.Count);
+                ClassicAssert.AreEqual(0, listener.Received.Count);
 
                 // stop statement
                 env.UndeployModuleContaining("s0");
                 theEvent = SendEvent(env, "E1");
-                Assert.AreEqual(1, listener.Received.Count);
-                Assert.AreSame(theEvent, listener.Received[0].Underlying);
+                ClassicAssert.AreEqual(1, listener.Received.Count);
+                ClassicAssert.AreSame(theEvent, listener.Received[0].Underlying);
                 listener.Reset();
 
                 // start statement
                 env.Deploy(compiled);
                 SendEvent(env, "E1");
-                Assert.AreEqual(0, listener.Received.Count);
+                ClassicAssert.AreEqual(0, listener.Received.Count);
 
                 // destroy statement
                 env.UndeployModuleContaining("s0");
                 theEvent = SendEvent(env, "E1");
-                Assert.AreEqual(1, listener.Received.Count);
-                Assert.AreSame(theEvent, listener.Received[0].Underlying);
+                ClassicAssert.AreEqual(1, listener.Received.Count);
+                ClassicAssert.AreSame(theEvent, listener.Received[0].Underlying);
+            }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.RUNTIMEOPS);
             }
         }
 
@@ -112,13 +121,18 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
 
                 // no statement, should be unmatched
                 SendEvent(env, "E1");
-                Assert.AreEqual(1, listener.Received.Count);
+                ClassicAssert.AreEqual(1, listener.Received.Count);
                 listener.Reset();
 
                 SendEvent(env, "E1");
-                Assert.AreEqual(0, listener.Received.Count);
+                ClassicAssert.AreEqual(0, listener.Received.Count);
 
                 env.UndeployAll();
+            }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.RUNTIMEOPS);
             }
         }
 
@@ -130,26 +144,31 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 env.EventService.UnmatchedListener = listener.Update;
 
                 // create insert into
-                env.CompileDeploy("@Name('s0') insert into MyEvent select TheString from SupportBean");
+                env.CompileDeploy("@name('s0') insert into MyEvent select TheString from SupportBean");
 
                 // no statement, should be unmatched
                 SendEvent(env, "E1");
-                Assert.AreEqual(1, listener.Received.Count);
-                Assert.AreEqual("E1", listener.Received[0].Get("TheString"));
+                ClassicAssert.AreEqual(1, listener.Received.Count);
+                ClassicAssert.AreEqual("E1", listener.Received[0].Get("TheString"));
                 listener.Reset();
 
                 // stop insert into, now SupportBean itself is unmatched
                 env.UndeployModuleContaining("s0");
                 var theEvent = SendEvent(env, "E2");
-                Assert.AreEqual(1, listener.Received.Count);
-                Assert.AreSame(theEvent, listener.Received[0].Underlying);
+                ClassicAssert.AreEqual(1, listener.Received.Count);
+                ClassicAssert.AreSame(theEvent, listener.Received[0].Underlying);
                 listener.Reset();
 
                 // start insert-into
                 SendEvent(env, "E3");
-                Assert.AreEqual(1, listener.Received.Count);
-                Assert.AreEqual("E3", listener.Received[0].Get("TheString"));
+                ClassicAssert.AreEqual(1, listener.Received.Count);
+                ClassicAssert.AreEqual("E3", listener.Received[0].Get("TheString"));
                 listener.Reset();
+            }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.RUNTIMEOPS);
             }
         }
 

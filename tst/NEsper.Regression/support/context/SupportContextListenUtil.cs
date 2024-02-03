@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -13,6 +13,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.support.context
 {
@@ -24,9 +25,9 @@ namespace com.espertech.esper.regressionlib.support.context
             Type type)
         {
             return @event => {
-                Assert.AreEqual(deploymentId, @event.ContextDeploymentId);
-                Assert.AreEqual(contextName, @event.ContextName);
-                Assert.AreEqual(type, @event.GetType());
+                ClassicAssert.AreEqual(deploymentId, @event.ContextDeploymentId);
+                ClassicAssert.AreEqual(contextName, @event.ContextName);
+                ClassicAssert.AreEqual(type, @event.GetType());
             };
         }
 
@@ -38,19 +39,19 @@ namespace com.espertech.esper.regressionlib.support.context
             string statementName)
         {
             return @event => {
-                Assert.AreEqual("default", @event.RuntimeURI);
-                Assert.AreEqual(contextDeploymentId, @event.ContextDeploymentId);
-                Assert.AreEqual(contextName, @event.ContextName);
-                Assert.AreEqual(type, @event.GetType());
+                ClassicAssert.AreEqual("default", @event.RuntimeURI);
+                ClassicAssert.AreEqual(contextDeploymentId, @event.ContextDeploymentId);
+                ClassicAssert.AreEqual(contextName, @event.ContextName);
+                ClassicAssert.AreEqual(type, @event.GetType());
                 if (@event is ContextStateEventContextStatementAdded) {
                     var added = (ContextStateEventContextStatementAdded) @event;
-                    Assert.AreEqual(statementDeploymentId, added.StatementDeploymentId);
-                    Assert.AreEqual(statementName, added.StatementName);
+                    ClassicAssert.AreEqual(statementDeploymentId, added.StatementDeploymentId);
+                    ClassicAssert.AreEqual(statementName, added.StatementName);
                 }
                 else if (@event is ContextStateEventContextStatementRemoved) {
                     var removed = (ContextStateEventContextStatementRemoved) @event;
-                    Assert.AreEqual(statementDeploymentId, removed.StatementDeploymentId);
-                    Assert.AreEqual(statementName, removed.StatementName);
+                    ClassicAssert.AreEqual(statementDeploymentId, removed.StatementDeploymentId);
+                    ClassicAssert.AreEqual(statementName, removed.StatementName);
                 }
                 else {
                     Assert.Fail();
@@ -64,21 +65,21 @@ namespace com.espertech.esper.regressionlib.support.context
             Type type)
         {
             return @event => {
-                Assert.AreEqual("default", @event.RuntimeURI);
-                Assert.AreEqual(contextDeploymentId, @event.ContextDeploymentId);
-                Assert.AreEqual(contextName, @event.ContextName);
-                Assert.AreEqual(type, @event.GetType());
+                ClassicAssert.AreEqual("default", @event.RuntimeURI);
+                ClassicAssert.AreEqual(contextDeploymentId, @event.ContextDeploymentId);
+                ClassicAssert.AreEqual(contextName, @event.ContextName);
+                ClassicAssert.AreEqual(type, @event.GetType());
                 var partition = (ContextStateEventContextPartition) @event;
                 if (partition is ContextStateEventContextPartitionAllocated) {
                     var allocated = (ContextStateEventContextPartitionAllocated) @event;
                     if (allocated.Identifier is ContextPartitionIdentifierInitiatedTerminated) {
                         var ident = (ContextPartitionIdentifierInitiatedTerminated) allocated.Identifier;
-                        Assert.IsNotNull(ident.Properties.Get("S0"));
+                        ClassicAssert.IsNotNull(ident.Properties.Get("S0"));
                     }
                     else if (allocated.Identifier is ContextPartitionIdentifierNested) {
                         var nested = (ContextPartitionIdentifierNested) allocated.Identifier;
                         var ident = (ContextPartitionIdentifierInitiatedTerminated) nested.Identifiers[1];
-                        Assert.IsNotNull(ident.Properties.Get("S0"));
+                        ClassicAssert.IsNotNull(ident.Properties.Get("S0"));
                     }
                 }
             };

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -108,12 +108,22 @@ namespace com.espertech.esper.common.client.soda
             WriteDelimiter(writer);
         }
 
+        public void BeginIntoTable(
+            TextWriter writer,
+            bool topLevel)
+        {
+            if (topLevel) {
+                WriteDelimiter(writer, topLevel);
+            }
+
+            SetDelimiter();
+        }
+
         public void BeginSelect(
             TextWriter writer,
             bool topLevel)
         {
-            if (topLevel)
-            {
+            if (topLevel) {
                 WriteDelimiter(writer, topLevel);
             }
 
@@ -162,20 +172,17 @@ namespace com.espertech.esper.common.client.soda
 
         private void SetDelimiter()
         {
-            if (_isNewline)
-            {
+            if (_isNewline) {
                 _delimiter = _newlineString;
             }
-            else
-            {
+            else {
                 _delimiter = SPACE;
             }
         }
 
         private void WriteDelimiter(TextWriter writer)
         {
-            if (_delimiter != null)
-            {
+            if (_delimiter != null) {
                 writer.Write(_delimiter);
             }
 
@@ -186,14 +193,11 @@ namespace com.espertech.esper.common.client.soda
             TextWriter writer,
             bool topLevel)
         {
-            if (_delimiter != null)
-            {
-                if (!topLevel)
-                {
+            if (_delimiter != null) {
+                if (!topLevel) {
                     writer.Write(SPACE);
                 }
-                else
-                {
+                else {
                     writer.Write(_delimiter);
                 }
             }
