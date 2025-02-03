@@ -28,10 +28,10 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
     public class ClientRuntimeListener
     {
         public static readonly string BEAN_TYPENAME = nameof(RoutedBeanEvent);
-        public static readonly string MAP_TYPENAME = nameof(ClientRuntimeListener) + "_MAP";
-        public static readonly string OA_TYPENAME = nameof(ClientRuntimeListener) + "_OA";
-        public static readonly string XML_TYPENAME = nameof(ClientRuntimeListener) + "_XML";
-        public static readonly string AVRO_TYPENAME = nameof(ClientRuntimeListener) + "_AVRO";
+        public static readonly string MAP_TYPENAME = $"{nameof(ClientRuntimeListener)}_MAP";
+        public static readonly string OA_TYPENAME = $"{nameof(ClientRuntimeListener)}_OA";
+        public static readonly string XML_TYPENAME = $"{nameof(ClientRuntimeListener)}_XML";
+        public static readonly string AVRO_TYPENAME = $"{nameof(ClientRuntimeListener)}_AVRO";
 
         public static IList<RegressionExecution> Executions()
         {
@@ -54,23 +54,13 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@name('bean') select * from " +
-                    BEAN_TYPENAME +
-                    ";\n" +
-                    "@name('map') select * from " +
-                    MAP_TYPENAME +
-                    ";\n" +
-                    "@name('oa') select * from " +
-                    OA_TYPENAME +
-                    ";\n" +
-                    "@name('xml') select * from " +
-                    XML_TYPENAME +
-                    ";\n" +
-                    "@name('avro') select * from " +
-                    AVRO_TYPENAME +
-                    ";\n" +
+                    $"@name('bean') select * from {BEAN_TYPENAME};\n" +
+                    $"@name('map') select * from {MAP_TYPENAME};\n" +
+                    $"@name('oa') select * from {OA_TYPENAME};\n" +
+                    $"@name('xml') select * from {XML_TYPENAME};\n" + 
+                    $"@name('avro') select * from {AVRO_TYPENAME};\n" + 
                     "@public @buseventtype create json schema JsonEvent(Ident string);\n" +
-                    "@name('json') select * from JsonEvent;\n" +
+                    "@name('json') select * from JsonEvent;\n" + 
                     "@name('trigger') select * from SupportBean;";
                 env.CompileDeploy(epl)
                     .AddListener("map")
@@ -108,7 +98,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
 
                 foreach (var name in new[] { "map", "bean", "oa", "xml", "avro", "json" }) {
                     var listener = env.Listener(name);
-                    ClassicAssert.IsTrue(listener.IsInvoked, "failed for " + name);
+                    ClassicAssert.IsTrue(listener.IsInvoked, $"failed for {name}");
                     ClassicAssert.AreEqual("xy", env.Listener(name).AssertOneGetNewAndReset().Get("Ident"));
                 }
 

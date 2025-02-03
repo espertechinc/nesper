@@ -29,17 +29,5 @@ namespace com.espertech.esper.runtime.client
 			: base(message, ex, rolloutItemNumber)
         {
         }
-
-	    /// <summary>
-	    /// Deserialization constructor.
-	    /// </summary>
-	    /// <param name="info"></param>
-	    /// <param name="context"></param>
-	    protected EPDeployDeploymentVersionException(
-		    SerializationInfo info,
-		    StreamingContext context) 
-		    : base(info, context)
-	    {
-	    }
     }
 } // end of namespace

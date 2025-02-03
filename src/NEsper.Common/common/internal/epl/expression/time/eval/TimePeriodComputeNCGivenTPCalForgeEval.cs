@@ -15,6 +15,8 @@ using com.espertech.esper.common.@internal.epl.expression.time.adder;
 using com.espertech.esper.common.@internal.schedule;
 using com.espertech.esper.compat;
 
+using TimeProvider = com.espertech.esper.common.@internal.schedule.TimeProvider;
+
 namespace com.espertech.esper.common.@internal.epl.expression.time.eval
 {
     public class TimePeriodComputeNCGivenTPCalForgeEval : TimePeriodCompute

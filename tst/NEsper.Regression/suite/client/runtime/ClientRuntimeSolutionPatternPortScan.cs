@@ -111,7 +111,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             string dst)
         {
             for (var i = 0; i < count; i++) {
-                SendEvent(env, src, dst, 16 + i, "m" + count);
+                SendEvent(env, src, dst, 16 + i, $"m{count}");
             }
         }
 
@@ -129,9 +129,9 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             RegressionEnvironment env,
             string time)
         {
-            var timestamp = "2002-05-30T" + time + ".000";
+            var timestamp = $"2002-05-30T{time}.000";
             var current = DateTimeParsingFunctions.ParseDefaultMSec(timestamp);
-            Console.WriteLine("Advancing time to " + timestamp + " msec " + current);
+            Console.WriteLine($"Advancing time to {timestamp} msec {current}");
             env.AdvanceTimeSpan(current);
         }
 

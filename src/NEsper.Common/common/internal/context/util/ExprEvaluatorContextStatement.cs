@@ -24,6 +24,8 @@ using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.threading.locks;
 
+using TimeProvider = com.espertech.esper.common.@internal.schedule.TimeProvider;
+
 namespace com.espertech.esper.common.@internal.context.util
 {
     public class ExprEvaluatorContextStatement : ExprEvaluatorContext

@@ -499,7 +499,7 @@ wideningConversions.AddAll (floatWrappers);
 
             var parametersPretty = GetParametersPretty(paramTypes);
             throw new MethodResolverNoSuchMethodException(
-                "Unknown method " + declaringClass.Name + '.' + methodName + '(' + parametersPretty + ')',
+                $"Unknown method {declaringClass.Name}.{methodName}({parametersPretty})",
                 conversionFailedMethod);
         }
 
@@ -576,17 +576,7 @@ wideningConversions.AddAll (floatWrappers);
                      paramMethod.GetBoxedType() == paramType)) {
                     var paramTypeStr = paramNull ? "null" : paramType.Name;
                     Log.Info(
-                        "Method '" +
-                        methodName +
-                        "' in class '" +
-                        declaringClass.CleanName() +
-                        "' expects primitive type '" +
-                        parametersMethod[i] +
-                        "' as parameter " +
-                        i +
-                        ", but receives a nullable (boxed) type " +
-                        paramTypeStr +
-                        ". This may cause null pointer exception at runtime if the actual value is null, please consider using boxed types for method parameters.");
+                        $"Method '{methodName}' in class '{declaringClass.CleanName()}' expects primitive type '{parametersMethod[i]}' as parameter {i}, but receives a nullable (boxed) type {paramTypeStr}. This may cause null pointer exception at runtime if the actual value is null, please consider using boxed types for method parameters.");
                     return;
                 }
             }
@@ -928,7 +918,7 @@ wideningConversions.AddAll (floatWrappers);
             }
 
             var paramList = new StringBuilder();
-            var message = "Constructor not found for " + declaringClass.Name + " taking ";
+            var message = $"Constructor not found for {declaringClass.Name} taking ";
             if (paramTypes != null && paramTypes.Length != 0) {
                 var appendString = "";
                 foreach (var param in paramTypes) {
@@ -943,7 +933,7 @@ wideningConversions.AddAll (floatWrappers);
                     appendString = ", ";
                 }
 
-                message += "('" + paramList + "')'";
+                message += $"('{paramList}')'";
             }
             else {
                 message += "no parameters";
@@ -985,14 +975,7 @@ wideningConversions.AddAll (floatWrappers);
             catch (Exception ex) {
                 var parametersPretty = GetParametersPretty(parameters);
                 throw new EPException(
-                    "Failed to resolve static method " +
-                    declaringClass.Name +
-                    '.' +
-                    methodName +
-                    '(' +
-                    parametersPretty +
-                    ": " +
-                    ex.Message,
+                    $"Failed to resolve static method {declaringClass.Name}.{methodName}({parametersPretty}: {ex.Message}",
                     ex);
             }
         }

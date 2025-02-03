@@ -57,7 +57,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             var compiled = env.Compile(
                 "select SupportStaticMethodLib.Sleep(10) from pattern[every MyMap -> timer:interval(1)]");
             for (var i = 0; i < countStatements; i++) {
-                var stmtName = "s" + i;
+                var stmtName = $"s{i}";
                 env.Deploy(compiled, new DeploymentOptions().WithStatementNameRuntime(ctx => stmtName));
                 env.Statement(stmtName).AddListener(listener);
             }
@@ -69,7 +69,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             SendTimer(1000, env);
             var end = PerformanceObserver.NanoTime;
             var delta = (end - start) / 1000000;
-            Assert.That(delta, Is.LessThan(100), "Delta is " + delta);
+            Assert.That(delta, Is.LessThan(100), $"Delta is {delta}");
 
             // wait for delivery
             while (true) {
@@ -78,7 +78,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                     break;
                 }
 
-                Log.Info("Delivered " + countDelivered + ", waiting for more");
+                Log.Info($"Delivered {countDelivered}, waiting for more");
                 try {
                     Thread.Sleep(200);
                 }

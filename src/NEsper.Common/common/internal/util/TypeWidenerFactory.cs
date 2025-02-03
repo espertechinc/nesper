@@ -115,13 +115,8 @@ namespace com.espertech.esper.common.@internal.util
 
             if (columnType == null) {
                 if (writeablePropertyType.CanNotBeNull()) {
-                    var message = "Invalid assignment of column '" +
-                                  columnName +
-                                  "' of null type to event property '" +
-                                  writeablePropertyName +
-                                  "' typed as '" +
-                                  writeablePropertyType.CleanName() +
-                                  "', nullable type mismatch";
+                    var message =
+                        $"Invalid assignment of column '{columnName}' of null type to event property '{writeablePropertyName}' typed as '{writeablePropertyType.CleanName()}', nullable type mismatch";
                     throw new TypeWidenerException(message);
                 }
             }
@@ -164,23 +159,16 @@ namespace com.espertech.esper.common.@internal.util
 
                     var writablePropName = writeablePropertyType.CleanName();
                     if (writeablePropertyType.IsArray) {
-                        writablePropName = writeablePropertyType.GetElementType().CleanName() + "[]";
+                        writablePropName = $"{writeablePropertyType.GetElementType().CleanName()}[]";
                     }
 
                     var columnTypeName = columnType.CleanName();
                     if (columnType.IsArray) {
-                        columnTypeName = columnType.GetElementType().CleanName() + "[]";
+                        columnTypeName = $"{columnType.GetElementType().CleanName()}[]";
                     }
 
-                    var message = "Invalid assignment of column '" +
-                                  columnName +
-                                  "' of type '" +
-                                  columnTypeName +
-                                  "' to event property '" +
-                                  writeablePropertyName +
-                                  "' typed as '" +
-                                  writablePropName +
-                                  "', column and parameter types mismatch";
+                    var message =
+                        $"Invalid assignment of column '{columnName}' of type '{columnTypeName}' to event property '{writeablePropertyName}' typed as '{writablePropName}', column and parameter types mismatch";
                     throw new TypeWidenerException(message);
                 }
 
@@ -225,7 +213,7 @@ namespace com.espertech.esper.common.@internal.util
                 return CHAR_ARRAY_TO_COLLECTION_COERCER;
             }
 
-            throw new IllegalStateException("Unrecognized class " + componentType);
+            throw new IllegalStateException($"Unrecognized class {componentType}");
         }
 
         public static CodegenExpression CodegenWidener(

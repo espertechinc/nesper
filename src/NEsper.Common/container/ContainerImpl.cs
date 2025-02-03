@@ -93,6 +93,53 @@ namespace com.espertech.esper.container
             CheckDisposed();
             return _container.Resolve<T>(name);
         }
+
+        /// <summary>
+        /// Attempts to resolve a name within a container.  If the named entity does not exist, then it
+        /// returns default(T).
+        /// </summary>
+        /// <param name="value"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public bool TryResolve<T>(out T value)
+        {
+            lock (this)
+            {
+                CheckDisposed();
+                if (Has<T>())
+                {
+                    value = Resolve<T>(); // should not throw any exceptions
+                    return true;
+                }
+                
+                value = default(T);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Attempts to resolve a name within a container.  If the named entity does not exist, then it
+        /// returns default(T).
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="value"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public bool TryResolve<T>(string name, out T value)
+        {
+            lock (this)
+            {
+                CheckDisposed();
+                if (Has<T>(name))
+                {
+                    value = Resolve<T>(name); // should not throw any exceptions
+                    return true;
+                }
+                
+                value = default(T);
+                return false;
+            }
+        }
         
 #if false
         /// <summary>

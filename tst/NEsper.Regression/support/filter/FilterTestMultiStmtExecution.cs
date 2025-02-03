@@ -76,7 +76,7 @@ namespace com.espertech.esper.regressionlib.support.filter
                 try {
                     AssertSendEvents(existingStatements, startedStatements, initialListeners, env, _theCase.Items);
                 }
-                catch (AssertionException ex) {
+                catch (AssertionException) {
                     Assert.Fail("Failed after create stmt " + i + " and after milestone P" + milestone.Get());
                 }
             }

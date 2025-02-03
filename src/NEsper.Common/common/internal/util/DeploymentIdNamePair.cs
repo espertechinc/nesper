@@ -30,14 +30,7 @@ namespace com.espertech.esper.common.@internal.util
 
         public override string ToString()
         {
-            return "DeploymentIdNamePair{" +
-                   "deploymentId='" +
-                   DeploymentId +
-                   '\'' +
-                   ", name='" +
-                   Name +
-                   '\'' +
-                   '}';
+            return $"DeploymentIdNamePair{{deploymentId='{DeploymentId}', name='{Name}'}}";
         }
 
         protected bool Equals(DeploymentIdNamePair other)

@@ -51,6 +51,25 @@ namespace com.espertech.esper.container
         /// <returns></returns>
         T Resolve<T>(IDictionary<object, object> argumentsAsDictionary);
 #endif
+
+        /// <summary>
+        /// Attempts to resolve a name within a container.  If the named entity does not exist, then it
+        /// returns default(T).
+        /// </summary>
+        /// <param name="value"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        bool TryResolve<T>(out T value);
+        
+        /// <summary>
+        /// Attempts to resolve a name within a container.  If the named entity does not exist, then it
+        /// returns default(T).
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="value"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        bool TryResolve<T>(string name, out T value);
         
         /// <summary>
         /// Registers the singleton.

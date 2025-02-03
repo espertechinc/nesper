@@ -72,15 +72,11 @@ namespace com.espertech.esper.common.@internal.util
 
         public void Dispose()
         {
-            if (_writerLock != null) {
-                _writerLock.Dispose();
-                _writerLock = null;
-            }
+            var wlock = Interlocked.Exchange(ref _writerLock, null);
+            wlock?.Dispose();
 
-            if (_readerLock != null) {
-                _readerLock.Dispose();
-                _readerLock = null;
-            }
+            var rlock = Interlocked.Exchange(ref _readerLock, null);
+            rlock?.Dispose();
         }
 
         public IDisposable AcquireDisposableWriteLock()
@@ -95,13 +91,13 @@ namespace com.espertech.esper.common.@internal.util
         public void AcquireWriteLock()
         {
             if (ThreadLogUtil.ENABLED_TRACE) {
-                ThreadLogUtil.TraceLock(ACQUIRE_TEXT + " write " + _name, Lock);
+                ThreadLogUtil.TraceLock($"{ACQUIRE_TEXT} write {_name}", Lock);
             }
 
             _writerLock = Lock.WriteLock.Acquire();
 
             if (ThreadLogUtil.ENABLED_TRACE) {
-                ThreadLogUtil.TraceLock(ACQUIRED_TEXT + " write " + _name, Lock);
+                ThreadLogUtil.TraceLock($"{ACQUIRED_TEXT} write {_name}", Lock);
             }
         }
 
@@ -113,7 +109,7 @@ namespace com.espertech.esper.common.@internal.util
         public bool TryWriteLock(long msec)
         {
             if (ThreadLogUtil.ENABLED_TRACE) {
-                ThreadLogUtil.TraceLock(TRY_TEXT + " write " + _name, Lock);
+                ThreadLogUtil.TraceLock($"{TRY_TEXT} write {_name}", Lock);
             }
 
             try {
@@ -124,7 +120,7 @@ namespace com.espertech.esper.common.@internal.util
             }
 
             if (ThreadLogUtil.ENABLED_TRACE) {
-                ThreadLogUtil.TraceLock(TRY_TEXT + " write " + _name, Lock);
+                ThreadLogUtil.TraceLock($"{TRY_TEXT} write {_name}", Lock);
             }
 
             return true;
@@ -136,14 +132,14 @@ namespace com.espertech.esper.common.@internal.util
         public void ReleaseWriteLock()
         {
             if (ThreadLogUtil.ENABLED_TRACE) {
-                ThreadLogUtil.TraceLock(RELEASE_TEXT + " write " + _name, Lock);
+                ThreadLogUtil.TraceLock($"{RELEASE_TEXT} write {_name}", Lock);
             }
 
-            _writerLock.Dispose();
-            _writerLock = null;
+            var wLock = Interlocked.Exchange(ref _writerLock, null);
+            wLock?.Dispose();
 
             if (ThreadLogUtil.ENABLED_TRACE) {
-                ThreadLogUtil.TraceLock(RELEASED_TEXT + " write " + _name, Lock);
+                ThreadLogUtil.TraceLock($"{RELEASED_TEXT} write {_name}", Lock);
             }
         }
 
@@ -159,13 +155,13 @@ namespace com.espertech.esper.common.@internal.util
         public void AcquireReadLock()
         {
             if (ThreadLogUtil.ENABLED_TRACE) {
-                ThreadLogUtil.TraceLock(ACQUIRE_TEXT + " read " + _name, Lock);
+                ThreadLogUtil.TraceLock($"{ACQUIRE_TEXT} read {_name}", Lock);
             }
 
             _readerLock = Lock.ReadLock.Acquire();
 
             if (ThreadLogUtil.ENABLED_TRACE) {
-                ThreadLogUtil.TraceLock(ACQUIRED_TEXT + " read " + _name, Lock);
+                ThreadLogUtil.TraceLock($"{ACQUIRED_TEXT} read {_name}", Lock);
             }
         }
 
@@ -175,14 +171,14 @@ namespace com.espertech.esper.common.@internal.util
         public void ReleaseReadLock()
         {
             if (ThreadLogUtil.ENABLED_TRACE) {
-                ThreadLogUtil.TraceLock(RELEASE_TEXT + " read " + _name, Lock);
+                ThreadLogUtil.TraceLock($"{RELEASE_TEXT} read {_name}", Lock);
             }
-
-            _readerLock.Dispose();
-            _readerLock = null;
+            
+            var rLock = Interlocked.Exchange(ref _readerLock, null);
+            rLock?.Dispose();
 
             if (ThreadLogUtil.ENABLED_TRACE) {
-                ThreadLogUtil.TraceLock(RELEASED_TEXT + " read " + _name, Lock);
+                ThreadLogUtil.TraceLock($"{RELEASED_TEXT} read {_name}", Lock);
             }
         }
     }

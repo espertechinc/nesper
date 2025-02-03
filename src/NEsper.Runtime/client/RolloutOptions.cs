@@ -6,12 +6,13 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Collections.Generic;
 using com.espertech.esper.runtime.client.util;
 
 namespace com.espertech.esper.runtime.client
 {
 	/// <summary>
-	///     Option holder for use with <seealso cref="EPDeploymentService.Rollout" /> ()}.
+	///     Option holder for use with <seealso cref="EPDeploymentService.Rollout(ICollection{EPDeploymentRolloutCompiled})" /> ()}.
 	/// </summary>
 	public class RolloutOptions
     {

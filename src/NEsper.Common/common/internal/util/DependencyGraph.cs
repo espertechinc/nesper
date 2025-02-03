@@ -106,12 +106,12 @@ namespace com.espertech.esper.common.@internal.util
             ICollection<int> requiredStreams)
         {
             if (requiredStreams.Contains(target)) {
-                throw new ArgumentException("Dependency between same streams is not allowed for stream " + target);
+                throw new ArgumentException($"Dependency between same streams is not allowed for stream {target}");
             }
 
             var toSet = Dependencies.Get(target);
             if (toSet != null) {
-                throw new ArgumentException("Dependencies from stream " + target + " already in collection");
+                throw new ArgumentException($"Dependencies from stream {target} already in collection");
             }
 
             Dependencies.Put(target, requiredStreams);
@@ -127,7 +127,7 @@ namespace com.espertech.esper.common.@internal.util
             int from)
         {
             if (target == from && !_allowDependencySame) {
-                throw new ArgumentException("Dependency between same streams is not allowed for stream " + target);
+                throw new ArgumentException($"Dependency between same streams is not allowed for stream {target}");
             }
 
             var toSet = Dependencies.Get(target);

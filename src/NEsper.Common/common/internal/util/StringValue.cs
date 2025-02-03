@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.util
                 }
             }
 
-            throw new ArgumentException("String value of '" + value + "' cannot be parsed");
+            throw new ArgumentException($"String value of '{value}' cannot be parsed");
         }
 
         /// <summary>

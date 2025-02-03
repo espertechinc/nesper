@@ -44,7 +44,7 @@ namespace com.espertech.esper.common.@internal.util
                     ? node.LocalName
                     : node.Name;
                 throw new ConfigurationException(
-                    "Required attribute by name '" + key + "' not found for element '" + name + "'");
+                    $"Required attribute by name '{key}' not found for element '{name}'");
             }
 
             return valueNode.InnerText;

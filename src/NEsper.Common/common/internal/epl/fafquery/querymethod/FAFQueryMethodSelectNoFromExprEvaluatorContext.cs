@@ -26,6 +26,8 @@ using com.espertech.esper.compat;
 using com.espertech.esper.compat.threading.locks;
 using com.espertech.esper.container;
 
+using TimeProvider = com.espertech.esper.common.@internal.schedule.TimeProvider;
+
 namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
 {
     internal class FAFQueryMethodSelectNoFromExprEvaluatorContext : ExprEvaluatorContext

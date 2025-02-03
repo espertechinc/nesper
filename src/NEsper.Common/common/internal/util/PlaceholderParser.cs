@@ -74,7 +74,7 @@ namespace com.espertech.esper.common.@internal.util
                 var endIndex = parseString.IndexOf("}", startIndex);
                 if (endIndex == -1) {
                     throw new PlaceholderParseException(
-                        "Syntax error in property or variable: '" + parseString.Substring(startIndex) + "'");
+                        $"Syntax error in property or variable: '{parseString.Substring(startIndex)}'");
                 }
 
                 // add placeholder
@@ -213,7 +213,7 @@ namespace com.espertech.esper.common.@internal.util
             /// </returns>
             public override string ToString()
             {
-                return "text=" + Value;
+                return $"text={Value}";
             }
         }
 
@@ -281,7 +281,7 @@ namespace com.espertech.esper.common.@internal.util
             /// </returns>
             public override string ToString()
             {
-                return "param=" + Value;
+                return $"param={Value}";
             }
         }
     }

@@ -56,16 +56,5 @@ namespace com.espertech.esper.runtime.client
         {
             _rolloutItemNumber = rolloutItemNumber;
         }
-        
-        /// <summary>
-        /// Deserialization constructor.
-        /// </summary>
-        /// <param name="info"></param>
-        /// <param name="context"></param>
-        protected EPDeployException(
-            SerializationInfo info,
-            StreamingContext context) : base(info, context)
-        {
-        }
     }
 } // end of namespace

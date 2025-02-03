@@ -41,11 +41,5 @@ namespace com.espertech.esper.runtime.client
             : base("Substitution parameters have not been provided: " + message, cause, rolloutItemNumber)
         {
         }
-
-        protected EPDeploySubstitutionParameterException(
-            SerializationInfo info,
-            StreamingContext context) : base(info, context)
-        {
-        }
     }
 } // end of namespace

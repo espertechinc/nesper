@@ -54,6 +54,8 @@ using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
 using com.espertech.esper.compiler.client;
+using com.espertech.esper.compiler.client.util;
+using com.espertech.esper.container;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.compiler.@internal.util.CompilerHelperStatementProvider;
@@ -117,6 +119,17 @@ namespace com.espertech.esper.compiler.@internal.util
 			return compiled;
 		}
 
+		public static ConfigurationPoolThreadFactory GetConfigurationPoolThreadFactory(IContainer container)
+		{
+			if ((container != null) &&
+			    (container.TryResolve<ConfigurationPoolThreadFactory>(out var poolThreadFactory)))
+			{
+				return poolThreadFactory;
+			}
+
+			return null;
+		}
+
 		private static EPCompiledManifest CompileToArtifact(
 			CompilerAbstraction compilerAbstraction,
 			CompilerAbstractionArtifactCollection compilationState,
@@ -131,6 +144,12 @@ namespace com.espertech.esper.compiler.@internal.util
 			var moduleAssignedName = optionalModuleName ?? Guid.NewGuid().ToString();
 			var moduleIdentPostfix = IdentifierUtil.GetIdentifierMayStartNumeric(moduleAssignedName);
 
+			// Modification: 8.9.1
+			// Compiler thread pool factory is now a parameter that can be provided through the container.  If
+			// provided, it will be given to the compiler pool and will be used during the creation of the
+			// executor service.
+			var compilerThreadPoolFactory = GetConfigurationPoolThreadFactory(compileTimeServices.Container);
+
 			// compile each statement
 			IList<string> statementClassNames = new List<string>();
 			ISet<string> statementNames = new HashSet<string>();
@@ -141,7 +160,8 @@ namespace com.espertech.esper.compiler.@internal.util
 				compileTimeServices,
 				path.Compileds,
 				compilerAbstraction,
-				compilationState);
+				compilationState,
+				compilerThreadPoolFactory);
 			var targetHA = compileTimeServices.SerdeEventTypeRegistry.IsTargetHA;
 			var fabricStatements = targetHA
 				? (IList<FabricStatement>)new List<FabricStatement>()

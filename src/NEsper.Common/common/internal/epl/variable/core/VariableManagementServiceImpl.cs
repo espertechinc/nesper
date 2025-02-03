@@ -27,6 +27,8 @@ using com.espertech.esper.compat.threading.locks;
 
 using static com.espertech.esper.common.@internal.context.util.StatementCPCacheService;
 
+using TimeProvider = com.espertech.esper.common.@internal.schedule.TimeProvider;
+
 namespace com.espertech.esper.common.@internal.epl.variable.core
 {
     /// <summary>

@@ -44,6 +44,8 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.directory;
 using com.espertech.esper.compat.threading.locks;
 
+using TimeProvider = com.espertech.esper.common.@internal.schedule.TimeProvider;
+
 namespace com.espertech.esper.common.@internal.context.util
 {
     public class AgentInstanceContext : ExprEvaluatorContext

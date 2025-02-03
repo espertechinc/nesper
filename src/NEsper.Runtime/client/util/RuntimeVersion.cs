@@ -124,11 +124,6 @@ namespace com.espertech.esper.runtime.client.util
                 Exception innerException) : base(message, innerException)
             {
             }
-
-            protected VersionException(SerializationInfo info,
-                StreamingContext context) : base(info, context)
-            {
-            }
         }
     }
 } // end of namespace

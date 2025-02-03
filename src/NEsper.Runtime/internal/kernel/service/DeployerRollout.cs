@@ -93,9 +93,9 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 						items[i].Options.StatementSubstitutionParameter,
 						runtime.ServicesContext);
 				}
-				catch (EPDeployException ex) {
+				catch (EPDeployException) {
 					RolloutCleanLightweights(stmtLightweights, inits, deploymentIds, moduleProviders, runtime.ServicesContext);
-					throw ex;
+					throw;
 				}
 				catch (Exception ex) {
 					RolloutCleanLightweights(stmtLightweights, inits, deploymentIds, moduleProviders, runtime.ServicesContext);
@@ -118,9 +118,9 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 						deploymentIds[i],
 						runtime);
 				}
-				catch (EPDeployException ex) {
+				catch (EPDeployException) {
 					RolloutCleanStatements(statements, stmtLightweights, inits, deploymentIds, moduleProviders, runtime.ServicesContext);
-					throw ex;
+					throw;
 				}
 				catch (Exception t) {
 					RolloutCleanStatements(statements, stmtLightweights, inits, deploymentIds, moduleProviders, runtime.ServicesContext);

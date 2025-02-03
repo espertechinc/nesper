@@ -391,9 +391,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             SupportSubscriberMultirowObjectArrayBase subscriber)
         {
             var stmtText =
-                eventRepresentationEnum.GetAnnotationTextWJsonProvided(typeof(MyLocalJsonProvidedStringInt)) +
-                " @name('s0') select irstream TheString, IntPrimitive from SupportBean" +
-                "#length_batch(2)";
+                $"{eventRepresentationEnum.GetAnnotationTextWJsonProvided(typeof(MyLocalJsonProvidedStringInt))} @name('s0') select irstream TheString, IntPrimitive from SupportBean#length_batch(2)";
             var stmt = env.CompileDeploy(stmtText).Statement("s0");
             stmt.SetSubscriber(subscriber);
             ClassicAssert.IsTrue(eventRepresentationEnum.MatchesClass(stmt.EventType.UnderlyingType));
@@ -427,9 +425,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             SupportSubscriberMultirowMapBase subscriber)
         {
             var stmtText =
-                eventRepresentationEnum.GetAnnotationTextWJsonProvided(typeof(MyLocalJsonProvidedStringInt)) +
-                " @name('s0') select irstream TheString, IntPrimitive from SupportBean" +
-                "#length_batch(2)";
+                $"{eventRepresentationEnum.GetAnnotationTextWJsonProvided(typeof(MyLocalJsonProvidedStringInt))} @name('s0') select irstream TheString, IntPrimitive from SupportBean#length_batch(2)";
             var stmt = env.CompileDeploy(stmtText).Statement("s0");
             stmt.SetSubscriber(subscriber);
             ClassicAssert.IsTrue(eventRepresentationEnum.MatchesClass(stmt.EventType.UnderlyingType));
@@ -463,8 +459,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             SupportSubscriberRowByRowSpecificBase subscriber)
         {
             var stmt = env.CompileDeploy(
-                    eventRepresentationEnum.GetAnnotationTextWJsonProvided(typeof(MyLocalJsonProvidedWidenedEvent)) +
-                    " @name('s0') select BytePrimitive, IntPrimitive, LongPrimitive, FloatPrimitive from SupportBean(TheString='E1')")
+                    $"{eventRepresentationEnum.GetAnnotationTextWJsonProvided(typeof(MyLocalJsonProvidedWidenedEvent))} @name('s0') select BytePrimitive, IntPrimitive, LongPrimitive, FloatPrimitive from SupportBean(TheString='E1')")
                 .Statement("s0");
             stmt.SetSubscriber(subscriber);
             ClassicAssert.IsTrue(eventRepresentationEnum.MatchesClass(stmt.EventType.UnderlyingType));
@@ -487,8 +482,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             SupportSubscriberRowByRowObjectArrayBase subscriber)
         {
             var stmt = env.CompileDeploy(
-                    eventRepresentationEnum.GetAnnotationTextWJsonProvided(typeof(MyLocalJsonProvidedStringInt)) +
-                    " @name('s0') select TheString, IntPrimitive from SupportBean#unique(TheString)")
+                    $"{eventRepresentationEnum.GetAnnotationTextWJsonProvided(typeof(MyLocalJsonProvidedStringInt))} @name('s0') select TheString, IntPrimitive from SupportBean#unique(TheString)")
                 .Statement("s0");
             stmt.SetSubscriber(subscriber);
             ClassicAssert.IsTrue(eventRepresentationEnum.MatchesClass(stmt.EventType.UnderlyingType));
@@ -508,8 +502,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             SupportSubscriberRowByRowMapBase subscriber)
         {
             var stmt = env.CompileDeploy(
-                    eventRepresentationEnum.GetAnnotationTextWJsonProvided(typeof(MyLocalJsonProvidedStringInt)) +
-                    " @name('s0') select irstream TheString, IntPrimitive from SupportBean#unique(TheString)")
+                    $"{eventRepresentationEnum.GetAnnotationTextWJsonProvided(typeof(MyLocalJsonProvidedStringInt))} @name('s0') select irstream TheString, IntPrimitive from SupportBean#unique(TheString)")
                 .Statement("s0");
             stmt.SetSubscriber(subscriber);
             ClassicAssert.IsTrue(eventRepresentationEnum.MatchesClass(stmt.EventType.UnderlyingType));
@@ -632,8 +625,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             SupportSubscriberRowByRowSpecificBase subscriber)
         {
             var stmt = env.CompileDeploy(
-                    eventRepresentationEnum.GetAnnotationTextWJsonProvided(typeof(MyLocalJsonProvidedStringInt)) +
-                    " @name('s0') select TheString, IntPrimitive from SupportBean output every 2 events")
+                    $"{eventRepresentationEnum.GetAnnotationTextWJsonProvided(typeof(MyLocalJsonProvidedStringInt))} @name('s0') select TheString, IntPrimitive from SupportBean output every 2 events")
                 .Statement("s0");
             stmt.SetSubscriber(subscriber);
             ClassicAssert.IsTrue(eventRepresentationEnum.MatchesClass(stmt.EventType.UnderlyingType));
@@ -937,8 +929,8 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             var fields = "key,value".SplitCsv();
             var path = new RegressionPath();
             var subscriberNamedWindow = new SubscriberMap();
-            var stmtTextCreate = eventRepresentationEnum.GetAnnotationText() +
-                                 " @name('create') @public create window MyWindow#keepall as select TheString as key, IntPrimitive as value from SupportBean";
+            var stmtTextCreate =
+                $"{eventRepresentationEnum.GetAnnotationText()} @name('create') @public create window MyWindow#keepall as select TheString as key, IntPrimitive as value from SupportBean";
             var stmt = env.CompileDeploy(stmtTextCreate, path).Statement("create");
             stmt.SetSubscriber(subscriberNamedWindow);
 

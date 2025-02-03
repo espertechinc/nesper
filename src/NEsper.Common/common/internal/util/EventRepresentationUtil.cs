@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.@internal.util
 
             if (assignedType == AssignedType.VARIANT ||
                 assignedType != AssignedType.NONE) {
-                throw new IllegalStateException("Not handled by event representation: " + assignedType);
+                throw new IllegalStateException($"Not handled by event representation: {assignedType}");
             }
 
             // annotation has second priority
@@ -53,7 +53,7 @@ namespace com.espertech.esper.common.@internal.util
                     EventUnderlyingType.JSON => EventUnderlyingType.JSON,
                     EventUnderlyingType.OBJECTARRAY => EventUnderlyingType.OBJECTARRAY,
                     EventUnderlyingType.MAP => EventUnderlyingType.MAP,
-                    _ => throw new IllegalStateException("Unrecognized enum " + eventRepresentation.Value)
+                    _ => throw new IllegalStateException($"Unrecognized enum {eventRepresentation.Value}")
                 };
             }
 
