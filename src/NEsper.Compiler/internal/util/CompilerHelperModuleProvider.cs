@@ -119,10 +119,10 @@ namespace com.espertech.esper.compiler.@internal.util
 			return compiled;
 		}
 
-		public static ConfigurationPoolThreadFactory GetConfigurationPoolThreadFactory(IContainer container)
+		public static CompilerThreadPoolFactory GetCompilerThreadPoolFactory(IContainer container)
 		{
 			if ((container != null) &&
-			    (container.TryResolve<ConfigurationPoolThreadFactory>(out var poolThreadFactory)))
+			    (container.TryResolve<CompilerThreadPoolFactory>(out var poolThreadFactory)))
 			{
 				return poolThreadFactory;
 			}
@@ -148,7 +148,7 @@ namespace com.espertech.esper.compiler.@internal.util
 			// Compiler thread pool factory is now a parameter that can be provided through the container.  If
 			// provided, it will be given to the compiler pool and will be used during the creation of the
 			// executor service.
-			var compilerThreadPoolFactory = GetConfigurationPoolThreadFactory(compileTimeServices.Container);
+			var compilerThreadPoolFactory = GetCompilerThreadPoolFactory(compileTimeServices.Container);
 
 			// compile each statement
 			IList<string> statementClassNames = new List<string>();

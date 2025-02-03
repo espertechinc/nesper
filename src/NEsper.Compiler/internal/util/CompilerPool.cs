@@ -40,7 +40,7 @@ namespace com.espertech.esper.compiler.@internal.util
 			IList<EPCompiled> path,
 			CompilerAbstraction compilerAbstraction,
 			CompilerAbstractionArtifactCollection compilationState,
-			ConfigurationPoolThreadFactory compilerThreadPoolFactory)
+			CompilerThreadPoolFactory compilerThreadPoolFactory)
 		{
 			_compileTimeServices = compileTimeServices;
 			_path = path;
