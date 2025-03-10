@@ -11,6 +11,11 @@ using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
+#if !NETCORE
+using com.espertech.esper.compat.diagnostics;
+using com.espertech.esper.regressionlib.support.client;
+#endif
+
 using NUnit.Framework;
 using NUnit.Framework.Legacy;
 

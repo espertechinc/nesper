@@ -297,7 +297,7 @@ namespace com.espertech.esper.common.@internal.util
             }
 
             if (!array.GetType().IsArray) {
-                throw new ArgumentException("Expected array but received " + array.GetType());
+                throw new ArgumentException($"Expected array but received {array.GetType()}");
             }
 
             for (var i = 0; i < array.Length; i++) {
@@ -346,12 +346,12 @@ namespace com.espertech.esper.common.@internal.util
                 var keyValue = values[index];
                 if (!(keyValue is string key)) {
                     throw new ArgumentException(
-                        "Expected string-type key value at index " + index + " but found " + keyValue);
+                        $"Expected string-type key value at index {index} but found {keyValue}");
                 }
 
                 var value = values[index + 1];
                 if (result.ContainsKey(key)) {
-                    throw new ArgumentException("Found two or more values for key '" + key + "'");
+                    throw new ArgumentException($"Found two or more values for key '{key}'");
                 }
 
                 result.Put(key, value);
@@ -365,11 +365,11 @@ namespace com.espertech.esper.common.@internal.util
             object second)
         {
             if (first != null && !first.GetType().IsArray) {
-                throw new ArgumentException("Parameter is not an array: " + first);
+                throw new ArgumentException($"Parameter is not an array: {first}");
             }
 
             if (second != null && !second.GetType().IsArray) {
-                throw new ArgumentException("Parameter is not an array: " + second);
+                throw new ArgumentException($"Parameter is not an array: {second}");
             }
 
             if (first == null) {
@@ -739,7 +739,7 @@ namespace com.espertech.esper.common.@internal.util
             CodegenClassScope codegenClassScope)
         {
             if (!arrayType.IsArray) {
-                throw new ArgumentException("Expected array type and received " + arrayType);
+                throw new ArgumentException($"Expected array type and received {arrayType}");
             }
 
             var arrayElementType = arrayType.GetComponentType();
@@ -992,7 +992,7 @@ namespace com.espertech.esper.common.@internal.util
                 comparable1 = one;
             }
             else {
-                throw new InvalidCastException("Cannot sort objects of type " + valueOne.GetType());
+                throw new InvalidCastException($"Cannot sort objects of type {valueOne.GetType()}");
             }
 
             if (isDescending) {
@@ -1079,7 +1079,7 @@ namespace com.espertech.esper.common.@internal.util
             int size)
         {
             if (size < 1) {
-                throw new ArgumentException("Invalid size " + size);
+                throw new ArgumentException($"Invalid size {size}");
             }
 
             if (items.Count <= size) {

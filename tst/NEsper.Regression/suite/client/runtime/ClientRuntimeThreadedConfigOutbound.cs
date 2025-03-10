@@ -48,7 +48,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
 
             var end = PerformanceObserver.NanoTime;
             var delta = (end - start) / 1000000;
-            Assert.That(delta, Is.LessThan(100), "Delta is " + delta);
+            Assert.That(delta, Is.LessThan(100), $"Delta is {delta}");
 
             try {
                 Thread.Sleep(1000);

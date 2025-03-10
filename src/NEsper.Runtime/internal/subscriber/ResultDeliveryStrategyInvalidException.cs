@@ -16,11 +16,5 @@ namespace com.espertech.esper.runtime.@internal.subscriber
         public ResultDeliveryStrategyInvalidException(string message) : base(message)
         {
         }
-
-        protected ResultDeliveryStrategyInvalidException(
-            SerializationInfo info,
-            StreamingContext context) : base(info, context)
-        {
-        }
     }
 } // end of namespace

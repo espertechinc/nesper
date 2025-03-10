@@ -13,11 +13,13 @@ using System.Threading;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.artifact;
+using com.espertech.esper.common.client.configuration.compiler;
 using com.espertech.esper.common.@internal.compile.compiler;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.compat.concurrency;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.compiler.client;
+using com.espertech.esper.compiler.client.util;
 
 namespace com.espertech.esper.compiler.@internal.util
 {
@@ -37,7 +39,8 @@ namespace com.espertech.esper.compiler.@internal.util
 			ModuleCompileTimeServices compileTimeServices,
 			IList<EPCompiled> path,
 			CompilerAbstraction compilerAbstraction,
-			CompilerAbstractionArtifactCollection compilationState)
+			CompilerAbstractionArtifactCollection compilationState,
+			CompilerThreadPoolFactory compilerThreadPoolFactory)
 		{
 			_compileTimeServices = compileTimeServices;
 			_path = path;
@@ -52,7 +55,9 @@ namespace com.espertech.esper.compiler.@internal.util
 			var config = compileTimeServices.Configuration.Compiler.ByteCode;
 			var numThreads = config.ThreadPoolCompilerNumThreads;
 			if (numThreads > 0 && size > 1) {
-				_compilerThreadPool = Executors.NewFixedThreadPool(numThreads, threadFactory);
+				_compilerThreadPool = compilerThreadPoolFactory != null 
+					? compilerThreadPoolFactory.Invoke(config, threadFactory)
+					: Executors.NewFixedThreadPool(numThreads, threadFactory);
 				_futures = new IFuture<CompilableItemResult>[size];
 				var capacity = config.ThreadPoolCompilerCapacity ?? int.MaxValue;
 				_semaphore = new SemaphoreSlim(Math.Max(1, capacity));

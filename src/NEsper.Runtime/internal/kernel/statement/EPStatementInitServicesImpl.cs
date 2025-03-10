@@ -46,6 +46,8 @@ using com.espertech.esper.container;
 using com.espertech.esper.runtime.@internal.kernel.service;
 using static com.espertech.esper.common.@internal.context.util.StatementCPCacheService;
 
+using TimeProvider = com.espertech.esper.common.@internal.schedule.TimeProvider;
+
 namespace com.espertech.esper.runtime.@internal.kernel.statement
 {
     public class EPStatementInitServicesImpl : EPStatementInitServices

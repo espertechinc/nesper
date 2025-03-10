@@ -83,16 +83,13 @@ namespace com.espertech.esper.common.@internal.util
                 return;
             }
 
-            Write(lockAction + " " + GetLockInfo(@lock));
+            Write($"{lockAction} {GetLockInfo(@lock)}");
         }
 
         private static string GetLockInfo(IReaderWriterLock lockObj)
         {
             var lockid = $"RWLock@{lockObj.GetHashCode():X}";
-            return lockid +
-                   //" readLockCount=" + lockObj.ReadLockCount +
-                   " isWriteLocked=" +
-                   lockObj.IsWriterLockHeld;
+            return $"{lockid} isWriteLocked={lockObj.IsWriterLockHeld}";
         }
 
         private static void Write(
@@ -120,7 +117,7 @@ namespace com.espertech.esper.common.@internal.util
 
         private static void Write(string text)
         {
-            Log.Info(".write Thread " + Thread.CurrentThread.ManagedThreadId + " " + text);
+            Log.Info($".write Thread {Thread.CurrentThread.ManagedThreadId} {text}");
         }
     }
 } // end of namespace

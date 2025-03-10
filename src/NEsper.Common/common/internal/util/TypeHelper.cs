@@ -559,7 +559,7 @@ namespace com.espertech.esper.common.@internal.util
 
             if (!IsTypeNumeric(boxedOne) || !IsTypeNumeric(boxedTwo)) {
                 throw new CoercionException(
-                    "Cannot coerce types " + typeOne.CleanName() + " and " + typeTwo.CleanName());
+                    $"Cannot coerce types {typeOne.CleanName()} and {typeTwo.CleanName()}");
             }
 
             if (boxedOne == typeof(decimal?) ||
@@ -655,7 +655,7 @@ namespace com.espertech.esper.common.@internal.util
                 return numToCoerce.AsByte();
             }
 
-            throw new ArgumentException("Cannot coerce to number subtype " + resultBoxedType.CleanName());
+            throw new ArgumentException($"Cannot coerce to number subtype {resultBoxedType.CleanName()}");
         }
 
         public static CodegenExpression CoerceNumberBoxedToBoxedCodegen(
@@ -703,7 +703,7 @@ namespace com.espertech.esper.common.@internal.util
                 return StaticMethod(typeof(TypeExtensions), "AsBoxedByte", exprReturningBoxed);
             }
 
-            throw new ArgumentException("Cannot coerce to number subtype " + fromTypeBoxed.CleanName());
+            throw new ArgumentException($"Cannot coerce to number subtype {fromTypeBoxed.CleanName()}");
         }
 
         public static CodegenExpression CoerceNumberToBoxedCodegen(
@@ -753,7 +753,7 @@ namespace com.espertech.esper.common.@internal.util
                 return StaticMethod(typeof(TypeExtensions), "AsBoxedByte", expr);
             }
 
-            throw new ArgumentException("Cannot coerce to number subtype " + targetTypeBoxed.CleanName());
+            throw new ArgumentException($"Cannot coerce to number subtype {targetTypeBoxed.CleanName()}");
         }
 
         public static bool IsLongNumber(this object number)
@@ -863,7 +863,7 @@ namespace com.espertech.esper.common.@internal.util
             var boxedTo = numberClassToCoerceTo.GetBoxedType();
 
             if (!IsTypeNumeric(numberClassToBeCoerced)) {
-                throw new CoercionException("Type '" + numberClassToBeCoerced + "' is not a numeric type'");
+                throw new CoercionException($"Type '{numberClassToBeCoerced}' is not a numeric type'");
             }
 
             if (boxedTo == typeof(float?)) {
@@ -941,7 +941,7 @@ namespace com.espertech.esper.common.@internal.util
                        boxedFrom == typeof(decimal?);
             }
 
-            throw new CoercionException("Type '" + numberClassToCoerceTo + "' is not a numeric type'");
+            throw new CoercionException($"Type '{numberClassToCoerceTo}' is not a numeric type'");
         }
 
         /// <summary>
@@ -1086,7 +1086,7 @@ namespace com.espertech.esper.common.@internal.util
             if (types[0] == typeof(string)) {
                 var errorType = types.FirstOrDefault(t => t != typeof(string));
                 if (errorType != null) {
-                    throw new CoercionException("Cannot coerce to String type " + errorType.CleanName());
+                    throw new CoercionException($"Cannot coerce to String type {errorType.CleanName()}");
                 }
 
                 return typeof(string);
@@ -1101,7 +1101,7 @@ namespace com.espertech.esper.common.@internal.util
             if (types[0] == typeof(bool?)) {
                 var errorType = types.FirstOrDefault(t => t != typeof(bool?));
                 if (errorType != null) {
-                    throw new CoercionException("Cannot coerce to bool type " + errorType.CleanName());
+                    throw new CoercionException($"Cannot coerce to bool type {errorType.CleanName()}");
                 }
 
                 return typeof(bool?);
@@ -1111,7 +1111,7 @@ namespace com.espertech.esper.common.@internal.util
             if (types[0] == typeof(char?)) {
                 var errorType = types.FirstOrDefault(t => t != typeof(char?));
                 if (errorType != null) {
-                    throw new CoercionException("Cannot coerce to char type " + errorType.CleanName());
+                    throw new CoercionException($"Cannot coerce to char type {errorType.CleanName()}");
                 }
 
                 return typeof(char?);
@@ -1167,7 +1167,7 @@ namespace com.espertech.esper.common.@internal.util
 
             // test for numeric
             if (!isAllNumeric) {
-                throw new CoercionException("Cannot coerce to numeric type " + types[0].CleanName());
+                throw new CoercionException($"Cannot coerce to numeric type {types[0].CleanName()}");
             }
 
             // Use arithmetic coercion type as the final authority, considering all types
@@ -1769,7 +1769,7 @@ namespace com.espertech.esper.common.@internal.util
         {
             var trueTypeName = ResolveType(assemblyQualifiedTypeName, false);
             if (trueTypeName == null) {
-                throw new EPException("unable to determine assembly qualified class for " + assemblyQualifiedTypeName);
+                throw new EPException($"unable to determine assembly qualified class for {assemblyQualifiedTypeName}");
             }
 
             return trueTypeName.AssemblyQualifiedName;
@@ -2093,24 +2093,22 @@ namespace com.espertech.esper.common.@internal.util
             }
             catch (TypeInstantiationException ex) {
                 throw new TypeInstantiationException(
-                    "Unable to instantiate from class '" + type.CleanName() + "' via default constructor",
+                    $"Unable to instantiate from class '{type.CleanName()}' via default constructor",
                     ex);
             }
             catch (TargetInvocationException ex) {
                 throw new TypeInstantiationException(
-                    "Invocation exception when instantiating class '" +
-                    type.CleanName() +
-                    "' via default constructor",
+                    $"Invocation exception when instantiating class '{type.CleanName()}' via default constructor",
                     ex);
             }
             catch (MethodAccessException ex) {
                 throw new TypeInstantiationException(
-                    "Method access when instantiating class '" + type.CleanName() + "' via default constructor",
+                    $"Method access when instantiating class '{type.CleanName()}' via default constructor",
                     ex);
             }
             catch (MemberAccessException ex) {
                 throw new TypeInstantiationException(
-                    "Member access when instantiating class '" + type.CleanName() + "' via default constructor",
+                    $"Member access when instantiating class '{type.CleanName()}' via default constructor",
                     ex);
             }
         }
@@ -2130,19 +2128,11 @@ namespace com.espertech.esper.common.@internal.util
             if (!IsSubclassOrImplementsInterface(type, implementedOrExtendedType)) {
                 if (implementedOrExtendedType.IsInterface) {
                     throw new TypeInstantiationException(
-                        "Type '" +
-                        typeNameClean +
-                        "' does not implement interface '" +
-                        implementedOrExtendedType.CleanName() +
-                        "'");
+                        $"Type '{typeNameClean}' does not implement interface '{implementedOrExtendedType.CleanName()}'");
                 }
 
                 throw new TypeInstantiationException(
-                    "Type '" +
-                    typeNameClean +
-                    "' does not extend '" +
-                    implementedOrExtendedType.CleanName() +
-                    "'");
+                    $"Type '{typeNameClean}' does not extend '{implementedOrExtendedType.CleanName()}'");
             }
 
             try {
@@ -2150,22 +2140,22 @@ namespace com.espertech.esper.common.@internal.util
             }
             catch (TypeInstantiationException ex) {
                 throw new TypeInstantiationException(
-                    "Unable to instantiate from class '" + typeName + "' via default constructor",
+                    $"Unable to instantiate from class '{typeName}' via default constructor",
                     ex);
             }
             catch (TargetInvocationException ex) {
                 throw new TypeInstantiationException(
-                    "Invocation exception when instantiating class '" + typeName + "' via default constructor",
+                    $"Invocation exception when instantiating class '{typeName}' via default constructor",
                     ex);
             }
             catch (MethodAccessException ex) {
                 throw new TypeInstantiationException(
-                    "Method access when instantiating class '" + typeName + "' via default constructor",
+                    $"Method access when instantiating class '{typeName}' via default constructor",
                     ex);
             }
             catch (MemberAccessException ex) {
                 throw new TypeInstantiationException(
-                    "Member access when instantiating class '" + typeName + "' via default constructor",
+                    $"Member access when instantiating class '{typeName}' via default constructor",
                     ex);
             }
         }
@@ -2185,25 +2175,17 @@ namespace com.espertech.esper.common.@internal.util
                 type = ResolveType(typeName);
             }
             catch (Exception ex) {
-                throw new TypeInstantiationException("Unable to load class '" + typeName + "', class not found", ex);
+                throw new TypeInstantiationException($"Unable to load class '{typeName}', class not found", ex);
             }
 
             if (!IsSubclassOrImplementsInterface(type, implementedOrExtendedType)) {
                 if (implementedOrExtendedType.IsInterface) {
                     throw new TypeInstantiationException(
-                        "Class '" +
-                        typeName +
-                        "' does not implement interface '" +
-                        implementedOrExtendedType.CleanName() +
-                        "'");
+                        $"Class '{typeName}' does not implement interface '{implementedOrExtendedType.CleanName()}'");
                 }
 
                 throw new TypeInstantiationException(
-                    "Class '" +
-                    typeName +
-                    "' does not extend '" +
-                    implementedOrExtendedType.CleanName() +
-                    "'");
+                    $"Class '{typeName}' does not extend '{implementedOrExtendedType.CleanName()}'");
             }
 
             try {
@@ -2211,22 +2193,22 @@ namespace com.espertech.esper.common.@internal.util
             }
             catch (TypeInstantiationException ex) {
                 throw new TypeInstantiationException(
-                    "Unable to instantiate from class '" + typeName + "' via default constructor",
+                    $"Unable to instantiate from class '{typeName}' via default constructor",
                     ex);
             }
             catch (TargetInvocationException ex) {
                 throw new TypeInstantiationException(
-                    "Invocation exception when instantiating class '" + typeName + "' via default constructor",
+                    $"Invocation exception when instantiating class '{typeName}' via default constructor",
                     ex);
             }
             catch (MethodAccessException ex) {
                 throw new TypeInstantiationException(
-                    "Method access when instantiating class '" + typeName + "' via default constructor",
+                    $"Method access when instantiating class '{typeName}' via default constructor",
                     ex);
             }
             catch (MemberAccessException ex) {
                 throw new TypeInstantiationException(
-                    "Member access when instantiating class '" + typeName + "' via default constructor",
+                    $"Member access when instantiating class '{typeName}' via default constructor",
                     ex);
             }
         }
@@ -2251,25 +2233,17 @@ namespace com.espertech.esper.common.@internal.util
                 type = typeResolver.ResolveType(typeName, false);
             }
             catch (Exception ex) {
-                throw new TypeInstantiationException("Unable to load class '" + typeName + "', class not found", ex);
+                throw new TypeInstantiationException($"Unable to load class '{typeName}', class not found", ex);
             }
 
             if (!IsSubclassOrImplementsInterface(type, implementedOrExtendedType)) {
                 if (implementedOrExtendedType.IsInterface) {
                     throw new TypeInstantiationException(
-                        "Type '" +
-                        typeName +
-                        "' does not implement interface '" +
-                        implementedOrExtendedType.CleanName() +
-                        "'");
+                        $"Type '{typeName}' does not implement interface '{implementedOrExtendedType.CleanName()}'");
                 }
 
                 throw new TypeInstantiationException(
-                    "Type '" +
-                    typeName +
-                    "' does not extend '" +
-                    implementedOrExtendedType.CleanName() +
-                    "'");
+                    $"Type '{typeName}' does not extend '{implementedOrExtendedType.CleanName()}'");
             }
 
             try {
@@ -2277,22 +2251,22 @@ namespace com.espertech.esper.common.@internal.util
             }
             catch (TypeInstantiationException ex) {
                 throw new TypeInstantiationException(
-                    "Unable to instantiate from class '" + typeName + "' via default constructor",
+                    $"Unable to instantiate from class '{typeName}' via default constructor",
                     ex);
             }
             catch (TargetInvocationException ex) {
                 throw new TypeInstantiationException(
-                    "Invocation exception when instantiating class '" + typeName + "' via default constructor",
+                    $"Invocation exception when instantiating class '{typeName}' via default constructor",
                     ex);
             }
             catch (MethodAccessException ex) {
                 throw new TypeInstantiationException(
-                    "Method access when instantiating class '" + typeName + "' via default constructor",
+                    $"Method access when instantiating class '{typeName}' via default constructor",
                     ex);
             }
             catch (MemberAccessException ex) {
                 throw new TypeInstantiationException(
-                    "Member access when instantiating class '" + typeName + "' via default constructor",
+                    $"Member access when instantiating class '{typeName}' via default constructor",
                     ex);
             }
         }
@@ -2404,7 +2378,7 @@ namespace com.espertech.esper.common.@internal.util
             string simpleTypeName,
             string fullyQualifiedTypename)
         {
-            if (fullyQualifiedTypename.EndsWith("." + simpleTypeName) ||
+            if (fullyQualifiedTypename.EndsWith($".{simpleTypeName}") ||
                 fullyQualifiedTypename.Equals(simpleTypeName)) {
                 return true;
             }
@@ -2869,24 +2843,12 @@ namespace com.espertech.esper.common.@internal.util
             }
             catch (Exception e) {
                 throw new ExprValidationException(
-                    "Failed to resolve hook provider of hook type '" +
-                    hookType +
-                    "' import '" +
-                    hookClass +
-                    "' :" +
-                    e.Message);
+                    $"Failed to resolve hook provider of hook type '{hookType}' import '{hookClass}' :{e.Message}");
             }
 
             if (!IsImplementsInterface(clazz, interfaceExpected)) {
                 throw new ExprValidationException(
-                    "Hook provider for hook type '" +
-                    hookType +
-                    "' " +
-                    "class '" +
-                    clazz.CleanName() +
-                    "' does not implement the required '" +
-                    interfaceExpected.CleanName() +
-                    "' interface");
+                    $"Hook provider for hook type '{hookType}' class '{clazz.CleanName()}' does not implement the required '{interfaceExpected.CleanName()}' interface");
             }
 
             try {
@@ -2894,13 +2856,7 @@ namespace com.espertech.esper.common.@internal.util
             }
             catch (Exception e) {
                 throw new ExprValidationException(
-                    "Failed to instantiate hook provider of hook type '" +
-                    hookType +
-                    "' " +
-                    "class '" +
-                    clazz.CleanName() +
-                    "' :" +
-                    e.Message);
+                    $"Failed to instantiate hook provider of hook type '{hookType}' class '{clazz.CleanName()}' :{e.Message}");
             }
         }
 
@@ -2920,35 +2876,14 @@ namespace com.espertech.esper.common.@internal.util
                 var methodParameters = method.GetParameterTypes();
                 for (var i = 0; i < methodParameters.Length; i++) {
                     if (methodParameters[i].IsValueType && args[i] == null) {
-                        return "NullPointerException invoking method '" +
-                               method.Name +
-                               "' of class '" +
-                               classOrPropertyName +
-                               "' in parameter " +
-                               i +
-                               " passing parameters " +
-                               parameters +
-                               " for statement '" +
-                               statementName +
-                               "': The method expects a primitive " +
-                               methodParameters[i].Name +
-                               " value but received a null value";
+                        return
+                            $"NullPointerException invoking method '{method.Name}' of class '{classOrPropertyName}' in parameter {i} passing parameters {parameters} for statement '{statementName}': The method expects a primitive {methodParameters[i].Name} value but received a null value";
                     }
                 }
             }
 
-            return "Invocation exception when invoking method '" +
-                   method.Name +
-                   "' of class '" +
-                   classOrPropertyName +
-                   "' passing parameters " +
-                   parameters +
-                   " for statement '" +
-                   statementName +
-                   "': " +
-                   e.GetType().CleanName() +
-                   " : " +
-                   e.Message;
+            return
+                $"Invocation exception when invoking method '{method.Name}' of class '{classOrPropertyName}' passing parameters {parameters} for statement '{statementName}': {e.GetType().CleanName()} : {e.Message}";
         }
 
         public static string GetMessageInvocationTarget(
@@ -2985,35 +2920,14 @@ namespace com.espertech.esper.common.@internal.util
             if (args != null) {
                 for (var i = 0; i < methodParameters.Length; i++) {
                     if (methodParameters[i].IsValueType && args[i] == null) {
-                        return "NullPointerException invoking method '" +
-                               methodName +
-                               "' of class '" +
-                               classOrPropertyName +
-                               "' in parameter " +
-                               i +
-                               " passing parameters " +
-                               parameters +
-                               " for statement '" +
-                               statementName +
-                               "': The method expects a primitive " +
-                               methodParameters[i].Name +
-                               " value but received a null value";
+                        return
+                            $"NullPointerException invoking method '{methodName}' of class '{classOrPropertyName}' in parameter {i} passing parameters {parameters} for statement '{statementName}': The method expects a primitive {methodParameters[i].Name} value but received a null value";
                     }
                 }
             }
 
-            return "Invocation exception when invoking method '" +
-                   methodName +
-                   "' of class '" +
-                   classOrPropertyName +
-                   "' passing parameters " +
-                   parameters +
-                   " for statement '" +
-                   statementName +
-                   "': " +
-                   e.GetType().CleanName() +
-                   " : " +
-                   e.Message;
+            return
+                $"Invocation exception when invoking method '{methodName}' of class '{classOrPropertyName}' passing parameters {parameters} for statement '{statementName}': {e.GetType().CleanName()} : {e.Message}";
         }
 
         public static IDictionary<string, object> GetClassObjectFromPropertyTypeNames(
@@ -3054,7 +2968,7 @@ namespace com.espertech.esper.common.@internal.util
                     }
                     catch (TypeLoadException ex) {
                         throw new ConfigurationException(
-                            "Unable to load class '" + boxedClassName + "', class not found",
+                            $"Unable to load class '{boxedClassName}', class not found",
                             ex);
                     }
                 });
@@ -3149,7 +3063,7 @@ namespace com.espertech.esper.common.@internal.util
         {
             var found = clazz.GetMethods().FirstOrDefault(m => m.Name == methodName);
             if (found == null) {
-                throw new ArgumentException("Not found method '" + methodName + "'");
+                throw new ArgumentException($"Not found method '{methodName}'");
             }
 
             return found;

@@ -70,7 +70,7 @@ namespace com.espertech.esper.common.@internal.util
             if (valueNode == null) {
                 var name = node.LocalName;
                 throw new ConfigurationException(
-                    "Required attribute by name '" + key + "' not found for element '" + name + "'");
+                    $"Required attribute by name '{key}' not found for element '{name}'");
             }
 
             return valueNode.InnerText;
@@ -109,7 +109,7 @@ namespace com.espertech.esper.common.@internal.util
             }
             catch (Exception t) {
                 throw new ConfigurationException(
-                    "Failed to parse value for '" + name + "' value '" + str + "' as boolean: " + t.Message,
+                    $"Failed to parse value for '{name}' value '{str}' as boolean: {t.Message}",
                     t);
             }
         }
@@ -123,7 +123,7 @@ namespace com.espertech.esper.common.@internal.util
             }
             catch (Exception t) {
                 throw new ConfigurationException(
-                    "Failed to parse value for '" + name + "' value '" + str + "' as integer: " + t.Message,
+                    $"Failed to parse value for '{name}' value '{str}' as integer: {t.Message}",
                     t);
             }
         }

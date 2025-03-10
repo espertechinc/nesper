@@ -51,10 +51,10 @@ namespace com.espertech.esper.common.@internal.util
                 document.Load(stream);
             }
             catch (XmlException ex) {
-                throw new EPException("Could not parse configuration: " + resourceName, ex);
+                throw new EPException($"Could not parse configuration: {resourceName}", ex);
             }
             catch (IOException ex) {
-                throw new EPException("Could not read configuration: " + resourceName, ex);
+                throw new EPException($"Could not read configuration: {resourceName}", ex);
             }
 
             return document;
@@ -104,9 +104,7 @@ namespace com.espertech.esper.common.@internal.util
                     case "engine-settings":
                     case "variant-stream":
                         Log.Warn(
-                            "The configuration file appears outdated as it has element '" +
-                            nodeName +
-                            "' among top-level elements. Please convert to the newest schema using the online converter.");
+                            $"The configuration file appears outdated as it has element '{nodeName}' among top-level elements. Please convert to the newest schema using the online converter.");
                         break;
                 }
             }

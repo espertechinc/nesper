@@ -51,6 +51,16 @@
 		<DefineConstants>$(DefineConstants);NETCORE;NET5;NET6;NET7;NET8;</DefineConstants>
 	</PropertyGroup>
 
+	<PropertyGroup Condition="'$(TargetFramework)'=='net9.0'">
+		<NetCore>true</NetCore>
+		<DefineConstants>$(DefineConstants);NETCORE;NET5;NET6;NET7;NET8;NET9;</DefineConstants>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(TargetFramework)'=='net8.0'">
+		<NetCore>true</NetCore>
+		<DefineConstants>$(DefineConstants);NETCORE;NET5;NET6;NET7;NET8;</DefineConstants>
+	</PropertyGroup>
+
 	<PropertyGroup Condition="'$(TargetFramework)'=='net7.0'">
 		<NetCore>true</NetCore>
 		<DefineConstants>$(DefineConstants);NETCORE;NET5;NET6;NET7;</DefineConstants>

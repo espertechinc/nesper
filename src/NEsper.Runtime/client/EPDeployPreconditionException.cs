@@ -41,11 +41,5 @@ namespace com.espertech.esper.runtime.client
             : base("A precondition is not satisfied: " + message, cause, rolloutItemNumber)
         {
         }
-
-        protected EPDeployPreconditionException(
-            SerializationInfo info,
-            StreamingContext context) : base(info, context)
-        {
-        }
     }
 } // end of namespace

@@ -79,13 +79,7 @@ namespace com.espertech.esper.common.@internal.util
 
             if (!value.GetType().IsImplementsInterface(interfaceClass)) {
                 Log.Warn(
-                    "For transient configuration '" +
-                    name +
-                    "' expected an object implementing " +
-                    interfaceClass.Name +
-                    " but received " +
-                    value.GetType() +
-                    ", using default provider");
+                    $"For transient configuration '{name}' expected an object implementing {interfaceClass.Name} but received {value.GetType()}, using default provider");
                 return defaultProvider;
             }
 

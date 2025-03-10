@@ -57,6 +57,8 @@ using com.espertech.esper.compat.threading.locks;
 using com.espertech.esper.compat.threading.threadlocal;
 using com.espertech.esper.container;
 
+using TimeProvider = com.espertech.esper.common.@internal.schedule.TimeProvider;
+
 namespace com.espertech.esper.common.@internal.context.util
 {
     public class StatementContext : ExprEvaluatorContext,

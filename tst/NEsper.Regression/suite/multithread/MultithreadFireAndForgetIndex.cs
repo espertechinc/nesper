@@ -21,7 +21,6 @@ using com.espertech.esper.regressionlib.support.util;
 
 using Common.Logging;
 
-using NUnit.Framework;
 using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.multithread
@@ -94,32 +93,32 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 
         public class QueryRunnable : IRunnable
         {
-            private readonly int numRepeats;
-            private readonly EPFireAndForgetPreparedQuery query;
-            private Exception exception;
+            private readonly int _numRepeats;
+            private readonly EPFireAndForgetPreparedQuery _query;
+            private Exception _exception;
 
             public QueryRunnable(
                 int numRepeats,
                 EPFireAndForgetPreparedQuery query)
             {
-                this.numRepeats = numRepeats;
-                this.query = query;
+                _numRepeats = numRepeats;
+                _query = query;
             }
 
             public void Run()
             {
                 try {
-                    for (var i = 0; i < numRepeats; i++) {
-                        query.Execute();
+                    for (var i = 0; i < _numRepeats; i++) {
+                        _query.Execute();
                     }
                 }
                 catch (Exception ex) {
                     Log.Error("Error in thread " + Thread.CurrentThread.ManagedThreadId, ex);
-                    this.exception = exception;
+                    _exception = ex;
                 }
             }
 
-            public Exception Exception => exception;
+            public Exception Exception => _exception;
         }
     }
 } // end of namespace

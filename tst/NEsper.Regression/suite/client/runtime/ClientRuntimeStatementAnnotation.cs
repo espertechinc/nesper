@@ -127,21 +127,9 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             public void Run(RegressionEnvironment env)
             {
                 var stmtText =
-                    "@MyAnnotationSimple " +
-                    "@MyAnnotationValue('abc') " +
-                    "@MyAnnotationValueDefaulted " +
-                    "@MyAnnotationValueEnum(SupportEnum=" + typeof(SupportEnum).FullName + ".ENUM_VALUE_3) " +
-                    "@MyAnnotationValuePair(StringVal='a',IntVal=-1,LongVal=2,BooleanVal=true,CharVal='x',ByteVal=10,ShortVal=20,DoubleVal=2.5) " +
-                    "@name('STMTONE') " +
-                    "select * from SupportBean";
-                var stmtTextFormatted = 
-                    "@MyAnnotationSimple" + NEWLINE +
-                    "@MyAnnotationValue('abc')" + NEWLINE + 
-                    "@MyAnnotationValueDefaulted" + NEWLINE +
-                    "@MyAnnotationValueEnum(SupportEnum=" + typeof(SupportEnum).FullName + ".ENUM_VALUE_3)" + NEWLINE +
-                    "@MyAnnotationValuePair(StringVal='a',IntVal=-1,LongVal=2,BooleanVal=true,CharVal='x',ByteVal=10,ShortVal=20,DoubleVal=2.5)" + NEWLINE +
-                    "@name('STMTONE')" + NEWLINE +
-                    "select *" + NEWLINE + "from SupportBean";
+                    $"@MyAnnotationSimple @MyAnnotationValue('abc') @MyAnnotationValueDefaulted @MyAnnotationValueEnum(SupportEnum={typeof(SupportEnum).FullName}.ENUM_VALUE_3) @MyAnnotationValuePair(StringVal='a',IntVal=-1,LongVal=2,BooleanVal=true,CharVal='x',ByteVal=10,ShortVal=20,DoubleVal=2.5) @name('STMTONE') select * from SupportBean";
+                var stmtTextFormatted =
+                    $"@MyAnnotationSimple{NEWLINE}@MyAnnotationValue('abc'){NEWLINE}@MyAnnotationValueDefaulted{NEWLINE}@MyAnnotationValueEnum(SupportEnum={typeof(SupportEnum).FullName}.ENUM_VALUE_3){NEWLINE}@MyAnnotationValuePair(StringVal='a',IntVal=-1,LongVal=2,BooleanVal=true,CharVal='x',ByteVal=10,ShortVal=20,DoubleVal=2.5){NEWLINE}@name('STMTONE'){NEWLINE}select *{NEWLINE}from SupportBean";
                 env.CompileDeploy(stmtText);
 
                 env.AssertStatement(
@@ -452,10 +440,8 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 env.UndeployAll();
 
                 // try fully-qualified
-                epl = "@" +
-                      nameof(NameAttribute) +
-                      "('MyTestStmt') @Description('MyTestStmt description') @Tag(Name=\"UserId\", Value=\"value\") " +
-                      "select * from SupportBean";
+                epl =
+                    $"@{nameof(NameAttribute)}('MyTestStmt') @Description('MyTestStmt description') @Tag(Name=\"UserId\", Value=\"value\") select * from SupportBean";
                 env.CompileDeploy(epl).AddListener("MyTestStmt");
                 env.AssertStatement("MyTestStmt", ClientRuntimeStatementAnnotation.TryAssertion);
                 env.UndeployAll();
@@ -536,7 +522,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 string text)
             {
                 env.CompileDeploy(
-                    "@MyAnnotationValueEnum(SupportEnum = " + text + ") @name('s0') select * from SupportBean");
+                    $"@MyAnnotationValueEnum(SupportEnum = {text}) @name('s0') select * from SupportBean");
                 env.AssertStatement(
                     "s0",
                     statement => {

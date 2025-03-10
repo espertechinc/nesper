@@ -14,6 +14,8 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.timers;
 using com.espertech.esper.container;
 
+using ITimer = com.espertech.esper.compat.timers.ITimer;
+
 namespace com.espertech.esper.runtime.@internal.timer
 {
     /// <summary>

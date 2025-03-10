@@ -189,19 +189,13 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
 
                         if (!expected[i][1].Equals(entry.Value)) {
                             Assert.Fail(
-                                "Failed to match value for key '" +
-                                entry.Key +
-                                "' expected '" +
-                                expected[i][i] +
-                                "' received '" +
-                                entry.Value +
-                                "'");
+                                $"Failed to match value for key '{entry.Key}' expected '{expected[i][i]}' received '{entry.Value}'");
                         }
                     }
                 }
 
                 if (!matchFound) {
-                    Assert.Fail("Failed to find key '" + entry.Key + "'");
+                    Assert.Fail($"Failed to find key '{entry.Key}'");
                 }
             }
         }
