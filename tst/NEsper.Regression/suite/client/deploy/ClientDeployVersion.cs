@@ -45,7 +45,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
 				EPCompiled compiled = EPCompiledIOUtil.Read(new File(file));
 
 				var versionMismatchMsg =
-					"Major or minor version of compiler and runtime mismatch; The runtime version is 8.9.0 and the compiler version of the compiled unit is 8.0.0";
+					"Major or minor version of compiler and runtime mismatch; The runtime version is 8.9.1 and the compiler version of the compiled unit is 8.0.0";
 				AssertMessage(
 					Assert.Throws<EPDeployDeploymentVersionException>(
 						() => env.Runtime.DeploymentService.Deploy(compiled)),
@@ -59,7 +59,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
 				AssertMessage(
 					Assert.Throws<EPException>(
 						() => env.Runtime.FireAndForgetService.ExecuteQuery(compiled)),
-					"Major or minor version of compiler and runtime mismatch; The runtime version is 8.9.0 and the compiler version of the compiled unit is 8.0.0");
+					"Major or minor version of compiler and runtime mismatch; The runtime version is 8.9.1 and the compiler version of the compiled unit is 8.0.0");
 #endif
             }
 

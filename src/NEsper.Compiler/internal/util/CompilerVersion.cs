@@ -10,6 +10,6 @@ namespace com.espertech.esper.compiler.@internal.util
 {
     public class CompilerVersion
     {
-        public const string COMPILER_VERSION = "8.9.0";
+        public const string COMPILER_VERSION = "8.9.1";
     }
 } // end of namespace
