@@ -18,7 +18,7 @@
 	</PropertyGroup>
 
 	<PropertyGroup>
-		<VersionPrefix Condition="'$(VersionPrefix)' == ''">8.9.0</VersionPrefix>
+		<VersionPrefix Condition="'$(VersionPrefix)' == ''">8.9.1</VersionPrefix>
 		<VersionSuffix Condition="'$(VersionSuffix)' == ''"></VersionSuffix>
 	</PropertyGroup>
 

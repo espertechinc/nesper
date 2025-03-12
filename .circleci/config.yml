@@ -12,6 +12,6 @@ jobs:
       - run: dotnet restore NEsperAll.sln
       - run: msbuild NEsper.proj
       - store_artifacts:
-          path: build/NEsper-8.9.0.zip
+          path: build/NEsper-8.9.1.zip
       - store_artifacts:
           path: build/packages
