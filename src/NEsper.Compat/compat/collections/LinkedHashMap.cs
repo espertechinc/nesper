@@ -25,7 +25,7 @@ namespace com.espertech.esper.compat.collections
 
     [Serializable]
     [RenderWithToString]
-    public sealed class LinkedHashMap<TK, TV> : IDictionary<TK, TV>, ISerializable
+    public sealed class LinkedHashMap<TK, TV> : IDictionary<TK, TV>
     {
         /// <summary>
         /// Delegate for handling events on dictionary entries.
@@ -93,48 +93,6 @@ namespace com.espertech.esper.compat.collections
             {
                 Put(entry.Key, entry.Value);
             }
-        }
-
-        /// <summary>
-        /// Serialization constructor
-        /// </summary>
-        /// <param name="info">The INFO.</param>
-        /// <param name="context">The context.</param>
-
-        public LinkedHashMap(SerializationInfo info, StreamingContext context)
-        {
-            var count = info.GetInt32("Count");
-            var pairList = (Pair<TK, TV>[]) info.GetValue("_hashList", typeof (Pair<TK, TV>[]));
-            Debug.Assert(pairList.Length == count);
-
-            _shuffleOnAccess = info.GetBoolean("_shuffle");
-
-            _hashList = new LinkedList<Pair<TK, TV>>(pairList);
-            if ( _hashList == null ) {
-                throw new SerializationException("unable to deserialize hashList");
-            }
-
-            _hashTable = new Dictionary<TK, LinkedListNode<Pair<TK, TV>>>((_hashList.Count * 3) / 2)
-                .WithSafeSupport();
-
-            for (var node = _hashList.First; node != null; node = node.Next) {
-                _hashTable.Add(node.Value.First, node);
-            }
-        }
-
-        /// <summary>
-        /// Populates a <see cref="T:System.Runtime.Serialization.SerializationInfo"></see> with the data needed to serialize the target object.
-        /// </summary>
-        /// <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo"></see> to populate with data.</param>
-        /// <param name="context">The destination (see <see cref="T:System.Runtime.Serialization.StreamingContext"></see>) for this serialization.</param>
-        /// <exception cref="T:System.Security.SecurityException">The caller does not have the required permission. </exception>
-        public void GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            // Note: we identified a bug in the serializer that occurs with serialization of a linked list
-            // Note: henceforth, use an array to serialize and deserialize.
-            info.AddValue("_hashList", _hashList.ToArray());
-            info.AddValue("_shuffle", _shuffleOnAccess);
-            info.AddValue("Count", _hashList.Count);
         }
 
         #region IDictionary<TK, TV> Members

@@ -51,7 +51,7 @@ namespace com.espertech.esper.compat
 
         public bool CompareAndSet(long testValue, long newValue)
         {
-            return (Interlocked.CompareExchange(ref _value, testValue, newValue) == testValue);
+            return Interlocked.CompareExchange(ref _value, newValue, testValue) == testValue;
         }
 
         /// <summary>

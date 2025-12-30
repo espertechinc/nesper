@@ -22,11 +22,5 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.resolve
             Exception cause) : base(message, cause)
         {
         }
-
-        protected DataInputOutputSerdeException(
-            SerializationInfo info,
-            StreamingContext context) : base(info, context)
-        {
-        }
     }
 } // end of namespace

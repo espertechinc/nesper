@@ -18,12 +18,6 @@ namespace com.espertech.esper.common.@internal.epl.agg.rollup
             Indexes = indexes;
         }
 
-        protected GroupByRollupDuplicateException(
-            SerializationInfo info,
-            StreamingContext context) : base(info, context)
-        {
-        }
-
         public int[] Indexes { get; private set; }
     }
 }

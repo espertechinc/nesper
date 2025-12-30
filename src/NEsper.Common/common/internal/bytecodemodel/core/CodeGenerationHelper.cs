@@ -127,37 +127,6 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
             return builder;
         }
 
-#if false
-        public static StringBuilder AppendClassName(
-            StringBuilder builder,
-            Type clazz,
-            Type optionalTypeParam)
-        {
-            if (clazz.IsVoid()) {
-                builder.Append("void");
-                return builder;
-            }
-
-            if (!clazz.IsArray)
-            {
-                string assignedName = GetAssignedName(clazz);
-                builder.Append(assignedName);
-                if (optionalTypeParam != null)
-                {
-                    builder.Append("<");
-                    AppendClassName(builder, optionalTypeParam, null);
-                    builder.Append(">");
-                }
-
-                return builder;
-            }
-
-            AppendClassName(builder, clazz.GetElementType(), null);
-            builder.Append("[]");
-            return builder;
-        }
-#endif
-
         private static string GetAssignedName(Type clazz)
         {
             return clazz.Name;

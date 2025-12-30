@@ -22,11 +22,5 @@ namespace com.espertech.esper.common.client.module
             : base(message)
         {
         }
-
-        protected ParseException(
-            SerializationInfo info,
-            StreamingContext context) : base(info, context)
-        {
-        }
     }
 }

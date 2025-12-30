@@ -1,0 +1,110 @@
+# Example GitHub Actions workflow for NEsper regression testing
+# Place this file in .github/workflows/ to enable automated testing
+
+name: NEsper Regression Tests
+
+on:
+  push:
+    branches: [ master, main, develop ]
+  pull_request:
+    branches: [ master, main, develop ]
+
+jobs:
+  unit-tests:
+    name: Unit Tests
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: |
+          8.0.x
+          9.0.x
+
+    - name: Restore dependencies
+      run: dotnet restore NEsperAll.sln
+
+    - name: Build
+      run: dotnet build NEsperAll.sln --no-restore
+
+    - name: Run Unit Tests
+      run: dotnet test NEsperAll.sln --no-build --filter "FullyQualifiedName!~Regression" --verbosity normal
+
+  regression-tests:
+    name: Regression Tests
+    runs-on: windows-latest
+    needs: unit-tests
+
+    services:
+      postgres:
+        image: postgres:16.1
+        env:
+          POSTGRES_DB: esper
+          POSTGRES_USER: esper
+          POSTGRES_PASSWORD: 3sp3rP@ssw0rd
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: |
+          8.0.x
+          9.0.x
+
+    - name: Restore dependencies
+      run: dotnet restore NEsperAll.sln
+
+    - name: Build
+      run: dotnet build NEsperAll.sln --no-restore
+
+    - name: View Test Batch Configuration
+      run: |
+        pwsh ./run-test-batches.ps1 -Summary
+
+    - name: Run Regression Test Batches
+      run: |
+        pwsh ./run-test-batches.ps1
+      continue-on-error: true  # Allow pipeline to continue even with known failures
+
+    - name: Upload Test Results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: test-results
+        path: |
+          **/TestResults/**/*.trx
+          **/TestResults/**/*.xml
+
+  quick-validation:
+    name: Quick Validation (Client Batch Only)
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 9.0.x
+
+    - name: Restore dependencies
+      run: dotnet restore NEsperAll.sln
+
+    - name: Build
+      run: dotnet build NEsperAll.sln --no-restore
+
+    - name: Run Quick Validation
+      run: |
+        pwsh ./run-test-batches.ps1 -BatchName "Client"

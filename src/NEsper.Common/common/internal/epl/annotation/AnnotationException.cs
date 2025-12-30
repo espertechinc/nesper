@@ -25,11 +25,5 @@ namespace com.espertech.esper.common.@internal.epl.annotation
         public AnnotationException(string message) : base(message)
         {
         }
-
-        protected AnnotationException(
-            SerializationInfo info,
-            StreamingContext context) : base(info, context)
-        {
-        }
     }
 } // end of namespace

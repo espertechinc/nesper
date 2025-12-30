@@ -14,13 +14,11 @@
         <PackageReference Include="System.Data.Common" Version="4.3.0" />
     </ItemGroup>
 
-    <ItemGroup Condition="'$(NetFramework)' == 'net472'">
-    </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="NLog" Version="5.4.0" />
+        <PackageReference Include="NLog" Version="6.0.7" />
 
-        <PackageReference Include="NUnit" Version="4.0.1" />
+        <PackageReference Include="NUnit" Version="4.4.0" />
     </ItemGroup>
 
     <ItemGroup>

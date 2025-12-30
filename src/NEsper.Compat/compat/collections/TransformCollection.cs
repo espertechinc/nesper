@@ -64,15 +64,11 @@ namespace com.espertech.esper.compat.collections
         /// <returns></returns>
         public IEnumerator<TExt> GetEnumerator()
         {
-#if true
             var enumerator = _trueCollection.GetEnumerator();
             while (enumerator.MoveNext())
             {
                 yield return _transformIntExt.Invoke(enumerator.Current);
             }
-#else
-            return _trueCollection.Select(item => _transformIntExt.Invoke(item)).GetEnumerator();
-#endif
         }
 
         /// <summary>

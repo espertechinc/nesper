@@ -35,12 +35,6 @@ namespace com.espertech.esper.common.@internal.util
             this.nearestMissMethod = nearestMissMethod;
         }
 
-        protected MethodResolverNoSuchMethodException(
-            SerializationInfo info,
-            StreamingContext context) : base(info, context)
-        {
-        }
-
         /// <summary>
         ///     Returns the best-match method.
         /// </summary>

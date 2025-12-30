@@ -39,11 +39,5 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
             : base("", cause)
         {
         }
-
-        internal PatternObjectException(
-            SerializationInfo info,
-            StreamingContext context) : base(info, context)
-        {
-        }
     }
 } // End of namespace

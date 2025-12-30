@@ -255,7 +255,6 @@ namespace com.espertech.esper.compat.collections
         {
             for (; ;)
             {
-#if true
                 var bitMask =
                     (baseEnum.MoveNext() ? 2 : 0) |
                     (compEnum.MoveNext() ? 1 : 0);
@@ -272,31 +271,6 @@ namespace com.espertech.esper.compat.collections
                     default:
                         return false;
                 }
-#else
-                bool baseTest = baseEnum.MoveNext();
-                bool compTest = compEnum.MoveNext();
-
-                if (baseTest && compTest)
-                {
-                    if (!Object.Equals(baseEnum.Current, compEnum.Current))
-                    {
-                        return false;
-                    }
-                }
-                else if (!baseTest && !compTest)
-                {
-                    return true;
-                }
-                else
-                {
-                    // Both baseTest and compTest should both be returning
-                    // false at this point.  Failure to do so indicates that
-                    // one enumerator is returning more results than the
-                    // other.
-
-                    return false;
-                }
-#endif
             }
         }
 

@@ -31,12 +31,6 @@ namespace com.espertech.esper.compiler.@internal.util
         {
         }
 
-        protected RoslynCompilationException(
-            SerializationInfo info,
-            StreamingContext context) : base(info, context)
-        {
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="RoslynCompilationException"/> class.
         /// </summary>

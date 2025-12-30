@@ -31,11 +31,5 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             : base(cause)
         {
         }
-
-        protected FilterLockBackoffException(
-            SerializationInfo info,
-            StreamingContext context) : base(info, context)
-        {
-        }
     }
 } // end of namespace

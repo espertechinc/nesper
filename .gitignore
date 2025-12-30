@@ -3,6 +3,8 @@
 **/*.suo
 **/*.user
 **/*.py
+!build/parse_warnings.py
 **/*.orig
 **/*.keep
 packages
+tst/db/data

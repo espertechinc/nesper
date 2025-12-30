@@ -41,16 +41,5 @@ namespace com.espertech.esper.common.client.configuration
             : base(cause)
         {
         }
-
-        /// <summary>
-        /// Serialization constructor.
-        /// </summary>
-        /// <param name="info"></param>
-        /// <param name="context"></param>
-        public ConfigurationException(
-            SerializationInfo info,
-            StreamingContext context) : base(info, context)
-        {
-        }
     }
 }

@@ -302,67 +302,7 @@ namespace com.espertech.esper.common.@internal.settings
                         return clazz;
                     }
                 } // class not found with this import
-
-                // clazz = ClassForNameProvider.ClassForName();
-                // if ((clazz != null) && (!requireAnnotation || clazz.IsAttribute())) {
-                //     return clazz;
-                // }
             }
-
-#if false
-            // Try all the imports
-            foreach (var import in imports) {
-                var isClassName = IsClassName(import);
-                var containsPackage = import.IndexOf('.') != -1;
-                var classNameWithDot = "." + className;
-                var classNameWithDollar = "$" + className;
-
-                // Import is a class name
-                if (isClassName) {
-                    if (containsPackage && import.EndsWith(classNameWithDot) ||
-                        containsPackage && import.EndsWith(classNameWithDollar) ||
-                        !containsPackage && import.Equals(className) ||
-                        !containsPackage && import.EndsWith(classNameWithDollar)) {
-                        return ClassForNameProvider.ClassForName(import);
-                    }
-
-                    var prefixedClassName = import + '$' + className;
-                    try {
-                        var clazz = ClassForNameProvider.ClassForName(prefixedClassName);
-                        if (!requireAnnotation || clazz.IsAttribute()) {
-                            return clazz;
-                        }
-                    }
-                    catch (TypeLoadException) {
-                        if (Log.IsDebugEnabled) {
-                            Log.Debug("Class not found for resolving from name '" + prefixedClassName + "'");
-                        }
-                    }
-                }
-                else {
-                    if (requireAnnotation && import.Equals(ConfigurationCommon.ANNOTATION_NAMESPACE)) {
-                        var clazz = BuiltinAnnotation.BUILTIN.Get(className.ToLowerInvariant());
-                        if (clazz != null) {
-                            return clazz;
-                        }
-                    }
-
-                    // Import is a package name
-                    var prefixedClassName = GetPackageName(import) + '.' + className;
-                    try {
-                        var clazz = ClassForNameProvider.ClassForName(prefixedClassName);
-                        if (!requireAnnotation || clazz.IsAttribute()) {
-                            return clazz;
-                        }
-                    }
-                    catch (TypeLoadException) {
-                        if (Log.IsDebugEnabled) {
-                            Log.Debug("Class not found for resolving from name '" + prefixedClassName + "'");
-                        }
-                    }
-                }
-            }
-#endif
 
             return null;
         }

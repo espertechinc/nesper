@@ -23,14 +23,7 @@ namespace com.espertech.esper.epl.db.drivers
         public DbDriverSqlServer()
         {
         }
-
-        protected DbDriverSqlServer(
-            SerializationInfo info,
-            StreamingContext context)
-            : base(info, context)
-        {
-        }
-
+        
         /// <summary>
         /// Creates a connection string builder.
         /// </summary>

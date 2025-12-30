@@ -31,7 +31,7 @@
     <PackageReference Include="XLR8.CGLib" Version="1.1.0" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(NetFramework)' == ''">
+  <ItemGroup Condition="'$()' == ''">
     <Compile Remove="compat\PerformanceObserverWin.cs" />
   </ItemGroup>
 

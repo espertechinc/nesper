@@ -29,11 +29,5 @@ namespace com.espertech.esper.runtime.client
             : base("Runtime has already been destroyed for runtime URI '" + runtimeURI + "'")
         {
         }
-
-        protected EPRuntimeDestroyedException(
-            SerializationInfo info,
-            StreamingContext context) : base(info, context)
-        {
-        }
     }
 } // end of namespace

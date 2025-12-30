@@ -54,16 +54,7 @@ namespace com.espertech.esper.compat.directory
 		{
 			using(_dataLock.Acquire())
 			{
-#if true
 			    _dataTable[name] = obj;
-#else
-                if ( _dataTable.ContainsKey( name ) )
-				{
-					throw new DirectoryException( "Value '" + name + "' was already bound" ) ;
-				}
-				
-				_dataTable[name] = obj ;
-#endif
 			}
 		}
 

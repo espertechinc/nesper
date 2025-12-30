@@ -27,11 +27,5 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             : base(message, cause, expression)
         {
         }
-
-        protected StatementSpecCompileSyntaxException(
-            SerializationInfo info,
-            StreamingContext context) : base(info, context)
-        {
-        }
     }
 } // end of namespace

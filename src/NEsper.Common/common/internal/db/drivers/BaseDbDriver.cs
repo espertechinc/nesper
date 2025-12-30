@@ -37,8 +37,7 @@ namespace com.espertech.esper.common.@internal.db.drivers
     /// that you use driver specific semantics.  This code exists to allow
     /// developers to integrate their own database models.
     /// </summary>
-    public abstract class BaseDbDriver : DbDriver,
-        ISerializable
+    public abstract class BaseDbDriver : DbDriver
     {
         private const string SAMPLE_WHERECLAUSE_PLACEHOLDER = "$ESPER-SAMPLE-WHERE";
 
@@ -86,15 +85,6 @@ namespace com.espertech.esper.common.@internal.db.drivers
 
         protected BaseDbDriver()
         {
-        }
-
-        protected BaseDbDriver(
-            SerializationInfo info,
-            StreamingContext context)
-        {
-            _name = info.GetString("_name");
-            _connectionProperties = (Properties)info.GetValue("_connectionProperties", typeof(Properties));
-            _connectionString = info.GetString("_connectionString");
         }
 
         /// <summary>
@@ -179,15 +169,6 @@ namespace com.espertech.esper.common.@internal.db.drivers
         /// </summary>
         [NonSerialized]
         private static Timer releaseTimer = null;
-
-        public virtual void GetObjectData(
-            SerializationInfo info,
-            StreamingContext context)
-        {
-            info.AddValue("_name", _name);
-            info.AddValue("_connectionProperties", _connectionProperties);
-            info.AddValue("_connectionString", _connectionString);
-        }
 
         /// <summary>
         /// Releases the connections.

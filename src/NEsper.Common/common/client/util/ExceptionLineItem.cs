@@ -55,11 +55,5 @@ namespace com.espertech.esper.common.client.util
             Expression = expression;
             LineNumber = lineNumber;
         }
-
-        protected ExceptionLineItem(
-            SerializationInfo info,
-            StreamingContext context) : base(info, context)
-        {
-        }
     }
 }

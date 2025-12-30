@@ -113,15 +113,6 @@ namespace NEsper.Avro.Getter
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            #if false
-            return CodegenExpressionBuilder.Cast(
-                _propertyType,
-                CodegenExpressionBuilder.StaticMethod(
-                    typeof(GenericRecordExtensions),
-                    "Get",
-                    underlyingExpression,
-                    CodegenExpressionBuilder.Constant(_propertyIndex.Name)));
-            #else
             return CodegenLegoCast.CastSafeFromObjectType(
                 _propertyType,
                 CodegenExpressionBuilder.StaticMethod(
@@ -129,7 +120,6 @@ namespace NEsper.Avro.Getter
                     "Get",
                     underlyingExpression,
                     CodegenExpressionBuilder.Constant(_propertyIndex.Name)));
-            #endif
         }
 
         public CodegenExpression UnderlyingExistsCodegen(

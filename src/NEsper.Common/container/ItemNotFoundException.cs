@@ -25,10 +25,5 @@ namespace com.espertech.esper.container
             Exception innerException) : base(message, innerException)
         {
         }
-
-        protected ItemNotFoundException(SerializationInfo info,
-            StreamingContext context) : base(info, context)
-        {
-        }
     }
 }

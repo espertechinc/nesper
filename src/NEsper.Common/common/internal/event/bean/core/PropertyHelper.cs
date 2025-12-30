@@ -355,25 +355,6 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             }
         }
 
-#if false
-/// <summary>
-/// Using the Introspector class the method returns the property descriptors obtained through introspection.
-/// </summary>
-/// <param name="clazz">to introspect</param>
-/// <returns>array of property descriptors</returns>
-        protected internal static PropertyDescriptor[] Introspect(Type clazz) {
-	        BeanInfo beanInfo;
-
-	        try {
-	            beanInfo = Introspector.GetBeanInfo(clazz);
-	        } catch (IntrospectionException e) {
-	            return new PropertyDescriptor[0];
-	        }
-
-	        return beanInfo.PropertyDescriptors;
-	    }
-#endif
-
         public static string GetGetterMethodName(string propertyName)
         {
             return GetGetterSetterMethodName(propertyName, "Get");

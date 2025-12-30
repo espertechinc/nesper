@@ -19,6 +19,7 @@ namespace com.espertech.esper.common.@internal.@event.json.serde
 {
     public class DIOJsonObjectSerde : DataInputOutputSerde<IDictionary<string, object>>
     {
+#if UNUSED
         private static readonly byte NULL_TYPE = 0;
         private static readonly byte INT_TYPE = 1;
         private static readonly byte DOUBLE_TYPE = 2;
@@ -26,6 +27,7 @@ namespace com.espertech.esper.common.@internal.@event.json.serde
         private static readonly byte BOOLEAN_TYPE = 4;
         private static readonly byte OBJECT_TYPE = 5;
         private static readonly byte ARRAY_TYPE = 6;
+#endif
 
         public static readonly DIOJsonObjectSerde INSTANCE = new DIOJsonObjectSerde();
 

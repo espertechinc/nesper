@@ -1,0 +1,175 @@
+{
+  "configuration": {
+    "defaultTimeout": 600000,
+    "defaultFramework": "net9.0",
+    "runSettingsPath": "NEsper.runsettings",
+    "testProjectPath": "tst/NEsper.Regression.Runner",
+    "parallelBatches": false,
+    "stopOnFirstFailure": false
+  },
+  "batches": [
+    {
+      "name": "Client",
+      "filter": "TestClient",
+      "enabled": true,
+      "timeout": 300000,
+      "description": "Client basic tests - quick validation"
+    },
+    {
+      "name": "Context",
+      "filter": "TestContext",
+      "enabled": true,
+      "timeout": 600000,
+      "description": "Context tests - moderate complexity"
+    },
+    {
+      "name": "EPL-Database",
+      "filter": "TestEPLDatabase",
+      "enabled": true,
+      "timeout": 300000,
+      "description": "Database integration tests"
+    },
+    {
+      "name": "EPL-Dataflow",
+      "filter": "TestEPLDataflow",
+      "enabled": true,
+      "timeout": 600000,
+      "description": "Dataflow tests - some isolation issues"
+    },
+    {
+      "name": "EPL-FromClause",
+      "filter": "TestEPLFromClauseMethod",
+      "enabled": true,
+      "timeout": 300000,
+      "description": "FROM clause method tests"
+    },
+    {
+      "name": "EPL-Join",
+      "filter": "TestEPLJoin",
+      "enabled": true,
+      "timeout": 600000,
+      "description": "Join tests - complex queries"
+    },
+    {
+      "name": "EPL-Other",
+      "filter": "TestEPLOther",
+      "enabled": true,
+      "timeout": 600000,
+      "description": "Other EPL tests - large batch"
+    },
+    {
+      "name": "EPL-Subselect",
+      "filter": "TestEPLSubselect",
+      "enabled": true,
+      "timeout": 600000,
+      "description": "Subselect tests"
+    },
+    {
+      "name": "Event",
+      "filter": "TestEvent",
+      "enabled": true,
+      "timeout": 600000,
+      "description": "Event tests - includes 4 known XML XPath failures"
+    },
+    {
+      "name": "Expression",
+      "filter": "TestExpr",
+      "enabled": true,
+      "timeout": 600000,
+      "description": "Expression tests - large batch"
+    },
+    {
+      "name": "Infrastructure",
+      "filter": "TestInfra",
+      "enabled": true,
+      "timeout": 600000,
+      "description": "Infrastructure tests - tables, named windows"
+    },
+    {
+      "name": "Multithread",
+      "filter": "TestMultithreaded",
+      "enabled": true,
+      "timeout": 300000,
+      "description": "Multithreaded tests - may have timing issues"
+    },
+    {
+      "name": "Pattern",
+      "filter": "TestPattern",
+      "enabled": true,
+      "timeout": 600000,
+      "description": "Pattern tests - includes 2 intermittent failures"
+    },
+    {
+      "name": "ResultSet",
+      "filter": "TestResultSet",
+      "enabled": true,
+      "timeout": 600000,
+      "description": "Result set tests"
+    },
+    {
+      "name": "RowRecognition",
+      "filter": "TestRowRecog",
+      "enabled": true,
+      "timeout": 600000,
+      "description": "Row recognition tests - includes 1 intermittent failure"
+    },
+    {
+      "name": "View",
+      "filter": "TestView",
+      "enabled": true,
+      "timeout": 600000,
+      "description": "View tests"
+    }
+  ],
+  "isolatedTests": {
+    "description": "Tests that should run in isolation due to state pollution",
+    "tests": [
+      {
+        "name": "WithParameterInjectionCallback-Isolated",
+        "filter": "FullyQualifiedName~WithParameterInjectionCallback",
+        "enabled": false,
+        "timeout": 120000,
+        "reason": "Fails when run with other dataflow tests due to static state pollution"
+      },
+      {
+        "name": "WithSingleMaxSimple-Isolated",
+        "filter": "FullyQualifiedName~WithSingleMaxSimple",
+        "enabled": false,
+        "timeout": 120000,
+        "reason": "Intermittent deployment name issue"
+      },
+      {
+        "name": "WithSinglePermFalseAndQuit-Isolated",
+        "filter": "FullyQualifiedName~WithSinglePermFalseAndQuit",
+        "enabled": false,
+        "timeout": 120000,
+        "reason": "Intermittent deployment name issue"
+      }
+    ]
+  },
+  "knownFailures": {
+    "description": "Known failing tests - documented for reference",
+    "failures": [
+      {
+        "test": "TestEventXMLSchemaEventObservationDOM.WithCreateSchema",
+        "reason": "XPath property 'mytags[1].ID' assertion failure",
+        "issue": "XML-001"
+      },
+      {
+        "test": "TestEventXMLSchemaEventObservationDOM.WithPreconfig",
+        "reason": "XPath property 'mytags[1].ID' assertion failure",
+        "issue": "XML-001"
+      },
+      {
+        "test": "TestEventXMLSchemaEventObservationXPath.WithCreateSchema",
+        "reason": "XPath property 'mytags[1].ID' assertion failure",
+        "issue": "XML-001"
+      },
+      {
+        "test": "TestEventXMLSchemaEventObservationXPath.WithPreconfig",
+        "reason": "XPath property 'mytags[1].ID' assertion failure",
+        "issue": "XML-001"
+      }
+    ]
+  }
+}

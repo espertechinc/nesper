@@ -31,22 +31,6 @@ namespace com.espertech.esper.epl.db.drivers
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DbDriverSQLite"/> class.
-        /// </summary>
-        /// <param name="info">The information.</param>
-        /// <param name="context">The context.</param>
-        /// <exception cref="IllegalStateException">context is not set to container</exception>
-        protected DbDriverSQLite(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        {
-            var container = (IContainer) context.Context;
-            if (container == null)
-            {
-                throw new IllegalStateException("context is not set to container");
-            }
-        }
-
-        /// <summary>
         /// Factory method that is used to create instance of a connection.
         /// </summary>
         /// <returns></returns>

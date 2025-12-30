@@ -36,11 +36,5 @@ namespace com.espertech.esper.common.@internal.settings
             : base(msg, ex)
         {
         }
-
-        protected ImportException(
-            SerializationInfo info,
-            StreamingContext context) : base(info, context)
-        {
-        }
     }
 } // end of namespace

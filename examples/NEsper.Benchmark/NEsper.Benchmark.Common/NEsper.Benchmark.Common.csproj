@@ -12,12 +12,10 @@
 
     <ItemGroup Condition="'$(NetCore)'=='true'">
         <PackageReference Include="System.Data.Common" Version="4.3.0"/>
-        <PackageReference Include="System.Data.SqlClient" Version="4.8.6" />
+        <PackageReference Include="System.Data.SqlClient" Version="4.9.0" />
         <PackageReference Include="System.Configuration.Abstractions" Version="2.0.2.45"/>
     </ItemGroup>
 
-    <ItemGroup Condition="'$(NetFramework)' == 'net472'">
-    </ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\..\..\src\NEsper.Log.NLog\NEsper.Log.NLog.csproj"/>

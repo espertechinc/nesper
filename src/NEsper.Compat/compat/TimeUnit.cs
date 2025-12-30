@@ -38,9 +38,9 @@ namespace com.espertech.esper.compat
                 case TimeUnit.MILLISECONDS:
                     return TimeSpan.FromMilliseconds(units);
                 case TimeUnit.MICROSECONDS:
-                    return TimeSpan.FromTicks(DateTimeHelper.MicrosToTicks(units));
+                    return TimeSpan.FromTicks(units * DateTimeHelper.TICKS_PER_MICRO);
                 case TimeUnit.NANOSECONDS:
-                    return TimeSpan.FromTicks(DateTimeHelper.NanosToTicks(units));
+                    return TimeSpan.FromTicks(units / DateTimeHelper.NANOS_PER_TICK);
                 default:
                     throw new ArgumentException("invalid value for unit");
             }

@@ -20,7 +20,6 @@ namespace com.espertech.esper.compat.collections
 
     public sealed class LinkedHashSet<T> 
         : ISet<T>
-        , ISerializable
     {
         internal class Entry
         {
@@ -73,42 +72,6 @@ namespace com.espertech.esper.compat.collections
             {
                 Add(item);
             }
-        }
-
-        /// <summary>
-        /// Serialization constructor
-        /// </summary>
-        /// <param name="info">The INFO.</param>
-        /// <param name="context">The context.</param>
-
-        public LinkedHashSet(SerializationInfo info, StreamingContext context)
-        {
-            var count = info.GetInt32("Count");
-            var array = (T[])info.GetValue("_list", typeof(T[]));
-            Debug.Assert(array.Length == count);
-
-            _entryCount = 0;
-            _entryListHead = new Entry();
-            _entryListTail = _entryListHead;
-            _indexTable = new Dictionary<T, Entry>((array.Length * 3) / 2).WithSafeSupport();
-
-            foreach (var item in array)
-            {
-                Add(item);
-            }
-        }
-
-        /// <summary>
-        /// Populates a <see cref="T:System.Runtime.Serialization.SerializationInfo"></see> with the data needed to serialize the target object.
-        /// </summary>
-        /// <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo"></see> to populate with data.</param>
-        /// <param name="context">The destination (see <see cref="T:System.Runtime.Serialization.StreamingContext"></see>) for this serialization.</param>
-        /// <exception cref="T:System.Security.SecurityException">The caller does not have the required permission. </exception>
-        public void GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            var hashArray = ToArray();
-            info.AddValue("_list", hashArray);
-            info.AddValue("Count", _entryCount);
         }
 
         /// <summary>

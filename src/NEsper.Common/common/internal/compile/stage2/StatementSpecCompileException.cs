@@ -30,12 +30,6 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             Expression = expression;
         }
 
-        protected StatementSpecCompileException(
-            SerializationInfo info,
-            StreamingContext context) : base(info, context)
-        {
-        }
-
         public string Expression { get; }
     }
 } // end of namespace

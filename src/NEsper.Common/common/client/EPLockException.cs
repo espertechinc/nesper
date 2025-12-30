@@ -18,11 +18,5 @@ namespace com.espertech.esper.common.client
         public EPLockException(Exception cause) : base(cause)
         {
         }
-
-        protected EPLockException(
-            SerializationInfo info,
-            StreamingContext context) : base(info, context)
-        {
-        }
     }
 }

@@ -30,11 +30,5 @@ namespace com.espertech.esper.common.@internal.epl.variable.compiletime
             Exception innerException) : base(message, innerException)
         {
         }
-
-        protected VariableTypeException(
-            SerializationInfo info,
-            StreamingContext context) : base(info, context)
-        {
-        }
     }
 } // End of namespace

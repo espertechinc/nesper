@@ -415,7 +415,6 @@ namespace com.espertech.esper.common.@internal.epl.annotation
         {
             var props = new List<AnnotationAttribute>();
 
-#if true
             var clazzProperties = annotationClass.GetProperties(BindingFlags.Instance | BindingFlags.Public);
             if (clazzProperties.Length == 0) {
                 return Collections.GetEmptyList<AnnotationAttribute>();
@@ -438,34 +437,6 @@ namespace com.espertech.esper.common.@internal.epl.annotation
 
                 props.Add(annotationAttribute);
             }
-#else
-            var methods = annotationClass.GetMethods();
-            if (methods.Length == 0) {
-                return Collections.GetEmptyList<AnnotationAttribute>();
-            }
-
-            for (var i = 0; i < methods.Length; i++) {
-                var method = methods[i];
-                if (method.ReturnType == typeof(void)) {
-                    continue;
-                }
-
-                var parameters = method.GetParameters();
-                if (parameters.Length > 0) {
-                    continue;
-                }
-
-                var methodName = method.Name;
-                if (methodName.Equals("GetType") ||
-                    methodName.Equals("ToString") ||
-                    methodName.Equals("AnnotationType") ||
-                    methodName.Equals("GetHashCode")) {
-                    continue;
-                }
-
-                props.Add(new AnnotationAttribute(method.Name, method.ReturnType, null)); // TODO: method.DefaultValue
-            }
-#endif
 
             props.Sort(
                 (

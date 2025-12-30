@@ -24,11 +24,5 @@ namespace com.espertech.esper.common.client.module
             : base(message)
         {
         }
-
-        protected ModuleOrderException(
-            SerializationInfo info,
-            StreamingContext context) : base(info, context)
-        {
-        }
     }
 } // end of namespace

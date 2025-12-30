@@ -26,12 +26,6 @@ namespace com.espertech.esper.common.@internal.epl.streamtype
             _optionalSuggestionGenerator = optionalSuggestionGenerator;
         }
 
-        protected StreamTypesException(
-            SerializationInfo info,
-            StreamingContext context) : base(info, context)
-        {
-        }
-
         /// <summary>
         ///     Returns the optional suggestion for a matching name.
         /// </summary>

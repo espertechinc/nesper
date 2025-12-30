@@ -37,11 +37,5 @@ namespace com.espertech.esper.common.client.dataflow.core
             : base(cause)
         {
         }
-
-        protected EPDataFlowInstantiationException(
-            SerializationInfo info,
-            StreamingContext context) : base(info, context)
-        {
-        }
     }
 }

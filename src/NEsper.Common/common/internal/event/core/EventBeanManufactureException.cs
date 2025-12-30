@@ -27,11 +27,5 @@ namespace com.espertech.esper.common.@internal.@event.core
             : base(message, innerException)
         {
         }
-
-        protected EventBeanManufactureException(
-            SerializationInfo info,
-            StreamingContext context) : base(info, context)
-        {
-        }
     }
 }

@@ -112,28 +112,6 @@ namespace com.espertech.esper.common.@internal.@event.bean.introspect
                     isMapped = false;
                     isFragment = underlyingType.IsFragmentableType();
 
-#if false
-                    if (type.IsGenericStringDictionary()) {
-                        isMapped = true;
-                        // We do not yet allow to fragment maps entries.
-                        // Class genericType = TypeHelper.getGenericReturnTypeMap(desc.getReadMethod(), desc.getAccessorField());
-                        isFragment = false;
-                    }
-                    else if (type.IsArray) {
-                        isIndexed = true;
-                        isFragment = type.GetComponentType().IsFragmentableType();
-                    }
-                    else if (type.IsGenericEnumerable()) {
-                        isIndexed = true;
-                        var genericType = type.GetComponentType();
-                        isFragment = genericType.IsFragmentableType();
-                    }
-                    else {
-                        isMapped = false;
-                        isFragment = type.IsFragmentableType();
-                    }
-#endif
-
                     simpleProperties.Put(propertyName, new PropertyInfo(underlyingType, getter, desc));
                 }
 

@@ -42,17 +42,6 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             this.ctorParams = ctorParams;
         }
 
-#if false
-        public void Render(
-            StringBuilder builder,
-            bool isInnerClass,
-            int level,
-            CodegenIndent indent)
-        {
-            Render(builder, isInnerClass, 4, new CodegenIndent(true));
-        }
-#endif
-
         public override void MergeClasses(ISet<Type> classes)
         {
             classes.AddToSet(interfaceOrSuperClass);

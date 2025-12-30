@@ -8,12 +8,5 @@
 
 namespace com.espertech.esper.common.@internal.epl.expression.core
 {
-#if true
     public delegate void PopulateFieldValueSetter(object value);
-#else
-    public interface PopulateFieldValueSetter
-    {
-        void Insert(object value) ;
-    }
-#endif
 }

@@ -20,8 +20,7 @@ namespace com.espertech.esper.common.@internal.db.drivers
     /// <summary>
     ///     A generic database driver.
     /// </summary>
-    public class DbDriverGeneric : BaseDbDriver,
-        ISerializable
+    public class DbDriverGeneric : BaseDbDriver
     {
         private readonly DbProviderFactory _dbProviderFactory;
         private readonly string _dbProviderFactoryName;
@@ -74,24 +73,6 @@ namespace com.espertech.esper.common.@internal.db.drivers
             _paramPrefix = paramPrefix;
         }
 
-        protected DbDriverGeneric(
-            SerializationInfo info,
-            StreamingContext context)
-            : base(info, context)
-        {
-            var container = (IContainer)context.Context;
-            if (container == null) {
-                throw new IllegalStateException("context is not set to container");
-            }
-
-            var dbProviderFactoryManager = container.Resolve<DbProviderFactoryManager>();
-            var dbProviderFactoryName = info.GetString("_dbProviderFactoryName");
-
-            _dbProviderFactory = dbProviderFactoryManager.GetFactory(dbProviderFactoryName);
-            _isPositional = info.GetBoolean("_isPositional");
-            _paramPrefix = info.GetString("_paramPrefix");
-        }
-
         /// <summary>
         ///     Gets a value indicating whether [use position parameters].
         /// </summary>
@@ -105,15 +86,6 @@ namespace com.espertech.esper.common.@internal.db.drivers
         /// </summary>
         /// <value>The param prefix.</value>
         protected override string ParamPrefix => _paramPrefix;
-
-        public override void GetObjectData(
-            SerializationInfo info,
-            StreamingContext context)
-        {
-            info.AddValue("_isPositional", _isPositional);
-            info.AddValue("_paramPrefix", _paramPrefix);
-            info.AddValue("_dbProviderFactoryName", _dbProviderFactoryName);
-        }
 
         /// <summary>
         ///     Factory method that is used to create instance of a connection.

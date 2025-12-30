@@ -30,11 +30,5 @@ namespace com.espertech.esper.compiler.client
             : base(message, innerException, expression, lineNumber)
         {
         }
-
-        protected EPCompileExceptionSyntaxItem(
-            SerializationInfo info,
-            StreamingContext context) : base(info, context)
-        {
-        }
     }
 } // end of namespace

@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  nesper-regression-runner:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app
+    working_dir: /app/tst/NEsper.Regression.Runner
+
