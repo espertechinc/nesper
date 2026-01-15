@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Numerics;
 using com.espertech.esper.compat.datetime;
 
 namespace com.espertech.esper.compat
@@ -22,19 +23,19 @@ namespace com.espertech.esper.compat
         /// Number of ticks per millisecond
         /// </summary>
 
-        public const int TICKS_PER_MILLI = 10000;
+        public const long TICKS_PER_MILLI = 10000L;
 
         /// <summary>
         /// Number of ticks per microsecond
         /// </summary>
 
-        public const int TICKS_PER_MICRO = 10;
+        public const long TICKS_PER_MICRO = 10L;
 
         /// <summary>
         /// Number of nanoseconds per tick
         /// </summary>
 
-        public const int NANOS_PER_TICK = 100;
+        public const long NANOS_PER_TICK = 100L;
 
         /// <summary>
         /// Converts ticks to milliseconds
@@ -47,6 +48,7 @@ namespace com.espertech.esper.compat
             return ticks / TICKS_PER_MILLI;
         }
 
+#if false
         /// <summary>
         /// Converts ticks to nanoseconds
         /// </summary>
@@ -55,8 +57,9 @@ namespace com.espertech.esper.compat
 
         public static long TicksToNanos(long ticks)
         {
-            return ticks * NANOS_PER_TICK;
+            return NANOS_PER_TICK * ticks;
         }
+#endif
 
         /// <summary>
         /// Converts microseconds to ticks
@@ -80,12 +83,16 @@ namespace com.espertech.esper.compat
             return millis * TICKS_PER_MILLI;
         }
 
+#if NANOS_OVERFLOW_BUG
         /// <summary>
         /// Nanoses to ticks.
         /// </summary>
         /// <param name="nanos">The nanos.</param>
         public static long NanosToTicks(long nanos)
         {
+            Console.WriteLine($"NanosToTicks: nanos = {nanos}");
+            Console.WriteLine($"NanosToTicks: ticks = {nanos / NANOS_PER_TICK}");
+            Console.WriteLine($"NanosToTicks: NPT = {NANOS_PER_TICK}");
             return nanos / NANOS_PER_TICK;
         }
 
@@ -97,17 +104,53 @@ namespace com.espertech.esper.compat
         /// <returns></returns>
         public static long UtcNanos(DateTime dateTime)
         {
-            if (dateTime.Kind == DateTimeKind.Utc)
-                return TicksToNanos(dateTime.Ticks) - (DateTimeConstants.Boundary * 100000);
-            else if (dateTime.Kind == DateTimeKind.Local)
-                return TicksToNanos(dateTime.ToUniversalTime().Ticks) - (DateTimeConstants.Boundary * 1000000);
+            if (dateTime.Kind == DateTimeKind.Local) {
+                dateTime = dateTime.ToUniversalTime();
+            }
+            if (dateTime.Kind == DateTimeKind.Utc) {
+                return TicksToNanos(dateTime.Ticks) - (DateTimeConstants.Boundary * 1000000);
+            }
+
+            throw new ArgumentException("dateTime does not have kind specified");
+        }
+#endif
+
+        /// <summary>
+        /// Gets the number of ticks needed to represent the datetime.
+        /// </summary>
+        /// <param name="dateTime">The date time.</param>
+        /// <returns></returns>
+        public static long UtcTicks(DateTime dateTime)
+        {
+            if (dateTime.Kind == DateTimeKind.Local) {
+                dateTime = dateTime.ToUniversalTime();
+            }
+            if (dateTime.Kind == DateTimeKind.Utc) {
+                return dateTime.Ticks;
+            }
 
             throw new ArgumentException("dateTime does not have kind specified");
         }
 
         /// <summary>
-        /// Gets the number of milliseconds needed to represent
-        /// the datetime.  This is needed to convert from Java
+        /// Gets the number of microseconds needed to represent the datetime.
+        /// </summary>
+        /// <param name="dateTime">The date time.</param>
+        /// <returns></returns>
+        public static long UtcMicros(DateTime dateTime)
+        {
+            if (dateTime.Kind == DateTimeKind.Local) {
+                dateTime = dateTime.ToUniversalTime();
+            }
+            if (dateTime.Kind == DateTimeKind.Utc) {
+                return dateTime.Ticks / TICKS_PER_MICRO;
+            }
+
+            throw new ArgumentException("dateTime does not have kind specified");
+        }
+
+        /// <summary>
+        /// Gets the number of milliseconds needed to represent the datetime.  This is needed to convert from Java
         /// datetime granularity (milliseconds) to CLR datetimes.
         /// </summary>
         /// <param name="dateTime"></param>
@@ -115,16 +158,14 @@ namespace com.espertech.esper.compat
 
         public static long UtcMillis(this DateTime dateTime)
         {
+            if (dateTime.Kind == DateTimeKind.Local) {
+                dateTime = dateTime.ToUniversalTime();
+            }
             if (dateTime.Kind == DateTimeKind.Utc) {
                 return TicksToMillis(dateTime.Ticks) - DateTimeConstants.Boundary;
             }
-            else if (dateTime.Kind == DateTimeKind.Local) {
-                return TicksToMillis(dateTime.ToUniversalTime().Ticks) - DateTimeConstants.Boundary;
-            }
-            else {
-                // We interpret any datetime that does not have this specified as assumed UTC.
-                return TicksToMillis(dateTime.Ticks) - DateTimeConstants.Boundary;
-            }
+            // We interpret any datetime that does not have this specified as assumed UTC.
+            return TicksToMillis(dateTime.Ticks) - DateTimeConstants.Boundary;
         }
 
         public static DateTime UtcFromMillis(this long millis)
@@ -137,9 +178,20 @@ namespace com.espertech.esper.compat
             return new DateTime(MicrosToTicks(micros + DateTimeConstants.Boundary * 1000), DateTimeKind.Utc);
         }
 
+#if NANOS_OVERFLOW_BUG
         public static DateTime UtcFromNanos(this long nanos)
         {
+            Console.WriteLine($"UtcFromNanos(Nanos): Nanos = {nanos}");
+            Console.WriteLine($"UtcFromNanos(Nanos): Nanos + Boundary = {nanos + DateTimeConstants.Boundary * 1000000}");
+            Console.WriteLine($"UtcFromNanos(Nanos): Ticks = {NanosToTicks(nanos + DateTimeConstants.Boundary * 1000000)}");
+
             return new DateTime(NanosToTicks(nanos + DateTimeConstants.Boundary * 1000000), DateTimeKind.Utc);
+        }
+#endif
+
+        public static DateTime UtcFromTicks(this long ticks)
+        {
+            return new DateTime(ticks, DateTimeKind.Utc);
         }
 
         public static DateTime TimeFromMillis(this long millis)
@@ -152,10 +204,18 @@ namespace com.espertech.esper.compat
             return UtcFromMicros(micros).ToLocalTime();
         }
 
+        public static DateTime TimeFromTicks(this long ticks)
+        {
+            return UtcFromTicks(ticks).ToLocalTime();
+        }
+
+
+#if NANOS_OVERFLOW_BUG
         public static DateTime TimeFromNanos(this long nanos)
         {
             return UtcFromNanos(nanos).ToLocalTime();
         }
+#endif
 
         public static DateTime GetCurrentTimeUniversal()
         {
@@ -182,11 +242,25 @@ namespace com.espertech.esper.compat
 
         public static long CurrentTimeMillis => UtcMillis(DateTime.UtcNow);
 
+#if NANOS_OVERFLOW_BUG
         /// <summary>
         /// Gets the current time in nanoseconds.
         /// </summary>
         /// <value>The current time nanos.</value>
         public static long CurrentTimeNanos => UtcNanos(DateTime.UtcNow);
+#endif
+
+        /// <summary>
+        /// Gets the current time in ticks.
+        /// </summary>
+        /// <value>The current time ticks.</value>
+        public static long CurrentTimeTicks => UtcTicks(DateTime.UtcNow);
+
+        /// <summary>
+        /// Gets the current time in microseconds.
+        /// </summary>
+        /// <value>The current time microseconds.</value>
+        public static long CurrentTimeMicros => UtcMicros(DateTime.UtcNow);
 
         public static DateTimeOffset TranslateTo(this DateTime dateTime, TimeZoneInfo timeZone)
         {

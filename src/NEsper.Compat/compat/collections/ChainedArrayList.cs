@@ -50,17 +50,7 @@ namespace com.espertech.esper.compat.collections
 
         public IEnumerator<T> GetEnumerator()
         {
-#if true
             return new EnumeratorImpl(_chainHead, 0);
-#else
-            for (var curr = _chainHead; curr != null; curr = curr.Next)
-            {
-                for (int ii = 0; ii < curr.Index; ii++)
-                {
-                    yield return curr.ConstantValue[ii];
-                }
-            }
-#endif
         }
 
         public void ForEach(Action<T> action)

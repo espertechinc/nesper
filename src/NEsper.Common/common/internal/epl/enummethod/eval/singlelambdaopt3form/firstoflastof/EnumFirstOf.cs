@@ -52,27 +52,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-#if true
             return StaticMethod(typeof(EnumFirstOf), "FirstValue", args.Expressions);
-#else
-            var type = _resultType.GetCodegenReturnType();
-            var collectionType = typeof(ICollection<>).MakeGenericType(type);
-            //var collectionType = typeof(ICollection<EventBean>).MakeGenericType(type);
-            var method = codegenMethodScope
-                .MakeChild(type, typeof(EnumFirstOf), codegenClassScope)
-                .AddParam(ExprForgeCodegenNames.FP_EPS)
-                .AddParam(new CodegenNamedParam(collectionType, EnumForgeCodegenNames.REF_ENUMCOLL))
-                .AddParam(ExprForgeCodegenNames.FP_ISNEWDATA)
-                .AddParam(ExprForgeCodegenNames.FP_EXPREVALCONTEXT)
-                .Block
-                .IfCondition(
-                    Or(
-                        EqualsNull(EnumForgeCodegenNames.REF_ENUMCOLL),
-                        ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "IsEmpty")))
-                .BlockReturn(ConstantNull())
-                .MethodReturn(Cast(type, ExprDotMethodChain(EnumForgeCodegenNames.REF_ENUMCOLL).Add("First")));
-            return LocalMethod(method, args.Expressions);
-#endif
         }
 
         public static T FirstValue<T>(

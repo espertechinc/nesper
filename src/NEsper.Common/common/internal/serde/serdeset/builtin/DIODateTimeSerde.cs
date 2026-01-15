@@ -54,13 +54,13 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
             DateTime @object,
             DataOutput output)
         {
-            output.WriteLong(DateTimeHelper.UtcNanos(@object));
+            output.WriteLong(DateTimeHelper.UtcTicks(@object));
         }
 
         internal static DateTime ReadInternal(DataInput input)
         {
             var utcNanos = input.ReadLong();
-            return utcNanos.TimeFromNanos();
+            return utcNanos.TimeFromTicks();
         }
     }
 } // end of namespace

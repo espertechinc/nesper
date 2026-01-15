@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.002.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NEsper.Regression", "NEsper.Regression.csproj", "{D715FC19-66D4-463D-B08C-B39AA5F7642B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D715FC19-66D4-463D-B08C-B39AA5F7642B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D715FC19-66D4-463D-B08C-B39AA5F7642B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D715FC19-66D4-463D-B08C-B39AA5F7642B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D715FC19-66D4-463D-B08C-B39AA5F7642B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {2D112BD1-801C-4BB7-AF39-B70F4DD38774}
+	EndGlobalSection
+EndGlobal

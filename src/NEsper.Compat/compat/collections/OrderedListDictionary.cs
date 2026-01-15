@@ -596,7 +596,7 @@ namespace com.espertech.esper.compat.collections
             var index = BinarySearch(key);
             if (index == _itemList.Count) {
                 valuePair = default;
-                return default; // no values are greater
+                return false; // no values are greater
             }
             if (index >= 0) {
                 valuePair = _itemList[index];
@@ -653,7 +653,7 @@ namespace com.espertech.esper.compat.collections
             
             if (index > 0) {
                 valuePair = _itemList[index];
-                return false;
+                return true;
             }
             
             // ~index is larger than my item

@@ -43,11 +43,5 @@ namespace com.espertech.esper.common.@internal.view.core
             : base(message, innerException)
         {
         }
-
-        public ViewProcessingException(
-            SerializationInfo info,
-            StreamingContext context) : base(info, context)
-        {
-        }
     }
 }

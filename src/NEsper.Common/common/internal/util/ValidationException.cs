@@ -26,11 +26,5 @@ namespace com.espertech.esper.common.@internal.util
             : base(message, cause)
         {
         }
-
-        protected ValidationException(
-            SerializationInfo info,
-            StreamingContext context) : base(info, context)
-        {
-        }
     }
 } // end of namespace

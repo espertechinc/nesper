@@ -30,11 +30,5 @@ namespace com.espertech.esper.common.@internal.util
             : base(message, innerException)
         {
         }
-
-        protected GraphCircularDependencyException(
-            SerializationInfo info,
-            StreamingContext context) : base(info, context)
-        {
-        }
     }
 }

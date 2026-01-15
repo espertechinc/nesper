@@ -43,11 +43,5 @@ namespace com.espertech.esper.compat
             Exception e) : base(message, e)
         {
         }
-
-        protected IllegalStateException(
-            SerializationInfo info,
-            StreamingContext context) : base(info, context)
-        {
-        }
     }
 }

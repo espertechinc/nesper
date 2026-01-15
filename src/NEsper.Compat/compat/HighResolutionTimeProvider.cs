@@ -18,7 +18,7 @@ namespace com.espertech.esper.compat
         public static readonly HighResolutionTimeProvider Instance = new HighResolutionTimeProvider();
 
 #if NETCOREAPP3_0_OR_GREATER
-        public long CurrentTime => DateTimeHelper.CurrentTimeNanos;
+        public long CurrentTime => DateTimeHelper.CurrentTimeTicks;
 #else
         [DllImport("Kernel32.dll")]
         private static extern bool QueryPerformanceCounter(out long lpPerformanceCount);

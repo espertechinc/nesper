@@ -24,11 +24,5 @@ namespace com.espertech.esper.common.@internal.context.util
             : base(message)
         {
         }
-
-        protected UndeployPreconditionException(
-            SerializationInfo info,
-            StreamingContext context) : base(info, context)
-        {
-        }
     }
 } // end of namespace

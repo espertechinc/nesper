@@ -106,59 +106,5 @@ namespace com.espertech.esper.common.@internal.db
             driver.Properties = driverConnectionFactoryDesc.DriverProperties;
             return driver;
         }
-
-#if false
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DriverConnectionFactoryDescDeprecated"/> class.
-        /// </summary>
-        /// <param name="container">Resource container.</param>
-        /// <param name="driverType">Type of the driver.</param>
-        /// <param name="properties">The properties.</param>
-        public DriverConnectionFactoryDescDeprecated(
-            IContainer container,
-            Type driverType,
-            Properties properties)
-        {
-            _driver = ResolveDriverFromType(container, driverType);
-            _driver.Properties = properties;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DriverConnectionFactoryDescDeprecated"/> class.
-        /// </summary>
-        /// <param name="container">Resource container.</param>
-        /// <param name="driverName">Name of the driver.</param>
-        /// <param name="properties">Properties that should be applied to the connection.</param>
-        public DriverConnectionFactoryDescDeprecated(
-            IContainer container,
-            string driverName,
-            Properties properties)
-        {
-            _driver = ResolveDriverFromName(container, driverName);
-            _driver.Properties = properties;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DriverConnectionFactoryDescDeprecated"/> class.
-        /// </summary>
-        /// <param name="container">Resource container.</param>
-        /// <param name="specification">The db specification.</param>
-        public DriverConnectionFactoryDescDeprecated(
-            IContainer container,
-            DriverConfiguration specification)
-        {
-            _driver = ResolveDriverFromName(container, specification.DriverName);
-            _driver.Properties = specification.Properties;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DriverConnectionFactoryDescDeprecated"/> class.
-        /// </summary>
-        /// <param name="driver">The driver.</param>
-        public DriverConnectionFactoryDescDeprecated(DbDriver driver)
-        {
-            _driver = driver;
-        }
-#endif
     }
 }

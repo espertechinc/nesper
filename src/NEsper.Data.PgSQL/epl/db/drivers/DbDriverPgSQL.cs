@@ -30,16 +30,6 @@ namespace com.espertech.esper.epl.db.drivers
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DbDriverPgSQL"/> class.
-        /// </summary>
-        /// <param name="info">The information.</param>
-        /// <param name="context">The context.</param>
-        protected DbDriverPgSQL(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        {
-        }
-
-        /// <summary>
         /// Factory method that is used to create instance of a connection.
         /// </summary>
         /// <returns></returns>

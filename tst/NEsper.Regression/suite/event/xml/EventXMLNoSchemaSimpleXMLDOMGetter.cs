@@ -105,19 +105,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
                     ClassicAssert.AreEqual("VAL21-2", theEvent.Get("mappedElement"));
                     ClassicAssert.AreEqual("VAL21-2", theEvent.Get("indexedElement"));
 
-#if true
                     ClassicAssert.AreEqual(null, theEvent.Get("invalidelement"));
                     ClassicAssert.AreEqual(null, theEvent.Get("invalidattribute"));
-#else
-                    if (isInvalidReturnsEmptyString) {
-                        ClassicAssert.AreEqual("", theEvent.Get("invalidelement"));
-                        ClassicAssert.AreEqual("", theEvent.Get("invalidattribute"));
-                    }
-                    else {
-                        ClassicAssert.AreEqual(null, theEvent.Get("invalidelement"));
-                        ClassicAssert.AreEqual(null, theEvent.Get("invalidattribute"));
-                    }
-#endif
                 });
         }
     }

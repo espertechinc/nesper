@@ -25,13 +25,6 @@ namespace com.espertech.esper.epl.db.drivers
         {
         }
 
-        protected DbDriverODBC(
-            SerializationInfo info,
-            StreamingContext context)
-            : base(info, context)
-        {
-        }
-
         /// <summary>
         /// Creates a connection string builder.
         /// </summary>

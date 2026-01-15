@@ -709,36 +709,6 @@ namespace com.espertech.esper.common.@internal.@event.xml
                 foreach (var facet in simpleTypeRestriction.Facets) {
                 }
             }
-#if false
-            if ((simpleType.getDefinedFacets() & XSSimpleType.FACET_FRACTIONDIGITS) != 0)
-            {
-                XSObjectList facets = simpleType.getFacets();
-                Integer digits = null;
-                for (int f = 0; f < facets.getLength(); f++)
-                {
-                    XSObject item = facets.item(f);
-                    if (item
-                    instanceof XSFacet)
-                    {
-                        XSFacet facet = (XSFacet) item;
-                        if (facet.getFacetKind() == XSSimpleType.FACET_FRACTIONDIGITS)
-                        {
-                            try
-                            {
-                                digits = Int32.Parse(facet.getLexicalFacetValue());
-                            }
-                            catch (Exception ex)
-                            {
-                                Log.warn(
-                                    "Error parsing fraction facet value '" + facet.getLexicalFacetValue() + "' : " +
-                                    ex.getMessage(), ex);
-                            }
-                        }
-                    }
-                }
-                return digits;
-            }
-#endif
             return null;
         }
     }

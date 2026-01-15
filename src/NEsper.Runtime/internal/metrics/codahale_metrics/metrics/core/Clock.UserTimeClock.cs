@@ -17,7 +17,7 @@ namespace com.espertech.esper.runtime.@internal.metrics.codahale_metrics.metrics
         /// </summary>
         public class UserTimeClock : Clock
         {
-            public override long Tick => DateTimeHelper.CurrentTimeNanos;
+            public override long Tick => DateTimeHelper.CurrentTimeTicks;
         }
     }
 }

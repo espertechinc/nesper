@@ -27,11 +27,5 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             : base(message, cause)
         {
         }
-
-        protected ExprValidationPropertyException(
-            SerializationInfo info,
-            StreamingContext context) : base(info, context)
-        {
-        }
     }
 }

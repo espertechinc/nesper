@@ -53,6 +53,7 @@ namespace com.espertech.esper.compat
             return DateTimeHelper.TicksToMillis(dateTime.UtcTicks) - DateTimeConstants.Boundary;
         }
 
+#if NANOS_OVERFLOW_BUG
         /// <summary>
         /// Gets the number of nanoseconds needed to represent the datetime.
         /// </summary>
@@ -61,6 +62,17 @@ namespace com.espertech.esper.compat
         public static long UtcNanos(this DateTimeOffset dateTime)
         {
             return DateTimeHelper.TicksToNanos(dateTime.Ticks) - (DateTimeConstants.Boundary * 100000);
+        }
+#endif
+
+        /// <summary>
+        /// Gets the number of ticks needed to represent the datetime.
+        /// </summary>
+        /// <param name="dateTime"></param>
+        /// <returns></returns>
+        public static long UtcTicks(this DateTimeOffset dateTime)
+        {
+            return dateTime.Ticks;
         }
 
         /// <summary>
@@ -74,6 +86,7 @@ namespace com.espertech.esper.compat
             return DateTimeHelper.TicksToMillis(dateTime.UtcTicks) - DateTimeConstants.Boundary;
         }
 
+#if NANOS_OVERFLOW_BUG
         /// <summary>
         /// Gets the datetime that matches the number of nanoseconds provided.
         /// </summary>
@@ -85,8 +98,19 @@ namespace com.espertech.esper.compat
             return new DateTimeOffset(DateTimeHelper.NanosToTicks(nanos + DateTimeConstants.Boundary * 100000), BaseUtcOffset)
                 .ToOffset(offset);
         }
-
+#endif
         
+        /// <summary>
+        /// Gets the datetime that matches the number of ticks provided.
+        /// </summary>
+        /// <param name="ticks">The ticks.</param>
+        /// <param name="offset">The offset.</param>
+        /// <returns></returns>
+        public static DateTimeOffset TimeFromTicks(this long ticks, TimeSpan offset)
+        {
+            return new DateTimeOffset(ticks, BaseUtcOffset).ToOffset(offset);
+        }
+
         /// <summary>
         /// Gets the datetime that matches the number of milliseconds provided.
         /// </summary>

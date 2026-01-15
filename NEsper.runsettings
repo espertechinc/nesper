@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RunSettings>
+  <RunConfiguration>
+    <MaxCpuCount>0</MaxCpuCount>
+    <ResultsDirectory>TestResults</ResultsDirectory>
+    <TargetPlatform>x64</TargetPlatform>
+    <TreatNoTestsAsError>false</TreatNoTestsAsError>
+  </RunConfiguration>
+
+  <NUnit>
+    <NumberOfTestWorkers>0</NumberOfTestWorkers>
+    <DefaultTimeout>300000</DefaultTimeout>
+    <InternalTraceLevel>Off</InternalTraceLevel>
+    <ShadowCopyFiles>false</ShadowCopyFiles>
+  </NUnit>
+</RunSettings>

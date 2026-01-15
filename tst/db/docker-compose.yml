@@ -1,4 +1,3 @@
-version: '3'
 services:
   database:
     # Official Postgres image from DockerHub (we use the last version)

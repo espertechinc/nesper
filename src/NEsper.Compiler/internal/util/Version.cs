@@ -11,7 +11,7 @@ namespace com.espertech.esper.compiler.@internal.util
     public class Version
     {
         public static string COMPILER_VERSION {
-            get => "8.9.1";
+            get => "8.9.2";
         }
     }
 } // end of namespace

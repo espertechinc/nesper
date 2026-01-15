@@ -53,12 +53,6 @@ namespace com.espertech.esper.compiler.client
             LineNumber = lineNumber;
         }
 
-        protected EPCompileExceptionItem(
-            SerializationInfo info,
-            StreamingContext context) : base(info, context)
-        {
-        }
-
         /// <summary>
         ///     Returns expression text for statement.
         /// </summary>

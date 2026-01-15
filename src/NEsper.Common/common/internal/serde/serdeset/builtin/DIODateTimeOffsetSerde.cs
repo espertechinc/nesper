@@ -54,7 +54,7 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
             DateTimeOffset @object,
             DataOutput output)
         {
-            var nanos = @object.UtcNanos();
+            var nanos = @object.UtcTicks();
             var offset = @object.Offset.Ticks;
             output.WriteLong(nanos);
             output.WriteLong(offset);
@@ -64,7 +64,7 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
         {
             var nanos = input.ReadLong();
             var offset = TimeSpan.FromTicks(input.ReadLong());
-            return nanos.TimeFromNanos(offset);
+            return nanos.TimeFromTicks(offset);
         }
     }
 } // end of namespace

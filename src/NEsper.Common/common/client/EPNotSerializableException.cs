@@ -27,12 +27,6 @@ namespace com.espertech.esper.common.client
             ClassType = classType;
         }
 
-        protected EPNotSerializableException(
-            SerializationInfo info,
-            StreamingContext context) : base(info, context)
-        {
-        }
-
         public Type ClassType { get; }
     }
 }

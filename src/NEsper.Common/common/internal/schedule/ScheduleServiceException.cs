@@ -43,11 +43,5 @@ namespace com.espertech.esper.common.@internal.schedule
             : base(string.Empty, cause)
         {
         }
-
-        protected ScheduleServiceException(
-            SerializationInfo info,
-            StreamingContext context) : base(info, context)
-        {
-        }
     }
 }

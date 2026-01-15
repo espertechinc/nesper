@@ -59,12 +59,6 @@ namespace com.espertech.esper.compiler.client
             Items = items;
         }
 
-        protected EPCompileException(
-            SerializationInfo info,
-            StreamingContext context) : base(info, context)
-        {
-        }
-
         /// <summary>
         ///     Returns compilation items.
         /// </summary>

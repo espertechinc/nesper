@@ -25,10 +25,7 @@ namespace com.espertech.esper.compat.logging
         /// <summary>
         /// Gets the simple layout.
         /// </summary>
-        public static Layout SimpleLayout { get; } = new SimpleLayout()
-        {
-            Text = "${threadid}|${level}|${logger}|${message}"
-        };
+        public static Layout SimpleLayout { get; } = new SimpleLayout("${threadid}|${level}|${logger}|${message}");
 
         /// <summary>
         /// Gets the console target.

@@ -24,11 +24,6 @@ namespace com.espertech.esper.compat
 	{
         public Properties() {}
 
-        protected Properties(SerializationInfo info, StreamingContext context) 
-            : base(info, context)
-        {
-        }
-
         public Properties Copy()
         {
             Properties clone = new Properties();

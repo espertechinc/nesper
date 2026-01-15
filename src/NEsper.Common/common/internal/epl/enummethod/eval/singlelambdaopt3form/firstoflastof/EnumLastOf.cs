@@ -53,9 +53,6 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-#if false
-            return StaticMethod(typeof(EnumLastOf), "LastValue", args.Expressions);
-#else
             var type = _resultType.GetCodegenReturnType().GetBoxedType();
             var method = codegenMethodScope.MakeChild(type, typeof(EnumLastOf), codegenClassScope)
                 .AddParam(ExprForgeCodegenNames.FP_EPS)
@@ -69,7 +66,6 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
                 .BlockEnd()
                 .MethodReturn(Cast(type, Ref("result")));
             return LocalMethod(method, args.Expressions);
-#endif
         }
 
         public static T LastValue<T>(

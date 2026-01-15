@@ -60,18 +60,6 @@ namespace com.espertech.esper.common.@internal.@event.json.deserializers.forge
                                             Ref("_")))))));
 
             return LocalMethod(child, elementExpr);
-
-#if false
-			method
-				.Block
-				.StaticMethod(
-					typeof(JsonElementExtensions),
-					"ElementToArray",
-					Ref("jsonElement"),
-					new CodegenExpressionLambda(method.Block)
-						.WithParam<JsonElement>("_")
-						.WithBody(_ => _subForge.CodegenDeserialize(method, classScope, Ref("_"))));
-#endif
         }
     }
 } // end of namespace

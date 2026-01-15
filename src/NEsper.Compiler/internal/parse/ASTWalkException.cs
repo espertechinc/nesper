@@ -34,12 +34,6 @@ namespace com.espertech.esper.compiler.@internal.parse
         {
         }
 
-        protected ASTWalkException(
-            SerializationInfo info,
-            StreamingContext context) : base(info, context)
-        {
-        }
-
         public static ASTWalkException From(
             string message,
             Exception ex)

@@ -52,9 +52,7 @@ namespace com.espertech.esper.runtime.@internal.timer
             }
         }
 
-        private long TimeMicros {
-            get { return (DateTimeHelper.CurrentTimeNanos / NANOS_TO_MICROS) + _wallClockOffset; }
-        }
+        private long TimeMicros => DateTimeHelper.CurrentTimeMicros + _wallClockOffset;
 
         /// <summary>
         /// Calculate resolution of this timer in microseconds i.e. what is the resolution

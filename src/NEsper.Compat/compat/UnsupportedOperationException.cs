@@ -28,16 +28,5 @@ namespace com.espertech.esper.compat
 		public UnsupportedOperationException(string message) : base(message)
 		{
 		}
-
-		/// <summary>
-		/// Serialization constructor.
-		/// </summary>
-		/// <param name="info"></param>
-		/// <param name="context"></param>
-		protected UnsupportedOperationException(
-			SerializationInfo info,
-			StreamingContext context) : base(info, context)
-		{
-		}
 	}
 }

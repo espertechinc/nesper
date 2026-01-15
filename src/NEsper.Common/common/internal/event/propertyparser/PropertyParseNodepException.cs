@@ -17,11 +17,5 @@ namespace com.espertech.esper.common.@internal.@event.propertyparser
             : base(message)
         {
         }
-
-        protected PropertyParseNodepException(
-            SerializationInfo info,
-            StreamingContext context) : base(info, context)
-        {
-        }
     }
 } // end of namespace

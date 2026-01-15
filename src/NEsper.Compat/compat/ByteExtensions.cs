@@ -8,8 +8,6 @@
 
 using System.Text;
 
-using Force.Crc32;
-
 namespace com.espertech.esper.compat
 {
     public static class ByteExtensions
@@ -27,7 +25,24 @@ namespace com.espertech.esper.compat
 
         public static long GetCrc32(this byte[] input)
         {
-            return Crc32Algorithm.Compute(input);
+            const uint polynomial = 0xEDB88320u;
+            uint crc = 0xFFFFFFFFu;
+
+            for (var i = 0; i < input.Length; i++) {
+                crc ^= input[i];
+
+                for (var bit = 0; bit < 8; bit++) {
+                    if ((crc & 1u) != 0u) {
+                        crc = (crc >> 1) ^ polynomial;
+                    }
+                    else {
+                        crc >>= 1;
+                    }
+                }
+            }
+
+            crc ^= 0xFFFFFFFFu;
+            return crc;
         }
     }
 }

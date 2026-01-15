@@ -17,11 +17,5 @@ namespace com.espertech.esper.common.@internal.collection
             : base(message)
         {
         }
-
-        protected PathException(
-            SerializationInfo info,
-            StreamingContext context) : base(info, context)
-        {
-        }
     }
 } // end of namespace

@@ -22,11 +22,5 @@ namespace com.espertech.esper.common.client.variable
             : base(message)
         {
         }
-
-        protected VariableValueException(
-            SerializationInfo info,
-            StreamingContext context) : base(info, context)
-        {
-        }
     }
 }

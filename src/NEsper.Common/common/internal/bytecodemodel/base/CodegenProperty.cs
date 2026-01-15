@@ -272,13 +272,6 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
 
         private CodegenProperty AddChild(CodegenProperty propertyNode)
         {
-#if false
-            if (Children.IsEmpty()) {
-                Children = new List<CodegenMethod>();
-            }
-
-            Children.Add(propertyNode);
-#endif
             return propertyNode;
         }
 

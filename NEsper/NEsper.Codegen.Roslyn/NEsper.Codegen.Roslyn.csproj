@@ -22,9 +22,6 @@
   <ItemGroup Condition="'$(NetCore)'=='true'">
   </ItemGroup>
   
-  <ItemGroup Condition="'$(NetFramework)' == 'net472'">
-  </ItemGroup>
-  
   <ItemGroup>
     <ProjectReference Include="..\NEsper\NEsper.csproj" />
   </ItemGroup>

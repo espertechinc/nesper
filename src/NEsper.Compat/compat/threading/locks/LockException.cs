@@ -9,12 +9,6 @@ namespace com.espertech.esper.compat.threading.locks
         {
         }
 
-        protected LockException(
-            SerializationInfo info,
-            StreamingContext context) : base(info, context)
-        {
-        }
-
         public LockException(string message) : base(message)
         {
         }

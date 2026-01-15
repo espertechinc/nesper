@@ -62,12 +62,6 @@ namespace com.espertech.esper.common.client
         {
         }
 
-        protected PropertyAccessException(
-            SerializationInfo info,
-            StreamingContext context) : base(info, context)
-        {
-        }
-
         /// <summary>
         /// Generates the Not-A-Valid-Property exception
         /// </summary>

@@ -43,7 +43,7 @@ namespace com.espertech.esper.compat
                 .Where(field => field.Name == enumName)
                 .FirstOrDefault();
             if (fieldInfo == null) {
-                throw new ArgumentException("enumName");
+                throw new ArgumentException("invalid enumeration name", nameof(enumName));
             }
 
             return (T) fieldInfo.GetValue(null);
@@ -60,7 +60,7 @@ namespace com.espertech.esper.compat
                 .FirstOrDefault();
             if (fieldInfo == null)
             {
-                throw new ArgumentException("enumName");
+                throw new ArgumentException("invalid enumeration value", nameof(enumValue));
             }
 
             return (TResult)fieldInfo.GetValue(null);

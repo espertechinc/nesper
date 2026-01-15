@@ -26,11 +26,5 @@ namespace com.espertech.esper.compat.concurrency
             Exception innerException) : base(message, innerException)
         {
         }
-
-        protected ValueNotAvailableException(
-            SerializationInfo info,
-            StreamingContext context) : base(info, context)
-        {
-        }
     }
 }

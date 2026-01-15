@@ -34,11 +34,5 @@ namespace com.espertech.esper.common.@internal.view.core
             : base(message)
         {
         }
-
-        protected ViewParameterException(
-            SerializationInfo info,
-            StreamingContext context) : base(info, context)
-        {
-        }
     }
 } // End of namespace

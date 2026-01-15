@@ -9,8 +9,6 @@
 using System.Text;
 using System.Text.RegularExpressions;
 
-using Force.Crc32;
-
 namespace com.espertech.esper.compat
 {
     public static class StringExtensions
@@ -33,6 +31,8 @@ namespace com.espertech.esper.compat
         {
             if (input == null)
                 return null;
+            if (input.Length == 0)
+                return string.Empty;
             if (input.Length == 1)
                 return char.ToUpperInvariant(input[0]) + "";
 
@@ -75,7 +75,7 @@ namespace com.espertech.esper.compat
             if (encoding == null)
                 encoding = Encoding.UTF8;
 
-            return Crc32Algorithm.Compute(encoding.GetBytes(input));
+            return ByteExtensions.GetCrc32(encoding.GetBytes(input));
         }
 
         /// <summary>
