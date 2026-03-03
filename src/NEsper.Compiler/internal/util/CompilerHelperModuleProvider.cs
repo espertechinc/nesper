@@ -78,7 +78,7 @@ namespace com.espertech.esper.compiler.@internal.util
 			var compilerAbstraction = compileTimeServices.CompilerAbstraction;
 			var compilationState = compilerAbstraction.NewArtifactCollection();
 			var container = compileTimeServices.Configuration.Container;
-			var artifactRepository = container.ArtifactRepositoryManager().DefaultRepository;
+			var artifactRepository = container.Resolve<IArtifactRepositoryManager>().DefaultRepository;
 			
 			EPCompiledManifest manifest;
 			try {

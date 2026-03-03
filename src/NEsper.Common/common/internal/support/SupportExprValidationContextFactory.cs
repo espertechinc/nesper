@@ -36,6 +36,7 @@ namespace com.espertech.esper.common.@internal.support
         {
             var moduleServices = new ModuleCompileTimeServices();
             moduleServices.Configuration = new Configuration();
+            moduleServices.Configuration.Container = container;
             moduleServices.ImportServiceCompileTime = SupportImport.GetInstance(container);
             var services = new StatementCompileTimeServices(1, moduleServices);
             var raw = new StatementRawInfo(1, "abc", null, StatementType.SELECT, null, null, null, null);

@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         public ExprEvaluator ExprEvaluator {
             get {
                 var evaluators = ExprNodeUtilityQuery.GetEvaluatorsNoCompile(ForgeRenderable.ChildNodes);
-                if (_threadingProfile == ThreadingProfile.LARGE) {
+                if (_threadingProfile == ThreadingProfile.LARGE || _threadLocalManager == null) {
                     return new ExprConcatNodeForgeEvalWNew(this, evaluators);
                 }
 

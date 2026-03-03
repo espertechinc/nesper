@@ -316,6 +316,30 @@ Exit criteria:
 
 - Compiler internals no longer call container resolve outside composition root.
 
+### Phase 3 Completion (2026-03-03)
+
+Completed in this pass:
+
+1. **Replaced container extension methods with explicit `Resolve<T>()` calls** in compiler composition roots:
+   - `CompilerHelperServices.GetServices()` lines 104-111: replaced `.SerializerFactory()`, `.ArtifactRepositoryManager()`, `.MetadataReferenceResolver()`, `.MetadataReferenceProvider()` with explicit `Resolve<T>()` calls.
+   - `CompilerHelperModuleProvider.Compile()` line 81: replaced `.ArtifactRepositoryManager()` with explicit `Resolve<IArtifactRepositoryManager>()`.
+
+2. **Fixed test infrastructure issue** exposed by proper dependency flow:
+   - `ExprConcatNodeForge.ExprEvaluator` now handles null `IThreadLocalManager` gracefully by falling back to non-thread-local evaluator (for test scenarios where `ModuleCompileTimeServices` uses empty constructor).
+   - Added container assignment in `SupportExprValidationContextFactory.Make()` to ensure test validation contexts have access to container.
+
+Validation:
+
+- `dotnet build src/NEsper.Compiler/NEsper.Compiler.csproj -v minimal` ✅
+- `dotnet test tst/NEsper.Compiler.Tests/NEsper.Compiler.Tests.csproj -v minimal` ✅ (134/134 tests passed)
+
+Phase 3 status:
+
+- ✅ No container extension methods remain in compiler assemblies.
+- ✅ All container access in compiler is now explicit `Resolve<T>()` at composition root.
+- ✅ `ModuleCompileTimeServices` and `StatementSpecMapEnv` have no `IContainer` dependencies.
+- ➡️ Container usage is limited to startup wiring in `CompilerHelperServices.GetServices()` and `CompilerHelperModuleProvider.Compile()`.
+
 ## Phase 4 — Common utility and DB subsystem cleanup
 
 1. `SerializableObjectCopier`, `SerializerFactory*`, `TransientConfigurationResolver`:
