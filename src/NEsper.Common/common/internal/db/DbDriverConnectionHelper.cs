@@ -67,6 +67,7 @@ namespace com.espertech.esper.common.@internal.db
         /// <param name="container">The container.</param>
         /// <param name="driverName">Name of the driver.</param>
         /// <returns></returns>
+        [Obsolete("Use ResolveDriverFromType(Func<Type, DbDriver>, Type) with an explicit resolver.")]
         public static DbDriver ResolveDriverFromName(
             IContainer container,
             string driverName)
@@ -81,21 +82,14 @@ namespace com.espertech.esper.common.@internal.db
         /// </summary>
         /// <param name="container">The container.</param>
         /// <param name="driverType">Type of the driver.</param>
+        [Obsolete("Use ResolveDriverFromType(Func<Type, DbDriver>, Type) with an explicit resolver.")]
         public static DbDriver ResolveDriverFromType(
             IContainer container,
             Type driverType)
         {
-            if (typeof(DbDriver).IsAssignableFrom(driverType)) {
-                if (container.Has(driverType.FullName)) {
-                    return container.Resolve<DbDriver>(driverType.FullName);
-                }
-
-                return Activator.CreateInstance(driverType) as DbDriver;
-            }
-
-            throw new EPException(
-                "Unable to create driver because it was not assignable from " +
-                typeof(DbDriver).FullName);
+            return ResolveDriverFromType(
+                type => Activator.CreateInstance(type) as DbDriver,
+                driverType);
         }
 
         public static DbDriver ResolveDriverFromType(
@@ -111,6 +105,7 @@ namespace com.espertech.esper.common.@internal.db
                 typeof(DbDriver).FullName);
         }
 
+        [Obsolete("Use ResolveDriver(Func<Type, DbDriver>, DriverConnectionFactoryDesc) with an explicit resolver.")]
         public static DbDriver ResolveDriver(
             IContainer container,
             DriverConnectionFactoryDesc driverConnectionFactoryDesc)
