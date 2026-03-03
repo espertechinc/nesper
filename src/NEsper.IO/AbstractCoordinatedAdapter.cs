@@ -18,7 +18,7 @@ using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
-using com.espertech.esper.container;
+using com.espertech.esper.compat.threading.locks;
 using com.espertech.esper.runtime.client;
 using com.espertech.esper.runtime.@internal.kernel.service;
 
@@ -49,7 +49,7 @@ namespace com.espertech.esperio
         private long _lastEventTime;
 		private long _startTime;
         private AbstractSender _sender;
-	    private IContainer _container;
+        private IReaderWriterLockManager _rwLockManager;
 
         /// <summary>
         /// Get the state of this Adapter.
@@ -61,15 +61,17 @@ namespace com.espertech.esperio
 	    /// Ctor.
 	    /// </summary>
 	    /// <param name="runtime">the runtime for the engine runtime</param>
+	    /// <param name="rwLockManager">the reader-writer lock manager</param>
 	    /// <param name="usingEngineThread">true if the Adapter should set time by the scheduling service in the runtime, false if it should set time externally through the calling thread</param>
 	    /// <param name="usingExternalTimer">true to use esper's external timer mechanism instead of internal timing</param>
 	    /// <param name="usingTimeSpanEvents"></param>
-	    protected AbstractCoordinatedAdapter(EPRuntime runtime, bool usingEngineThread, bool usingExternalTimer, bool usingTimeSpanEvents)
+	    protected AbstractCoordinatedAdapter(EPRuntime runtime, IReaderWriterLockManager rwLockManager, bool usingEngineThread, bool usingExternalTimer, bool usingTimeSpanEvents)
         {
             UsingEngineThread = usingEngineThread;
             UsingExternalTimer = usingExternalTimer;
             UsingTimeSpanEvents = usingTimeSpanEvents;
             Sender = new DirectSender();
+            _rwLockManager = rwLockManager;
 
 			if(runtime == null)
 			{
@@ -81,7 +83,6 @@ namespace com.espertech.esperio
 			}
 
             _runtime = runtimeSpi;
-            _container = runtimeSpi.Container;
             _processEvent = runtime.EventService;
 			_schedulingService = runtimeSpi.ServicesContext.SchedulingService;
 		}
@@ -359,7 +360,7 @@ namespace com.espertech.esperio
             var spi = (EPRuntimeSPI) _runtime;
             var deploymentId = "CSV-adapter-" + UuidGenerator.Generate();
             var metricsHandle = spi.ServicesContext.MetricReportingService.GetStatementHandle(-1, deploymentId, "AbstractCoordinatedAdapter");
-            var lockImpl = _container.RWLockManager().CreateLock("CSV");
+            var lockImpl = _rwLockManager.CreateLock("CSV");
             var stmtHandle = new EPStatementHandle(
 	            "AbstractCoordinatedAdapter", deploymentId, -1, null, 0, false, false, 
 	            spi.ServicesContext.MultiMatchHandlerFactory.Make(false, false), false, false, metricsHandle, null, null);

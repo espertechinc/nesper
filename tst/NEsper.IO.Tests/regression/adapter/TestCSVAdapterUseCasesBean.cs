@@ -1,4 +1,4 @@
-///////////////////////////////////////////////////////////////////////////////////////
+﻿///////////////////////////////////////////////////////////////////////////////////////
 // Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
@@ -57,7 +57,7 @@ namespace com.espertech.esperio.regression.adapter
             stmt.Events += listener.Update;
 
             var inputAdapter = new CSVInputAdapter(
-                _runtime, new AdapterInputSource(_container, CSV_FILENAME_ONELINE_TRADE), "ExampleMarketDataBeanReadWrite");
+                _runtime, new AdapterInputSource(_container.ResourceManager(), CSV_FILENAME_ONELINE_TRADE), "ExampleMarketDataBeanReadWrite");
             inputAdapter.Start();
  
             ClassicAssert.AreEqual(1, listener.GetNewDataList().Count);

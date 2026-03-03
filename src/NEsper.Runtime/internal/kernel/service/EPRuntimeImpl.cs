@@ -852,7 +852,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
                 }
 
                 Configuration copy = SerializableObjectCopier
-                    .GetInstance(RuntimeContainer)
+                    .GetInstance(RuntimeContainer.Resolve<TypeResolverProvider>().TypeResolver)
                     .Copy(configuration);
                 copy.Container = RuntimeContainer;
 

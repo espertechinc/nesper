@@ -359,7 +359,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 
             DatabaseConfigServiceRuntime databaseConfigServiceRuntime =
                 new DatabaseConfigServiceImpl(
-                    driverType => DbDriverConnectionHelper.ResolveDriverFromType(container, driverType),
+                    driverType => (DbDriver) Activator.CreateInstance(driverType),
                     configs.Common.DatabaseReferences,
                     importServiceRuntime);
             var historicalDataCacheFactory = MakeHistoricalDataCacheFactory(epServicesHA.RuntimeExtensionServices);

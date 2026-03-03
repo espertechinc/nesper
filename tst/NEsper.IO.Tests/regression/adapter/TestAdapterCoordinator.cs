@@ -1,4 +1,4 @@
-///////////////////////////////////////////////////////////////////////////////////////
+﻿///////////////////////////////////////////////////////////////////////////////////////
 // Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
@@ -74,26 +74,26 @@ namespace com.espertech.esperio.regression.adapter
         	var propertyOrderTimestamp = new[] { "timestamp", "MyInt", "MyDouble", "MyString" };
     
     		// A CSVPlayer for a file with timestamps, not looping
-    		_timestampsNotLooping = new CSVInputAdapterSpec(new AdapterInputSource(_container, "regression/timestampOne.csv"), _eventTypeName);
+    		_timestampsNotLooping = new CSVInputAdapterSpec(new AdapterInputSource(_container.ResourceManager(), "regression/timestampOne.csv"), _eventTypeName);
             _timestampsNotLooping.IsUsingEngineThread = true;
     		_timestampsNotLooping.PropertyOrder = propertyOrderTimestamp;
     		_timestampsNotLooping.TimestampColumn = "timestamp";
     
     		// A CSVAdapter for a file with timestamps, looping
-    		_timestampsLooping = new CSVInputAdapterSpec(new AdapterInputSource(_container, "regression/timestampTwo.csv"), _eventTypeName);
+    		_timestampsLooping = new CSVInputAdapterSpec(new AdapterInputSource(_container.ResourceManager(), "regression/timestampTwo.csv"), _eventTypeName);
             _timestampsLooping.IsLooping = true;
     		_timestampsLooping.IsUsingEngineThread = true;
     		_timestampsLooping.PropertyOrder = propertyOrderTimestamp;
     		_timestampsLooping.TimestampColumn = "timestamp";
     
     		// A CSVAdapter that sends 10 events per sec, not looping
-    		_noTimestampsNotLooping = new CSVInputAdapterSpec(new AdapterInputSource(_container, "regression/noTimestampOne.csv"), _eventTypeName);
+    		_noTimestampsNotLooping = new CSVInputAdapterSpec(new AdapterInputSource(_container.ResourceManager(), "regression/noTimestampOne.csv"), _eventTypeName);
     		_noTimestampsNotLooping.EventsPerSec = 10;
     		_noTimestampsNotLooping.PropertyOrder = _propertyOrderNoTimestamp;
             _noTimestampsNotLooping.IsUsingEngineThread = true;
     
     		// A CSVAdapter that sends 5 events per sec, looping
-    		_noTimestampsLooping = new CSVInputAdapterSpec(new AdapterInputSource(_container, "regression/noTimestampTwo.csv"), _eventTypeName);
+    		_noTimestampsLooping = new CSVInputAdapterSpec(new AdapterInputSource(_container.ResourceManager(), "regression/noTimestampTwo.csv"), _eventTypeName);
     		_noTimestampsLooping.EventsPerSec = 5;
             _noTimestampsLooping.IsLooping = true;
     		_noTimestampsLooping.PropertyOrder = _propertyOrderNoTimestamp;
@@ -248,7 +248,7 @@ namespace com.espertech.esperio.regression.adapter
         [Test]
     	public void TestExternalTimer()
     	{
-    		_coordinator = new AdapterCoordinatorImpl(_runtime, false, true, false);
+    		_coordinator = new AdapterCoordinatorImpl(_runtime, ((com.espertech.esper.runtime.@internal.kernel.service.EPRuntimeSPI)_runtime).ServicesContext.ReaderWriterLockManager, false, true, false);
     		_coordinator.Coordinate(new CSVInputAdapter(_runtime, _noTimestampsNotLooping));
     		_coordinator.Coordinate(new CSVInputAdapter(_runtime, _timestampsNotLooping));
     

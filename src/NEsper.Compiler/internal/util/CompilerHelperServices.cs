@@ -614,7 +614,7 @@ namespace com.espertech.esper.compiler.@internal.util
 
 			var databaseConfigServiceCompileTime =
 				new DatabaseConfigServiceImpl(
-					driverType => DbDriverConnectionHelper.ResolveDriverFromType(container, driverType),
+					driverType => (DbDriver) Activator.CreateInstance(driverType),
 					configuration.Common.DatabaseReferences,
 					importServiceCompileTime);
 
@@ -648,6 +648,8 @@ namespace com.espertech.esper.compiler.@internal.util
 				artifactRepository,
 				metadataReferenceResolver,
 				metadataReferenceProvider,
+				typeResolverProvider,
+				resourceManager,
 				classProvidedCompileTimeRegistry,
 				classProvidedCompileTimeResolver,
 				contextCompileTimeRegistry,

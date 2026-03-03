@@ -119,7 +119,8 @@ namespace com.espertech.esper.container
                     Lifespan.Singleton);
             if (container.DoesNotHave<IObjectCopier>()) {
                 container.Register<IObjectCopier>(
-                    ic => new SerializableObjectCopier(ic),
+                    ic => new SerializableObjectCopier(
+                        ic.Resolve<TypeResolverProvider>().TypeResolver),
                     Lifespan.Singleton);
             }
 

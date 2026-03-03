@@ -129,19 +129,18 @@ namespace com.espertech.esper.compiler.@internal.util
             Configuration configuration)
         {
             try {
-                var container = configuration.Container;
-                var typeResolverProvider = container.Resolve<TypeResolverProvider>();
-                var resourceManager = container.Resolve<IResourceManager>();
+                var arguments = new CompilerArguments(configuration);
+                var compileTimeServices = GetCompileTimeServices(arguments, null, null, false);
                 var mapEnv = new StatementSpecMapEnv(
-                    container.SerializerFactory(),
-                    MakeImportService(configuration, typeResolverProvider, resourceManager),
+                    compileTimeServices.SerializerFactory,
+                    compileTimeServices.ImportServiceCompileTime,
                     VariableCompileTimeResolverEmpty.INSTANCE,
                     configuration,
                     ExprDeclaredCompileTimeResolverEmpty.INSTANCE,
                     ContextCompileTimeResolverEmpty.INSTANCE,
                     TableCompileTimeResolverEmpty.INSTANCE,
                     ScriptCompileTimeResolverEmpty.INSTANCE,
-                    new CompilerServicesImpl(),
+                    compileTimeServices.CompilerServices,
                     new ClassProvidedExtensionImpl(ClassProvidedCompileTimeResolverEmpty.INSTANCE));
                 var statementSpec = ParseWalk(stmtText, mapEnv);
                 var unmapped = StatementSpecMapper.Unmap(statementSpec);

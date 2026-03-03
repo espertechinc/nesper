@@ -1,4 +1,4 @@
-///////////////////////////////////////////////////////////////////////////////////////
+﻿///////////////////////////////////////////////////////////////////////////////////////
 // Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
@@ -551,7 +551,7 @@ namespace com.espertech.esper.regressionlib.framework
         {
             try {
                 return SerializableObjectCopier
-                    .GetInstance(env.Container)
+                    .GetInstance(env.Container.Resolve<com.espertech.esper.common.client.util.TypeResolverProvider>().TypeResolver)
                     .Copy(orig);
             }
             catch (Exception) {

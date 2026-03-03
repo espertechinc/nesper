@@ -1,4 +1,4 @@
-///////////////////////////////////////////////////////////////////////////////////////
+﻿///////////////////////////////////////////////////////////////////////////////////////
 // Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
@@ -403,7 +403,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var copier = SerializableObjectCopier.GetInstance(env.Container);
+                var copier = SerializableObjectCopier.GetInstance(env.Container.Resolve<com.espertech.esper.common.client.util.TypeResolverProvider>().TypeResolver);
+
                 var model = new EPStatementObjectModel();
                 model
                     .SelectClause = SelectClause.Create()
@@ -491,7 +492,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var copier = SerializableObjectCopier.GetInstance(env.Container);
+                var copier = SerializableObjectCopier.GetInstance(env.Container.Resolve<com.espertech.esper.common.client.util.TypeResolverProvider>().TypeResolver);
                 var model = new EPStatementObjectModel();
                 model.SelectClause = SelectClause.Create()
                     .Add(
@@ -1120,7 +1121,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                           "else 2 " +
                           "end as p1 from SupportBean#length(100)";
 
-                var copier = SerializableObjectCopier.GetInstance(env.Container);
+                var copier = SerializableObjectCopier.GetInstance(env.Container.Resolve<com.espertech.esper.common.client.util.TypeResolverProvider>().TypeResolver);
 
                 var model = new EPStatementObjectModel();
                 model.SelectClause = SelectClause.Create()

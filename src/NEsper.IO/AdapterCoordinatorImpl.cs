@@ -14,6 +14,7 @@ using com.espertech.esper.common.@internal.schedule;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
+using com.espertech.esper.compat.threading.locks;
 using com.espertech.esper.runtime.client;
 using com.espertech.esper.runtime.@internal.kernel.service;
 
@@ -39,11 +40,9 @@ namespace com.espertech.esperio
 		/// Ctor.
 		/// </summary>
 		/// <param name="runtime">the EPRuntime for services and runtime</param>
-		/// <param name="usingEngineThread">true if the coordinator should set time by the scheduling service in the engine,
-		///                           false if it should set time externally through the calling thread
-		/// </param>
+		/// <param name="usingEngineThread">true if the coordinator should set time by the scheduling service in the engine, false if it should set time externally through the calling thread</param>
 		public AdapterCoordinatorImpl(EPRuntime runtime, bool usingEngineThread)
-            : this(runtime, usingEngineThread, false, false)
+            : this(runtime, ((EPRuntimeSPI)runtime)?.ServicesContext?.ReaderWriterLockManager, usingEngineThread, false, false)
 		{
 		}
 
@@ -51,13 +50,14 @@ namespace com.espertech.esperio
         /// Ctor.
         /// </summary>
         /// <param name="runtime">the EPRuntime for services and runtime</param>
+        /// <param name="rwLockManager">the reader-writer lock manager</param>
         /// <param name="usingEngineThread">true if the coordinator should set time by the scheduling service in the engine, false if it should set time externally through the calling thread</param>
         /// <param name="usingExternalTimer">true to use esper's external timer mechanism instead of internal timing</param>
         /// <param name="usingTimeSpanEvents"></param>
         /// <exception cref="System.ArgumentNullException">epService;epService cannot be null</exception>
         /// <exception cref="System.ArgumentException">Illegal type of EPServiceProvider</exception>
-	    public AdapterCoordinatorImpl(EPRuntime runtime, bool usingEngineThread, bool usingExternalTimer, bool usingTimeSpanEvents)
-            : base(runtime, usingEngineThread, usingExternalTimer, usingTimeSpanEvents)
+	    public AdapterCoordinatorImpl(EPRuntime runtime, IReaderWriterLockManager rwLockManager, bool usingEngineThread, bool usingExternalTimer, bool usingTimeSpanEvents)
+            : base(runtime, rwLockManager, usingEngineThread, usingExternalTimer, usingTimeSpanEvents)
     	{
             if (runtime == null)
 			{

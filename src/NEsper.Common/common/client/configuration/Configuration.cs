@@ -56,6 +56,7 @@ namespace com.espertech.esper.common.client.configuration
         /// <summary>
         /// Gets the resource manager.
         /// </summary>
+        [Obsolete("Configuration.ResourceManager is deprecated; wire IResourceManager explicitly and pass it to consumers.")]
         [JsonIgnore]
         public IResourceManager ResourceManager => Container.ResourceManager();
 
@@ -181,8 +182,9 @@ namespace com.espertech.esper.common.client.configuration
             var stripped = resource.StartsWith("/", StringComparison.CurrentCultureIgnoreCase)
                 ? resource.Substring(1)
                 : resource;
-            var stream = ResourceManager.GetResourceAsStream(resource) ??
-                         ResourceManager.GetResourceAsStream(stripped);
+            var resourceManager = Container.Resolve<IResourceManager>();
+            var stream = resourceManager.GetResourceAsStream(resource) ??
+                         resourceManager.GetResourceAsStream(stripped);
             if (stream == null) {
                 throw new EPException(resource + " not found");
             }

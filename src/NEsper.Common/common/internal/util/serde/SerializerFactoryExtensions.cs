@@ -1,4 +1,6 @@
-﻿using com.espertech.esper.container;
+﻿using com.espertech.esper.common.client.util;
+using com.espertech.esper.compat;
+using com.espertech.esper.container;
 
 namespace com.espertech.esper.common.@internal.util.serde
 {
@@ -21,7 +23,17 @@ namespace com.espertech.esper.common.@internal.util.serde
         
         public static SerializerFactory GetDefaultSerializerFactory(IContainer container)
         {
-            return new SerializerFactory(container);
+            TypeResolver typeResolver;
+            
+            if (container.Has<TypeResolver>()) {
+                typeResolver = container.Resolve<TypeResolver>();
+            } else if (container.Has<TypeResolverProvider>()) {
+                typeResolver = container.Resolve<TypeResolverProvider>().TypeResolver;
+            } else {
+                typeResolver = TypeResolverDefault.INSTANCE;
+            }
+            
+            return new SerializerFactory(new ObjectSerializer(typeResolver));
         }
     }
 }

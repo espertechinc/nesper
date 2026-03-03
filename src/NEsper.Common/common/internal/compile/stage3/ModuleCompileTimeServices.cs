@@ -40,7 +40,10 @@ using com.espertech.esper.common.@internal.statemgmtsettings;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.common.@internal.util.serde;
 using com.espertech.esper.common.@internal.view.core;
+using com.espertech.esper.common.client.util;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.threading.threadlocal;
+using com.espertech.esper.container;
 
 namespace com.espertech.esper.common.@internal.compile.stage3
 {
@@ -58,6 +61,8 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             IArtifactRepository artifactRepository,
             MetadataReferenceResolver metadataReferenceResolver,
             MetadataReferenceProvider metadataReferenceProvider,
+            TypeResolverProvider typeResolverProvider,
+            IResourceManager resourceManager,
             ClassProvidedCompileTimeRegistry classProvidedCompileTimeRegistry,
             ClassProvidedCompileTimeResolver classProvidedCompileTimeResolver,
             ContextCompileTimeRegistry contextCompileTimeRegistry,
@@ -104,6 +109,8 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             CompilerAbstraction = compilerAbstraction;
             ParentTypeResolver = parentTypeResolver;
             StateMgmtSettingsProvider = stateMgmtSettingsProvider;
+            TypeResolverProvider = typeResolverProvider;
+            ResourceManager = resourceManager;
             CompilerServices = compilerServices;
             Configuration = configuration;
             ArtifactRepository = artifactRepository;
@@ -154,6 +161,8 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             ClassProvidedCompileTimeResolver = null;
             ParentTypeResolver = null;
             StateMgmtSettingsProvider = null;
+            TypeResolverProvider = null;
+            ResourceManager = null;
             CompilerServices = null;
             Configuration = null;
             ArtifactRepository = null;
@@ -284,5 +293,9 @@ namespace com.espertech.esper.common.@internal.compile.stage3
         public ClassProvidedCompileTimeRegistry ClassProvidedCompileTimeRegistry { get; }
 
         public StateMgmtSettingsProvider StateMgmtSettingsProvider { get; }
+
+        public TypeResolverProvider TypeResolverProvider { get; }
+
+        public IResourceManager ResourceManager { get; }
     }
 } // end of namespace

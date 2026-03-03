@@ -1,4 +1,4 @@
-///////////////////////////////////////////////////////////////////////////////////////
+﻿///////////////////////////////////////////////////////////////////////////////////////
 // Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
@@ -146,7 +146,7 @@ namespace com.espertech.esperio.regression.adapter
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
 
-            var spec = new CSVInputAdapterSpec(new AdapterInputSource(_container, CSV_FILENAME_ONELINE_TRADE), "TypeA");
+            var spec = new CSVInputAdapterSpec(new AdapterInputSource(_container.ResourceManager(), CSV_FILENAME_ONELINE_TRADE), "TypeA");
             spec.EventsPerSec = 1000;
 
             InputAdapter inputAdapter = new CSVInputAdapter(_runtime, spec);
@@ -177,13 +177,13 @@ namespace com.espertech.esperio.regression.adapter
             _runtime.EventService.ClockExternal();
             _runtime.EventService.AdvanceTime(0);
 
-            var sourcePrices = new AdapterInputSource(_container, CSV_FILENAME_TIMESTAMPED_PRICES);
+            var sourcePrices = new AdapterInputSource(_container.ResourceManager(), CSV_FILENAME_TIMESTAMPED_PRICES);
             var inputPricesSpec = new CSVInputAdapterSpec(sourcePrices, "PriceEvent");
             inputPricesSpec.TimestampColumn = "timestamp";
             inputPricesSpec.PropertyTypes = priceProps;
             var inputPrices = new CSVInputAdapter(inputPricesSpec);
 
-            var sourceTrades = new AdapterInputSource(_container, CSV_FILENAME_TIMESTAMPED_TRADES);
+            var sourceTrades = new AdapterInputSource(_container.ResourceManager(), CSV_FILENAME_TIMESTAMPED_TRADES);
             var inputTradesSpec = new CSVInputAdapterSpec(sourceTrades, "TradeEvent");
             inputTradesSpec.TimestampColumn = "timestamp";
             inputTradesSpec.PropertyTypes = tradeProps;
@@ -234,7 +234,7 @@ namespace com.espertech.esperio.regression.adapter
         public void TestDynamicType()
         {
             var spec = new CSVInputAdapterSpec(
-                new AdapterInputSource(_container, CSV_FILENAME_ONELINE_TRADE), "TypeB");
+                new AdapterInputSource(_container.ResourceManager(), CSV_FILENAME_ONELINE_TRADE), "TypeB");
 
             var config = new Configuration(_container);
             config.Runtime.Threading.IsInternalTimerEnabled = false;
@@ -272,7 +272,7 @@ namespace com.espertech.esperio.regression.adapter
             stmt.Events += listener.Update;
 
             var spec = new CSVInputAdapterSpec(
-                new AdapterInputSource(_container, CSV_FILENAME_ONELINE_TRADE), "TypeA");
+                new AdapterInputSource(_container.ResourceManager(), CSV_FILENAME_ONELINE_TRADE), "TypeA");
             spec.EventsPerSec = 1000;
             spec.IsUsingEngineThread = true;
 
@@ -296,7 +296,7 @@ namespace com.espertech.esperio.regression.adapter
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
 
-            var spec = new CSVInputAdapterSpec(new AdapterInputSource(_container, CSV_FILENAME_ONELINE_TRADE_MULTIPLE), "TypeA");
+            var spec = new CSVInputAdapterSpec(new AdapterInputSource(_container.ResourceManager(), CSV_FILENAME_ONELINE_TRADE_MULTIPLE), "TypeA");
             spec.EventsPerSec = 1;
             spec.IsUsingEngineThread = true;
 
@@ -327,7 +327,7 @@ namespace com.espertech.esperio.regression.adapter
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
 
-            (new CSVInputAdapter(_runtime, new AdapterInputSource(_container, CSV_FILENAME_ONELINE_TRADE), "TypeA")).Start();
+            (new CSVInputAdapter(_runtime, new AdapterInputSource(_container.ResourceManager(), CSV_FILENAME_ONELINE_TRADE), "TypeA")).Start();
 
             ClassicAssert.AreEqual(1, listener.GetNewDataList().Count);
         }
@@ -341,7 +341,7 @@ namespace com.espertech.esperio.regression.adapter
             TrySource(() => {
                 var myCSV = "symbol, price, volume"+ NEW_LINE + "IBM, 10.2, 10000";
                 var inputStream = new MemoryStream(Encoding.ASCII.GetBytes(myCSV));
-                return new AdapterInputSource(_container, inputStream);
+                return new AdapterInputSource(_container.ResourceManager(), inputStream);
             });
         }
 
@@ -354,7 +354,7 @@ namespace com.espertech.esperio.regression.adapter
             TrySource(() => {
                 var myCSV = "symbol, price, volume"+ NEW_LINE + "IBM, 10.2, 10000";
                 var reader = new StringReader(myCSV);
-                return new AdapterInputSource(_container, reader);
+                return new AdapterInputSource(_container.ResourceManager(), reader);
             });
         }
     }

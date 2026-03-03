@@ -15,14 +15,15 @@ using System.Text.RegularExpressions;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.@event.eventtyperepo;
-using com.espertech.esper.common.@internal.@event.map;
+using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.schedule;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.common.@internal.@event.map;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.logging;
+using com.espertech.esper.compat.threading.locks;
 using com.espertech.esper.compat.magic;
-using com.espertech.esper.container;
 using com.espertech.esper.runtime.client;
 using com.espertech.esper.runtime.@internal.kernel.service;
 
@@ -60,7 +61,7 @@ namespace com.espertech.esperio.csv
         /// <param name="spec">the parameters for this adapter</param>
 
         public CSVInputAdapter(EPRuntime runtime, CSVInputAdapterSpec spec)
-            : base(runtime, spec.IsUsingEngineThread, spec.IsUsingExternalTimer, spec.IsUsingTimeSpanEvents)
+            : base(runtime, ((EPRuntimeSPI)runtime)?.ServicesContext?.ReaderWriterLockManager, spec.IsUsingEngineThread, spec.IsUsingExternalTimer, spec.IsUsingTimeSpanEvents)
         {
             Coercer = new BasicTypeCoercer();
             _adapterSpec = spec;
@@ -641,11 +642,11 @@ namespace com.espertech.esperio.csv
             StaticTypeTable[typeof(string)] = ProxyParser;
         }
 
-        private static IContainer GetContainer(EPRuntime runtime)
+        private static IReaderWriterLockManager GetRWLockManager(EPRuntime runtime)
         {
             if (runtime is EPRuntimeSPI spi)
-                return spi.Container;
-            throw new ArgumentException("Container is missing");
+                return spi.ServicesContext.ReaderWriterLockManager;
+            return null;
         }
     }
 }

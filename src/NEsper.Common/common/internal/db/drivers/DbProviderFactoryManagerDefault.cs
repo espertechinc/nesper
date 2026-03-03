@@ -7,63 +7,47 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
 
+using com.espertech.esper.common.client;
 using com.espertech.esper.container;
 
 namespace com.espertech.esper.common.@internal.db.drivers
 {
     public class DbProviderFactoryManagerDefault : DbProviderFactoryManager
     {
-        private readonly IContainer _container;
+        private readonly IDictionary<string, DbProviderFactory> _factories;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DbProviderFactoryManagerDefault"/> class.
         /// </summary>
         /// <param name="container">The container.</param>
         public DbProviderFactoryManagerDefault(IContainer container)
+            : this()
         {
-            _container = container;
-            RegisterDataProviders(container);
         }
 
-        private static void RegisterBuiltinDataProviders(IContainer container)
+        public DbProviderFactoryManagerDefault()
         {
-#if DEPRECATED
-            foreach (DataRow dataTableRow in DbProviderFactories.GetFactoryClasses().Rows)
-            {
-                // Name
-                // Description
-                // InvariantName
-                // AssemblyQualifiedName
-
-                var dataProviderTypeName = (string) dataTableRow["InvariantName"];
-                if (!container.Has(dataProviderTypeName))
-                {
-                    container.Register<DbProviderFactory>(
-                        xx => DbProviderFactories.GetFactory(dataTableRow),
-                        Lifespan.Singleton,
-                        dataProviderTypeName);
-                }
-            }
-#endif
+            _factories = RegisterDataProviders();
         }
 
-        private static void RegisterDataProviders(IContainer container)
+        private static IDictionary<string, DbProviderFactory> RegisterDataProviders()
         {
+            var factories = new Dictionary<string, DbProviderFactory>();
             var candidateTypes = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(assembly => assembly.GetTypes())
                 .Where(type => type.IsSubclassOf(typeof(DbProviderFactory)));
             foreach (var candidate in candidateTypes) {
                 var dataProviderTypeName = candidate.FullName;
-                if (!container.Has(dataProviderTypeName)) {
-                    container.Register<DbProviderFactory>(
-                        xx => CreateDataProvider(candidate),
-                        Lifespan.Singleton,
-                        dataProviderTypeName);
+                if (!factories.ContainsKey(dataProviderTypeName)) {
+                    factories[dataProviderTypeName] = CreateDataProvider(candidate);
                 }
             }
+
+            return factories;
         }
 
         /// <summary>
@@ -85,7 +69,11 @@ namespace com.espertech.esper.common.@internal.db.drivers
         /// <param name="factoryName">Name of the factory.</param>
         public DbProviderFactory GetFactory(string factoryName)
         {
-            return _container.Resolve<DbProviderFactory>(factoryName);
+            if (_factories.TryGetValue(factoryName, out var factory)) {
+                return factory;
+            }
+
+            throw new EPException("DbProviderFactory not found for name '" + factoryName + "'");
         }
     }
 }

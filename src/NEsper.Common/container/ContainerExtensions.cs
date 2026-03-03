@@ -56,6 +56,7 @@ namespace com.espertech.esper.container
             return container.Resolve<IReaderWriterLockManager>();
         }
 
+        [Obsolete("Use constructor injection instead", true)]
         public static IThreadLocalManager ThreadLocalManager(this IContainer container)
         {
             container.CheckContainer();
@@ -68,12 +69,14 @@ namespace com.espertech.esper.container
             return container.Resolve<IResourceManager>();
         }
 
+        [Obsolete("Use constructor injection instead", true)]
         public static TypeResolverProvider TypeResolverProvider(this IContainer container)
         {
             container.CheckContainer();
             return container.Resolve<TypeResolverProvider>();
         }
 
+        [Obsolete("Use constructor injection instead", true)]
         public static TypeResolver TypeResolver(this IContainer container)
         {
             container.CheckContainer();
@@ -101,6 +104,7 @@ namespace com.espertech.esper.container
             return true;
         }
 
+        [Obsolete("Use alternative method", true)]
         public static T CreateInstance<T>(this IContainer container, Type viewFactoryClass)
         {
             container.CheckContainer();
