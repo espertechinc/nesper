@@ -26,8 +26,7 @@ namespace com.espertech.esperio.file
 
 		public DataFlowOperator Operator(DataFlowOpInitializeContext context)
 		{
-			var container = context.Container;
-			var resourceManager = container.Resolve<IResourceManager>();
+			var resourceManager = context.ResourceManager;
 			var adapterInputSourceValue = DataFlowParameterResolution.ResolveOptionalInstance<AdapterInputSource>(
 				"adapterInputSource",
 				AdapterInputSource,
