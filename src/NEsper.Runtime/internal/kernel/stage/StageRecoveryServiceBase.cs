@@ -10,7 +10,6 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.compat.threading.locks;
-using com.espertech.esper.container;
 using com.espertech.esper.runtime.@internal.deploymentlifesvc;
 using com.espertech.esper.runtime.@internal.filtersvcimpl;
 using com.espertech.esper.runtime.@internal.kernel.service;
@@ -56,7 +55,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.stage
 			string stageUri,
 			EPServicesContext servicesContext)
 		{
-			var rwLockManager = servicesContext.Container.RWLockManager();
+			var rwLockManager = servicesContext.ReaderWriterLockManager;
 			
 			IReaderWriterLock eventProcessingRWLock;
 			if (servicesContext.ConfigSnapshot.Runtime.Threading.IsRuntimeFairlock) {

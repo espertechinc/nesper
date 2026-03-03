@@ -9,7 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net;
+using System.Net.Http;
 
 namespace com.espertech.esper.compat
 {
@@ -130,7 +130,14 @@ namespace com.espertech.esper.compat
             if (Uri.IsWellFormedUriString(name, UriKind.Absolute))
             {
                 var uri = new Uri(name, UriKind.Absolute);
-                return (new WebClient()).OpenRead(uri);
+                if (uri.IsFile) {
+                    return File.OpenRead(uri.LocalPath);
+                }
+
+                using (var httpClient = new HttpClient()) {
+                    var bytes = httpClient.GetByteArrayAsync(uri).GetAwaiter().GetResult();
+                    return new MemoryStream(bytes);
+                }
             }
 
             // Currently using file-based search and lookup.  This needs to be expanded

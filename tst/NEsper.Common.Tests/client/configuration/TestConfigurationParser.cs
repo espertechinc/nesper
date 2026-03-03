@@ -9,8 +9,9 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Linq;
-using System.Net;
+using System.Net.Http;
 using System.Xml.XPath;
 
 using com.espertech.esper.common.client.configuration.common;
@@ -38,12 +39,23 @@ namespace com.espertech.esper.common.client.configuration
         public void TestRegressionFileConfig()
         {
             var config = new Configuration(container);
-            var url = container.ResourceManager().ResolveResourceURL(TestConfiguration.ESPER_TEST_CONFIG);
-            using (var client = new WebClient()) {
-                using (var stream = client.OpenRead(url)) {
-                    ConfigurationParser.DoConfigure(config, stream, url.ToString());
-                    AssertFileConfig(config);
+            var url = ResourceManager.ResolveResourceURL(TestConfiguration.ESPER_TEST_CONFIG);
+            
+            System.IO.Stream stream;
+
+            if (url.IsFile) {
+                stream = File.OpenRead(url.LocalPath);
+            }
+            else {
+                using (var httpClient = new HttpClient()) {
+                    var bytes = httpClient.GetByteArrayAsync(url).GetAwaiter().GetResult();
+                    stream = new MemoryStream(bytes);
                 }
+            }
+
+            using (stream) {
+                ConfigurationParser.DoConfigure(config, stream, url.ToString());
+                AssertFileConfig(config);
             }
         }
 

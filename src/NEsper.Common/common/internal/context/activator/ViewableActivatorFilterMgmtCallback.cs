@@ -10,7 +10,6 @@ using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.common.@internal.filtersvc;
 using com.espertech.esper.compat.threading.locks;
-using com.espertech.esper.container;
 
 namespace com.espertech.esper.common.@internal.context.activator
 {
@@ -21,11 +20,11 @@ namespace com.espertech.esper.common.@internal.context.activator
         private FilterHandle _filterHandle;
 
         public ViewableActivatorFilterMgmtCallback(
-            IContainer container,
+            ILockManager lockManager,
             FilterHandle filterHandle,
             FilterSpecActivatable filterSpecActivatable)
         {
-            _lock = container.LockManager().CreateLock(GetType());
+            _lock = lockManager.CreateLock(GetType());
             _filterHandle = filterHandle;
             _filterSpecActivatable = filterSpecActivatable;
         }

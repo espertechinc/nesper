@@ -31,8 +31,8 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
-using IContainer = com.espertech.esper.container.IContainer;
 using MetadataReferenceResolver = com.espertech.esper.common.client.artifact.MetadataReferenceResolver;
+using CoreAssemblyProvider = com.espertech.esper.compiler.client.CoreAssemblyProvider;
 
 namespace com.espertech.esper.compiler.@internal.util
 {
@@ -48,17 +48,25 @@ namespace com.espertech.esper.compiler.@internal.util
         /// <summary>
         /// Initializes a new instance of the <see cref="RoslynCompiler"/> class.
         /// </summary>
-        public RoslynCompiler(IContainer container)
+        public RoslynCompiler(
+            MetadataReferenceResolver metadataReferenceResolver,
+            CoreAssemblyProvider coreAssemblyProvider)
         {
-            Container = container;
+            MetadataReferenceResolver = metadataReferenceResolver ?? throw new ArgumentNullException(nameof(metadataReferenceResolver));
+            CoreAssemblyProvider = coreAssemblyProvider ?? throw new ArgumentNullException(nameof(coreAssemblyProvider));
             Sources = new List<Source>();
         }
 
         /// <summary>
-        /// Application container
+        /// Resolves metadata references for assemblies.
         /// </summary>
-        public IContainer Container { get; }
-        
+        public MetadataReferenceResolver MetadataReferenceResolver { get; }
+
+        /// <summary>
+        /// Provides core assemblies for compilation references.
+        /// </summary>
+        public CoreAssemblyProvider CoreAssemblyProvider { get; }
+
         /// <summary>
         /// Gets the assembly image.
         /// </summary>
@@ -73,18 +81,17 @@ namespace com.espertech.esper.compiler.@internal.util
         /// Gets or sets the location for code source to be written.
         /// </summary>
         public string CodeAuditDirectory { get; set; }
-        
+
         /// <summary>
         /// Gets or sets the codegen class.
         /// </summary>
         public IList<Source> Sources { get; set; }
 
-
         /// <summary>
         /// Gets or sets the metadata references.
         /// </summary>
         public IEnumerable<MetadataReference> MetadataReferences { get; set; }
-        
+
         /// <summary>
         /// Returns true if the compiler should set optimization to debug.
         /// </summary>
@@ -107,7 +114,7 @@ namespace com.espertech.esper.compiler.@internal.util
             Sources = sorted.Select(_ => new SourceCodegen(_)).ToList<Source>();
             return this;
         }
-        
+
         public RoslynCompiler WithSources(IList<Source> sources)
         {
             Sources = sources;
@@ -116,11 +123,14 @@ namespace com.espertech.esper.compiler.@internal.util
 
         public RoslynCompiler WithMetaDataReferences(IEnumerable<MetadataReference> metadataReferences)
         {
-            if (metadataReferences != null) {
-                if (MetadataReferences == null) {
+            if (metadataReferences != null)
+            {
+                if (MetadataReferences == null)
+                {
                     MetadataReferences = metadataReferences;
                 }
-                else {
+                else
+                {
                     MetadataReferences = MetadataReferences
                         .Concat(metadataReferences)
                         .ToList();
@@ -129,7 +139,7 @@ namespace com.espertech.esper.compiler.@internal.util
 
             return this;
         }
-        
+
         public RoslynCompiler WithDebugOptimization(bool isDebugOptimization)
         {
             IsDebugOptimization = isDebugOptimization;
@@ -147,15 +157,14 @@ namespace com.espertech.esper.compiler.@internal.util
 
         internal IEnumerable<MetadataReference> GetCoreMetadataReferences()
         {
-            var resolver = Container.MetadataReferenceResolver();
-            return Container
-                .CoreAssemblyProvider()
+            var resolver = MetadataReferenceResolver;
+            return CoreAssemblyProvider
                 .Invoke()
                 .Distinct()
                 .Select(_ => GetMetadataReference(resolver, _))
                 .Where(_ => _ != null);
         }
-        
+
         /// <summary>
         /// Compiles a single source into its syntax elements.
         /// </summary>

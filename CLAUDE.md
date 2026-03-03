@@ -229,9 +229,9 @@ NEsper uses **code generation instead of interpretation** for maximum performanc
 - Allows multiple statement instances per context partition
 - Encapsulates statement initialization logic
 
-**Service Locator:**
+**Service Locator (being removed):**
 - `EPServicesContext` provides centralized access to runtime services
-- Dependency injection container (Castle Windsor)
+- **Active refactoring:** eliminating IContainer as a runtime service locator — see `.planning/service-locator-removal/PLAN.md`
 
 **Event-Driven:**
 - Asynchronous event processing
@@ -341,6 +341,14 @@ runtime.EventService.SendEventBean(eventBean, "MyEvent");
 - **NEsperAll.sln** - Complete solution with all projects
 - **NEsper.sln** - Core projects only
 - **NEsper.Documentation.sln** - Documentation projects
+
+## Active Refactoring Work
+
+Plans are stored in `.planning/` — see `.planning/README.md` for the index.
+
+| Branch | Plan | Status |
+|--------|------|--------|
+| `service-locator-refactor` | `.planning/service-locator-removal/PLAN.md` | Planned |
 
 ## Additional Notes
 

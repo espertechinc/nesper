@@ -15,7 +15,7 @@ using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.eventtyperepo;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.statement.dispatch;
-using com.espertech.esper.container;
+using com.espertech.esper.compat.threading.threadlocal;
 using com.espertech.esper.runtime.@internal.kernel.thread;
 using com.espertech.esper.runtime.@internal.statementlifesvc;
 
@@ -24,7 +24,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.stage
     public class StageRuntimeServices
     {
         public StageRuntimeServices(
-            IContainer container,
+            IThreadLocalManager threadLocalManager,
             ImportServiceRuntime importServiceRuntime,
             Configuration configSnapshot,
             DispatchService dispatchService,
@@ -41,10 +41,11 @@ namespace com.espertech.esper.runtime.@internal.kernel.stage
             ThreadingService threadingService,
             VariableManagementService variableManagementService)
         {
-            Container = container;
+            ThreadLocalManager = threadLocalManager;
             ImportServiceRuntime = importServiceRuntime;
             ConfigSnapshot = configSnapshot;
             DispatchService = dispatchService;
+
             EventBeanService = eventBeanService;
             EventBeanTypedEventFactory = eventBeanTypedEventFactory;
             EventTypeRepositoryBus = eventTypeRepositoryBus;
@@ -59,7 +60,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.stage
             VariableManagementService = variableManagementService;
         }
 
-        public IContainer Container { get; }
+        public IThreadLocalManager ThreadLocalManager { get; }
         public ImportServiceRuntime ImportServiceRuntime { get; set; }
 
         public Configuration ConfigSnapshot { get; set; }

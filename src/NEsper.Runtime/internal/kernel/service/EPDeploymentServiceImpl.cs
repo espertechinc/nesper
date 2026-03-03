@@ -44,7 +44,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 		{
 			_services = services;
 			_runtime = runtime;
-			_artifactRepositoryManager = _services.Container.ArtifactRepositoryManager();
+			_artifactRepositoryManager = _services.ArtifactRepositoryManager;
 		}
 
 		public EPDeploymentRollout Rollout(ICollection<EPDeploymentRolloutCompiled> items)

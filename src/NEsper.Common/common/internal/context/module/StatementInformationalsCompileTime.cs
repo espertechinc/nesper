@@ -32,7 +32,6 @@ using com.espertech.esper.common.@internal.util.serde;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.container;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.annotation.AnnotationUtil;
@@ -76,10 +75,10 @@ namespace com.espertech.esper.common.@internal.context.module
         private readonly bool _allowSubscriber;
         private readonly ExpressionScriptProvided[] _onScripts;
 
-        private readonly IContainer _container;
-        
+        private readonly SerializerFactory _serializerFactory;
+
         public StatementInformationalsCompileTime(
-            IContainer container,
+            SerializerFactory serializerFactory,
             string statementNameCompileTime,
             bool alwaysSynthesizeOutputEvents,
             string optionalContextName,
@@ -113,7 +112,7 @@ namespace com.espertech.esper.common.@internal.context.module
             bool allowSubscriber,
             ExpressionScriptProvided[] onScripts)
         {
-            _container = container;
+            _serializerFactory = serializerFactory;
             _statementNameCompileTime = statementNameCompileTime;
             _alwaysSynthesizeOutputEvents = alwaysSynthesizeOutputEvents;
             _optionalContextName = optionalContextName;
@@ -191,7 +190,7 @@ namespace com.espertech.esper.common.@internal.context.module
                 .ConstantDefaultCheckedObj("InsertIntoLatchName", _insertIntoLatchName)
                 .ConstantDefaultChecked("IsAllowSubscriber", _allowSubscriber)
                 .ExpressionDefaultChecked("Annotations", annotationsExpr)
-                .ExpressionDefaultChecked("UserObjectCompileTime", SerializerUtil.ExpressionForUserObject(_container.SerializerFactory(), _userObjectCompileTime))
+                .ExpressionDefaultChecked("UserObjectCompileTime", SerializerUtil.ExpressionForUserObject(_serializerFactory, _userObjectCompileTime))
                 .ExpressionDefaultChecked("GroupDeliveryEval", MultiKeyCodegen.CodegenExprEvaluatorMayMultikey(_groupDelivery, null, _groupDeliveryMultiKey, method, classScope))
                 .ExpressionDefaultChecked("Properties", MakeProperties(_properties, method, classScope))
                 .ExpressionDefaultChecked("AuditProvider", MakeAuditProvider(method, classScope))

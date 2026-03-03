@@ -25,6 +25,7 @@ using com.espertech.esper.common.@internal.context.compile;
 using com.espertech.esper.common.@internal.context.mgr;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.context.util;
+using com.espertech.esper.common.@internal.db;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.classprovided.core;
 using com.espertech.esper.common.@internal.epl.dataflow.core;
@@ -70,6 +71,8 @@ using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.threading.locks;
+using com.espertech.esper.compat.threading.threadlocal;
+using com.espertech.esper.compat.timers;
 using com.espertech.esper.container;
 using com.espertech.esper.runtime.client;
 using com.espertech.esper.runtime.@internal.deploymentlifesvc;
@@ -104,23 +107,32 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             Configuration configs,
             EPRuntimeOptions options)
         {
-            var container = epRuntime.Container;
+            var container = epRuntime.RuntimeContainer;
+            var typeResolverProvider = container.Resolve<TypeResolverProvider>();
+            var resourceManager = container.Resolve<IResourceManager>();
+
+            var lockManager = container.Resolve<ILockManager>();
+            var rwLockManager = container.Resolve<IReaderWriterLockManager>();
+            var threadLocalManager = container.Resolve<IThreadLocalManager>();
+            var objectCopier = container.Resolve<IObjectCopier>();
+            var timerFactory = container.Resolve<ITimerFactory>();
 
             var artifactRepositoryManager = container.ArtifactRepositoryManager();
             var artifactRepositoryDefault = artifactRepositoryManager.DefaultRepository;
             
             var runtimeEnvContext = new RuntimeEnvContext();
-            var eventProcessingRWLock = epRuntime.Container.RWLockManager().CreateLock("EventProcLock");
+            var eventProcessingRWLock = rwLockManager.CreateLock("EventProcLock");
             var deploymentLifecycleService = new DeploymentLifecycleServiceImpl(-1);
 
             var runtimeSettingsService = MakeRuntimeSettingsService(configs);
 
-            var scriptCompiler = new ScriptCompilerImpl(container, configs.Common);
+            var scriptCompiler = new ScriptCompilerImpl(typeResolverProvider.TypeResolver, configs.Common);
             
             var timeAbacus = TimeAbacusFactory.Make(configs.Common.TimeSource.TimeUnit);
             var timeZone = configs.Runtime.Expression.TimeZone ?? TimeZoneInfo.Utc;
             var importServiceRuntime = new ImportServiceRuntime(
-                container,
+                typeResolverProvider,
+                resourceManager,
                 configs.Common.TransientConfiguration, timeAbacus,
                 configs.Common.EventTypeAutoNameNamespaces, timeZone,
                 configs.Common.MethodInvocationReferences,
@@ -150,7 +162,12 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
                 BeanEventTypeRepoUtil.MakeBeanEventTypeStemService(configs, resolvedBeanEventTypes, eventBeanTypedEventFactory);
             var eventTypeRepositoryPreconfigured = new EventTypeRepositoryImpl(false);
             var eventTypeFactory = MakeEventTypeFactory(
-                epServicesHA.RuntimeExtensionServices, eventTypeRepositoryPreconfigured, deploymentLifecycleService, eventBeanTypedEventFactory);
+                epServicesHA.RuntimeExtensionServices,
+                eventTypeRepositoryPreconfigured,
+                deploymentLifecycleService,
+                eventBeanTypedEventFactory,
+                objectCopier);
+
             var beanEventTypeFactoryPrivate = new BeanEventTypeFactoryPrivate(eventBeanTypedEventFactory, eventTypeFactory, beanEventTypeStemService);
             
             EventTypeRepositoryBeanTypeUtil.BuildBeanTypes(
@@ -214,8 +231,13 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             var filterSharedBoolExprRepository = MakeFilterSharedBoolExprRepository();
             var filterSharedLookupableRepository = MakeFilterSharedLookupableRepository();
             var filterServiceSPI = MakeFilterService(
-                epServicesHA.RuntimeExtensionServices, eventTypeRepositoryPreconfigured, statementLifecycleService, runtimeSettingsService,
-                eventTypeIdResolver, filterSharedLookupableRepository);
+                epServicesHA.RuntimeExtensionServices,
+                eventTypeRepositoryPreconfigured,
+                statementLifecycleService,
+                runtimeSettingsService,
+                eventTypeIdResolver,
+                filterSharedLookupableRepository,
+                rwLockManager);
             var filterBooleanExpressionFactory = MakeFilterBooleanExpressionFactory(statementLifecycleService);
 
             var statementResourceHolderBuilder = MakeStatementResourceHolderBuilder();
@@ -257,17 +279,17 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
                 throw new ConfigurationException("Timer resolution configuration not set to a valid value, expecting a non-zero value");
             }
 
-            TimerService timerService = new TimerServiceImpl(container, epRuntime.URI, msecTimerResolution);
+            TimerService timerService = new TimerServiceImpl(timerFactory, epRuntime.URI, msecTimerResolution);
             StatementAgentInstanceLockFactory statementAgentInstanceLockFactory = new StatementAgentInstanceLockFactoryImpl(
                 configs.Runtime.Execution.IsFairlock,
                 configs.Runtime.Execution.IsDisableLocking,
                 configs.Runtime.Logging.IsEnableLockActivity,
-                container.RWLockManager());
+                rwLockManager);
 
             var eventTableIndexService = MakeEventTableIndexService(epServicesHA.RuntimeExtensionServices);
             var expressionResultCacheSharable = new ExpressionResultCacheService(
                 configs.Runtime.Execution.DeclaredExprValueCacheSize,
-                container.ThreadLocalManager());
+                threadLocalManager);
 
             var resultSetProcessorHelperFactory = MakeResultSetProcessorHelperFactory(epServicesHA.RuntimeExtensionServices);
 
@@ -276,7 +298,13 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
                 variableRepositoryPreconfigured, configs.Common.Variables, importServiceRuntime, eventBeanTypedEventFactory,
                 eventTypeRepositoryPreconfigured, beanEventTypeFactoryPrivate);
             var variableManagementService = MakeVariableManagementService(
-                configs, schedulingService, eventBeanTypedEventFactory, runtimeSettingsService, epServicesHA);
+                configs,
+                schedulingService,
+                eventBeanTypedEventFactory,
+                runtimeSettingsService,
+                epServicesHA,
+                rwLockManager);
+
             foreach (var publicVariable in variableRepositoryPreconfigured.Metadata) {
                 variableManagementService.AddVariable(null, publicVariable.Value, null, null);
                 variableManagementService.AllocateVariableState(
@@ -286,12 +314,12 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             var variablePathRegistry = new PathRegistry<string, VariableMetaData>(PathRegistryObjectType.VARIABLE);
 
             var tableExprEvaluatorContext = new TableExprEvaluatorContext(
-                epRuntime.Container.ThreadLocalManager());
+                threadLocalManager);
             var tableManagementService = MakeTableManagementService(epServicesHA.RuntimeExtensionServices, tableExprEvaluatorContext);
             var tablePathRegistry = new PathRegistry<string, TableMetaData>(PathRegistryObjectType.TABLE);
 
             var metricsReporting = new MetricReportingServiceImpl(
-                configs.Runtime.MetricsReporting, epRuntime.URI, container.RWLockManager());
+                configs.Runtime.MetricsReporting, epRuntime.URI, rwLockManager);
 
             var namedWindowFactoryService = MakeNamedWindowFactoryService();
             var namedWindowDispatchService = MakeNamedWindowDispatchService(
@@ -331,7 +359,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 
             DatabaseConfigServiceRuntime databaseConfigServiceRuntime =
                 new DatabaseConfigServiceImpl(
-                    container,
+                    driverType => DbDriverConnectionHelper.ResolveDriverFromType(container, driverType),
                     configs.Common.DatabaseReferences,
                     importServiceRuntime);
             var historicalDataCacheFactory = MakeHistoricalDataCacheFactory(epServicesHA.RuntimeExtensionServices);
@@ -345,7 +373,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             var eventSerdeFactory = MakeEventSerdeFactory(epServicesHA.RuntimeExtensionServices);
             var eventTypeSerdeRepository = MakeEventTypeSerdeRepository(eventTypeRepositoryPreconfigured, eventTypePathRegistry);
 
-            var stageRecoveryService = MakeStageRecoveryService(epServicesHA);
+            var stageRecoveryService = MakeStageRecoveryService(epServicesHA, rwLockManager);
 
             var classProvidedPathRegistry = new PathRegistry<string, ClassProvided>(PathRegistryObjectType.CLASSPROVIDED);
 
@@ -427,7 +455,12 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
                 viewableActivatorFactory,
                 viewFactoryService,
                 viewServicePreviousFactory,
-                xmlFragmentEventTypeFactory);
+                xmlFragmentEventTypeFactory,
+                artifactRepositoryManager,
+                objectCopier,
+                lockManager,
+                rwLockManager,
+                threadLocalManager);
         }
 
         protected abstract EPServicesHA InitHA(
@@ -447,7 +480,8 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             StatementLifecycleServiceImpl statementLifecycleService,
             RuntimeSettingsService runtimeSettingsService,
             EventTypeIdResolver eventTypeIdResolver,
-            FilterSharedLookupableRepository filterSharedLookupableRepository);
+            FilterSharedLookupableRepository filterSharedLookupableRepository,
+            IReaderWriterLockManager rwLockManager);
 
         protected abstract StatementResourceHolderBuilder MakeStatementResourceHolderBuilder();
 
@@ -467,7 +501,8 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             RuntimeExtensionServices runtimeExt,
             EventTypeRepositoryImpl eventTypeRepositoryPreconfigured,
             DeploymentLifecycleServiceImpl deploymentLifecycleService,
-            EventBeanTypedEventFactory eventBeanTypedEventFactory);
+            EventBeanTypedEventFactory eventBeanTypedEventFactory,
+            IObjectCopier objectCopier);
 
         protected abstract EventTypeResolvingBeanFactory MakeEventTypeResolvingBeanFactory(
             EventTypeRepository eventTypeRepository,
@@ -518,7 +553,8 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             SchedulingServiceSPI schedulingService,
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
             RuntimeSettingsService runtimeSettingsService,
-            EPServicesHA epServicesHA);
+            EPServicesHA epServicesHA,
+            IReaderWriterLockManager rwLockManager);
 
         protected abstract TableManagementService MakeTableManagementService(
             RuntimeExtensionServices runtimeExt,
@@ -541,8 +577,10 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 
         protected abstract EventSerdeFactory MakeEventSerdeFactory(RuntimeExtensionServices ext);
 
-        protected abstract StageRecoveryService MakeStageRecoveryService(EPServicesHA epServicesHA);
-        
+        protected abstract StageRecoveryService MakeStageRecoveryService(
+            EPServicesHA epServicesHA,
+            IReaderWriterLockManager rwLockManager);
+
         protected static ExceptionHandlingService InitExceptionHandling(
             string runtimeURI,
             ConfigurationRuntimeExceptionHandling exceptionHandling,

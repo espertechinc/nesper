@@ -95,7 +95,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 "DefaultSupportCaptureOp(BeaconStream) {}",
                 path);
 
-            var future = new DefaultSupportCaptureOp(3, env.Container.LockManager());
+            var future = new DefaultSupportCaptureOp(3, env.LockManager);
             options = new EPDataFlowInstantiationOptions()
                 .WithOperatorProvider(new DefaultSupportGraphOpProvider(future));
             var df = env.Runtime.DataFlowService.Instantiate(env.DeploymentId("flow"), "MyDataFlowOne", options);
@@ -154,7 +154,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 "}" +
                 "DefaultSupportCaptureOp(BeaconStream) {}");
 
-            var future = new DefaultSupportCaptureOp(1, env.Container.LockManager());
+            var future = new DefaultSupportCaptureOp(1, env.LockManager);
             var options = new EPDataFlowInstantiationOptions()
                 .WithOperatorProvider(new DefaultSupportGraphOpProvider(future));
             var df = env.Runtime.DataFlowService.Instantiate(env.DeploymentId("flow"), "MyDataFlowOne", options);
@@ -206,7 +206,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                     "DefaultSupportCaptureOp(BeaconStream) {}",
                     path);
 
-                var future = new DefaultSupportCaptureOp(3, env.Container.LockManager());
+                var future = new DefaultSupportCaptureOp(3, env.LockManager);
                 var options = new EPDataFlowInstantiationOptions()
                     .WithOperatorProvider(new DefaultSupportGraphOpProvider(future));
                 var df = env.Runtime.DataFlowService.Instantiate(env.DeploymentId("flow"), "MyDataFlowOne", options);
@@ -309,7 +309,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                     "DefaultSupportCaptureOp(BeaconStream) {}");
 
                 var countExpected = 10;
-                var futureAtLeast = new DefaultSupportCaptureOp(countExpected, env.Container.LockManager());
+                var futureAtLeast = new DefaultSupportCaptureOp(countExpected, env.LockManager);
                 options = new EPDataFlowInstantiationOptions()
                     .WithOperatorProvider(new DefaultSupportGraphOpProvider(futureAtLeast));
                 var df = env.Runtime.DataFlowService.Instantiate(env.DeploymentId("flow"), "MyDataFlowOne", options);
@@ -333,7 +333,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                     "}" +
                     "DefaultSupportCaptureOp(BeaconStream) {}");
 
-                var futureExactTwo = new DefaultSupportCaptureOp(5, env.Container.LockManager());
+                var futureExactTwo = new DefaultSupportCaptureOp(5, env.LockManager);
                 options = new EPDataFlowInstantiationOptions()
                     .WithOperatorProvider(new DefaultSupportGraphOpProvider(futureExactTwo));
                 env.Runtime.DataFlowService.Instantiate(env.DeploymentId("flow"), "MyDataFlowTwo", options).Start();
@@ -356,7 +356,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                     "}" +
                     "DefaultSupportCaptureOp(BeaconStream) {}");
 
-                var futureExactThree = new DefaultSupportCaptureOp(2, env.Container.LockManager());
+                var futureExactThree = new DefaultSupportCaptureOp(2, env.LockManager);
                 options = new EPDataFlowInstantiationOptions()
                     .WithOperatorProvider(new DefaultSupportGraphOpProvider(futureExactThree));
 
@@ -383,7 +383,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                     "  interval: 0.5" +
                     "}" +
                     "DefaultSupportCaptureOp(BeaconStream) {}");
-                var futureFour = new DefaultSupportCaptureOp(2, env.Container.LockManager());
+                var futureFour = new DefaultSupportCaptureOp(2, env.LockManager);
                 options = new EPDataFlowInstantiationOptions()
                     .WithOperatorProvider(new DefaultSupportGraphOpProvider(futureFour));
                 var instance = env.Runtime.DataFlowService.Instantiate(

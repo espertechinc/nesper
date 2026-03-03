@@ -34,7 +34,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                       "DefaultSupportCaptureOp(WordCountStream) {}";
             env.CompileDeploy(epl);
 
-            var future = new DefaultSupportCaptureOp(1, env.Container.LockManager());
+            var future = new DefaultSupportCaptureOp(1, env.LockManager);
             var source = new MyLineFeedSource(Arrays.AsList("Test this code", "Test line two").GetEnumerator());
 
             var options = new EPDataFlowInstantiationOptions()

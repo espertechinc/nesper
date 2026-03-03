@@ -40,14 +40,14 @@ namespace com.espertech.esper.common.client.configuration
         [Test]
         public void TestURL()
         {
-            config.Configure(container.ResourceManager().ResolveResourceURL(ESPER_TEST_CONFIG));
+            config.Configure(ResourceManager.ResolveResourceURL(ESPER_TEST_CONFIG));
             TestConfigurationParser.AssertFileConfig(config);
         }
 
         [Test]
         public void TestFile()
         {
-            config.Configure(container.ResourceManager().ResolveResourceFile(ESPER_TEST_CONFIG));
+            config.Configure(ResourceManager.ResolveResourceFile(ESPER_TEST_CONFIG));
             TestConfigurationParser.AssertFileConfig(config);
         }
 

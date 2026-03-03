@@ -11,6 +11,7 @@ using System.Data;
 using System.Data.Common;
 
 using com.espertech.esper.common.client.configuration.common;
+using com.espertech.esper.common.@internal.db;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.supportunit.db;
@@ -75,7 +76,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.connectio
                     config.ConnectionAutoCommit = false; // not supported yet
                     config.ConnectionTransactionIsolation = IsolationLevel.Unspecified;
                     return new DatabaseDriverConnFactory(
-                        base.container,
+                        driverType => DbDriverConnectionHelper.ResolveDriverFromType(base.container, driverType),
                         (DriverConnectionFactoryDesc) config.ConnectionFactoryDesc,
                         config.ConnectionSettings);
                 });
@@ -98,7 +99,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.connectio
         {
             var config = new ConfigurationCommonDBRef { ConnectionFactoryDesc = connectionFactoryDesc };
             var connectionFactory = new DatabaseDriverConnFactory(
-                container,
+                driverType => DbDriverConnectionHelper.ResolveDriverFromType(container, driverType),
                 (DriverConnectionFactoryDesc) config.ConnectionFactoryDesc,
                 config.ConnectionSettings);
             var connection = connectionFactory.Driver.CreateConnection();

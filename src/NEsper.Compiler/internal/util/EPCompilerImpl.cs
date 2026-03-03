@@ -10,7 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
+using System.Net.Http;
 using System.Reflection;
 
 using com.espertech.esper.common.client;
@@ -18,6 +18,7 @@ using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.client.module;
 using com.espertech.esper.common.client.soda;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.compile.stage1;
 using com.espertech.esper.common.@internal.compile.stage1.specmapper;
 using com.espertech.esper.common.@internal.compile.stage2;
@@ -29,6 +30,7 @@ using com.espertech.esper.common.@internal.epl.script.compiletime;
 using com.espertech.esper.common.@internal.epl.table.compiletime;
 using com.espertech.esper.common.@internal.epl.variable.compiletime;
 using com.espertech.esper.common.@internal.settings;
+using com.espertech.esper.common.@internal.util.serde;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
@@ -127,9 +129,12 @@ namespace com.espertech.esper.compiler.@internal.util
             Configuration configuration)
         {
             try {
+                var container = configuration.Container;
+                var typeResolverProvider = container.Resolve<TypeResolverProvider>();
+                var resourceManager = container.Resolve<IResourceManager>();
                 var mapEnv = new StatementSpecMapEnv(
-                    configuration.Container,
-                    MakeImportService(configuration),
+                    container.SerializerFactory(),
+                    MakeImportService(configuration, typeResolverProvider, resourceManager),
                     VariableCompileTimeResolverEmpty.INSTANCE,
                     configuration,
                     ExprDeclaredCompileTimeResolverEmpty.INSTANCE,
@@ -240,8 +245,17 @@ namespace com.espertech.esper.compiler.@internal.util
                 Log.Debug("Reading resource from url: " + url);
             }
 
-            using (var stream = new WebClient().OpenRead(url)) {
-                return EPLModuleUtil.ReadInternal(stream, url.ToString());
+            if (url.IsFile) {
+                using (var stream = File.OpenRead(url.LocalPath)) {
+                    return EPLModuleUtil.ReadInternal(stream, url.ToString());
+                }
+            }
+
+            using (var httpClient = new HttpClient()) {
+                var bytes = httpClient.GetByteArrayAsync(url).GetAwaiter().GetResult();
+                using (var stream = new MemoryStream(bytes)) {
+                    return EPLModuleUtil.ReadInternal(stream, url.ToString());
+                }
             }
         }
 

@@ -166,7 +166,7 @@ namespace com.espertech.esper.compiler.@internal.util
 			VerifySubstitutionParams(raw.SubstitutionParameters);
 
 			var repository = compileTimeServices
-				.Container
+				.Configuration.Container
 				.ArtifactRepositoryManager()
 				.DefaultRepository;
 			

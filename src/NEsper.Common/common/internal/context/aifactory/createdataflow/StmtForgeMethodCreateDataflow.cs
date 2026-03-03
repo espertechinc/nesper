@@ -40,7 +40,6 @@ using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
-using com.espertech.esper.container;
 
 
 namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
@@ -267,8 +266,6 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
             StatementBaseInfo @base,
             StatementCompileTimeServices services)
         {
-            var container = services.Container;
-            
             // Step 1: find all the operators that have explicit output ports and determine the type of such
             IDictionary<int, IList<LogicalChannelProducingPortDeclared>> declaredOutputPorts =
                 new Dictionary<int, IList<LogicalChannelProducingPortDeclared>>();
@@ -316,7 +313,6 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
                 // Compile type information, call method, obtain output types.
                 var incomingDependentOpNums = operatorDependencies.Get(operatorNum).Incoming;
                 var initializeResult = InitializeOperatorForge(
-                    container,
                     operatorNum,
                     operatorForge,
                     operatorAnno,
@@ -1088,7 +1084,6 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
         }
 
         private static DataFlowOpForgeInitializeResult InitializeOperatorForge(
-            IContainer container,
             int operatorNumber,
             DataFlowOperatorForge forge,
             Attribute[] operatorAnnotations,
@@ -1164,7 +1159,6 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
             DataFlowOpForgeInitializeResult initializeResult;
             try {
                 var context = new DataFlowOpForgeInitializeContext(
-                    container,
                     desc.GraphName,
                     operatorNumber,
                     operatorAnnotations,

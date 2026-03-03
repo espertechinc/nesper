@@ -21,7 +21,6 @@ using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
-using com.espertech.esper.container;
 
 using PropertyInfo = System.Reflection.PropertyInfo;
 
@@ -33,7 +32,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
     public class BeanEventType : EventTypeSPI,
         NativeEventType
     {
-        private readonly IContainer _container;
+        private readonly IObjectCopier _objectCopier;
         private readonly BeanEventTypeStem _stem;
         private EventTypeMetadata _metadata;
         private readonly BeanEventTypeFactory _beanEventTypeFactory;
@@ -49,7 +48,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
         private IDictionary<string, Pair<EventPropertyDescriptor, BeanEventPropertyWriter>> _writerMap;
 
         public BeanEventType(
-            IContainer container,
+            IObjectCopier objectCopier,
             BeanEventTypeStem stem,
             EventTypeMetadata metadata,
             BeanEventTypeFactory beanEventTypeFactory,
@@ -58,7 +57,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             string startTimestampPropertyName,
             string endTimestampPropertyName)
         {
-            _container = container;
+            _objectCopier = objectCopier;
             _stem = stem;
             _metadata = metadata;
             _beanEventTypeFactory = beanEventTypeFactory;
@@ -475,7 +474,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
         {
             var copyMethodName = _stem.OptionalLegacyDef?.CopyMethod;
             if (copyMethodName == null) {
-                var objectCopier = _container.Resolve<IObjectCopier>();
+                var objectCopier = _objectCopier;
                 if (objectCopier.IsSupported(Stem.Clazz))
                 {
                     return new BeanEventBeanObjectCopyMethodForge(
@@ -504,7 +503,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
                 if (Stem.Clazz.IsSerializable) {
                     return new BeanEventBeanObjectCopyMethodForge(
                         this,
-                        _container.Resolve<SerializableObjectCopier>());
+                        _objectCopier);
                 }
 
                 throw new EPException(

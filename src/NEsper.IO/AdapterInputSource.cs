@@ -10,7 +10,7 @@ using System;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using System.Net;
+using System.Net.Http;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.container;
@@ -149,8 +149,14 @@ namespace com.espertech.esperio
 			}
 
 			if (_url != null) {
-				var webClient = new WebClient();
-				return webClient.OpenRead(_url);
+				if (_url.IsFile) {
+					return File.OpenRead(_url.LocalPath);
+				}
+
+				using (var httpClient = new HttpClient()) {
+					var bytes = httpClient.GetByteArrayAsync(_url).GetAwaiter().GetResult();
+					return new MemoryStream(bytes);
+				}
 			}
 
 			return ResolvePathAsStream(_resource);

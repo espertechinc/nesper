@@ -7,7 +7,8 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Net;
+using System.IO;
+using System.Net.Http;
 
 using com.espertech.esper.container;
 using NUnit.Framework;
@@ -26,14 +27,22 @@ namespace com.espertech.esper.common.client.configuration
 
         private void RunAssertion(string file)
         {
-            var url = container.ResourceManager().ResolveResourceURL(file);
-            using (var client = new WebClient())
-            {
-                using (var stream = client.OpenRead(url)) {
-                    var result = ConfigurationSchema7To8Upgrade.Upgrade(stream, file);
-                    Assert.That(result, Is.Not.Null);
-                    Console.WriteLine(result);
+            var url = ResourceManager.ResolveResourceURL(file);
+            Stream stream;
+            if (url.IsFile) {
+                stream = File.OpenRead(url.LocalPath);
+            }
+            else {
+                using (var httpClient = new HttpClient()) {
+                    var bytes = httpClient.GetByteArrayAsync(url).GetAwaiter().GetResult();
+                    stream = new MemoryStream(bytes);
                 }
+            }
+
+            using (stream) {
+                var result = ConfigurationSchema7To8Upgrade.Upgrade(stream, file);
+                Assert.That(result, Is.Not.Null);
+                Console.WriteLine(result);
             }
         }
 

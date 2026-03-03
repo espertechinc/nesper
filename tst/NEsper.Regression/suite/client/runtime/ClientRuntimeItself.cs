@@ -80,7 +80,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
         {
             public void Run(RegressionEnvironment env)
             {
-                var beanEventType = new EPRuntimeBeanAnonymousTypeService(env.Container)
+                var beanEventType = new EPRuntimeBeanAnonymousTypeService(((EPRuntimeSPI) env.Runtime).ServicesContext.ObjectCopier)
                     .MakeBeanEventTypeAnonymous(typeof(MyBeanAnonymousType));
                 ClassicAssert.AreEqual(typeof(int), beanEventType.GetPropertyType("Prop"));
             }

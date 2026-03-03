@@ -55,7 +55,7 @@ namespace com.espertech.esperio.regression.adapter
             epl = epl.Replace("${SUBS_HERE}", substituion);
             var stmtGraph = CompileDeploy(_runtime, epl).Statements[0];
             try {
-                var outputOp = new DefaultSupportCaptureOp(container.LockManager());
+                var outputOp = new DefaultSupportCaptureOp(LockManager);
                 _runtime.DataFlowService.Instantiate(
                     stmtGraph.DeploymentId,
                     dataflowName,
@@ -74,7 +74,7 @@ namespace com.espertech.esperio.regression.adapter
         {
             var deployment = CompileDeploy(_runtime, epl);
 
-            var outputOp = new DefaultSupportCaptureOp(container.LockManager());
+            var outputOp = new DefaultSupportCaptureOp(LockManager);
             var instance = _runtime.DataFlowService.Instantiate(
                 deployment.DeploymentId,
                 "ReadCSV",

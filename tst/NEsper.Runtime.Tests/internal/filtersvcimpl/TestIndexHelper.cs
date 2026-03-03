@@ -13,7 +13,6 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.container;
 using com.espertech.esper.runtime.@internal.support;
 using NUnit.Framework;
 using NUnit.Framework.Legacy;
@@ -26,8 +25,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
         [SetUp]
         public void SetUp()
         {
-            lockFactory = new FilterServiceGranularLockFactoryReentrant(
-                Container.RWLockManager());
+            lockFactory = MakeGranularLockFactory();
 
             eventType = SupportEventTypeFactory
                 .GetInstance(Container)

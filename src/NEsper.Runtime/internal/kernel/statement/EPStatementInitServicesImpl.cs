@@ -82,9 +82,10 @@ namespace com.espertech.esper.runtime.@internal.kernel.statement
             ServicesContext = servicesContext;
         }
 
-        public IContainer Container => ServicesContext.Container;
+        [Obsolete("Container access is deprecated; use explicit init-service dependencies.")]
+        public IContainer Container => ServicesContext.RuntimeContainer;
 
-        public IObjectCopier ObjectCopier => ServicesContext.Container.Resolve<IObjectCopier>();
+        public IObjectCopier ObjectCopier => ServicesContext.ObjectCopier;
 
         public EPServicesContext ServicesContext { get; }
 

@@ -20,10 +20,11 @@ namespace com.espertech.esper.compiler.@internal.parse
 	public class SupportEPLTreeWalkerFactory
 	{
 		public static EPLTreeWalkerListener MakeWalker(
+			IContainer container,
 			CommonTokenStream tokenStream,
 			ImportServiceCompileTime engineImportService)
 		{
-			StatementSpecMapEnv mapEnv = SupportStatementSpecMapEnv.Make(engineImportService);
+			StatementSpecMapEnv mapEnv = SupportStatementSpecMapEnv.Make(container, engineImportService);
 			return new EPLTreeWalkerListener(
 				tokenStream,
 				SelectClauseStreamSelectorEnum.ISTREAM_ONLY,
@@ -33,10 +34,10 @@ namespace com.espertech.esper.compiler.@internal.parse
 		}
 
 		public static EPLTreeWalkerListener MakeWalker(
-			IContainer container, 
+			IContainer container,
 			CommonTokenStream tokenStream)
 		{
-			return MakeWalker(tokenStream, SupportImport.GetInstance(container));
+			return MakeWalker(container, tokenStream, SupportImport.GetInstance(container));
 		}
 	}
 } // end of namespace

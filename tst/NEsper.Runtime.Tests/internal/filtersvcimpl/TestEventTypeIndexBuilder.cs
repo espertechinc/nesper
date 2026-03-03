@@ -40,8 +40,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
         {
             var supportEventTypeFactory = SupportEventTypeFactory.GetInstance(Container);
 
-            lockFactory = new FilterServiceGranularLockFactoryReentrant(
-                Container.RWLockManager());
+            lockFactory = MakeGranularLockFactory();
 
             eventTypeIndex = new EventTypeIndex(lockFactory);
             indexBuilder = new EventTypeIndexBuilder(eventTypeIndex);

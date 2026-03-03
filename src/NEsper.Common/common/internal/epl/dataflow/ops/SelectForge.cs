@@ -183,7 +183,6 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
 
             // make forgeable
             var forgeablesResult = StmtForgeMethodSelectUtil.Make(
-                context.Container,
                 true,
                 context.CodegenEnv.Namespace,
                 dataflowClassPostfix,

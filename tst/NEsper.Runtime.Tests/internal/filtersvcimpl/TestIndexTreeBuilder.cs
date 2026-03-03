@@ -33,8 +33,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
         [SetUp]
         public void SetUp()
         {
-            lockFactory = new FilterServiceGranularLockFactoryReentrant(
-                Container.RWLockManager());
+            lockFactory = MakeGranularLockFactory();
 
             var testBean = new SupportBean();
             testBean.IntPrimitive = 50;

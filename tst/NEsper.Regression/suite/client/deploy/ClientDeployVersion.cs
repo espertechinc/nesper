@@ -34,7 +34,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
             public void Run(RegressionEnvironment env)
             {
 #if false
-				var resourceManager = env.Container.ResourceManager();
+				var resourceManager = env.ResourceManager;
 				var resourceName = "regression/epcompiled_version_8.0.0.epl_dll_for_deployment";
 				
 				string file = FileUtil.FindClasspathFile(resourceName);

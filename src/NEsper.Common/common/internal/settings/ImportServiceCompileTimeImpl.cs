@@ -22,9 +22,9 @@ using com.espertech.esper.common.@internal.epl.expression.time.abacus;
 using com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree;
 using com.espertech.esper.common.@internal.epl.index.advanced.index.service;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.container;
 
 namespace com.espertech.esper.common.@internal.settings
 {
@@ -50,14 +50,15 @@ namespace com.espertech.esper.common.@internal.settings
         private readonly IDictionary<string, ConfigurationCompilerPlugInEnumMethod> _enumMethods;
 
         public ImportServiceCompileTimeImpl(
-            IContainer container,
+            TypeResolverProvider typeResolverProvider,
+            IResourceManager resourceManager,
             IDictionary<string, object> transientConfiguration,
             TimeAbacus timeAbacus,
             ISet<string> eventTypeAutoNames,
             MathContext mathContext,
             bool allowExtendedAggregationFunc,
             bool sortUsingCollator)
-            : base(container, transientConfiguration, timeAbacus, eventTypeAutoNames)
+            : base(typeResolverProvider, resourceManager, transientConfiguration, timeAbacus, eventTypeAutoNames)
         {
             _aggregationFunctions = new Dictionary<string, ConfigurationCompilerPlugInAggregationFunction>();
             _aggregationAccess = new List<Pair<ISet<string>, ConfigurationCompilerPlugInAggregationMultiFunction>>();

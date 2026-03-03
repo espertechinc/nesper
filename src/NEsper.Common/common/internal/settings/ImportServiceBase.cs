@@ -18,7 +18,6 @@ using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
-using com.espertech.esper.container;
 
 namespace com.espertech.esper.common.@internal.settings
 {
@@ -35,18 +34,22 @@ namespace com.espertech.esper.common.@internal.settings
         public IDictionary<string, object> TransientConfiguration => _transientConfiguration;
 
         protected ImportServiceBase(
-            IContainer container,
+            TypeResolverProvider typeResolverProvider,
+            IResourceManager resourceManager,
             IDictionary<string, object> transientConfiguration,
             TimeAbacus timeAbacus,
             ISet<string> eventTypeAutoNames)
         {
-            Container = container ?? throw new ArgumentNullException(nameof(container));
+            _typeResolverProvider = typeResolverProvider;
+            ResourceManager = resourceManager;
             _transientConfiguration = transientConfiguration;
             TimeAbacus = timeAbacus;
             _eventTypeAutoNames = eventTypeAutoNames;
         }
 
-        public IContainer Container { get; }
+        protected readonly TypeResolverProvider _typeResolverProvider;
+
+        public IResourceManager ResourceManager { get; }
 
         public TimeAbacus TimeAbacus { get; }
 
@@ -67,10 +70,10 @@ namespace com.espertech.esper.common.@internal.settings
         }
 
         public virtual TypeResolverProvider TypeResolverProvider => TransientConfigurationResolver
-            .ResolveTypeResolverProvider(Container, _transientConfiguration);
+            .ResolveTypeResolverProvider(_typeResolverProvider, _transientConfiguration);
 
         public virtual TypeResolver TypeResolver => TransientConfigurationResolver
-            .ResolveTypeResolver(Container, _transientConfiguration);
+            .ResolveTypeResolver(_typeResolverProvider, _transientConfiguration);
 
         public Type ResolveClassForBeanEventType(string fullyQualClassName)
         {

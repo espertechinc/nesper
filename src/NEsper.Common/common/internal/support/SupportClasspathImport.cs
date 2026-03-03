@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.compat;
 using com.espertech.esper.container;
@@ -18,7 +19,8 @@ namespace com.espertech.esper.common.@internal.support
         {
             return container.ResolveSingleton(
                 () => new ImportServiceCompileTimeImpl(
-                    container,
+                    container.Resolve<TypeResolverProvider>(),
+                    container.Resolve<IResourceManager>(),
                     null,
                     null,
                     null,

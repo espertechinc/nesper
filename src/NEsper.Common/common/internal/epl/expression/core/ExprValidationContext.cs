@@ -25,8 +25,9 @@ using com.espertech.esper.common.@internal.serde.compiletime.eventtype;
 using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.statemgmtsettings;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.common.@internal.view.access;
-using com.espertech.esper.container;
+using com.espertech.esper.compat.threading.threadlocal;
 
 namespace com.espertech.esper.common.@internal.epl.expression.core
 {
@@ -92,7 +93,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             IsExpressionNestedAudit = AuditEnum.EXPRESSION_NESTED.GetAudit(statementRawInfo.Annotations) != null;
         }
 
-        public IContainer Container => StatementCompileTimeService.Container;
+        public IObjectCopier ObjectCopier => StatementCompileTimeService.ObjectCopier;
+
+        public IThreadLocalManager ThreadLocalManager => StatementCompileTimeService.ThreadLocalManager;
 
         public Attribute[] Annotations => StatementRawInfo.Annotations;
 

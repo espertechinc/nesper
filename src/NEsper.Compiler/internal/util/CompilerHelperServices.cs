@@ -23,6 +23,7 @@ using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.context.compile;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.context.util;
+using com.espertech.esper.common.@internal.db;
 using com.espertech.esper.common.@internal.epl.classprovided.compiletime;
 using com.espertech.esper.common.@internal.epl.classprovided.core;
 using com.espertech.esper.common.@internal.epl.expression.declared.compiletime;
@@ -54,7 +55,10 @@ using com.espertech.esper.common.@internal.serde.runtime.@event;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.statemgmtsettings;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.common.@internal.util.serde;
 using com.espertech.esper.common.@internal.view.core;
+using com.espertech.esper.compat.threading.threadlocal;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compiler.client;
 using com.espertech.esper.compiler.client.option;
@@ -96,14 +100,22 @@ namespace com.espertech.esper.compiler.@internal.util
 			var configuration = arguments.Configuration;
 			var path = arguments.Path;
 			var options = arguments.Options;
+			var container = configuration.Container;
+			var objectCopier = container.Resolve<IObjectCopier>();
+			var threadLocalManager = container.Resolve<IThreadLocalManager>();
+			var serializerFactory = container.SerializerFactory();
+			var artifactRepository = container.ArtifactRepositoryManager().DefaultRepository;
+			var metadataReferenceResolver = container.MetadataReferenceResolver();
+			var metadataReferenceProvider = container.MetadataReferenceProvider();
+			var typeResolverProvider = container.Resolve<TypeResolverProvider>();
+			var resourceManager = container.Resolve<IResourceManager>();
 
 			// script
-			var scriptCompiler = MakeScriptCompiler(configuration);
+			var scriptCompiler = MakeScriptCompiler(configuration, typeResolverProvider);
 
 			// imports
-			var importServiceCompileTime = MakeImportService(configuration);
+			var importServiceCompileTime = MakeImportService(configuration, typeResolverProvider, resourceManager);
 			var typeResolverParent = new ParentTypeResolver(importServiceCompileTime.TypeResolver);
-			var container = importServiceCompileTime.Container;
 
 			// resolve pre-configured bean event types, make bean-stem service
 			var resolvedBeanEventTypes = BeanEventTypeRepoUtil.ResolveBeanEventTypes(
@@ -120,7 +132,7 @@ namespace com.espertech.esper.compiler.@internal.util
 				new EventTypeCompileTimeRegistry(eventTypeRepositoryPreconfigured);
 			var beanEventTypeFactoryPrivate = new BeanEventTypeFactoryPrivate(
 				EventBeanTypedEventFactoryCompileTime.INSTANCE,
-				EventTypeFactoryImpl.GetInstance(container),
+				new EventTypeFactoryImpl(objectCopier),
 				beanEventTypeStemService);
 			var variableRepositoryPreconfigured = new VariableRepositoryPreconfigured();
 
@@ -205,7 +217,7 @@ namespace com.espertech.esper.compiler.@internal.util
 			EventTypeRepositoryVariantStreamUtil.BuildVariantStreams(
 				eventTypeRepositoryPreconfigured,
 				configuration.Common.VariantStreams,
-                EventTypeFactoryImpl.GetInstance(container));
+				new EventTypeFactoryImpl(objectCopier));
 
 			// build preconfigured variables
 			VariableUtil.ConfigureVariables(
@@ -272,11 +284,10 @@ namespace com.espertech.esper.compiler.@internal.util
 					beanEventTypeFactoryPrivate,
 					EventSerdeFactoryDefault.INSTANCE);
 				var eventTypeCollector = new EventTypeCollectorImpl(
-					container,
 					moduleTypes,
 					beanEventTypeFactoryPrivate,
 					provider.TypeResolver,
-                    EventTypeFactoryImpl.GetInstance(container),
+					new EventTypeFactoryImpl(objectCopier),
 					beanEventTypeStemService,
 					eventTypeResolver,
 					xmlFragmentEventTypeFactory,
@@ -375,7 +386,7 @@ namespace com.espertech.esper.compiler.@internal.util
 				// initialize inlined classes
 				var moduleClassProvideds = new Dictionary<string, ClassProvided>();
 				var classProvidedCollector = new ClassProvidedCollectorCompileTime(moduleClassProvideds, typeResolverParent);
-				var artifactFactory = container.ArtifactRepositoryManager().DefaultRepository;
+				var artifactFactory = artifactRepository;
 				
 				try {
 					provider.ModuleProvider.InitializeClassProvided(
@@ -585,7 +596,7 @@ namespace com.espertech.esper.compiler.@internal.util
 				importServiceCompileTime);
 			var viewRegistry = new PluggableObjectRegistryImpl(
 				new PluggableObjectCollection[] { ViewEnumHelper.BuiltinViews, plugInViews });
-			ViewResolutionService viewResolutionService = new ViewResolutionServiceImpl(container, viewRegistry);
+			ViewResolutionService viewResolutionService = new ViewResolutionServiceImpl(serializerFactory, viewRegistry);
 
 			var plugInPatternObj = new PluggableObjectCollection();
 			plugInPatternObj.AddPatternObjects(
@@ -603,7 +614,7 @@ namespace com.espertech.esper.compiler.@internal.util
 
 			var databaseConfigServiceCompileTime =
 				new DatabaseConfigServiceImpl(
-					container,
+					driverType => DbDriverConnectionHelper.ResolveDriverFromType(container, driverType),
 					configuration.Common.DatabaseReferences,
 					importServiceCompileTime);
 
@@ -615,7 +626,7 @@ namespace com.espertech.esper.compiler.@internal.util
 			SerdeEventTypeCompileTimeRegistry serdeEventTypeRegistry =
 				new SerdeEventTypeCompileTimeRegistryImpl(targetHA);
 			var serdeResolver = targetHA
-				? MakeSerdeResolver(container, configuration.Compiler.Serde, configuration.Common.TransientConfiguration)
+				? MakeSerdeResolver(typeResolverProvider, configuration.Compiler.Serde, configuration.Common.TransientConfiguration)
 				: SerdeCompileTimeResolverNonHA.INSTANCE;
 
 			CompilerAbstraction compilerAbstraction = CompilerAbstractionRoslyn.INSTANCE;
@@ -628,10 +639,15 @@ namespace com.espertech.esper.compiler.@internal.util
 			}
 
 			return new ModuleCompileTimeServices(
-				container,
+				objectCopier,
+				threadLocalManager,
+				serializerFactory,
 				compilerAbstraction,
 				compilerServices,
 				configuration,
+				artifactRepository,
+				metadataReferenceResolver,
+				metadataReferenceProvider,
 				classProvidedCompileTimeRegistry,
 				classProvidedCompileTimeResolver,
 				contextCompileTimeRegistry,
@@ -669,22 +685,28 @@ namespace com.espertech.esper.compiler.@internal.util
 				xmlFragmentEventTypeFactory);
 		}
 
-		public static ScriptCompiler MakeScriptCompiler(Configuration configuration)
+		public static ScriptCompiler MakeScriptCompiler(
+			Configuration configuration,
+			TypeResolverProvider typeResolverProvider)
 		{
 			return new ScriptCompilerImpl(
-				configuration.Container,
+				typeResolverProvider.TypeResolver,
 				configuration.Common);
 		}
 
-		public static ImportServiceCompileTime MakeImportService(Configuration configuration)
+		public static ImportServiceCompileTime MakeImportService(
+			Configuration configuration,
+			TypeResolverProvider typeResolverProvider,
+			IResourceManager resourceManager)
 		{
 			var timeAbacus = TimeAbacusFactory.Make(configuration.Common.TimeSource.TimeUnit);
 			var expression = configuration.Compiler.Expression;
 			var importService = new ImportServiceCompileTimeImpl(
-                configuration.Container,
+				typeResolverProvider,
+				resourceManager,
 				configuration.Common.TransientConfiguration,
 				timeAbacus,
-                configuration.Common.EventTypeAutoNameNamespaces,
+				configuration.Common.EventTypeAutoNameNamespaces,
 				expression.MathContext,
 				expression.IsExtendedAggregation,
 				configuration.Compiler.Language.IsSortUsingCollator
@@ -739,7 +761,7 @@ namespace com.espertech.esper.compiler.@internal.util
 		}
 
 		private static SerdeCompileTimeResolver MakeSerdeResolver(
-            IContainer container,
+            TypeResolverProvider typeResolverProvider,
 			ConfigurationCompilerSerde config,
 			IDictionary<string, object> transientConfiguration)
 		{
@@ -752,7 +774,7 @@ namespace com.espertech.esper.compiler.@internal.util
 						var instance = TypeHelper.Instantiate<SerdeProviderFactory>(
 							factory,
 							TransientConfigurationResolver
-								.ResolveTypeResolverProvider(container, transientConfiguration)
+								.ResolveTypeResolverProvider(typeResolverProvider, transientConfiguration)
 								.TypeResolver);
 						var provider = instance.GetProvider(context);
 						if (provider == null) {

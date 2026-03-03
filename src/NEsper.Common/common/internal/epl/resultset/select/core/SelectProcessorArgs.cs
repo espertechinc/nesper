@@ -26,7 +26,7 @@ using com.espertech.esper.common.@internal.@event.bean.service;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 using com.espertech.esper.common.@internal.settings;
-using com.espertech.esper.container;
+using com.espertech.esper.common.@internal.util;
 
 namespace com.espertech.esper.common.@internal.epl.resultset.select.core
 {
@@ -58,7 +58,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
             CompileTimeServices = compileTimeServices;
         }
 
-        public IContainer Container => CompileTimeServices.Container;
+        public IObjectCopier ObjectCopier => CompileTimeServices.ObjectCopier;
 
         public SelectClauseElementCompiled[] SelectionList { get; }
 

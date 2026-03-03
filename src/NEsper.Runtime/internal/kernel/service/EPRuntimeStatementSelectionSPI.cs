@@ -42,7 +42,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 		public EPRuntimeStatementSelectionSPI(EPRuntimeSPI runtimeSPI)
 		{
 			_runtimeSPI = runtimeSPI;
-			_statementRowType = new EPRuntimeBeanAnonymousTypeService(runtimeSPI.Container)
+			_statementRowType = new EPRuntimeBeanAnonymousTypeService(runtimeSPI.ServicesContext.ObjectCopier)
 				.MakeBeanEventTypeAnonymous(typeof(StatementRow));
 		}
 

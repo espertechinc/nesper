@@ -68,7 +68,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 
         private static void RunAssertion(RegressionEnvironment env)
         {
-            var future = new DefaultSupportCaptureOp(1, env.Container.LockManager());
+            var future = new DefaultSupportCaptureOp(1, env.LockManager);
             var source = new MyObjectArrayGraphSource(
                 Arrays.AsList(
                         new object[] { "trade", "GE", 100d, 1000L, null, null }, // vwap = 100, minPrice=100

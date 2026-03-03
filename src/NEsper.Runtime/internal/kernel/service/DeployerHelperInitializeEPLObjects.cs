@@ -57,7 +57,6 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 				services.BeanEventTypeFactoryPrivate,
 				services.EventSerdeFactory);
 			var eventTypeCollector = new EventTypeCollectorImpl(
-				services.Container,
 				moduleEventTypes,
 				beanEventTypeFactory,
 				provider.TypeResolver,
@@ -152,7 +151,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 			// initialize module class-provided create-class
 			IDictionary<string, ClassProvided> moduleClasses = new Dictionary<string, ClassProvided>();
 			var classProvidedCollectorRuntime = new ClassProvidedCollectorRuntime(moduleClasses);
-			var artifactRepositoryManager = services.Container.ArtifactRepositoryManager();
+			var artifactRepositoryManager = services.ArtifactRepositoryManager;
 			var artifactRepository = artifactRepositoryManager.DefaultRepository;
 			try {
 				provider.ModuleProvider.InitializeClassProvided(new EPModuleClassProvidedInitServicesImpl(classProvidedCollectorRuntime, artifactRepository));

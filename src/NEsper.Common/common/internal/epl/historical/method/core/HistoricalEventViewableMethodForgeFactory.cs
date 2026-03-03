@@ -278,7 +278,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
                 else {
                     var stem = services.BeanEventTypeStemService.GetCreateStem(beanClass, null);
                     eventType = new BeanEventType(
-                        services.Container,
+                        services.ObjectCopier,
                         stem,
                         metadataFunction.Invoke(EventTypeApplicationType.CLASS),
                         services.BeanEventTypeFactoryPrivate,

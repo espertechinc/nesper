@@ -1,5 +1,7 @@
 ﻿using com.espertech.esper.compat.function;
+using com.espertech.esper.compat.threading.locks;
 using com.espertech.esper.container;
+using com.espertech.esper.runtime.@internal.filtersvcimpl;
 using com.espertech.esper.runtime.@internal.support;
 
 using NUnit.Framework;
@@ -11,6 +13,18 @@ namespace com.espertech.esper.runtime
         private Supplier<SupportEventTypeFactory> supportEventTypeFactorySupplier;
 
         protected IContainer Container;
+
+        protected IReaderWriterLockManager rwLockManager => Container.RWLockManager();
+
+        protected FilterServiceGranularLockFactoryReentrant MakeGranularLockFactory()
+        {
+            return new FilterServiceGranularLockFactoryReentrant(rwLockManager);
+        }
+
+        protected FilterServiceLockCoarse MakeFilterServiceLockCoarse()
+        {
+            return new FilterServiceLockCoarse(rwLockManager, -1);
+        }
 
         protected SupportEventTypeFactory supportEventTypeFactory =>
             supportEventTypeFactorySupplier.Invoke();

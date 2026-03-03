@@ -915,7 +915,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 		{
 			RemoveFromThreadLocals();
 			_threadLocals = AllocateThreadLocals(
-				_services.Container,
+				_services.ThreadLocalManager,
 				_isPrioritized,
 				_services.RuntimeURI,
 				_services.ConfigSnapshot,

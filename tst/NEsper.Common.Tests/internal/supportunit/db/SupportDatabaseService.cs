@@ -93,7 +93,9 @@ namespace com.espertech.esper.common.@internal.supportunit.db
             mapDatabaseRef.Put(DBNAME_PART, DbConfigReferenceODBC);
 
             return new DatabaseConfigServiceImpl(
-                _container, mapDatabaseRef, importService);
+                driverType => DbDriverConnectionHelper.ResolveDriverFromType(_container, driverType),
+                mapDatabaseRef,
+                importService);
 		}
 
         public Properties DefaultProperties

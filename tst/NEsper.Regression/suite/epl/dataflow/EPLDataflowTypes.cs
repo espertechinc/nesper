@@ -120,7 +120,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 
                 var source = new DefaultSupportSourceOp(new object[] { MakeMap("E1", 1) });
                 var outputOne = new MyMapOutputOp();
-                var outputTwo = new DefaultSupportCaptureOp(env.Container.LockManager());
+                var outputTwo = new DefaultSupportCaptureOp(env.LockManager);
                 var options =
                     new EPDataFlowInstantiationOptions()
                         .WithOperatorProvider(new DefaultSupportGraphOpProvider(source, outputOne, outputTwo));

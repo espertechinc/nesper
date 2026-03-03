@@ -6,6 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.client.hook.expr;
@@ -55,10 +57,13 @@ using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.statement.dispatch;
 using com.espertech.esper.common.@internal.statement.multimatch;
 using com.espertech.esper.common.@internal.statement.resource;
+using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.common.client.artifact;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.common.@internal.view.previous;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.threading.locks;
+using com.espertech.esper.compat.threading.threadlocal;
 using com.espertech.esper.container;
 using com.espertech.esper.runtime.client;
 using com.espertech.esper.runtime.@internal.deploymentlifesvc;
@@ -75,6 +80,11 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 	public class EPServicesContext : EPServicesEvaluation, EPServicesPath
 	{
 		private readonly IContainer _container;
+		private readonly IArtifactRepositoryManager _artifactRepositoryManager;
+		private readonly IObjectCopier _objectCopier;
+		private readonly ILockManager _lockManager;
+		private readonly IReaderWriterLockManager _readerWriterLockManager;
+		private readonly IThreadLocalManager _threadLocalManager;
 	    private readonly AggregationServiceFactoryService _aggregationServiceFactoryService;
 	    private readonly BeanEventTypeFactoryPrivate _beanEventTypeFactoryPrivate;
 	    private readonly BeanEventTypeStemService _beanEventTypeStemService;
@@ -235,9 +245,19 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 		    ViewableActivatorFactory viewableActivatorFactory,
 		    ViewFactoryService viewFactoryService,
 		    ViewServicePreviousFactory viewServicePreviousFactory,
-		    XMLFragmentEventTypeFactory xmlFragmentEventTypeFactory)
+		    XMLFragmentEventTypeFactory xmlFragmentEventTypeFactory,
+		    IArtifactRepositoryManager artifactRepositoryManager,
+		    IObjectCopier objectCopier,
+		    ILockManager lockManager,
+		    IReaderWriterLockManager readerWriterLockManager,
+		    IThreadLocalManager threadLocalManager)
 	    {
 		    _container = container;
+		    _artifactRepositoryManager = artifactRepositoryManager;
+		    _objectCopier = objectCopier;
+		    _lockManager = lockManager;
+		    _readerWriterLockManager = readerWriterLockManager;
+		    _threadLocalManager = threadLocalManager;
 	        _aggregationServiceFactoryService = aggregationServiceFactoryService;
 	        _beanEventTypeFactoryPrivate = beanEventTypeFactoryPrivate;
 	        _beanEventTypeStemService = beanEventTypeStemService;
@@ -325,7 +345,20 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 	    public void Initialize() {
 	    }
 
-	    public IContainer Container => _container;
+	    public IContainer RuntimeContainer => _container;
+
+	    [Obsolete("Container access is deprecated; use explicit services such as ThreadLocalManager, ObjectCopier, and ArtifactRepositoryManager.")]
+	    public IContainer Container => RuntimeContainer;
+
+	    public IArtifactRepositoryManager ArtifactRepositoryManager => _artifactRepositoryManager;
+
+	    public IObjectCopier ObjectCopier => _objectCopier;
+
+	    public ILockManager LockManager => _lockManager;
+
+	    public IReaderWriterLockManager ReaderWriterLockManager => _readerWriterLockManager;
+
+	    public IThreadLocalManager ThreadLocalManager => _threadLocalManager;
 
 	    public RuntimeExtensionServices RuntimeExtensionServices => _epServicesHA.RuntimeExtensionServices;
 
@@ -337,7 +370,6 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 		    get {
 			    if (_statementContextRuntimeServices == null) {
 				    _statementContextRuntimeServices = new StatementContextRuntimeServices(
-					    _container,
 					    _configSnapshot,
 					    _contextManagementService,
 					    _contextPathRegistry,
@@ -383,7 +415,10 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 					    _tableManagementService,
 					    _variableManagementService,
 					    _viewFactoryService,
-					    _viewServicePreviousFactory);
+					    _viewServicePreviousFactory,
+					    _lockManager,
+					    _readerWriterLockManager,
+					    _threadLocalManager);
 			    }
 
 			    return _statementContextRuntimeServices;
@@ -394,7 +429,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 		    get {
 			    if (_stageRuntimeServices == null) {
 				    _stageRuntimeServices = new StageRuntimeServices(
-					    _container,
+					    _threadLocalManager,
 					    _importServiceRuntime,
 					    _configSnapshot,
 					    _dispatchService,

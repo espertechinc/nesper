@@ -48,6 +48,7 @@ namespace com.espertech.esper.common.@internal.context.module
 {
     public interface EPStatementInitServices
     {
+        [Obsolete("Container access is deprecated; use explicit init-service dependencies instead.")]
         IContainer Container { get; }
 
         Attribute[] Annotations { get; }

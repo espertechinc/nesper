@@ -24,7 +24,6 @@ using com.espertech.esper.common.@internal.schedule;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.threading.locks;
-using com.espertech.esper.container;
 
 using TimeProvider = com.espertech.esper.common.@internal.schedule.TimeProvider;
 
@@ -47,7 +46,7 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             _lock = new StatementAgentInstanceLockRW(false);
 
             tableExprEvaluatorContext = select.HasTableAccess
-                ? new TableExprEvaluatorContext(services.Container.ThreadLocalManager())
+                ? new TableExprEvaluatorContext(services.ThreadLocalManager)
                 : null;
         }
 

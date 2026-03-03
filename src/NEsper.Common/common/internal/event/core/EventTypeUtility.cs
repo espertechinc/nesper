@@ -2396,8 +2396,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                     EventTypeIdPair.Unassigned());
                 config.StartTimestampPropertyName = spec.StartTimestampProperty;
                 config.EndTimestampPropertyName = spec.EndTimestampProperty;
-                eventType = EventTypeFactoryImpl
-                    .GetInstance(services.Container)
+                eventType = new EventTypeFactoryImpl(services.ObjectCopier)
                     .CreateXMLType(
                         metadata,
                         config,
@@ -2445,7 +2444,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                     var superTypes = GetSuperTypes(stem.SuperTypes, services);
                     var deepSuperTypes = GetDeepSupertypes(stem.DeepSuperTypes, services);
                     eventType = new BeanEventType(
-                        services.Container,
+                        services.ObjectCopier,
                         stem,
                         metadata,
                         services.BeanEventTypeFactoryPrivate,

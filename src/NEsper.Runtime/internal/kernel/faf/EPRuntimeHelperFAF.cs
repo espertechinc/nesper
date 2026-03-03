@@ -82,7 +82,6 @@ namespace com.espertech.esper.runtime.@internal.kernel.faf
                 services.EventSerdeFactory);
 
             EventTypeCollectorImpl eventTypeCollector = new EventTypeCollectorImpl(
-                services.Container,
                 moduleTypes,
                 services.BeanEventTypeFactoryPrivate,
                 classLoader,

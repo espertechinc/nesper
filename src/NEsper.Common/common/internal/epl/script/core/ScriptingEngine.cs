@@ -11,7 +11,7 @@ using System;
 using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.settings;
-using com.espertech.esper.container;
+using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.@internal.epl.script.core
 {
@@ -38,7 +38,7 @@ namespace com.espertech.esper.common.@internal.epl.script.core
         /// <param name="container"></param>
         /// <param name="scriptingConfiguration"></param>
         void Initialize(
-            IContainer container,
+            TypeResolver typeResolver,
             ConfigurationCommonScripting scriptingConfiguration);
 
         /// <summary>

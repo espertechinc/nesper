@@ -98,11 +98,34 @@ namespace com.espertech.esper.common.@internal.db
                 typeof(DbDriver).FullName);
         }
 
+        public static DbDriver ResolveDriverFromType(
+            Func<Type, DbDriver> driverResolver,
+            Type driverType)
+        {
+            if (typeof(DbDriver).IsAssignableFrom(driverType)) {
+                return driverResolver(driverType);
+            }
+
+            throw new EPException(
+                "Unable to create driver because it was not assignable from " +
+                typeof(DbDriver).FullName);
+        }
+
         public static DbDriver ResolveDriver(
             IContainer container,
             DriverConnectionFactoryDesc driverConnectionFactoryDesc)
         {
             var driver = ResolveDriverFromName(container, driverConnectionFactoryDesc.DriverName);
+            driver.Properties = driverConnectionFactoryDesc.DriverProperties;
+            return driver;
+        }
+
+        public static DbDriver ResolveDriver(
+            Func<Type, DbDriver> driverResolver,
+            DriverConnectionFactoryDesc driverConnectionFactoryDesc)
+        {
+            var driverType = ResolveDriverTypeFromName(driverConnectionFactoryDesc.DriverName);
+            var driver = ResolveDriverFromType(driverResolver, driverType);
             driver.Properties = driverConnectionFactoryDesc.DriverProperties;
             return driver;
         }

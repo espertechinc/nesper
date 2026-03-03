@@ -34,7 +34,7 @@ namespace com.espertech.esper.common.@internal.support
             IContainer container,
             StreamTypeService streamTypeService)
         {
-            var moduleServices = new ModuleCompileTimeServices(container);
+            var moduleServices = new ModuleCompileTimeServices();
             moduleServices.Configuration = new Configuration();
             moduleServices.ImportServiceCompileTime = SupportImport.GetInstance(container);
             var services = new StatementCompileTimeServices(1, moduleServices);

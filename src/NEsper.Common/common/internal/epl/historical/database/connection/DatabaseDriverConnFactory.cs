@@ -6,9 +6,10 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+
 using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.@internal.db;
-using com.espertech.esper.container;
 
 namespace com.espertech.esper.common.@internal.epl.historical.database.connection
 {
@@ -18,16 +19,16 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.connectio
     public class DatabaseDriverConnFactory : DatabaseConnectionFactory
     {
         /// <summary>Ctor.</summary>
-        /// <param name="container">the container</param>
+        /// <param name="driverResolver">resolves a db driver from a type</param>
         /// <param name="config">is the database provider configuration</param>
         /// <param name="connectionSettings">are connection-level settings</param>
         /// <throws>  DatabaseConfigException thrown if the driver class cannot be loaded </throws>
         public DatabaseDriverConnFactory(
-            IContainer container,
+            Func<Type, DbDriver> driverResolver,
             DriverConnectionFactoryDesc config,
             ConnectionSettings connectionSettings)
         {
-            Driver = DbDriverConnectionHelper.ResolveDriver(container, config);
+            Driver = DbDriverConnectionHelper.ResolveDriver(driverResolver, config);
             ConnectionSettings = connectionSettings;
         }
 

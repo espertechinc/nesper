@@ -55,7 +55,6 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.directory;
 using com.espertech.esper.compat.threading.locks;
 using com.espertech.esper.compat.threading.threadlocal;
-using com.espertech.esper.container;
 
 using TimeProvider = com.espertech.esper.common.@internal.schedule.TimeProvider;
 
@@ -69,7 +68,6 @@ namespace com.espertech.esper.common.@internal.context.util
         private AgentInstanceScriptContext defaultAgentInstanceScriptContext;
 
         public StatementContext(
-            IContainer container,
             ContextRuntimeDescriptor contextRuntimeDescriptor,
             string deploymentId,
             int statementId,
@@ -92,7 +90,6 @@ namespace com.espertech.esper.common.@internal.context.util
             SchedulingService schedulingService,
             InternalEventRouteDest internalEventRouteDest)
         {
-            Container = container;
             ContextRuntimeDescriptor = contextRuntimeDescriptor;
             DeploymentId = deploymentId;
             StatementId = statementId;
@@ -121,13 +118,11 @@ namespace com.espertech.esper.common.@internal.context.util
             InternalEventRouteDest = internalEventRouteDest;
         }
 
-        public IContainer Container { get; set; }
+        public IThreadLocalManager ThreadLocalManager => StatementContextRuntimeServices.ThreadLocalManager;
 
-        public IThreadLocalManager ThreadLocalManager => Container.ThreadLocalManager();
+        public ILockManager LockManager => StatementContextRuntimeServices.LockManager;
 
-        public ILockManager LockManager => Container.LockManager();
-
-        public IReaderWriterLockManager RWLockManager => Container.RWLockManager();
+        public IReaderWriterLockManager RWLockManager => StatementContextRuntimeServices.RWLockManager;
 
         public Attribute[] Annotations => StatementInformationals.Annotations;
 

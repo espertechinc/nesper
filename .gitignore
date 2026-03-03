@@ -8,3 +8,29 @@
 **/*.keep
 packages
 tst/db/data
+
+# IDE/editor artifacts
+.idea/
+.claude/
+.vs/
+
+# Generated test output
+TestResults/
+
+# Editor temporary files
+**/*.swp
+
+# Generated troubleshooting scripts
+**/error-by-class.sh
+**/error-by-file.sh
+**/error-count.sh
+
+# Regression runner artifacts
+tst/NEsper.Regression.Runner/TestResults/
+tst/NEsper.Regression.Runner/*.DotSettings
+
+# Backup/temp source artifacts
+**/*.bak
+
+# Local sqlite test runtime artifact
+tst/etc/regression/sqlite/regression.db

@@ -6,6 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.function;
@@ -25,6 +27,9 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 
         void Initialize(Consumer<EPRuntimeSPIRunAfterDestroyCtx> runAfterDestroy);
 
+        IContainer RuntimeContainer { get; }
+
+        [Obsolete("Container access is deprecated for internal flows; use ServicesContext and explicit dependencies.")]
         IContainer Container { get; }
 
         EPServicesContext ServicesContext { get; }

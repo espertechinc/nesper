@@ -42,10 +42,10 @@ namespace com.espertech.esper.common.@internal.@event.xml
         [Test]
         public void TestMap()
         {
-            var uri = container.ResourceManager().ResolveResourceURL("regression/simpleSchema.xsd");
+            var uri = ResourceManager.ResolveResourceURL("regression/simpleSchema.xsd");
             var schemaUri = uri.ToString();
 
-            var model = XSDSchemaMapper.LoadAndMap(schemaUri, null, container.ResourceManager());
+            var model = XSDSchemaMapper.LoadAndMap(schemaUri, null, ResourceManager);
             Assert.That(model.Components.Count, Is.EqualTo(1));
 
             var simpleEvent = model.Components[0];
@@ -94,7 +94,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
         [Test]
         public void TestMap()
         {
-            Uri uri = _container.ResourceManager().ResolveResourceURL("regression/simpleSchema.xsd");
+            Uri uri = ResourceManager.ResolveResourceURL("regression/simpleSchema.xsd");
             String schemaUri = uri.ToString();
 
             SchemaModel model = XSDSchemaMapper.LoadAndMap(schemaUri, null);
@@ -189,7 +189,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
         public void TestEvent()
         {
             //URL url = ResourceLoader.ResolveClassPathOrURLResource("schema", "regression/typeTestSchema.xsd");
-            var stream = container.ResourceManager().GetResourceAsStream("regression/simpleSchema.xsd");
+            var stream = ResourceManager.GetResourceAsStream("regression/simpleSchema.xsd");
             var xsModel = XmlSchema.Read(stream, delegate { });
 
             var elements = new List<XmlSchemaElement>();
@@ -224,10 +224,10 @@ namespace com.espertech.esper.common.@internal.@event.xml
         [Test]
         public void TestExtendedElements()
         {
-            var uri = container.ResourceManager().ResolveResourceURL("regression/schemaWithExtensions.xsd");
+            var uri = ResourceManager.ResolveResourceURL("regression/schemaWithExtensions.xsd");
             var schemaUri = uri.ToString();
 
-            var model = XSDSchemaMapper.LoadAndMap(schemaUri, null, container.ResourceManager());
+            var model = XSDSchemaMapper.LoadAndMap(schemaUri, null, ResourceManager);
 
             var complexEvent = model.Components[0];
             VerifyComplexElement(complexEvent, "complexEvent", false);

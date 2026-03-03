@@ -4,7 +4,6 @@ using System.Xml.XPath;
 
 using com.espertech.esper.common.@internal.@event.xml;
 using com.espertech.esper.common.@internal.settings;
-using com.espertech.esper.container;
 
 namespace com.espertech.esper.common.@internal.xmlxsd.core
 {
@@ -31,7 +30,7 @@ namespace com.espertech.esper.common.@internal.xmlxsd.core
             return XSDSchemaMapper.LoadAndMap(
                 schemaResource,
                 schemaText,
-                importService.Container.ResourceManager());
+                importService.ResourceManager);
         }
     }
 }

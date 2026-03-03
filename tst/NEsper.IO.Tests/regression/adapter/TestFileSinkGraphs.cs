@@ -74,7 +74,7 @@ namespace com.espertech.esperio.regression.adapter
 			string message)
 		{
 			var stmtGraph = CompileDeploy(_runtime, epl).Statements[0];
-			var outputOp = new DefaultSupportCaptureOp(container.LockManager());
+			var outputOp = new DefaultSupportCaptureOp(LockManager);
 			try {
 				_runtime.DataFlowService.Instantiate(
 					stmtGraph.DeploymentId,

@@ -11,13 +11,12 @@ using System.Reflection;
 
 using com.espertech.esper.common.@internal.epl.expression.time.abacus;
 using com.espertech.esper.compat;
-using com.espertech.esper.container;
 
 namespace com.espertech.esper.common.@internal.settings
 {
     public interface ImportService
     {
-        IContainer Container { get; }
+        IResourceManager ResourceManager { get; }
 
         TimeAbacus TimeAbacus { get; }
 

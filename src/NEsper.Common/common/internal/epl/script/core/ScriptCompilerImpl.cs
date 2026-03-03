@@ -15,17 +15,17 @@ using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.container;
 
 namespace com.espertech.esper.common.@internal.epl.script.core
 {
     public class ScriptCompilerImpl : ScriptCompiler
     {
         /// <summary>
-        /// The container.
+        /// The type resolver for resolving scripting engine types.
         /// </summary>
-        private IContainer _container;
+        private readonly TypeResolver _typeResolver;
 
         /// <summary>
         /// The scripting configuration.
@@ -42,10 +42,10 @@ namespace com.espertech.esper.common.@internal.epl.script.core
         /// Constructor.
         /// </summary>
         public ScriptCompilerImpl(
-            IContainer container,
+            TypeResolver typeResolver,
             ConfigurationCommon configuration)
         {
-            _container = container;
+            _typeResolver = typeResolver;
             _configuration = configuration.Scripting;
             InitializeScriptingEngines();
         }
@@ -55,7 +55,7 @@ namespace com.espertech.esper.common.@internal.epl.script.core
         /// </summary>
         private void InitializeScriptingEngines()
         {
-            var typeResolver = _container.TypeResolverProvider().TypeResolver;
+            var typeResolver = _typeResolver;
             foreach (var engineTypeName in _configuration.Engines) {
                 var engineType = typeResolver.ResolveType(engineTypeName, false);
                 if (engineType != null) {
@@ -82,7 +82,7 @@ namespace com.espertech.esper.common.@internal.epl.script.core
                     $"duplicate language prefix \"{scriptingEngine.LanguagePrefix}\" detected");
             }
 
-            scriptingEngine.Initialize(_container, _configuration);
+            scriptingEngine.Initialize(_typeResolver, _configuration);
             _scriptingEngines.Add(scriptingEngine.LanguagePrefix, scriptingEngine);
         }
 
@@ -136,7 +136,7 @@ namespace com.espertech.esper.common.@internal.epl.script.core
         /// </returns>
         public static bool IsEngineType(Type type)
         {
-            return type.IsImplementsInterface<ScriptingEngine>();
+            return compat.TypeExtensions.IsImplementsInterface<ScriptingEngine>(type);
             //return type.IsSubclassOrImplementsInterface<ScriptingEngine>();
         }
 

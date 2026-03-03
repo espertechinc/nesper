@@ -20,7 +20,6 @@ using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.container;
 
 using Microsoft.ClearScript;
 using Microsoft.ClearScript.V8;
@@ -40,7 +39,7 @@ namespace NEsper.Scripting.ClearScript
         public string LanguagePrefix { get; private set; }
 
         public void Initialize(
-            IContainer container,
+            TypeResolver typeResolver,
             ConfigurationCommonScripting scriptingConfiguration)
         {
         }

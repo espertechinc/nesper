@@ -1,0 +1,20 @@
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  NEsper.Compat -> D:\src\Espertech\NEsper-8.9.x\src\NEsper.Compat\bin\Debug\net9.0\NEsper.Compat.dll
+  NEsper.Grammar -> D:\src\Espertech\NEsper-8.9.x\src\NEsper.Grammar\bin\Debug\net9.0\NEsper.Grammar.dll
+  NEsper.Log.NLog -> D:\src\Espertech\NEsper-8.9.x\src\NEsper.Log.NLog\bin\Debug\net9.0\NEsper.Log.NLog.dll
+  NEsper.Common -> D:\src\Espertech\NEsper-8.9.x\src\NEsper.Common\bin\Debug\net9.0\NEsper.Common.dll
+  NEsper.Compiler -> D:\src\Espertech\NEsper-8.9.x\src\NEsper.Compiler\bin\Debug\net9.0\NEsper.Compiler.dll
+  NEsper.Runtime -> D:\src\Espertech\NEsper-8.9.x\src\NEsper.Runtime\bin\Debug\net9.0\NEsper.Runtime.dll
+  NEsper.Scripting.ClearScript -> D:\src\Espertech\NEsper-8.9.x\src\NEsper.Scripting.ClearScript\bin\Debug\net9.0\NEsper.Scripting.ClearScript.dll
+  NEsper.Data.PgSQL -> D:\src\Espertech\NEsper-8.9.x\src\NEsper.Data.PgSQL\bin\Debug\net9.0\NEsper.Data.PgSQL.dll
+  NEsper.Avro -> D:\src\Espertech\NEsper-8.9.x\src\NEsper.Avro\bin\Debug\net9.0\NEsper.Avro.dll
+  NEsper.Regression -> D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression\bin\Debug\net9.0\NEsper.Regression.dll
+  NEsper.Regression.Runner -> D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll
+Test run for D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll (.NETCoreApp,Version=v9.0)
+VSTest version 17.14.0 (x64)
+
+Starting test execution, please wait...
+A total of 1 test files matched the specified pattern.
+No test matches the given testcase filter `FullyQualifiedName~suite.epl.database` in D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll
+

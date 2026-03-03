@@ -893,7 +893,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.stage
 			RemoveFromThreadLocals();
 
 			_threadLocals = AllocateThreadLocals(
-				_runtimeServices.Container,
+				_runtimeServices.ThreadLocalManager,
 				_isPrioritized,
 				_runtimeServices.RuntimeURI,
 				_runtimeServices.ConfigSnapshot,

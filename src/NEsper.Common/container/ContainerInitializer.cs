@@ -14,6 +14,7 @@ using System.Linq;
 
 using Castle.MicroKernel.Registration;
 
+using com.espertech.esper.common.client.artifact;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.db;
 using com.espertech.esper.common.@internal.db.drivers;
@@ -105,7 +106,7 @@ namespace com.espertech.esper.container
             
             if (container.DoesNotHave<TypeResolverProvider>())
                 container.Register<TypeResolverProvider>(
-                    ic => new ArtifactTypeResolverProvider(ic),
+                    ic => new ArtifactTypeResolverProvider(ic.ArtifactRepositoryManager()),
                     Lifespan.Singleton);
 #if DEPRECATED
             if (container.DoesNotHave<ClassForNameProvider>())

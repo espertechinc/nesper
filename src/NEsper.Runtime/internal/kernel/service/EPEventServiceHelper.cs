@@ -23,7 +23,6 @@ using com.espertech.esper.common.@internal.schedule;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.threading.threadlocal;
-using com.espertech.esper.container;
 using com.espertech.esper.runtime.@internal.metrics.instrumentation;
 
 namespace com.espertech.esper.runtime.@internal.kernel.service
@@ -125,7 +124,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 		}
 
 		public static IThreadLocal<EPEventServiceThreadLocalEntry> AllocateThreadLocals(
-			IContainer container,
+			IThreadLocalManager threadLocalManager,
 			bool isPrioritized,
 			string runtimeURI,
 			Configuration configuration,
@@ -138,7 +137,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 		{
 			var expressionResultCacheService = new ExpressionResultCacheService(
 				configuration.Runtime.Execution.DeclaredExprValueCacheSize,
-				container.ThreadLocalManager());
+				threadLocalManager);
 				
 			//return new SystemThreadLocal<EPEventServiceThreadLocalEntry>(
 			return new FastThreadLocal<EPEventServiceThreadLocalEntry>(
