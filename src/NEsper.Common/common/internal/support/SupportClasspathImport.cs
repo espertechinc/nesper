@@ -17,8 +17,11 @@ namespace com.espertech.esper.common.@internal.support
     {
         public static ImportServiceCompileTime GetInstance(IContainer container)
         {
-            return container.ResolveSingleton(
-                () => new ImportServiceCompileTimeImpl(
+            lock (container) {
+                if (container.Has<ImportServiceCompileTime>()) {
+                    return container.Resolve<ImportServiceCompileTime>();
+                }
+                var instance = new ImportServiceCompileTimeImpl(
                     container.Resolve<TypeResolverProvider>(),
                     container.Resolve<IResourceManager>(),
                     null,
@@ -26,7 +29,10 @@ namespace com.espertech.esper.common.@internal.support
                     null,
                     MathContext.DECIMAL32,
                     false,
-                    false));
+                    false);
+                container.Register<ImportServiceCompileTime>(instance, Lifespan.Singleton, null);
+                return instance;
+            }
         }
     }
 } // end of namespace

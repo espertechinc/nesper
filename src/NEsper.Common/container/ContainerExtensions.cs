@@ -44,39 +44,42 @@ namespace com.espertech.esper.container
             }
         }
 
+        [Obsolete("Use constructor injection instead")]
         public static ILockManager LockManager(this IContainer container)
         {
             container.CheckContainer();
             return container.Resolve<ILockManager>();
         }
 
+        [Obsolete("Use constructor injection instead")]
         public static IReaderWriterLockManager RWLockManager(this IContainer container)
         {
             container.CheckContainer();
             return container.Resolve<IReaderWriterLockManager>();
         }
 
-        [Obsolete("Use constructor injection instead", true)]
+        [Obsolete("Use constructor injection instead")]
         public static IThreadLocalManager ThreadLocalManager(this IContainer container)
         {
             container.CheckContainer();
             return container.Resolve<IThreadLocalManager>();
         }
 
+        [Obsolete("Use constructor injection instead")]
         public static IResourceManager ResourceManager(this IContainer container)
         {
             container.CheckContainer();
             return container.Resolve<IResourceManager>();
         }
 
-        [Obsolete("Use constructor injection instead", true)]
+        [Obsolete("Use constructor injection instead")]
         public static TypeResolverProvider TypeResolverProvider(this IContainer container)
         {
             container.CheckContainer();
             return container.Resolve<TypeResolverProvider>();
         }
 
-        [Obsolete("Use constructor injection instead", true)]
+        [Obsolete("Use constructor injection instead")]
         public static TypeResolver TypeResolver(this IContainer container)
         {
             container.CheckContainer();
@@ -104,7 +107,7 @@ namespace com.espertech.esper.container
             return true;
         }
 
-        [Obsolete("Use alternative method", true)]
+        [Obsolete("Use alternative method")]
         public static T CreateInstance<T>(this IContainer container, Type viewFactoryClass)
         {
             container.CheckContainer();
@@ -129,6 +132,7 @@ namespace com.espertech.esper.container
             throw new ArgumentException("unable to create an instance of type " + viewFactoryClass.FullName);
         }
 
+        [Obsolete("Use explicit registration in ContainerInitializer instead")]
         public static T ResolveSingleton<T>(
             this IContainer container,
             Supplier<T> instanceSupplier)

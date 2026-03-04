@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
                 new object[] { typeof(double?), typeof(int?), typeof(string) }
             );
             configuration.Common.AddEventType(typeof(MyDefaultSupportGraphEvent));
-            configuration.Common.AddEventType("MyXMLEvent", GetConfig(container.ResourceManager()));
+            configuration.Common.AddEventType("MyXMLEvent", GetConfig(container.Resolve<IResourceManager>()));
         }
 
         public static SendableEvent[] GetXMLEventsSendable()
