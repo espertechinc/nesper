@@ -104,9 +104,15 @@ namespace com.espertech.esper.container
             //    container.Register<IConfigurationParser, ConfigurationParser>(
             //        Lifespan.Transient);
             
+            // Register IArtifactRepositoryManager eagerly (used by both runtime and compiler)
+            if (container.DoesNotHave<IArtifactRepositoryManager>())
+                container.Register<IArtifactRepositoryManager>(
+                    ic => ArtifactRepositoryExtensions.GetDefaultArtifactRepositoryManager(ic),
+                    Lifespan.Singleton);
+            
             if (container.DoesNotHave<TypeResolverProvider>())
                 container.Register<TypeResolverProvider>(
-                    ic => new ArtifactTypeResolverProvider(ic.ArtifactRepositoryManager()),
+                    ic => new ArtifactTypeResolverProvider(ic.Resolve<IArtifactRepositoryManager>()),
                     Lifespan.Singleton);
 #if DEPRECATED
             if (container.DoesNotHave<ClassForNameProvider>())

@@ -104,7 +104,7 @@ namespace com.espertech.esper.compiler.@internal.util
 			var objectCopier = container.Resolve<IObjectCopier>();
 			var threadLocalManager = container.Resolve<IThreadLocalManager>();
 			var serializerFactory = container.SerializerFactory();
-			var artifactRepository = container.ArtifactRepositoryManager().DefaultRepository;
+			var artifactRepository = container.Resolve<IArtifactRepositoryManager>().DefaultRepository;
 			var metadataReferenceResolver = container.MetadataReferenceResolver();
 			var metadataReferenceProvider = container.MetadataReferenceProvider();
 			var typeResolverProvider = container.Resolve<TypeResolverProvider>();
