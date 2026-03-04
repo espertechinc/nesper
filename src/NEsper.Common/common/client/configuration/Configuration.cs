@@ -54,13 +54,6 @@ namespace com.espertech.esper.common.client.configuration
         }
 
         /// <summary>
-        /// Gets the resource manager.
-        /// </summary>
-        [Obsolete("Configuration.ResourceManager is deprecated; wire IResourceManager explicitly and pass it to consumers.")]
-        [JsonIgnore]
-        public IResourceManager ResourceManager => Container.ResourceManager();
-
-        /// <summary>
         /// Returns the common section of the configuration.
         /// <para />The common section is for use by both the compiler and the runtime.
         /// </summary>

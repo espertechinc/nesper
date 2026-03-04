@@ -117,7 +117,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             var objectCopier = container.Resolve<IObjectCopier>();
             var timerFactory = container.Resolve<ITimerFactory>();
 
-            var artifactRepositoryManager = container.ArtifactRepositoryManager();
+            var artifactRepositoryManager = container.Resolve<IArtifactRepositoryManager>();
             var artifactRepositoryDefault = artifactRepositoryManager.DefaultRepository;
             
             var runtimeEnvContext = new RuntimeEnvContext();

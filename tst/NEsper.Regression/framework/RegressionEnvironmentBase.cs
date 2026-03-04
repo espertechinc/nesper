@@ -618,7 +618,7 @@ namespace com.espertech.esper.regressionlib.framework
 
 		public IContainer Container => Configuration.Container;
 
-		public IResourceManager ResourceManager => Configuration.ResourceManager;
+		public IResourceManager ResourceManager => Container.Resolve<IResourceManager>();
 
 		public ILockManager LockManager => Container.LockManager();
 		

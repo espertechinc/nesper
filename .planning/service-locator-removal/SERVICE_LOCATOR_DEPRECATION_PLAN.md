@@ -20,7 +20,8 @@ Target architecture:
 
 ## Inventory of Active Service-Locator Usage
 
-> Status: Identified from current source via grep/code search on 2026-03-02.
+> Original inventory: 2026-03-02. Status updated: 2026-03-03 after Phases 1–5 completion.
+> Legend: ~~strikethrough~~ = eliminated. Items without strikethrough are still active.
 
 ## A) Infrastructure/Enablers (must be constrained)
 
@@ -37,92 +38,101 @@ These are not necessarily business call sites, but they enable widespread servic
 
 ### Runtime kernel and context
 
-- `src/NEsper.Runtime/internal/kernel/service/EPServicesContextFactoryBase.cs`
-  - `epRuntime.Container.RWLockManager()`
-  - `container.Resolve<TypeResolverProvider>()`
-  - `container.Resolve<IResourceManager>()`
-  - `container.RWLockManager()`
-  - `container.ThreadLocalManager()`
-- `src/NEsper.Runtime/internal/kernel/service/EPServicesContextFactoryDefault.cs`
-  - `_container.RWLockManager()`
-  - `_container.Resolve<IObjectCopier>()`
+- ~~`src/NEsper.Runtime/internal/kernel/service/EPServicesContextFactoryBase.cs`~~
+  - ~~`epRuntime.Container.RWLockManager()`~~ → replaced with `container.Resolve<IReaderWriterLockManager>()`
+  - ~~`container.RWLockManager()`~~ → explicit `Resolve<IReaderWriterLockManager>()`
+  - ~~`container.ThreadLocalManager()`~~ → explicit `Resolve<IThreadLocalManager>()`
+  - **Still active (composition-root approved):** `container.Resolve<TypeResolverProvider>()`, `container.Resolve<IResourceManager>()`, etc.
+- ~~`src/NEsper.Runtime/internal/kernel/service/EPServicesContextFactoryDefault.cs`~~
+  - ~~`_container.RWLockManager()`~~ → eliminated
+  - ~~`_container.Resolve<IObjectCopier>()`~~ → `objectCopier` passed explicitly
 - `src/NEsper.Runtime/internal/kernel/service/EPServicesContext.cs`
-  - `_container.Resolve<ILockManager>()`
-  - `_container.Resolve<IReaderWriterLockManager>()`
-  - `_container.Resolve<IThreadLocalManager>()`
-  - Exposes `public IContainer Container => _container;`
+  - ~~`_container.Resolve<ILockManager>()`~~ → injected via constructor
+  - ~~`_container.Resolve<IReaderWriterLockManager>()`~~ → injected via constructor
+  - ~~`_container.Resolve<IThreadLocalManager>()`~~ → injected via constructor
+  - **Still present:** `_container` field stored, `public IContainer RuntimeContainer => _container` (transitional); `[Obsolete] public IContainer Container => RuntimeContainer`
 - `src/NEsper.Runtime/internal/kernel/statement/EPStatementInitServicesImpl.cs`
-  - `ServicesContext.Container.Resolve<IObjectCopier>()`
-  - Exposes `public IContainer Container => ServicesContext.Container;`
+  - ~~`ServicesContext.Container.Resolve<IObjectCopier>()`~~ → `ServicesContext.ObjectCopier`
+  - **Still present (Obsolete):** `public IContainer Container => ServicesContext.RuntimeContainer`
 - `src/NEsper.Runtime/internal/kernel/service/EPRuntimeImpl.cs`
-  - `Container.Resolve<TypeResolverProvider>()`
-  - Exposes `public IContainer Container { get; }`
+  - ~~`Container.Resolve<TypeResolverProvider>()`~~ → `RuntimeContainer.Resolve<TypeResolverProvider>()` at startup
+  - **Still present:** `public IContainer RuntimeContainer { get; }` (from `configuration.Container`); `[Obsolete] public IContainer Container => RuntimeContainer`
 
 ### Runtime stage recovery
 
-- `src/NEsper.Runtime/internal/kernel/stage/StageRecoveryServiceBase.cs`
-  - `servicesContext.Container.RWLockManager()`
-- `src/NEsper.Runtime/internal/kernel/stage/StageRecoveryServiceImpl.cs`
-  - `servicesContext.Container.RWLockManager()`
+- ~~`src/NEsper.Runtime/internal/kernel/stage/StageRecoveryServiceBase.cs`~~
+  - ~~`servicesContext.Container.RWLockManager()`~~ → `rwLockManager` injected directly
+- ~~`src/NEsper.Runtime/internal/kernel/stage/StageRecoveryServiceImpl.cs`~~
+  - ~~`servicesContext.Container.RWLockManager()`~~ → `rwLockManager` injected directly
 
 ### Runtime utility/support classes in production assembly
 
-- `src/NEsper.Runtime/internal/timer/TimerServiceImpl.cs`
-  - `Container.Resolve<ITimerFactory>()`
-- `src/NEsper.Runtime/internal/kernel/service/EPEventServiceHelper.cs`
-  - `container.ThreadLocalManager()`
-- `src/NEsper.Runtime/internal/kernel/service/EPRuntimeBeanAnonymousTypeService.cs`
-  - `container.Resolve<IObjectCopier>()`, `_container.Resolve<IObjectCopier>()`
+- ~~`src/NEsper.Runtime/internal/timer/TimerServiceImpl.cs`~~
+  - ~~`Container.Resolve<ITimerFactory>()`~~ → `ITimerFactory` injected directly
+- ~~`src/NEsper.Runtime/internal/kernel/service/EPEventServiceHelper.cs`~~
+  - ~~`container.ThreadLocalManager()`~~ → `IThreadLocalManager` injected directly
+- ~~`src/NEsper.Runtime/internal/kernel/service/EPRuntimeBeanAnonymousTypeService.cs`~~
+  - ~~`container.Resolve<IObjectCopier>()`~~ → `IObjectCopier` injected directly
 - `src/NEsper.Runtime/internal/support/SupportEventTypeFactory.cs`
-  - `ResolveSingleton`, `Resolve<IObjectCopier>()`
+  - **Still active:** `ResolveSingleton`, `Resolve<IObjectCopier>()` (×2) — test support only
 - `src/NEsper.Runtime/internal/support/SupportEventBeanFactory.cs`
-  - `ResolveSingleton`
+  - **Still active:** `ResolveSingleton` — test support only
 
 ## C) Compiler production call sites (`src/NEsper.Compiler`)
 
-- `src/NEsper.Compiler/internal/util/CompilerHelperServices.cs`
-  - `container.Resolve<IObjectCopier>()`
-  - `container.Resolve<IThreadLocalManager>()`
-  - `container.Resolve<TypeResolverProvider>()`
-  - `container.Resolve<IResourceManager>()`
-- `src/NEsper.Compiler/internal/util/EPCompilerImpl.cs`
-  - `container.Resolve<TypeResolverProvider>()`
-  - `container.Resolve<IResourceManager>()`
+- ~~`src/NEsper.Compiler/internal/util/CompilerHelperServices.cs`~~
+  - ~~`container.Resolve<IObjectCopier>()`~~ → explicit `Resolve<IObjectCopier>()`
+  - ~~`container.Resolve<IThreadLocalManager>()`~~ → explicit `Resolve<IThreadLocalManager>()`
+  - ~~`container.Resolve<TypeResolverProvider>()`~~ → explicit `Resolve<TypeResolverProvider>()`
+  - ~~`container.Resolve<IResourceManager>()`~~ → explicit `Resolve<IResourceManager>()`
+  - ~~Extension methods replaced with explicit `Resolve<T>()` calls~~
+- ~~`src/NEsper.Compiler/internal/util/EPCompilerImpl.cs`~~
+  - ~~`container.Resolve<TypeResolverProvider>()`~~ → explicit `Resolve<TypeResolverProvider>()`
+  - ~~`container.Resolve<IResourceManager>()`~~ → explicit `Resolve<IResourceManager>()`
 - `src/NEsper.Compiler/client/CoreAssemblyProviderExtensions.cs`
-  - `container.Resolve<CoreAssemblyProvider>()`
+  - ~~`container.Resolve<CoreAssemblyProvider>()`~~ — method has no callers; **pending removal (Phase 7)**
+- `src/NEsper.Compiler/internal/util/CompilerHelperModuleProvider.cs`
+  - **Still active:** `GetCompilerThreadPoolFactory(IContainer)` — intentional user extension point; reads `compileTimeServices.Configuration.Container`
 
 ## D) Common production call sites (`src/NEsper.Common`)
 
-- `src/NEsper.Common/common/internal/util/SerializableObjectCopier.cs`
-  - `_container.Resolve<TypeResolver>()`
-  - `_container.Resolve<TypeResolverProvider>()`
-  - `_container.Resolve<ObjectSerializer>()`
-- `src/NEsper.Common/common/internal/util/serde/SerializerFactory.cs`
-  - `container.Resolve<TypeResolver>()`
-  - `container.Resolve<TypeResolverProvider>()`
+- ~~`src/NEsper.Common/common/internal/util/SerializableObjectCopier.cs`~~
+  - ~~`_container.Resolve<TypeResolver>()`~~ → takes `TypeResolver` directly in constructor
+- ~~`src/NEsper.Common/common/internal/util/serde/SerializerFactory.cs`~~
+  - ~~`container.Resolve<TypeResolver>()`~~ → eliminated
 - `src/NEsper.Common/common/internal/util/serde/SerializerFactoryExtensions.cs`
-  - `container.Resolve<SerializerFactory>()`
-- `src/NEsper.Common/common/internal/util/TransientConfigurationResolver.cs`
-  - `container.Resolve<ClassForNameProvider>()`
-- `src/NEsper.Common/common/internal/support/SupportClasspathImport.cs`
-  - `ResolveSingleton`, `Resolve<TypeResolverProvider>()`, `Resolve<IResourceManager>()`
-- `src/NEsper.Common/common/internal/db/DbDriverConnectionHelper.cs`
-  - `container.Resolve<DbDriver>(name)`
-- `src/NEsper.Common/common/internal/db/drivers/DbProviderFactoryManagerDefault.cs`
-  - `_container.Resolve<DbProviderFactory>(factoryName)`
+  - `container.Resolve<SerializerFactory>()` — **dead code; no callers remain; pending file deletion (Phase 7)**
+- ~~`src/NEsper.Common/common/internal/util/TransientConfigurationResolver.cs`~~
+  - ~~`container.Resolve<ClassForNameProvider>()`~~ → takes `TypeResolverProvider` directly
+- `src/NEsper.Common/common/internal/support/SupportImport.cs` (was SupportClasspathImport)
+  - **Still active:** `ResolveSingleton`, `Resolve<TypeResolverProvider>()`, `Resolve<IResourceManager>()` — test support only
+- ~~`src/NEsper.Common/common/internal/db/DbDriverConnectionHelper.cs`~~
+  - ~~`container.Resolve<DbDriver>(name)`~~ → marked `[Obsolete]`, replaced by direct driver resolution
+- ~~`src/NEsper.Common/common/internal/db/drivers/DbProviderFactoryManagerDefault.cs`~~
+  - ~~`_container.Resolve<DbProviderFactory>(factoryName)`~~ → `IContainer` ctor overload removed; uses `Dictionary<string, DbProviderFactory>` built at construction
 - `src/NEsper.Common/common/internal/epl/dataflow/util/DefaultSupportGraphEventUtil.cs`
-  - `container.ResourceManager()`
-- `src/NEsper.Common/common/client/configuration/Configuration.cs`
-  - `Container.ResourceManager()`
-- `src/NEsper.Common/common/client/artifact/*Extensions.cs`
-  - `Resolve<IArtifactRepositoryManager>()`, `Resolve<MetadataReferenceResolver>()`, `Resolve<MetadataReferenceProvider>()`
+  - **Still active:** `container.ResourceManager()` — test support only
+- ~~`src/NEsper.Common/common/client/configuration/Configuration.cs`~~
+  - ~~`Container.ResourceManager()`~~ → callers use injected `IResourceManager` directly
+- ~~`src/NEsper.Common/common/client/artifact/*Extensions.cs`~~
+  - ~~`Resolve<IArtifactRepositoryManager>()`~~ → explicit `ArtifactRepositoryManager()` from container at startup
+- ~~`src/NEsper.Common/common/internal/epl/dataflow/interfaces/DataFlowOpInitializeContext.cs`~~
+  - ~~`container.Resolve<IResourceManager>()`~~ → `IResourceManager` injected directly; `IContainer` removed
+- ~~`src/NEsper.Common/common/internal/epl/dataflow/realize/DataflowInstantiator.cs`~~
+  - ~~`IContainer container` parameter~~ → replaced with `IResourceManager resourceManager`
+- ~~`src/NEsper.Common/common/internal/epl/dataflow/core/EPDataFlowServiceImpl.cs`~~
+  - ~~`_container` field~~ → replaced with `_resourceManager: IResourceManager`
+- ~~`src/NEsper.Common/common/internal/util/serde/SerializerUtil.cs`~~
+  - ~~`ObjectToByteArr(IContainer, object)`~~ → dead overload removed
+- ~~`src/NEsper.Common/common/internal/context/controller/hash/ContextControllerHashedGetterCRC32SerializedForge.cs`~~
+  - ~~`SerializeAndCRC32Hash(IContainer, ...)`~~ → dead overload removed; codegen uses `SerializerFactory.Instance` overload
 
 ## E) IO production call sites (`src/NEsper.IO`)
 
-- `src/NEsper.IO/AdapterInputSource.cs`
-  - `_container.ResourceManager().GetResourceAsStream(...)`
-- `src/NEsper.IO/AbstractCoordinatedAdapter.cs`
-  - `_container.RWLockManager().CreateLock(...)`
+- ~~`src/NEsper.IO/AdapterInputSource.cs`~~
+  - ~~`_container.ResourceManager().GetResourceAsStream(...)`~~ → `IResourceManager` injected directly ✅
+- ~~`src/NEsper.IO/AbstractCoordinatedAdapter.cs`~~
+  - ~~`_container.RWLockManager().CreateLock(...)`~~ → `IReaderWriterLockManager` injected directly ✅
 
 ## F) Test and regression call sites (`tst/`)
 
@@ -353,6 +363,40 @@ Exit criteria:
 
 - No runtime dynamic resolve in utility/DB code.
 
+### Phase 4 Completion (2026-03-03)
+
+Completed in this pass:
+
+1. **Dataflow chain fully decoupled from `IContainer`:**
+   - `DataFlowOpInitializeContext` — removed `IContainer container` constructor parameter; now takes `IResourceManager resourceManager` directly; removed `Container` property.
+   - `DataflowInstantiator` — all three static methods (`Instantiate`, `InstantiateOperators`, `InstantiateOperator`) changed from `IContainer` to `IResourceManager` parameter; removed `using com.espertech.esper.container`.
+   - `EPDataFlowServiceImpl` — `_container` field replaced with `_resourceManager`; constructor takes `IResourceManager`; removed `using com.espertech.esper.container`.
+   - `EPServicesContextFactoryBase.CreateServicesContext` — wired `resourceManager` (already resolved from container at startup) to `EPDataFlowServiceImpl`.
+
+2. **Dead `IContainer` overloads removed:**
+   - `SerializerUtil.ObjectToByteArr(IContainer, object)` — removed; no callers existed; removed `using com.espertech.esper.container` from file.
+   - `ContextControllerHashedGetterCRC32SerializedForge.SerializeAndCRC32Hash(IContainer, object, int, Serializer[])` — removed; codegen emits the `SerializerFactory` overload via `EnumValue(typeof(SerializerFactory), "Instance")`; removed `using com.espertech.esper.container` from file.
+   - `DbProviderFactoryManagerDefault(IContainer container)` constructor overload — removed; it only called `this()` with no arguments; removed `using com.espertech.esper.container` from file.
+
+3. **Residual dead-code identified (not yet removed — Phase 7):**
+   - `SerializerFactoryExtensions.SerializerFactory(this IContainer)` — its only callers were the two dead overloads above; file now has no production callers.
+   - `CoreAssemblyProviderExtensions.CoreAssemblyProvider(this IContainer)` — no callers in production or test code.
+
+Validation:
+
+- `dotnet build src/NEsper.Common/NEsper.Common.csproj -v minimal` ✅ (0 errors)
+- `dotnet build src/NEsper.Runtime/NEsper.Runtime.csproj -v minimal` ✅ (0 errors)
+
+Phase 4 status:
+
+- ✅ `SerializableObjectCopier` — takes `TypeResolver` directly (done in earlier passes).
+- ✅ `DatabaseConfigServiceImpl` — uses `Func<Type, DbDriver>` resolver, no `IContainer`.
+- ✅ `DbProviderFactoryManagerDefault` — dead `IContainer` ctor overload removed.
+- ✅ Dataflow chain (`EPDataFlowServiceImpl`, `DataflowInstantiator`, `DataFlowOpInitializeContext`) — `IContainer` replaced with `IResourceManager`.
+- ✅ Dead `IContainer` overloads in `SerializerUtil` and `ContextControllerHashedGetterCRC32SerializedForge` removed.
+- ➡️ `SerializerFactoryExtensions.cs` — file is dead; remove in Phase 7.
+- ➡️ `CoreAssemblyProviderExtensions.CoreAssemblyProvider(this IContainer)` — dead; remove in Phase 7.
+
 ## Phase 5 — IO package cleanup
 
 1. `AdapterInputSource`: inject `IResourceManager` (not container).
@@ -361,6 +405,12 @@ Exit criteria:
 Exit criteria:
 
 - IO assembly has no service-locator calls.
+
+### Phase 5 Status (2026-03-03) — Already Complete
+
+Verified by grep: `src/NEsper.IO/` contains zero `IContainer` references. `AbstractCoordinatedAdapter` and `AdapterInputSource` have already been refactored in prior passes. No further action needed.
+
+Phase 5 status: ✅ COMPLETE.
 
 ## Phase 6 — Test harness migration
 
@@ -372,6 +422,20 @@ Exit criteria:
 
 - Test code uses fixture injection/helpers, not global service location.
 
+### Phase 6 Status (2026-03-03) — Pending
+
+Remaining `ResolveSingleton`/`Resolve` usage in production-assembly support utilities (called only from tests):
+
+| File | Active Usage |
+|------|-------------|
+| `src/NEsper.Common/common/internal/support/SupportImport.cs` | `ResolveSingleton`, `Resolve<TypeResolverProvider>`, `Resolve<IResourceManager>` |
+| `src/NEsper.Runtime/internal/support/SupportEventTypeFactory.cs` | `ResolveSingleton`, `Resolve<IObjectCopier>` (×2) |
+| `src/NEsper.Runtime/internal/support/SupportEventBeanFactory.cs` | `ResolveSingleton` |
+| `src/NEsper.Common/common/internal/epl/dataflow/util/DefaultSupportGraphEventUtil.cs` | `container.ResourceManager()` |
+| `src/NEsper.Common/common/internal/support/SupportExprValidationContextFactory.cs` | `IContainer container` parameters |
+
+Regression/test-only callers in `tst/` also use `container.LockManager()`, `container.RWLockManager()`, `container.ResourceManager()` directly — see section F of the inventory above.
+
 ## Phase 7 — API deprecation and removal
 
 1. Mark `ContainerExtensions` convenience resolver methods `[Obsolete]` with migration guidance.
@@ -381,6 +445,29 @@ Exit criteria:
 Exit criteria:
 
 - Public deprecation warnings in place and cleanup branch ready for hard removal.
+
+### Phase 7 Status (2026-03-03) — Pending
+
+Specific items to handle:
+
+**Remove dead files/methods:**
+- `src/NEsper.Common/common/internal/util/serde/SerializerFactoryExtensions.cs` — entire file is dead after Phase 4; delete.
+- `src/NEsper.Compiler/client/CoreAssemblyProviderExtensions.cs::CoreAssemblyProvider(this IContainer)` — no callers; remove method (keep `GetCoreAssemblies()` which has no container dependency).
+
+**Mark `[Obsolete]` in `ContainerExtensions.cs`** (currently still active):
+- `LockManager(this IContainer)` — only test code callers remain
+- `RWLockManager(this IContainer)` — only test code callers remain
+- `ResourceManager(this IContainer)` — only test/support callers remain
+- `ResolveSingleton<T>(this IContainer, Supplier<T>)` — only support factories use it
+
+**`EPRuntimeSPI.RuntimeContainer` decision point:**
+`EPServicesContext._container` is stored but never resolved from internally. `RuntimeContainer` is still needed because:
+- `EPRuntimeImpl` stores `configuration.Container` → `RuntimeContainer`
+- `EPServicesContextFactoryBase.CreateServicesContext` accesses `epRuntime.RuntimeContainer` during startup wiring
+- `EPRuntimeImpl` does `copy.Container = RuntimeContainer` when copying configuration snapshots
+- `CompilerHelperModuleProvider.GetCompilerThreadPoolFactory(IContainer)` reads `compileTimeServices.Configuration.Container` — intentional optional user extension point (could move to `CompilerOptions` in a future phase)
+
+Removal of `RuntimeContainer` from the public interface requires a decision about whether `Configuration.Container` remains a user-facing API.
 
 ---
 
@@ -417,9 +504,17 @@ Exit criteria:
 
 ## Immediate Next Execution Order
 
-1. Runtime hot-path cleanup (`EPServicesContextFactoryBase`, `EPServicesContext`, `TimerServiceImpl`).
-2. Stage recovery + statement init service cleanup.
-3. Compiler service chain cleanup.
-4. Common utility/DB cleanup.
-5. IO and tests.
-6. Mark extension methods obsolete and enforce CI rule from warning -> failure.
+> Updated 2026-03-03. Phases 1–5 complete. Remaining work:
+
+1. **Phase 7 dead-code removal** (low risk, no behaviour change):
+   - Delete `src/NEsper.Common/common/internal/util/serde/SerializerFactoryExtensions.cs`.
+   - Remove `CoreAssemblyProviderExtensions.CoreAssemblyProvider(this IContainer)` method body (keep file, keep `GetCoreAssemblies()`).
+2. **Phase 6 test-support refactor** (medium effort):
+   - Replace `ResolveSingleton` in `SupportImport`, `SupportEventTypeFactory`, `SupportEventBeanFactory` with explicit constructor injection.
+   - Replace `container.ResourceManager()` in `DefaultSupportGraphEventUtil` with injected `IResourceManager`.
+3. **Phase 7 `[Obsolete]` annotations** (after step 2 clears test callers):
+   - Mark `ContainerExtensions.LockManager`, `RWLockManager`, `ResourceManager`, `ResolveSingleton` as `[Obsolete]`.
+4. **Phase 7 `RuntimeContainer` decision**:
+   - Decide whether `Configuration.Container` remains a public API surface.
+   - If yes: keep `EPRuntimeSPI.RuntimeContainer` as a named composition-root accessor; document boundary.
+   - If no: move startup wiring to explicit parameter passing and remove the property from the public interface.

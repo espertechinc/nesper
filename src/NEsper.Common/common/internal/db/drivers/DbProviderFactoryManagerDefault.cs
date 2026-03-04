@@ -12,22 +12,12 @@ using System.Data.Common;
 using System.Linq;
 
 using com.espertech.esper.common.client;
-using com.espertech.esper.container;
 
 namespace com.espertech.esper.common.@internal.db.drivers
 {
     public class DbProviderFactoryManagerDefault : DbProviderFactoryManager
     {
         private readonly IDictionary<string, DbProviderFactory> _factories;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DbProviderFactoryManagerDefault"/> class.
-        /// </summary>
-        /// <param name="container">The container.</param>
-        public DbProviderFactoryManagerDefault(IContainer container)
-            : this()
-        {
-        }
 
         public DbProviderFactoryManagerDefault()
         {

@@ -148,7 +148,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
             }
 
             var config = new ConfigurationCommonEventTypeXMLDOM();
-            var resourceManager = configuration.ResourceManager;
+            var resourceManager = configuration.Container.Resolve<IResourceManager>();
             config.SchemaResource = resourceManager.ResolveResourceURL("regression/mediaOrderSchema.xsd").ToString();
             config.RootElementName = "MediaOrder";
             configuration.Common.AddEventType("MediaOrder", config);

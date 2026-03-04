@@ -15,9 +15,9 @@ using com.espertech.esper.common.client.dataflow.core;
 using com.espertech.esper.common.@internal.context.aifactory.createdataflow;
 using com.espertech.esper.common.@internal.epl.dataflow.realize;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
-using com.espertech.esper.container;
 
 namespace com.espertech.esper.common.@internal.epl.dataflow.core
 {
@@ -36,16 +36,16 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.core
         private readonly DataFlowConfigurationStateService _configurationState =
             new DataFlowConfigurationStateServiceImpl();
 
-        private readonly IContainer _container;
+        private readonly IResourceManager _resourceManager;
         private int _agentInstanceNumCurrent;
 
         /// <summary>
         /// Instantiate the service.
         /// </summary>
-        /// <param name="container"></param>
-        public EPDataFlowServiceImpl(IContainer container)
+        /// <param name="resourceManager"></param>
+        public EPDataFlowServiceImpl(IResourceManager resourceManager)
         {
-            _container = container;
+            _resourceManager = resourceManager;
         }
 
         public EPDataFlowDescriptor GetDataFlow(
@@ -102,7 +102,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.core
 
                 try {
                     _agentInstanceNumCurrent++;
-                    return DataflowInstantiator.Instantiate(_container, _agentInstanceNumCurrent, entry, options);
+                    return DataflowInstantiator.Instantiate(_resourceManager, _agentInstanceNumCurrent, entry, options);
                 }
                 catch (Exception ex) {
                     var message = "Failed to instantiate data flow '" + dataFlowName + "': " + ex.Message;

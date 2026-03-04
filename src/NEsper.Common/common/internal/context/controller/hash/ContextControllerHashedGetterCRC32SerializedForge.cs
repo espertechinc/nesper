@@ -22,7 +22,6 @@ using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.common.@internal.util.serde;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.logging;
-using com.espertech.esper.container;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -43,26 +42,6 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
             this.granularity = granularity;
         }
 
-        /// <summary>
-        /// NOTE: Code-generation-invoked method, method name and parameter order matters
-        /// </summary>
-        /// <param name="objectMayArray">value</param>
-        /// <param name="granularity">granularity</param>
-        /// <param name="serializers">serializers</param>
-        /// <returns>hash</returns>
-        public static int SerializeAndCRC32Hash(
-            IContainer container,
-            object objectMayArray,
-            int granularity,
-            Serializer[] serializers)
-        {
-            return SerializeAndCRC32Hash(
-                container.SerializerFactory(),
-                objectMayArray,
-                granularity,
-                serializers);
-        }
-        
         /// <summary>
         /// NOTE: Code-generation-invoked method, method name and parameter order matters
         /// </summary>
