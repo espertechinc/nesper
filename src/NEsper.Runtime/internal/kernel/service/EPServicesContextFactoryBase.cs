@@ -364,7 +364,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
                     importServiceRuntime);
             var historicalDataCacheFactory = MakeHistoricalDataCacheFactory(epServicesHA.RuntimeExtensionServices);
 
-            var dataflowService = new EPDataFlowServiceImpl(container);
+            var dataflowService = new EPDataFlowServiceImpl(resourceManager);
             var dataFlowFilterServiceAdapter = MakeDataFlowFilterServiceAdapter();
 
             var threadingService = MakeThreadingService(configs);
@@ -378,7 +378,6 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             var classProvidedPathRegistry = new PathRegistry<string, ClassProvided>(PathRegistryObjectType.CLASSPROVIDED);
 
             return new EPServicesContext(
-                container,
                 aggregationServiceFactoryService,
                 beanEventTypeFactoryPrivate,
                 beanEventTypeStemService,

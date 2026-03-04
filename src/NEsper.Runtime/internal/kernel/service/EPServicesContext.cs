@@ -79,7 +79,6 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 {
 	public class EPServicesContext : EPServicesEvaluation, EPServicesPath
 	{
-		private readonly IContainer _container;
 		private readonly IArtifactRepositoryManager _artifactRepositoryManager;
 		private readonly IObjectCopier _objectCopier;
 		private readonly ILockManager _lockManager;
@@ -168,7 +167,6 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 	    private StageRuntimeServices _stageRuntimeServices;
 
 	    public EPServicesContext(
-		    IContainer container,
 		    AggregationServiceFactoryService aggregationServiceFactoryService,
 		    BeanEventTypeFactoryPrivate beanEventTypeFactoryPrivate,
 		    BeanEventTypeStemService beanEventTypeStemService,
@@ -252,7 +250,6 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 		    IReaderWriterLockManager readerWriterLockManager,
 		    IThreadLocalManager threadLocalManager)
 	    {
-		    _container = container;
 		    _artifactRepositoryManager = artifactRepositoryManager;
 		    _objectCopier = objectCopier;
 		    _lockManager = lockManager;
@@ -344,11 +341,6 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 
 	    public void Initialize() {
 	    }
-
-	    public IContainer RuntimeContainer => _container;
-
-	    [Obsolete("Container access is deprecated; use explicit services such as ThreadLocalManager, ObjectCopier, and ArtifactRepositoryManager.")]
-	    public IContainer Container => RuntimeContainer;
 
 	    public IArtifactRepositoryManager ArtifactRepositoryManager => _artifactRepositoryManager;
 

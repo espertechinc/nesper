@@ -38,7 +38,6 @@ using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.statement.resource;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.common.@internal.view.core;
-using com.espertech.esper.container;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -48,9 +47,6 @@ namespace com.espertech.esper.common.@internal.context.module
 {
     public interface EPStatementInitServices
     {
-        [Obsolete("Container access is deprecated; use explicit init-service dependencies instead.")]
-        IContainer Container { get; }
-
         Attribute[] Annotations { get; }
 
         string DeploymentId { get; }
