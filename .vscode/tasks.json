@@ -7,9 +7,9 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/examples/NEsper.Benchmark/NEsper.Benchmark.Client/NEsper.Benchmark.Client.csproj",
+                "${workspaceFolder}/tst/NEsper.Runtime.Tests/NEsper.Runtime.Tests.csproj",
                 "/property:GenerateFullPaths=true",
-                "/consoleloggerparameters:NoSummary"
+                "/consoleloggerparameters:NoSummary;ForceNoAlign"
             ],
             "problemMatcher": "$msCompile"
         },
@@ -19,9 +19,9 @@
             "type": "process",
             "args": [
                 "publish",
-                "${workspaceFolder}/examples/NEsper.Benchmark/NEsper.Benchmark.Client/NEsper.Benchmark.Client.csproj",
+                "${workspaceFolder}/tst/NEsper.Runtime.Tests/NEsper.Runtime.Tests.csproj",
                 "/property:GenerateFullPaths=true",
-                "/consoleloggerparameters:NoSummary"
+                "/consoleloggerparameters:NoSummary;ForceNoAlign"
             ],
             "problemMatcher": "$msCompile"
         },
@@ -33,7 +33,7 @@
                 "watch",
                 "run",
                 "--project",
-                "${workspaceFolder}/examples/NEsper.Benchmark/NEsper.Benchmark.Client/NEsper.Benchmark.Client.csproj"
+                "${workspaceFolder}/tst/NEsper.Runtime.Tests/NEsper.Runtime.Tests.csproj"
             ],
             "problemMatcher": "$msCompile"
         }

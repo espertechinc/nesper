@@ -9,6 +9,7 @@
 using System;
 
 using com.espertech.esper.common.client.configuration.common;
+using com.espertech.esper.common.client.db;
 using com.espertech.esper.common.@internal.db;
 
 namespace com.espertech.esper.common.@internal.epl.historical.database.connection
@@ -24,7 +25,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.connectio
         /// <param name="connectionSettings">are connection-level settings</param>
         /// <throws>  DatabaseConfigException thrown if the driver class cannot be loaded </throws>
         public DatabaseDriverConnFactory(
-            Func<Type, DbDriver> driverResolver,
+            IDriverResolver driverResolver,
             DriverConnectionFactoryDesc config,
             ConnectionSettings connectionSettings)
         {

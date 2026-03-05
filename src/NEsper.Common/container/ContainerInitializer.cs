@@ -15,6 +15,7 @@ using System.Linq;
 using Castle.MicroKernel.Registration;
 
 using com.espertech.esper.common.client.artifact;
+using com.espertech.esper.common.client.db;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.db;
 using com.espertech.esper.common.@internal.db.drivers;
@@ -129,6 +130,9 @@ namespace com.espertech.esper.container
                         ic.Resolve<TypeResolverProvider>().TypeResolver),
                     Lifespan.Singleton);
             }
+            if (container.DoesNotHave<IDriverResolver>())
+                container.Register<IDriverResolver, StatefulDriverResolver>(
+                    Lifespan.Singleton);
 
             return container;
         }

@@ -311,11 +311,13 @@ namespace com.espertech.esper.common.client.configuration
             ClassicAssert.AreEqual("startts", legacy.StartTimestampPropertyName);
             ClassicAssert.AreEqual("endts", legacy.EndTimestampPropertyName);
 
+            var driverResolver = new StatelessDriverResolver();
+            
             // assert database reference - data source config
             ClassicAssert.AreEqual(2, common.DatabaseReferences.Count);
             var configDBRef = common.DatabaseReferences.Get("mydb1");
             var dbDef = (DriverConnectionFactoryDesc) configDBRef.ConnectionFactoryDesc;
-            var dbDriver = DbDriverConnectionHelper.ResolveDriver(container, dbDef);
+            var dbDriver = DbDriverConnectionHelper.ResolveDriver(driverResolver, dbDef);
 
             ClassicAssert.AreEqual("com.espertech.esper.epl.db.drivers.DbDriverPgSQL", dbDriver.GetType().FullName);
             ClassicAssert.AreEqual("Host=localhost;Database=esper;Username=esper;Password=3sp3rP@ssw0rd;", dbDriver.ConnectionString);
@@ -336,7 +338,7 @@ namespace com.espertech.esper.common.client.configuration
             configDBRef = common.DatabaseReferences.Get("mydb2");
 
             var dmDef = (DriverConnectionFactoryDesc) configDBRef.ConnectionFactoryDesc;
-            var dmDriver = DbDriverConnectionHelper.ResolveDriver(container, dmDef);
+            var dmDriver = DbDriverConnectionHelper.ResolveDriver(driverResolver, dmDef);
             ClassicAssert.AreEqual("com.espertech.esper.epl.db.drivers.DbDriverPgSQL", dmDriver.GetType().FullName);
             ClassicAssert.AreEqual("Host=localhost;Database=esper;Username=esper;Password=3sp3rP@ssw0rd;", dmDriver.ConnectionString);
 

@@ -8,35 +8,57 @@
 
 using System;
 using System.Data.Common;
-using System.Runtime.Serialization;
 
 using com.espertech.esper.common.@internal.db.drivers;
-using com.espertech.esper.container;
 
 using Npgsql;
 
-namespace com.espertech.esper.epl.db.drivers
-{
+namespace com.espertech.esper.epl.db.drivers {
     /// <summary>
     /// A database driver specific to the NPGSQL driver.
     /// </summary>
-    public class DbDriverPgSQL : BaseDbDriver
+    public class DbDriverPgSQL : BaseDbDriver, IDisposable
     {
         /// <summary>
-        /// Initializes the <see cref="DbDriverPgSQL"/> class.
+        /// Flag indicating whether to use internal connection pooling.
         /// </summary>
-        public DbDriverPgSQL(DbProviderFactoryManager dbProviderFactoryManager)
-        {
+        private readonly bool _useConnectionPool;
+
+        /// <summary>
+        /// A connection pool for database connections.  Connections are returned to the pool when they are closed or disposed.
+        /// Only the connection pool will completely close and dispose of the connection.
+        /// </summary>
+        private ConnectionPool _connectionPool;
+
+        /// <summary>
+        /// Initialize the <see cref="DbDriverPgSQL"/> class.
+        /// </summary>
+        public DbDriverPgSQL() : this(true) {
+        }
+
+        /// <summary>
+        /// Initialize the <see cref="DbDriverPgSQL"/> class with a flag indicating whether to use connection pooling.
+        /// </summary>
+        /// <param name="useConnectionPool">Flag indicating whether to use connection pooling.</param>
+        public DbDriverPgSQL(bool useConnectionPool) {
+            _useConnectionPool = useConnectionPool;
+        }
+
+        /// <summary>
+        /// Disposes the connection pool.
+        /// </summary>
+        public virtual void Dispose() {
+            _connectionPool?.Dispose();
+            GC.SuppressFinalize(this);
         }
 
         /// <summary>
         /// Factory method that is used to create instance of a connection.
         /// </summary>
         /// <returns></returns>
-        public override DbConnection CreateConnection()
-        {
-            var dbConnection = new NpgsqlConnection();
-            dbConnection.ConnectionString = ConnectionString;
+        public override DbConnection CreateConnection() {
+            DbConnection dbConnection;
+            dbConnection = _connectionPool != null ? _connectionPool.Acquire() : new NpgsqlConnection(ConnectionString);
             dbConnection.Open();
             return dbConnection;
         }
@@ -59,21 +81,27 @@ namespace com.espertech.esper.epl.db.drivers
         /// Creates a connection string builder.
         /// </summary>
         /// <returns></returns>
-        protected override DbConnectionStringBuilder CreateConnectionStringBuilder()
-        {
+        protected override DbConnectionStringBuilder CreateConnectionStringBuilder() {
             return new NpgsqlConnectionStringBuilder();
         }
 
         /// <summary>
-        /// Registers the specified container.
+        /// Gets or sets the connection string.
         /// </summary>
-        /// <param name="container">The container.</param>
-        public static void Register(IContainer container)
-        {
-            container.Register<DbProviderFactory>(
-                NpgsqlFactory.Instance,
-                Lifespan.Singleton,
-                typeof(NpgsqlFactory).FullName);
+        /// <value>The connection string.</value>
+        public override string ConnectionString {
+            get => base.ConnectionString;
+            set {
+                // this logic only applies if the value being passed in is different from the current value.
+                var current = base.ConnectionString;
+                if (value != current) {
+                    base.ConnectionString = value;
+                    _connectionPool?.Dispose();
+                    if (_useConnectionPool) {
+                        _connectionPool = new ConnectionPool(value, _ => new NpgsqlConnection(_), 10);
+                    }
+                }
+            }
         }
     }
 }

@@ -80,7 +80,10 @@ namespace com.espertech.esper.common.@internal.supportunit.@event
 
         public static SupportEventTypeFactory GetInstance(IContainer container)
         {
-            return container.ResolveSingleton(() => new SupportEventTypeFactory(container));
+            if (!container.Has<SupportEventTypeFactory>()) {
+                RegisterSingleton(container);
+            }
+            return container.Resolve<SupportEventTypeFactory>();
         }
 
         public static void RegisterSingleton(IContainer container)

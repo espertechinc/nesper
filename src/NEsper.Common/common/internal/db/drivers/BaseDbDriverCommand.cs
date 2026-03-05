@@ -12,7 +12,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Text;
-
+using System.Threading;
 using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.historical.database.core;
@@ -140,20 +140,12 @@ namespace com.espertech.esper.common.@internal.db.drivers
         /// </summary>
         public void Dispose()
         {
-            lock (_allocLock) {
-                // Clean up the command
-                if (_theCommand != null) {
-                    _theCommand.Dispose();
-                    _theCommand = null;
-                }
+            // Clean up the command
+            Interlocked.Exchange(ref _theCommand, null)?.Dispose();
+            // Clean up the connection
+            Interlocked.Exchange(ref _theConnection, null)?.Dispose();
 
-                // Clean up the connection
-                //if (theConnection != null)
-                //{
-                //    theConnection.Dispose();
-                //    theConnection = null;
-                //}
-            }
+            GC.SuppressFinalize(this);
         }
 
         #endregion
@@ -335,14 +327,13 @@ namespace com.espertech.esper.common.@internal.db.drivers
 
                 DataTable schemaTable;
 
-                var dbConnection = _driver.CreateConnectionInternal();
+                using var dbConnection = _driver.CreateConnectionInternal();
 
                 using (var dbCommand = CreateCommand(dbConnection, false)) {
                     try {
-                        using (IDataReader reader = dbCommand.ExecuteReader(CommandBehavior.SchemaOnly)) {
-                            // Get the schema table
-                            schemaTable = reader.GetSchemaTable();
-                        }
+                        using var reader = dbCommand.ExecuteReader(CommandBehavior.SchemaOnly);
+                        // Get the schema table
+                        schemaTable = reader.GetSchemaTable();
                     }
                     catch (DbException ex) {
                         var text = "Error in statement '" +

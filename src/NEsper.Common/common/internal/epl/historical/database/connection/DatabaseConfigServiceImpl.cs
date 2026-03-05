@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client.configuration.common;
+using com.espertech.esper.common.client.db;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.db;
 using com.espertech.esper.common.@internal.epl.historical.database.core;
@@ -28,7 +29,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.connectio
     public class DatabaseConfigServiceImpl : DatabaseConfigServiceCompileTime,
         DatabaseConfigServiceRuntime
     {
-        private readonly Func<Type, DbDriver> _driverResolver;
+        private readonly IDriverResolver _driverResolver;
         private readonly ImportService _importService;
         private readonly IDictionary<string, DatabaseConnectionFactory> _connectionFactories;
         private readonly IDictionary<string, ConfigurationCommonDBRef> _mapDatabaseRef;
@@ -38,7 +39,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.connectio
         /// <param name="mapDatabaseRef">is a map of database name and database configuration entries</param>
         /// <param name="importService">imports</param>
         public DatabaseConfigServiceImpl(
-            Func<Type, DbDriver> driverResolver,
+            IDriverResolver driverResolver,
             IDictionary<string, ConfigurationCommonDBRef> mapDatabaseRef,
             ImportService importService)
         {

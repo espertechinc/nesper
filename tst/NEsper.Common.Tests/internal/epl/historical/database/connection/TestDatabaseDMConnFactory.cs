@@ -76,7 +76,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.connectio
                     config.ConnectionAutoCommit = false; // not supported yet
                     config.ConnectionTransactionIsolation = IsolationLevel.Unspecified;
                     return new DatabaseDriverConnFactory(
-                        driverType => DbDriverConnectionHelper.ResolveDriverFromType(base.container, driverType),
+                        new StatefulDriverResolver(),
                         (DriverConnectionFactoryDesc) config.ConnectionFactoryDesc,
                         config.ConnectionSettings);
                 });
@@ -99,7 +99,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.connectio
         {
             var config = new ConfigurationCommonDBRef { ConnectionFactoryDesc = connectionFactoryDesc };
             var connectionFactory = new DatabaseDriverConnFactory(
-                driverType => DbDriverConnectionHelper.ResolveDriverFromType(container, driverType),
+                new StatefulDriverResolver(),
                 (DriverConnectionFactoryDesc) config.ConnectionFactoryDesc,
                 config.ConnectionSettings);
             var connection = connectionFactory.Driver.CreateConnection();

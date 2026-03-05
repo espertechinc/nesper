@@ -10,6 +10,7 @@ using System;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration.common;
+using com.espertech.esper.common.client.db;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.container;
 
@@ -61,43 +62,12 @@ namespace com.espertech.esper.common.@internal.db
             throw new EPException("Unable to resolve type for driver '" + driverName + "'");
         }
 
-        /// <summary>
-        /// Resolves the driver from the name.
-        /// </summary>
-        /// <param name="container">The container.</param>
-        /// <param name="driverName">Name of the driver.</param>
-        /// <returns></returns>
-        [Obsolete("Use ResolveDriverFromType(Func<Type, DbDriver>, Type) with an explicit resolver.")]
-        public static DbDriver ResolveDriverFromName(
-            IContainer container,
-            string driverName)
-        {
-            return ResolveDriverFromType(
-                container,
-                ResolveDriverTypeFromName(driverName));
-        }
-
-        /// <summary>
-        /// Resolves the driver from the type.
-        /// </summary>
-        /// <param name="container">The container.</param>
-        /// <param name="driverType">Type of the driver.</param>
-        [Obsolete("Use ResolveDriverFromType(Func<Type, DbDriver>, Type) with an explicit resolver.")]
         public static DbDriver ResolveDriverFromType(
-            IContainer container,
-            Type driverType)
-        {
-            return ResolveDriverFromType(
-                type => Activator.CreateInstance(type) as DbDriver,
-                driverType);
-        }
-
-        public static DbDriver ResolveDriverFromType(
-            Func<Type, DbDriver> driverResolver,
+            IDriverResolver driverResolver,
             Type driverType)
         {
             if (typeof(DbDriver).IsAssignableFrom(driverType)) {
-                return driverResolver(driverType);
+                return driverResolver.Resolve(driverType);
             }
 
             throw new EPException(
@@ -105,18 +75,8 @@ namespace com.espertech.esper.common.@internal.db
                 typeof(DbDriver).FullName);
         }
 
-        [Obsolete("Use ResolveDriver(Func<Type, DbDriver>, DriverConnectionFactoryDesc) with an explicit resolver.")]
         public static DbDriver ResolveDriver(
-            IContainer container,
-            DriverConnectionFactoryDesc driverConnectionFactoryDesc)
-        {
-            var driver = ResolveDriverFromName(container, driverConnectionFactoryDesc.DriverName);
-            driver.Properties = driverConnectionFactoryDesc.DriverProperties;
-            return driver;
-        }
-
-        public static DbDriver ResolveDriver(
-            Func<Type, DbDriver> driverResolver,
+            IDriverResolver driverResolver,
             DriverConnectionFactoryDesc driverConnectionFactoryDesc)
         {
             var driverType = ResolveDriverTypeFromName(driverConnectionFactoryDesc.DriverName);

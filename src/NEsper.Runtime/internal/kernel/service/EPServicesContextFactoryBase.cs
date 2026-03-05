@@ -14,6 +14,7 @@ using com.espertech.esper.common.client.artifact;
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.client.configuration.runtime;
+using com.espertech.esper.common.client.db;
 using com.espertech.esper.common.client.hook.condition;
 using com.espertech.esper.common.client.hook.exception;
 using com.espertech.esper.common.client.hook.expr;
@@ -357,11 +358,13 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 
             var rowRecogStateRepoFactory = MakeRowRecogStateRepoFactory();
 
-            DatabaseConfigServiceRuntime databaseConfigServiceRuntime =
+            var driverResolver = container.Resolve<IDriverResolver>();
+            var databaseConfigServiceRuntime =
                 new DatabaseConfigServiceImpl(
-                    driverType => (DbDriver) Activator.CreateInstance(driverType),
+                    driverResolver,
                     configs.Common.DatabaseReferences,
                     importServiceRuntime);
+            
             var historicalDataCacheFactory = MakeHistoricalDataCacheFactory(epServicesHA.RuntimeExtensionServices);
 
             var dataflowService = new EPDataFlowServiceImpl(resourceManager);

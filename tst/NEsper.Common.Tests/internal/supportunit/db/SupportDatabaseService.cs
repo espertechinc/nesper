@@ -12,6 +12,7 @@ using System.IO;
 using System.Xml;
 
 using com.espertech.esper.common.client.configuration.common;
+using com.espertech.esper.common.client.db;
 using com.espertech.esper.common.@internal.db;
 using com.espertech.esper.common.@internal.epl.historical.database.connection;
 using com.espertech.esper.common.@internal.settings;
@@ -25,6 +26,8 @@ namespace com.espertech.esper.common.@internal.supportunit.db
 	{
         private const string ESPER_LOCAL_CONFIG_FILE = "NEsperConfig.xml";
 
+        private readonly IDriverResolver _driverResolver;
+
         public readonly ConfigurationCommonDBRef DbConfigReferenceNative;
         public readonly ConfigurationCommonDBRef DbConfigReferenceODBC;
 
@@ -37,7 +40,10 @@ namespace com.espertech.esper.common.@internal.supportunit.db
 
         public static SupportDatabaseService GetInstance(IContainer container)
         {
-            return container.ResolveSingleton(() => new SupportDatabaseService(container));
+            if (!container.Has<SupportDatabaseService>()) {
+                RegisterSingleton(container);
+            }
+            return container.Resolve<SupportDatabaseService>();
         }
 
         public static void RegisterSingleton(IContainer container)
@@ -50,6 +56,7 @@ namespace com.espertech.esper.common.@internal.supportunit.db
         private SupportDatabaseService(IContainer container)
         {
             _container = container;
+            _driverResolver = container.Resolve<IDriverResolver>();
 
             var configurationPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ESPER_LOCAL_CONFIG_FILE);
             var configurationFile = new FileInfo(configurationPath);
@@ -74,12 +81,12 @@ namespace com.espertech.esper.common.@internal.supportunit.db
         /// <summary>
         /// Gets the first database driver.
         /// </summary>
-        public DbDriver DriverNative => DbDriverConnectionHelper.ResolveDriver(_container, DriverConnectionFactoryNative);
+        public DbDriver DriverNative => DbDriverConnectionHelper.ResolveDriver(_driverResolver, DriverConnectionFactoryNative);
 
         /// <summary>
         /// Gets the second database driver.
         /// </summary>
-        public DbDriver DriverODBC => DbDriverConnectionHelper.ResolveDriver(_container, DriverConnectionFactoryOdbc);
+        public DbDriver DriverODBC => DbDriverConnectionHelper.ResolveDriver(_driverResolver, DriverConnectionFactoryOdbc);
 
         public const string DBNAME_FULL = "mydb";
         public const string DBNAME_PART = "mydb2";
@@ -92,10 +99,11 @@ namespace com.espertech.esper.common.@internal.supportunit.db
             mapDatabaseRef.Put(DBNAME_FULL, DbConfigReferenceNative);
             mapDatabaseRef.Put(DBNAME_PART, DbConfigReferenceODBC);
 
+            var driverResolver = _container.Resolve<IDriverResolver>();
             return new DatabaseConfigServiceImpl(
-                driverType => DbDriverConnectionHelper.ResolveDriverFromType(_container, driverType),
-                mapDatabaseRef,
-                importService);
+                    driverResolver,
+                    mapDatabaseRef,
+                    importService);
 		}
 
         public Properties DefaultProperties

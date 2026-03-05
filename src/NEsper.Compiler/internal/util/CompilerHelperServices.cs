@@ -13,6 +13,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.artifact;
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.client.configuration.compiler;
+using com.espertech.esper.common.client.db;
 using com.espertech.esper.common.client.serde;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.collection;
@@ -612,9 +613,10 @@ namespace com.espertech.esper.compiler.@internal.util
 			var moduleVisibilityRules =
 				new ModuleAccessModifierServiceImpl(options, configuration.Compiler.ByteCode);
 
+			var driverResolver = container.Resolve<IDriverResolver>();
 			var databaseConfigServiceCompileTime =
 				new DatabaseConfigServiceImpl(
-					driverType => (DbDriver) Activator.CreateInstance(driverType),
+					driverResolver,
 					configuration.Common.DatabaseReferences,
 					importServiceCompileTime);
 
