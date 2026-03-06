@@ -9,9 +9,6 @@
 using System;
 using System.Linq;
 
-#if NETCOREAPP3_0_OR_GREATER
-#endif
-
 using Castle.MicroKernel.Registration;
 
 using com.espertech.esper.common.client.artifact;
@@ -20,6 +17,7 @@ using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.db;
 using com.espertech.esper.common.@internal.db.drivers;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.common.@internal.util.serde;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.directory;
 using com.espertech.esper.compat.threading.locks;
@@ -101,26 +99,22 @@ namespace com.espertech.esper.container
             if (container.DoesNotHave<ITimerFactory>())
                 container.Register<ITimerFactory>(
                     ic => new SimpleTimerFactory(), Lifespan.Singleton);
-            //if (container.DoesNotHave<IConfigurationParser>())
-            //    container.Register<IConfigurationParser, ConfigurationParser>(
-            //        Lifespan.Transient);
-            
+
+#region ArtifactRepositoryManager            
             // Register IArtifactRepositoryManager eagerly (used by both runtime and compiler)
             if (container.DoesNotHave<IArtifactRepositoryManager>())
                 container.Register<IArtifactRepositoryManager>(
                     ic => ArtifactRepositoryExtensions.GetDefaultArtifactRepositoryManager(ic),
                     Lifespan.Singleton);
-            
+#endregion
+
+#region TypeResolverProvider
             if (container.DoesNotHave<TypeResolverProvider>())
                 container.Register<TypeResolverProvider>(
                     ic => new ArtifactTypeResolverProvider(ic.Resolve<IArtifactRepositoryManager>()),
                     Lifespan.Singleton);
-#if DEPRECATED
-            if (container.DoesNotHave<ClassForNameProvider>())
-                container.Register<ClassForNameProvider>(
-                    ic => new ArtifactClassForNameProvider(ic),
-                    Lifespan.Singleton);
-#endif
+#endregion
+
             if (container.DoesNotHave<INamingContext>())
                 container.Register<INamingContext, SimpleNamingContext>(
                     Lifespan.Singleton);
@@ -130,9 +124,27 @@ namespace com.espertech.esper.container
                         ic.Resolve<TypeResolverProvider>().TypeResolver),
                     Lifespan.Singleton);
             }
-            if (container.DoesNotHave<IDriverResolver>())
+            if (container.DoesNotHave<SerializerFactory>())
+                container.Register<SerializerFactory>(
+                    ic => new SerializerFactory(new ObjectSerializer(ic.Resolve<TypeResolverProvider>().TypeResolver)),
+                    Lifespan.Singleton);
+
+#region Database::Driver
+           if (container.DoesNotHave<IDriverResolver>())
                 container.Register<IDriverResolver, StatefulDriverResolver>(
                     Lifespan.Singleton);
+#endregion
+ 
+#region Roslyn::Metadata
+            if (container.DoesNotHave<MetadataReferenceResolver>())
+                container.Register<MetadataReferenceResolver>(
+                    _ => MetadataReferenceResolverExtensions.GetMetadataReference,
+                    Lifespan.Singleton);
+            if (container.DoesNotHave<MetadataReferenceProvider>())
+                container.Register<MetadataReferenceProvider>(
+                    _ => Array.Empty<Microsoft.CodeAnalysis.MetadataReference>,
+                    Lifespan.Singleton);
+#endregion
 
             return container;
         }

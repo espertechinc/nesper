@@ -29,9 +29,6 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 
         IContainer RuntimeContainer { get; }
 
-        [Obsolete("Container access is deprecated for internal flows; use ServicesContext and explicit dependencies.")]
-        IContainer Container { get; }
-
         EPServicesContext ServicesContext { get; }
 
         AtomicBoolean ServiceStatusProvider { get; }

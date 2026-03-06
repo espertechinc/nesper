@@ -14,7 +14,7 @@ namespace com.espertech.esper.runtime
 
         protected IContainer Container;
 
-        protected IReaderWriterLockManager rwLockManager => Container.RWLockManager();
+        protected IReaderWriterLockManager rwLockManager => Container.Resolve<IReaderWriterLockManager>();
 
         protected FilterServiceGranularLockFactoryReentrant MakeGranularLockFactory()
         {

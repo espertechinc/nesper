@@ -1,11 +1,11 @@
 # Service Locator Removal Plan
 ## NEsper 8.9.x — IContainer Anti-Pattern Elimination
 
-**Branch:** `service-locator-refactor`
-**Date:** 2026-03-02
-**Status:** Phases 1–5 complete (2026-03-03); Phase 6 next
+**Branch:** `service-locator-refactor` / `service-locator-refactor-testing`
+**Date:** 2026-03-05
+**Status:** Phases 1–8 nearly complete; 3 small tasks remain before merge
 
-### Phase Completion Summary (as of 2026-03-03)
+### Phase Completion Summary (as of 2026-03-05)
 
 | Phase | Status | Notes |
 |-------|--------|-------|
@@ -14,9 +14,9 @@
 | 3 – Compilation Services | ✅ COMPLETE | ModuleCompileTimeServices, StatementSpecMapEnv clean |
 | 4 – Event Type System | ✅ COMPLETE | EventTypeFactoryImpl, BeanEventType, EventTypeCollectorImpl clean |
 | 5 – Utility/Infrastructure | ✅ COMPLETE | DataflowInstantiator, EPDataFlowServiceImpl, SerializerUtil, DbProviderFactoryManagerDefault clean |
-| 6 – Runtime Context | ⬜ PENDING | EPServicesContext._container + RuntimeContainer shims |
-| 7 – Entry Points | ⬜ PENDING | RuntimeContainer still needed for startup |
-| 8 – Cleanup | ⬜ PENDING | ContainerExtensions dead methods; Windsor reference |
+| 6 – Runtime Context | ✅ COMPLETE | EPServicesContext has no _container field; StageRuntimeServices clean |
+| 7 – Entry Points | ✅ COMPLETE | EPRuntimeImpl.Container marked [Obsolete]; factory uses explicit Resolve<T>() |
+| 8 – Cleanup | 🔄 IN PROGRESS | See remaining tasks below |
 
 ---
 
@@ -63,63 +63,68 @@ Phases 1–5 can largely proceed in parallel. Phase 6 depends on all of 1–5. P
 
 ---
 
-## Remaining Work Inventory (as of 2026-03-03)
+## Remaining Work Inventory (as of 2026-03-05)
 
-### Phase 6 — Runtime Context (next to execute)
+### Phase 8 — Completed tasks
 
-| File | Issue |
-|------|-------|
-| `EPServicesContext.cs` | `_container` field; `RuntimeContainer => _container` property; resolve calls in `StatementContextRuntimeServices` getter still use `_container.Resolve<>()` |
-| `StageRuntimeServices.cs` | Still holds `IContainer Container` property |
-| `EPStatementInitServicesImpl.cs` | `[Obsolete] Container => ServicesContext.RuntimeContainer` — remove once `EPServicesContext.Container` is gone |
-
-`EPServicesContext._container` is stored but never called on outside of startup-time getters. It is only surfaced via `RuntimeContainer => _container`. The `RuntimeContainer` property is still needed because `EPRuntimeImpl` assigns it from `configuration.Container` and passes it into the factory — so Phase 6 cannot fully remove it until Phase 7 completes. Goal for Phase 6: resolve all services up-front at construction time, store resolved fields, and remove `_container` from `EPServicesContext`.
-
-### Phase 7 — Entry Points
-
-| File | Issue |
-|------|-------|
-| `EPRuntimeImpl.cs` | `RuntimeContainer = configuration.Container`; `copy.Container = RuntimeContainer`; `[Obsolete] Container` property |
-| `Configuration.cs` | `ResourceManager => Container.ResourceManager()` delegation (~line 61); remove this — callers should use the resolved `IResourceManager` directly |
-| `EPServicesContextFactoryBase.cs` | `container.ArtifactRepositoryManager()` extension method call during startup; replace with `container.Resolve<IArtifactRepositoryManager>()` |
-| `CompilerHelperModuleProvider.cs` | `GetCompilerThreadPoolFactory(IContainer)` — intentional extension point; reads `Configuration.Container` for user-registered `CompilerThreadPoolFactory`; could move to `CompilerOptions` |
-
-### Phase 8 — Cleanup (lazy-registration extensions + dead code)
-
-**Lazy-registration extension methods to inline or remove:**
-
-| File | Method | Action |
-|------|--------|--------|
-| `ArtifactRepositoryExtensions.cs` | `ArtifactRepositoryManager(this IContainer)` | Move registration to `ContainerInitializer`; remove lazy-register pattern |
-| `MetadataReferenceResolverExtensions.cs` | `MetadataReferenceResolver(this IContainer)` | Same |
-| `MetadataReferenceProviderExtensions.cs` | `MetadataReferenceProvider(this IContainer)` | Same |
-| `CoreAssemblyProviderExtensions.cs` | `CoreAssemblyProvider(this IContainer)` | No production callers; remove entire file |
-| `SerializerFactoryExtensions.cs` | `SerializerFactory(this IContainer)` | No production callers; remove entire file |
-
-**`ContainerExtensions` methods to mark `[Obsolete]` then remove:**
-
-After Phases 6–7 leave no production callers:
-- `LockManager(this IContainer)` — currently only IO/test callers
-- `RWLockManager(this IContainer)` — same
-- `ResourceManager(this IContainer)` — only test-support callers
-- `ResolveSingleton<T>(this IContainer, Supplier<T>)` — only test-support callers
-
-**Dead code to delete:**
-
-| File | Action |
+| Task | Result |
 |------|--------|
-| `FallbackContainer.cs` | Static service locator singleton — remove once all `FallbackContainer.Instance` callers are gone |
-| `ContainerImpl.cs` | Empty Windsor wrapper — delete |
+| Delete `FallbackContainer.cs` | ✅ Done |
+| Pare `ContainerExtensions` to 2 methods (`CreateDefaultContainer`, `CheckContainer`) | ✅ Done |
+| Delete `SerializerFactoryExtensions.cs` | ✅ Done — no callers remained |
+| Delete `MetadataReferenceProviderExtensions.cs` | ✅ Done — no callers remained |
+| Strip lazy-register body from `MetadataReferenceResolverExtensions.cs` | ✅ Done — kept `GetMetadataReference` (default delegate, referenced by `ContainerInitializer`) and `RegisterMetadataReferenceResolver` (user-facing API) |
+| Register `SerializerFactory`, `MetadataReferenceResolver`, `MetadataReferenceProvider` eagerly in `ContainerInitializer` | ✅ Done |
+| `CompilerHelperServices.cs` — replace extension calls with `Resolve<T>()` | ✅ Done |
+| `DefaultSupportGraphEventUtil.cs` — takes `IResourceManager` directly, no container | ✅ Done |
 
-### Test/support code (lower priority, Phase 8 or separate PR)
+### Phase 8 — Remaining tasks (3 items)
+
+**1. Delete `CoreAssemblyProviderExtensions.cs`**
+
+`CoreAssemblyProvider(this IContainer container)` extension method has no production callers.
+The static `GetCoreAssemblies()` method is referenced directly by `RoslynCompiler.cs` as a
+delegate — it can be moved to `RoslynCompiler` or `RoslynCompilerExtensions` and the file deleted.
+
+**2. Mark `EPRuntimeImpl.RuntimeContainer` `[Obsolete]`**
+
+`RuntimeContainer` is still live (used at two call sites within `EPRuntimeImpl` itself for startup
+re-initialization). It cannot be removed yet without further restructuring. Marking `[Obsolete]`
+is consistent with the `Container` alias treatment and signals intent.
+
+**3. Inline `ArtifactRepositoryExtensions.GetDefaultArtifactRepositoryManager` into `ContainerInitializer`**
+
+`ArtifactRepositoryExtensions.cs` now contains only the static helper
+`GetDefaultArtifactRepositoryManager(IContainer)`, called from exactly one site:
+`ContainerInitializer.InitializeDefaultServices` (line 108). Move the body inline and delete
+the file to eliminate the last `src/` file whose sole purpose was lazy-registration scaffolding.
+
+### Test/support code — separate PR
+
+These files are in `src/` but serve as test fixtures. They still use `container.Resolve<T>()`
+pattern. Lower priority; address in a follow-on cleanup PR.
 
 | File | Issue |
 |------|-------|
-| `SupportClasspathImport.cs` | `GetInstance(IContainer)` uses `ResolveSingleton` + `Resolve<TypeResolverProvider>` + `Resolve<IResourceManager>` |
-| `SupportEventTypeFactory.cs` (Runtime) | `GetInstance(IContainer)` uses `ResolveSingleton` + `Resolve<IObjectCopier>` |
-| `SupportEventBeanFactory.cs` (Runtime) | `GetInstance(IContainer)` uses `ResolveSingleton` |
-| `DefaultSupportGraphEventUtil.cs` | `AddConfig(IContainer, ...)` calls `container.ResourceManager()` |
-| `SupportExprValidationContextFactory.cs` | Methods take `IContainer container` |
+| `SupportClasspathImport.cs` | `GetInstance(IContainer)` calls `Resolve<ImportServiceCompileTime>`, `Resolve<TypeResolverProvider>`, `Resolve<IResourceManager>` |
+| `SupportEventTypeFactory.cs` (Runtime) | `GetInstance(IContainer)` calls `Resolve<SupportEventTypeFactory>`, `Resolve<IObjectCopier>` |
+| `SupportEventBeanFactory.cs` (Runtime) | `GetInstance(IContainer)` calls `Resolve<SupportEventBeanFactory>` |
+
+### Startup-boundary `Resolve<T>()` calls — acceptable, no action needed
+
+The following files call `container.Resolve<T>()` exclusively during application startup
+(container wiring / factory construction). This is the intended final state — the container
+boundary is explicit and confined to initialization code.
+
+| File | Role |
+|------|------|
+| `ContainerImpl.cs` | Internal IContainer implementation |
+| `ContainerInitializer.cs` | Registers all singletons eagerly at startup |
+| `EPServicesContextFactoryBase.cs` | Resolves registered singletons once to build EPServicesContext |
+| `CompilerHelperServices.cs` | Resolves registered singletons once to build ModuleCompileTimeServices |
+| `CompilerHelperModuleProvider.cs` | Resolves `IArtifactRepositoryManager` at module-load time |
+| `EPRuntimeImpl.cs` (`RuntimeContainer`) | Resolves `TypeResolverProvider` during runtime re-initialization |
+| `ContainerInitializer.RegisterDatabaseDriver` | Windsor-specific named registration; intentional, documented |
 
 ---
 
@@ -528,41 +533,38 @@ the container reference is dropped.
 
 ### Goal
 
-Remove dead `ContainerExtensions` methods, address remaining Windsor dependency, and define the
-final state of `IContainer`.
+Remove vestigial lazy-register extension code, clean up a handful of remaining `src/` service
+locator call sites, and document the final responsibility of `IContainer`.
 
-### Specific Tasks
+### Completed tasks
 
-**Remove dead `ContainerExtensions` methods**
+| Task | Status |
+|------|--------|
+| Delete `FallbackContainer.cs` | ✅ |
+| Pare `ContainerExtensions` to 2 methods | ✅ |
+| Delete `SerializerFactoryExtensions.cs` | ✅ |
+| Delete `MetadataReferenceProviderExtensions.cs` | ✅ |
+| Strip lazy-register body from `MetadataReferenceResolverExtensions.cs` | ✅ |
+| Register `SerializerFactory`, `MetadataReferenceResolver`, `MetadataReferenceProvider` eagerly | ✅ |
+| `DefaultSupportGraphEventUtil` takes `IResourceManager` directly | ✅ |
 
-After Phases 1–7, verify with grep that these have no non-startup call sites, then remove:
-- `LockManager(this IContainer container)`
-- `RWLockManager(this IContainer container)`
-- `ThreadLocalManager(this IContainer container)`
-- `TypeResolverProvider(this IContainer container)`
-- `TypeResolver(this IContainer container)`
-- `ResolveSingleton<T>(this IContainer container, Supplier<T>)` — verify no remaining callers
+### Remaining tasks
 
-Keep (still needed for startup or user API):
-- `CreateDefaultContainer(bool initialize)` — public API
-- `CheckContainer(this IContainer container)` — utility
-- `CreateInstance<T>(this IContainer container, Type)` — view factory reflection may still need it
+1. Delete `CoreAssemblyProviderExtensions.cs` — no callers of the extension method; move `GetCoreAssemblies` if needed
+2. Mark `EPRuntimeImpl.RuntimeContainer` `[Obsolete]` — property still live but signals deprecation
+3. Inline `ArtifactRepositoryExtensions.GetDefaultArtifactRepositoryManager` into `ContainerInitializer` and delete `ArtifactRepositoryExtensions.cs`
 
-**Clean up `ContainerInitializer.RegisterDatabaseDriver`**
+### Final `IContainer` responsibility (target state achieved)
 
-Lines 36–41 cast to `ContainerImpl` to access `WindsorContainer`. After Phase 5 refactoring of
-`DbProviderFactoryManagerDefault`, this method may be dead code. If not, replace with generic
-`IContainer.Register` API.
+`IContainer` is now used only at startup:
+1. `ContainerInitializer.InitializeDefaultServices` — registers all singletons eagerly
+2. `EPServicesContextFactoryBase.CreateServices` — resolves registered singletons once to build context
+3. `CompilerHelperServices.GetServices` — resolves registered singletons once to build compile-time context
+4. `ContainerExtensions.CreateDefaultContainer` — public bootstrapping API
+5. `Configuration.Container` — public user API for custom container injection
 
-**Define final `IContainer` responsibility**
-
-After all phases, `IContainer` is used only:
-1. Startup registration (`ContainerInitializer.InitializeDefaultServices`)
-2. `Configuration.Container` user API
-3. `ContainerExtensions.CreateDefaultContainer`
-4. The factory classes during `EPServicesContext` construction
-
-Document this clearly in a summary comment on the `IContainer` interface.
+`ContainerInitializer.RegisterDatabaseDriver` intentionally accesses `WindsorContainer` directly
+for named component registration. This is the one acceptable Windsor-specific call site.
 
 ### Test Strategy
 
@@ -575,10 +577,12 @@ dotnet build NEsperAll.sln
 
 ### Success Criteria
 
-- `ContainerExtensions` has ≤5 methods
-- No `using Castle.Windsor` anywhere except the backing container file itself
-- All 5,691 tests pass (3,801 regression + 1,890 unit)
-- No grep hits for `container.ResolveSingleton` outside startup/initializer code
+- ✅ `ContainerExtensions` has exactly 2 methods: `CreateDefaultContainer` and `CheckContainer`
+- ✅ `DefaultSupportGraphEventUtil` takes `IResourceManager` directly
+- ⬜ `CoreAssemblyProviderExtensions.cs` deleted
+- ⬜ `EPRuntimeImpl.RuntimeContainer` marked `[Obsolete]`
+- ⬜ `ArtifactRepositoryExtensions.cs` deleted
+- ⬜ All 5,691 tests pass (3,801 regression + 1,890 unit) — full regression run to confirm
 
 ---
 

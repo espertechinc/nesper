@@ -15,7 +15,7 @@ namespace com.espertech.esperio
         public virtual void SetUpCommon()
         {
             container = SupportContainer.Reset();
-            LockManager = container.LockManager();
+            LockManager = container.Resolve<ILockManager>();
         }
     }
 }

@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat;
 using com.espertech.esper.container;
 using com.espertech.esper.runtime.client;
 using com.espertech.esperio.csv;
@@ -216,7 +217,7 @@ namespace com.espertech.esperio.regression.adapter
             String timestampColumn,
             String[] propertyOrder)
         {
-            var adapterSpec = new CSVInputAdapterSpec(new AdapterInputSource(_container.ResourceManager(), filename), _eventTypeName);
+            var adapterSpec = new CSVInputAdapterSpec(new AdapterInputSource(_container.Resolve<IResourceManager>(), filename), _eventTypeName);
             if (eventsPerSec != -1) {
                 adapterSpec.EventsPerSec = eventsPerSec;
             }
@@ -234,7 +235,7 @@ namespace com.espertech.esperio.regression.adapter
             String eventTypeName)
         {
             try {
-                (new CSVInputAdapter(_runtime, new AdapterInputSource(_container.ResourceManager(), filename), eventTypeName)).Start();
+                (new CSVInputAdapter(_runtime, new AdapterInputSource(_container.Resolve<IResourceManager>(), filename), eventTypeName)).Start();
                 Assert.Fail();
             }
             catch (EPException) {
@@ -268,7 +269,7 @@ namespace com.espertech.esperio.regression.adapter
             CompileDeploy(_runtime, "@public @buseventtype create schema intsTitleRowEvent(intOne string, intTwo string)");
 
             var adapterSpec = new CSVInputAdapterSpec(
-                new AdapterInputSource(_container.ResourceManager(), "regression/intsTitleRow.csv"),
+                new AdapterInputSource(_container.Resolve<IResourceManager>(), "regression/intsTitleRow.csv"),
                 "intsTitleRowEvent");
             adapterSpec.EventsPerSec = 10;
             adapterSpec.PropertyOrder = new[] {"intTwo", "intOne"};
@@ -356,8 +357,8 @@ namespace com.espertech.esperio.regression.adapter
         [Test]
         public void TestInputStream()
         {
-            var stream = _container.ResourceManager().GetResourceAsStream("regression/noTimestampOne.csv");
-            var adapterSpec = new CSVInputAdapterSpec(new AdapterInputSource(_container.ResourceManager(), stream), _eventTypeName);
+            var stream = _container.Resolve<IResourceManager>().GetResourceAsStream("regression/noTimestampOne.csv");
+            var adapterSpec = new CSVInputAdapterSpec(new AdapterInputSource(_container.Resolve<IResourceManager>(), stream), _eventTypeName);
             adapterSpec.PropertyOrder = _propertyOrderNoTimestamps;
 
             new CSVInputAdapter(_runtime, adapterSpec);
@@ -411,7 +412,7 @@ namespace com.espertech.esperio.regression.adapter
             CompileDeploy(_runtime, "@public @buseventtype create schema allStringEvent(MyInt string, MyDouble string, MyString string)");
 
             var adapterSpec = new CSVInputAdapterSpec(
-                new AdapterInputSource(_container.ResourceManager(), "regression/noTimestampOne.csv"),
+                new AdapterInputSource(_container.Resolve<IResourceManager>(), "regression/noTimestampOne.csv"),
                 "allStringEvent");
             adapterSpec.EventsPerSec = 10;
             adapterSpec.PropertyOrder = new[] {"MyInt", "MyDouble", "MyString"};
@@ -487,13 +488,13 @@ namespace com.espertech.esperio.regression.adapter
         public void TestNullEPService()
         {
             var adapter = new CSVInputAdapter(
-                new AdapterInputSource(_container.ResourceManager(), "regression/titleRow.csv"),
+                new AdapterInputSource(_container.Resolve<IResourceManager>(), "regression/titleRow.csv"),
                 _eventTypeName);
             RunNullEPService(adapter);
 
             _listener.Reset();
 
-            adapter = new CSVInputAdapter(new AdapterInputSource(_container.ResourceManager(), "regression/titleRow.csv"), _eventTypeName);
+            adapter = new CSVInputAdapter(new AdapterInputSource(_container.Resolve<IResourceManager>(), "regression/titleRow.csv"), _eventTypeName);
             RunNullEPService(adapter);
         }
 
@@ -610,7 +611,7 @@ namespace com.espertech.esperio.regression.adapter
             CompileDeploy(_runtime, "@public @buseventtype create schema propertyTypeEvent(MyInt int, MyDouble double, MyString string)");
 
             var adapterSpec = new CSVInputAdapterSpec(
-                new AdapterInputSource(_container.ResourceManager(), "regression/noTimestampOne.csv"),
+                new AdapterInputSource(_container.Resolve<IResourceManager>(), "regression/noTimestampOne.csv"),
                 "propertyTypeEvent");
             adapterSpec.EventsPerSec = 10;
             adapterSpec.PropertyOrder = new[] {"MyInt", "MyDouble", "MyString"};
@@ -641,7 +642,7 @@ namespace com.espertech.esperio.regression.adapter
             propertyTypesInvalid.Put("anotherProperty", typeof(String));
             try {
                 var adapterSpec = new CSVInputAdapterSpec(
-                    new AdapterInputSource(_container.ResourceManager(), "regression/noTimestampOne.csv"),
+                    new AdapterInputSource(_container.Resolve<IResourceManager>(), "regression/noTimestampOne.csv"),
                     "mapEvent");
                 adapterSpec.PropertyTypes = propertyTypesInvalid;
                 (new CSVInputAdapter(_runtime, adapterSpec)).Start();
@@ -655,7 +656,7 @@ namespace com.espertech.esperio.regression.adapter
             propertyTypesInvalid.Put("MyInt", typeof(String));
             try {
                 var adapterSpec = new CSVInputAdapterSpec(
-                    new AdapterInputSource(_container.ResourceManager(), "regression/noTimestampOne.csv"),
+                    new AdapterInputSource(_container.Resolve<IResourceManager>(), "regression/noTimestampOne.csv"),
                     "mapEvent");
                 adapterSpec.PropertyTypes = propertyTypesInvalid;
                 (new CSVInputAdapter(_runtime, adapterSpec)).Start();
@@ -670,7 +671,7 @@ namespace com.espertech.esperio.regression.adapter
             propertyTypesInvalid.Put("anotherInt", typeof(int?));
             try {
                 var adapterSpec = new CSVInputAdapterSpec(
-                    new AdapterInputSource(_container.ResourceManager(), "regression/noTimestampOne.csv"),
+                    new AdapterInputSource(_container.Resolve<IResourceManager>(), "regression/noTimestampOne.csv"),
                     "mapEvent");
                 adapterSpec.PropertyTypes = propertyTypesInvalid;
                 (new CSVInputAdapter(_runtime, adapterSpec)).Start();

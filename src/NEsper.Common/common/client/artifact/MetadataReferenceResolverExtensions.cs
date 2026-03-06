@@ -27,25 +27,6 @@ namespace com.espertech.esper.common.client.artifact
             return string.IsNullOrEmpty(assembly.Location) ? null : MetadataReference.CreateFromFile(assembly.Location);
         }
 
-        /// <summary>
-        /// Retrieves an instance of the MetadataReferenceResolver.  If none has been registered, this method
-        /// will return the default resolver.
-        /// </summary>
-        /// <param name="container"></param>
-        /// <returns></returns>
-        public static MetadataReferenceResolver MetadataReferenceResolver(this IContainer container)
-        {
-            container.CheckContainer();
-
-            lock (container) {
-                if (container.DoesNotHave<MetadataReferenceResolver>()) {
-                    return GetMetadataReference;
-                }
-            }
-
-            return container.Resolve<MetadataReferenceResolver>();
-        }
-
         public static bool RegisterMetadataReferenceResolver(
             this IContainer container,
             MetadataReferenceResolver resolver)

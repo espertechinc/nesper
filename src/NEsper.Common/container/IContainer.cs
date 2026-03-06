@@ -34,24 +34,6 @@ namespace com.espertech.esper.container
         /// <returns></returns>
         T Resolve<T>(string name);
 
-#if false
-        /// <summary>
-        /// Resolves the specified arguments as anonymous type.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="argumentsAsAnonymousType">Type of the arguments as anonymous.</param>
-        /// <returns></returns>
-        T Resolve<T>(object argumentsAsAnonymousType);
-
-        /// <summary>
-        /// Resolves the specified arguments as dictionary.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="argumentsAsDictionary">The arguments as dictionary.</param>
-        /// <returns></returns>
-        T Resolve<T>(IDictionary<object, object> argumentsAsDictionary);
-#endif
-
         /// <summary>
         /// Attempts to resolve a name within a container.  If the named entity does not exist, then it
         /// returns default(T).

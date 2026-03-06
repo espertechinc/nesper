@@ -12,6 +12,7 @@ using System.Xml;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.compat.logging;
+using com.espertech.esper.compat;
 using com.espertech.esper.container;
 using com.espertech.esper.runtime.client;
 
@@ -96,7 +97,7 @@ namespace NEsper.Examples.AutoId
 
 	        // load config - this defines the XML event types to be processed
 	        var configFile = "esper.examples.cfg.xml";
-	        var url = container.ResourceManager().ResolveResourceURL(configFile);
+	        var url = container.Resolve<IResourceManager>().ResolveResourceURL(configFile);
 	        var config = new Configuration(container);
 	        config.Configure(url);
 	

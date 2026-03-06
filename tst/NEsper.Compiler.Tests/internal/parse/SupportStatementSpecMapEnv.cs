@@ -26,7 +26,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 		public static StatementSpecMapEnv Make(IContainer container, ImportServiceCompileTime engineImportService)
 		{
 			return new StatementSpecMapEnv(
-				container.SerializerFactory(),
+				container.Resolve<SerializerFactory>(),
 				engineImportService,
 				VariableCompileTimeResolverEmpty.INSTANCE,
 				new Configuration(),

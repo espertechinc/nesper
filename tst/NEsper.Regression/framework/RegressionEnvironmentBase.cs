@@ -620,7 +620,7 @@ namespace com.espertech.esper.regressionlib.framework
 
 		public IResourceManager ResourceManager => Container.Resolve<IResourceManager>();
 
-		public ILockManager LockManager => Container.LockManager();
+		public ILockManager LockManager => Container.Resolve<ILockManager>();
 		
 		public string RuntimeURI => Runtime.URI;
 

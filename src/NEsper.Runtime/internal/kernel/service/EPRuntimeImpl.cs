@@ -130,9 +130,6 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 
         public IContainer RuntimeContainer { get; }
 
-        [Obsolete("Container access is deprecated for internal flows; use ServicesContext and explicit dependencies.")]
-        public IContainer Container => RuntimeContainer;
-
         public string URI { get; }
 
         public EPEventService EventService {

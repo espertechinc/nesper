@@ -13,6 +13,7 @@ using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 using com.espertech.esper.container;
 using com.espertech.esper.regressionlib.suite.@event.xml;
 using com.espertech.esper.regressionlib.support.util;
@@ -36,7 +37,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
                 configuration.Common.AddEventType(clazz);
             }
 
-            var resourceManager = configuration.Container.ResourceManager();
+            var resourceManager = configuration.Container.Resolve<IResourceManager>();
             string schemaUriSimpleSchema = resourceManager
                 .ResolveResourceURL("regression/simpleSchema.xsd")
                 .ToString();

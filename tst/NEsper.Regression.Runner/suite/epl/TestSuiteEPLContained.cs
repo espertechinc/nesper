@@ -49,7 +49,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
         [Test, RunInApplicationDomain]
         public void TestEPLContainedEventExample()
         {
-            RegressionRunner.Run(_session, EPLContainedEventExample.Executions(_session.Container.ResourceManager()));
+            RegressionRunner.Run(_session, EPLContainedEventExample.Executions(_session.Container.Resolve<IResourceManager>()));
         }
 
         [Test, RunInApplicationDomain]

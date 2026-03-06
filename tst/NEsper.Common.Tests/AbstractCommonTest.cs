@@ -35,7 +35,7 @@ namespace com.espertech.esper.common
         public virtual void SetUpCommon()
         {
             container = SupportContainer.Reset();
-            ResourceManager = container.ResourceManager();
+            ResourceManager = container.Resolve<IResourceManager>();
             supportEventTypeFactorySupplier = Suppliers.Memoize(() => 
                 SupportEventTypeFactory.GetInstance(container));
 

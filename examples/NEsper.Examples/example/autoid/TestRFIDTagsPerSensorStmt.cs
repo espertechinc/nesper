@@ -8,6 +8,7 @@
 
 using System.Xml;
 
+using com.espertech.esper.compat;
 using com.espertech.esper.container;
 using com.espertech.esper.runtime.client;
 using com.espertech.esper.runtime.client.scopetest;
@@ -31,7 +32,7 @@ namespace NEsper.Examples.AutoId
 	            .InitializeDefaultServices()
 	            .InitializeDatabaseDrivers();
 
-            var url = _container.ResourceManager().ResolveResourceURL("esper.examples.cfg.xml");
+            var url = _container.Resolve<IResourceManager>().ResolveResourceURL("esper.examples.cfg.xml");
 	        var config = new Configuration(_container);
 	        config.Configure(url);
 	
@@ -49,7 +50,7 @@ namespace NEsper.Examples.AutoId
 	    	var sensorlDoc = new XmlDocument() ;
 	
 	        using(var stream = _container
-		        .ResourceManager()
+		        .Resolve<IResourceManager>()
 		        .GetResourceAsStream("data/AutoIdSensor1.xml")) {
 	        	sensorlDoc.Load( stream ) ;
 	        }

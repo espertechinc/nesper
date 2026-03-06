@@ -23,7 +23,6 @@ using com.espertech.esper.common.@internal.@event.xml;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.container;
 
 namespace com.espertech.esper.common.@internal.epl.dataflow.util
 {
@@ -33,9 +32,8 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
 
         public static readonly string EVENTTYPENAME = typeof(MyDefaultSupportGraphEvent).GetSimpleName();
 
-        public static void AddTypeConfiguration(Configuration configuration)
+        public static void AddTypeConfiguration(Configuration configuration, IResourceManager resourceManager)
         {
-            var container = configuration.Container;
             var propertyTypes = new Dictionary<string, object>();
             propertyTypes.Put("MyDouble", typeof(double?));
             propertyTypes.Put("MyInt", typeof(int?));
@@ -47,7 +45,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
                 new object[] { typeof(double?), typeof(int?), typeof(string) }
             );
             configuration.Common.AddEventType(typeof(MyDefaultSupportGraphEvent));
-            configuration.Common.AddEventType("MyXMLEvent", GetConfig(container.Resolve<IResourceManager>()));
+            configuration.Common.AddEventType("MyXMLEvent", GetConfig(resourceManager));
         }
 
         public static SendableEvent[] GetXMLEventsSendable()

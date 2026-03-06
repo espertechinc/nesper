@@ -10,21 +10,6 @@ namespace com.espertech.esper.common.client.artifact
 {
     public static class ArtifactRepositoryExtensions
     {
-        public static IArtifactRepositoryManager ArtifactRepositoryManager(this IContainer container)
-        {
-            container.CheckContainer();
-
-            lock (container) {
-                if (container.DoesNotHave<IArtifactRepositoryManager>()) {
-                    container.Register<IArtifactRepositoryManager>(
-                        GetDefaultArtifactRepositoryManager,
-                        Lifespan.Singleton);
-                }
-            }
-
-            return container.Resolve<IArtifactRepositoryManager>();
-        }
-
         public static IArtifactRepositoryManager GetDefaultArtifactRepositoryManager(IContainer container)
         {
             var baseTypeResolver = container.Has<TypeResolver>()

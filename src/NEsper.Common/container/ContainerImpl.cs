@@ -112,7 +112,7 @@ namespace com.espertech.esper.container
                     return true;
                 }
                 
-                value = default(T);
+                value = default;
                 return false;
             }
         }
@@ -136,35 +136,11 @@ namespace com.espertech.esper.container
                     return true;
                 }
                 
-                value = default(T);
+                value = default;
                 return false;
             }
         }
-        
-#if false
-        /// <summary>
-        /// Resolves the specified arguments as anonymous type.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="argumentsAsAnonymousType">Type of the arguments as anonymous.</param>
-        /// <returns></returns>
-        public T Resolve<T>(object argumentsAsAnonymousType)
-        {
-            return _container.Resolve<T>(argumentsAsAnonymousType);
-        }
-
-        /// <summary>
-        /// Resolves the specified arguments as dictionary.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="argumentsAsDictionary">The arguments as dictionary.</param>
-        /// <returns></returns>
-        public T Resolve<T>(IDictionary<object, object> argumentsAsDictionary)
-        {
-            return _container.Resolve<T>(argumentsAsDictionary);
-        }
-#endif
-        
+              
         /// <summary>
         /// Returns true if an object by the given name is registered.
         /// </summary>
@@ -271,7 +247,7 @@ namespace com.espertech.esper.container
             }
             else if (lifespan is Lifespan.LifespanTypeBound typeBound)
             {
-                var method = componentRegistration.GetType().GetMethod("LifestyleBoundTo", new Type[] { });
+                var method = componentRegistration.GetType().GetMethod("LifestyleBoundTo", Array.Empty<Type>());
                 var genericMethod = method.MakeGenericMethod(typeBound.BoundType);
                 return (ComponentRegistration<T>)genericMethod.Invoke(
                     componentRegistration, Array.Empty<object>());

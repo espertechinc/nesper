@@ -7,15 +7,8 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Linq;
-using System.Reflection;
 
-using com.espertech.esper.common.client.util;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.threading.locks;
 using Castle.Windsor;
-using com.espertech.esper.compat.function;
-using com.espertech.esper.compat.threading.threadlocal;
 
 namespace com.espertech.esper.container
 {
@@ -42,34 +35,6 @@ namespace com.espertech.esper.container
                     "container is null, please initialize",
                     nameof(container));
             }
-        }
-
-        [Obsolete("Use constructor injection instead")]
-        public static ILockManager LockManager(this IContainer container)
-        {
-            container.CheckContainer();
-            return container.Resolve<ILockManager>();
-        }
-
-        [Obsolete("Use constructor injection instead")]
-        public static IReaderWriterLockManager RWLockManager(this IContainer container)
-        {
-            container.CheckContainer();
-            return container.Resolve<IReaderWriterLockManager>();
-        }
-
-        [Obsolete("Use constructor injection instead")]
-        public static IThreadLocalManager ThreadLocalManager(this IContainer container)
-        {
-            container.CheckContainer();
-            return container.Resolve<IThreadLocalManager>();
-        }
-
-        [Obsolete("Use constructor injection instead")]
-        public static IResourceManager ResourceManager(this IContainer container)
-        {
-            container.CheckContainer();
-            return container.Resolve<IResourceManager>();
         }
     }
 }
