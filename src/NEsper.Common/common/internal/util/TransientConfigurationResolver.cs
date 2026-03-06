@@ -19,19 +19,6 @@ namespace com.espertech.esper.common.@internal.util
     {
         private static readonly ILog Log = LogManager.GetLogger(typeof(TransientConfigurationResolver));
 
-#if DEPRECATED
-        public static ClassForNameProvider ResolveClassForNameProvider(
-            IContainer container,
-            IDictionary<string, object> transientConfiguration)
-        {
-            return Resolve(
-                transientConfiguration,
-                container.Resolve<ClassForNameProvider>(),
-                ClassForNameProviderDefault.NAME,
-                typeof(ClassForNameProvider));
-        }
-#endif
-
         public static TypeResolverProvider ResolveTypeResolverProvider(
             TypeResolverProvider defaultProvider,
             IDictionary<string, object> transientConfiguration)

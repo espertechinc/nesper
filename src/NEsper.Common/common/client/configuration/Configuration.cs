@@ -38,6 +38,8 @@ namespace com.espertech.esper.common.client.configuration
 
         [NonSerialized]
         private IContainer _container;
+        [NonSerialized]
+        private IResourceManager _resourceManager;
 
         /// <summary>
         /// Default name of the configuration file.
@@ -50,7 +52,10 @@ namespace com.espertech.esper.common.client.configuration
         [JsonIgnore]
         public IContainer Container {
             get => _container;
-            set => _container = value;
+            set {
+                _container = value;
+                _resourceManager = Container?.Resolve<IResourceManager>();
+            }
         }
 
         /// <summary>
@@ -175,9 +180,8 @@ namespace com.espertech.esper.common.client.configuration
             var stripped = resource.StartsWith("/", StringComparison.CurrentCultureIgnoreCase)
                 ? resource.Substring(1)
                 : resource;
-            var resourceManager = Container.Resolve<IResourceManager>();
-            var stream = resourceManager.GetResourceAsStream(resource) ??
-                         resourceManager.GetResourceAsStream(stripped);
+            var stream = _resourceManager.GetResourceAsStream(resource) ??
+                         _resourceManager.GetResourceAsStream(stripped);
             if (stream == null) {
                 throw new EPException(resource + " not found");
             }

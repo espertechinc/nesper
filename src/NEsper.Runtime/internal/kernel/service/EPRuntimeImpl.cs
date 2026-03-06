@@ -128,6 +128,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             _configLastProvided = TakeSnapshot(configuration);
         }
 
+        [Obsolete("RuntimeContainer is scheduled for removal. Use explicit constructor injection for services needed at startup.")]
         public IContainer RuntimeContainer { get; }
 
         public string URI { get; }

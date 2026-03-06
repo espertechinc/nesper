@@ -27,6 +27,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 
         void Initialize(Consumer<EPRuntimeSPIRunAfterDestroyCtx> runAfterDestroy);
 
+        [Obsolete("RuntimeContainer is scheduled for removal. Use explicit constructor injection for services needed at startup.")]
         IContainer RuntimeContainer { get; }
 
         EPServicesContext ServicesContext { get; }

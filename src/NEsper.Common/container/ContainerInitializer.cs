@@ -104,7 +104,15 @@ namespace com.espertech.esper.container
             // Register IArtifactRepositoryManager eagerly (used by both runtime and compiler)
             if (container.DoesNotHave<IArtifactRepositoryManager>())
                 container.Register<IArtifactRepositoryManager>(
-                    ic => ArtifactRepositoryExtensions.GetDefaultArtifactRepositoryManager(ic),
+                    ic => {
+                        var baseTypeResolver = ic.Has<TypeResolver>()
+                            ? ic.Resolve<TypeResolver>()
+                            : TypeResolverDefault.INSTANCE;
+                        var assemblyResolver = ic.Has<AssemblyResolver>()
+                            ? ic.Resolve<AssemblyResolver>()
+                            : null;
+                        return new DefaultArtifactRepositoryManager(baseTypeResolver, assemblyResolver);
+                    },
                     Lifespan.Singleton);
 #endregion
 

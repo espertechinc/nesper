@@ -35,8 +35,7 @@ namespace com.espertech.esper.common.@internal.support
             StreamTypeService streamTypeService)
         {
             var moduleServices = new ModuleCompileTimeServices();
-            moduleServices.Configuration = new Configuration();
-            moduleServices.Configuration.Container = container;
+            moduleServices.Configuration = new Configuration(container);
             moduleServices.ImportServiceCompileTime = SupportImport.GetInstance(container);
             var services = new StatementCompileTimeServices(1, moduleServices);
             var raw = new StatementRawInfo(1, "abc", null, StatementType.SELECT, null, null, null, null);
