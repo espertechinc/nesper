@@ -184,7 +184,7 @@ namespace com.espertech.esper.compat.threading.locks
         {
             var lockFactory = DefaultLockFactory;
             if (lockFactory == null) {
-                throw new ApplicationException("default lock factory is not set");
+                throw new InvalidOperationException("default lock factory is not set");
             }
 
             return WrapLock(lockFactory.Invoke(DefaultLockTimeout), category);

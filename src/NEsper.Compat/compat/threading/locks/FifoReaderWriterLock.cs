@@ -137,8 +137,7 @@ namespace com.espertech.esper.compat.threading.locks
 	    /// <param name="timeout">The timeout.</param>
 	    public Node AcquireReaderLock(long timeout)
         {
-            var timeCur = DateTimeHelper.CurrentTimeMillis;
-            var timeEnd = timeCur + timeout;
+            var timeEnd = DateTimeHelper.CurrentTimeMillis + timeout;
 
             var curr = _rnode;
             var node = PushNode(new Node(NodeFlags.Shared));
@@ -161,8 +160,10 @@ namespace com.espertech.esper.compat.threading.locks
 					node.ChainLength++;
 #endif
             	} else if (curr.Flags == NodeFlags.Exclusive) {
-                    SlimLock.SmartWait(++iter);
+                    if (!SlimLock.SmartWait(++iter, timeEnd))
+                        throw new TimeoutException("FifoReaderWriterLock timeout expired");
                 } else if (curr.Flags == NodeFlags.None) {
+            		TryAdvancePastDeadNode(curr);
             		curr = curr.Next; // dead node
 #if STATISTICS
 					node.ChainLength++;
@@ -179,8 +180,7 @@ namespace com.espertech.esper.compat.threading.locks
 	    /// <param name="timeout">The timeout.</param>
 	    public Node AcquireWriterLock(long timeout)
         {
-        	var timeCur = DateTimeHelper.CurrentTimeMillis;
-            var timeEnd = timeCur + timeout;
+            var timeEnd = DateTimeHelper.CurrentTimeMillis + timeout;
 
             var curr = _rnode;
             var node = PushNode(new Node(NodeFlags.Exclusive));
@@ -198,11 +198,14 @@ namespace com.espertech.esper.compat.threading.locks
 #endif
             		return _rnode = node;
             	} else if (curr.Flags == NodeFlags.Shared) {
-                    SlimLock.SmartWait(++iter);
+                    if (!SlimLock.SmartWait(++iter, timeEnd))
+                        throw new TimeoutException("FifoReaderWriterLock timeout expired");
             	} else if (curr.Flags == NodeFlags.Exclusive) {
-                    SlimLock.SmartWait(++iter);
+                    if (!SlimLock.SmartWait(++iter, timeEnd))
+                        throw new TimeoutException("FifoReaderWriterLock timeout expired");
                 } else if (curr.Flags == NodeFlags.None) {
             		iter = 0; // clear wait cycling
+                    TryAdvancePastDeadNode(curr);
             		curr = curr.Next; // dead node
 #if STATISTICS
 					node.ChainLength++;
@@ -211,6 +214,17 @@ namespace com.espertech.esper.compat.threading.locks
             		throw new IllegalStateException();
             	}
             }
+        }
+
+        /// <summary>
+        /// Attempts to swing _rnode forward past a dead node, freeing it for GC.
+        /// </summary>
+        private void TryAdvancePastDeadNode(Node deadNode)
+        {
+            var next = deadNode.Next;
+            if (next != null) {
+                Interlocked.CompareExchange(ref _rnode, next, deadNode);
+        }
         }
 
         /// <summary>

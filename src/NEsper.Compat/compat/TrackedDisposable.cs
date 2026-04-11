@@ -7,12 +7,13 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Threading;
 
 namespace com.espertech.esper.compat
 {
     public sealed class TrackedDisposable : IDisposable
     {
-        private readonly Action _actionOnDispose;
+        private Action _actionOnDispose;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TrackedDisposable"/> class.
@@ -28,7 +29,7 @@ namespace com.espertech.esper.compat
         /// </summary>
         public void Dispose()
         {
-            _actionOnDispose.Invoke();
+            Interlocked.Exchange(ref _actionOnDispose, null)?.Invoke();
         }
     }
 }

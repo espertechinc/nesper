@@ -140,22 +140,6 @@ namespace com.espertech.esper.compat.threading.locks
             return new TrackedDisposable(InternalRelease);
         }
 
-        /// <summary>
-        /// Acquire the lock; the lock is released when the disposable
-        /// object that was returned is disposed IF the releaseLock
-        /// flag is set.
-        /// </summary>
-        /// <param name="releaseLock"></param>
-        /// <param name="msec"></param>
-        /// <returns></returns>
-        public IDisposable Acquire(bool releaseLock, long? msec = null)
-        {
-            InternalAcquire((int) (msec ?? _uLockTimeout));
-            if (releaseLock)
-                return new TrackedDisposable(InternalRelease);
-            return new VoidDisposable();
-        }
-
         public IDisposable ReleaseAcquire()
         {
             InternalRelease();
@@ -192,7 +176,7 @@ namespace com.espertech.esper.compat.threading.locks
                 }
                 else
                 {
-                    throw new ApplicationException("Unable to obtain lock before timeout occurred");
+                    throw new TimeoutException("Unable to obtain lock before timeout occurred");
                 }
             }
         }

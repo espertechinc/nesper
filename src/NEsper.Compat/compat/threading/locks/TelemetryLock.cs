@@ -8,6 +8,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Threading;
 
 namespace com.espertech.esper.compat.threading.locks
 {
@@ -67,12 +68,10 @@ namespace com.espertech.esper.compat.threading.locks
             var disposableLock = _subLock.Acquire();
             var timeLockAcquired = PerformanceObserver.MicroTime;
             var disposableTrack = new TrackedDisposable(
-                delegate
-                    {
-                        disposableLock.Dispose();
-                        disposableLock = null;
-                        FinishTrackingPerformance(timeLockRequested, timeLockAcquired);
-                    });
+                delegate {
+                    Interlocked.Exchange(ref disposableLock, null)?.Dispose();
+                    FinishTrackingPerformance(timeLockRequested, timeLockAcquired);
+                });
 
             return disposableTrack;
         }
@@ -85,24 +84,7 @@ namespace com.espertech.esper.compat.threading.locks
             var disposableTrack = new TrackedDisposable(
                 delegate
                 {
-                    disposableLock.Dispose();
-                    disposableLock = null;
-                    FinishTrackingPerformance(timeLockRequested, timeLockAcquired);
-                });
-
-            return disposableTrack;
-        }
-
-        public IDisposable Acquire(bool releaseLock, long? msec = null)
-        {
-            var timeLockRequested = PerformanceObserver.MicroTime;
-            var disposableLock = _subLock.Acquire(releaseLock, msec: msec);
-            var timeLockAcquired = PerformanceObserver.MicroTime;
-            var disposableTrack = new TrackedDisposable(
-                delegate
-                {
-                    disposableLock.Dispose();
-                    disposableLock = null;
+                    Interlocked.Exchange(ref disposableLock, null)?.Dispose();
                     FinishTrackingPerformance(timeLockRequested, timeLockAcquired);
                 });
 
@@ -123,8 +105,7 @@ namespace com.espertech.esper.compat.threading.locks
             var disposableTrack = new TrackedDisposable(
                 delegate
                 {
-                    disposableLock.Dispose();
-                    disposableLock = null;
+                    Interlocked.Exchange(ref disposableLock, null)?.Dispose();
                     FinishTrackingPerformance(timeLockRequested, timeLockAcquired);
                 });
 

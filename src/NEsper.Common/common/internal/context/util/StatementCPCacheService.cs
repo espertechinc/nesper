@@ -23,7 +23,7 @@ namespace com.espertech.esper.common.@internal.context.util
     {
         public const int DEFAULT_AGENT_INSTANCE_ID = -1;
 
-        private readonly ILockable @lock = new MonitorSpinLock(60000);
+        private readonly ILockable @lock = new MonitorSlimLock(60000);
 
         /* for expression resources under context partitioning */
         private readonly StatementAIResourceRegistry statementAgentInstanceRegistry;

@@ -31,8 +31,6 @@ namespace com.espertech.esper.compat.threading.locks
             ReadLock = new CommonReadLock(this, _lockTimeout);
             WriteLock = new CommonWriteLock(this, _lockTimeout);
 
-            _rDisposable = new TrackedDisposable(ReleaseReaderLock);
-            _wDisposable = new TrackedDisposable(ReleaseWriterLock);
         }
 
         /// <summary>
@@ -54,69 +52,35 @@ namespace com.espertech.esper.compat.threading.locks
         /// <value></value>
         public ILockable WriteLock { get;  private set; }
 
-        private readonly IDisposable _rDisposable;
-        private readonly IDisposable _wDisposable;
-
         public IDisposable AcquireReadLock()
         {
-#if DIAGNOSTICS && DEBUG
-            Console.WriteLine("{0}:AcquireReadLock:IN:{1}: {2}", Thread.CurrentThread.ManagedThreadId, _id, _lockTimeout);
-#endif
-            try {
-                if (_useUpgradeableLocks) {
-                    if (_rwLock.TryEnterUpgradeableReadLock(_lockTimeout)) {
-                        return _rDisposable;
-                    }
-                }
-                else if (_rwLock.TryEnterReadLock(_lockTimeout)) {
-                    return _rDisposable;
+            if (_useUpgradeableLocks) {
+                if (_rwLock.TryEnterUpgradeableReadLock(_lockTimeout)) {
+                    return new TrackedDisposable(ReleaseReaderLock);
                 }
             }
-            finally {
-#if DIAGNOSTICS && DEBUG
-                Console.WriteLine("{0}:AcquireReadLock:OUT:{1}: {2}", Thread.CurrentThread.ManagedThreadId, _id, _lockTimeout);
-#endif
+            else if (_rwLock.TryEnterReadLock(_lockTimeout)) {
+                return new TrackedDisposable(ReleaseReaderLock);
             }
 
-#if DIAGNOSTICS && DEBUG
-            Console.WriteLine("{0}:AcquireReadLock:ERR:{1}: {2}", Thread.CurrentThread.ManagedThreadId, _id, _lockTimeout);
-#endif
             throw new TimeoutException("ReaderWriterLock timeout expired");
         }
 
         public IDisposable AcquireWriteLock()
         {
-#if DIAGNOSTICS && DEBUG
-            Console.WriteLine("{0}:AcquireWriteLock:IN:{1}: {2}", Thread.CurrentThread.ManagedThreadId, _id, _lockTimeout);
-#endif
             if (_rwLock.TryEnterWriteLock(_lockTimeout)) {
-#if DIAGNOSTICS && DEBUG
-                Console.WriteLine("{0}:AcquireWriteLock:OUT:{1}: {2}", Thread.CurrentThread.ManagedThreadId, _id, _lockTimeout);
-#endif
-                return _wDisposable;
+                return new TrackedDisposable(ReleaseWriterLock);
             }
 
-#if DIAGNOSTICS && DEBUG
-            Console.WriteLine("{0}:AcquireWriteLock:ERR:{1}: {2}", Thread.CurrentThread.ManagedThreadId, _id, _lockTimeout);
-#endif
             throw new TimeoutException("ReaderWriterLock timeout expired");
         }
 
         public IDisposable AcquireWriteLock(TimeSpan lockWaitDuration)
         {
-#if DIAGNOSTICS && DEBUG
-            Console.WriteLine("{0}:AcquireWriteLock:IN:{1}: {2}", Thread.CurrentThread.ManagedThreadId, _id, lockWaitDuration);
-#endif
             if (_rwLock.TryEnterWriteLock(lockWaitDuration)) {
-#if DIAGNOSTICS && DEBUG
-                Console.WriteLine("{0}:AcquireWriteLock:OUT:{1}: {2}", Thread.CurrentThread.ManagedThreadId, _id, lockWaitDuration);
-#endif
-                return _wDisposable;
+                return new TrackedDisposable(ReleaseWriterLock);
             }
 
-#if DIAGNOSTICS && DEBUG
-            Console.WriteLine("{0}:AcquireWriteLock:ERR:{1}: {2}", Thread.CurrentThread.ManagedThreadId, _id, lockWaitDuration);
-#endif
             throw new TimeoutException("ReaderWriterLock timeout expired");
         }
 
@@ -150,28 +114,14 @@ namespace com.espertech.esper.compat.threading.locks
         /// <param name="timeout">The timeout.</param>
         public void AcquireReaderLock(long timeout)
         {
-#if DIAGNOSTICS && DEBUG
-            Console.WriteLine("{0}:AcquireReaderLock:IN:{1}: {2}", Thread.CurrentThread.ManagedThreadId, _id, timeout);
-#endif
-            try {
-                if (_useUpgradeableLocks) {
-                    if (_rwLock.TryEnterUpgradeableReadLock((int)timeout)) {
-                        return;
-                    }
-                }
-                else if (_rwLock.TryEnterReadLock((int)timeout)) {
+            if (_useUpgradeableLocks) {
+                if (_rwLock.TryEnterUpgradeableReadLock((int)timeout)) {
                     return;
                 }
             }
-            finally {
-#if DIAGNOSTICS && DEBUG
-                Console.WriteLine("{0}:AcquireReaderLock:OUT:{1}: {2}", Thread.CurrentThread.ManagedThreadId, _id, timeout);
-#endif
+            else if (_rwLock.TryEnterReadLock((int)timeout)) {
+                return;
             }
-
-#if DIAGNOSTICS && DEBUG
-            Console.WriteLine("{0}:AcquireReaderLock:ERR:{1}: {2}", Thread.CurrentThread.ManagedThreadId, _id, timeout);
-#endif
             throw new TimeoutException("ReaderWriterLock timeout expired");
         }
 
@@ -181,19 +131,9 @@ namespace com.espertech.esper.compat.threading.locks
         /// <param name="timeout">The timeout.</param>
         public void AcquireWriterLock(long timeout)
         {
-#if DIAGNOSTICS && DEBUG
-            Console.WriteLine("{0}:AcquireWriterLock:IN:{1}: {2}", Thread.CurrentThread.ManagedThreadId, _id, timeout);
-#endif
             if (_rwLock.TryEnterWriteLock((int) timeout)) {
-#if DIAGNOSTICS && DEBUG
-                Console.WriteLine("{0}:AcquireWriterLock:OUT:{1}: {2}", Thread.CurrentThread.ManagedThreadId, _id, timeout);
-#endif
                 return;
             }
-
-#if DIAGNOSTICS && DEBUG
-            Console.WriteLine("{0}:AcquireWriterLock:ERR:{1}: {2}", Thread.CurrentThread.ManagedThreadId, _id, timeout);
-#endif
             throw new TimeoutException("ReaderWriterLock timeout expired");
         }
 
@@ -202,18 +142,12 @@ namespace com.espertech.esper.compat.threading.locks
         /// </summary>
         public void ReleaseReaderLock()
         {
-#if DIAGNOSTICS && DEBUG
-            Console.WriteLine("{0}:ReleaseReaderLock:IN:{1}", Thread.CurrentThread.ManagedThreadId, _id);
-#endif
             if (_useUpgradeableLocks) {
                 _rwLock.ExitUpgradeableReadLock();
             }
             else {
                 _rwLock.ExitReadLock();
             }
-#if DIAGNOSTICS && DEBUG
-            Console.WriteLine("{0}:ReleaseReaderLock:OUT:{1}", Thread.CurrentThread.ManagedThreadId, _id);
-#endif
         }
 
         /// <summary>
@@ -221,13 +155,7 @@ namespace com.espertech.esper.compat.threading.locks
         /// </summary>
         public void ReleaseWriterLock()
         {
-#if DIAGNOSTICS && DEBUG
-            Console.WriteLine("{0}:ReleaseWriterLock:IN:{1}", Thread.CurrentThread.ManagedThreadId, _id);
-#endif
             _rwLock.ExitWriteLock();
-#if DIAGNOSTICS && DEBUG
-            Console.WriteLine("{0}:ReleaseWriterLock:OUT:{1}", Thread.CurrentThread.ManagedThreadId, _id);
-#endif
         }
     }
 }

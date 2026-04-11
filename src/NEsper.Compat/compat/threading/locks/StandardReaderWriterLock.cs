@@ -12,6 +12,7 @@ using System.Threading;
 
 namespace com.espertech.esper.compat.threading.locks
 {
+    [Obsolete("Use SlimReaderWriterLock instead. ReaderWriterLock (the underlying type) has known writer-starvation issues and worse performance than ReaderWriterLockSlim.")]
     public sealed class StandardReaderWriterLock
         : IReaderWriterLock,
             IReaderWriterLockCommon

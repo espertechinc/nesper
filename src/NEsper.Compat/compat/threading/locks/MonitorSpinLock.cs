@@ -11,6 +11,7 @@ using System.Threading;
 
 namespace com.espertech.esper.compat.threading.locks
 {
+    [Obsolete("MonitorSpinLock busy-spins on a CPU core for the full lock timeout duration under contention. Use MonitorLock for general-purpose locking or MonitorSlimLock for short-duration critical sections.")]
     public class MonitorSpinLock : ILockable
     {
         /// <summary>
@@ -90,22 +91,6 @@ namespace com.espertech.esper.compat.threading.locks
         {
             InternalAcquire((int) msec);
             return new TrackedDisposable(InternalRelease);
-        }
-
-        /// <summary>
-        /// Acquire the lock; the lock is released when the disposable
-        /// object that was returned is disposed IF the releaseLock
-        /// flag is set.
-        /// </summary>
-        /// <param name="releaseLock"></param>
-        /// <param name="msec"></param>
-        /// <returns></returns>
-        public IDisposable Acquire(bool releaseLock, long? msec = null)
-        {
-            InternalAcquire((int) (msec ?? _uLockTimeout));
-            if (releaseLock)
-                return new TrackedDisposable(InternalRelease);
-            return new VoidDisposable();
         }
 
         /// <summary>

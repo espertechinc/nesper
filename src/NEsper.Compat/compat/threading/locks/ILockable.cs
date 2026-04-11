@@ -24,16 +24,6 @@ namespace com.espertech.esper.compat.threading.locks
         IDisposable Acquire();
 
         /// <summary>
-        /// Acquire the lock; the lock is released when the disposable
-        /// object that was returned is disposed IF the releaseLock
-        /// flag is set.
-        /// </summary>
-        /// <param name="releaseLock"></param>
-        /// <param name="msec"></param>
-        /// <returns></returns>
-        IDisposable Acquire(bool releaseLock, long? msec = null);
-
-        /// <summary>
         /// Acquires the specified msec.
         /// </summary>
         /// <param name="msec">The msec.</param>

@@ -728,7 +728,7 @@ namespace com.espertech.esper.compat.magic
             return genericTypeCaster(value);
         }
 
-        private static readonly ILockable TypeCacheLock = new MonitorSpinLock(60000);
+        private static readonly ILockable TypeCacheLock = new MonitorSlimLock(60000);
 
         private static readonly Dictionary<Type, MagicType> TypeCacheTable =
             new Dictionary<Type, MagicType>();
@@ -750,7 +750,7 @@ namespace com.espertech.esper.compat.magic
             }
         }
 
-        private static readonly ILockable AccessorCacheLock = new MonitorSpinLock(60000);
+        private static readonly ILockable AccessorCacheLock = new MonitorSlimLock(60000);
 
         private static readonly Dictionary<MethodInfo, Func<object, object>> AccessorCacheTable =
             new Dictionary<MethodInfo, Func<object, object>>();
