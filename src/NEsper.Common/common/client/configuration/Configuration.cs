@@ -8,7 +8,7 @@
 
 using System;
 using System.IO;
-using System.Net;
+using System.Net.Http;
 using System.Reflection;
 using System.Text.Json.Serialization;
 using System.Xml;
@@ -38,6 +38,8 @@ namespace com.espertech.esper.common.client.configuration
 
         [NonSerialized]
         private IContainer _container;
+        [NonSerialized]
+        private IResourceManager _resourceManager;
 
         /// <summary>
         /// Default name of the configuration file.
@@ -50,14 +52,11 @@ namespace com.espertech.esper.common.client.configuration
         [JsonIgnore]
         public IContainer Container {
             get => _container;
-            set => _container = value;
+            set {
+                _container = value;
+                _resourceManager = Container?.Resolve<IResourceManager>();
+            }
         }
-
-        /// <summary>
-        /// Gets the resource manager.
-        /// </summary>
-        [JsonIgnore]
-        public IResourceManager ResourceManager => Container.ResourceManager();
 
         /// <summary>
         /// Returns the common section of the configuration.
@@ -181,8 +180,8 @@ namespace com.espertech.esper.common.client.configuration
             var stripped = resource.StartsWith("/", StringComparison.CurrentCultureIgnoreCase)
                 ? resource.Substring(1)
                 : resource;
-            var stream = ResourceManager.GetResourceAsStream(resource) ??
-                         ResourceManager.GetResourceAsStream(stripped);
+            var stream = _resourceManager.GetResourceAsStream(resource) ??
+                         _resourceManager.GetResourceAsStream(stripped);
             if (stream == null) {
                 throw new EPException(resource + " not found");
             }
@@ -204,16 +203,15 @@ namespace com.espertech.esper.common.client.configuration
                 Log.Debug("configuring from url: " + url);
             }
 
-            using (var webClient = new WebClient()) {
-                using (var stream = webClient.OpenRead(url)) {
-                    try {
-                        ConfigurationParser.DoConfigure(this, stream, url.ToString());
-                        return this;
-                    }
-                    catch (IOException ioe) {
-                        throw new EPException("could not configure from URL: " + url, ioe);
-                    }
-                }
+            using var httpClient = new HttpClient();
+            var bytes = httpClient.GetByteArrayAsync(url).GetAwaiter().GetResult();
+            using var stream = new MemoryStream(bytes);
+            try {
+                ConfigurationParser.DoConfigure(this, stream, url.ToString());
+                return this;
+            }
+            catch (IOException ioe) {
+                throw new EPException("could not configure from URL: " + url, ioe);
             }
         }
 

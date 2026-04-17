@@ -40,13 +40,13 @@ namespace com.espertech.esper.compiler.@internal.compiler.abstraction
 				.Cast<RoslynCompiler.Source>()
 				.ToList();
 
-			var container = context.Container;
 			var configuration = context.Services.Configuration.Compiler;
-			var repository = container.ArtifactRepositoryManager().DefaultRepository;
-			var compiler = container
-				.RoslynCompiler()
+			var repository = context.ArtifactRepository;
+			var compiler = new RoslynCompiler(
+					context.MetadataReferenceResolver,
+					() => context.CoreAssemblies)
 				.WithMetaDataReferences(repository.AllMetadataReferences)
-				.WithMetaDataReferences(container.MetadataReferenceProvider()?.Invoke())
+				.WithMetaDataReferences(context.MetadataReferenceProvider?.Invoke())
 				.WithDebugOptimization(configuration.IsDebugOptimization)
 				.WithCodeLogging(configuration.Logging.IsEnableCode)
 				.WithCodeAuditDirectory(configuration.Logging.AuditDirectory)
@@ -70,14 +70,14 @@ namespace com.espertech.esper.compiler.@internal.compiler.abstraction
 				.Select((_, index) => new RoslynCompiler.SourceBasic(Filename(index), _))
 				.Cast<RoslynCompiler.Source>()
 				.ToList();
-			
-			var container = context.Container;
+
 			var configuration = context.Services.Configuration.Compiler;
-			var repository = container.ArtifactRepositoryManager().DefaultRepository;
-			var compiler = container
-				.RoslynCompiler()
+			var repository = context.ArtifactRepository;
+			var compiler = new RoslynCompiler(
+					context.MetadataReferenceResolver,
+					() => context.CoreAssemblies)
 				.WithMetaDataReferences(repository.AllMetadataReferences)
-				.WithMetaDataReferences(container.MetadataReferenceProvider()?.Invoke())
+				.WithMetaDataReferences(context.MetadataReferenceProvider?.Invoke())
 				.WithDebugOptimization(configuration.IsDebugOptimization)
 				.WithCodeLogging(configuration.Logging.IsEnableCode)
 				.WithCodeAuditDirectory(configuration.Logging.AuditDirectory)

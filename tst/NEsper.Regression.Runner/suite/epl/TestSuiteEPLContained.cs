@@ -49,7 +49,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
         [Test, RunInApplicationDomain]
         public void TestEPLContainedEventExample()
         {
-            RegressionRunner.Run(_session, EPLContainedEventExample.Executions(_session.Container.ResourceManager()));
+            RegressionRunner.Run(_session, EPLContainedEventExample.Executions(_session.Container.Resolve<IResourceManager>()));
         }
 
         [Test, RunInApplicationDomain]
@@ -148,7 +148,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
             }
 
             var config = new ConfigurationCommonEventTypeXMLDOM();
-            var resourceManager = configuration.ResourceManager;
+            var resourceManager = configuration.Container.Resolve<IResourceManager>();
             config.SchemaResource = resourceManager.ResolveResourceURL("regression/mediaOrderSchema.xsd").ToString();
             config.RootElementName = "MediaOrder";
             configuration.Common.AddEventType("MediaOrder", config);

@@ -41,14 +41,13 @@ using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.common.@internal.view.previous;
 using com.espertech.esper.compat.directory;
 using com.espertech.esper.compat.threading.locks;
-using com.espertech.esper.container;
+using com.espertech.esper.compat.threading.threadlocal;
 
 namespace com.espertech.esper.common.@internal.context.util
 {
     public class StatementContextRuntimeServices
     {
         public StatementContextRuntimeServices(
-            IContainer container,
             Configuration configSnapshot,
             ContextManagementService contextManagementService,
             PathRegistry<string, ContextMetaData> contextPathRegistry,
@@ -94,9 +93,11 @@ namespace com.espertech.esper.common.@internal.context.util
             TableManagementService tableManagementService,
             VariableManagementService variableManagementService,
             ViewFactoryService viewFactoryService,
-            ViewServicePreviousFactory viewServicePreviousFactory)
+            ViewServicePreviousFactory viewServicePreviousFactory,
+            ILockManager lockManager,
+            IReaderWriterLockManager rwLockManager,
+            IThreadLocalManager threadLocalManager)
         {
-            Container = container;
             ConfigSnapshot = configSnapshot;
             ContextManagementService = contextManagementService;
             ContextPathRegistry = contextPathRegistry;
@@ -143,11 +144,13 @@ namespace com.espertech.esper.common.@internal.context.util
             VariableManagementService = variableManagementService;
             ViewFactoryService = viewFactoryService;
             ViewServicePreviousFactory = viewServicePreviousFactory;
+            LockManager = lockManager;
+            RWLockManager = rwLockManager;
+            ThreadLocalManager = threadLocalManager;
         }
 
-        public StatementContextRuntimeServices(IContainer container)
+        public StatementContextRuntimeServices()
         {
-            Container = container;
             ConfigSnapshot = null;
             ContextManagementService = null;
             ContextPathRegistry = null;
@@ -194,9 +197,14 @@ namespace com.espertech.esper.common.@internal.context.util
             VariableManagementService = null;
             ViewFactoryService = null;
             ViewServicePreviousFactory = null;
+            LockManager = null;
+            RWLockManager = null;
+            ThreadLocalManager = null;
         }
 
-        public IContainer Container { get; }
+        public ILockManager LockManager { get; }
+        public IReaderWriterLockManager RWLockManager { get; }
+        public IThreadLocalManager ThreadLocalManager { get; }
         public Configuration ConfigSnapshot { get; }
 
         public ContextManagementService ContextManagementService { get; }

@@ -9,7 +9,6 @@
 using System;
 
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
-using com.espertech.esper.container;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -17,13 +16,6 @@ namespace com.espertech.esper.common.@internal.util.serde
 {
     public class SerializerUtil
     {
-        public static byte[] ObjectToByteArr(
-            IContainer container,
-            object underlying)
-        {
-            return ObjectToByteArr(container.SerializerFactory(), underlying);
-        }
-
         /// <summary>Serialize object to byte array. </summary>
         /// <param name="underlying">to serialize</param>
         /// <returns>byte array</returns>

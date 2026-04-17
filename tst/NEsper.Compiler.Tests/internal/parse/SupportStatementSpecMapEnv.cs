@@ -16,16 +16,17 @@ using com.espertech.esper.common.@internal.epl.table.compiletime;
 using com.espertech.esper.common.@internal.epl.variable.compiletime;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.common.@internal.util.serde;
 using com.espertech.esper.container;
 
 namespace com.espertech.esper.compiler.@internal.parse
 {
 	public class SupportStatementSpecMapEnv
 	{
-		public static StatementSpecMapEnv Make(ImportServiceCompileTime engineImportService)
+		public static StatementSpecMapEnv Make(IContainer container, ImportServiceCompileTime engineImportService)
 		{
 			return new StatementSpecMapEnv(
-				engineImportService.Container,
+				container.Resolve<SerializerFactory>(),
 				engineImportService,
 				VariableCompileTimeResolverEmpty.INSTANCE,
 				new Configuration(),
@@ -39,7 +40,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 
 		public static StatementSpecMapEnv Make(IContainer container)
 		{
-			return Make(SupportImport.GetInstance(container));
+			return Make(container, SupportImport.GetInstance(container));
 		}
 	}
 } // end of namespace

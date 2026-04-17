@@ -10,7 +10,6 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.@internal.schedule;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.container;
 using com.espertech.esper.runtime.@internal.filtersvcimpl;
 using com.espertech.esper.runtime.@internal.kernel.service;
 using com.espertech.esper.runtime.@internal.schedulesvcimpl;
@@ -80,7 +79,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.stage
 			int stageId,
 			EPServicesContext servicesContext)
 		{
-			return new FilterServiceLockCoarse(servicesContext.Container.RWLockManager(), stageId);
+			return new FilterServiceLockCoarse(servicesContext.ReaderWriterLockManager, stageId);
 		}
 
 		protected override SchedulingServiceSPI MakeSchedulingService(

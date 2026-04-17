@@ -142,7 +142,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             public void Run(RegressionEnvironment env)
             {
                 var resource = "regression/test_module_12.epl";
-                var input = env.Container.ResourceManager().GetResourceAsStream(resource);
+                var input = env.ResourceManager.GetResourceAsStream(resource);
                 ClassicAssert.IsNotNull(input);
 
                 Module module;
@@ -525,7 +525,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             string message)
         {
             try {
-                env.Compiler.ReadModule(resource, env.Container.ResourceManager());
+                env.Compiler.ReadModule(resource, env.ResourceManager);
                 Assert.Fail();
             }
             catch (IOException ex) {
@@ -542,7 +542,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             string message)
         {
             try {
-                env.Compiler.ReadModule(resource, env.Container.ResourceManager());
+                env.Compiler.ReadModule(resource, env.ResourceManager);
                 Assert.Fail();
             }
             catch (IOException ex) {

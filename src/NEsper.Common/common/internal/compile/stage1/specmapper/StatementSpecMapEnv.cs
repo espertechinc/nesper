@@ -14,14 +14,14 @@ using com.espertech.esper.common.@internal.epl.script.compiletime;
 using com.espertech.esper.common.@internal.epl.table.compiletime;
 using com.espertech.esper.common.@internal.epl.variable.compiletime;
 using com.espertech.esper.common.@internal.settings;
-using com.espertech.esper.container;
+using com.espertech.esper.common.@internal.util.serde;
 
 namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
 {
     public class StatementSpecMapEnv
     {
         public StatementSpecMapEnv(
-            IContainer container,
+            SerializerFactory serializerFactory,
             ImportServiceCompileTime importService,
             VariableCompileTimeResolver variableCompileTimeResolver,
             Configuration configuration,
@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
             CompilerServices compilerServices,
             ClassProvidedExtension classProvidedExtension)
         {
-            Container = container;
+            SerializerFactory = serializerFactory;
             ImportService = importService;
             VariableCompileTimeResolver = variableCompileTimeResolver;
             Configuration = configuration;
@@ -44,8 +44,8 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
             ClassProvidedExtension = classProvidedExtension;
         }
 
-        public IContainer Container { get; }
-        
+        public SerializerFactory SerializerFactory { get; }
+
         public ImportServiceCompileTime ImportService { get; }
 
         public VariableCompileTimeResolver VariableCompileTimeResolver { get; }

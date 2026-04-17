@@ -20,8 +20,8 @@ namespace com.espertech.esper.common.@internal.util
         [Test]
         public void TestResolveResourceAsURL()
         {
-            Assert.That(container.ResourceManager().ResolveResourceURL("somefile"), Is.Null);
-            Assert.That(container.ResourceManager().ResolveResourceURL(TEST_RESOURCE), Is.Not.Null);
+            Assert.That(ResourceManager.ResolveResourceURL("somefile"), Is.Null);
+            Assert.That(ResourceManager.ResolveResourceURL(TEST_RESOURCE), Is.Not.Null);
         }
     }
 } // end of namespace

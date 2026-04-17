@@ -1,4 +1,4 @@
-///////////////////////////////////////////////////////////////////////////////////////
+﻿///////////////////////////////////////////////////////////////////////////////////////
 // Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
@@ -91,7 +91,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     .Add(Expressions.BinaryAnd().Add("BoolPrimitive").Add("BoolBoxed"), "myFifthProperty");
 
                 model.FromClause = FromClause.Create(FilterStream.Create(nameof(SupportBean)));
-                model = SerializableObjectCopier.GetInstance(env.Container).Copy(model);
+                model = SerializableObjectCopier.GetInstance(env.Container.Resolve<com.espertech.esper.common.client.util.TypeResolverProvider>().TypeResolver).Copy(model);
                 ClassicAssert.AreEqual(EPL, model.ToEPL());
 
                 env.CompileDeploy("@name('s0')  " + EPL).AddListener("s0");

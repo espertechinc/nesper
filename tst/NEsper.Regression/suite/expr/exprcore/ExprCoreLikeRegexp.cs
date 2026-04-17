@@ -261,7 +261,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     .Add(Expressions.Regexp(Expressions.Property("P02"), Expressions.Property("P03")), "r3");
 
                 model.FromClause = FromClause.Create(FilterStream.Create("SupportBean_S0"));
-                model = SerializableObjectCopier.GetInstance(env.Container).Copy(model);
+                model = SerializableObjectCopier.GetInstance(env.Container.Resolve<com.espertech.esper.common.client.util.TypeResolverProvider>().TypeResolver).Copy(model);
                 ClassicAssert.AreEqual(stmtText, model.ToEPL());
 
                 var compiled = env.Compile(model, new CompilerArguments(env.Configuration));
@@ -283,7 +283,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                           "from SupportBean_S0";
 
                 var model = env.EplToModel(epl);
-                model = SerializableObjectCopier.GetInstance(env.Container).Copy(model);
+                model = SerializableObjectCopier.GetInstance(env.Container.Resolve<com.espertech.esper.common.client.util.TypeResolverProvider>().TypeResolver).Copy(model);
                 ClassicAssert.AreEqual(epl, model.ToEPL());
 
                 var compiled = env.Compile(model, new CompilerArguments(env.Configuration));

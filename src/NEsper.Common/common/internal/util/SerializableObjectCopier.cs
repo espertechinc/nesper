@@ -16,7 +16,6 @@ using System.Runtime.Serialization.Formatters.Binary;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.util.serde;
 using com.espertech.esper.compat;
-using com.espertech.esper.container;
 
 namespace com.espertech.esper.common.@internal.util
 {
@@ -25,15 +24,17 @@ namespace com.espertech.esper.common.@internal.util
     /// </summary>
     public class SerializableObjectCopier : IObjectCopier
     {
-        private readonly IContainer _container;
+        private readonly TypeResolver _typeResolver;
+        private readonly ObjectSerializer _serializer;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SerializableObjectCopier"/> class.
         /// </summary>
-        /// <param name="container">The container.</param>
-        public SerializableObjectCopier(IContainer container)
+        /// <param name="typeResolver">The type resolver for serialization.</param>
+        public SerializableObjectCopier(TypeResolver typeResolver)
         {
-            _container = container;
+            _typeResolver = typeResolver ?? TypeResolverDefault.INSTANCE;
+            _serializer = new ObjectSerializer(_typeResolver);
         }
 
         /// <summary>
@@ -62,26 +63,8 @@ namespace com.espertech.esper.common.@internal.util
         public T Copy<T>(T orig)
         {
 #if NET6_0_OR_GREATER
-            TypeResolver typeResolver;
-
-            if (_container.Has<TypeResolver>()) {
-                typeResolver = _container.Resolve<TypeResolver>();
-            } else if (_container.Has<TypeResolverProvider>()) {
-                typeResolver = _container.Resolve<TypeResolverProvider>().TypeResolver;
-            } else {
-                typeResolver = TypeResolverDefault.INSTANCE;
-            }
-
-            lock (_container) {
-                if (!_container.Has<ObjectSerializer>()) {
-                    _container.Register<ObjectSerializer>(ic => new ObjectSerializer(typeResolver), Lifespan.Singleton);
-                }
-            }
-
-            var serializer = _container.Resolve<ObjectSerializer>();
-            //var serializer = new ObjectSerializer(typeResolver);
-            var serialized = serializer.SerializeAny(orig);
-            var deserialized = serializer.DeserializeAny(serialized);
+            var serialized = _serializer.SerializeAny(orig);
+            var deserialized = _serializer.DeserializeAny(serialized);
             return (T)deserialized;
 #else
             // Create the formatter
@@ -89,7 +72,7 @@ namespace com.espertech.esper.common.@internal.util
             formatter.FilterLevel = TypeFilterLevel.Full;
             formatter.AssemblyFormat = FormatterAssemblyStyle.Full;
             formatter.TypeFormat = FormatterTypeStyle.TypesAlways;
-            formatter.Context = new StreamingContext(StreamingContextStates.Clone, container);
+            formatter.Context = new StreamingContext(StreamingContextStates.Clone, _typeResolver);
             formatter.Binder = new TypeSerializationBinder();
             formatter.SurrogateSelector = new TypeSurrogateSelector();
 
@@ -104,17 +87,16 @@ namespace com.espertech.esper.common.@internal.util
 #endif
         }
 
-        public static IObjectCopier GetInstance(IContainer container)
+        public static IObjectCopier GetInstance(TypeResolver typeResolver)
         {
-            return container.ResolveSingleton<IObjectCopier>(
-                () => new SerializableObjectCopier(container));
+            return new SerializableObjectCopier(typeResolver);
         }
 
         public static T CopyMayFail<T>(
-            IContainer container,
+            TypeResolver typeResolver,
             T input)
         {
-            return GetInstance(container).Copy<T>(input);
+            return GetInstance(typeResolver).Copy<T>(input);
         }
 
         /// <summary>

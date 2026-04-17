@@ -22,8 +22,8 @@ using com.espertech.esper.common.@internal.epl.table.compiletime;
 using com.espertech.esper.common.@internal.epl.variable.compiletime;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.common.@internal.util.serde;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.container;
 
 namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
 {
@@ -63,12 +63,8 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
 
         public VariableCompileTimeResolver VariableCompileTimeResolver => MapEnv.VariableCompileTimeResolver;
 
-        /// <summary>
-        ///     Returns the container;
-        /// </summary>
-        /// <value> the container</value>
-        public IContainer Container => MapEnv.Container;
-        
+        public SerializerFactory SerializerFactory => MapEnv.SerializerFactory;
+
         /// <summary>
         ///     Returns the runtime import service.
         /// </summary>

@@ -67,18 +67,18 @@ namespace com.espertech.esper.compiler.client.util
 		/// Reads the assembly into an <seealso cref="EPCompiled" /> compiled for deployment
 		/// into a runtime.
 		/// </summary>
-		/// <param name="container">The container</param>
+		/// <param name="artifactRepositoryManager">The artifact repository manager</param>
 		/// <param name="fileInfo">The file containing the assembly</param>
 		/// <returns>compiled</returns>
 		/// <throws>IOException when the read failed</throws>
-		public static EPCompiled Read(IContainer container, FileInfo fileInfo)
+		public static EPCompiled Read(IArtifactRepositoryManager artifactRepositoryManager, FileInfo fileInfo)
 		{
 			var image = File.ReadAllBytes(fileInfo.FullName);
 			var unit = new EPCompilationUnit() {
 				Image = image,
 				TypeNames = new EmptySet<string>()
 			};
-			var repository = container.ArtifactRepositoryManager().DefaultRepository;
+			var repository = artifactRepositoryManager.DefaultRepository;
 			var artifact = repository.Register(unit);
 			var assembly = artifact.Runtime.Assembly;
 			var attributes = assembly

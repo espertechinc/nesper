@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.compat;
 using com.espertech.esper.container;
@@ -16,15 +17,22 @@ namespace com.espertech.esper.common.@internal.support
     {
         public static ImportServiceCompileTime GetInstance(IContainer container)
         {
-            return container.ResolveSingleton(
-                () => new ImportServiceCompileTimeImpl(
-                    container,
+            lock (container) {
+                if (container.Has<ImportServiceCompileTime>()) {
+                    return container.Resolve<ImportServiceCompileTime>();
+                }
+                var instance = new ImportServiceCompileTimeImpl(
+                    container.Resolve<TypeResolverProvider>(),
+                    container.Resolve<IResourceManager>(),
                     null,
                     null,
                     null,
                     MathContext.DECIMAL32,
                     false,
-                    false));
+                    false);
+                container.Register<ImportServiceCompileTime>(instance, Lifespan.Singleton, null);
+                return instance;
+            }
         }
     }
 } // end of namespace

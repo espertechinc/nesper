@@ -32,7 +32,16 @@ namespace com.espertech.esper.runtime.@internal.support
         /// <returns></returns>
         public static SupportEventTypeFactory GetInstance(IContainer container)
         {
-            return container.ResolveSingleton(() => new SupportEventTypeFactory(container));
+            lock (container)
+            {
+                if (container.Has<SupportEventTypeFactory>())
+                {
+                    return container.Resolve<SupportEventTypeFactory>();
+                }
+                var instance = new SupportEventTypeFactory(container);
+                container.Register<SupportEventTypeFactory>(instance, Lifespan.Singleton, null);
+                return instance;
+            }
         }
 
         public IContainer Container { get; set; }
@@ -65,7 +74,7 @@ namespace com.espertech.esper.runtime.@internal.support
 
             BEAN_EVENT_TYPE_FACTORY = new BeanEventTypeFactoryPrivate(
                 new EventBeanTypedEventFactoryRuntime(null),
-                EventTypeFactoryImpl.GetInstance(container),
+                new EventTypeFactoryImpl(container.Resolve<IObjectCopier>()),
                 BEAN_STEM_SVC);
 
             METADATA_CLASS = name => new EventTypeMetadata(
@@ -130,7 +139,7 @@ namespace com.espertech.esper.runtime.@internal.support
         private BeanEventType MakeType(Type clazz)
         {
             return new BeanEventType(
-                Container,
+                Container.Resolve<IObjectCopier>(),
                 STEM_BUILDER.Make(clazz),
                 METADATA_CLASS.Invoke(clazz.Name),
                 BEAN_EVENT_TYPE_FACTORY,

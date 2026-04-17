@@ -12,11 +12,11 @@ using System.Collections.Generic;
 using com.espertech.esper.common.client.artifact;
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.client.configuration.common;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.epl.expression.time.abacus;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.container;
 
 namespace com.espertech.esper.common.@internal.settings
 {
@@ -26,7 +26,8 @@ namespace com.espertech.esper.common.@internal.settings
         private readonly IArtifactRepository _artifactRepository;
 
         public ImportServiceRuntime(
-            IContainer container,
+            TypeResolverProvider typeResolverProvider,
+            IResourceManager resourceManager,
             IDictionary<string, object> transientConfiguration,
             TimeAbacus timeAbacus,
             ISet<string> eventTypeAutoNames,
@@ -35,7 +36,7 @@ namespace com.espertech.esper.common.@internal.settings
             IList<Import> imports,
             IList<Import> annotationImports,
             IArtifactRepository artifactRepositoryDefault)
-            : base(container, transientConfiguration, timeAbacus, eventTypeAutoNames)
+            : base(typeResolverProvider, resourceManager, transientConfiguration, timeAbacus, eventTypeAutoNames)
         {
             TimeZone = timeZone;
 
@@ -59,7 +60,7 @@ namespace com.espertech.esper.common.@internal.settings
         public TimeZoneInfo TimeZone { get; }
 
         public override TypeResolver TypeResolver => TransientConfigurationResolver
-            .ResolveTypeResolver(Container, TransientConfiguration, _artifactRepository.TypeResolver);
+            .ResolveTypeResolver(_typeResolverProvider, TransientConfiguration, _artifactRepository.TypeResolver);
 
         public ConfigurationCommonMethodRef GetConfigurationMethodRef(string configurationName)
         {

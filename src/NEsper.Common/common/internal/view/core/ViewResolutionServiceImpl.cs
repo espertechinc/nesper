@@ -14,7 +14,6 @@ using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.common.@internal.util.serde;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.logging;
-using com.espertech.esper.container;
 
 namespace com.espertech.esper.common.@internal.view.core
 {
@@ -25,14 +24,14 @@ namespace com.espertech.esper.common.@internal.view.core
     {
         private static readonly ILog Log = LogManager.GetLogger(typeof(ViewResolutionServiceImpl));
 
-        private readonly IContainer container;
+        private readonly SerializerFactory serializerFactory;
         private readonly PluggableObjectRegistry viewObjects;
 
         public ViewResolutionServiceImpl(
-            IContainer container,
+            SerializerFactory serializerFactory,
             PluggableObjectRegistry viewObjects)
         {
-            this.container = container;
+            this.serializerFactory = serializerFactory;
             this.viewObjects = viewObjects;
         }
 
@@ -59,7 +58,7 @@ namespace com.espertech.esper.common.@internal.view.core
                     }
 
                     return new VirtualDWViewFactoryForge(
-                        container.SerializerFactory(),
+                        serializerFactory,
                         pair.First,
                         optionalCreateNamedWindowName,
                         pair.Second.CustomConfigs);

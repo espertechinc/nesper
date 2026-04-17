@@ -58,7 +58,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
         {
             public void Run(RegressionEnvironment env)
             {
-                var schemaUriSimpleSchema = env.Container.ResourceManager()
+                var schemaUriSimpleSchema = env.ResourceManager
                     .ResolveResourceURL("regression/simpleSchema.xsd")
                     .ToString();
                 var epl = "@public @buseventtype " +

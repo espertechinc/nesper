@@ -8,6 +8,7 @@
 
 using System.Threading;
 
+using com.espertech.esper.common.client.artifact;
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.@internal.compile.compiler;
 using com.espertech.esper.common.@internal.compile.stage1;
@@ -36,9 +37,13 @@ using com.espertech.esper.common.@internal.serde.compiletime.eventtype;
 using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.statemgmtsettings;
+using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.common.@internal.util.serde;
 using com.espertech.esper.common.@internal.view.core;
+using com.espertech.esper.common.client.util;
+using com.espertech.esper.compat;
+using com.espertech.esper.compat.threading.threadlocal;
 using com.espertech.esper.container;
-
 
 namespace com.espertech.esper.common.@internal.compile.stage3
 {
@@ -47,10 +52,17 @@ namespace com.espertech.esper.common.@internal.compile.stage3
         private static long _generation = 0L;
 
         public ModuleCompileTimeServices(
-            IContainer container,
+            IObjectCopier objectCopier,
+            IThreadLocalManager threadLocalManager,
+            SerializerFactory serializerFactory,
             CompilerAbstraction compilerAbstraction,
             CompilerServices compilerServices,
             Configuration configuration,
+            IArtifactRepository artifactRepository,
+            MetadataReferenceResolver metadataReferenceResolver,
+            MetadataReferenceProvider metadataReferenceProvider,
+            TypeResolverProvider typeResolverProvider,
+            IResourceManager resourceManager,
             ClassProvidedCompileTimeRegistry classProvidedCompileTimeRegistry,
             ClassProvidedCompileTimeResolver classProvidedCompileTimeResolver,
             ContextCompileTimeRegistry contextCompileTimeRegistry,
@@ -91,12 +103,19 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 
             Namespace = $"generation_{generation}";
 
-            Container = container;
+            ObjectCopier = objectCopier;
+            ThreadLocalManager = threadLocalManager;
+            SerializerFactory = serializerFactory;
             CompilerAbstraction = compilerAbstraction;
             ParentTypeResolver = parentTypeResolver;
             StateMgmtSettingsProvider = stateMgmtSettingsProvider;
+            TypeResolverProvider = typeResolverProvider;
+            ResourceManager = resourceManager;
             CompilerServices = compilerServices;
             Configuration = configuration;
+            ArtifactRepository = artifactRepository;
+            MetadataReferenceResolver = metadataReferenceResolver;
+            MetadataReferenceProvider = metadataReferenceProvider;
             ClassProvidedCompileTimeRegistry = classProvidedCompileTimeRegistry;
             ClassProvidedCompileTimeResolver = classProvidedCompileTimeResolver;
             ContextCompileTimeRegistry = contextCompileTimeRegistry;
@@ -132,16 +151,23 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             XmlFragmentEventTypeFactory = xmlFragmentEventTypeFactory;
         }
 
-        public ModuleCompileTimeServices(IContainer container)
+        public ModuleCompileTimeServices()
         {
-            Container = container;
+            ObjectCopier = null;
+            ThreadLocalManager = null;
+            SerializerFactory = null;
             CompilerAbstraction = null;
             ClassProvidedCompileTimeRegistry = null;
             ClassProvidedCompileTimeResolver = null;
             ParentTypeResolver = null;
             StateMgmtSettingsProvider = null;
+            TypeResolverProvider = null;
+            ResourceManager = null;
             CompilerServices = null;
             Configuration = null;
+            ArtifactRepository = null;
+            MetadataReferenceResolver = null;
+            MetadataReferenceProvider = null;
             ContextCompileTimeRegistry = null;
             ContextCompileTimeResolver = null;
             BeanEventTypeStemService = null;
@@ -174,7 +200,11 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             XmlFragmentEventTypeFactory = null;
         }
 
-        public IContainer Container { get; }
+        public IObjectCopier ObjectCopier { get; }
+
+        public IThreadLocalManager ThreadLocalManager { get; }
+
+        public SerializerFactory SerializerFactory { get; }
 
         public BeanEventTypeStemService BeanEventTypeStemService { get; }
 
@@ -187,6 +217,12 @@ namespace com.espertech.esper.common.@internal.compile.stage3
         public CompilerServices CompilerServices { get; }
 
         public Configuration Configuration { get; set; }
+
+        public IArtifactRepository ArtifactRepository { get; }
+
+        public MetadataReferenceResolver MetadataReferenceResolver { get; }
+
+        public MetadataReferenceProvider MetadataReferenceProvider { get; }
 
         public ContextCompileTimeRegistry ContextCompileTimeRegistry { get; }
 
@@ -257,5 +293,9 @@ namespace com.espertech.esper.common.@internal.compile.stage3
         public ClassProvidedCompileTimeRegistry ClassProvidedCompileTimeRegistry { get; }
 
         public StateMgmtSettingsProvider StateMgmtSettingsProvider { get; }
+
+        public TypeResolverProvider TypeResolverProvider { get; }
+
+        public IResourceManager ResourceManager { get; }
     }
 } // end of namespace

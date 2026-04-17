@@ -243,7 +243,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
                         else if (selectFromType is BeanEventType) {
                             var beanType = (BeanEventType)selectFromType;
                             targetType = new BeanEventType(
-                                services.Container,
+                                services.ObjectCopier,
                                 beanType.Stem,
                                 metadata.Invoke(EventTypeApplicationType.CLASS),
                                 services.BeanEventTypeFactoryPrivate,

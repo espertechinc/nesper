@@ -6,6 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.function;
@@ -25,7 +27,8 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 
         void Initialize(Consumer<EPRuntimeSPIRunAfterDestroyCtx> runAfterDestroy);
 
-        IContainer Container { get; }
+        [Obsolete("RuntimeContainer is scheduled for removal. Use explicit constructor injection for services needed at startup.")]
+        IContainer RuntimeContainer { get; }
 
         EPServicesContext ServicesContext { get; }
 

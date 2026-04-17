@@ -25,7 +25,6 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
             StatementCompileTimeServices services)
         {
             var forgeablesResult = StmtForgeMethodSelectUtil.Make(
-                services.Container,
                 false,
                 @namespace,
                 classPostfix,

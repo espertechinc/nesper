@@ -22,18 +22,18 @@ using com.espertech.esper.common.@internal.@event.json.core;
 using com.espertech.esper.common.@internal.@event.map;
 using com.espertech.esper.common.@internal.@event.variant;
 using com.espertech.esper.common.@internal.@event.xml;
-using com.espertech.esper.container;
+using com.espertech.esper.common.@internal.util;
 
 namespace com.espertech.esper.common.@internal.@event.eventtypefactory
 {
     public class EventTypeFactoryImpl : EventTypeFactory
     {
-        private EventTypeFactoryImpl(IContainer container)
-        {
-            Container = container;
-        }
+        private readonly IObjectCopier _objectCopier;
 
-        public IContainer Container { get; }
+        public EventTypeFactoryImpl(IObjectCopier objectCopier)
+        {
+            _objectCopier = objectCopier;
+        }
 
         public BeanEventType CreateBeanType(
             BeanEventTypeStem stem,
@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.@event.eventtypefactory
             string endTimestampPropertyName)
         {
             return new BeanEventType(
-                Container,
+                _objectCopier,
                 stem,
                 metadata,
                 beanEventTypeFactory,
@@ -189,9 +189,9 @@ namespace com.espertech.esper.common.@internal.@event.eventtypefactory
                 false);
         }
 
-        public static EventTypeFactoryImpl GetInstance(IContainer container)
+        public static EventTypeFactoryImpl GetInstance(IObjectCopier objectCopier)
         {
-            return container.ResolveSingleton(() => new EventTypeFactoryImpl(container));
+            return new EventTypeFactoryImpl(objectCopier);
         }
     }
 } // end of namespace

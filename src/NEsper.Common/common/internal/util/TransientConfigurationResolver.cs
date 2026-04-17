@@ -12,7 +12,6 @@ using System.Collections.Generic;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.logging;
-using com.espertech.esper.container;
 
 namespace com.espertech.esper.common.@internal.util
 {
@@ -20,47 +19,28 @@ namespace com.espertech.esper.common.@internal.util
     {
         private static readonly ILog Log = LogManager.GetLogger(typeof(TransientConfigurationResolver));
 
-#if DEPRECATED
-        public static ClassForNameProvider ResolveClassForNameProvider(
-            IContainer container,
-            IDictionary<string, object> transientConfiguration)
-        {
-            return Resolve(
-                transientConfiguration,
-                container.Resolve<ClassForNameProvider>(),
-                ClassForNameProviderDefault.NAME,
-                typeof(ClassForNameProvider));
-        }
-#endif
-
         public static TypeResolverProvider ResolveTypeResolverProvider(
-            IContainer container,
+            TypeResolverProvider defaultProvider,
             IDictionary<string, object> transientConfiguration)
         {
             return Resolve(
                 transientConfiguration,
-                container.Resolve<TypeResolverProvider>(),
+                defaultProvider,
                 TypeResolverProviderDefault.NAME,
                 typeof(TypeResolverProvider));
         }
 
         public static TypeResolver ResolveTypeResolver(
-            IContainer container,
+            TypeResolverProvider defaultTypeResolverProvider,
             IDictionary<string, object> transientConfiguration,
             TypeResolver typeResolverDefault = null)
         {
-            if (typeResolverDefault == null) {
-                if (container.Has<TypeResolver>()) {
-                    typeResolverDefault = container.Resolve<TypeResolver>();
-                }
-            }
-
             var typeResolver = Resolve(
                 transientConfiguration,
                 typeResolverDefault,
                 TypeResolverConstants.NAME,
                 typeof(TypeResolver));
-            return typeResolver ?? ResolveTypeResolverProvider(container, transientConfiguration).TypeResolver;
+            return typeResolver ?? ResolveTypeResolverProvider(defaultTypeResolverProvider, transientConfiguration).TypeResolver;
         }
 
         private static T Resolve<T>(

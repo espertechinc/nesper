@@ -1,4 +1,4 @@
-///////////////////////////////////////////////////////////////////////////////////////
+﻿///////////////////////////////////////////////////////////////////////////////////////
 // Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
@@ -25,6 +25,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
 using com.espertech.esper.compiler.client;
 using com.espertech.esper.container;
+using com.espertech.esper.compat.threading.locks;
 using com.espertech.esper.runtime.client;
 using com.espertech.esper.runtime.client.scopetest;
 
@@ -33,6 +34,10 @@ namespace com.espertech.esper.regressionlib.framework
     public interface RegressionEnvironment
     {
         IContainer Container { get; }
+
+        IResourceManager ResourceManager { get; }
+
+        ILockManager LockManager { get; }
 
         Configuration Configuration { get; }
 
@@ -546,7 +551,7 @@ namespace com.espertech.esper.regressionlib.framework
         {
             try {
                 return SerializableObjectCopier
-                    .GetInstance(env.Container)
+                    .GetInstance(env.Container.Resolve<com.espertech.esper.common.client.util.TypeResolverProvider>().TypeResolver)
                     .Copy(orig);
             }
             catch (Exception) {

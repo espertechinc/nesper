@@ -7,7 +7,13 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+
+#if NETCOREAPP3_0_OR_GREATER
+using System.Runtime.Loader;
+#endif
 
 using com.espertech.esper.common.client.artifact;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -99,13 +105,13 @@ namespace com.espertech.esper.compiler.@internal.util
 
         public ICompileArtifact Compile(CompileRequest request)
         {
-            var configuration = request.ModuleCompileTimeServices.Configuration;
-            var container = request.ModuleCompileTimeServices.Container;
-            var repository = container.ArtifactRepositoryManager().DefaultRepository;
-            var compiler = container
-                .RoslynCompiler()
+            var services = request.ModuleCompileTimeServices;
+            var configuration = services.Configuration;
+            var repository = services.ArtifactRepository;
+
+            var compiler = new RoslynCompiler(services.MetadataReferenceResolver,GetCoreAssemblies)
                 .WithMetaDataReferences(repository.AllMetadataReferences)
-                .WithMetaDataReferences(container.MetadataReferenceProvider()?.Invoke())
+                .WithMetaDataReferences(services.MetadataReferenceProvider?.Invoke())
                 .WithDebugOptimization(configuration.Compiler.IsDebugOptimization)
                 .WithCodeLogging(configuration.Compiler.Logging.IsEnableCode)
                 .WithCodeAuditDirectory(configuration.Compiler.Logging.AuditDirectory)
@@ -115,6 +121,15 @@ namespace com.espertech.esper.compiler.@internal.util
                         .ToList<RoslynCompiler.Source>());
 
             return repository.Register(compiler.Compile());
+        }
+
+        private static IEnumerable<Assembly> GetCoreAssemblies()
+        {
+#if NETCOREAPP3_0_OR_GREATER
+            return AssemblyLoadContext.Default.Assemblies;
+#else
+            return AppDomain.CurrentDomain.GetAssemblies();
+#endif
         }
     }
 } // end of namespace

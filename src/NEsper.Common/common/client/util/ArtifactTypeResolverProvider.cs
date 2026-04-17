@@ -1,18 +1,17 @@
 ﻿using com.espertech.esper.common.client.artifact;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
-using com.espertech.esper.container;
 
 namespace com.espertech.esper.common.client.util
 {
     public class ArtifactTypeResolverProvider : TypeResolverProvider
     {
-        private readonly IContainer _container;
+        private readonly IArtifactRepositoryManager _artifactRepositoryManager;
         private ArtifactTypeResolver typeResolver;
 
-        public ArtifactTypeResolverProvider(IContainer container)
+        public ArtifactTypeResolverProvider(IArtifactRepositoryManager artifactRepositoryManager)
         {
-            _container = container;
+            _artifactRepositoryManager = artifactRepositoryManager;
         }
 
         public TypeResolver TypeResolver {
@@ -20,7 +19,7 @@ namespace com.espertech.esper.common.client.util
                 lock (this) {
                     if (typeResolver == null) {
                         var parentClassLoader = TypeResolverDefault.INSTANCE;
-                        var defaultArtifactRepository = _container.ArtifactRepositoryManager().DefaultRepository;
+                        var defaultArtifactRepository = _artifactRepositoryManager.DefaultRepository;
                         typeResolver = new ArtifactTypeResolver(defaultArtifactRepository, parentClassLoader);
                     }
 

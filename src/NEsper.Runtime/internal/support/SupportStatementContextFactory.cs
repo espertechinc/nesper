@@ -9,19 +9,16 @@
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.schedule;
-using com.espertech.esper.container;
 
 namespace com.espertech.esper.runtime.@internal.support
 {
     public class SupportStatementContextFactory
     {
         public static StatementContext MakeContext(
-            IContainer container,
             int statementId)
         {
             StatementInformationalsRuntime informationals = new StatementInformationalsRuntime();
             return new StatementContext(
-                container,
                 null,
                 "deployment1",
                 statementId,
@@ -29,7 +26,7 @@ namespace com.espertech.esper.runtime.@internal.support
                 null,
                 informationals,
                 null,
-                new StatementContextRuntimeServices(container),
+                new StatementContextRuntimeServices(),
                 null,
                 null,
                 null,

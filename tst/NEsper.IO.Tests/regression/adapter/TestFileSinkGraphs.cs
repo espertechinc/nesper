@@ -13,6 +13,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.client.dataflow.core;
 using com.espertech.esper.common.@internal.epl.dataflow.util;
+using com.espertech.esper.compat;
 using com.espertech.esper.container;
 using com.espertech.esper.runtime.client;
 using com.espertech.esperio.file;
@@ -39,7 +40,7 @@ namespace com.espertech.esperio.regression.adapter
 			configuration.Common.AddImportNamespace(typeof(DefaultSupportSourceOpForge));
 			configuration.Common.EventMeta.IsEnableXmlXsd = true;
 			
-			DefaultSupportGraphEventUtil.AddTypeConfiguration(configuration);
+			DefaultSupportGraphEventUtil.AddTypeConfiguration(configuration, configuration.Container.Resolve<IResourceManager>());
 			_runtimeProvider = new EPRuntimeProvider();
 			_runtime = _runtimeProvider.GetDefaultRuntimeInstance(configuration);
 			_runtime.Initialize();
@@ -74,7 +75,7 @@ namespace com.espertech.esperio.regression.adapter
 			string message)
 		{
 			var stmtGraph = CompileDeploy(_runtime, epl).Statements[0];
-			var outputOp = new DefaultSupportCaptureOp(container.LockManager());
+			var outputOp = new DefaultSupportCaptureOp(LockManager);
 			try {
 				_runtime.DataFlowService.Instantiate(
 					stmtGraph.DeploymentId,

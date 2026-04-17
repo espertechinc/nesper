@@ -42,7 +42,6 @@ using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
-using com.espertech.esper.container;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -56,7 +55,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         
-        private readonly IContainer _container;
+        private readonly IObjectCopier _objectCopier;
         private readonly IList<SelectClauseExprCompiledSpec> _selectionList;
         private readonly IList<SelectExprStreamDesc> _selectedStreams;
         private readonly SelectProcessorArgs _args;
@@ -68,7 +67,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
             SelectProcessorArgs args,
             InsertIntoDesc insertIntoDesc)
         {
-            _container = args.Container;
+            _objectCopier = args.ObjectCopier;
             _selectionList = selectionList;
             _selectedStreams = selectedStreams;
             _args = args;
@@ -105,7 +104,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                 false,
                 EventTypeIdPair.Unassigned());
             var type = new BeanEventType(
-                _container,
+                _objectCopier,
                 stem,
                 metadata,
                 beanEventTypeFactoryProtected,
@@ -1150,7 +1149,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                                         false,
                                         EventTypeIdPair.Unassigned());
                                     underlyingEventType = new BeanEventType(
-                                        _container,
+                                        _objectCopier,
                                         stem,
                                         metadata,
                                         beanEventTypeFactoryProtected,
@@ -1960,7 +1959,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                                     false,
                                     EventTypeIdPair.Unassigned());
                                 var newBeanType = new BeanEventType(
-                                    _container,
+                                    _objectCopier,
                                     beanEventType.Stem,
                                     metadata,
                                     beanEventTypeFactoryProtected,
@@ -2280,7 +2279,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                                         false,
                                         EventTypeIdPair.Unassigned());
                                     existingType = new BeanEventType(
-                                        _container,
+                                        _objectCopier,
                                         stem,
                                         metadata,
                                         beanEventTypeFactoryProtected,

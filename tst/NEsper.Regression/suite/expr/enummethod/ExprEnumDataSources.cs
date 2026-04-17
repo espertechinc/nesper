@@ -972,7 +972,6 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 env.SendEventBean(new SupportBean());
                 env.AssertEqualsNew("s0", "flag", false);
 
-                Console.WriteLine("Critical Event");
                 env.SendEventMap(MakeBEvent("GE"), "BEvent");
                 env.SendEventBean(new SupportBean());
                 env.AssertEqualsNew("s0", "flag", true);

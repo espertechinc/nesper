@@ -45,8 +45,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             filterCallback = new SupportFilterHandle();
             handleSetNode.Add(filterCallback);
 
-            testIndex = new EventTypeIndex(new FilterServiceGranularLockFactoryReentrant(
-                Container.RWLockManager()));
+            testIndex = new EventTypeIndex(MakeGranularLockFactory());
             testIndex.Add(testEventType, handleSetNode);
         }
 

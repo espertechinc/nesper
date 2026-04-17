@@ -1,4 +1,4 @@
-///////////////////////////////////////////////////////////////////////////////////////
+﻿///////////////////////////////////////////////////////////////////////////////////////
 // Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
@@ -11,6 +11,7 @@ using System.Linq;
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.client.dataflow.core;
 using com.espertech.esper.common.@internal.epl.dataflow.util;
+using com.espertech.esper.compat;
 using com.espertech.esper.container;
 using com.espertech.esper.runtime.client;
 using com.espertech.esperio.csv;
@@ -57,7 +58,7 @@ namespace com.espertech.esperio.regression.adapter
             stmt.Events += listener.Update;
 
             var inputAdapter = new CSVInputAdapter(
-                _runtime, new AdapterInputSource(_container, CSV_FILENAME_ONELINE_TRADE), "ExampleMarketDataBeanReadWrite");
+                _runtime, new AdapterInputSource(_container.Resolve<IResourceManager>(), CSV_FILENAME_ONELINE_TRADE), "ExampleMarketDataBeanReadWrite");
             inputAdapter.Start();
  
             ClassicAssert.AreEqual(1, listener.GetNewDataList().Count);

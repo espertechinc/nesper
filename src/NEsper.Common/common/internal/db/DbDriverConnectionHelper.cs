@@ -10,6 +10,7 @@ using System;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration.common;
+using com.espertech.esper.common.client.db;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.container;
 
@@ -61,36 +62,12 @@ namespace com.espertech.esper.common.@internal.db
             throw new EPException("Unable to resolve type for driver '" + driverName + "'");
         }
 
-        /// <summary>
-        /// Resolves the driver from the name.
-        /// </summary>
-        /// <param name="container">The container.</param>
-        /// <param name="driverName">Name of the driver.</param>
-        /// <returns></returns>
-        public static DbDriver ResolveDriverFromName(
-            IContainer container,
-            string driverName)
-        {
-            return ResolveDriverFromType(
-                container,
-                ResolveDriverTypeFromName(driverName));
-        }
-
-        /// <summary>
-        /// Resolves the driver from the type.
-        /// </summary>
-        /// <param name="container">The container.</param>
-        /// <param name="driverType">Type of the driver.</param>
         public static DbDriver ResolveDriverFromType(
-            IContainer container,
+            IDriverResolver driverResolver,
             Type driverType)
         {
             if (typeof(DbDriver).IsAssignableFrom(driverType)) {
-                if (container.Has(driverType.FullName)) {
-                    return container.Resolve<DbDriver>(driverType.FullName);
-                }
-
-                return Activator.CreateInstance(driverType) as DbDriver;
+                return driverResolver.Resolve(driverType);
             }
 
             throw new EPException(
@@ -99,10 +76,11 @@ namespace com.espertech.esper.common.@internal.db
         }
 
         public static DbDriver ResolveDriver(
-            IContainer container,
+            IDriverResolver driverResolver,
             DriverConnectionFactoryDesc driverConnectionFactoryDesc)
         {
-            var driver = ResolveDriverFromName(container, driverConnectionFactoryDesc.DriverName);
+            var driverType = ResolveDriverTypeFromName(driverConnectionFactoryDesc.DriverName);
+            var driver = ResolveDriverFromType(driverResolver, driverType);
             driver.Properties = driverConnectionFactoryDesc.DriverProperties;
             return driver;
         }

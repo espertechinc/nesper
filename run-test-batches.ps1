@@ -120,7 +120,15 @@ $results = @{
     BatchResults = @()
 }
 
+# Create TestResults directory if it doesn't exist (use absolute path from script location)
+$scriptDir = $PSScriptRoot
+$testResultsDir = Join-Path $scriptDir "TestResults"
+if (-not (Test-Path $testResultsDir)) {
+    New-Item -ItemType Directory -Path $testResultsDir | Out-Null
+}
+
 $startTime = Get-Date
+$timestamp = $startTime.ToString("yyyyMMdd_HHmmss")
 
 # Run isolated tests if requested
 if ($IsolatedOnly) {
@@ -199,29 +207,54 @@ try {
 
         $batchStartTime = Get-Date
 
+        # Create output filename for this batch
+        $batchNameSafe = $batch.name -replace '[^a-zA-Z0-9-]', '_'
+        $outputFile = Join-Path $testResultsDir "TestResult_${timestamp}_${batchNameSafe}.txt"
+        $trxFile = Join-Path $testResultsDir "TestResult_${timestamp}_${batchNameSafe}.trx"
+
         # Build test arguments
+        $consoleVerbosity = if ($Verbose) { "detailed" } else { "normal" }
         $testArgs = @(
             "test",
             "--filter", $batch.filter,
             "--framework", $targetFramework,
             "--settings", "../../$runSettings",
-            "--logger", "console;verbosity=normal"
+            "--logger", "console;verbosity=$consoleVerbosity",
+            "--logger", "trx;LogFileName=$trxFile"
         )
-
-        if ($Verbose) {
-            $testArgs[-1] = "console;verbosity=detailed"
-        }
 
         # Run the tests
         Write-Info "Executing: dotnet $($testArgs -join ' ')"
+        Write-Info "Output file: $outputFile"
         Write-Info ""
 
+        # Capture test output to both console and file
         $testOutput = & dotnet @testArgs 2>&1
         $exitCode = $LASTEXITCODE
         $batchEndTime = Get-Date
         $duration = ($batchEndTime - $batchStartTime).TotalSeconds
 
-        # Parse results from output
+        # Write header to output file
+        $fileHeader = @"
+========================================
+NEsper Test Batch Results
+========================================
+Batch: $($batch.name)
+Description: $($batch.description)
+Filter: $($batch.filter)
+Framework: $targetFramework
+Start Time: $($batchStartTime.ToString("yyyy-MM-dd HH:mm:ss"))
+End Time: $($batchEndTime.ToString("yyyy-MM-dd HH:mm:ss"))
+Duration: $('{0:N2}' -f $duration)s
+Exit Code: $exitCode
+========================================
+
+"
+"@
+        Set-Content -Path $outputFile -Value $fileHeader
+        Add-Content -Path $outputFile -Value ($testOutput | Out-String)
+
+        # Parse results from output and display to console
         $testOutput | ForEach-Object { Write-Host $_ }
 
         $batchResult = @{
@@ -229,6 +262,7 @@ try {
             ExitCode = $exitCode
             Duration = $duration
             Success = ($exitCode -eq 0)
+            OutputFile = $outputFile
         }
 
         $results.BatchResults += $batchResult
@@ -273,6 +307,47 @@ try {
         Write-Host "$($result.Name) " -ForegroundColor White -NoNewline
         Write-Host "($duration)" -ForegroundColor Gray
     }
+
+    # Write summary file
+    $summaryFile = Join-Path $testResultsDir "TestSummary_${timestamp}.txt"
+    $summaryContent = @"
+========================================
+NEsper Test Execution Summary
+========================================
+Execution Time: $($startTime.ToString("yyyy-MM-dd HH:mm:ss"))
+Total Duration: $('{0:N2}' -f $totalDuration)s
+Framework: $targetFramework
+
+Batch Summary:
+  Total: $($results.Total)
+  Passed: $($results.Passed)
+  Failed: $($results.Failed)
+
+========================================
+Detailed Batch Results:
+========================================
+
+"
+"@
+    foreach ($result in $results.BatchResults) {
+        $status = if ($result.Success) { "PASS" } else { "FAIL" }
+        $duration = "{0:N2}s" -f $result.Duration
+        $summaryContent += "[$status] $($result.Name) ($duration)`n"
+        $summaryContent += "  Output: $($result.OutputFile)`n`n"
+    }
+    
+    if ($config.knownFailures.failures.Count -gt 0) {
+        $summaryContent += "`n========================================`n"
+        $summaryContent += "Known Failures ($($config.knownFailures.failures.Count)):`n"
+        $summaryContent += "========================================`n`n"
+        foreach ($failure in $config.knownFailures.failures) {
+            $summaryContent += "  - $($failure.test): $($failure.reason)`n"
+        }
+    }
+    
+    Set-Content -Path $summaryFile -Value $summaryContent
+    Write-Info ""
+    Write-Success "Summary written to: $summaryFile"
 
     # Known failures reminder
     if ($config.knownFailures.failures.Count -gt 0) {

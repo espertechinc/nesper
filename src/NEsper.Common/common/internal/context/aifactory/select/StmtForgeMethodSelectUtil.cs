@@ -53,7 +53,6 @@ using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.common.@internal.view.prior;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.container;
 
 using static com.espertech.esper.common.@internal.context.aifactory.select.StatementForgeMethodSelectUtil;
 
@@ -62,7 +61,6 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
     public partial class StmtForgeMethodSelectUtil
     {
         public static StmtForgeMethodSelectResult Make(
-            IContainer container,
             bool dataflowOperator,
             string packageName,
             string classPostfix,

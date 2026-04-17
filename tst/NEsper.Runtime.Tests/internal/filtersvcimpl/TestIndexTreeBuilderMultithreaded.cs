@@ -32,8 +32,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
         [SetUp]
         public void SetUp()
         {
-            lockFactory = new FilterServiceGranularLockFactoryReentrant(
-                Container.RWLockManager());
+            lockFactory = MakeGranularLockFactory();
 
             eventType = SupportEventTypeFactory
                 .GetInstance(Container)
@@ -132,6 +131,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             Log.Info(".PerformMultithreadedTest Loading thread pool work queue,numberOfRunnables={0}", numberOfRunnables);
 
             var pool = Executors.NewMultiThreadedExecutor(numberOfThreads);
+            var lockManager = rwLockManager;
             //var pool = new ThreadPoolExecutor(0, numberOfThreads, 99999,
             //    TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
 
@@ -143,7 +143,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
                     testFilterSpecs,
                     matchedEvents,
                     unmatchedEvents,
-                    Container.RWLockManager());
+                    lockManager);
 
                 pool.Submit(() => runnable.Run());
             }

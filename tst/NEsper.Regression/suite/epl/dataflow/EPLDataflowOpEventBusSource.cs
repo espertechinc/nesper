@@ -119,7 +119,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 "> {} " +
                 "DefaultSupportCaptureOp(ReceivedStream) {}");
 
-            var future = new DefaultSupportCaptureOp(env.Container.LockManager());
+            var future = new DefaultSupportCaptureOp(env.LockManager);
             var options = new EPDataFlowInstantiationOptions()
                 .WithOperatorProvider(new DefaultSupportGraphOpProvider(future));
             var eventService = (EventServiceSendEventCommon)env.EventService;
@@ -177,7 +177,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                     path);
 
                 var collector = new MyCollector();
-                var future = new DefaultSupportCaptureOp(env.Container.LockManager());
+                var future = new DefaultSupportCaptureOp(env.LockManager);
                 var options = new EPDataFlowInstantiationOptions()
                     .WithOperatorProvider(new DefaultSupportGraphOpProvider(future))
                     .WithParameterProvider(
@@ -223,7 +223,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 "DefaultSupportCaptureOp(ReceivedStream) {}",
                 path);
 
-            var future = new DefaultSupportCaptureOp(1, env.Container.LockManager());
+            var future = new DefaultSupportCaptureOp(1, env.LockManager);
             var options = new EPDataFlowInstantiationOptions()
                 .WithOperatorProvider(new DefaultSupportGraphOpProvider(future));
 

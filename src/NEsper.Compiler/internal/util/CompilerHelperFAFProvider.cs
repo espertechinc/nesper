@@ -165,10 +165,7 @@ namespace com.espertech.esper.compiler.@internal.util
 			// verify substitution parameters
 			VerifySubstitutionParams(raw.SubstitutionParameters);
 
-			var repository = compileTimeServices
-				.Container
-				.ArtifactRepositoryManager()
-				.DefaultRepository;
+			var repository = compileTimeServices.Services.ArtifactRepository;
 			
 			try {
 				manifest = CompileToBytes(query, classPostfix, compilerState, services, args.Path);

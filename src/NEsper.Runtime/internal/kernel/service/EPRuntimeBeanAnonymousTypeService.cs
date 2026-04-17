@@ -17,19 +17,19 @@ using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.eventtypefactory;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.container;
+using com.espertech.esper.common.@internal.util;
 
 namespace com.espertech.esper.runtime.@internal.kernel.service
 {
 	public class EPRuntimeBeanAnonymousTypeService
 	{
-		private IContainer _container;
+		private readonly IObjectCopier _objectCopier;
 		private readonly BeanEventTypeStemService _stemSvc;
 		private readonly BeanEventTypeFactoryPrivate _factoryPrivate;
 
-		public EPRuntimeBeanAnonymousTypeService(IContainer container)
+		public EPRuntimeBeanAnonymousTypeService(IObjectCopier objectCopier)
 		{
-			_container = container;
+			_objectCopier = objectCopier;
 			_stemSvc = new BeanEventTypeStemService(
 				EmptyDictionary<Type, IList<string>>.Instance,
 				null,
@@ -38,7 +38,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 
 			_factoryPrivate = new BeanEventTypeFactoryPrivate(
 				new EventBeanTypedEventFactoryRuntime(null),
-				EventTypeFactoryImpl.GetInstance(container),
+				new EventTypeFactoryImpl(objectCopier),
 				_stemSvc);
 		}
 
@@ -54,7 +54,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 				false,
 				EventTypeIdPair.Unassigned());
 			var stem = _stemSvc.GetCreateStem(beanType, null);
-			return new BeanEventType(_container, stem, metadata, _factoryPrivate, null, null, null, null);
+			return new BeanEventType(_objectCopier, stem, metadata, _factoryPrivate, null, null, null, null);
 		}
 	}
 } // end of namespace

@@ -10,10 +10,10 @@ using System;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using System.Net;
+using System.Net.Http;
 
 using com.espertech.esper.common.client;
-using com.espertech.esper.container;
+using com.espertech.esper.compat;
 
 namespace com.espertech.esperio
 {
@@ -22,7 +22,7 @@ namespace com.espertech.esperio
 	/// </summary>
 	public class AdapterInputSource : IDisposable
 	{
-		private readonly IContainer _container;
+		private readonly IResourceManager _resourceManager;
 		private readonly Uri _url;
 		private readonly string _resource;
 		private readonly FileInfo _file;
@@ -33,14 +33,14 @@ namespace com.espertech.esperio
 		/// <summary>
 		/// Ctor.
 		/// </summary>
-		/// <param name="container">the service container</param>
+		/// <param name="resourceManager">the resource manager</param>
 		/// <param name="resource">the name of the resource on the classpath to use as the source for an adapter</param>
 
 		public AdapterInputSource(
-			IContainer container,
+			IResourceManager resourceManager,
 			string resource)
 		{
-			_container = container;
+			_resourceManager = resourceManager;
 			_resource = resource ?? throw new ArgumentException("Cannot create AdapterInputStream from a null resource");
 			_url = null;
 			_file = null;
@@ -51,13 +51,13 @@ namespace com.espertech.esperio
 		/// <summary>
 		/// Ctor.
 		/// </summary>
-		/// <param name="container">the service container</param>
+		/// <param name="resourceManager">the resource manager</param>
 		/// <param name="url">the URL for the resource to use as source for an adapter</param>
 		public AdapterInputSource(
-			IContainer container,
+			IResourceManager resourceManager,
 			Uri url)
 		{
-			_container = container;
+			_resourceManager = resourceManager;
 			_url = url ?? throw new ArgumentException("Cannot create AdapterInputStream from a null URL");
 			_resource = null;
 			_file = null;
@@ -68,13 +68,13 @@ namespace com.espertech.esperio
 		/// <summary>
 		/// Ctor.
 		/// </summary>
-		/// <param name="container">the service container</param>
+		/// <param name="resourceManager">the resource manager</param>
 		/// <param name="file">the file to use as a source</param>
 		public AdapterInputSource(
-			IContainer container,
+			IResourceManager resourceManager,
 			FileInfo file)
 		{
-			_container = container;
+			_resourceManager = resourceManager;
 			_file = file ?? throw new ArgumentException("file cannot be null");
 			_url = null;
 			_resource = null;
@@ -85,13 +85,13 @@ namespace com.espertech.esperio
 		/// <summary>
 		/// Ctor.
 		/// </summary>
-		/// <param name="container">the service container</param>
+		/// <param name="resourceManager">the resource manager</param>
 		/// <param name="inputStream">the stream to use as a source</param>
 		public AdapterInputSource(
-			IContainer container,
+			IResourceManager resourceManager,
 			Stream inputStream)
 		{
-			_container = container;
+			_resourceManager = resourceManager;
 			_inputStream = inputStream ?? throw new ArgumentException("stream cannot be null");
 			_file = null;
 			_url = null;
@@ -102,13 +102,13 @@ namespace com.espertech.esperio
 		/// <summary>
 		/// Ctor.
 		/// </summary>
-		/// <param name="container">the service container</param>
+		/// <param name="resourceManager">the resource manager</param>
 		/// <param name="reader">reader is any reader for reading a file or string</param>
 		public AdapterInputSource(
-			IContainer container,
+			IResourceManager resourceManager,
 			TextReader reader)
 		{
-			_container = container;
+			_resourceManager = resourceManager;
 			_reader = reader ?? throw new ArgumentException("reader cannot be null");
 			_url = null;
 			_resource = null;
@@ -149,8 +149,14 @@ namespace com.espertech.esperio
 			}
 
 			if (_url != null) {
-				var webClient = new WebClient();
-				return webClient.OpenRead(_url);
+				if (_url.IsFile) {
+					return File.OpenRead(_url.LocalPath);
+				}
+
+				using (var httpClient = new HttpClient()) {
+					var bytes = httpClient.GetByteArrayAsync(_url).GetAwaiter().GetResult();
+					return new MemoryStream(bytes);
+				}
 			}
 
 			return ResolvePathAsStream(_resource);
@@ -190,7 +196,7 @@ namespace com.espertech.esperio
 
 		private Stream ResolvePathAsStream(string path)
 		{
-			var stream = _container.ResourceManager().GetResourceAsStream(path);
+			var stream = _resourceManager.GetResourceAsStream(path);
 			if (stream == null) {
 				throw new EPException(path + " not found");
 			}

@@ -42,7 +42,6 @@ using com.espertech.esper.common.@internal.statement.resource;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.container;
 using com.espertech.esper.runtime.@internal.kernel.service;
 using static com.espertech.esper.common.@internal.context.util.StatementCPCacheService;
 
@@ -82,9 +81,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.statement
             ServicesContext = servicesContext;
         }
 
-        public IContainer Container => ServicesContext.Container;
-
-        public IObjectCopier ObjectCopier => ServicesContext.Container.Resolve<IObjectCopier>();
+        public IObjectCopier ObjectCopier => ServicesContext.ObjectCopier;
 
         public EPServicesContext ServicesContext { get; }
 

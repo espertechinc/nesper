@@ -1,4 +1,4 @@
-///////////////////////////////////////////////////////////////////////////////////////
+﻿///////////////////////////////////////////////////////////////////////////////////////
 // Copyright (C) 2006-2024 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
@@ -13,6 +13,7 @@ using System.IO;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat;
 using com.espertech.esper.container;
 using com.espertech.esper.runtime.client;
 using com.espertech.esperio.support.util;
@@ -37,7 +38,7 @@ namespace com.espertech.esperio.csv
         public void TestClose()
         {
             var path = "regression/parseTests.csv";
-            var reader = new CSVReader(new AdapterInputSource(_container, path));
+            var reader = new CSVReader(new AdapterInputSource(_container.Resolve<IResourceManager>(), path));
 
             reader.Close();
             try {
@@ -76,7 +77,7 @@ namespace com.espertech.esperio.csv
         public void TestParsing()
         {
             var path = "regression/parseTests.csv";
-            var reader = new CSVReader(new AdapterInputSource(_container, path));
+            var reader = new CSVReader(new AdapterInputSource(_container.Resolve<IResourceManager>(), path));
 
             var nextRecord = reader.GetNextRecord();
             var expected = new[] {"8", "8.0", "c", "'c'", "string", "string"};
@@ -122,7 +123,7 @@ namespace com.espertech.esperio.csv
         [Test]
         public void TestReset()
         {
-            var reader = new CSVReader(new AdapterInputSource(_container, "regression/endOnNewline.csv"));
+            var reader = new CSVReader(new AdapterInputSource(_container.Resolve<IResourceManager>(), "regression/endOnNewline.csv"));
 
             var nextRecord = reader.GetNextRecord();
             var expected = new[] {"first line", "1"};
@@ -142,7 +143,7 @@ namespace com.espertech.esperio.csv
         [Test]
         public void TestTitleRow()
         {
-            var reader = new CSVReader(new AdapterInputSource(_container, "regression/titleRow.csv"));
+            var reader = new CSVReader(new AdapterInputSource(_container.Resolve<IResourceManager>(), "regression/titleRow.csv"));
             reader.Looping = true;
 
             // isUsingTitleRow is false by default, so get the title row
@@ -209,7 +210,7 @@ namespace com.espertech.esperio.csv
             var stmt = CompileUtil.CompileDeploy(runtime, "select * from Figure").Statements[0];
             stmt.Events += ul.Update;
 
-            var source = new AdapterInputSource(_container, "regression/nestedProperties.csv");
+            var source = new AdapterInputSource(_container.Resolve<IResourceManager>(), "regression/nestedProperties.csv");
             var spec = new CSVInputAdapterSpec(source, "Figure");
             var adapter = new CSVInputAdapter(runtime, spec);
             adapter.Start();
@@ -240,7 +241,7 @@ namespace com.espertech.esperio.csv
             var stmt = CompileUtil.CompileDeploy(runtime, "select * from Figure").Statements[0];
             stmt.Events += ul.Update;
 
-            var source = new AdapterInputSource(_container, "regression/nestedProperties.csv");
+            var source = new AdapterInputSource(_container.Resolve<IResourceManager>(), "regression/nestedProperties.csv");
             var spec = new CSVInputAdapterSpec(source, "Figure");
             var adapter = new CSVInputAdapter(runtime, spec);
             adapter.Start();
@@ -252,7 +253,7 @@ namespace com.espertech.esperio.csv
 
         private void AssertLooping(String path)
         {
-            var reader = new CSVReader(new AdapterInputSource(_container, path));
+            var reader = new CSVReader(new AdapterInputSource(_container.Resolve<IResourceManager>(), path));
             reader.Looping = true;
 
             var nextRecord = reader.GetNextRecord();
@@ -290,7 +291,7 @@ namespace com.espertech.esperio.csv
 
         private void AssertNonLooping(String path)
         {
-            var reader = new CSVReader(new AdapterInputSource(_container, path));
+            var reader = new CSVReader(new AdapterInputSource(_container.Resolve<IResourceManager>(), path));
 
             var nextRecord = reader.GetNextRecord();
             var expected = new[] { "first line", "1" };

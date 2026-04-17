@@ -6,8 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using Castle.MicroKernel.ModelBuilder.Descriptors;
-
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.@internal.compile.compiler;
 using com.espertech.esper.common.@internal.compile.stage1;
@@ -38,8 +36,10 @@ using com.espertech.esper.common.@internal.serde.compiletime.eventtype;
 using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.statemgmtsettings;
+using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.common.@internal.util.serde;
 using com.espertech.esper.common.@internal.view.core;
-using com.espertech.esper.container;
+using com.espertech.esper.compat.threading.threadlocal;
 
 namespace com.espertech.esper.common.@internal.compile.stage3
 {
@@ -109,7 +109,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 
         public StatementSpecMapEnv StatementSpecMapEnv =>
             new StatementSpecMapEnv(
-                Services.Container,
+                Services.SerializerFactory,
                 Services.ImportServiceCompileTime,
                 Services.VariableCompileTimeResolver,
                 Services.Configuration,
@@ -164,6 +164,10 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 
         public StateMgmtSettingsProvider StateMgmtSettingsProvider => Services.StateMgmtSettingsProvider;
 
-        public IContainer Container => Services.Container;
+        public IObjectCopier ObjectCopier => Services.ObjectCopier;
+
+        public IThreadLocalManager ThreadLocalManager => Services.ThreadLocalManager;
+
+        public SerializerFactory SerializerFactory => Services.SerializerFactory;
     }
 } // end of namespace

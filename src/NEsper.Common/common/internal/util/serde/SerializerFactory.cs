@@ -14,7 +14,6 @@ using System.Linq;
 
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.compat;
-using com.espertech.esper.container;
 
 namespace com.espertech.esper.common.@internal.util.serde
 {
@@ -37,21 +36,6 @@ namespace com.espertech.esper.common.@internal.util.serde
             }
         }
 
-        public static Serializer CreateDefaultSerializer(IContainer container)
-        {
-            TypeResolver typeResolver;
-            
-            if (container.Has<TypeResolver>()) {
-                typeResolver = container.Resolve<TypeResolver>();
-            } else if (container.Has<TypeResolverProvider>()) {
-                typeResolver = container.Resolve<TypeResolverProvider>().TypeResolver;
-            } else {
-                typeResolver = TypeResolverDefault.INSTANCE;
-            }
-            
-            return new ObjectSerializer(typeResolver);
-        }
-
         public IList<Serializer> Serializers => _serializers;
 
         public Serializer DefaultSerializer => _defaultSerializer;
@@ -70,11 +54,6 @@ namespace com.espertech.esper.common.@internal.util.serde
             _serializers.Add(BinarySerializer.DOUBLE);
             _serializers.Add(BinarySerializer.DECIMAL);
             _serializers.Add(BinarySerializer.STRING);
-        }
-
-        public SerializerFactory(IContainer container) :
-            this(CreateDefaultSerializer(container))
-        {
         }
 
         public Serializer[] GetSerializers(IEnumerable<Type> types)

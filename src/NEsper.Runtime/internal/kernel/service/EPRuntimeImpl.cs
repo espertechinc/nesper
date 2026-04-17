@@ -84,7 +84,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
                     "Unexpected null value received for configuration");
             }
 
-            Container = configuration.Container;
+            RuntimeContainer = configuration.Container;
             _runtimes = runtimes;
             URI = runtimeURI ??
                   throw new ArgumentNullException(nameof(runtimeURI), "runtime URI should not be null at this stage");
@@ -128,7 +128,8 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             _configLastProvided = TakeSnapshot(configuration);
         }
 
-        public IContainer Container { get; }
+        [Obsolete("RuntimeContainer is scheduled for removal. Use explicit constructor injection for services needed at startup.")]
+        public IContainer RuntimeContainer { get; }
 
         public string URI { get; }
 
@@ -520,13 +521,13 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             }
 
             if (epServicesContextFactoryClassName == null) {
-                epServicesContextFactory = new EPServicesContextFactoryDefault(Container);
+                epServicesContextFactory = new EPServicesContextFactoryDefault();
             }
             else {
                 Type clazz;
                 try {
                     clazz = TransientConfigurationResolver
-                        .ResolveTypeResolver(Container, _configLastProvided.Common.TransientConfiguration)
+                        .ResolveTypeResolver(RuntimeContainer.Resolve<TypeResolverProvider>(), _configLastProvided.Common.TransientConfiguration)
                         .ResolveType(epServicesContextFactoryClassName);
                 }
                 catch (TypeLoadException) {
@@ -849,9 +850,9 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
                 }
 
                 Configuration copy = SerializableObjectCopier
-                    .GetInstance(Container)
+                    .GetInstance(RuntimeContainer.Resolve<TypeResolverProvider>().TypeResolver)
                     .Copy(configuration);
-                copy.Container = Container;
+                copy.Container = RuntimeContainer;
 
                 // Restore transient
                 if (transients != null) {

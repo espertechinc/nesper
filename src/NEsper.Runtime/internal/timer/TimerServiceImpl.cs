@@ -12,7 +12,6 @@ using System.Threading;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.timers;
-using com.espertech.esper.container;
 
 using ITimer = com.espertech.esper.compat.timers.ITimer;
 
@@ -86,19 +85,17 @@ namespace com.espertech.esper.runtime.@internal.timer
         /// </summary>
         /// <value>The runtime URI.</value>
         public string RuntimeUri { get; }
-        
-        /// <summary>
-        /// The container
-        /// </summary>
-        private IContainer Container { get; }
+
+        private readonly ITimerFactory _timerFactory;
 
         /// <summary> Constructor.</summary>
-        /// <param name="msecTimerResolution">is the millisecond resolution or interval the internal timer thread processes schedules</param>
+        /// <param name="timerFactory">timer factory</param>
         /// <param name="runtimeURI">runtime URI</param>
-        public TimerServiceImpl(IContainer container, string runtimeURI, long msecTimerResolution)
+        /// <param name="msecTimerResolution">is the millisecond resolution or interval the internal timer thread processes schedules</param>
+        public TimerServiceImpl(ITimerFactory timerFactory, string runtimeURI, long msecTimerResolution)
         {
             Id = Guid.NewGuid();
-            Container = container;
+            _timerFactory = timerFactory;
             RuntimeUri = runtimeURI;
             MsecTimerResolution = msecTimerResolution;
             _timerTaskCancelled = false;
@@ -138,11 +135,9 @@ namespace com.espertech.esper.runtime.@internal.timer
                 throw new IllegalStateException("Timer callback not set");
             }
 
-            var timerFactory = Container.Resolve<ITimerFactory>();
-
             _timerTask = new EPLTimerTask(_timerCallback);
             _timerTaskCancelled = false;
-            _timer = timerFactory.CreateTimer(
+            _timer = _timerFactory.CreateTimer(
                 OnTimerElapsed, MsecTimerResolution, MsecTimerResolution);
         }
 

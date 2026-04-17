@@ -23,6 +23,7 @@ using com.espertech.esper.common.client.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
+using com.espertech.esper.compat.threading.locks;
 using com.espertech.esper.compiler.client;
 using com.espertech.esper.container;
 using com.espertech.esper.runtime.client;
@@ -616,6 +617,10 @@ namespace com.espertech.esper.regressionlib.framework
 		}
 
 		public IContainer Container => Configuration.Container;
+
+		public IResourceManager ResourceManager => Container.Resolve<IResourceManager>();
+
+		public ILockManager LockManager => Container.Resolve<ILockManager>();
 		
 		public string RuntimeURI => Runtime.URI;
 
@@ -652,7 +657,7 @@ namespace com.espertech.esper.regressionlib.framework
 		public Module ReadModule(string filename)
 		{
 			try {
-                return Compiler.ReadModule(filename, Container.ResourceManager());
+                return Compiler.ReadModule(filename, ResourceManager);
 			}
 			catch (Exception ex) {
 				throw new EPRuntimeException(ex);

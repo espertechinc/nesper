@@ -104,7 +104,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             var stem = validationContext.StatementCompileTimeService.BeanEventTypeStemService
                 .GetCreateStem(clazz, null);
             var beantype = new BeanEventType(
-                validationContext.Container,
+                validationContext.ObjectCopier,
                 stem,
                 metadata,
                 validationContext.StatementCompileTimeService.BeanEventTypeFactoryPrivate,

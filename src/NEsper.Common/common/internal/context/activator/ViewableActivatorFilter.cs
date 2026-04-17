@@ -11,7 +11,6 @@ using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.common.@internal.filtersvc;
 using com.espertech.esper.common.@internal.view.core;
-using com.espertech.esper.container;
 
 namespace com.espertech.esper.common.@internal.context.activator
 {
@@ -119,7 +118,7 @@ namespace com.espertech.esper.common.@internal.context.activator
             }
 
             var stopCallback = new ViewableActivatorFilterMgmtCallback(
-                agentInstanceContext.StatementContext.Container,
+                agentInstanceContext.StatementContext.LockManager,
                 filterHandle,
                 FilterSpec);
             

@@ -9,6 +9,8 @@
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.@internal.epl.dataflow.util;
+using com.espertech.esper.compat;
+using com.espertech.esper.container;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.regressionlib.suite.epl.dataflow;
 using com.espertech.esper.regressionlib.support.bean;
@@ -57,7 +59,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
                 typeof(EPLDataflowOpBeaconSource),
                 "GenerateTagId");
 
-            DefaultSupportGraphEventUtil.AddTypeConfiguration(configuration);
+            DefaultSupportGraphEventUtil.AddTypeConfiguration(configuration, configuration.Container.Resolve<IResourceManager>());
 
             configuration.Common.AddImportType(typeof(Randomizer));
             configuration.Common.AddImportNamespace(typeof(DefaultSupportSourceOp));

@@ -179,7 +179,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
 
                 var stem = services.BeanEventTypeStemService.GetCreateStem(carrierClass, null);
                 eventType = new BeanEventType(
-                    services.Container,
+                    services.ObjectCopier,
                     stem,
                     metadata.Invoke(EventTypeApplicationType.CLASS),
                     services.BeanEventTypeFactoryPrivate,

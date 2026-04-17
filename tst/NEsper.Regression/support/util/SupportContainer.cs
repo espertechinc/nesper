@@ -43,8 +43,6 @@ namespace com.espertech.esper.regressionlib.support.util
 
             // --------------------------------------------------------------------------------
 
-            container.Register(new DbDriverPgSQL(dbProviderFactoryManager), Lifespan.Singleton);
-
             //SupportEventTypeFactory.RegisterSingleton(container);
             //SupportExprNodeFactory.RegisterSingleton(container);
             //SupportDatabaseService.RegisterSingleton(container);

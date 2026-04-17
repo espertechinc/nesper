@@ -56,7 +56,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
         {
             public void Run(RegressionEnvironment env)
             {
-                var resourceManager = env.Container.ResourceManager();
+                var resourceManager = env.ResourceManager;
                 var schemaStream = resourceManager.GetResourceAsStream("regression/simpleSchemaWithRestriction.xsd");
                 ClassicAssert.IsNotNull(schemaStream);
                 var schemaTextSimpleSchemaWithRestriction = schemaStream.ConsumeStream();

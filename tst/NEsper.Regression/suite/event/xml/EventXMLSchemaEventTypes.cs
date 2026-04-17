@@ -56,7 +56,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
         {
             public void Run(RegressionEnvironment env)
             {
-                var resourceManager = env.Container.ResourceManager();
+                var resourceManager = env.ResourceManager;
                 var schemaUriTypeTestSchema = resourceManager.ResolveResourceURL("regression/typeTestSchema.xsd");
                 var epl = "@public @buseventtype " +
                           "@XMLSchema(RootElementName='typesEvent', SchemaResource='" +

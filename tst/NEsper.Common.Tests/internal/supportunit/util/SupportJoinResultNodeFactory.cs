@@ -28,7 +28,10 @@ namespace com.espertech.esper.common.@internal.supportunit.util
 
         public static SupportJoinResultNodeFactory GetInstance(IContainer container)
         {
-            return container.ResolveSingleton(() => new SupportJoinResultNodeFactory(container));
+            if (!container.Has<SupportJoinResultNodeFactory>()) {
+                RegisterSingleton(container);
+            }
+            return container.Resolve<SupportJoinResultNodeFactory>();
         }
 
         public static void RegisterSingleton(IContainer container)

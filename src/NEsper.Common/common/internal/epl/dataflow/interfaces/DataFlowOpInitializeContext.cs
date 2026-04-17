@@ -10,14 +10,14 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.client.dataflow.core;
 using com.espertech.esper.common.@internal.context.util;
-using com.espertech.esper.container;
+using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.@internal.epl.dataflow.interfaces
 {
     public class DataFlowOpInitializeContext
     {
         public DataFlowOpInitializeContext(
-            IContainer container,
+            IResourceManager resourceManager,
             string dataFlowName,
             string operatorName,
             int operatorNumber,
@@ -28,7 +28,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.interfaces
             DataFlowOperatorFactory dataFlowOperatorFactory,
             object dataflowInstanceUserObject)
         {
-            Container = container;
+            ResourceManager = resourceManager;
             DataFlowName = dataFlowName;
             OperatorName = operatorName;
             OperatorNumber = operatorNumber;
@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.interfaces
             DataflowInstanceUserObject = dataflowInstanceUserObject;
         }
 
-        public IContainer Container { get; }
+        public IResourceManager ResourceManager { get; }
         public AgentInstanceContext AgentInstanceContext { get; }
 
         public IDictionary<string, object> AdditionalParameters { get; }

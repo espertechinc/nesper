@@ -10,7 +10,9 @@ using System;
 using System.Text.Json.Serialization;
 
 using com.espertech.esper.common.client.scopetest;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.util.serde;
+using com.espertech.esper.compat;
 
 using NUnit.Framework;
 using NUnit.Framework.Legacy;
@@ -70,7 +72,9 @@ namespace com.espertech.esper.common.@internal.util
                 classes[i] = expected.GetType();
             }
 
-            var serializerFactory = new SerializerFactory(container);
+            var typeResolver = container.Resolve<TypeResolverProvider>().TypeResolver;
+            var serializer = new ObjectSerializer(typeResolver);
+            var serializerFactory = new SerializerFactory(serializer);
             var serializers = serializerFactory.GetSerializers(classes);
             var bytes = serializerFactory.Serialize(serializers, expected);
 

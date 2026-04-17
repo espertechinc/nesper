@@ -14,6 +14,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.dataflow.util;
 using com.espertech.esper.common.@internal.epl.dataflow.interfaces;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.compat;
 
 namespace com.espertech.esperio.file
 {
@@ -25,7 +26,7 @@ namespace com.espertech.esperio.file
 
 		public DataFlowOperator Operator(DataFlowOpInitializeContext context)
 		{
-			var container = context.Container;
+			var resourceManager = context.ResourceManager;
 			var adapterInputSourceValue = DataFlowParameterResolution.ResolveOptionalInstance<AdapterInputSource>(
 				"adapterInputSource",
 				AdapterInputSource,
@@ -38,7 +39,7 @@ namespace com.espertech.esperio.file
 
 			if (adapterInputSourceValue == null) {
 				if (fileName != null) {
-					adapterInputSourceValue = new AdapterInputSource(container, new FileInfo(fileName));
+					adapterInputSourceValue = new AdapterInputSource(resourceManager, new FileInfo(fileName));
 				}
 				else {
 					throw new EPException("Failed to find required parameter, either the file or the adapterInputSource parameter is required");

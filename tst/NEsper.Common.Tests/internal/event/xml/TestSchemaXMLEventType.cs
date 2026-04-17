@@ -26,7 +26,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
         [SetUp]
         public void SetUp()
         {
-            var schemaUrl = container.ResourceManager().ResolveResourceURL("regression/simpleSchema.xsd");
+            var schemaUrl = ResourceManager.ResolveResourceURL("regression/simpleSchema.xsd");
             var configNoNS = new ConfigurationCommonEventTypeXMLDOM();
             configNoNS.IsXPathPropertyExpr = true;
             configNoNS.SchemaResource = schemaUrl.ToString();
@@ -37,11 +37,11 @@ namespace com.espertech.esper.common.@internal.@event.xml
             var model = XSDSchemaMapper.LoadAndMap(
                 schemaUrl.ToString(),
                 null,
-                container.ResourceManager());
+                ResourceManager);
             var eventTypeNoNS = new SchemaXMLEventType(
                 null, configNoNS, model, null, null, null, null, null, new EventTypeXMLXSDHandlerImpl());
 
-            using (var stream = container.ResourceManager().GetResourceAsStream("regression/simpleWithSchema.xml")) {
+            using (var stream = ResourceManager.GetResourceAsStream("regression/simpleWithSchema.xml")) {
                 var noNSDoc = new XmlDocument();
                 noNSDoc.Load(stream);
                 eventSchemaOne = new XMLEventBean(noNSDoc.DocumentElement, eventTypeNoNS);

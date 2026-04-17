@@ -83,7 +83,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                     "} " +
                     "DefaultSupportCaptureOp(thedata) {}");
 
-                var captureOp = new DefaultSupportCaptureOp(env.Container.LockManager());
+                var captureOp = new DefaultSupportCaptureOp(env.LockManager);
+
                 var options = new EPDataFlowInstantiationOptions()
                     .WithOperatorProvider(new DefaultSupportGraphOpProvider(captureOp));
 
@@ -265,7 +266,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                     "EPStatementSource -> thedata<AllObjects> {} " +
                     "DefaultSupportCaptureOp(thedata) {}");
 
-                var captureOp = new DefaultSupportCaptureOp(env.Container.LockManager());
+                var captureOp = new DefaultSupportCaptureOp(env.LockManager);
                 var options = new EPDataFlowInstantiationOptions();
                 var myFilter = new MyFilter();
                 options.WithParameterProvider(
@@ -358,7 +359,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 "} " +
                 "DefaultSupportCaptureOp(thedata) {}");
 
-            var captureOp = new DefaultSupportCaptureOp(2, env.Container.LockManager());
+            var captureOp = new DefaultSupportCaptureOp(2, env.LockManager);
+
             var options = new EPDataFlowInstantiationOptions()
                 .WithOperatorProvider(new DefaultSupportGraphOpProvider(captureOp));
 

@@ -1,19 +1,21 @@
-﻿using com.espertech.esper.container;
+﻿using com.espertech.esper.common.client.artifact;
+using com.espertech.esper.compiler.client;
 
 namespace com.espertech.esper.compiler.@internal.util
 {
     public static class RoslynCompilerExtensions
     {
         /// <summary>
-        /// Resolves a RoslynCompiler from the container.  Attempts to reuse the same compiler for the lifetime
-        /// of the container.
+        /// Creates a RoslynCompiler from explicit dependencies.
         /// </summary>
-        /// <param name="container"></param>
+        /// <param name="metadataReferenceResolver"></param>
+        /// <param name="coreAssemblyProvider"></param>
         /// <returns></returns>
-        public static RoslynCompiler RoslynCompiler(this IContainer container)
+        public static RoslynCompiler RoslynCompiler(
+            MetadataReferenceResolver metadataReferenceResolver,
+            CoreAssemblyProvider coreAssemblyProvider)
         {
-            return new RoslynCompiler(container);
-            //return container.ResolveSingleton<RoslynCompiler>(() => new RoslynCompiler(container));
+            return new RoslynCompiler(metadataReferenceResolver, coreAssemblyProvider);
         }
     }
 }

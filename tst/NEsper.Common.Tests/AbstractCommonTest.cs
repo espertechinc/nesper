@@ -1,6 +1,7 @@
 ﻿using com.espertech.esper.common.@internal.supportunit.db;
 using com.espertech.esper.common.@internal.supportunit.@event;
 using com.espertech.esper.common.@internal.supportunit.util;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.function;
 using com.espertech.esper.container;
 
@@ -16,6 +17,7 @@ namespace com.espertech.esper.common
         private Supplier<SupportJoinResultNodeFactory> supportJoinResultNodeFactorySupplier;
 
         protected internal IContainer container;
+        protected internal IResourceManager ResourceManager { get; private set; }
 
         protected internal SupportEventTypeFactory supportEventTypeFactory =>
             supportEventTypeFactorySupplier.Invoke();
@@ -33,8 +35,10 @@ namespace com.espertech.esper.common
         public virtual void SetUpCommon()
         {
             container = SupportContainer.Reset();
+            ResourceManager = container.Resolve<IResourceManager>();
             supportEventTypeFactorySupplier = Suppliers.Memoize(() => 
                 SupportEventTypeFactory.GetInstance(container));
+
             supportExprNodeFactorySupplier = Suppliers.Memoize(() =>
                 SupportExprNodeFactory.GetInstance(container));
             supportDatabaseServiceSupplier = Suppliers.Memoize(() =>

@@ -7,16 +7,11 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Linq;
-using System.Runtime.Serialization;
-using System.Security.Permissions;
 using System.Text;
-using System.Text.Json.Serialization;
-using System.Threading;
 
 using com.espertech.esper.client.annotation;
 using com.espertech.esper.common.client.configuration.common;
@@ -25,7 +20,6 @@ using com.espertech.esper.common.@internal.epl.historical.database.connection;
 using com.espertech.esper.common.@internal.epl.historical.database.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.threading.threadlocal;
 
 namespace com.espertech.esper.common.@internal.db.drivers
 {
@@ -142,60 +136,6 @@ namespace com.espertech.esper.common.@internal.db.drivers
         #endregion "PositionalToTextConversion"
 
         /// <summary>
-        /// Weak reference to the database connection.  Allows a thread to
-        /// reuse an existing connection rather than opening a new one as
-        /// opening a new connection can be considerably expensive with some
-        /// drivers.  The reference is weak which means that after it is no
-        /// longer is use, the weak reference will go out of scope.  To
-        /// prevent the database connection from going out of scope prematurely
-        /// we keep around a strong reference that is swept on a regular
-        /// interval.
-        /// </summary>
-        private readonly FastThreadStore<compat.WeakReference<DbConnection>> wdbConnection =
-            new FastThreadStore<compat.WeakReference<DbConnection>>();
-
-        /// <summary>
-        /// Collects connections across threads and stores them in a strongly
-        /// referenced table.  The table allows us to reuse connections to
-        /// database that are continually accessed on the same thread.
-        /// </summary>
-        [NonSerialized]
-        private static readonly Dictionary<DbConnection, long>
-            sdbConnectionTable = new Dictionary<DbConnection, long>();
-
-        /// <summary>
-        /// Periodically removes unused connections from the sdbConnectionTable
-        /// and allows them to be reclaimed.
-        /// </summary>
-        [NonSerialized]
-        private static Timer releaseTimer = null;
-
-        /// <summary>
-        /// Releases the connections.
-        /// </summary>
-        /// <param name="userObject">The user object.</param>
-        private static void ReleaseConnections(object userObject)
-        {
-            long touchPoint = Environment.TickCount - 15000;
-
-            lock (((ICollection)sdbConnectionTable).SyncRoot) {
-                IList<DbConnection> termList = new List<DbConnection>();
-                foreach (var entry in sdbConnectionTable) {
-                    if (entry.Value < touchPoint) {
-                        termList.Add(entry.Key);
-                    }
-                }
-
-                // Remove strong references to any databases that have not
-                // been active since the touchPoint (expiry time).
-
-                foreach (var termPoint in termList) {
-                    sdbConnectionTable.Remove(termPoint);
-                }
-            }
-        }
-
-        /// <summary>
         /// Factory method that is used to create instance of a connection.
         /// </summary>
         /// <returns></returns>
@@ -209,30 +149,7 @@ namespace com.espertech.esper.common.@internal.db.drivers
         /// <returns></returns>
         protected internal DbConnection CreateConnectionInternal()
         {
-            DbConnection _dbConnection;
-            var dbConnection = wdbConnection.Value;
-            if (dbConnection == null ||
-                dbConnection.IsDead ||
-                dbConnection.Target == null) {
-                _dbConnection = CreateConnection();
-                dbConnection = new compat.WeakReference<DbConnection>(_dbConnection);
-                ApplyConnectionOptions(_dbConnection);
-                wdbConnection.Value = dbConnection;
-            }
-            else {
-                _dbConnection = dbConnection.Target;
-            }
-
-            // Enter the time of the last activity on the database
-            // connection... i.e. touch the connection.
-            lock (((ICollection)sdbConnectionTable).SyncRoot) {
-                sdbConnectionTable[_dbConnection] = Environment.TickCount;
-                if (releaseTimer == null) {
-                    releaseTimer = new Timer(ReleaseConnections, null, 0L, 5000L);
-                }
-            }
-
-            return _dbConnection;
+            return CreateConnection();
         }
 
         /// <summary>
@@ -417,12 +334,14 @@ namespace com.espertech.esper.common.@internal.db.drivers
                 // Look for the term "connectionString" in the properties.  If it is not specified
                 // then use the other items in the properties to drive a connection string builder.
 
+                string propConnectionString;
+                
                 if (!_connectionProperties.TryGetValue(
                         DriverConfiguration.PROPERTY_CONNECTION_STRING,
-                        out _connectionString) &&
+                        out propConnectionString) &&
                     !_connectionProperties.TryGetValue(
                         DriverConfiguration.PROPERTY_CONNECTION_STRING_HYPHENATED,
-                        out _connectionString)) {
+                        out propConnectionString)) {
                     // Create the connection string; to do so, we require a connection
                     // string builder.  These are native to every connection class and
                     // ADO.NET providers will provide them to you natively.  We require
@@ -440,7 +359,10 @@ namespace com.espertech.esper.common.@internal.db.drivers
                         }
                     }
 
-                    _connectionString = builder.ConnectionString;
+                    ConnectionString = builder.ConnectionString;
+                }
+                else {
+                    ConnectionString = propConnectionString;
                 }
             }
         }

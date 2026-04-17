@@ -10,7 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
+using System.Net.Http;
 using System.Reflection;
 using System.Xml;
 using System.Xml.Schema;
@@ -79,8 +79,20 @@ namespace com.espertech.esper.common.@internal.@event.xml
                 return schema;
             }
 
-            using (var client = new WebClient()) {
-                using (var resourceStream = client.OpenRead(uri)) {
+            if (uri.IsFile) {
+                using (var resourceStream = File.OpenRead(uri.LocalPath)) {
+                    var schema = XmlSchema.Read(resourceStream, null);
+                    if (schema == null) {
+                        throw new ConfigurationException("Failed to read schema via URL '" + uri + '\'');
+                    }
+
+                    return schema;
+                }
+            }
+
+            using (var httpClient = new HttpClient()) {
+                var bytes = httpClient.GetByteArrayAsync(uri).GetAwaiter().GetResult();
+                using (var resourceStream = new MemoryStream(bytes)) {
                     var schema = XmlSchema.Read(resourceStream, null);
                     if (schema == null) {
                         throw new ConfigurationException("Failed to read schema via URL '" + uri + '\'');

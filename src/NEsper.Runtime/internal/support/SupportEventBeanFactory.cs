@@ -21,7 +21,14 @@ namespace com.espertech.esper.runtime.@internal.support
         /// <returns></returns>
         public static SupportEventBeanFactory GetInstance(IContainer container)
         {
-            return container.ResolveSingleton(() => new SupportEventBeanFactory(container));
+            lock (container) {
+                if (container.Has<SupportEventBeanFactory>()) {
+                    return container.Resolve<SupportEventBeanFactory>();
+                }
+                var instance = new SupportEventBeanFactory(container);
+                container.Register<SupportEventBeanFactory>(instance, Lifespan.Singleton, null);
+                return instance;
+            }
         }
 
         public static void RegisterSingleton(IContainer container)

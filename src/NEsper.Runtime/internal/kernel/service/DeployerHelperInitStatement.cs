@@ -328,7 +328,6 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 			}
 
 			var statementContext = new StatementContext(
-				services.Container,
 				contextRuntimeDescriptor,
 				deploymentId,
 				statementId,

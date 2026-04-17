@@ -90,7 +90,7 @@ namespace NEsper.Examples.OHLC
 
             // make bean event type
             _eventType = new BeanEventType(
-                _container,
+                _container.Resolve<IObjectCopier>(),
                 stem,
                 metadata,
                 env.BeanEventTypeFactoryProtected,

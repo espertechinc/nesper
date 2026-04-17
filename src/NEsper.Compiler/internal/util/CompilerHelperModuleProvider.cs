@@ -77,8 +77,8 @@ namespace com.espertech.esper.compiler.@internal.util
 		{
 			var compilerAbstraction = compileTimeServices.CompilerAbstraction;
 			var compilationState = compilerAbstraction.NewArtifactCollection();
-			var container = compileTimeServices.Container;
-			var artifactRepository = container.ArtifactRepositoryManager().DefaultRepository;
+			var container = compileTimeServices.Configuration.Container;
+			var artifactRepository = container.Resolve<IArtifactRepositoryManager>().DefaultRepository;
 			
 			EPCompiledManifest manifest;
 			try {
@@ -148,7 +148,7 @@ namespace com.espertech.esper.compiler.@internal.util
 			// Compiler thread pool factory is now a parameter that can be provided through the container.  If
 			// provided, it will be given to the compiler pool and will be used during the creation of the
 			// executor service.
-			var compilerThreadPoolFactory = GetCompilerThreadPoolFactory(compileTimeServices.Container);
+			var compilerThreadPoolFactory = GetCompilerThreadPoolFactory(compileTimeServices.Configuration.Container);
 
 			// compile each statement
 			IList<string> statementClassNames = new List<string>();
@@ -315,7 +315,7 @@ namespace com.espertech.esper.compiler.@internal.util
 			IArtifactRepository artifactRepository,
 			out ICompileArtifact artifact)
 		{
-			var serializerFactory = compileTimeServices.Container.SerializerFactory();
+			var serializerFactory = compileTimeServices.SerializerFactory;
 			
 			// write code to create an implementation of StatementResource
 			var statementFieldsClassName = CodeGenerationIDGenerator.GenerateClassNameSimple(
@@ -575,7 +575,7 @@ namespace com.espertech.esper.compiler.@internal.util
 				return null;
 			}
 
-			var serializerFactory = compileTimeServices.Container.SerializerFactory();
+			var serializerFactory = compileTimeServices.SerializerFactory;
 			var symbols = new ModuleExpressionDeclaredInitializeSymbol();
 			var method = CodegenMethod
 				.MakeParentNode(typeof(void), typeof(EPCompilerImpl), symbols, classScope)

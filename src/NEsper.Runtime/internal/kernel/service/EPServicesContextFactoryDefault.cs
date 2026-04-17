@@ -42,6 +42,7 @@ using com.espertech.esper.common.@internal.statement.multimatch;
 using com.espertech.esper.common.@internal.statement.resource;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.common.@internal.view.previous;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.threading.locks;
 using com.espertech.esper.container;
@@ -59,11 +60,8 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 {
     public class EPServicesContextFactoryDefault : EPServicesContextFactoryBase
     {
-        private IContainer _container;
-
-        public EPServicesContextFactoryDefault(IContainer container)
+        public EPServicesContextFactoryDefault()
         {
-            this._container = container;
         }
 
         protected override RuntimeSettingsService MakeRuntimeSettingsService(Configuration configurationSnapshot)
@@ -100,9 +98,10 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             StatementLifecycleServiceImpl statementLifecycleService,
             RuntimeSettingsService runtimeSettingsService,
             EventTypeIdResolver eventTypeIdResolver,
-            FilterSharedLookupableRepository filterSharedLookupableRepository)
+            FilterSharedLookupableRepository filterSharedLookupableRepository,
+            IReaderWriterLockManager rwLockManager)
         {
-            return new FilterServiceLockCoarse(_container.RWLockManager(), -1);
+            return new FilterServiceLockCoarse(rwLockManager, -1);
         }
 
         public override EPEventServiceImpl CreateEPRuntime(
@@ -141,9 +140,10 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             RuntimeExtensionServices runtimeExt,
             EventTypeRepositoryImpl eventTypeRepositoryPreconfigured,
             DeploymentLifecycleServiceImpl deploymentLifecycleService,
-            EventBeanTypedEventFactory eventBeanTypedEventFactory)
+            EventBeanTypedEventFactory eventBeanTypedEventFactory,
+            IObjectCopier objectCopier)
         {
-            return EventTypeFactoryImpl.GetInstance(_container);
+            return new EventTypeFactoryImpl(objectCopier);
         }
 
         protected override EventTypeResolvingBeanFactory MakeEventTypeResolvingBeanFactory(
@@ -251,10 +251,11 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             SchedulingServiceSPI schedulingService,
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
             RuntimeSettingsService runtimeSettingsService,
-            EPServicesHA epServicesHA)
+            EPServicesHA epServicesHA,
+            IReaderWriterLockManager rwLockManager)
         {
             return new VariableManagementServiceImpl(
-                _container.RWLockManager(),
+                rwLockManager,
                 configs.Runtime.Variables.MsecVersionRelease,
                 schedulingService,
                 eventBeanTypedEventFactory,
@@ -297,13 +298,15 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
         {
             return new ThreadingServiceImpl(configs.Runtime.Threading);
         }
-        
+
         protected override EventSerdeFactory MakeEventSerdeFactory(RuntimeExtensionServices ext)
         {
             return EventSerdeFactoryDefault.INSTANCE;
         }
 
-        protected override StageRecoveryService MakeStageRecoveryService(EPServicesHA epServicesHA)
+        protected override StageRecoveryService MakeStageRecoveryService(
+            EPServicesHA epServicesHA,
+            IReaderWriterLockManager rwLockManager)
         {
             return StageRecoveryServiceImpl.INSTANCE;
         }

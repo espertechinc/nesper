@@ -97,7 +97,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                           "DefaultSupportCaptureOp(out_17) {}\n";
                 env.CompileDeploy(epl);
 
-                var futureOneA = new DefaultSupportCaptureOp(1, env.Container.LockManager());
+                var futureOneA = new DefaultSupportCaptureOp(1, env.LockManager);
+
                 IDictionary<string, object> operators = new Dictionary<string, object>();
                 operators.Put("DefaultSupportCaptureOp", futureOneA);
 
@@ -147,10 +148,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                           "DefaultSupportCaptureOp(OutTwo) { name : 'SupportOpCountFutureTwoB' }\n";
                 env.CompileDeploy(epl);
 
-                var futureOneA = new DefaultSupportCaptureOp(2, env.Container.LockManager());
-                var futureOneB = new DefaultSupportCaptureOp(2, env.Container.LockManager());
-                var futureTwoA = new DefaultSupportCaptureOp(2, env.Container.LockManager());
-                var futureTwoB = new DefaultSupportCaptureOp(2, env.Container.LockManager());
+                var futureOneA = new DefaultSupportCaptureOp(2, env.LockManager);
+                var futureOneB = new DefaultSupportCaptureOp(2, env.LockManager);
+                var futureTwoA = new DefaultSupportCaptureOp(2, env.LockManager);
+                var futureTwoB = new DefaultSupportCaptureOp(2, env.LockManager);
 
                 IDictionary<string, object> operators = new Dictionary<string, object>();
                 operators.Put("SupportOpCountFutureOneA", futureOneA);
@@ -208,7 +209,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                           "DefaultSupportCaptureOp(FinalResult) {}\n";
                 env.CompileDeploy(epl);
 
-                var future = new DefaultSupportCaptureOp(1, env.Container.LockManager());
+                var future = new DefaultSupportCaptureOp(1, env.LockManager);
+
                 var options = new EPDataFlowInstantiationOptions()
                     .WithOperatorProvider(new DefaultSupportGraphOpProvider(future));
 

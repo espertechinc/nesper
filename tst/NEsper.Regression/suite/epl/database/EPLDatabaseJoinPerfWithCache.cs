@@ -242,7 +242,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 var endTime = PerformanceObserver.MilliTime;
 
                 // log.info("delta=" + (endTime - startTime));
-                ClassicAssert.IsTrue(endTime - startTime < 500);
+                ClassicAssert.That(endTime - startTime, Is.LessThan(500));
                 env.AssertListenerNotInvoked("s0");
 
                 env.UndeployAll();
@@ -280,7 +280,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 var endTime = PerformanceObserver.MilliTime;
 
                 // log.info("delta=" + (endTime - startTime));
-                ClassicAssert.IsTrue(endTime - startTime < 500);
+                ClassicAssert.That(endTime - startTime, Is.LessThan(500));
 
                 env.UndeployAll();
             }
@@ -324,7 +324,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                     new object[] { "-1", null, null });
 
                 // log.info("delta=" + (endTime - startTime));
-                ClassicAssert.IsTrue(endTime - startTime < 500);
+                ClassicAssert.That(endTime - startTime, Is.LessThan(500));
 
                 env.UndeployAll();
             }
@@ -371,7 +371,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 env.AssertListenerNotInvoked("s0");
 
                 // log.info("delta=" + (endTime - startTime));
-                ClassicAssert.IsTrue(endTime - startTime < 500);
+                ClassicAssert.That(endTime - startTime, Is.LessThan(500));
 
                 env.UndeployAll();
             }
