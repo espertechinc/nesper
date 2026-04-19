@@ -100,6 +100,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "examples", "examples", "{41
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NEsper.Examples.OHLC", "examples\NEsper.Examples\example\NEsper.Examples.OHLC\NEsper.Examples.OHLC.csproj", "{B74D6BE7-7B2F-4B45-802D-E831C222B9C5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NEsper.Benchmarks.Micro", "tst\NEsper.Benchmarks.Micro\NEsper.Benchmarks.Micro.csproj", "{053E7ED5-D302-437D-ABD4-977BF3849FE6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -590,6 +592,18 @@ Global
 		{B74D6BE7-7B2F-4B45-802D-E831C222B9C5}.Release|x64.Build.0 = Release|Any CPU
 		{B74D6BE7-7B2F-4B45-802D-E831C222B9C5}.Release|x86.ActiveCfg = Release|Any CPU
 		{B74D6BE7-7B2F-4B45-802D-E831C222B9C5}.Release|x86.Build.0 = Release|Any CPU
+		{053E7ED5-D302-437D-ABD4-977BF3849FE6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{053E7ED5-D302-437D-ABD4-977BF3849FE6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{053E7ED5-D302-437D-ABD4-977BF3849FE6}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{053E7ED5-D302-437D-ABD4-977BF3849FE6}.Debug|x64.Build.0 = Debug|Any CPU
+		{053E7ED5-D302-437D-ABD4-977BF3849FE6}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{053E7ED5-D302-437D-ABD4-977BF3849FE6}.Debug|x86.Build.0 = Debug|Any CPU
+		{053E7ED5-D302-437D-ABD4-977BF3849FE6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{053E7ED5-D302-437D-ABD4-977BF3849FE6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{053E7ED5-D302-437D-ABD4-977BF3849FE6}.Release|x64.ActiveCfg = Release|Any CPU
+		{053E7ED5-D302-437D-ABD4-977BF3849FE6}.Release|x64.Build.0 = Release|Any CPU
+		{053E7ED5-D302-437D-ABD4-977BF3849FE6}.Release|x86.ActiveCfg = Release|Any CPU
+		{053E7ED5-D302-437D-ABD4-977BF3849FE6}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -637,6 +651,7 @@ Global
 		{A124B48C-71C7-4409-9FDE-FB73A66AA964} = {3B7A1B30-8D5A-496B-A734-9B80EB3C5794}
 		{D3F42D31-A133-4DBD-8C9A-F4D4129350B9} = {3B7A1B30-8D5A-496B-A734-9B80EB3C5794}
 		{B74D6BE7-7B2F-4B45-802D-E831C222B9C5} = {3426C460-A7A9-4AFB-9D42-04733A2F7C06}
+		{053E7ED5-D302-437D-ABD4-977BF3849FE6} = {64E875A7-9654-43CF-87C3-FB3169CB7E20}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {ECCBA704-EBC2-49C4-8521-486AF157D4B2}
