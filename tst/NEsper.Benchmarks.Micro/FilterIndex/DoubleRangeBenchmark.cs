@@ -14,11 +14,11 @@ public class DoubleRangeBenchmark
     private const double LargestRangeValue = 1000.0;
 
     [Benchmark(Baseline = true)]
-    public (DoubleRange, DoubleRange) Current_AllocateTwoRanges()
+    public bool Current_AllocateTwoRanges()
     {
         var rangeStart = new DoubleRange(AttributeValue - LargestRangeValue, AttributeValue);
         var rangeEnd   = new DoubleRange(AttributeValue, double.MaxValue);
-        return (rangeStart, rangeEnd);
+        return rangeStart != null & rangeEnd != null;
     }
 
     [Benchmark]

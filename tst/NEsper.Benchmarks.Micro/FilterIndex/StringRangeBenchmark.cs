@@ -13,11 +13,11 @@ public class StringRangeBenchmark
     private const string AttributeValue = "MSFT";
 
     [Benchmark(Baseline = true)]
-    public (StringRange, StringRange) Current_AllocateTwoRanges()
+    public bool Current_AllocateTwoRanges()
     {
         var rangeStart = new StringRange(null!, AttributeValue);
         var rangeEnd   = new StringRange(AttributeValue, null!);
-        return (rangeStart, rangeEnd);
+        return rangeStart != null & rangeEnd != null;
     }
 
     [Benchmark]
