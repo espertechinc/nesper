@@ -60,6 +60,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NEsper.Runtime.Tests", "tst
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NEsper.Benchmarks.Micro", "tst\NEsper.Benchmarks.Micro\NEsper.Benchmarks.Micro.csproj", "{F9E82E73-9793-45D2-82E9-CB0C844E5EDD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NEsper.Benchmarks.EndToEnd", "tst\NEsper.Benchmarks.EndToEnd\NEsper.Benchmarks.EndToEnd.csproj", "{41080135-5FD5-4026-B79A-0105EF36C4E4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -346,6 +348,18 @@ Global
 		{F9E82E73-9793-45D2-82E9-CB0C844E5EDD}.Release|x64.Build.0 = Release|Any CPU
 		{F9E82E73-9793-45D2-82E9-CB0C844E5EDD}.Release|x86.ActiveCfg = Release|Any CPU
 		{F9E82E73-9793-45D2-82E9-CB0C844E5EDD}.Release|x86.Build.0 = Release|Any CPU
+		{41080135-5FD5-4026-B79A-0105EF36C4E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{41080135-5FD5-4026-B79A-0105EF36C4E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{41080135-5FD5-4026-B79A-0105EF36C4E4}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{41080135-5FD5-4026-B79A-0105EF36C4E4}.Debug|x64.Build.0 = Debug|Any CPU
+		{41080135-5FD5-4026-B79A-0105EF36C4E4}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{41080135-5FD5-4026-B79A-0105EF36C4E4}.Debug|x86.Build.0 = Debug|Any CPU
+		{41080135-5FD5-4026-B79A-0105EF36C4E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{41080135-5FD5-4026-B79A-0105EF36C4E4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{41080135-5FD5-4026-B79A-0105EF36C4E4}.Release|x64.ActiveCfg = Release|Any CPU
+		{41080135-5FD5-4026-B79A-0105EF36C4E4}.Release|x64.Build.0 = Release|Any CPU
+		{41080135-5FD5-4026-B79A-0105EF36C4E4}.Release|x86.ActiveCfg = Release|Any CPU
+		{41080135-5FD5-4026-B79A-0105EF36C4E4}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -374,6 +388,7 @@ Global
 		{AD508C9F-8B4D-4943-9069-2F9C4F7421A4} = {CB410E7E-6D3D-4100-8339-C2C818E12D51}
 		{0E201A80-31FF-49D9-B34D-F76635F1C55A} = {CB410E7E-6D3D-4100-8339-C2C818E12D51}
 		{F9E82E73-9793-45D2-82E9-CB0C844E5EDD} = {CB410E7E-6D3D-4100-8339-C2C818E12D51}
+		{41080135-5FD5-4026-B79A-0105EF36C4E4} = {CB410E7E-6D3D-4100-8339-C2C818E12D51}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {ECCBA704-EBC2-49C4-8521-486AF157D4B2}

@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
+        <AssemblyName>NEsper.Benchmarks.EndToEnd</AssemblyName>
+        <RootNamespace>NEsper.Benchmarks.EndToEnd</RootNamespace>
+        <Nullable>enable</Nullable>
+        <LangVersion>latest</LangVersion>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="BenchmarkDotNet" Version="0.14.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\src\NEsper.Compat\NEsper.Compat.csproj" />
+        <ProjectReference Include="..\..\src\NEsper.Common\NEsper.Common.csproj" />
+        <ProjectReference Include="..\..\src\NEsper.Runtime\NEsper.Runtime.csproj" />
+        <ProjectReference Include="..\..\src\NEsper.Compiler\NEsper.Compiler.csproj" />
+    </ItemGroup>
+</Project>
