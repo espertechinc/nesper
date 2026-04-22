@@ -25,6 +25,13 @@ namespace com.espertech.esper.container
                 wrapper.InitializeDefaultServices();
             }
 
+#if NETCOREAPP3_0_OR_GREATER
+            // assign the default assembly load context
+            wrapper.AssemblyLoadContext =
+                System.Runtime.Loader.AssemblyLoadContext.CurrentContextualReflectionContext ??
+                System.Runtime.Loader.AssemblyLoadContext.Default;
+#endif
+
             return wrapper;
         }
 

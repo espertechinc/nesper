@@ -51,7 +51,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 
             // Look up in hashtable
             EventEvaluator evaluator = null;
-            using (ConstantsMapRwLock.ReadLock.Acquire()) {
+            using (ConstantsMapRwLock.ReadLock.AcquireScope()) {
                 evaluator = ConstantsMap.Get(attributeValue);
             }
 

@@ -58,14 +58,17 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 
             var rangeStart = new StringRange(null, attributeValue);
             var rangeEnd = new StringRange(attributeValue, null);
-            var subMap = Ranges.Between(rangeStart, true, rangeEnd, true);
+
+            int startIdx = Ranges.GetTailIndex(rangeStart, true);
+            int endIdx = Ranges.GetHeadIndex(rangeEnd, true);
 
             // For not including either endpoint
             // A bit awkward to duplicate the loop code, however better than checking the boolean many times over
             // This may be a bit of an early performance optimization - the optimizer after all may do this better
             if (FilterOperator == FilterOperator.RANGE_OPEN) {
                 // include neither endpoint
-                foreach (var entry in subMap) {
+                for (int i = startIdx; i <= endIdx; i++) {
+                    var entry = Ranges.EntryAt(i);
                     if (string.Compare(entry.Key.Min, attributeValue, StringComparison.Ordinal) < 0 &&
                         string.Compare(entry.Key.Max, attributeValue, StringComparison.Ordinal) > 0) {
                         entry.Value.MatchEvent(theEvent, matches, ctx);
@@ -74,7 +77,8 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             }
             else if (FilterOperator == FilterOperator.RANGE_CLOSED) {
                 // include all endpoints
-                foreach (var entry in subMap) {
+                for (int i = startIdx; i <= endIdx; i++) {
+                    var entry = Ranges.EntryAt(i);
                     if (string.Compare(entry.Key.Min, attributeValue, StringComparison.Ordinal) <= 0 &&
                         string.Compare(entry.Key.Max, attributeValue, StringComparison.Ordinal) >= 0) {
                         entry.Value.MatchEvent(theEvent, matches, ctx);
@@ -83,7 +87,8 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             }
             else if (FilterOperator == FilterOperator.RANGE_HALF_CLOSED) {
                 // include high endpoint not low endpoint
-                foreach (var entry in subMap) {
+                for (int i = startIdx; i <= endIdx; i++) {
+                    var entry = Ranges.EntryAt(i);
                     if (string.Compare(entry.Key.Min, attributeValue, StringComparison.Ordinal) < 0 &&
                         string.Compare(entry.Key.Max, attributeValue, StringComparison.Ordinal) >= 0) {
                         entry.Value.MatchEvent(theEvent, matches, ctx);
@@ -92,7 +97,8 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             }
             else if (FilterOperator == FilterOperator.RANGE_HALF_OPEN) {
                 // include low endpoint not high endpoint
-                foreach (var entry in subMap) {
+                for (int i = startIdx; i <= endIdx; i++) {
+                    var entry = Ranges.EntryAt(i);
                     if (string.Compare(entry.Key.Min, attributeValue, StringComparison.Ordinal) <= 0 &&
                         string.Compare(entry.Key.Max, attributeValue, StringComparison.Ordinal) > 0) {
                         entry.Value.MatchEvent(theEvent, matches, ctx);

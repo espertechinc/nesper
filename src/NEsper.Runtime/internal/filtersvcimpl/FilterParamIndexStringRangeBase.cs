@@ -18,7 +18,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
     public abstract class FilterParamIndexStringRangeBase : FilterParamIndexLookupableBase
     {
         protected EventEvaluator RangesNullEndpoints;
-        protected readonly IOrderedDictionary<StringRange, EventEvaluator> Ranges;
+        protected readonly OrderedListDictionary<StringRange, EventEvaluator> Ranges;
 
         protected FilterParamIndexStringRangeBase(
             ExprFilterSpecLookupable lookupable,

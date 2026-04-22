@@ -145,7 +145,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
                 env.AssertListener("s0", listener => ClassicAssert.AreEqual(1, listener.LastNewData.Length));
                 // Stay below 50 ms
-                ClassicAssert.IsTrue((endTime - startTime) < 25);
+                ClassicAssert.That((endTime - startTime), Is.LessThan(25));
                 env.UndeployAll();
             }
         }

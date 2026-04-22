@@ -23,6 +23,18 @@ namespace com.espertech.esper.compat.threading.locks
             return new TrackedDisposable(_lockObj.ReleaseWriterLock);
         }
 
+        public LockScope AcquireScope()
+        {
+            _lockObj.AcquireWriterLock(_lockTimeout);
+            return new LockScope(this);
+        }
+
+        public LockScope AcquireScope(long msec)
+        {
+            _lockObj.AcquireWriterLock(msec);
+            return new LockScope(this);
+        }
+
 	    public IDisposable ReleaseAcquire()
         {
             _lockObj.ReleaseWriterLock();
@@ -60,6 +72,18 @@ namespace com.espertech.esper.compat.threading.locks
 	    {
             _lockValue = _lockObj.AcquireWriterLock(msec);
             return new TrackedDisposable(() => _lockObj.ReleaseWriterLock(_lockValue));
+        }
+
+        public LockScope AcquireScope()
+        {
+            _lockValue = _lockObj.AcquireWriterLock(_lockTimeout);
+            return new LockScope(this);
+        }
+
+        public LockScope AcquireScope(long msec)
+        {
+            _lockValue = _lockObj.AcquireWriterLock(msec);
+            return new LockScope(this);
         }
 
 	    public IDisposable ReleaseAcquire()

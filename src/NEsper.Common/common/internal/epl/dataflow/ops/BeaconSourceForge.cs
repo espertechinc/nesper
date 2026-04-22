@@ -110,7 +110,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
 
             // compile properties to populate
             _outputEventType = port.OptionalDeclaredType.EventType;
-            var props = _allProperties.Keys;
+            var props = _allProperties.Keys.ToList();
             props.RemoveAll(PARAMETER_PROPERTIES);
             var writables = SetupProperties(props.ToArray(), _outputEventType);
             try {
@@ -173,7 +173,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
         {
             // No type has been declared, we can create one
             var types = new LinkedHashMap<string, object>();
-            var props = _allProperties.Keys;
+            var props = _allProperties.Keys.ToList();
             props.RemoveAll(PARAMETER_PROPERTIES);
 
             var count = 0;

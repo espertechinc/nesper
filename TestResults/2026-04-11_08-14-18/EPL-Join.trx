@@ -1,0 +1,543 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="b4ff3792-2d25-454f-b89a-d88aa52bc00a" name="ajack@NEBULOUS 2026-04-11 08:21:44" runUser="NEBULOUS\ajack" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2026-04-11T08:21:44.4582464-05:00" queuing="2026-04-11T08:21:44.4582464-05:00" start="2026-04-11T08:21:41.2315859-05:00" finish="2026-04-11T08:22:32.3422598-05:00" />
+  <TestSettings name="default" id="f2a0a0a1-2d26-4e40-be61-e3066c3d1de7">
+    <Deployment runDeploymentRoot="ajack_NEBULOUS_2026-04-11_08_21_44" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="7eb0372d-788d-4d28-9e64-c408152138c0" testId="161cdb4d-8c73-0666-197c-e8a1cbff2bdd" testName="WithnRange" computerName="NEBULOUS" duration="00:00:00.2072520" startTime="2026-04-11T08:22:16.3401340-05:00" endTime="2026-04-11T08:22:16.5473822-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="7eb0372d-788d-4d28-9e64-c408152138c0" />
+    <UnitTestResult executionId="7c586d56-84a3-4cdf-8190-d5aa3bf94e69" testId="242014fb-9fe1-75e0-b685-d926771b02f4" testName="WithPatternUnidirectionalOuterJoinNoOn" computerName="NEBULOUS" duration="00:00:01.5633680" startTime="2026-04-11T08:22:30.7047628-05:00" endTime="2026-04-11T08:22:32.2681055-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="7c586d56-84a3-4cdf-8190-d5aa3bf94e69" />
+    <UnitTestResult executionId="8dcb3632-fa9d-4b3f-a354-1fe130abdd01" testId="03d8d41d-0809-348c-bb11-62dc2b0e7ee4" testName="With2TableJoinRowForAll" computerName="NEBULOUS" duration="00:00:00.1097900" startTime="2026-04-11T08:22:29.4140284-05:00" endTime="2026-04-11T08:22:29.5238167-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="8dcb3632-fa9d-4b3f-a354-1fe130abdd01" />
+    <UnitTestResult executionId="3783e6f7-0df9-4b7e-aca8-bfa4b6e86039" testId="86b41e70-7f57-82fc-1000-f0ebcec446a8" testName="WithWrapperEventNotUnique" computerName="NEBULOUS" duration="00:00:01.0862610" startTime="2026-04-11T08:22:24.5684526-05:00" endTime="2026-04-11T08:22:25.6546960-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="3783e6f7-0df9-4b7e-aca8-bfa4b6e86039" />
+    <UnitTestResult executionId="ada36c67-a13f-4cd8-88a1-b185b17b030d" testId="70e2110f-2d78-e08f-3f0d-3ae90f84cffa" testName="WithMultikeyWArrayCompositeArray" computerName="NEBULOUS" duration="00:00:00.1155360" startTime="2026-04-11T08:22:25.8217756-05:00" endTime="2026-04-11T08:22:25.9373101-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="ada36c67-a13f-4cd8-88a1-b185b17b030d" />
+    <UnitTestResult executionId="571ea8bf-cdf6-4bc0-9c36-f0cab5acaa3c" testId="631c56a2-9a38-3530-9dd6-90e0f9e781a4" testName="With2Properties" computerName="NEBULOUS" duration="00:00:00.1484650" startTime="2026-04-11T08:21:52.9402669-05:00" endTime="2026-04-11T08:21:53.0887286-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="571ea8bf-cdf6-4bc0-9c36-f0cab5acaa3c" />
+    <UnitTestResult executionId="6a1ac6ee-e732-421d-bffd-1836d99c142e" testId="1524add8-97ea-87a6-1e8c-8d51c84e051d" testName="WithInvalid" computerName="NEBULOUS" duration="00:00:00.0078619" startTime="2026-04-11T08:22:30.3530118-05:00" endTime="2026-04-11T08:22:30.3608737-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="6a1ac6ee-e732-421d-bffd-1836d99c142e" />
+    <UnitTestResult executionId="12b79cfb-0d43-4c20-ae0b-8f40a699443d" testId="038db104-7763-56dc-9a48-6fdc4b94e50d" testName="TestEPLJoinSelectClause" computerName="NEBULOUS" duration="00:00:00.1676010" startTime="2026-04-11T08:21:49.0520215-05:00" endTime="2026-04-11T08:21:49.2196193-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="12b79cfb-0d43-4c20-ae0b-8f40a699443d" />
+    <UnitTestResult executionId="e9c1bb05-cc47-452b-92e2-d2960ee994cf" testId="42284121-5806-e139-8958-9cdb4f838dec" testName="WithSceneOne" computerName="NEBULOUS" duration="00:00:00.2984510" startTime="2026-04-11T08:22:11.2806826-05:00" endTime="2026-04-11T08:22:11.5791283-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="e9c1bb05-cc47-452b-92e2-d2960ee994cf" />
+    <UnitTestResult executionId="36fc29f0-fadb-40ac-93d1-1e6586d09e12" testId="40347027-ed55-e7e9-1f28-4a953d975ecf" testName="WithMultiIndexLookup" computerName="NEBULOUS" duration="00:00:00.2029870" startTime="2026-04-11T08:21:53.4216632-05:00" endTime="2026-04-11T08:21:53.6246459-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="36fc29f0-fadb-40ac-93d1-1e6586d09e12" />
+    <UnitTestResult executionId="05eef656-e0c9-4830-89c8-3673ac3a5133" testId="147197bd-858d-71a7-9b04-c9b798f65df3" testName="WithStartStopSceneOne" computerName="NEBULOUS" duration="00:00:00.2667830" startTime="2026-04-11T08:22:28.1892027-05:00" endTime="2026-04-11T08:22:28.4559815-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="05eef656-e0c9-4830-89c8-3673ac3a5133" />
+    <UnitTestResult executionId="65704b06-d23c-4337-ab0e-0a7d5b2b97cb" testId="28903bd6-5f8b-f46b-218e-8947d2fe70cc" testName="WithEventRepresentations(JSONCLASSPROVIDED)" computerName="NEBULOUS" duration="00:00:01.3161500" startTime="2026-04-11T08:22:21.8031144-05:00" endTime="2026-04-11T08:22:23.1192432-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="65704b06-d23c-4337-ab0e-0a7d5b2b97cb" />
+    <UnitTestResult executionId="b382a150-811f-4ec0-864c-26d50f54a7c2" testId="a8a884ee-dc1c-b88b-000a-64f7f631a465" testName="With2PatternJoinSelect" computerName="NEBULOUS" duration="00:00:00.2244520" startTime="2026-04-11T08:22:26.7743538-05:00" endTime="2026-04-11T08:22:26.9988017-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="b382a150-811f-4ec0-864c-26d50f54a7c2" />
+    <UnitTestResult executionId="3e7ef5c1-1615-4e08-b31b-21ecd152f541" testId="814d5ae9-98fc-aa91-a063-8d0644cad05f" testName="TestEPLJoinUniqueIndex(MULTIDIRECTIONAL_3STREAM)" computerName="NEBULOUS" duration="00:00:00.9350460" startTime="2026-04-11T08:21:52.0045871-05:00" endTime="2026-04-11T08:21:52.9396173-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="3e7ef5c1-1615-4e08-b31b-21ecd152f541" />
+    <UnitTestResult executionId="dbf486b1-c16c-44b6-a138-cf37616171ae" testId="d133b1ab-f28f-0239-b981-42fd633d7dfb" testName="Withn" computerName="NEBULOUS" duration="00:00:00.1525240" startTime="2026-04-11T08:22:16.1875953-05:00" endTime="2026-04-11T08:22:16.3401157-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="dbf486b1-c16c-44b6-a138-cf37616171ae" />
+    <UnitTestResult executionId="aae70ea3-ebd9-4115-8fdd-a7a8b60a6128" testId="ff573c31-06ce-b58e-b3f5-f45e94a10511" testName="WithOne" computerName="NEBULOUS" duration="00:00:00.3717559" startTime="2026-04-11T08:22:09.9668322-05:00" endTime="2026-04-11T08:22:10.3385821-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="aae70ea3-ebd9-4115-8fdd-a7a8b60a6128" />
+    <UnitTestResult executionId="61a269ae-8aab-41e5-955d-88d2660702a3" testId="83723ae4-8f5a-7d1a-335a-5afbb8f257a6" testName="WithJoinPerformanceStreamA" computerName="NEBULOUS" duration="00:00:00.3072770" startTime="2026-04-11T08:22:08.8847804-05:00" endTime="2026-04-11T08:22:09.1920523-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="61a269ae-8aab-41e5-955d-88d2660702a3" />
+    <UnitTestResult executionId="97d0dc2a-5e46-4d88-9f1b-fb8b280c064d" testId="d2bedc03-36be-cc78-3bf3-18ba5ef023f8" testName="WithRelationalOp" computerName="NEBULOUS" duration="00:00:01.3000740" startTime="2026-04-11T08:21:58.6593359-05:00" endTime="2026-04-11T08:21:59.9593884-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="97d0dc2a-5e46-4d88-9f1b-fb8b280c064d" />
+    <UnitTestResult executionId="b4cc7238-53bc-4f94-b284-4ade1702afe7" testId="c62f6214-68d4-3045-ea0c-cda1fc70b73b" testName="WithPartialStreams" computerName="NEBULOUS" duration="00:00:00.1192940" startTime="2026-04-11T08:22:09.8474670-05:00" endTime="2026-04-11T08:22:09.9667593-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="b4cc7238-53bc-4f94-b284-4ade1702afe7" />
+    <UnitTestResult executionId="d88f631d-a8b5-4ef7-bda3-4a415919adca" testId="e0d6e5ec-e0f8-c1a1-e941-eeceef36752d" testName="WithRemoveStream" computerName="NEBULOUS" duration="00:00:00.1571710" startTime="2026-04-11T08:21:53.2644252-05:00" endTime="2026-04-11T08:21:53.4215933-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="d88f631d-a8b5-4ef7-bda3-4a415919adca" />
+    <UnitTestResult executionId="1895cadd-58ac-4041-a5f9-3393fd2e23b1" testId="ad1761b2-a94f-b0e0-70d2-0f2a8082c296" testName="WithKeyAndRange" computerName="NEBULOUS" duration="00:00:01.3764030" startTime="2026-04-11T08:22:12.2242584-05:00" endTime="2026-04-11T08:22:13.6006396-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="1895cadd-58ac-4041-a5f9-3393fd2e23b1" />
+    <UnitTestResult executionId="5a548495-b5d7-4762-a531-6d92cf7bf078" testId="ab86f2ec-4cae-454c-c85c-63fe2f5890bb" testName="With2TableFullOuterJoinCompile" computerName="NEBULOUS" duration="00:00:00.1549020" startTime="2026-04-11T08:22:28.7961375-05:00" endTime="2026-04-11T08:22:28.9510371-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="5a548495-b5d7-4762-a531-6d92cf7bf078" />
+    <UnitTestResult executionId="bdd8f6eb-6c11-4800-b92a-4a1174f386f4" testId="376aebad-b299-b6f2-9557-8f808e80f36a" testName="TestEPLJoinNoTableName" computerName="NEBULOUS" duration="00:00:00.1646730" startTime="2026-04-11T08:21:48.8873268-05:00" endTime="2026-04-11T08:21:49.0519966-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="bdd8f6eb-6c11-4800-b92a-4a1174f386f4" />
+    <UnitTestResult executionId="dc832795-2d3b-425f-b18a-ebe26576db77" testId="e4909f6d-1472-8fad-0e4e-e3307a57440f" testName="WithRegularJoin" computerName="NEBULOUS" duration="00:00:00.1575750" startTime="2026-04-11T08:22:27.4909397-05:00" endTime="2026-04-11T08:22:27.6485120-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="dc832795-2d3b-425f-b18a-ebe26576db77" />
+    <UnitTestResult executionId="3efb399d-fcdb-42ce-b890-66d91d18eeb8" testId="6495656c-420b-6166-08d7-15a88c6544fe" testName="WithRangeNullAndDupAndInvalid" computerName="NEBULOUS" duration="00:00:00.2594330" startTime="2026-04-11T08:22:26.2305261-05:00" endTime="2026-04-11T08:22:26.4899551-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="3efb399d-fcdb-42ce-b890-66d91d18eeb8" />
+    <UnitTestResult executionId="ece5c3e1-44e8-41cc-a849-aaabae4c6d72" testId="16b7b944-b955-3e7a-a101-43408f42ac80" testName="WithUnidirectionalRelOp" computerName="NEBULOUS" duration="00:00:08.4596380" startTime="2026-04-11T08:21:59.9594137-05:00" endTime="2026-04-11T08:22:08.4189171-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="ece5c3e1-44e8-41cc-a849-aaabae4c6d72" />
+    <UnitTestResult executionId="d34b5f16-63bf-47ea-9ab7-4dac30baf490" testId="2f623b40-61fc-f355-c17e-a1736f0e2542" testName="WithKeyAndRange" computerName="NEBULOUS" duration="00:00:02.3881650" startTime="2026-04-11T08:21:53.7822916-05:00" endTime="2026-04-11T08:21:56.1704185-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="d34b5f16-63bf-47ea-9ab7-4dac30baf490" />
+    <UnitTestResult executionId="1ae9b87b-bc58-4514-8c81-50513c46b266" testId="8cb839c6-7af5-83b4-857a-a08129b2ce2c" testName="WithEventRepresentations(AVRO)" computerName="NEBULOUS" duration="00:00:01.3121000" startTime="2026-04-11T08:22:19.1896731-05:00" endTime="2026-04-11T08:22:20.5017524-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="1ae9b87b-bc58-4514-8c81-50513c46b266" />
+    <UnitTestResult executionId="85f2dae9-e31a-4539-9dc0-4cbbc68183d8" testId="729531b1-a454-e370-2ad4-34da615b3c7a" testName="WithKeyAndRangeOuterJoin" computerName="NEBULOUS" duration="00:00:01.2637590" startTime="2026-04-11T08:21:57.3955729-05:00" endTime="2026-04-11T08:21:58.6593121-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="85f2dae9-e31a-4539-9dc0-4cbbc68183d8" />
+    <UnitTestResult executionId="c0f722ba-d998-4b36-be7b-fc517311d170" testId="5368be7a-8035-6e64-d628-b244c0d293f8" testName="WithInvalidJoin" computerName="NEBULOUS" duration="00:00:00.0141380" startTime="2026-04-11T08:22:28.1750582-05:00" endTime="2026-04-11T08:22:28.1891963-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="c0f722ba-d998-4b36-be7b-fc517311d170" />
+    <UnitTestResult executionId="080436e7-9412-4b6e-81ce-6904fd01eab7" testId="645f7936-ea4d-52b6-92f6-5e1f65fa2a0d" testName="WithEventRepresentations(JSON)" computerName="NEBULOUS" duration="00:00:01.3013480" startTime="2026-04-11T08:22:20.5017705-05:00" endTime="2026-04-11T08:22:21.8030975-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="080436e7-9412-4b6e-81ce-6904fd01eab7" />
+    <UnitTestResult executionId="0c0129d4-541f-4c21-92f7-8ff45877eaaf" testId="6c5f6b2d-5ca0-e840-8ce4-aa26d0e5f556" testName="WithRangeOnly" computerName="NEBULOUS" duration="00:00:01.3423550" startTime="2026-04-11T08:22:13.6006574-05:00" endTime="2026-04-11T08:22:14.9429904-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="0c0129d4-541f-4c21-92f7-8ff45877eaaf" />
+    <UnitTestResult executionId="5dc9106f-770e-4ce4-a914-8d6a91e33996" testId="5dc63ee8-337c-5bd4-23bc-45d17ea22d2d" testName="With3TableJoinVar3" computerName="NEBULOUS" duration="00:00:00.1546130" startTime="2026-04-11T08:22:29.9695817-05:00" endTime="2026-04-11T08:22:30.1241922-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="5dc9106f-770e-4ce4-a914-8d6a91e33996" />
+    <UnitTestResult executionId="b0fa1b59-1a10-41eb-979c-d7f3708123ce" testId="31713f3f-e075-7181-3aca-c6ca322d12ea" testName="WithPatternFilterJoin" computerName="NEBULOUS" duration="00:00:00.2218980" startTime="2026-04-11T08:22:27.1285349-05:00" endTime="2026-04-11T08:22:27.3504295-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="b0fa1b59-1a10-41eb-979c-d7f3708123ce" />
+    <UnitTestResult executionId="25cb3e18-df90-4d5a-9437-00f97f285db5" testId="58b684e1-4e84-1610-cb03-7f191aee23f4" testName="WithEventRepresentations(OBJECTARRAY)" computerName="NEBULOUS" duration="00:00:01.3174530" startTime="2026-04-11T08:22:16.5475153-05:00" endTime="2026-04-11T08:22:17.8649465-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="25cb3e18-df90-4d5a-9437-00f97f285db5" />
+    <UnitTestResult executionId="2bfff7a8-112b-4313-b840-c31c2c138729" testId="db268824-5fba-6265-0f7b-63e24e498ef0" testName="With2TableJoin" computerName="NEBULOUS" duration="00:00:00.1434410" startTime="2026-04-11T08:22:29.0844819-05:00" endTime="2026-04-11T08:22:29.2279202-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="2bfff7a8-112b-4313-b840-c31c2c138729" />
+    <UnitTestResult executionId="b19d9d75-dbd9-4c16-badd-b75d20692305" testId="0b4c8ce1-851d-c7d7-ff09-5b51df73e588" testName="TestEPLJoin20Stream" computerName="NEBULOUS" duration="00:00:01.9777920" startTime="2026-04-11T08:21:41.6322295-05:00" endTime="2026-04-11T08:21:43.6099673-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="b19d9d75-dbd9-4c16-badd-b75d20692305" />
+    <UnitTestResult executionId="a264cd25-56c5-4152-84f4-954cdc89db55" testId="73a4e1da-961c-7ce7-cdd7-c5723e212331" testName="WithdOM" computerName="NEBULOUS" duration="00:00:00.1571720" startTime="2026-04-11T08:22:28.0177944-05:00" endTime="2026-04-11T08:22:28.1749633-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="a264cd25-56c5-4152-84f4-954cdc89db55" />
+    <UnitTestResult executionId="7ec542b6-c958-40d9-b0b8-81547a71cf4b" testId="010b9f00-32df-50be-7ef2-91b1c1953022" testName="TestEPLJoin2StreamSimple" computerName="NEBULOUS" duration="00:00:00.1945700" startTime="2026-04-11T08:21:47.8758783-05:00" endTime="2026-04-11T08:21:48.0704445-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="7ec542b6-c958-40d9-b0b8-81547a71cf4b" />
+    <UnitTestResult executionId="e89871d5-7acb-4b48-a58a-47b61780ed5b" testId="c5cd3adf-697f-f0f8-3b86-3890dc3634f7" testName="With2TableBackwards" computerName="NEBULOUS" duration="00:00:00.1172160" startTime="2026-04-11T08:22:28.4560483-05:00" endTime="2026-04-11T08:22:28.5732620-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="e89871d5-7acb-4b48-a58a-47b61780ed5b" />
+    <UnitTestResult executionId="b8a36d05-7574-4e85-a809-855181e445e9" testId="84a683b6-aa73-9bf6-f9a6-366dbcfc6a6f" testName="WithForward" computerName="NEBULOUS" duration="00:00:00.2275560" startTime="2026-04-11T08:22:08.6571244-05:00" endTime="2026-04-11T08:22:08.8846767-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="b8a36d05-7574-4e85-a809-855181e445e9" />
+    <UnitTestResult executionId="96019043-2f9c-45be-a2ba-e91ea5acb87c" testId="8409f137-363f-b40d-d7ca-046561c8823b" testName="WithMultikeyWArrayHashJoinArray" computerName="NEBULOUS" duration="00:00:00.1422840" startTime="2026-04-11T08:22:26.0882221-05:00" endTime="2026-04-11T08:22:26.2305033-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="96019043-2f9c-45be-a2ba-e91ea5acb87c" />
+    <UnitTestResult executionId="8c3f1dc0-a0fa-4b7f-974c-cc2a18a1fb1d" testId="bc89286e-d9ab-9ee2-5dd5-d1f507f44562" testName="With3TableOuterJoinVar2" computerName="NEBULOUS" duration="00:00:00.1314410" startTime="2026-04-11T08:22:30.2215627-05:00" endTime="2026-04-11T08:22:30.3530010-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="8c3f1dc0-a0fa-4b7f-974c-cc2a18a1fb1d" />
+    <UnitTestResult executionId="b61c9e70-fed7-4557-b840-17087381bb3e" testId="e7029355-3b23-1b15-2282-c170eb8453a3" testName="With2TableJoinGrouped" computerName="NEBULOUS" duration="00:00:00.1860900" startTime="2026-04-11T08:22:29.2279309-05:00" endTime="2026-04-11T08:22:29.4140173-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="b61c9e70-fed7-4557-b840-17087381bb3e" />
+    <UnitTestResult executionId="d675244d-bf26-49fc-985a-6b8d1f28a096" testId="8a6d6ff9-c3ba-46b3-2439-4108c07a5968" testName="WithPartialProps" computerName="NEBULOUS" duration="00:00:00.1301990" startTime="2026-04-11T08:22:09.7172437-05:00" endTime="2026-04-11T08:22:09.8474399-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="d675244d-bf26-49fc-985a-6b8d1f28a096" />
+    <UnitTestResult executionId="9194e168-d00b-4a37-a879-2346c906f793" testId="01e42d80-d492-a38d-0d7e-4620f81da978" testName="WithAllProps" computerName="NEBULOUS" duration="00:00:00.1123820" startTime="2026-04-11T08:22:09.6048420-05:00" endTime="2026-04-11T08:22:09.7172218-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="9194e168-d00b-4a37-a879-2346c906f793" />
+    <UnitTestResult executionId="ee80b653-900d-431b-a669-898245dd570c" testId="b6a8b52c-6981-c64c-a4c8-2ea63e53efb8" testName="TestEPLJoin2StreamExprPerformance" computerName="NEBULOUS" duration="00:00:04.2654430" startTime="2026-04-11T08:21:43.6104643-05:00" endTime="2026-04-11T08:21:47.8758388-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="ee80b653-900d-431b-a669-898245dd570c" />
+    <UnitTestResult executionId="2956341f-7b7e-49d5-95dd-2b2a9b8b2709" testId="428320d8-5033-e83a-adc2-0b7839aa38a3" testName="With3TableJoinVar1" computerName="NEBULOUS" duration="00:00:00.1618060" startTime="2026-04-11T08:22:29.5238285-05:00" endTime="2026-04-11T08:22:29.6856321-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="2956341f-7b7e-49d5-95dd-2b2a9b8b2709" />
+    <UnitTestResult executionId="37882713-4abe-4d29-8242-969ba7ca0f0d" testId="702dce6c-529d-48f8-55ec-24d3410a4acd" testName="WithBack" computerName="NEBULOUS" duration="00:00:00.2380690" startTime="2026-04-11T08:22:08.4190313-05:00" endTime="2026-04-11T08:22:08.6570963-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="37882713-4abe-4d29-8242-969ba7ca0f0d" />
+    <UnitTestResult executionId="6e3c5b0a-66c4-4804-b151-61f9132d5272" testId="3ff0720d-7b9f-0de9-db16-25e66bf23c36" testName="WithdCompile" computerName="NEBULOUS" duration="00:00:00.2125350" startTime="2026-04-11T08:22:27.8052528-05:00" endTime="2026-04-11T08:22:28.0177839-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="6e3c5b0a-66c4-4804-b151-61f9132d5272" />
+    <UnitTestResult executionId="bcb0bad4-c449-4564-b30d-3066a2cd3e60" testId="43340122-5816-0210-c877-8f0204728ff0" testName="WithMapEventNotUnique" computerName="NEBULOUS" duration="00:00:00.1277010" startTime="2026-04-11T08:22:24.4407411-05:00" endTime="2026-04-11T08:22:24.5684395-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="bcb0bad4-c449-4564-b30d-3066a2cd3e60" />
+    <UnitTestResult executionId="147937e7-c4a4-41ff-acd6-077b09c4c1e5" testId="9ebe467f-e4a6-ca75-f1b8-cc371bc5f384" testName="With3TableOuterJoinVar1" computerName="NEBULOUS" duration="00:00:00.0973490" startTime="2026-04-11T08:22:30.1242037-05:00" endTime="2026-04-11T08:22:30.2215510-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="147937e7-c4a4-41ff-acd6-077b09c4c1e5" />
+    <UnitTestResult executionId="f7a6b8ca-7ed1-413f-ae32-5df98f731090" testId="95b5d278-ca23-ddc5-b3d4-d670eef694a0" testName="With3TableJoinVar2B" computerName="NEBULOUS" duration="00:00:00.1417150" startTime="2026-04-11T08:22:29.8278570-05:00" endTime="2026-04-11T08:22:29.9695700-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="f7a6b8ca-7ed1-413f-ae32-5df98f731090" />
+    <UnitTestResult executionId="da685d61-7e5c-43c8-a8e3-254e90921b1c" testId="48b0b11f-a5be-a295-79d7-3f47f10448aa" testName="WithEventRepresentations(MAP)" computerName="NEBULOUS" duration="00:00:01.3247140" startTime="2026-04-11T08:22:17.8649625-05:00" endTime="2026-04-11T08:22:19.1896551-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="da685d61-7e5c-43c8-a8e3-254e90921b1c" />
+    <UnitTestResult executionId="1ba32030-11ed-4481-bf8f-a4aaf8c225db" testId="0b8cefbe-55f2-5ccb-d2eb-be1ddc92ba73" testName="TestEPLJoinUniqueIndex(UNIDIRECTIONAL)" computerName="NEBULOUS" duration="00:00:00.9943840" startTime="2026-04-11T08:21:49.2196684-05:00" endTime="2026-04-11T08:21:50.2140359-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="1ba32030-11ed-4481-bf8f-a4aaf8c225db" />
+    <UnitTestResult executionId="d6009be4-aaea-4ecc-b228-5439422268f9" testId="035889d1-506a-5ab6-955e-20a6c3ef8385" testName="WithRange" computerName="NEBULOUS" duration="00:00:00.4023900" startTime="2026-04-11T08:22:10.8782789-05:00" endTime="2026-04-11T08:22:11.2806626-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="d6009be4-aaea-4ecc-b228-5439422268f9" />
+    <UnitTestResult executionId="86bf9215-08c3-467f-b9b1-53bb26668295" testId="e3ece4e9-d4d4-34a5-e533-a22deca5d448" testName="WithTwo" computerName="NEBULOUS" duration="00:00:00.3068980" startTime="2026-04-11T08:22:10.5712673-05:00" endTime="2026-04-11T08:22:10.8781595-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="86bf9215-08c3-467f-b9b1-53bb26668295" />
+    <UnitTestResult executionId="d1489e11-da3e-4ad5-b366-6bc43cbba323" testId="15f83243-95ae-1203-01ca-39b0e7ab71da" testName="WithMultikeyWArrayComposite2Prop" computerName="NEBULOUS" duration="00:00:00.1669830" startTime="2026-04-11T08:22:25.6547808-05:00" endTime="2026-04-11T08:22:25.8217611-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="d1489e11-da3e-4ad5-b366-6bc43cbba323" />
+    <UnitTestResult executionId="024e3bbd-9459-47d6-bd13-abd10ee8daec" testId="1491a7d8-0e61-0971-f7d4-d207c4e7c5d2" testName="WithJoinPerformanceStreamB" computerName="NEBULOUS" duration="00:00:00.3085840" startTime="2026-04-11T08:22:09.1920789-05:00" endTime="2026-04-11T08:22:09.5006571-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="024e3bbd-9459-47d6-bd13-abd10ee8daec" />
+    <UnitTestResult executionId="4ec0df6e-961b-4b5f-a8f7-b91c4adc0a92" testId="6c0a8d00-5bba-c98c-65f3-b2c4db88de67" testName="TestEPLJoinUniqueIndex(MULTIDIRECTIONAL)" computerName="NEBULOUS" duration="00:00:00.9079720" startTime="2026-04-11T08:21:50.2140644-05:00" endTime="2026-04-11T08:21:51.1220213-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="4ec0df6e-961b-4b5f-a8f7-b91c4adc0a92" />
+    <UnitTestResult executionId="c14c385b-6710-42f3-b7c5-ecd4f84c0d08" testId="d4680b34-c60b-585c-e12c-e15929cac674" testName="WithPatternJoinOutputRate" computerName="NEBULOUS" duration="00:00:00.1607750" startTime="2026-04-11T08:22:30.5439790-05:00" endTime="2026-04-11T08:22:30.7047516-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="c14c385b-6710-42f3-b7c5-ecd4f84c0d08" />
+    <UnitTestResult executionId="254a21c8-6c01-4fd4-ba7c-6a0bbe11c5ce" testId="854a8f5e-cbfc-a5c4-e268-0f03e033799e" testName="Withd" computerName="NEBULOUS" duration="00:00:00.1566680" startTime="2026-04-11T08:22:27.6485762-05:00" endTime="2026-04-11T08:22:27.8052415-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="254a21c8-6c01-4fd4-ba7c-6a0bbe11c5ce" />
+    <UnitTestResult executionId="8ad0a504-7a76-4527-83e9-87423ba9405f" testId="91b5879d-c7c7-ac59-9d9b-3caecb8c3465" testName="WithMultikeyWArrayHashJoin2Prop" computerName="NEBULOUS" duration="00:00:00.1508840" startTime="2026-04-11T08:22:25.9373240-05:00" endTime="2026-04-11T08:22:26.0882051-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="8ad0a504-7a76-4527-83e9-87423ba9405f" />
+    <UnitTestResult executionId="65dfe139-f584-45a0-983c-8859159c3f9f" testId="048789c8-0224-9fc6-4967-6bde4e2d1ae6" testName="With2PatternJoinWildcard" computerName="NEBULOUS" duration="00:00:00.1297100" startTime="2026-04-11T08:22:26.9988161-05:00" endTime="2026-04-11T08:22:27.1285234-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="65dfe139-f584-45a0-983c-8859159c3f9f" />
+    <UnitTestResult executionId="5f4ae120-df1c-4045-a5e5-47772cc96c71" testId="4082bb02-4ec0-3313-ec23-a6ead7a0444c" testName="WithSceneThree" computerName="NEBULOUS" duration="00:00:00.3532830" startTime="2026-04-11T08:22:11.5791471-05:00" endTime="2026-04-11T08:22:11.9324241-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="5f4ae120-df1c-4045-a5e5-47772cc96c71" />
+    <UnitTestResult executionId="7ee5a5d2-1bda-4da0-9903-fab9ed793cb8" testId="3af7f823-1dc9-6d9f-0509-c06417f667f3" testName="WithPerformanceJoinNoResults" computerName="NEBULOUS" duration="00:00:00.1040819" startTime="2026-04-11T08:22:09.5006782-05:00" endTime="2026-04-11T08:22:09.6047584-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="7ee5a5d2-1bda-4da0-9903-fab9ed793cb8" />
+    <UnitTestResult executionId="972ad6fc-d805-4d7a-90ca-894816ad5868" testId="912785a2-e1df-e5c6-9b2d-181714cef294" testName="TestEPLJoinUniqueIndex(UNIDIRECTIONAL_3STREAM)" computerName="NEBULOUS" duration="00:00:00.8825360" startTime="2026-04-11T08:21:51.1220449-05:00" endTime="2026-04-11T08:21:52.0045661-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="972ad6fc-d805-4d7a-90ca-894816ad5868" />
+    <UnitTestResult executionId="8afb86a4-354b-4886-9bdc-0419514842e2" testId="c39b63a4-a6fe-44b8-e9de-ed25b82cb140" testName="WithSceneTwo" computerName="NEBULOUS" duration="00:00:00.2916940" startTime="2026-04-11T08:22:11.9324465-05:00" endTime="2026-04-11T08:22:12.2241350-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="8afb86a4-354b-4886-9bdc-0419514842e2" />
+    <UnitTestResult executionId="e7241fc7-70df-4637-a0f7-167b8d276b56" testId="1e5fb346-7cf0-98c0-5f67-07e96c5db941" testName="WithOuterJoin" computerName="NEBULOUS" duration="00:00:00.1404330" startTime="2026-04-11T08:22:27.3504987-05:00" endTime="2026-04-11T08:22:27.4909296-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="e7241fc7-70df-4637-a0f7-167b8d276b56" />
+    <UnitTestResult executionId="f92fbb0a-5d96-4845-afa3-89aedb138e7a" testId="ac1a60e7-216c-a72c-8353-9c6c51b6494b" testName="WithKeyAndRangeInverted" computerName="NEBULOUS" duration="00:00:01.2251240" startTime="2026-04-11T08:21:56.1704420-05:00" endTime="2026-04-11T08:21:57.3955460-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="f92fbb0a-5d96-4845-afa3-89aedb138e7a" />
+    <UnitTestResult executionId="ea501062-5b23-4e08-971e-5cc5e76f4bbd" testId="c1b78cc9-dcb5-d0dc-65d8-316fc73ae33b" testName="TestEPLJoinInheritAndInterface" computerName="NEBULOUS" duration="00:00:00.1696600" startTime="2026-04-11T08:21:48.7176485-05:00" endTime="2026-04-11T08:21:48.8873050-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="ea501062-5b23-4e08-971e-5cc5e76f4bbd" />
+    <UnitTestResult executionId="1ca9e4fc-c897-4c90-9b27-d3bd34b86b4c" testId="2e9b4068-737e-53ba-ac10-00d72ef740fb" testName="TestEPLJoinDerivedValueViews" computerName="NEBULOUS" duration="00:00:00.1732860" startTime="2026-04-11T08:21:48.5443445-05:00" endTime="2026-04-11T08:21:48.7176268-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="1ca9e4fc-c897-4c90-9b27-d3bd34b86b4c" />
+    <UnitTestResult executionId="0c9854fd-10d5-4313-9d1a-816d6a91bfe6" testId="21153845-788a-f21b-6268-6636fd43db93" testName="With2TableFullOuterJoinOM" computerName="NEBULOUS" duration="00:00:00.1334230" startTime="2026-04-11T08:22:28.9510490-05:00" endTime="2026-04-11T08:22:29.0844702-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="0c9854fd-10d5-4313-9d1a-816d6a91bfe6" />
+    <UnitTestResult executionId="05fc0f4d-77b2-49c8-8122-840738d73921" testId="54342d81-5fa2-f67c-7883-c213759bf717" testName="WithEventRepresentations(DEFAULT)" computerName="NEBULOUS" duration="00:00:01.3214120" startTime="2026-04-11T08:22:23.1192711-05:00" endTime="2026-04-11T08:22:24.4406609-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="05fc0f4d-77b2-49c8-8122-840738d73921" />
+    <UnitTestResult executionId="60259697-d427-4821-a3c9-8a987f358dc7" testId="1effccd2-bb58-7f59-627e-2ebaabfb0684" testName="With3Properties" computerName="NEBULOUS" duration="00:00:00.1756560" startTime="2026-04-11T08:21:53.0887508-05:00" endTime="2026-04-11T08:21:53.2644040-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="60259697-d427-4821-a3c9-8a987f358dc7" />
+    <UnitTestResult executionId="3533670a-80da-491a-a155-936bbea8c03f" testId="dc357fa8-3b15-cadb-74cb-f5e7adb967d0" testName="With3TableJoinVar2A" computerName="NEBULOUS" duration="00:00:00.1421970" startTime="2026-04-11T08:22:29.6856505-05:00" endTime="2026-04-11T08:22:29.8278452-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="3533670a-80da-491a-a155-936bbea8c03f" />
+    <UnitTestResult executionId="881f9bd2-5a5b-4b88-94ca-fb69176189af" testId="41548401-5633-9e99-00bc-438fe08a019c" testName="TestEPLJoin5StreamPerformance" computerName="NEBULOUS" duration="00:00:00.2011180" startTime="2026-04-11T08:21:48.3432066-05:00" endTime="2026-04-11T08:21:48.5443210-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="881f9bd2-5a5b-4b88-94ca-fb69176189af" />
+    <UnitTestResult executionId="70beb6c5-8706-4c01-b9f8-459596c5828c" testId="c1a7cff8-45fa-a928-4b5e-0facb8b251ee" testName="WithWInnerKeywordWOOnClause" computerName="NEBULOUS" duration="00:00:00.1545989" startTime="2026-04-11T08:22:26.6196921-05:00" endTime="2026-04-11T08:22:26.7742889-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="70beb6c5-8706-4c01-b9f8-459596c5828c" />
+    <UnitTestResult executionId="b9b71053-d3a2-48de-bca9-dfe812307b1d" testId="e80e34a9-e33e-5afc-f0ec-017425005dc0" testName="TestEPLJoin3StreamInKeywordPerformance" computerName="NEBULOUS" duration="00:00:00.2727110" startTime="2026-04-11T08:21:48.0704737-05:00" endTime="2026-04-11T08:21:48.3431794-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="b9b71053-d3a2-48de-bca9-dfe812307b1d" />
+    <UnitTestResult executionId="88754c04-aa78-4751-b8fd-c03c5e8fb9ce" testId="a0301d07-305c-0c20-136d-54e712735260" testName="WithPatternJoin" computerName="NEBULOUS" duration="00:00:00.1830910" startTime="2026-04-11T08:22:30.3608800-05:00" endTime="2026-04-11T08:22:30.5439677-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="88754c04-aa78-4751-b8fd-c03c5e8fb9ce" />
+    <UnitTestResult executionId="54f66883-f9cb-4b0b-8a64-3b2f58e6593d" testId="a05d9eb5-6b34-40dd-b455-68ceb5888f5f" testName="With2TableFullOuterJoinBackwards" computerName="NEBULOUS" duration="00:00:00.1331230" startTime="2026-04-11T08:22:28.6630047-05:00" endTime="2026-04-11T08:22:28.7961257-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="54f66883-f9cb-4b0b-8a64-3b2f58e6593d" />
+    <UnitTestResult executionId="8fb01464-2721-44b2-82df-8dca4e77cab8" testId="e4a54b80-ea6a-73e7-bc95-0a9ae9e7ed83" testName="WithThree" computerName="NEBULOUS" duration="00:00:00.2326400" startTime="2026-04-11T08:22:10.3385994-05:00" endTime="2026-04-11T08:22:10.5712355-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="8fb01464-2721-44b2-82df-8dca4e77cab8" />
+    <UnitTestResult executionId="3c864a92-367b-47af-b8ba-2a3f0b74c554" testId="a77a60ab-280a-62cd-fcea-16a2cb374305" testName="WithUnidirectionalKeyAndRange" computerName="NEBULOUS" duration="00:00:01.2445280" startTime="2026-04-11T08:22:14.9430072-05:00" endTime="2026-04-11T08:22:16.1875148-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="3c864a92-367b-47af-b8ba-2a3f0b74c554" />
+    <UnitTestResult executionId="383b6cf9-7af1-49a4-973e-4b046dd8e70a" testId="7b893d84-633a-7c53-b560-32888b182348" testName="With2TableFullOuterJoin" computerName="NEBULOUS" duration="00:00:00.0897170" startTime="2026-04-11T08:22:28.5732770-05:00" endTime="2026-04-11T08:22:28.6629930-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="383b6cf9-7af1-49a4-973e-4b046dd8e70a" />
+    <UnitTestResult executionId="6489a0bc-56e4-4987-9ac9-a1a3364da9d3" testId="98ba366d-a2b7-ce24-26ad-6be41af03d29" testName="WithNoWhereClause" computerName="NEBULOUS" duration="00:00:00.1296480" startTime="2026-04-11T08:22:26.4900347-05:00" endTime="2026-04-11T08:22:26.6196808-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="6489a0bc-56e4-4987-9ac9-a1a3364da9d3" />
+    <UnitTestResult executionId="9ea686d2-4359-4ba9-a0ea-4005fa6d7552" testId="604c1378-5bcd-8c22-ec7f-f00d39695da6" testName="WithSingleIndexLookup" computerName="NEBULOUS" duration="00:00:00.1575540" startTime="2026-04-11T08:21:53.6246663-05:00" endTime="2026-04-11T08:21:53.7822171-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="9ea686d2-4359-4ba9-a0ea-4005fa6d7552" />
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="WithSingleIndexLookup" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="604c1378-5bcd-8c22-ec7f-f00d39695da6">
+      <Execution id="9ea686d2-4359-4ba9-a0ea-4005fa6d7552" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin+TestEPLJoin2StreamInKeywordPerformance" name="WithSingleIndexLookup" />
+    </UnitTest>
+    <UnitTest name="WithPartialStreams" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="c62f6214-68d4-3045-ea0c-cda1fc70b73b">
+      <Execution id="b4cc7238-53bc-4f94-b284-4ade1702afe7" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin+TestEPLJoin3StreamAndPropertyPerformance" name="WithPartialStreams" />
+    </UnitTest>
+    <UnitTest name="With3TableJoinVar2B" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="95b5d278-ca23-ddc5-b3d4-d670eef694a0">
+      <Execution id="f7a6b8ca-7ed1-413f-ae32-5df98f731090" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin+TestEPLJoinUnidirectionalStream" name="With3TableJoinVar2B" />
+    </UnitTest>
+    <UnitTest name="WithUnidirectionalRelOp" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="16b7b944-b955-3e7a-a101-43408f42ac80">
+      <Execution id="ece5c3e1-44e8-41cc-a849-aaabae4c6d72" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin+TestEPLJoin2StreamRangePerformance" name="WithUnidirectionalRelOp" />
+    </UnitTest>
+    <UnitTest name="WithInvalid" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="1524add8-97ea-87a6-1e8c-8d51c84e051d">
+      <Execution id="6a1ac6ee-e732-421d-bffd-1836d99c142e" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin+TestEPLJoinUnidirectionalStream" name="WithInvalid" />
+    </UnitTest>
+    <UnitTest name="With3Properties" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="1effccd2-bb58-7f59-627e-2ebaabfb0684">
+      <Execution id="60259697-d427-4821-a3c9-8a987f358dc7" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin+TestEPLJoin2StreamAndPropertyPerformance" name="With3Properties" />
+    </UnitTest>
+    <UnitTest name="WithInvalidJoin" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="5368be7a-8035-6e64-d628-b244c0d293f8">
+      <Execution id="c0f722ba-d998-4b36-be7b-fc517311d170" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin+TestEPLJoinStartStop" name="WithInvalidJoin" />
+    </UnitTest>
+    <UnitTest name="With3TableJoinVar1" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="428320d8-5033-e83a-adc2-0b7839aa38a3">
+      <Execution id="2956341f-7b7e-49d5-95dd-2b2a9b8b2709" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin+TestEPLJoinUnidirectionalStream" name="With3TableJoinVar1" />
+    </UnitTest>
+    <UnitTest name="With2TableBackwards" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="c5cd3adf-697f-f0f8-3b86-3890dc3634f7">
+      <Execution id="e89871d5-7acb-4b48-a58a-47b61780ed5b" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin+TestEPLJoinUnidirectionalStream" name="With2TableBackwards" />
+    </UnitTest>
+    <UnitTest name="WithEventRepresentations(OBJECTARRAY)" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="58b684e1-4e84-1610-cb03-7f191aee23f4">
+      <Execution id="25cb3e18-df90-4d5a-9437-00f97f285db5" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin+TestEPLJoinEventRepresentation" name="WithEventRepresentations(OBJECTARRAY)" />
+    </UnitTest>
+    <UnitTest name="WithBack" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="702dce6c-529d-48f8-55ec-24d3410a4acd">
+      <Execution id="37882713-4abe-4d29-8242-969ba7ca0f0d" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin+TestEPLJoin2StreamSimpleCoercionPerformance" name="WithBack" />
+    </UnitTest>
+    <UnitTest name="With3TableOuterJoinVar1" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="9ebe467f-e4a6-ca75-f1b8-cc371bc5f384">
+      <Execution id="147937e7-c4a4-41ff-acd6-077b09c4c1e5" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin+TestEPLJoinUnidirectionalStream" name="With3TableOuterJoinVar1" />
+    </UnitTest>
+    <UnitTest name="WithMultiIndexLookup" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="40347027-ed55-e7e9-1f28-4a953d975ecf">
+      <Execution id="36fc29f0-fadb-40ac-93d1-1e6586d09e12" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin+TestEPLJoin2StreamInKeywordPerformance" name="WithMultiIndexLookup" />
+    </UnitTest>
+    <UnitTest name="TestEPLJoinInheritAndInterface" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="c1b78cc9-dcb5-d0dc-65d8-316fc73ae33b">
+      <Execution id="ea501062-5b23-4e08-971e-5cc5e76f4bbd" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin" name="TestEPLJoinInheritAndInterface" />
+    </UnitTest>
+    <UnitTest name="WithMultikeyWArrayHashJoin2Prop" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="91b5879d-c7c7-ac59-9d9b-3caecb8c3465">
+      <Execution id="8ad0a504-7a76-4527-83e9-87423ba9405f" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin+TestEPLJoinMultiKeyAndRange" name="WithMultikeyWArrayHashJoin2Prop" />
+    </UnitTest>
+    <UnitTest name="With2TableJoinGrouped" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="e7029355-3b23-1b15-2282-c170eb8453a3">
+      <Execution id="b61c9e70-fed7-4557-b840-17087381bb3e" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin+TestEPLJoinUnidirectionalStream" name="With2TableJoinGrouped" />
+    </UnitTest>
+    <UnitTest name="WithThree" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="e4a54b80-ea6a-73e7-bc95-0a9ae9e7ed83">
+      <Execution id="8fb01464-2721-44b2-82df-8dca4e77cab8" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin+TestEPLJoin3StreamCoercionPerformance" name="WithThree" />
+    </UnitTest>
+    <UnitTest name="WithRangeNullAndDupAndInvalid" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="6495656c-420b-6166-08d7-15a88c6544fe">
+      <Execution id="3efb399d-fcdb-42ce-b890-66d91d18eeb8" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin+TestEPLJoinMultiKeyAndRange" name="WithRangeNullAndDupAndInvalid" />
+    </UnitTest>
+    <UnitTest name="TestEPLJoin20Stream" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="0b4c8ce1-851d-c7d7-ff09-5b51df73e588">
+      <Execution id="b19d9d75-dbd9-4c16-badd-b75d20692305" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin" name="TestEPLJoin20Stream" />
+    </UnitTest>
+    <UnitTest name="TestEPLJoinUniqueIndex(UNIDIRECTIONAL)" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="0b8cefbe-55f2-5ccb-d2eb-be1ddc92ba73">
+      <Execution id="1ba32030-11ed-4481-bf8f-a4aaf8c225db" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin" name="TestEPLJoinUniqueIndex(UNIDIRECTIONAL)" />
+    </UnitTest>
+    <UnitTest name="WithPatternJoinOutputRate" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="d4680b34-c60b-585c-e12c-e15929cac674">
+      <Execution id="c14c385b-6710-42f3-b7c5-ecd4f84c0d08" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin+TestEPLJoinUnidirectionalStream" name="WithPatternJoinOutputRate" />
+    </UnitTest>
+    <UnitTest name="WithStartStopSceneOne" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="147197bd-858d-71a7-9b04-c9b798f65df3">
+      <Execution id="05eef656-e0c9-4830-89c8-3673ac3a5133" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin+TestEPLJoinStartStop" name="WithStartStopSceneOne" />
+    </UnitTest>
+    <UnitTest name="WithPartialProps" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="8a6d6ff9-c3ba-46b3-2439-4108c07a5968">
+      <Execution id="d675244d-bf26-49fc-985a-6b8d1f28a096" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin+TestEPLJoin3StreamAndPropertyPerformance" name="WithPartialProps" />
+    </UnitTest>
+    <UnitTest name="WithAllProps" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="01e42d80-d492-a38d-0d7e-4620f81da978">
+      <Execution id="9194e168-d00b-4a37-a879-2346c906f793" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin+TestEPLJoin3StreamAndPropertyPerformance" name="WithAllProps" />
+    </UnitTest>
+    <UnitTest name="With3TableOuterJoinVar2" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="bc89286e-d9ab-9ee2-5dd5-d1f507f44562">
+      <Execution id="8c3f1dc0-a0fa-4b7f-974c-cc2a18a1fb1d" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin+TestEPLJoinUnidirectionalStream" name="With3TableOuterJoinVar2" />
+    </UnitTest>
+    <UnitTest name="TestEPLJoinUniqueIndex(MULTIDIRECTIONAL)" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="6c0a8d00-5bba-c98c-65f3-b2c4db88de67">
+      <Execution id="4ec0df6e-961b-4b5f-a8f7-b91c4adc0a92" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin" name="TestEPLJoinUniqueIndex(MULTIDIRECTIONAL)" />
+    </UnitTest>
+    <UnitTest name="WithdOM" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="73a4e1da-961c-7ce7-cdd7-c5723e212331">
+      <Execution id="a264cd25-56c5-4152-84f4-954cdc89db55" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin+TestEPLJoinSingleOp3Stream" name="WithdOM" />
+    </UnitTest>
+    <UnitTest name="WithnRange" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="161cdb4d-8c73-0666-197c-e8a1cbff2bdd">
+      <Execution id="7eb0372d-788d-4d28-9e64-c408152138c0" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin+TestEPLJoinCoercion" name="WithnRange" />
+    </UnitTest>
+    <UnitTest name="TestEPLJoinDerivedValueViews" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="2e9b4068-737e-53ba-ac10-00d72ef740fb">
+      <Execution id="1ca9e4fc-c897-4c90-9b27-d3bd34b86b4c" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin" name="TestEPLJoinDerivedValueViews" />
+    </UnitTest>
+    <UnitTest name="WithOne" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="ff573c31-06ce-b58e-b3f5-f45e94a10511">
+      <Execution id="aae70ea3-ebd9-4115-8fdd-a7a8b60a6128" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin+TestEPLJoin3StreamCoercionPerformance" name="WithOne" />
+    </UnitTest>
+    <UnitTest name="With3TableJoinVar3" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="5dc63ee8-337c-5bd4-23bc-45d17ea22d2d">
+      <Execution id="5dc9106f-770e-4ce4-a914-8d6a91e33996" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin+TestEPLJoinUnidirectionalStream" name="With3TableJoinVar3" />
+    </UnitTest>
+    <UnitTest name="Withn" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="d133b1ab-f28f-0239-b981-42fd633d7dfb">
+      <Execution id="dbf486b1-c16c-44b6-a138-cf37616171ae" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin+TestEPLJoinCoercion" name="Withn" />
+    </UnitTest>
+    <UnitTest name="TestEPLJoinUniqueIndex(MULTIDIRECTIONAL_3STREAM)" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="814d5ae9-98fc-aa91-a063-8d0644cad05f">
+      <Execution id="3e7ef5c1-1615-4e08-b31b-21ecd152f541" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin" name="TestEPLJoinUniqueIndex(MULTIDIRECTIONAL_3STREAM)" />
+    </UnitTest>
+    <UnitTest name="WithEventRepresentations(DEFAULT)" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="54342d81-5fa2-f67c-7883-c213759bf717">
+      <Execution id="05fc0f4d-77b2-49c8-8122-840738d73921" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin+TestEPLJoinEventRepresentation" name="WithEventRepresentations(DEFAULT)" />
+    </UnitTest>
+    <UnitTest name="WithRangeOnly" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="6c5f6b2d-5ca0-e840-8ce4-aa26d0e5f556">
+      <Execution id="0c0129d4-541f-4c21-92f7-8ff45877eaaf" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin+TestEPLJoin3StreamRangePerformance" name="WithRangeOnly" />
+    </UnitTest>
+    <UnitTest name="TestEPLJoinUniqueIndex(UNIDIRECTIONAL_3STREAM)" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="912785a2-e1df-e5c6-9b2d-181714cef294">
+      <Execution id="972ad6fc-d805-4d7a-90ca-894816ad5868" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin" name="TestEPLJoinUniqueIndex(UNIDIRECTIONAL_3STREAM)" />
+    </UnitTest>
+    <UnitTest name="WithOuterJoin" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="1e5fb346-7cf0-98c0-5f67-07e96c5db941">
+      <Execution id="e7241fc7-70df-4637-a0f7-167b8d276b56" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin+TestEPLJoinPropertyAccess" name="WithOuterJoin" />
+    </UnitTest>
+    <UnitTest name="WithRemoveStream" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="e0d6e5ec-e0f8-c1a1-e941-eeceef36752d">
+      <Execution id="d88f631d-a8b5-4ef7-bda3-4a415919adca" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin+TestEPLJoin2StreamAndPropertyPerformance" name="WithRemoveStream" />
+    </UnitTest>
+    <UnitTest name="WithMultikeyWArrayComposite2Prop" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="15f83243-95ae-1203-01ca-39b0e7ab71da">
+      <Execution id="d1489e11-da3e-4ad5-b366-6bc43cbba323" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin+TestEPLJoinMultiKeyAndRange" name="WithMultikeyWArrayComposite2Prop" />
+    </UnitTest>
+    <UnitTest name="TestEPLJoin3StreamInKeywordPerformance" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="e80e34a9-e33e-5afc-f0ec-017425005dc0">
+      <Execution id="b9b71053-d3a2-48de-bca9-dfe812307b1d" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin" name="TestEPLJoin3StreamInKeywordPerformance" />
+    </UnitTest>
+    <UnitTest name="WithSceneThree" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="4082bb02-4ec0-3313-ec23-a6ead7a0444c">
+      <Execution id="5f4ae120-df1c-4045-a5e5-47772cc96c71" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin+TestEPLJoin3StreamOuterJoinCoercionPerformance" name="WithSceneThree" />
+    </UnitTest>
+    <UnitTest name="TestEPLJoin2StreamExprPerformance" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="b6a8b52c-6981-c64c-a4c8-2ea63e53efb8">
+      <Execution id="ee80b653-900d-431b-a669-898245dd570c" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin" name="TestEPLJoin2StreamExprPerformance" />
+    </UnitTest>
+    <UnitTest name="WithKeyAndRange" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="2f623b40-61fc-f355-c17e-a1736f0e2542">
+      <Execution id="d34b5f16-63bf-47ea-9ab7-4dac30baf490" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin+TestEPLJoin2StreamRangePerformance" name="WithKeyAndRange" />
+    </UnitTest>
+    <UnitTest name="WithSceneTwo" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="c39b63a4-a6fe-44b8-e9de-ed25b82cb140">
+      <Execution id="8afb86a4-354b-4886-9bdc-0419514842e2" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin+TestEPLJoin3StreamOuterJoinCoercionPerformance" name="WithSceneTwo" />
+    </UnitTest>
+    <UnitTest name="WithUnidirectionalKeyAndRange" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="a77a60ab-280a-62cd-fcea-16a2cb374305">
+      <Execution id="3c864a92-367b-47af-b8ba-2a3f0b74c554" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin+TestEPLJoin3StreamRangePerformance" name="WithUnidirectionalKeyAndRange" />
+    </UnitTest>
+    <UnitTest name="With2PatternJoinWildcard" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="048789c8-0224-9fc6-4967-6bde4e2d1ae6">
+      <Execution id="65dfe139-f584-45a0-983c-8859159c3f9f" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin+TestEPLJoinPatterns" name="With2PatternJoinWildcard" />
+    </UnitTest>
+    <UnitTest name="TestEPLJoinNoTableName" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="376aebad-b299-b6f2-9557-8f808e80f36a">
+      <Execution id="bdd8f6eb-6c11-4800-b92a-4a1174f386f4" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin" name="TestEPLJoinNoTableName" />
+    </UnitTest>
+    <UnitTest name="WithRelationalOp" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="d2bedc03-36be-cc78-3bf3-18ba5ef023f8">
+      <Execution id="97d0dc2a-5e46-4d88-9f1b-fb8b280c064d" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin+TestEPLJoin2StreamRangePerformance" name="WithRelationalOp" />
+    </UnitTest>
+    <UnitTest name="WithKeyAndRangeInverted" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="ac1a60e7-216c-a72c-8353-9c6c51b6494b">
+      <Execution id="f92fbb0a-5d96-4845-afa3-89aedb138e7a" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin+TestEPLJoin2StreamRangePerformance" name="WithKeyAndRangeInverted" />
+    </UnitTest>
+    <UnitTest name="WithWInnerKeywordWOOnClause" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="c1a7cff8-45fa-a928-4b5e-0facb8b251ee">
+      <Execution id="70beb6c5-8706-4c01-b9f8-459596c5828c" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin+TestEPLJoinNoWhereClause" name="WithWInnerKeywordWOOnClause" />
+    </UnitTest>
+    <UnitTest name="WithSceneOne" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="42284121-5806-e139-8958-9cdb4f838dec">
+      <Execution id="e9c1bb05-cc47-452b-92e2-d2960ee994cf" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin+TestEPLJoin3StreamOuterJoinCoercionPerformance" name="WithSceneOne" />
+    </UnitTest>
+    <UnitTest name="WithdCompile" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="3ff0720d-7b9f-0de9-db16-25e66bf23c36">
+      <Execution id="6e3c5b0a-66c4-4804-b151-61f9132d5272" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin+TestEPLJoinSingleOp3Stream" name="WithdCompile" />
+    </UnitTest>
+    <UnitTest name="WithPerformanceJoinNoResults" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="3af7f823-1dc9-6d9f-0509-c06417f667f3">
+      <Execution id="7ee5a5d2-1bda-4da0-9903-fab9ed793cb8" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin+TestEPLJoin2StreamSimplePerformance" name="WithPerformanceJoinNoResults" />
+    </UnitTest>
+    <UnitTest name="WithKeyAndRangeOuterJoin" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="729531b1-a454-e370-2ad4-34da615b3c7a">
+      <Execution id="85f2dae9-e31a-4539-9dc0-4cbbc68183d8" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin+TestEPLJoin2StreamRangePerformance" name="WithKeyAndRangeOuterJoin" />
+    </UnitTest>
+    <UnitTest name="WithMultikeyWArrayCompositeArray" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="70e2110f-2d78-e08f-3f0d-3ae90f84cffa">
+      <Execution id="ada36c67-a13f-4cd8-88a1-b185b17b030d" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin+TestEPLJoinMultiKeyAndRange" name="WithMultikeyWArrayCompositeArray" />
+    </UnitTest>
+    <UnitTest name="WithJoinPerformanceStreamA" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="83723ae4-8f5a-7d1a-335a-5afbb8f257a6">
+      <Execution id="61a269ae-8aab-41e5-955d-88d2660702a3" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin+TestEPLJoin2StreamSimplePerformance" name="WithJoinPerformanceStreamA" />
+    </UnitTest>
+    <UnitTest name="WithJoinPerformanceStreamB" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="1491a7d8-0e61-0971-f7d4-d207c4e7c5d2">
+      <Execution id="024e3bbd-9459-47d6-bd13-abd10ee8daec" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin+TestEPLJoin2StreamSimplePerformance" name="WithJoinPerformanceStreamB" />
+    </UnitTest>
+    <UnitTest name="WithEventRepresentations(JSONCLASSPROVIDED)" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="28903bd6-5f8b-f46b-218e-8947d2fe70cc">
+      <Execution id="65704b06-d23c-4337-ab0e-0a7d5b2b97cb" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin+TestEPLJoinEventRepresentation" name="WithEventRepresentations(JSONCLASSPROVIDED)" />
+    </UnitTest>
+    <UnitTest name="WithNoWhereClause" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="98ba366d-a2b7-ce24-26ad-6be41af03d29">
+      <Execution id="6489a0bc-56e4-4987-9ac9-a1a3364da9d3" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin+TestEPLJoinNoWhereClause" name="WithNoWhereClause" />
+    </UnitTest>
+    <UnitTest name="With2TableFullOuterJoinBackwards" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="a05d9eb5-6b34-40dd-b455-68ceb5888f5f">
+      <Execution id="54f66883-f9cb-4b0b-8a64-3b2f58e6593d" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin+TestEPLJoinUnidirectionalStream" name="With2TableFullOuterJoinBackwards" />
+    </UnitTest>
+    <UnitTest name="With2PatternJoinSelect" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="a8a884ee-dc1c-b88b-000a-64f7f631a465">
+      <Execution id="b382a150-811f-4ec0-864c-26d50f54a7c2" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin+TestEPLJoinPatterns" name="With2PatternJoinSelect" />
+    </UnitTest>
+    <UnitTest name="With3TableJoinVar2A" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="dc357fa8-3b15-cadb-74cb-f5e7adb967d0">
+      <Execution id="3533670a-80da-491a-a155-936bbea8c03f" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin+TestEPLJoinUnidirectionalStream" name="With3TableJoinVar2A" />
+    </UnitTest>
+    <UnitTest name="WithKeyAndRange" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="ad1761b2-a94f-b0e0-70d2-0f2a8082c296">
+      <Execution id="1895cadd-58ac-4041-a5f9-3393fd2e23b1" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin+TestEPLJoin3StreamRangePerformance" name="WithKeyAndRange" />
+    </UnitTest>
+    <UnitTest name="WithEventRepresentations(MAP)" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="48b0b11f-a5be-a295-79d7-3f47f10448aa">
+      <Execution id="da685d61-7e5c-43c8-a8e3-254e90921b1c" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin+TestEPLJoinEventRepresentation" name="WithEventRepresentations(MAP)" />
+    </UnitTest>
+    <UnitTest name="WithTwo" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="e3ece4e9-d4d4-34a5-e533-a22deca5d448">
+      <Execution id="86bf9215-08c3-467f-b9b1-53bb26668295" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin+TestEPLJoin3StreamCoercionPerformance" name="WithTwo" />
+    </UnitTest>
+    <UnitTest name="WithForward" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="84a683b6-aa73-9bf6-f9a6-366dbcfc6a6f">
+      <Execution id="b8a36d05-7574-4e85-a809-855181e445e9" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin+TestEPLJoin2StreamSimpleCoercionPerformance" name="WithForward" />
+    </UnitTest>
+    <UnitTest name="With2TableFullOuterJoinCompile" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="ab86f2ec-4cae-454c-c85c-63fe2f5890bb">
+      <Execution id="5a548495-b5d7-4762-a531-6d92cf7bf078" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin+TestEPLJoinUnidirectionalStream" name="With2TableFullOuterJoinCompile" />
+    </UnitTest>
+    <UnitTest name="WithEventRepresentations(JSON)" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="645f7936-ea4d-52b6-92f6-5e1f65fa2a0d">
+      <Execution id="080436e7-9412-4b6e-81ce-6904fd01eab7" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin+TestEPLJoinEventRepresentation" name="WithEventRepresentations(JSON)" />
+    </UnitTest>
+    <UnitTest name="WithPatternJoin" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="a0301d07-305c-0c20-136d-54e712735260">
+      <Execution id="88754c04-aa78-4751-b8fd-c03c5e8fb9ce" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin+TestEPLJoinUnidirectionalStream" name="WithPatternJoin" />
+    </UnitTest>
+    <UnitTest name="WithEventRepresentations(AVRO)" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="8cb839c6-7af5-83b4-857a-a08129b2ce2c">
+      <Execution id="1ae9b87b-bc58-4514-8c81-50513c46b266" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin+TestEPLJoinEventRepresentation" name="WithEventRepresentations(AVRO)" />
+    </UnitTest>
+    <UnitTest name="WithRange" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="035889d1-506a-5ab6-955e-20a6c3ef8385">
+      <Execution id="d6009be4-aaea-4ecc-b228-5439422268f9" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin+TestEPLJoin3StreamOuterJoinCoercionPerformance" name="WithRange" />
+    </UnitTest>
+    <UnitTest name="TestEPLJoinSelectClause" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="038db104-7763-56dc-9a48-6fdc4b94e50d">
+      <Execution id="12b79cfb-0d43-4c20-ae0b-8f40a699443d" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin" name="TestEPLJoinSelectClause" />
+    </UnitTest>
+    <UnitTest name="WithMultikeyWArrayHashJoinArray" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="8409f137-363f-b40d-d7ca-046561c8823b">
+      <Execution id="96019043-2f9c-45be-a2ba-e91ea5acb87c" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin+TestEPLJoinMultiKeyAndRange" name="WithMultikeyWArrayHashJoinArray" />
+    </UnitTest>
+    <UnitTest name="With2TableFullOuterJoinOM" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="21153845-788a-f21b-6268-6636fd43db93">
+      <Execution id="0c9854fd-10d5-4313-9d1a-816d6a91bfe6" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin+TestEPLJoinUnidirectionalStream" name="With2TableFullOuterJoinOM" />
+    </UnitTest>
+    <UnitTest name="Withd" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="854a8f5e-cbfc-a5c4-e268-0f03e033799e">
+      <Execution id="254a21c8-6c01-4fd4-ba7c-6a0bbe11c5ce" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin+TestEPLJoinSingleOp3Stream" name="Withd" />
+    </UnitTest>
+    <UnitTest name="TestEPLJoin2StreamSimple" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="010b9f00-32df-50be-7ef2-91b1c1953022">
+      <Execution id="7ec542b6-c958-40d9-b0b8-81547a71cf4b" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin" name="TestEPLJoin2StreamSimple" />
+    </UnitTest>
+    <UnitTest name="WithWrapperEventNotUnique" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="86b41e70-7f57-82fc-1000-f0ebcec446a8">
+      <Execution id="3783e6f7-0df9-4b7e-aca8-bfa4b6e86039" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin+TestEPLJoinEventRepresentation" name="WithWrapperEventNotUnique" />
+    </UnitTest>
+    <UnitTest name="With2Properties" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="631c56a2-9a38-3530-9dd6-90e0f9e781a4">
+      <Execution id="571ea8bf-cdf6-4bc0-9c36-f0cab5acaa3c" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin+TestEPLJoin2StreamAndPropertyPerformance" name="With2Properties" />
+    </UnitTest>
+    <UnitTest name="With2TableJoin" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="db268824-5fba-6265-0f7b-63e24e498ef0">
+      <Execution id="2bfff7a8-112b-4313-b840-c31c2c138729" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin+TestEPLJoinUnidirectionalStream" name="With2TableJoin" />
+    </UnitTest>
+    <UnitTest name="WithMapEventNotUnique" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="43340122-5816-0210-c877-8f0204728ff0">
+      <Execution id="bcb0bad4-c449-4564-b30d-3066a2cd3e60" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin+TestEPLJoinEventRepresentation" name="WithMapEventNotUnique" />
+    </UnitTest>
+    <UnitTest name="WithPatternUnidirectionalOuterJoinNoOn" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="242014fb-9fe1-75e0-b685-d926771b02f4">
+      <Execution id="7c586d56-84a3-4cdf-8190-d5aa3bf94e69" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin+TestEPLJoinUnidirectionalStream" name="WithPatternUnidirectionalOuterJoinNoOn" />
+    </UnitTest>
+    <UnitTest name="WithPatternFilterJoin" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="31713f3f-e075-7181-3aca-c6ca322d12ea">
+      <Execution id="b0fa1b59-1a10-41eb-979c-d7f3708123ce" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin+TestEPLJoinPatterns" name="WithPatternFilterJoin" />
+    </UnitTest>
+    <UnitTest name="TestEPLJoin5StreamPerformance" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="41548401-5633-9e99-00bc-438fe08a019c">
+      <Execution id="881f9bd2-5a5b-4b88-94ca-fb69176189af" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin" name="TestEPLJoin5StreamPerformance" />
+    </UnitTest>
+    <UnitTest name="With2TableFullOuterJoin" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="7b893d84-633a-7c53-b560-32888b182348">
+      <Execution id="383b6cf9-7af1-49a4-973e-4b046dd8e70a" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin+TestEPLJoinUnidirectionalStream" name="With2TableFullOuterJoin" />
+    </UnitTest>
+    <UnitTest name="With2TableJoinRowForAll" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="03d8d41d-0809-348c-bb11-62dc2b0e7ee4">
+      <Execution id="8dcb3632-fa9d-4b3f-a354-1fe130abdd01" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin+TestEPLJoinUnidirectionalStream" name="With2TableJoinRowForAll" />
+    </UnitTest>
+    <UnitTest name="WithRegularJoin" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="e4909f6d-1472-8fad-0e4e-e3307a57440f">
+      <Execution id="dc832795-2d3b-425f-b18a-ebe26576db77" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.epl.TestSuiteEPLJoin+TestEPLJoinPropertyAccess" name="WithRegularJoin" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="161cdb4d-8c73-0666-197c-e8a1cbff2bdd" executionId="7eb0372d-788d-4d28-9e64-c408152138c0" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="242014fb-9fe1-75e0-b685-d926771b02f4" executionId="7c586d56-84a3-4cdf-8190-d5aa3bf94e69" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="03d8d41d-0809-348c-bb11-62dc2b0e7ee4" executionId="8dcb3632-fa9d-4b3f-a354-1fe130abdd01" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="86b41e70-7f57-82fc-1000-f0ebcec446a8" executionId="3783e6f7-0df9-4b7e-aca8-bfa4b6e86039" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="70e2110f-2d78-e08f-3f0d-3ae90f84cffa" executionId="ada36c67-a13f-4cd8-88a1-b185b17b030d" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="631c56a2-9a38-3530-9dd6-90e0f9e781a4" executionId="571ea8bf-cdf6-4bc0-9c36-f0cab5acaa3c" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="1524add8-97ea-87a6-1e8c-8d51c84e051d" executionId="6a1ac6ee-e732-421d-bffd-1836d99c142e" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="038db104-7763-56dc-9a48-6fdc4b94e50d" executionId="12b79cfb-0d43-4c20-ae0b-8f40a699443d" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="42284121-5806-e139-8958-9cdb4f838dec" executionId="e9c1bb05-cc47-452b-92e2-d2960ee994cf" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="40347027-ed55-e7e9-1f28-4a953d975ecf" executionId="36fc29f0-fadb-40ac-93d1-1e6586d09e12" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="147197bd-858d-71a7-9b04-c9b798f65df3" executionId="05eef656-e0c9-4830-89c8-3673ac3a5133" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="28903bd6-5f8b-f46b-218e-8947d2fe70cc" executionId="65704b06-d23c-4337-ab0e-0a7d5b2b97cb" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="a8a884ee-dc1c-b88b-000a-64f7f631a465" executionId="b382a150-811f-4ec0-864c-26d50f54a7c2" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="814d5ae9-98fc-aa91-a063-8d0644cad05f" executionId="3e7ef5c1-1615-4e08-b31b-21ecd152f541" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="d133b1ab-f28f-0239-b981-42fd633d7dfb" executionId="dbf486b1-c16c-44b6-a138-cf37616171ae" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="ff573c31-06ce-b58e-b3f5-f45e94a10511" executionId="aae70ea3-ebd9-4115-8fdd-a7a8b60a6128" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="83723ae4-8f5a-7d1a-335a-5afbb8f257a6" executionId="61a269ae-8aab-41e5-955d-88d2660702a3" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="d2bedc03-36be-cc78-3bf3-18ba5ef023f8" executionId="97d0dc2a-5e46-4d88-9f1b-fb8b280c064d" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="c62f6214-68d4-3045-ea0c-cda1fc70b73b" executionId="b4cc7238-53bc-4f94-b284-4ade1702afe7" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="e0d6e5ec-e0f8-c1a1-e941-eeceef36752d" executionId="d88f631d-a8b5-4ef7-bda3-4a415919adca" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="ad1761b2-a94f-b0e0-70d2-0f2a8082c296" executionId="1895cadd-58ac-4041-a5f9-3393fd2e23b1" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="ab86f2ec-4cae-454c-c85c-63fe2f5890bb" executionId="5a548495-b5d7-4762-a531-6d92cf7bf078" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="376aebad-b299-b6f2-9557-8f808e80f36a" executionId="bdd8f6eb-6c11-4800-b92a-4a1174f386f4" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="e4909f6d-1472-8fad-0e4e-e3307a57440f" executionId="dc832795-2d3b-425f-b18a-ebe26576db77" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="6495656c-420b-6166-08d7-15a88c6544fe" executionId="3efb399d-fcdb-42ce-b890-66d91d18eeb8" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="16b7b944-b955-3e7a-a101-43408f42ac80" executionId="ece5c3e1-44e8-41cc-a849-aaabae4c6d72" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="2f623b40-61fc-f355-c17e-a1736f0e2542" executionId="d34b5f16-63bf-47ea-9ab7-4dac30baf490" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="8cb839c6-7af5-83b4-857a-a08129b2ce2c" executionId="1ae9b87b-bc58-4514-8c81-50513c46b266" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="729531b1-a454-e370-2ad4-34da615b3c7a" executionId="85f2dae9-e31a-4539-9dc0-4cbbc68183d8" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="5368be7a-8035-6e64-d628-b244c0d293f8" executionId="c0f722ba-d998-4b36-be7b-fc517311d170" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="645f7936-ea4d-52b6-92f6-5e1f65fa2a0d" executionId="080436e7-9412-4b6e-81ce-6904fd01eab7" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="6c5f6b2d-5ca0-e840-8ce4-aa26d0e5f556" executionId="0c0129d4-541f-4c21-92f7-8ff45877eaaf" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="5dc63ee8-337c-5bd4-23bc-45d17ea22d2d" executionId="5dc9106f-770e-4ce4-a914-8d6a91e33996" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="31713f3f-e075-7181-3aca-c6ca322d12ea" executionId="b0fa1b59-1a10-41eb-979c-d7f3708123ce" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="58b684e1-4e84-1610-cb03-7f191aee23f4" executionId="25cb3e18-df90-4d5a-9437-00f97f285db5" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="db268824-5fba-6265-0f7b-63e24e498ef0" executionId="2bfff7a8-112b-4313-b840-c31c2c138729" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="0b4c8ce1-851d-c7d7-ff09-5b51df73e588" executionId="b19d9d75-dbd9-4c16-badd-b75d20692305" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="73a4e1da-961c-7ce7-cdd7-c5723e212331" executionId="a264cd25-56c5-4152-84f4-954cdc89db55" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="010b9f00-32df-50be-7ef2-91b1c1953022" executionId="7ec542b6-c958-40d9-b0b8-81547a71cf4b" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="c5cd3adf-697f-f0f8-3b86-3890dc3634f7" executionId="e89871d5-7acb-4b48-a58a-47b61780ed5b" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="84a683b6-aa73-9bf6-f9a6-366dbcfc6a6f" executionId="b8a36d05-7574-4e85-a809-855181e445e9" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="8409f137-363f-b40d-d7ca-046561c8823b" executionId="96019043-2f9c-45be-a2ba-e91ea5acb87c" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="bc89286e-d9ab-9ee2-5dd5-d1f507f44562" executionId="8c3f1dc0-a0fa-4b7f-974c-cc2a18a1fb1d" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="e7029355-3b23-1b15-2282-c170eb8453a3" executionId="b61c9e70-fed7-4557-b840-17087381bb3e" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="8a6d6ff9-c3ba-46b3-2439-4108c07a5968" executionId="d675244d-bf26-49fc-985a-6b8d1f28a096" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="01e42d80-d492-a38d-0d7e-4620f81da978" executionId="9194e168-d00b-4a37-a879-2346c906f793" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="b6a8b52c-6981-c64c-a4c8-2ea63e53efb8" executionId="ee80b653-900d-431b-a669-898245dd570c" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="428320d8-5033-e83a-adc2-0b7839aa38a3" executionId="2956341f-7b7e-49d5-95dd-2b2a9b8b2709" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="702dce6c-529d-48f8-55ec-24d3410a4acd" executionId="37882713-4abe-4d29-8242-969ba7ca0f0d" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="3ff0720d-7b9f-0de9-db16-25e66bf23c36" executionId="6e3c5b0a-66c4-4804-b151-61f9132d5272" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="43340122-5816-0210-c877-8f0204728ff0" executionId="bcb0bad4-c449-4564-b30d-3066a2cd3e60" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="9ebe467f-e4a6-ca75-f1b8-cc371bc5f384" executionId="147937e7-c4a4-41ff-acd6-077b09c4c1e5" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="95b5d278-ca23-ddc5-b3d4-d670eef694a0" executionId="f7a6b8ca-7ed1-413f-ae32-5df98f731090" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="48b0b11f-a5be-a295-79d7-3f47f10448aa" executionId="da685d61-7e5c-43c8-a8e3-254e90921b1c" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="0b8cefbe-55f2-5ccb-d2eb-be1ddc92ba73" executionId="1ba32030-11ed-4481-bf8f-a4aaf8c225db" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="035889d1-506a-5ab6-955e-20a6c3ef8385" executionId="d6009be4-aaea-4ecc-b228-5439422268f9" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="e3ece4e9-d4d4-34a5-e533-a22deca5d448" executionId="86bf9215-08c3-467f-b9b1-53bb26668295" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="15f83243-95ae-1203-01ca-39b0e7ab71da" executionId="d1489e11-da3e-4ad5-b366-6bc43cbba323" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="1491a7d8-0e61-0971-f7d4-d207c4e7c5d2" executionId="024e3bbd-9459-47d6-bd13-abd10ee8daec" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="6c0a8d00-5bba-c98c-65f3-b2c4db88de67" executionId="4ec0df6e-961b-4b5f-a8f7-b91c4adc0a92" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="d4680b34-c60b-585c-e12c-e15929cac674" executionId="c14c385b-6710-42f3-b7c5-ecd4f84c0d08" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="854a8f5e-cbfc-a5c4-e268-0f03e033799e" executionId="254a21c8-6c01-4fd4-ba7c-6a0bbe11c5ce" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="91b5879d-c7c7-ac59-9d9b-3caecb8c3465" executionId="8ad0a504-7a76-4527-83e9-87423ba9405f" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="048789c8-0224-9fc6-4967-6bde4e2d1ae6" executionId="65dfe139-f584-45a0-983c-8859159c3f9f" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="4082bb02-4ec0-3313-ec23-a6ead7a0444c" executionId="5f4ae120-df1c-4045-a5e5-47772cc96c71" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="3af7f823-1dc9-6d9f-0509-c06417f667f3" executionId="7ee5a5d2-1bda-4da0-9903-fab9ed793cb8" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="912785a2-e1df-e5c6-9b2d-181714cef294" executionId="972ad6fc-d805-4d7a-90ca-894816ad5868" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="c39b63a4-a6fe-44b8-e9de-ed25b82cb140" executionId="8afb86a4-354b-4886-9bdc-0419514842e2" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="1e5fb346-7cf0-98c0-5f67-07e96c5db941" executionId="e7241fc7-70df-4637-a0f7-167b8d276b56" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="ac1a60e7-216c-a72c-8353-9c6c51b6494b" executionId="f92fbb0a-5d96-4845-afa3-89aedb138e7a" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="c1b78cc9-dcb5-d0dc-65d8-316fc73ae33b" executionId="ea501062-5b23-4e08-971e-5cc5e76f4bbd" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="2e9b4068-737e-53ba-ac10-00d72ef740fb" executionId="1ca9e4fc-c897-4c90-9b27-d3bd34b86b4c" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="21153845-788a-f21b-6268-6636fd43db93" executionId="0c9854fd-10d5-4313-9d1a-816d6a91bfe6" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="54342d81-5fa2-f67c-7883-c213759bf717" executionId="05fc0f4d-77b2-49c8-8122-840738d73921" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="1effccd2-bb58-7f59-627e-2ebaabfb0684" executionId="60259697-d427-4821-a3c9-8a987f358dc7" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="dc357fa8-3b15-cadb-74cb-f5e7adb967d0" executionId="3533670a-80da-491a-a155-936bbea8c03f" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="41548401-5633-9e99-00bc-438fe08a019c" executionId="881f9bd2-5a5b-4b88-94ca-fb69176189af" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="c1a7cff8-45fa-a928-4b5e-0facb8b251ee" executionId="70beb6c5-8706-4c01-b9f8-459596c5828c" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="e80e34a9-e33e-5afc-f0ec-017425005dc0" executionId="b9b71053-d3a2-48de-bca9-dfe812307b1d" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="a0301d07-305c-0c20-136d-54e712735260" executionId="88754c04-aa78-4751-b8fd-c03c5e8fb9ce" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="a05d9eb5-6b34-40dd-b455-68ceb5888f5f" executionId="54f66883-f9cb-4b0b-8a64-3b2f58e6593d" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="e4a54b80-ea6a-73e7-bc95-0a9ae9e7ed83" executionId="8fb01464-2721-44b2-82df-8dca4e77cab8" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="a77a60ab-280a-62cd-fcea-16a2cb374305" executionId="3c864a92-367b-47af-b8ba-2a3f0b74c554" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="7b893d84-633a-7c53-b560-32888b182348" executionId="383b6cf9-7af1-49a4-973e-4b046dd8e70a" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="98ba366d-a2b7-ce24-26ad-6be41af03d29" executionId="6489a0bc-56e4-4987-9ac9-a1a3364da9d3" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="604c1378-5bcd-8c22-ec7f-f00d39695da6" executionId="9ea686d2-4359-4ba9-a0ea-4005fa6d7552" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Completed">
+    <Counters total="86" executed="86" passed="86" failed="0" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>NUnit Adapter 6.0.0.0: Test execution started&#xD;
+Running selected tests in D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll&#xD;
+   NUnit3TestExecutor discovered 86 of 86 NUnit test cases using Current Discovery mode, Non-Explicit run&#xD;
+NUnit Adapter 6.0.0.0: Test execution complete&#xD;
+</StdOut>
+    </Output>
+  </ResultSummary>
+</TestRun>

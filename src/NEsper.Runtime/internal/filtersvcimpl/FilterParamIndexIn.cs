@@ -118,7 +118,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             }
 
             // Look up in hashtable
-            using (_constantsMapRwLock.ReadLock.Acquire()) {
+            using (_constantsMapRwLock.ReadLock.AcquireScope()) {
                 var evaluators = _constantsMap.Get(attributeValue);
 
                 // No listener found for the value, return

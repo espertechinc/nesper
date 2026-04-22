@@ -9,6 +9,10 @@
 using System;
 using System.Reflection;
 
+#if NETCOREAPP3_0_OR_GREATER
+using System.Runtime.Loader;
+#endif
+
 using Castle.MicroKernel.Registration;
 using Castle.Windsor;
 
@@ -61,7 +65,19 @@ namespace com.espertech.esper.container
                 }
             }
         }
-        
+
+#if NETCOREAPP3_0_OR_GREATER
+        private AssemblyLoadContext _assemblyLoadContext = null;
+
+        /// <summary>
+        /// Gets the assembly load context associated with this container.
+        /// </summary>
+        public AssemblyLoadContext AssemblyLoadContext {
+            get => _assemblyLoadContext;
+            set => _assemblyLoadContext = value;
+        }
+#endif
+
         /// <summary>
         /// Resolves an object within a container.
         /// </summary>

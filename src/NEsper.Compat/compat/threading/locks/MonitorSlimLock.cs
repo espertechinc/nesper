@@ -101,6 +101,18 @@ namespace com.espertech.esper.compat.threading.locks
         /// This method is effectively the opposite of acquire.
         /// </summary>
         /// <returns></returns>
+        public LockScope AcquireScope()
+        {
+            InternalAcquire(_uLockTimeout);
+            return new LockScope(this);
+        }
+
+        public LockScope AcquireScope(long msec)
+        {
+            InternalAcquire((int)msec);
+            return new LockScope(this);
+        }
+
         public IDisposable ReleaseAcquire()
         {
             InternalRelease();

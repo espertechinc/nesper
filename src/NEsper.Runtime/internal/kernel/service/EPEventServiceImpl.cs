@@ -82,8 +82,6 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 			_timerThreading = services.ThreadingService.IsTimerThreading;
 			
 			ConfigurationRuntime runtimeConfig = services.RuntimeSettingsService.ConfigurationRuntime;
-			_isUsingExternalClocking = !runtimeConfig.Threading.IsInternalTimerEnabled;
-			_isPrioritized = runtimeConfig.Execution.IsPrioritized;
 			_isUsingExternalClocking = !this._services.RuntimeSettingsService.ConfigurationRuntime.Threading.IsInternalTimerEnabled;
 			_isPrioritized = services.RuntimeSettingsService.ConfigurationRuntime.Execution.IsPrioritized;
 			_routedInternal = new AtomicLong();
@@ -386,7 +384,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 				InstrumentationHelper.Get().QEvent(eventBean, _services.RuntimeURI, true);
 			}
 
-			using (_services.EventProcessingRWLock.AcquireReadLock()) {
+			using (_services.EventProcessingRWLock.ReadLock.AcquireScope()) {
 				try {
 					ProcessMatches(eventBean);
 				}
@@ -471,7 +469,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 			}
 
 			try {
-				using (_services.EventProcessingRWLock.AcquireReadLock()) {
+				using (_services.EventProcessingRWLock.ReadLock.AcquireScope()) {
 					try {
 						ProcessMatches(eventBean);
 					}
@@ -503,7 +501,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 			}
 
 			try {
-				using (_services.EventProcessingRWLock.AcquireReadLock()) {
+				using (_services.EventProcessingRWLock.ReadLock.AcquireScope()) {
 					try {
 						ProcessMatches(eventBean);
 					}
@@ -540,7 +538,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 			}
 
 			try {
-				using (_services.EventProcessingRWLock.AcquireReadLock()) {
+				using (_services.EventProcessingRWLock.ReadLock.AcquireScope()) {
 					try {
 						ProcessMatches(eventBean);
 					}
@@ -581,8 +579,8 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 						Log.Error("Exception thrown by unmatched listener: " + ex.Message, ex);
 					}
 					finally {
-						// acquire read lock for release by caller
-						_services.EventProcessingRWLock.AcquireReadLock();
+						// acquire read lock for release by caller (discard struct scope — outer scope disposes)
+						_ = _services.EventProcessingRWLock.ReadLock.AcquireScope();
 					}
 				}
 
@@ -938,12 +936,12 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 			// Evaluation of schedules is protected by an optional scheduling service lock and then the runtime lock
 			// We want to stay in this order for allowing the runtime lock as a second-order lock to the
 			// services own lock, if it has one.
-			using (_services.EventProcessingRWLock.AcquireReadLock()) {
+			using (_services.EventProcessingRWLock.ReadLock.AcquireScope()) {
 				_services.SchedulingService.Evaluate(handles);
 			}
 
 			try {
-				using (_services.EventProcessingRWLock.AcquireReadLock()) {
+				using (_services.EventProcessingRWLock.ReadLock.AcquireScope()) {
 					try {
 						ProcessScheduleHandles(handles);
 					}

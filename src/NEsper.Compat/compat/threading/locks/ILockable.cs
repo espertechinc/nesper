@@ -31,6 +31,17 @@ namespace com.espertech.esper.compat.threading.locks
         IDisposable Acquire(long msec);
 
         /// <summary>
+        /// Acquires the lock and returns a zero-allocation <see cref="LockScope"/> struct.
+        /// Use with <c>using var</c> for stack-only scope management without heap allocation.
+        /// </summary>
+        LockScope AcquireScope();
+
+        /// <summary>
+        /// Acquires the lock with a timeout and returns a zero-allocation <see cref="LockScope"/> struct.
+        /// </summary>
+        LockScope AcquireScope(long msec);
+
+        /// <summary>
         /// Provides a temporary release of the lock if it is acquired.  When the
         /// disposable object that is returned is disposed, the lock is re-acquired.
         /// This method is effectively the opposite of acquire.

@@ -30,7 +30,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 
         public override void AcquireWriteLock()
         {
-            _lock.WriteLock.Acquire();
+            _lock.WriteLock.AcquireScope();
         }
 
         public override void ReleaseWriteLock()
@@ -40,7 +40,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 
         public override IDictionary<EventTypeIdPair, IDictionary<int, IList<FilterItem[]>>> Get(ISet<int> statementId)
         {
-            using (_lock.WriteLock.Acquire()) {
+            using (_lock.WriteLock.AcquireScope()) {
                 return GetInternal(statementId);
             }
         }
@@ -50,7 +50,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             ICollection<FilterHandle> matches,
             ExprEvaluatorContext ctx)
         {
-            using (_lock.ReadLock.Acquire())
+            using (_lock.ReadLock.AcquireScope())
             {
                 return EvaluateInternal(theEvent, matches, ctx);
             }
@@ -62,7 +62,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             int statementId,
             ExprEvaluatorContext ctx)
         {
-            using (_lock.ReadLock.Acquire())
+            using (_lock.ReadLock.AcquireScope())
             {
                 return EvaluateInternal(theEvent, matches, statementId, ctx);
             }
@@ -73,7 +73,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             FilterValueSetParam[][] valueSet,
             FilterHandle callback)
         {
-            using (_lock.WriteLock.Acquire())
+            using (_lock.WriteLock.AcquireScope())
             {
                 AddInternal(eventType, valueSet, callback);
             }
@@ -84,7 +84,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             EventType eventType,
             FilterValueSetParam[][] valueSet)
         {
-            using (_lock.WriteLock.Acquire())
+            using (_lock.WriteLock.AcquireScope())
             {
                 RemoveInternal(callback, eventType, valueSet);
             }
@@ -92,7 +92,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 
         public override void RemoveType(EventType type)
         {
-            using (_lock.WriteLock.Acquire())
+            using (_lock.WriteLock.AcquireScope())
             {
                 RemoveTypeInternal(type);
             }

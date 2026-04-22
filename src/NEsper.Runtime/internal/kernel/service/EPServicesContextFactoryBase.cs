@@ -151,6 +151,8 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
                 options,
                 typeResolverParent);
 
+            var typeResolver = new TypeResolverDefault(container.AssemblyLoadContext);
+            
             var eventTypeAvroHandler = MakeEventTypeAvroHandler(
                 importServiceRuntime, configs.Common.EventMeta.AvroSettings, epServicesHA.RuntimeExtensionServices);
             var eventTypeXMLXSDHandler = EventTypeXMLXSDHandlerFactory.Resolve(
@@ -252,7 +254,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
                 epRuntime.URI,
                 configs.Runtime.ExceptionHandling,
                 configs.Runtime.ConditionHandling,
-                TypeResolverDefault.INSTANCE);
+                typeResolver);
 
             var timeSourceService = MakeTimeSource(configs);
             var schedulingService = MakeSchedulingService(
@@ -384,7 +386,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
                 aggregationServiceFactoryService,
                 beanEventTypeFactoryPrivate,
                 beanEventTypeStemService,
-                TypeResolverDefault.INSTANCE,
+                typeResolver,
                 typeResolverParent,
                 classProvidedPathRegistry,
                 configs,

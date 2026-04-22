@@ -59,14 +59,16 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             var rangeStart = new DoubleRange(attributeValue - LargestRangeValueDouble, attributeValue);
             var rangeEnd = new DoubleRange(attributeValue, double.MaxValue);
 
-            var subMap = Ranges.Between(rangeStart, true, rangeEnd, true);
+            int startIdx = Ranges.GetTailIndex(rangeStart, true);
+            int endIdx = Ranges.GetHeadIndex(rangeEnd, true);
 
             // For not including either endpoint
             // A bit awkward to duplicate the loop code, however better than checking the boolean many times over
             // This may be a bit of an early performance optimization - the optimizer after all may do this better
             if (FilterOperator == FilterOperator.RANGE_OPEN) {
                 // include neither endpoint
-                foreach (KeyValuePair<DoubleRange, EventEvaluator> entry in subMap) {
+                for (int i = startIdx; i <= endIdx; i++) {
+                    var entry = Ranges.EntryAt(i);
                     if (attributeValue > entry.Key.Min &&
                         attributeValue < entry.Key.Max) {
                         entry.Value.MatchEvent(theEvent, matches, ctx);
@@ -75,7 +77,8 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             }
             else if (FilterOperator == FilterOperator.RANGE_CLOSED) {
                 // include all endpoints
-                foreach (KeyValuePair<DoubleRange, EventEvaluator> entry in subMap) {
+                for (int i = startIdx; i <= endIdx; i++) {
+                    var entry = Ranges.EntryAt(i);
                     if (attributeValue >= entry.Key.Min &&
                         attributeValue <= entry.Key.Max) {
                         entry.Value.MatchEvent(theEvent, matches, ctx);
@@ -84,7 +87,8 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             }
             else if (FilterOperator == FilterOperator.RANGE_HALF_CLOSED) {
                 // include high endpoint not low endpoint
-                foreach (KeyValuePair<DoubleRange, EventEvaluator> entry in subMap) {
+                for (int i = startIdx; i <= endIdx; i++) {
+                    var entry = Ranges.EntryAt(i);
                     if (attributeValue > entry.Key.Min &&
                         attributeValue <= entry.Key.Max) {
                         entry.Value.MatchEvent(theEvent, matches, ctx);
@@ -93,7 +97,8 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             }
             else if (FilterOperator == FilterOperator.RANGE_HALF_OPEN) {
                 // include low endpoint not high endpoint
-                foreach (KeyValuePair<DoubleRange, EventEvaluator> entry in subMap) {
+                for (int i = startIdx; i <= endIdx; i++) {
+                    var entry = Ranges.EntryAt(i);
                     if (attributeValue >= entry.Key.Min &&
                         attributeValue < entry.Key.Max) {
                         entry.Value.MatchEvent(theEvent, matches, ctx);

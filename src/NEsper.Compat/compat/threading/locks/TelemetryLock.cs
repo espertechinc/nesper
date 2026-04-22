@@ -112,6 +112,10 @@ namespace com.espertech.esper.compat.threading.locks
             return disposableTrack;
         }
 
+        public LockScope AcquireScope() => _subLock.AcquireScope();
+
+        public LockScope AcquireScope(long msec) => _subLock.AcquireScope(msec);
+
         /// <summary>
         /// Releases this instance.
         /// </summary>

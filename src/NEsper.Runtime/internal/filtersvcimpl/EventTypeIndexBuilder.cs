@@ -71,7 +71,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 
             // Make sure we have a root node
             if (rootNode == null) {
-                using (callbacksLock.Acquire()) {
+                using (callbacksLock.AcquireScope()) {
                     rootNode = eventTypeIndex.Get(eventType);
                     if (rootNode == null) {
                         rootNode = new FilterHandleSetNode(lockFactory.ObtainNew());

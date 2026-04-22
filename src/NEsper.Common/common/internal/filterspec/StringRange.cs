@@ -11,9 +11,9 @@ using System;
 namespace com.espertech.esper.common.@internal.filterspec
 {
     /// <summary>
-    ///     Holds a range of double values with a minimum (start) value and a maximum (end) value.
+    ///     Holds a range of string values with a minimum (start) value and a maximum (end) value.
     /// </summary>
-    public class StringRange : Range
+    public readonly struct StringRange : Range
     {
         private readonly int _hashCode;
 
@@ -26,25 +26,24 @@ namespace com.espertech.esper.common.@internal.filterspec
             string min,
             string max)
         {
-            Min = min;
-            Max = max;
-
-            if (min != null && max != null) {
-                if (min.CompareTo(max) > 0) {
-                    Max = min;
-                    Min = max;
-                }
+            if (min != null && max != null && min.CompareTo(max) > 0) {
+                Min = max;
+                Max = min;
+            }
+            else {
+                Min = min;
+                Max = max;
             }
 
             _hashCode = 7;
-            if (min != null) {
+            if (Min != null) {
                 _hashCode = 31 * _hashCode;
-                _hashCode ^= min.GetHashCode();
+                _hashCode ^= Min.GetHashCode();
             }
 
-            if (max != null) {
+            if (Max != null) {
                 _hashCode = 31 * _hashCode;
-                _hashCode ^= max.GetHashCode();
+                _hashCode ^= Max.GetHashCode();
             }
         }
 
@@ -66,29 +65,24 @@ namespace com.espertech.esper.common.@internal.filterspec
 
         public override bool Equals(object o)
         {
-            if (this == o) {
-                return true;
-            }
-
-            if (o == null || GetType() != o.GetType()) {
+            if (!(o is StringRange that)) {
                 return false;
             }
-
-            var that = (StringRange)o;
 
             if (_hashCode != that._hashCode) {
                 return false;
             }
 
-            if (!Max?.Equals(that.Max) ?? that.Max != null) {
+            return string.Equals(Max, that.Max) && string.Equals(Min, that.Min);
+        }
+
+        public bool Equals(StringRange that)
+        {
+            if (_hashCode != that._hashCode) {
                 return false;
             }
 
-            if (!Min?.Equals(that.Min) ?? that.Min != null) {
-                return false;
-            }
-
-            return true;
+            return string.Equals(Max, that.Max) && string.Equals(Min, that.Min);
         }
 
         public override int GetHashCode()

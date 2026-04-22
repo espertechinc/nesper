@@ -7,7 +7,7 @@ namespace com.espertech.esper.common.client.util
     public class ArtifactTypeResolverProvider : TypeResolverProvider
     {
         private readonly IArtifactRepositoryManager _artifactRepositoryManager;
-        private ArtifactTypeResolver typeResolver;
+        private ArtifactTypeResolver _typeResolver;
 
         public ArtifactTypeResolverProvider(IArtifactRepositoryManager artifactRepositoryManager)
         {
@@ -17,13 +17,13 @@ namespace com.espertech.esper.common.client.util
         public TypeResolver TypeResolver {
             get {
                 lock (this) {
-                    if (typeResolver == null) {
+                    if (_typeResolver == null) {
                         var parentClassLoader = TypeResolverDefault.INSTANCE;
                         var defaultArtifactRepository = _artifactRepositoryManager.DefaultRepository;
-                        typeResolver = new ArtifactTypeResolver(defaultArtifactRepository, parentClassLoader);
+                        _typeResolver = new ArtifactTypeResolver(defaultArtifactRepository, parentClassLoader);
                     }
 
-                    return typeResolver;
+                    return _typeResolver;
                 }
             }
         }

@@ -144,6 +144,10 @@ namespace com.espertech.esper.compat.collections
             }
         }
 
+        public TV ValueAt(int index) => _itemList[index].Value;
+
+        public KeyValuePair<TK, TV> EntryAt(int index) => _itemList[index];
+
         public void ForEach(Action<KeyValuePair<TK, TV>> action)
         {
             for (var ii = 0; ii < _itemList.Count; ii++) {

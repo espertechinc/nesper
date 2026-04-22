@@ -80,6 +80,25 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             ClassicAssert.IsTrue(index is FilterParamIndexBooleanExpr);
         }
 
+        [Test, RunInApplicationDomain]
+        public void TestCreateIndexTypedEquals()
+        {
+            FilterParamIndexBase index;
+
+            index = IndexFactory.CreateIndex(MakeLookupable("IntPrimitive"), lockFactory, FilterOperator.EQUAL);
+            ClassicAssert.IsInstanceOf<FilterParamIndexEqualsInt>(index);
+
+            index = IndexFactory.CreateIndex(MakeLookupable("LongPrimitive"), lockFactory, FilterOperator.EQUAL);
+            ClassicAssert.IsInstanceOf<FilterParamIndexEqualsLong>(index);
+
+            index = IndexFactory.CreateIndex(MakeLookupable("DoublePrimitive"), lockFactory, FilterOperator.EQUAL);
+            ClassicAssert.IsInstanceOf<FilterParamIndexEqualsDouble>(index);
+
+            // string property falls back to object-based equals
+            index = IndexFactory.CreateIndex(MakeLookupable("TheString"), lockFactory, FilterOperator.EQUAL);
+            ClassicAssert.IsInstanceOf<FilterParamIndexEquals>(index);
+        }
+
         private string GetPropName(FilterParamIndexBase index)
         {
             FilterParamIndexLookupableBase propIndex = (FilterParamIndexLookupableBase) index;

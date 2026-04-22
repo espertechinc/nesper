@@ -140,6 +140,18 @@ namespace com.espertech.esper.compat.threading.locks
             return new TrackedDisposable(InternalRelease);
         }
 
+        public LockScope AcquireScope()
+        {
+            InternalAcquire(_uLockTimeout);
+            return new LockScope(this);
+        }
+
+        public LockScope AcquireScope(long msec)
+        {
+            InternalAcquire((int)msec);
+            return new LockScope(this);
+        }
+
         public IDisposable ReleaseAcquire()
         {
             InternalRelease();

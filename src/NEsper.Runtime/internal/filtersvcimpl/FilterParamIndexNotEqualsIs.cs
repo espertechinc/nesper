@@ -41,7 +41,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             }
 
             // Look up in hashtable
-            using (ConstantsMapRwLock.ReadLock.Acquire()) {
+            using (ConstantsMapRwLock.ReadLock.AcquireScope()) {
                 foreach (var entry in ConstantsMap) {
                     if (entry.Key == null) {
                         if (attributeValue != null) {

@@ -40,6 +40,16 @@ namespace com.espertech.esper.compat.threading.locks
             //return new VoidDisposable();
         }
 
+        public LockScope AcquireScope()
+        {
+            return default;
+        }
+
+        public LockScope AcquireScope(long msec)
+        {
+            return default;
+        }
+
         /// <summary>
         /// Releases this instance.
         /// </summary>

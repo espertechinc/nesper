@@ -52,6 +52,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
             EventTypeNameResolver eventTypeResolver,
             XMLFragmentEventTypeFactory xmlEventTypeFactory,
             EventTypeXMLXSDHandler xmlxsdHandler) : base(
+            new TypeResolverDefault(),
             eventTypeMetadata,
             config,
             eventBeanTypedEventFactory,

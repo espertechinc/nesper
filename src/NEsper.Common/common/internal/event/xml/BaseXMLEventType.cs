@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Runtime.Loader;
 using System.Xml;
 using System.Xml.XPath;
 
@@ -58,6 +59,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
         /// <param name = "xmlEventTypeFactory">xml type factory</param>
         /// <param name = "eventTypeResolver">resolver</param>
         public BaseXMLEventType(
+            TypeResolver typeResolver,
             EventTypeMetadata metadata,
             ConfigurationCommonEventTypeXMLDOM configurationEventTypeXMLDOM,
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
@@ -76,7 +78,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
                 try {
                     _functionResolver = TypeHelper.Instantiate<IXPathFunctionResolver>(
                         configurationEventTypeXMLDOM.XPathFunctionResolver,
-                        TypeResolverDefault.INSTANCE);
+                        typeResolver);
                 }
                 catch (ClassInstantiationException ex) {
                     throw new ConfigurationException(
@@ -92,7 +94,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
                 try {
                     _variableResolver = TypeHelper.Instantiate<IXPathVariableResolver>(
                         configurationEventTypeXMLDOM.XPathVariableResolver,
-                        TypeResolverDefault.INSTANCE);
+                        typeResolver);
                 }
                 catch (ClassInstantiationException ex) {
                     throw new ConfigurationException(

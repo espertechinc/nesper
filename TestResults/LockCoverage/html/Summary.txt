@@ -1,0 +1,46 @@
+Summary - Lock Implementations Coverage
+  Generated on: 4/10/2026 - 11:02:05 PM
+  Coverage date: 4/10/2026 - 9:42:50 PM - 4/10/2026 - 11:02:01 PM
+  Parser: MultiReport (3x Cobertura)
+  Assemblies: 1
+  Classes: 24
+  Files: 22
+  Line coverage: 90.8%
+  Covered lines: 1024
+  Uncovered lines: 103
+  Coverable lines: 1127
+  Total lines: 3047
+  Branch coverage: 80.3% (180 of 224)
+  Covered branches: 180
+  Total branches: 224
+  Method coverage: 90.1% (192 of 213)
+  Full method coverage: 83.5% (178 of 213)
+  Covered methods: 192
+  Fully covered methods: 178
+  Total methods: 213
+
+NEsper.Compat                                                                 90.8%
+  com.espertech.esper.compat.threading.locks.CommonReadLock                    100%
+  com.espertech.esper.compat.threading.locks.CommonReadLock<T>                 100%
+  com.espertech.esper.compat.threading.locks.CommonWriteLock                   100%
+  com.espertech.esper.compat.threading.locks.CommonWriteLock<T>                100%
+  com.espertech.esper.compat.threading.locks.DefaultLockManager                100%
+  com.espertech.esper.compat.threading.locks.DefaultReaderWriterLockManager    100%
+  com.espertech.esper.compat.threading.locks.DummyReaderWriterLock              95%
+  com.espertech.esper.compat.threading.locks.FairReaderWriterLock             91.2%
+  com.espertech.esper.compat.threading.locks.FifoReaderWriterLock             86.8%
+  com.espertech.esper.compat.threading.locks.LockableExtensions                100%
+  com.espertech.esper.compat.threading.locks.LockException                     100%
+  com.espertech.esper.compat.threading.locks.MonitorLock                      89.6%
+  com.espertech.esper.compat.threading.locks.MonitorSlimLock                  89.6%
+  com.espertech.esper.compat.threading.locks.MonitorSpinLock                  87.7%
+  com.espertech.esper.compat.threading.locks.SlimLock                           80%
+  com.espertech.esper.compat.threading.locks.SlimReaderWriterLock             72.5%
+  com.espertech.esper.compat.threading.locks.StandardReaderWriterLock         97.6%
+  com.espertech.esper.compat.threading.locks.TelemetryEngine                  85.4%
+  com.espertech.esper.compat.threading.locks.TelemetryLock                     100%
+  com.espertech.esper.compat.threading.locks.TelemetryLockCategory             100%
+  com.espertech.esper.compat.threading.locks.TelemetryProbe                      0%
+  com.espertech.esper.compat.threading.locks.TelemetryReaderWriterLock        96.9%
+  com.espertech.esper.compat.threading.locks.VoidLock                          100%
+  com.espertech.esper.compat.threading.locks.VoidReaderWriterLock               95%

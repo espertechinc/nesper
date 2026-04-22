@@ -17,6 +17,7 @@ using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
 using com.espertech.esper.compiler.client;
+using com.espertech.esper.container;
 using com.espertech.esper.regressionlib.support.client;
 using com.espertech.esper.regressionlib.support.extend.aggfunc;
 using com.espertech.esper.regressionlib.support.extend.aggmultifunc;
@@ -57,6 +58,13 @@ namespace com.espertech.esper.regressionrun.suite.client
 
         private class MyTypeResolver : TypeResolver
         {
+            private TypeResolver _typeResolver;
+            
+            public MyTypeResolver(IContainer container)
+            {
+                _typeResolver = new TypeResolverDefault(container.AssemblyLoadContext);
+            }
+
             public Type ResolveType(
                 string typeName,
                 bool resolve = false)
@@ -64,7 +72,7 @@ namespace com.espertech.esper.regressionrun.suite.client
                 if (typeName == "System.Environment") {
                     throw new UnsupportedOperationException("Access to class '" + typeName + " is not permitted");
                 }
-                return TypeResolverDefault.INSTANCE.ResolveType(typeName);
+                return _typeResolver.ResolveType(typeName);
             }
         }
 
@@ -87,7 +95,7 @@ namespace com.espertech.esper.regressionrun.suite.client
         {
             var config = SupportConfigFactory.GetConfiguration(Container);
             config.Common.AddEventType(typeof(SupportBean));
-            config.Common.TransientConfiguration.Put(TypeResolverConstants.NAME, new MyTypeResolver());
+            config.Common.TransientConfiguration.Put(TypeResolverConstants.NAME, new MyTypeResolver(Container));
 
             var epl = "select System.Environment.Exit(-1) from SupportBean";
             TryInvalidCompileWConfig(
@@ -97,7 +105,7 @@ namespace com.espertech.esper.regressionrun.suite.client
 
             config.Common.TransientConfiguration.Put(
                 TypeResolverConstants.NAME,
-                TypeResolverDefault.INSTANCE);
+                new TypeResolverDefault(Container.AssemblyLoadContext));
         }
 
         [Test, RunInApplicationDomain]
