@@ -8,8 +8,8 @@
 
 using System;
 using com.espertech.esper.common.@internal.context.util;
+using com.espertech.esper.compat.logging;
 using com.espertech.esper.runtime.@internal.kernel.service;
-using Common.Logging;
 
 namespace com.espertech.esper.runtime.@internal.kernel.thread
 {
