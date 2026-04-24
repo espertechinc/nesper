@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.compile.stage2;
@@ -18,8 +19,7 @@ using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-
-using Common.Logging;
+using com.espertech.esper.compat.logging;
 
 namespace com.espertech.esper.common.@internal.epl.variable.core
 {
