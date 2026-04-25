@@ -6,34 +6,37 @@ namespace com.espertech.esper.compat.threading.locks
 	/// <summary>
 	/// Description of CommonReadLock.
 	/// </summary>
-	public sealed class CommonReadLock 
+	public sealed class CommonReadLock
         : ILockable
 	{
 	    private readonly int _lockTimeout;
         private readonly IReaderWriterLockCommon _lockObj;
-	    private readonly IDisposable _disposableObj;
 
         public IDisposable Acquire()
         {
             _lockObj.AcquireReaderLock(_lockTimeout);
-            return _disposableObj;
+            return new TrackedDisposable(_lockObj.ReleaseReaderLock);
         }
 
 	    public IDisposable Acquire(long msec)
 	    {
             _lockObj.AcquireReaderLock(msec);
-            return _disposableObj;
+            return new TrackedDisposable(_lockObj.ReleaseReaderLock);
         }
 
-        public IDisposable Acquire(bool releaseLock, long? msec = null)
+        public LockScope AcquireScope()
         {
-            _lockObj.AcquireReaderLock(msec ?? _lockTimeout);
-            if (releaseLock)
-                return _disposableObj;
-            return new VoidDisposable();
+            _lockObj.AcquireReaderLock(_lockTimeout);
+            return new LockScope(this);
         }
 
-	    public IDisposable ReleaseAcquire()
+        public LockScope AcquireScope(long msec)
+        {
+            _lockObj.AcquireReaderLock(msec);
+            return new LockScope(this);
+        }
+
+        public IDisposable ReleaseAcquire()
         {
             _lockObj.ReleaseReaderLock();
             return new TrackedDisposable(() => _lockObj.AcquireReaderLock(_lockTimeout));
@@ -48,7 +51,6 @@ namespace com.espertech.esper.compat.threading.locks
         {
             _lockObj = lockObj;
             _lockTimeout = lockTimeout;
-            _disposableObj = new TrackedDisposable(_lockObj.ReleaseReaderLock);
         }
 	}
 	
@@ -73,13 +75,17 @@ namespace com.espertech.esper.compat.threading.locks
             return new TrackedDisposable(() => _lockObj.ReleaseReaderLock(_lockValue));
         }
 
-	    public IDisposable Acquire(bool releaseLock, long? msec = null)
-	    {
-            _lockValue = _lockObj.AcquireReaderLock(msec ?? _lockTimeout);
-            if (releaseLock)
-                return new TrackedDisposable(() => _lockObj.ReleaseReaderLock(_lockValue));
-	        return new VoidDisposable();
-	    }
+        public LockScope AcquireScope()
+        {
+            _lockValue = _lockObj.AcquireReaderLock(_lockTimeout);
+            return new LockScope(this);
+        }
+
+        public LockScope AcquireScope(long msec)
+        {
+            _lockValue = _lockObj.AcquireReaderLock(msec);
+            return new LockScope(this);
+        }
 
 	    public IDisposable ReleaseAcquire()
         {

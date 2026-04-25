@@ -72,7 +72,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
         {
             // If no parameters are specified, add to current node, and done
             if (remainingParameters.IsEmpty()) {
-                using (currentNode.NodeRWLock.WriteLock.Acquire())
+                using (currentNode.NodeRWLock.WriteLock.AcquireScope())
                 {
                     currentNode.Add(filterCallback);
                 }
@@ -82,7 +82,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 
             // Need to find an existing index that matches one of the filter parameters
             Pair<FilterValueSetParam, FilterParamIndexBase> pair;
-            using (currentNode.NodeRWLock.ReadLock.Acquire())
+            using (currentNode.NodeRWLock.ReadLock.AcquireScope())
             {
                 pair = IndexHelper.FindIndex(remainingParameters, currentNode.Indizes);
 
@@ -98,7 +98,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             }
 
             // An index for any of the filter parameters was not found, create one
-            using (currentNode.NodeRWLock.WriteLock.Acquire())
+            using (currentNode.NodeRWLock.WriteLock.AcquireScope())
             {
                 pair = IndexHelper.FindIndex(remainingParameters, currentNode.Indizes);
 
@@ -139,7 +139,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
         {
             EventEvaluator eventEvaluator;
 
-            using (index.ReadWriteLock.ReadLock.Acquire())
+            using (index.ReadWriteLock.ReadLock.AcquireScope())
             { 
                 eventEvaluator = index.Get(filterForValue);
 
@@ -153,7 +153,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             }
 
             // new filter parameter value, need a write lock
-            using (index.ReadWriteLock.WriteLock.Acquire())
+            using (index.ReadWriteLock.WriteLock.AcquireScope())
             {
                 eventEvaluator = index.Get(filterForValue);
 

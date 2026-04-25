@@ -24,21 +24,22 @@ namespace com.espertech.esper.compat.threading.locks
         IDisposable Acquire();
 
         /// <summary>
-        /// Acquire the lock; the lock is released when the disposable
-        /// object that was returned is disposed IF the releaseLock
-        /// flag is set.
-        /// </summary>
-        /// <param name="releaseLock"></param>
-        /// <param name="msec"></param>
-        /// <returns></returns>
-        IDisposable Acquire(bool releaseLock, long? msec = null);
-
-        /// <summary>
         /// Acquires the specified msec.
         /// </summary>
         /// <param name="msec">The msec.</param>
         /// <returns></returns>
         IDisposable Acquire(long msec);
+
+        /// <summary>
+        /// Acquires the lock and returns a zero-allocation <see cref="LockScope"/> struct.
+        /// Use with <c>using var</c> for stack-only scope management without heap allocation.
+        /// </summary>
+        LockScope AcquireScope();
+
+        /// <summary>
+        /// Acquires the lock with a timeout and returns a zero-allocation <see cref="LockScope"/> struct.
+        /// </summary>
+        LockScope AcquireScope(long msec);
 
         /// <summary>
         /// Provides a temporary release of the lock if it is acquired.  When the

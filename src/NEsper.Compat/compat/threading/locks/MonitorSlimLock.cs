@@ -96,27 +96,23 @@ namespace com.espertech.esper.compat.threading.locks
         }
 
         /// <summary>
-        /// Acquire the lock; the lock is released when the disposable
-        /// object that was returned is disposed IF the releaseLock
-        /// flag is set.
-        /// </summary>
-        /// <param name="releaseLock"></param>
-        /// <param name="msec"></param>
-        /// <returns></returns>
-        public IDisposable Acquire(bool releaseLock, long? msec = null)
-        {
-            InternalAcquire((int)(msec ?? _uLockTimeout));
-            if (releaseLock)
-                return new TrackedDisposable(InternalRelease);
-            return new VoidDisposable();
-        }
-
-        /// <summary>
         /// Provides a temporary release of the lock if it is acquired.  When the
         /// disposable object that is returned is disposed, the lock is re-acquired.
         /// This method is effectively the opposite of acquire.
         /// </summary>
         /// <returns></returns>
+        public LockScope AcquireScope()
+        {
+            InternalAcquire(_uLockTimeout);
+            return new LockScope(this);
+        }
+
+        public LockScope AcquireScope(long msec)
+        {
+            InternalAcquire((int)msec);
+            return new LockScope(this);
+        }
+
         public IDisposable ReleaseAcquire()
         {
             InternalRelease();

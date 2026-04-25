@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Runtime.Loader;
 
 using com.espertech.esper.compat;
 
@@ -14,17 +15,20 @@ namespace com.espertech.esper.common.@internal.util
 {
     public class TypeResolverDefault : TypeResolver
     {
-        public static readonly TypeResolver INSTANCE = new TypeResolverDefault();
+        private readonly AssemblyLoadContext _assemblyLoadContext;
 
-        private TypeResolverDefault()
+        public TypeResolverDefault(AssemblyLoadContext assemblyLoadContext = null)
         {
+            _assemblyLoadContext = assemblyLoadContext ??
+                                   AssemblyLoadContext.CurrentContextualReflectionContext ??
+                                   AssemblyLoadContext.Default;
         }
 
         public Type ResolveType(
             string typeName,
             bool resolve)
         {
-            return TypeHelper.ResolveType(typeName, resolve);
+            return TypeHelper.ResolveType(_assemblyLoadContext, typeName, resolve);
         }
     }
 }

@@ -35,3 +35,6 @@ tst/NEsper.Regression.Runner/*.DotSettings
 
 # Local sqlite test runtime artifact
 tst/etc/regression/sqlite/regression.db
+# BenchmarkDotNet output
+BenchmarkDotNet.Artifacts/
+BenchmarkResults/

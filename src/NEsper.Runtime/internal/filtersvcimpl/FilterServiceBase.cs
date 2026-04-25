@@ -40,6 +40,9 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
         private readonly AtomicLong numEventsEvaluated = new AtomicLong();
         private long filtersVersion = 1;
 
+        [System.ThreadStatic]
+        private static ArrayDeque<FilterHandle> _singleStatementAllMatches;
+
         protected FilterServiceBase(
             FilterServiceGranularLockFactory lockFactory,
             int stageId)
@@ -156,7 +159,8 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             var version = filtersVersion;
             numEventsEvaluated.IncrementAndGet();
 
-            var allMatches = new ArrayDeque<FilterHandle>();
+            var allMatches = _singleStatementAllMatches ??= new ArrayDeque<FilterHandle>();
+            allMatches.Clear();
 
             // Finds all matching filters
             RetryableMatchEvent(theEvent, allMatches, ctx);

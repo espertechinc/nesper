@@ -10,9 +10,13 @@ namespace com.espertech.esper.runtime.@internal.metrics.instrumentation
 {
     public class InstrumentationHelper
     {
-        public static bool ENABLED { get; set; } = false;
-
+#if DEBUG
+        public const bool ENABLED = true;
+        public const bool ASSERTIONENABLED = true;
+#else
+        public const bool ENABLED = false;
         public const bool ASSERTIONENABLED = false;
+#endif
 
         public static readonly Instrumentation DEFAULT_INSTRUMENTATION = InstrumentationDefault.INSTANCE;
         public static Instrumentation instrumentation = DEFAULT_INSTRUMENTATION;

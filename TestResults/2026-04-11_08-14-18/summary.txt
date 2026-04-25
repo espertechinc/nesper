@@ -1,0 +1,23 @@
+NEsper Test Run Summary
+Run:       2026-04-11_08-14-18
+Framework: net9.0
+Duration:  2,292.06s
+Batches:   16 total, 11 passed, 5 failed
+
+Batch Results:
+  [PASS] Client (129.01s)
+  [PASS] Context (107.93s)
+  [PASS] EPL-Database (130.44s)
+  [FAIL] EPL-Dataflow (44.12s)
+  [PASS] EPL-FromClause (26.92s)
+  [PASS] EPL-Join (55.72s)
+  [PASS] EPL-Other (101.87s)
+  [PASS] EPL-Subselect (52.80s)
+  [FAIL] Event (221.94s)
+  [PASS] Expression (506.50s)
+  [FAIL] Infrastructure (481.57s)
+  [PASS] Multithread (6.54s)
+  [FAIL] Pattern (109.68s)
+  [PASS] ResultSet (191.07s)
+  [FAIL] RowRecognition (30.74s)
+  [PASS] View (93.38s)

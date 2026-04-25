@@ -14,22 +14,26 @@ namespace com.espertech.esper.compat.threading.locks
         public IDisposable Acquire()
         {
             _lockObj.AcquireWriterLock(_lockTimeout);
-            return new TrackedDisposable(() => _lockObj.ReleaseWriterLock());
+            return new TrackedDisposable(_lockObj.ReleaseWriterLock);
         }
 
 	    public IDisposable Acquire(long msec)
 	    {
             _lockObj.AcquireWriterLock(msec);
-            return new TrackedDisposable(() => _lockObj.ReleaseWriterLock());
+            return new TrackedDisposable(_lockObj.ReleaseWriterLock);
         }
 
-	    public IDisposable Acquire(bool releaseLock, long? msec = null)
-	    {
-            _lockObj.AcquireWriterLock(msec ?? _lockTimeout);
-            if (releaseLock)
-                return new TrackedDisposable(() => _lockObj.ReleaseWriterLock());
-            return new VoidDisposable();
-	    }
+        public LockScope AcquireScope()
+        {
+            _lockObj.AcquireWriterLock(_lockTimeout);
+            return new LockScope(this);
+        }
+
+        public LockScope AcquireScope(long msec)
+        {
+            _lockObj.AcquireWriterLock(msec);
+            return new LockScope(this);
+        }
 
 	    public IDisposable ReleaseAcquire()
         {
@@ -70,12 +74,16 @@ namespace com.espertech.esper.compat.threading.locks
             return new TrackedDisposable(() => _lockObj.ReleaseWriterLock(_lockValue));
         }
 
-        public IDisposable Acquire(bool releaseLock, long? msec = null)
+        public LockScope AcquireScope()
         {
-            _lockValue = _lockObj.AcquireWriterLock(msec ?? _lockTimeout);
-            if (releaseLock)
-                return new TrackedDisposable(() => _lockObj.ReleaseWriterLock(_lockValue));
-            return new VoidDisposable();
+            _lockValue = _lockObj.AcquireWriterLock(_lockTimeout);
+            return new LockScope(this);
+        }
+
+        public LockScope AcquireScope(long msec)
+        {
+            _lockValue = _lockObj.AcquireWriterLock(msec);
+            return new LockScope(this);
         }
 
 	    public IDisposable ReleaseAcquire()

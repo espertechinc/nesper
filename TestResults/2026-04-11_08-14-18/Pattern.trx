@@ -1,0 +1,933 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="736491dc-3994-4d2e-b0bd-a70ce9f3b2d0" name="ajack@NEBULOUS 2026-04-11 08:45:30" runUser="NEBULOUS\ajack" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2026-04-11T08:45:30.8572353-05:00" queuing="2026-04-11T08:45:30.8572354-05:00" start="2026-04-11T08:45:29.1274128-05:00" finish="2026-04-11T08:47:14.2228319-05:00" />
+  <TestSettings name="default" id="ca531d96-6745-4f77-a8b9-5962222051a2">
+    <Deployment runDeploymentRoot="ajack_NEBULOUS_2026-04-11_08_45_30" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="be63c7aa-90fa-4cb1-a65d-3d81efd3cc67" testId="f4b2c845-7dbe-9374-d396-9478d9246423" testName="WithFollowedByOp" computerName="NEBULOUS" duration="00:00:00.2211950" startTime="2026-04-11T08:46:05.4425517-05:00" endTime="2026-04-11T08:46:05.6637432-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="be63c7aa-90fa-4cb1-a65d-3d81efd3cc67" />
+    <UnitTestResult executionId="a3512d73-099a-494f-a032-3e9b766df471" testId="ba78c801-10e8-9ea3-a283-90a1233c1fea" testName="WithFollowedByTimer" computerName="NEBULOUS" duration="00:00:00.1153270" startTime="2026-04-11T08:46:40.5609981-05:00" endTime="2026-04-11T08:46:40.6763233-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="a3512d73-099a-494f-a032-3e9b766df471" />
+    <UnitTestResult executionId="d01800b5-e558-4455-a421-4392e8b2976c" testId="447d4c10-c727-eaa2-a98c-306a56d40460" testName="WithArrayFunctionRepeat" computerName="NEBULOUS" duration="00:00:00.1114220" startTime="2026-04-11T08:46:44.6819452-05:00" endTime="2026-04-11T08:46:44.7933653-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="d01800b5-e558-4455-a421-4392e8b2976c" />
+    <UnitTestResult executionId="3169440f-1859-4c2c-9554-51c3b7682e29" testId="a0d2effe-c0eb-f403-55f1-fc37dbf78937" testName="WithNotDefaultTrue" computerName="NEBULOUS" duration="00:00:00.1630190" startTime="2026-04-11T08:46:32.8800499-05:00" endTime="2026-04-11T08:46:33.0430663-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="3169440f-1859-4c2c-9554-51c3b7682e29" />
+    <UnitTestResult executionId="0e53df18-ea08-4f11-a193-53003774a1f8" testId="eb9403bf-835f-8bc7-2159-2de6949de712" testName="WithInvalid" computerName="NEBULOUS" duration="00:00:00.1637240" startTime="2026-04-11T08:46:05.9954407-05:00" endTime="2026-04-11T08:46:06.1591617-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="0e53df18-ea08-4f11-a193-53003774a1f8" />
+    <UnitTestResult executionId="7083cc3a-0bed-4312-a8d6-5e6b69c3bb97" testId="b4f1c817-49bd-61be-5ef4-0ac522271c09" testName="WithFollowedEveryMultiple" computerName="NEBULOUS" duration="00:00:00.1430070" startTime="2026-04-11T08:46:40.7849369-05:00" endTime="2026-04-11T08:46:40.9279421-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="7083cc3a-0bed-4312-a8d6-5e6b69c3bb97" />
+    <UnitTestResult executionId="c147d565-498d-4d55-bc17-96d8f5214677" testId="5c7e205d-3709-b63c-c04b-709e8b8c1660" testName="WithEveryDistinctMultikeyWArray" computerName="NEBULOUS" duration="00:00:00.0983570" startTime="2026-04-11T08:46:37.5385256-05:00" endTime="2026-04-11T08:46:37.6368812-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="c147d565-498d-4d55-bc17-96d8f5214677" />
+    <UnitTestResult executionId="39fe6654-cef4-47ef-a9e4-a7ddf58ae624" testId="7e74d633-876f-ec1a-07cf-fdb5d97abef9" testName="WithComplexProperties" computerName="NEBULOUS" duration="00:00:02.9161140" startTime="2026-04-11T08:45:57.8368372-05:00" endTime="2026-04-11T08:46:00.7529050-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="39fe6654-cef4-47ef-a9e4-a7ddf58ae624" />
+    <UnitTestResult executionId="2744cbf5-110c-46e1-abed-f61c0b6627e3" testId="4a2a0e2b-8753-0323-240e-a21ed8ec3862" testName="WithIntervalSpecExpressionWithPropertyArray" computerName="NEBULOUS" duration="00:00:00.1156270" startTime="2026-04-11T08:46:24.6770748-05:00" endTime="2026-04-11T08:46:24.7927002-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="2744cbf5-110c-46e1-abed-f61c0b6627e3" />
+    <UnitTestResult executionId="aac6f71a-a6c3-452d-89be-8820166f8cbb" testId="b3a5c348-7d28-a3ed-5ea4-e04b93701fdf" testName="WithIndexedValueProp" computerName="NEBULOUS" duration="00:00:00.0931980" startTime="2026-04-11T08:46:00.8759809-05:00" endTime="2026-04-11T08:46:00.9691770-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="aac6f71a-a6c3-452d-89be-8820166f8cbb" />
+    <UnitTestResult executionId="425369ff-8ea2-4ed9-b81a-56518d96bd82" testId="9a0fce98-87ee-6f82-1c3e-33484e380eee" testName="WithEveryOp" computerName="NEBULOUS" duration="00:00:00.5179210" startTime="2026-04-11T08:46:04.9246172-05:00" endTime="2026-04-11T08:46:05.4425300-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="425369ff-8ea2-4ed9-b81a-56518d96bd82" />
+    <UnitTestResult executionId="893b641c-0287-42be-9c14-f8790e6dd4b7" testId="7990bc9b-5c2c-0260-827c-6e3c0992508a" testName="WithInvalid" computerName="NEBULOUS" duration="00:00:00.0340680" startTime="2026-04-11T08:46:14.2900634-05:00" endTime="2026-04-11T08:46:14.3241310-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="893b641c-0287-42be-9c14-f8790e6dd4b7" />
+    <UnitTestResult executionId="ce53eb05-9ce5-4306-a4c7-1b502ab1469b" testId="7effbd41-0163-8b4b-41b4-fba79e26712f" testName="WithEveryDistinctSimple" computerName="NEBULOUS" duration="00:00:00.1360850" startTime="2026-04-11T08:46:39.1783288-05:00" endTime="2026-04-11T08:46:39.3144121-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="ce53eb05-9ce5-4306-a4c7-1b502ab1469b" />
+    <UnitTestResult executionId="5349c05d-67ee-4510-bc22-2330e2151e24" testId="4447c9ea-66a2-9053-f5fa-2c6cb53fe72a" testName="TestPatternOperatorOperatorMix" computerName="NEBULOUS" duration="00:00:01.2792130" startTime="2026-04-11T08:45:51.2697016-05:00" endTime="2026-04-11T08:45:52.5488940-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="5349c05d-67ee-4510-bc22-2330e2151e24" />
+    <UnitTestResult executionId="ab75f3db-86c8-4b41-a888-246bbe1001ae" testId="a200d8e0-bc2e-7f44-b939-4fd61257c626" testName="WithAtWeekdaysPrepared" computerName="NEBULOUS" duration="00:00:00.1538760" startTime="2026-04-11T08:46:17.1795254-05:00" endTime="2026-04-11T08:46:17.3333990-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="ab75f3db-86c8-4b41-a888-246bbe1001ae" />
+    <UnitTestResult executionId="2ae31bfa-29d7-4e04-9675-9311c3220c2e" testId="35ed4b10-2e41-8c34-439a-8e95cc8af898" testName="WithperatorOrWHarness" computerName="NEBULOUS" duration="00:00:01.5517460" startTime="2026-04-11T08:47:03.9824493-05:00" endTime="2026-04-11T08:47:05.5341715-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="2ae31bfa-29d7-4e04-9675-9311c3220c2e" />
+    <UnitTestResult executionId="e87d0c89-84ca-4ecc-9d28-f47a2282bc1a" testId="d1199623-4948-ab75-d306-8b6474e820f5" testName="WithOperatorNotWHarness" computerName="NEBULOUS" duration="00:00:02.5796670" startTime="2026-04-11T08:47:01.1496108-05:00" endTime="2026-04-11T08:47:03.7292386-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="e87d0c89-84ca-4ecc-9d28-f47a2282bc1a" />
+    <UnitTestResult executionId="db084973-55e7-4d36-b843-b4a9bf7d0f82" testId="d9ba1496-9794-5e9d-e8b9-94cc47ce8b91" testName="WithFollowedBy" computerName="NEBULOUS" duration="00:00:00.1003220" startTime="2026-04-11T08:46:02.8385039-05:00" endTime="2026-04-11T08:46:02.9388247-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="db084973-55e7-4d36-b843-b4a9bf7d0f82" />
+    <UnitTestResult executionId="f54c8f4a-c62a-4ba7-839f-2383b5df79fa" testId="4f1bc025-36e7-2a05-1d36-41f8e487ba84" testName="WithNotOpNotImpacted" computerName="NEBULOUS" duration="00:00:00.1384479" startTime="2026-04-11T08:46:06.4848010-05:00" endTime="2026-04-11T08:46:06.6232465-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="f54c8f4a-c62a-4ba7-839f-2383b5df79fa" />
+    <UnitTestResult executionId="687c11d7-38d2-4b44-8013-25073f5d0514" testId="e22b2907-06cc-8e91-b522-c32e66365866" testName="WithFollowedByFilter" computerName="NEBULOUS" duration="00:00:00.1446390" startTime="2026-04-11T08:47:07.4373097-05:00" endTime="2026-04-11T08:47:07.5819459-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="687c11d7-38d2-4b44-8013-25073f5d0514" />
+    <UnitTestResult executionId="832a07fd-37cc-40fa-a270-5b11c781195c" testId="5f75c856-207a-24e7-07fc-674a1de144d6" testName="WithRepeatUseTags" computerName="NEBULOUS" duration="00:00:00.3126120" startTime="2026-04-11T08:46:57.4293207-05:00" endTime="2026-04-11T08:46:57.7419278-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="832a07fd-37cc-40fa-a270-5b11c781195c" />
+    <UnitTestResult executionId="7277319e-dd48-4a12-a338-87e166e28404" testId="1c22b661-f40a-e214-5d5c-5254b2dcaa8a" testName="WithEveryWithAnd" computerName="NEBULOUS" duration="00:00:00.1675540" startTime="2026-04-11T08:46:36.4925843-05:00" endTime="2026-04-11T08:46:36.6601354-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="7277319e-dd48-4a12-a338-87e166e28404" />
+    <UnitTestResult executionId="242a6e85-f864-4614-8657-debce453cfb2" testId="ace03d42-c54a-6484-9684-f4ce56685286" testName="WithOperatorFollowedByMaxInvalid" computerName="NEBULOUS" duration="00:00:00.0104080" startTime="2026-04-11T08:46:44.6444904-05:00" endTime="2026-04-11T08:46:44.6548979-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="242a6e85-f864-4614-8657-debce453cfb2" />
+    <UnitTestResult executionId="81e0e265-211b-4e13-981a-8b92b9b599a1" testId="07e094f8-cab7-7efd-51a4-e11cb9c129c0" testName="WithUseFilter" computerName="NEBULOUS" duration="00:00:00.3774159" startTime="2026-04-11T08:46:57.8956092-05:00" endTime="2026-04-11T08:46:58.2730190-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="81e0e265-211b-4e13-981a-8b92b9b599a1" />
+    <UnitTestResult executionId="8a946e22-fb18-4727-a93c-44699cb26f46" testId="ae894d23-90fb-9b82-889e-a4de2c60ff06" testName="TestPatternMicrosecondResolution" computerName="NEBULOUS" duration="00:00:00.7674520" startTime="2026-04-11T08:45:50.5022383-05:00" endTime="2026-04-11T08:45:51.2696777-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="8a946e22-fb18-4727-a93c-44699cb26f46" />
+    <UnitTestResult executionId="4b517cb0-1f34-49c6-ba75-40ed440d02e7" testId="6dc87638-cea9-cad9-d3f8-8c0af29c2f3a" testName="WithInvalid" computerName="NEBULOUS" duration="00:00:00.0182050" startTime="2026-04-11T08:46:02.9388480-05:00" endTime="2026-04-11T08:46:02.9570522-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="4b517cb0-1f34-49c6-ba75-40ed440d02e7" />
+    <UnitTestResult executionId="1b0c7780-6c9c-45cc-ad15-60fa22c0c763" testId="66806214-f455-fdce-96e1-e8445c484ffb" testName="WithGuardWhileSimple" computerName="NEBULOUS" duration="00:00:00.1295160" startTime="2026-04-11T08:46:14.1605327-05:00" endTime="2026-04-11T08:46:14.2900459-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="1b0c7780-6c9c-45cc-ad15-60fa22c0c763" />
+    <UnitTestResult executionId="1430b723-a20e-44b5-8531-e27b755c0d43" testId="c3e32eff-1286-af2f-6f1f-12f6d5cb9341" testName="WithRFIDZoneEnter" computerName="NEBULOUS" duration="00:00:00.1108310" startTime="2026-04-11T08:46:44.0711162-05:00" endTime="2026-04-11T08:46:44.1819456-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="1430b723-a20e-44b5-8531-e27b755c0d43" />
+    <UnitTestResult executionId="f50d0beb-4603-4e80-aca6-82c5ec5afba6" testId="bb53f26d-5a0d-a03b-2db6-94fb94af9fb3" testName="WithrAndNotAndZeroStart" computerName="NEBULOUS" duration="00:00:00.2463980" startTime="2026-04-11T08:47:05.5341841-05:00" endTime="2026-04-11T08:47:05.7805781-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="f50d0beb-4603-4e80-aca6-82c5ec5afba6" />
+    <UnitTestResult executionId="52a7f0a6-2b1d-4b2e-b7f4-89cc08a5f572" testId="611c1ca4-15b9-a29c-e89b-8fe9fbe3a93c" testName="WithAtWeekdaysVariable" computerName="NEBULOUS" duration="00:00:00.1020250" startTime="2026-04-11T08:46:17.3334239-05:00" endTime="2026-04-11T08:46:17.4354474-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="52a7f0a6-2b1d-4b2e-b7f4-89cc08a5f572" />
+    <UnitTestResult executionId="369fd155-5992-48fe-b405-8069b1944345" testId="bb8c7469-0e49-e2ec-7eb0-f77e20c08faa" testName="WithOp" computerName="NEBULOUS" duration="00:00:05.1885519" startTime="2026-04-11T08:46:18.3865940-05:00" endTime="2026-04-11T08:46:23.5750655-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="369fd155-5992-48fe-b405-8069b1944345" />
+    <UnitTestResult executionId="faad02ee-b186-440e-9611-30808d13bf23" testId="46e2050c-6200-b218-674a-b2137f334d33" testName="WithIndexedValuePropCompile" computerName="NEBULOUS" duration="00:00:00.1178360" startTime="2026-04-11T08:46:00.9692029-05:00" endTime="2026-04-11T08:46:01.0870362-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="faad02ee-b186-440e-9611-30808d13bf23" />
+    <UnitTestResult executionId="8e7e389e-c3ce-4f74-b43d-02eed311c51c" testId="a2c1d6cb-cc77-d03c-074e-be333ab0f4f2" testName="WithExpressionBounds" computerName="NEBULOUS" duration="00:00:01.0878810" startTime="2026-04-11T08:46:44.9307133-05:00" endTime="2026-04-11T08:46:46.0185772-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="8e7e389e-c3ce-4f74-b43d-02eed311c51c" />
+    <UnitTestResult executionId="747bbd52-f7fe-4be6-b6a4-6e396e962862" testId="a68e75ee-1399-4c75-5eba-0ca0c88a4409" testName="WithOpWHarness" computerName="NEBULOUS" duration="00:00:02.7606700" startTime="2026-04-11T08:46:41.3104768-05:00" endTime="2026-04-11T08:46:44.0711040-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="747bbd52-f7fe-4be6-b6a4-6e396e962862" />
+    <UnitTestResult executionId="5d7548f4-26b0-4f86-90e3-57da93707614" testId="98e84f96-9ae9-8c17-ba6c-6c4891627b56" testName="WithMultiple" computerName="NEBULOUS" duration="00:00:00.1088630" startTime="2026-04-11T08:46:44.5356121-05:00" endTime="2026-04-11T08:46:44.6444730-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="5d7548f4-26b0-4f86-90e3-57da93707614" />
+    <UnitTestResult executionId="e91d93de-f461-4404-8472-909295f3f70f" testId="53445149-4f74-3763-1cfe-26e8fd9120b5" testName="WithWithinFromExpression" computerName="NEBULOUS" duration="00:00:00.1353450" startTime="2026-04-11T08:46:13.8836616-05:00" endTime="2026-04-11T08:46:14.0190042-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="e91d93de-f461-4404-8472-909295f3f70f" />
+    <UnitTestResult executionId="59988053-c226-4825-a75f-cddec8ae695c" testId="243c68d4-e2da-2dbc-4b4d-406d78a8bc8a" testName="TestPatternSuperAndInterfaces" computerName="NEBULOUS" duration="00:00:05.1193730" startTime="2026-04-11T08:45:52.7164259-05:00" endTime="2026-04-11T08:45:57.8357190-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="59988053-c226-4825-a75f-cddec8ae695c" />
+    <UnitTestResult executionId="e1cbadb6-7294-48d6-b9da-42a1af93e488" testId="7d707ca3-8234-edb5-5646-0a1e48a9f6ec" testName="WithEveryFollowedByWithin" computerName="NEBULOUS" duration="00:00:00.1738560" startTime="2026-04-11T08:46:36.1795029-05:00" endTime="2026-04-11T08:46:36.3533561-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="e1cbadb6-7294-48d6-b9da-42a1af93e488" />
+    <UnitTestResult executionId="68f03336-19d6-4b31-81a3-9ce1fabfe11f" testId="f86518d8-ce8e-005b-4b7a-5785f8ad4676" testName="WithObserverOp" computerName="NEBULOUS" duration="00:00:00.1527679" startTime="2026-04-11T08:46:06.6232775-05:00" endTime="2026-04-11T08:46:06.7760434-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="68f03336-19d6-4b31-81a3-9ce1fabfe11f" />
+    <UnitTestResult executionId="c462bd1a-b068-441c-8011-aa45c2a8e34f" testId="c83200a8-f641-22c9-7f68-50ddbaa78f6a" testName="WithInvalid" computerName="NEBULOUS" duration="00:00:00.0655000" startTime="2026-04-11T08:46:46.0185903-05:00" endTime="2026-04-11T08:46:46.0840887-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="c462bd1a-b068-441c-8011-aa45c2a8e34f" />
+    <UnitTestResult executionId="81311d7f-367b-4c15-915b-fe9e10faaa69" testId="414caff9-d6a8-fbe4-93da-f50218215302" testName="WithOp" computerName="NEBULOUS" duration="00:00:11.2419429" startTime="2026-04-11T08:46:46.1875380-05:00" endTime="2026-04-11T08:46:57.4293086-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="81311d7f-367b-4c15-915b-fe9e10faaa69" />
+    <UnitTestResult executionId="1f29ded6-3b39-4a4e-912b-d77da9cbac4f" testId="473de8b2-e2f5-cd7a-5b4a-5a99dc905ca0" testName="WithFollowedByWithDistinct" computerName="NEBULOUS" duration="00:00:00.2014370" startTime="2026-04-11T08:46:39.7111759-05:00" endTime="2026-04-11T08:46:39.9126101-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="1f29ded6-3b39-4a4e-912b-d77da9cbac4f" />
+    <UnitTestResult executionId="3bb7375a-f6d3-473b-8cd5-0160a38b1514" testId="5725e595-3a0e-3ae5-e214-ebdedca98d46" testName="WithRepeatOverDistinct" computerName="NEBULOUS" duration="00:00:00.1403500" startTime="2026-04-11T08:46:40.0723552-05:00" endTime="2026-04-11T08:46:40.2127035-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="3bb7375a-f6d3-473b-8cd5-0160a38b1514" />
+    <UnitTestResult executionId="06c48ba3-cfa2-4311-8051-23cdd4ec982d" testId="bf47fc5c-68b3-adbd-3eb0-0120dfc4f40b" testName="WithVariable" computerName="NEBULOUS" duration="00:00:00.1749620" startTime="2026-04-11T08:46:15.2808361-05:00" endTime="2026-04-11T08:46:15.4557953-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="06c48ba3-cfa2-4311-8051-23cdd4ec982d" />
+    <UnitTestResult executionId="2fce08af-9b60-4b6d-a362-4113a4a5ff3f" testId="ea316c66-7134-a5a1-9587-a6f9da39ec9a" testName="WithNotWithEvery" computerName="NEBULOUS" duration="00:00:00.1173600" startTime="2026-04-11T08:46:58.4768226-05:00" endTime="2026-04-11T08:46:58.5941807-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="2fce08af-9b60-4b6d-a362-4113a4a5ff3f" />
+    <UnitTestResult executionId="7fa09650-4890-42e4-b418-02bccd7f2fa5" testId="8d67d458-5e31-f696-e7b1-1b8748441706" testName="Withragment" computerName="NEBULOUS" duration="00:00:00.1625500" startTime="2026-04-11T08:46:02.2887097-05:00" endTime="2026-04-11T08:46:02.4512569-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="7fa09650-4890-42e4-b418-02bccd7f2fa5" />
+    <UnitTestResult executionId="dc4c6c28-9591-47e8-822a-7eb9e3370540" testId="c54c5e6c-0923-f28f-3009-444282cb01a6" testName="WithWMilliseconds" computerName="NEBULOUS" duration="00:00:00.3201510" startTime="2026-04-11T08:46:23.9162375-05:00" endTime="2026-04-11T08:46:24.2363823-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="dc4c6c28-9591-47e8-822a-7eb9e3370540" />
+    <UnitTestResult executionId="594ccb20-ed7a-4084-9c59-6fee4be9a434" testId="8182cd20-e8c8-5414-6bfe-67ea8faa7798" testName="WithIntervalSpecPreparedStmt" computerName="NEBULOUS" duration="00:00:00.1407930" startTime="2026-04-11T08:46:24.7927120-05:00" endTime="2026-04-11T08:46:24.9335027-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="594ccb20-ed7a-4084-9c59-6fee4be9a434" />
+    <UnitTestResult executionId="e3d969ce-562c-4931-9ac9-c80f6fe7b023" testId="512aa12d-a488-1530-28eb-a8de9d7d5095" testName="WithWHarness" computerName="NEBULOUS" duration="00:00:02.6733440" startTime="2026-04-11T08:46:33.1834096-05:00" endTime="2026-04-11T08:46:35.8567124-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="e3d969ce-562c-4931-9ac9-c80f6fe7b023" />
+    <UnitTestResult executionId="4384c9a0-e670-4bbc-8f8e-e6c8e3323b17" testId="fddc018c-cbc9-5e11-00c7-13dc5f64d84e" testName="WithMatchUntilSimple" computerName="NEBULOUS" duration="00:00:00.1034220" startTime="2026-04-11T08:46:46.0841001-05:00" endTime="2026-04-11T08:46:46.1875204-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="4384c9a0-e670-4bbc-8f8e-e6c8e3323b17" />
+    <UnitTestResult executionId="92c9e55d-08df-4811-8ddc-377ef30b0093" testId="b4400542-cd8a-88f7-808b-a727c7553044" testName="WithTimerScheduleUnlimitedRecurringPeriod" computerName="NEBULOUS" duration="00:00:00.1044090" startTime="2026-04-11T08:46:32.7755738-05:00" endTime="2026-04-11T08:46:32.8799815-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="92c9e55d-08df-4811-8ddc-377ef30b0093" />
+    <UnitTestResult executionId="bf671f5c-96f2-4d4b-821f-b5cd04695800" testId="03e38977-279b-8569-1bbd-a0117e347071" testName="WithOp" computerName="NEBULOUS" duration="00:00:00.9566840" startTime="2026-04-11T08:46:14.3241483-05:00" endTime="2026-04-11T08:46:15.2808169-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="bf671f5c-96f2-4d4b-821f-b5cd04695800" />
+    <UnitTestResult executionId="4b6e3bd1-85d1-49f8-ad9e-0286b2d70faf" testId="83a16174-a09b-4690-f435-da5a98ca7fa7" testName="WithObjectId" computerName="NEBULOUS" duration="00:00:01.2155270" startTime="2026-04-11T08:47:10.9409252-05:00" endTime="2026-04-11T08:47:12.1564334-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="4b6e3bd1-85d1-49f8-ad9e-0286b2d70faf" />
+    <UnitTestResult executionId="353e40cb-1775-475f-85e2-05925bba4fa6" testId="e37602d5-09ef-dfd7-efc6-5e5835839270" testName="WithEveryDistinctOverRepeat" computerName="NEBULOUS" duration="00:00:00.2012830" startTime="2026-04-11T08:46:38.7909214-05:00" endTime="2026-04-11T08:46:38.9922018-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="353e40cb-1775-475f-85e2-05925bba4fa6" />
+    <UnitTestResult executionId="903e23fb-49ac-4d4c-bbdf-8774d0100910" testId="6b543aef-fcc6-b33b-772f-efeb6a6a36d5" testName="WithGuardOp" computerName="NEBULOUS" duration="00:00:00.3316450" startTime="2026-04-11T08:46:05.6637691-05:00" endTime="2026-04-11T08:46:05.9954088-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="903e23fb-49ac-4d4c-bbdf-8774d0100910" />
+    <UnitTestResult executionId="58cc1327-e93a-49be-8274-1ee2df60c464" testId="0871ef90-a370-8f21-483d-8cbf02a849d6" testName="TestPatternStartLoop" computerName="NEBULOUS" duration="00:00:00.1674850" startTime="2026-04-11T08:45:52.5489177-05:00" endTime="2026-04-11T08:45:52.7163994-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="58cc1327-e93a-49be-8274-1ee2df60c464" />
+    <UnitTestResult executionId="cc67a076-beb9-4c95-bf26-6bca70465f22" testId="237f6422-10b3-9c52-567e-038fa127139f" testName="WithOp" computerName="NEBULOUS" duration="00:00:05.5266560" startTime="2026-04-11T08:46:25.2291288-05:00" endTime="2026-04-11T08:46:30.7557003-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="cc67a076-beb9-4c95-bf26-6bca70465f22" />
+    <UnitTestResult executionId="aeaaf893-7cc2-4fe2-a0c0-33d8ec2be00f" testId="5545e7e8-4b56-8986-e342-400cdb37101f" testName="WithIntervalSpec" computerName="NEBULOUS" duration="00:00:00.0996710" startTime="2026-04-11T08:46:24.2365012-05:00" endTime="2026-04-11T08:46:24.3361707-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="aeaaf893-7cc2-4fe2-a0c0-33d8ec2be00f" />
+    <UnitTestResult executionId="bf53670a-d486-40c9-aa93-cbf74216fa78" testId="e0e8d6bc-6e5e-90cf-845d-6e42b6bfb5be" testName="WithMemoryRFIDEvent" computerName="NEBULOUS" duration="00:00:00.1285700" startTime="2026-04-11T08:46:41.1818968-05:00" endTime="2026-04-11T08:46:41.3104644-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="bf53670a-d486-40c9-aa93-cbf74216fa78" />
+    <UnitTestResult executionId="af4e7ad7-5f94-45e5-acb0-095f1db78f18" testId="b88afe70-a82a-e474-9a40-1e75f5f5957d" testName="WithStartStopTwo" computerName="NEBULOUS" duration="00:00:00.6195210" startTime="2026-04-11T08:47:06.5366245-05:00" endTime="2026-04-11T08:47:07.1561361-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="af4e7ad7-5f94-45e5-acb0-095f1db78f18" />
+    <UnitTestResult executionId="a8f8bb3b-00c1-460b-b0e0-5504079ae9c2" testId="5d5d4481-fcb9-7d3b-a82f-868ee3834cea" testName="WithStartStopOne" computerName="NEBULOUS" duration="00:00:00.1052120" startTime="2026-04-11T08:47:06.4313986-05:00" endTime="2026-04-11T08:47:06.5366091-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="a8f8bb3b-00c1-460b-b0e0-5504079ae9c2" />
+    <UnitTestResult executionId="0bc34ada-c33f-46bb-9a47-d2fd65f3bf5b" testId="9591dbcc-8613-ce0c-c500-b11efdae22be" testName="WithCronParameter" computerName="NEBULOUS" duration="00:00:00.6781570" startTime="2026-04-11T08:46:17.4354665-05:00" endTime="2026-04-11T08:46:18.1136131-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="0bc34ada-c33f-46bb-9a47-d2fd65f3bf5b" />
+    <UnitTestResult executionId="f2008fdd-5d2f-4dd6-8526-5052edb42b08" testId="a4867831-d341-4f88-ec6b-1ae6e0670053" testName="WithFollowedByWithNot" computerName="NEBULOUS" duration="00:00:00.1085910" startTime="2026-04-11T08:46:40.6763356-05:00" endTime="2026-04-11T08:46:40.7849244-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="f2008fdd-5d2f-4dd6-8526-5052edb42b08" />
+    <UnitTestResult executionId="b3b80caa-d74c-4866-9fac-721125ed0e7a" testId="505a7aaf-6e64-2075-7b18-9afa425a5b91" testName="WithStatementException" computerName="NEBULOUS" duration="00:00:00.0933010" startTime="2026-04-11T08:46:16.6024054-05:00" endTime="2026-04-11T08:46:16.6957047-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="b3b80caa-d74c-4866-9fac-721125ed0e7a" />
+    <UnitTestResult executionId="f340900e-cb69-4ed1-883c-55ff4cec3d5c" testId="2c9d4565-a06c-4435-a5c6-116da912e24c" testName="WithSimple" computerName="NEBULOUS" duration="00:00:00.1403200" startTime="2026-04-11T08:46:33.0430789-05:00" endTime="2026-04-11T08:46:33.1833966-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="f340900e-cb69-4ed1-883c-55ff4cec3d5c" />
+    <UnitTestResult executionId="f2df0627-2916-4e28-bf56-f9bc7768ab74" testId="4cfbae13-c00c-cdf1-9f1d-05e224a57c65" testName="WithEveryDistinctOverNot" computerName="NEBULOUS" duration="00:00:00.2343250" startTime="2026-04-11T08:46:38.3834091-05:00" endTime="2026-04-11T08:46:38.6177309-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="f2df0627-2916-4e28-bf56-f9bc7768ab74" />
+    <UnitTestResult executionId="006209c4-af9d-497f-9bc3-efb5b6b744bc" testId="21c4540e-75ef-757c-45ed-95e22807fc8b" testName="WithWithEveryAndTerminationOptimization" computerName="NEBULOUS" duration="00:00:00.0957210" startTime="2026-04-11T08:46:35.8567283-05:00" endTime="2026-04-11T08:46:35.9524482-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="006209c4-af9d-497f-9bc3-efb5b6b744bc" />
+    <UnitTestResult executionId="21ad55f8-0bc9-48f8-b4ab-40f4553b2173" testId="4b8d7216-4d46-3152-35e4-2457d7def86f" testName="WithTimerScheduleSimple" computerName="NEBULOUS" duration="00:00:00.1382840" startTime="2026-04-11T08:46:32.6372795-05:00" endTime="2026-04-11T08:46:32.7755611-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="21ad55f8-0bc9-48f8-b4ab-40f4553b2173" />
+    <UnitTestResult executionId="2126c1ee-aa77-4c8b-a511-d34a22525ef0" testId="16767fb2-e428-bc29-355c-551178473d80" testName="WithOp" computerName="NEBULOUS" duration="00:00:00.8783210" startTime="2026-04-11T08:46:36.6601489-05:00" endTime="2026-04-11T08:46:37.5384566-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="2126c1ee-aa77-4c8b-a511-d34a22525ef0" />
+    <UnitTestResult executionId="a1d42b97-0fb7-42ae-a92b-ffeb674763ae" testId="ba492e6a-f354-19e5-a089-cbab67941422" testName="WithTimerScheduleDateWithPeriod" computerName="NEBULOUS" duration="00:00:00.1019410" startTime="2026-04-11T08:46:32.1658056-05:00" endTime="2026-04-11T08:46:32.2677445-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="a1d42b97-0fb7-42ae-a92b-ffeb674763ae" />
+    <UnitTestResult executionId="b3a6916e-ae6d-49fc-aac0-9a4ea3fa0e7c" testId="d32c169c-c244-1e7a-74d8-9343f62e296b" testName="WithMatchUntilOp" computerName="NEBULOUS" duration="00:00:00.3256040" startTime="2026-04-11T08:46:06.1591810-05:00" endTime="2026-04-11T08:46:06.4847793-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="b3a6916e-ae6d-49fc-aac0-9a4ea3fa0e7c" />
+    <UnitTestResult executionId="af535bef-5b49-42d8-8448-e22f50a08137" testId="f4bee000-515c-b427-5f8c-f45467819854" testName="WithEveryDistinctOverTimerWithin" computerName="NEBULOUS" duration="00:00:00.1861070" startTime="2026-04-11T08:46:38.9922129-05:00" endTime="2026-04-11T08:46:39.1783166-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="af535bef-5b49-42d8-8448-e22f50a08137" />
+    <UnitTestResult executionId="1770a039-a167-45f9-9c86-adcb35c6c563" testId="6959e102-ab5d-11a3-0e92-457b395c8296" testName="WithollowedByFilter" computerName="NEBULOUS" duration="00:00:01.0550280" startTime="2026-04-11T08:46:01.2336768-05:00" endTime="2026-04-11T08:46:02.2886877-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="1770a039-a167-45f9-9c86-adcb35c6c563" />
+    <UnitTestResult executionId="1c413921-2303-4eed-a82c-616249eeb3f3" testId="9b2be6d2-047c-321a-94d2-33b47cf701ee" testName="WithAnd" computerName="NEBULOUS" duration="00:00:00.2515460" startTime="2026-04-11T08:46:02.4513428-05:00" endTime="2026-04-11T08:46:02.7028847-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="1c413921-2303-4eed-a82c-616249eeb3f3" />
+    <UnitTestResult executionId="967baffa-7461-4eb1-8972-7df05ac443df" testId="191aa86f-0537-7c5a-046e-2378f6d38bf3" testName="WithOp" computerName="NEBULOUS" duration="00:00:02.5554460" startTime="2026-04-11T08:46:58.5941928-05:00" endTime="2026-04-11T08:47:01.1495999-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="967baffa-7461-4eb1-8972-7df05ac443df" />
+    <UnitTestResult executionId="a588bf3d-a537-436f-ae69-206491539c93" testId="dc81b689-3edd-c9fc-c3d3-af17f1773e9d" testName="WithAndOp" computerName="NEBULOUS" duration="00:00:00.2259390" startTime="2026-04-11T08:46:03.7684646-05:00" endTime="2026-04-11T08:46:03.9944000-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="a588bf3d-a537-436f-ae69-206491539c93" />
+    <UnitTestResult executionId="11be7d2d-d7d7-4d1c-a1c7-0d509ca04bab" testId="404a23e9-9b5a-a824-6fa0-9b6545c55da0" testName="WithPatternTypeCacheForRepeat" computerName="NEBULOUS" duration="00:00:01.0848000" startTime="2026-04-11T08:47:12.1564460-05:00" endTime="2026-04-11T08:47:13.2412287-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="11be7d2d-d7d7-4d1c-a1c7-0d509ca04bab" />
+    <UnitTestResult executionId="19b5fb75-3eb3-4485-9a40-02adbdb26e4d" testId="30c3dbce-2942-8039-e95a-e09f1cdd5bdb" testName="WithTimerScheduleJustDate" computerName="NEBULOUS" duration="00:00:00.1223830" startTime="2026-04-11T08:46:32.2677623-05:00" endTime="2026-04-11T08:46:32.3901434-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="19b5fb75-3eb3-4485-9a40-02adbdb26e4d" />
+    <UnitTestResult executionId="26b0c70d-3213-44e8-a8b2-a8da88d8f108" testId="8f5f9ffd-6aaf-764f-9c18-62f69e8cde28" testName="TestPatternMicrosecondResolution" computerName="NEBULOUS" duration="00:00:00.5358060" startTime="2026-04-11T08:47:13.2412871-05:00" endTime="2026-04-11T08:47:13.7770847-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="26b0c70d-3213-44e8-a8b2-a8da88d8f108" />
+    <UnitTestResult executionId="8c0288cb-8aed-4564-8d62-b4d6539dcb81" testId="4cadf76a-30cb-6a51-47ab-40ee555cbad7" testName="TestPatternExpressionText" computerName="NEBULOUS" duration="00:00:16.6946690" startTime="2026-04-11T08:45:30.7729637-05:00" endTime="2026-04-11T08:45:47.4673735-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="8c0288cb-8aed-4564-8d62-b4d6539dcb81" />
+    <UnitTestResult executionId="abb3719e-d65e-4b65-9bb5-b89c16c63b52" testId="d440299a-2814-2e2d-9b47-7a82a652307d" testName="WithSingleMaxSimple" computerName="NEBULOUS" duration="00:00:00.0207620" startTime="2026-04-11T08:46:44.6549076-05:00" endTime="2026-04-11T08:46:44.6756688-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="abb3719e-d65e-4b65-9bb5-b89c16c63b52">
+      <Output>
+        <ErrorInfo>
+          <Message>  Assert.That(actual, Is.EqualTo(expected))&#xD;
+  Expected string length 7 but was 41. Strings differ at index 0.&#xD;
+  Expected: "default"&#xD;
+  But was:  "test:25c0276c-ad9a-4693-8093-4600091a7644"&#xD;
+  -----------^&#xD;
+</Message>
+          <StackTrace>   at NUnit.Framework.Legacy.ClassicAssert.AreEqual(Object expected, Object actual)&#xD;
+   at com.espertech.esper.regressionlib.suite.pattern.PatternOperatorFollowedByMax.PatternSingleMaxSimple.Run(RegressionEnvironment env) in D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression\suite\pattern\PatternOperatorFollowedByMax.cs:line 292&#xD;
+   at com.espertech.esper.regressionrun.runner.RegressionRunner.RunInternal(RegressionSession session, RegressionExecution execution) in D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\runner\RegressionRunner.cs:line 122&#xD;
+   at com.espertech.esper.regressionrun.runner.RegressionRunner.Run[T](RegressionSession session, ICollection`1 executions, Boolean usePerfContext) in D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\runner\RegressionRunner.cs:line 77&#xD;
+   at com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern.TestPatternOperatorFollowedByMax.WithSingleMaxSimple() in D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\suite\pattern\TestSuitePattern.cs:line 684&#xD;
+
+1)    at NUnit.Framework.Legacy.ClassicAssert.AreEqual(Object expected, Object actual)&#xD;
+   at com.espertech.esper.regressionlib.suite.pattern.PatternOperatorFollowedByMax.PatternSingleMaxSimple.Run(RegressionEnvironment env) in D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression\suite\pattern\PatternOperatorFollowedByMax.cs:line 292&#xD;
+   at com.espertech.esper.regressionrun.runner.RegressionRunner.RunInternal(RegressionSession session, RegressionExecution execution) in D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\runner\RegressionRunner.cs:line 122&#xD;
+   at com.espertech.esper.regressionrun.runner.RegressionRunner.Run[T](RegressionSession session, ICollection`1 executions, Boolean usePerfContext) in D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\runner\RegressionRunner.cs:line 77&#xD;
+   at com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern.TestPatternOperatorFollowedByMax.WithSingleMaxSimple() in D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\suite\pattern\TestSuitePattern.cs:line 684&#xD;
+
+</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="d5095296-aa6f-41a1-be76-6e0c93ba412b" testId="7be99b65-b956-b9e4-a68c-fca24156bdc5" testName="WithBooleanExprRemoveConsiderTag" computerName="NEBULOUS" duration="00:00:00.1140120" startTime="2026-04-11T08:47:07.3232886-05:00" endTime="2026-04-11T08:47:07.4372984-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="d5095296-aa6f-41a1-be76-6e0c93ba412b" />
+    <UnitTestResult executionId="72d62d4f-2033-4f9d-8480-c243c0a923dd" testId="e121f581-8d88-4a87-6c99-eec64e1982eb" testName="WithSelectArray" computerName="NEBULOUS" duration="00:00:00.1535340" startTime="2026-04-11T08:46:57.7420661-05:00" endTime="2026-04-11T08:46:57.8955981-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="72d62d4f-2033-4f9d-8480-c243c0a923dd" />
+    <UnitTestResult executionId="3578f058-3a35-4c5c-b28e-4758b76c6dea" testId="853c5c0e-e61e-6516-f59e-f97635513c48" testName="WithWithinMayMaxMonthScoped" computerName="NEBULOUS" duration="00:00:00.1414110" startTime="2026-04-11T08:46:14.0190411-05:00" endTime="2026-04-11T08:46:14.1604501-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="3578f058-3a35-4c5c-b28e-4758b76c6dea" />
+    <UnitTestResult executionId="6f239674-7ed4-419d-81d9-e1750c435fc3" testId="6f428a3f-5ba8-a8b1-8240-1f7da29bfd85" testName="WithOrOp" computerName="NEBULOUS" duration="00:00:00.1173780" startTime="2026-04-11T08:46:06.7760851-05:00" endTime="2026-04-11T08:46:06.8934622-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="6f239674-7ed4-419d-81d9-e1750c435fc3" />
+    <UnitTestResult executionId="42f45adf-69ea-4da2-9880-23b98cecc91d" testId="91cce466-6c1a-3237-fa1d-736fc8c7b227" testName="WithAddRemoveListener" computerName="NEBULOUS" duration="00:00:00.1449689" startTime="2026-04-11T08:47:06.2864192-05:00" endTime="2026-04-11T08:47:06.4313856-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="42f45adf-69ea-4da2-9880-23b98cecc91d" />
+    <UnitTestResult executionId="a4e57b08-ff61-4000-8572-c80830fb1952" testId="e063222d-6062-3fc3-0205-93808b530258" testName="WithTimerScheduleJustPeriod" computerName="NEBULOUS" duration="00:00:00.1474440" startTime="2026-04-11T08:46:32.3901588-05:00" endTime="2026-04-11T08:46:32.5376005-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="a4e57b08-ff61-4000-8572-c80830fb1952" />
+    <UnitTestResult executionId="add54816-2f09-405b-a65a-134e478177d0" testId="c4ef9fd1-7f77-fec0-2a7e-0ffda25b000c" testName="WithTimerAtSimple" computerName="NEBULOUS" duration="00:00:00.0893070" startTime="2026-04-11T08:46:23.8269156-05:00" endTime="2026-04-11T08:46:23.9162209-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="add54816-2f09-405b-a65a-134e478177d0" />
+    <UnitTestResult executionId="19aca507-1ea5-4c6e-9a10-5747a16ec085" testId="af3d92f9-4115-8af8-a835-4c37473e2ad4" testName="WithIntervalPrepared" computerName="NEBULOUS" duration="00:00:00.1514300" startTime="2026-04-11T08:46:07.1751063-05:00" endTime="2026-04-11T08:46:07.3265337-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="19aca507-1ea5-4c6e-9a10-5747a16ec085" />
+    <UnitTestResult executionId="4d68bbbb-acea-467b-b14e-9d67f2f900c3" testId="3af2944d-7345-e143-4810-9f4896579fa8" testName="WithEveryFollowedBy" computerName="NEBULOUS" duration="00:00:00.1065790" startTime="2026-04-11T08:46:36.0729120-05:00" endTime="2026-04-11T08:46:36.1794888-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="4d68bbbb-acea-467b-b14e-9d67f2f900c3" />
+    <UnitTestResult executionId="9bc8ff6a-a09f-4145-acb9-28b76c7d992a" testId="db248253-da7e-d8ae-8fd8-0de3e569f587" testName="WithOr" computerName="NEBULOUS" duration="00:00:00.8112780" startTime="2026-04-11T08:46:02.9570673-05:00" endTime="2026-04-11T08:46:03.7683318-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="9bc8ff6a-a09f-4145-acb9-28b76c7d992a" />
+    <UnitTestResult executionId="824e6994-a388-40df-913a-710cae487c18" testId="6553fb45-bd07-30d2-0565-5ad2bfe97bee" testName="WithFollowedOrPermFalse" computerName="NEBULOUS" duration="00:00:00.1591590" startTime="2026-04-11T08:46:41.0227279-05:00" endTime="2026-04-11T08:46:41.1818845-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="824e6994-a388-40df-913a-710cae487c18" />
+    <UnitTestResult executionId="539dcb78-88f3-4945-9e65-ca29c3392df2" testId="cf6b9a6d-2d64-3f3e-0445-16be9b4ff5ff" testName="WithPatternNotFollowedBy" computerName="NEBULOUS" duration="00:00:00.1123850" startTime="2026-04-11T08:46:13.7712592-05:00" endTime="2026-04-11T08:46:13.8836423-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="539dcb78-88f3-4945-9e65-ca29c3392df2" />
+    <UnitTestResult executionId="8640b7ee-98be-4730-a684-9917a55081c0" testId="22b5d76b-18ed-daf8-013f-c25f7f5ad196" testName="WithMonthScoped" computerName="NEBULOUS" duration="00:00:00.1029579" startTime="2026-04-11T08:46:39.9693862-05:00" endTime="2026-04-11T08:46:40.0723424-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="8640b7ee-98be-4730-a684-9917a55081c0" />
+    <UnitTestResult executionId="49662328-3e4d-4598-9986-708905938841" testId="79169ea5-ae4f-4ccd-d8b8-7b2c4bec7bde" testName="WithUniformEvents" computerName="NEBULOUS" duration="00:00:00.2531300" startTime="2026-04-11T08:47:03.7292505-05:00" endTime="2026-04-11T08:47:03.9823767-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="49662328-3e4d-4598-9986-708905938841" />
+    <UnitTestResult executionId="509d2c9b-07ee-4d84-969e-8c22cf932604" testId="1966f85d-ba11-bbac-8345-7308e4d98c0c" testName="WithEveryDistinctOverFilter" computerName="NEBULOUS" duration="00:00:00.2607870" startTime="2026-04-11T08:46:37.8947327-05:00" endTime="2026-04-11T08:46:38.1555157-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="509d2c9b-07ee-4d84-969e-8c22cf932604" />
+    <UnitTestResult executionId="9480cf2b-1e2e-43e1-b951-61d0e2656a6b" testId="60801d4d-ce4e-d032-d374-8bc7259cd4ec" testName="WithInterval10Min" computerName="NEBULOUS" duration="00:00:00.1530680" startTime="2026-04-11T08:46:06.8935521-05:00" endTime="2026-04-11T08:46:07.0466172-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="9480cf2b-1e2e-43e1-b951-61d0e2656a6b" />
+    <UnitTestResult executionId="a02e5723-25bb-4105-ae86-ecda7f365f28" testId="5b5c5bd5-21b9-575a-4bf9-e09492efb0e3" testName="WithCascade" computerName="NEBULOUS" duration="00:00:00.1356590" startTime="2026-04-11T08:47:05.8796163-05:00" endTime="2026-04-11T08:47:06.0152726-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="a02e5723-25bb-4105-ae86-ecda7f365f28" />
+    <UnitTestResult executionId="47c2312b-9631-484f-a2c2-42c6b4026ac4" testId="584d532e-f95e-65d8-6f4f-413589baf034" testName="WithIntervalSpecExpressionWithProperty" computerName="NEBULOUS" duration="00:00:00.1394690" startTime="2026-04-11T08:46:24.5375963-05:00" endTime="2026-04-11T08:46:24.6770627-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="47c2312b-9631-484f-a2c2-42c6b4026ac4" />
+    <UnitTestResult executionId="aa3c66df-56a1-424c-b9bf-01db40b95ff0" testId="7320b796-ee56-5463-a49e-056ed94df26d" testName="WithPropertyAndSODAAndTimezone" computerName="NEBULOUS" duration="00:00:00.2518200" startTime="2026-04-11T08:46:23.5750827-05:00" endTime="2026-04-11T08:46:23.8268981-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="aa3c66df-56a1-424c-b9bf-01db40b95ff0" />
+    <UnitTestResult executionId="e4e6a00e-8e5a-47c1-94ea-d801ee3ab17f" testId="30567522-1bd6-03aa-f2e0-66e80ed22737" testName="WithrSimple" computerName="NEBULOUS" duration="00:00:00.0989609" startTime="2026-04-11T08:47:05.7805898-05:00" endTime="2026-04-11T08:47:05.8795495-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="e4e6a00e-8e5a-47c1-94ea-d801ee3ab17f" />
+    <UnitTestResult executionId="99eb5e47-5358-4ff3-9da8-1d641d40def9" testId="d81398be-173a-051d-cf5e-27b82e00626f" testName="TestPatternDeadPattern" computerName="NEBULOUS" duration="00:00:01.2397050" startTime="2026-04-11T08:45:29.5328303-05:00" endTime="2026-04-11T08:45:30.7724930-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="99eb5e47-5358-4ff3-9da8-1d641d40def9" />
+    <UnitTestResult executionId="6fe991ce-4fcc-43ec-81d9-ff357b9e9e91" testId="648b52db-4fc2-b0a1-6f01-278cd89d1fe5" testName="WithFollowedNotEvery" computerName="NEBULOUS" duration="00:00:00.0947610" startTime="2026-04-11T08:46:40.9279536-05:00" endTime="2026-04-11T08:46:41.0227129-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="6fe991ce-4fcc-43ec-81d9-ff357b9e9e91" />
+    <UnitTestResult executionId="6abbe49d-c1dd-4aa9-b020-cb1072ca45ca" testId="d82b2c69-5d35-34f6-bd4e-d1d2b5161453" testName="WithTimer" computerName="NEBULOUS" duration="00:00:00.1342520" startTime="2026-04-11T08:47:06.1520872-05:00" endTime="2026-04-11T08:47:06.2863368-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="6abbe49d-c1dd-4aa9-b020-cb1072ca45ca" />
+    <UnitTestResult executionId="aec9301c-aef9-4f01-b14f-282108df5352" testId="60bc3806-5d59-1164-edd0-b978654e5a6f" testName="WithInterval10MinVariable" computerName="NEBULOUS" duration="00:00:00.1284520" startTime="2026-04-11T08:46:07.0466369-05:00" endTime="2026-04-11T08:46:07.1750869-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="aec9301c-aef9-4f01-b14f-282108df5352" />
+    <UnitTestResult executionId="25eccc4a-4206-4586-8b47-71d43835fb47" testId="81126c52-a531-994d-547a-9e7770a946b3" testName="WithSinglePermFalseAndQuit" computerName="NEBULOUS" duration="00:00:00.0061830" startTime="2026-04-11T08:46:44.6757050-05:00" endTime="2026-04-11T08:46:44.6818883-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="25eccc4a-4206-4586-8b47-71d43835fb47">
+      <Output>
+        <ErrorInfo>
+          <Message>  Assert.That(actual, Is.EqualTo(expected))&#xD;
+  Expected string length 7 but was 41. Strings differ at index 0.&#xD;
+  Expected: "default"&#xD;
+  But was:  "test:25c0276c-ad9a-4693-8093-4600091a7644"&#xD;
+  -----------^&#xD;
+</Message>
+          <StackTrace>   at NUnit.Framework.Legacy.ClassicAssert.AreEqual(Object expected, Object actual)&#xD;
+   at com.espertech.esper.regressionlib.suite.pattern.PatternOperatorFollowedByMax.PatternSinglePermFalseAndQuit.Run(RegressionEnvironment env) in D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression\suite\pattern\PatternOperatorFollowedByMax.cs:line 198&#xD;
+   at com.espertech.esper.regressionrun.runner.RegressionRunner.RunInternal(RegressionSession session, RegressionExecution execution) in D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\runner\RegressionRunner.cs:line 122&#xD;
+   at com.espertech.esper.regressionrun.runner.RegressionRunner.Run[T](RegressionSession session, ICollection`1 executions, Boolean usePerfContext) in D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\runner\RegressionRunner.cs:line 77&#xD;
+   at com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern.TestPatternOperatorFollowedByMax.WithSinglePermFalseAndQuit() in D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\suite\pattern\TestSuitePattern.cs:line 687&#xD;
+
+1)    at NUnit.Framework.Legacy.ClassicAssert.AreEqual(Object expected, Object actual)&#xD;
+   at com.espertech.esper.regressionlib.suite.pattern.PatternOperatorFollowedByMax.PatternSinglePermFalseAndQuit.Run(RegressionEnvironment env) in D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression\suite\pattern\PatternOperatorFollowedByMax.cs:line 198&#xD;
+   at com.espertech.esper.regressionrun.runner.RegressionRunner.RunInternal(RegressionSession session, RegressionExecution execution) in D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\runner\RegressionRunner.cs:line 122&#xD;
+   at com.espertech.esper.regressionrun.runner.RegressionRunner.Run[T](RegressionSession session, ICollection`1 executions, Boolean usePerfContext) in D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\runner\RegressionRunner.cs:line 77&#xD;
+   at com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern.TestPatternOperatorFollowedByMax.WithSinglePermFalseAndQuit() in D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\suite\pattern\TestSuitePattern.cs:line 687&#xD;
+
+</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="a4566a57-a3e6-4a78-8a0a-1fd1967f2f59" testId="fc265353-4aaa-18f9-5737-56466fefa4f4" testName="WithObserverTimerScheduleMultiform" computerName="NEBULOUS" duration="00:00:01.4100130" startTime="2026-04-11T08:46:30.7557996-05:00" endTime="2026-04-11T08:46:32.1657909-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="a4566a57-a3e6-4a78-8a0a-1fd1967f2f59" />
+    <UnitTestResult executionId="5b74730e-85b2-48b5-9fba-0b74a6eb1343" testId="bb9c4b5c-d162-32c2-f8c8-d84ac6a36c44" testName="WithInvalid" computerName="NEBULOUS" duration="00:00:00.0567500" startTime="2026-04-11T08:46:39.9126242-05:00" endTime="2026-04-11T08:46:39.9693735-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="5b74730e-85b2-48b5-9fba-0b74a6eb1343" />
+    <UnitTestResult executionId="d1eb6e03-c699-417b-addd-73c932762081" testId="87f93025-2cb2-6eaf-6fa0-44b0da441674" testName="WithEverySimple" computerName="NEBULOUS" duration="00:00:00.1392060" startTime="2026-04-11T08:46:36.3533687-05:00" endTime="2026-04-11T08:46:36.4925719-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="d1eb6e03-c699-417b-addd-73c932762081" />
+    <UnitTestResult executionId="b0e58ad8-593e-4622-a4b4-68d634a2f59e" testId="0fbdf991-9713-923a-ade8-985dc350a11f" testName="WithFilterGreaterThen" computerName="NEBULOUS" duration="00:00:00.1796360" startTime="2026-04-11T08:46:40.3813530-05:00" endTime="2026-04-11T08:46:40.5609862-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="b0e58ad8-593e-4622-a4b4-68d634a2f59e" />
+    <UnitTestResult executionId="c35f5671-1f0a-4393-99e1-ef9d09eb4ce9" testId="fca12cff-29b9-8f6f-082a-9c4f78676746" testName="WithEveryDistinctOverFollowedBy" computerName="NEBULOUS" duration="00:00:00.2278710" startTime="2026-04-11T08:46:38.1555293-05:00" endTime="2026-04-11T08:46:38.3833962-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="c35f5671-1f0a-4393-99e1-ef9d09eb4ce9" />
+    <UnitTestResult executionId="09c1780f-5516-4f13-857a-51011c4b1e3d" testId="a193e079-779c-8c81-b2d1-20524ef25bff" testName="WithIntervalSpecExpression" computerName="NEBULOUS" duration="00:00:00.2014030" startTime="2026-04-11T08:46:24.3361845-05:00" endTime="2026-04-11T08:46:24.5375849-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="09c1780f-5516-4f13-857a-51011c4b1e3d" />
+    <UnitTestResult executionId="6321f7bd-f63f-4a8f-b236-9fb908fb4244" testId="b1a1f615-1e76-5c5d-fd25-823ffb3e6e45" testName="WithExpireSeenBeforeKey" computerName="NEBULOUS" duration="00:00:00.1161680" startTime="2026-04-11T08:46:39.5949984-05:00" endTime="2026-04-11T08:46:39.7111641-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="6321f7bd-f63f-4a8f-b236-9fb908fb4244" />
+    <UnitTestResult executionId="bfa6a41e-21f0-4d3d-af3c-698e2064d560" testId="31da4611-5ad4-b053-d978-5182afb0863d" testName="WithEveryDistinctOverOr" computerName="NEBULOUS" duration="00:00:00.1731690" startTime="2026-04-11T08:46:38.6177430-05:00" endTime="2026-04-11T08:46:38.7909092-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="bfa6a41e-21f0-4d3d-af3c-698e2064d560" />
+    <UnitTestResult executionId="a1b0304f-b645-4824-a322-3379892deafe" testId="8d1776d8-3757-78fe-df15-877e53a9c9ff" testName="WithExpression" computerName="NEBULOUS" duration="00:00:00.1566230" startTime="2026-04-11T08:46:18.2299566-05:00" endTime="2026-04-11T08:46:18.3865768-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="a1b0304f-b645-4824-a322-3379892deafe" />
+    <UnitTestResult executionId="4c270083-bb53-4626-810d-0d952553e046" testId="da829574-a481-b5ac-3437-22c6e6b79c91" testName="WithNotFollowedBy" computerName="NEBULOUS" duration="00:00:00.0886160" startTime="2026-04-11T08:46:58.2730910-05:00" endTime="2026-04-11T08:46:58.3617058-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="4c270083-bb53-4626-810d-0d952553e046" />
+    <UnitTestResult executionId="17d8298b-669a-4a95-a0b4-e8c18df4c9aa" testId="61939726-3358-34bd-b1c2-610de2b720c2" testName="WithOp" computerName="NEBULOUS" duration="00:00:06.4447820" startTime="2026-04-11T08:46:07.3265589-05:00" endTime="2026-04-11T08:46:13.7712409-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="17d8298b-669a-4a95-a0b4-e8c18df4c9aa" />
+    <UnitTestResult executionId="4c551fa8-62c9-4e8e-abe9-b6d47b665cfd" testId="d687cfc2-0d4f-1c92-a9d6-6f00a47f4bb5" testName="WithMixed" computerName="NEBULOUS" duration="00:00:00.2234050" startTime="2026-04-11T08:46:44.3121989-05:00" endTime="2026-04-11T08:46:44.5356004-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="4c551fa8-62c9-4e8e-abe9-b6d47b665cfd" />
+    <UnitTestResult executionId="28073a30-f7f6-4da5-9840-602a719d826d" testId="fcb61475-4742-ec31-075f-7a95de1851a6" testName="WithRFIDZoneExit" computerName="NEBULOUS" duration="00:00:00.1301430" startTime="2026-04-11T08:46:44.1819578-05:00" endTime="2026-04-11T08:46:44.3120990-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="28073a30-f7f6-4da5-9840-602a719d826d" />
+    <UnitTestResult executionId="2b8a3a22-d892-4280-9fe1-28f7ef2de62f" testId="e37332f9-887b-18a9-0b70-0369b696f5a4" testName="WithIntervalSpecVariables" computerName="NEBULOUS" duration="00:00:00.1996180" startTime="2026-04-11T08:46:24.9335143-05:00" endTime="2026-04-11T08:46:25.1331291-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="2b8a3a22-d892-4280-9fe1-28f7ef2de62f" />
+    <UnitTestResult executionId="d867b9bd-c3e9-4345-b807-05b94141ca85" testId="bbf75a37-81b7-beea-e0b3-b9ab40d9e81c" testName="WithCombination" computerName="NEBULOUS" duration="00:00:00.9301760" startTime="2026-04-11T08:46:03.9944304-05:00" endTime="2026-04-11T08:46:04.9245921-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="d867b9bd-c3e9-4345-b807-05b94141ca85" />
+    <UnitTestResult executionId="66156dd0-0433-4539-996b-30704b34e9a4" testId="e3c3f004-578b-ec70-246b-476494e24061" testName="WithTimerScheduleLimitedWDateAndPeriod" computerName="NEBULOUS" duration="00:00:00.0996530" startTime="2026-04-11T08:46:32.5376122-05:00" endTime="2026-04-11T08:46:32.6372632-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="66156dd0-0433-4539-996b-30704b34e9a4" />
+    <UnitTestResult executionId="6346fcb5-603c-4245-b8b1-d751ac035d1c" testId="62b0cf9a-408b-ce0f-d20c-53b4f5b35894" testName="WithFilterAndSceneTwo" computerName="NEBULOUS" duration="00:00:00.1355700" startTime="2026-04-11T08:46:02.7029117-05:00" endTime="2026-04-11T08:46:02.8384791-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="6346fcb5-603c-4245-b8b1-d751ac035d1c" />
+    <UnitTestResult executionId="f31035ab-db01-44d9-acbe-fbaed4d3fef5" testId="0b491071-1a55-e437-0bfc-136ec0538771" testName="WithInvalidExpr" computerName="NEBULOUS" duration="00:00:01.1465360" startTime="2026-04-11T08:46:15.4558718-05:00" endTime="2026-04-11T08:46:16.6023895-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="f31035ab-db01-44d9-acbe-fbaed4d3fef5" />
+    <UnitTestResult executionId="23c8c8f2-1c01-4df4-b3d9-5b883d8c8370" testId="0ea565f6-abbc-dc5c-0b9a-47c143092495" testName="WithEveryDistinctWTime" computerName="NEBULOUS" duration="00:00:00.1049260" startTime="2026-04-11T08:46:39.4900587-05:00" endTime="2026-04-11T08:46:39.5949829-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="23c8c8f2-1c01-4df4-b3d9-5b883d8c8370" />
+    <UnitTestResult executionId="973da6d9-b642-492f-8490-c75e8e9fd31c" testId="fccac4b8-3164-e237-cb31-53a8335eb221" testName="WithBoundRepeatWithNot" computerName="NEBULOUS" duration="00:00:00.1373270" startTime="2026-04-11T08:46:44.7933764-05:00" endTime="2026-04-11T08:46:44.9307013-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="973da6d9-b642-492f-8490-c75e8e9fd31c" />
+    <UnitTestResult executionId="f46cc39a-6215-42bc-9338-132208fddd93" testId="5127eaad-0d75-57a0-7b02-93b721c3498e" testName="WithNotTimeInterval" computerName="NEBULOUS" duration="00:00:00.1150930" startTime="2026-04-11T08:46:58.3617189-05:00" endTime="2026-04-11T08:46:58.4768104-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="f46cc39a-6215-42bc-9338-132208fddd93" />
+    <UnitTestResult executionId="75a45de0-5360-469a-8616-780331af8875" testId="eed63e70-c0b0-c97a-fc10-0ef6c99ffa3b" testName="TestPatternGuardTimerWithinOrMax" computerName="NEBULOUS" duration="00:00:03.0348530" startTime="2026-04-11T08:45:47.4674075-05:00" endTime="2026-04-11T08:45:50.5022132-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="75a45de0-5360-469a-8616-780331af8875" />
+    <UnitTestResult executionId="cd30f9c1-fd5f-4f14-bce3-faa797e637a4" testId="8e1e7355-b3cf-1e40-e5e8-0e8ec3858c67" testName="WithMonthScoped" computerName="NEBULOUS" duration="00:00:00.0959779" startTime="2026-04-11T08:46:25.1331407-05:00" endTime="2026-04-11T08:46:25.2291166-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="cd30f9c1-fd5f-4f14-bce3-faa797e637a4" />
+    <UnitTestResult executionId="2c47df35-2a3c-43e6-8ab9-d0eb8e4db207" testId="f59888af-e671-41e4-5b0b-f73de016d1a4" testName="WithEveryDistinctOverAnd" computerName="NEBULOUS" duration="00:00:00.2578320" startTime="2026-04-11T08:46:37.6368927-05:00" endTime="2026-04-11T08:46:37.8947200-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="2c47df35-2a3c-43e6-8ab9-d0eb8e4db207" />
+    <UnitTestResult executionId="8ae04a03-e1fe-4a05-bbaa-0715af9ea4e2" testId="c9c01814-9ab8-b2b9-06b2-4c938f55dca9" testName="WithEveryAndNot" computerName="NEBULOUS" duration="00:00:00.1203870" startTime="2026-04-11T08:46:35.9525146-05:00" endTime="2026-04-11T08:46:36.0728999-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="8ae04a03-e1fe-4a05-bbaa-0715af9ea4e2" />
+    <UnitTestResult executionId="134a330b-e68f-4b65-8d8d-f92bb61c2436" testId="a54d7156-29cf-73d8-3a74-16146bff2523" testName="WithTimerWithinOverDistinct" computerName="NEBULOUS" duration="00:00:00.1685640" startTime="2026-04-11T08:46:40.2127169-05:00" endTime="2026-04-11T08:46:40.3812787-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="134a330b-e68f-4b65-8d8d-f92bb61c2436" />
+    <UnitTestResult executionId="5d1064a8-42c5-4cbb-b5e0-dcbb219bcc2e" testId="657f5a63-1436-fb5c-f30f-72c6873b7744" testName="WithUseResult" computerName="NEBULOUS" duration="00:00:00.3543250" startTime="2026-04-11T08:46:16.6957222-05:00" endTime="2026-04-11T08:46:17.0500417-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="5d1064a8-42c5-4cbb-b5e0-dcbb219bcc2e" />
+    <UnitTestResult executionId="8c3f2d63-2fcd-46fe-b275-32bdc887f814" testId="8588541e-7e60-da19-36d9-378684b519c5" testName="TestPatternObserverTimerScheduleTimeZoneEST" computerName="NEBULOUS" duration="00:00:00.1385650" startTime="2026-04-11T08:47:14.0136270-05:00" endTime="2026-04-11T08:47:14.1521893-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="8c3f2d63-2fcd-46fe-b275-32bdc887f814" />
+    <UnitTestResult executionId="bab5b98d-c06b-4842-b6e2-7152c909c851" testId="6631534b-359e-ad69-6c1c-4cc56ff2f052" testName="WithEveryDistinctWithinFollowedBy" computerName="NEBULOUS" duration="00:00:00.1756180" startTime="2026-04-11T08:46:39.3144253-05:00" endTime="2026-04-11T08:46:39.4900403-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="bab5b98d-c06b-4842-b6e2-7152c909c851" />
+    <UnitTestResult executionId="83a08318-43ea-441c-9875-f9a14d10a4fc" testId="6d7113b9-c6f7-3e1b-b861-36f8dab21ec4" testName="WithBooleanExprRemoveConsiderArrayTag" computerName="NEBULOUS" duration="00:00:00.1670760" startTime="2026-04-11T08:47:07.1562038-05:00" endTime="2026-04-11T08:47:07.3232776-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="83a08318-43ea-441c-9875-f9a14d10a4fc" />
+    <UnitTestResult executionId="203a3b88-2c37-4ac6-aafa-c8258d9f27b5" testId="0db3f6d4-ccaa-2d0f-d2b1-0557146e7c11" testName="WithAtWeekdays" computerName="NEBULOUS" duration="00:00:00.1293800" startTime="2026-04-11T08:46:17.0501293-05:00" endTime="2026-04-11T08:46:17.1795072-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="203a3b88-2c37-4ac6-aafa-c8258d9f27b5" />
+    <UnitTestResult executionId="e446c0a0-3f30-4ba2-89af-1733e24108a8" testId="76cc238c-cd4c-8401-9f6d-fd151739c8df" testName="WithIndexedFilterProp" computerName="NEBULOUS" duration="00:00:00.1230240" startTime="2026-04-11T08:46:00.7529310-05:00" endTime="2026-04-11T08:46:00.8759525-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="e446c0a0-3f30-4ba2-89af-1733e24108a8" />
+    <UnitTestResult executionId="7b9a2450-b3aa-4b89-84e8-d9de0e865788" testId="0be8f1a9-bab5-7665-ac90-ffebaa1c880c" testName="WithIndexedValuePropOM" computerName="NEBULOUS" duration="00:00:00.1465290" startTime="2026-04-11T08:46:01.0870653-05:00" endTime="2026-04-11T08:46:01.2335911-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="7b9a2450-b3aa-4b89-84e8-d9de0e865788" />
+    <UnitTestResult executionId="42b39cc2-e287-4e76-bff0-6720bc59ea20" testId="cc3d2b22-81a8-837d-8d4a-9a88dd1283cc" testName="TestPatternMicrosecondResolutionCrontab" computerName="NEBULOUS" duration="00:00:00.2365220" startTime="2026-04-11T08:47:13.7770967-05:00" endTime="2026-04-11T08:47:14.0136153-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="42b39cc2-e287-4e76-bff0-6720bc59ea20" />
+    <UnitTestResult executionId="bbe901c3-d25a-4b28-9400-1e1cd8cb518b" testId="77c734fd-abd6-16de-fec2-423e19fdda41" testName="WithEvery15thMonth" computerName="NEBULOUS" duration="00:00:00.1163090" startTime="2026-04-11T08:46:18.1136306-05:00" endTime="2026-04-11T08:46:18.2299370-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="bbe901c3-d25a-4b28-9400-1e1cd8cb518b" />
+    <UnitTestResult executionId="bac86c47-2075-4d30-9609-48f79133a570" testId="e6ce22c7-80ee-879f-5637-cbc748185183" testName="WithNumeric" computerName="NEBULOUS" duration="00:00:03.3590060" startTime="2026-04-11T08:47:07.5819580-05:00" endTime="2026-04-11T08:47:10.9409126-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="bac86c47-2075-4d30-9609-48f79133a570" />
+    <UnitTestResult executionId="6bfb320a-ff50-47de-b405-63dc76529da6" testId="cc724ed3-3d15-fa03-6383-b1275dcc07b6" testName="WithSingle" computerName="NEBULOUS" duration="00:00:00.1367860" startTime="2026-04-11T08:47:06.0152918-05:00" endTime="2026-04-11T08:47:06.1520749-05:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="6bfb320a-ff50-47de-b405-63dc76529da6" />
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="TestPatternMicrosecondResolutionCrontab" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="cc3d2b22-81a8-837d-8d4a-9a88dd1283cc">
+      <Execution id="42b39cc2-e287-4e76-bff0-6720bc59ea20" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePatternWConfig" name="TestPatternMicrosecondResolutionCrontab" />
+    </UnitTest>
+    <UnitTest name="WithAtWeekdaysVariable" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="611c1ca4-15b9-a29c-e89b-8fe9fbe3a93c">
+      <Execution id="52a7f0a6-2b1d-4b2e-b7f4-89cc08a5f572" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternObserverTimerAt" name="WithAtWeekdaysVariable" />
+    </UnitTest>
+    <UnitTest name="WithWithinFromExpression" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="53445149-4f74-3763-1cfe-26e8fd9120b5">
+      <Execution id="e91d93de-f461-4404-8472-909295f3f70f" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternGuardTimerWithin" name="WithWithinFromExpression" />
+    </UnitTest>
+    <UnitTest name="WithEveryDistinctWTime" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="0ea565f6-abbc-dc5c-0b9a-47c143092495">
+      <Execution id="23c8c8f2-1c01-4df4-b3d9-5b883d8c8370" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternOperatorEveryDistinct" name="WithEveryDistinctWTime" />
+    </UnitTest>
+    <UnitTest name="TestPatternMicrosecondResolution" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="ae894d23-90fb-9b82-889e-a4de2c60ff06">
+      <Execution id="8a946e22-fb18-4727-a93c-44699cb26f46" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern" name="TestPatternMicrosecondResolution" />
+    </UnitTest>
+    <UnitTest name="WithEveryDistinctOverRepeat" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="e37602d5-09ef-dfd7-efc6-5e5835839270">
+      <Execution id="353e40cb-1775-475f-85e2-05925bba4fa6" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternOperatorEveryDistinct" name="WithEveryDistinctOverRepeat" />
+    </UnitTest>
+    <UnitTest name="WithIntervalSpecVariables" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="e37332f9-887b-18a9-0b70-0369b696f5a4">
+      <Execution id="2b8a3a22-d892-4280-9fe1-28f7ef2de62f" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternObserverTimerInterval" name="WithIntervalSpecVariables" />
+    </UnitTest>
+    <UnitTest name="WithOp" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="237f6422-10b3-9c52-567e-038fa127139f">
+      <Execution id="cc67a076-beb9-4c95-bf26-6bca70465f22" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternObserverTimerInterval" name="WithOp" />
+    </UnitTest>
+    <UnitTest name="WithEveryDistinctOverAnd" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="f59888af-e671-41e4-5b0b-f73de016d1a4">
+      <Execution id="2c47df35-2a3c-43e6-8ab9-d0eb8e4db207" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternOperatorEveryDistinct" name="WithEveryDistinctOverAnd" />
+    </UnitTest>
+    <UnitTest name="WithFollowedByOp" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="f4b2c845-7dbe-9374-d396-9478d9246423">
+      <Execution id="be63c7aa-90fa-4cb1-a65d-3d81efd3cc67" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternConsumingPattern" name="WithFollowedByOp" />
+    </UnitTest>
+    <UnitTest name="WithTimerScheduleLimitedWDateAndPeriod" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="e3c3f004-578b-ec70-246b-476494e24061">
+      <Execution id="66156dd0-0433-4539-996b-30704b34e9a4" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternObserverTimerSchedule" name="WithTimerScheduleLimitedWDateAndPeriod" />
+    </UnitTest>
+    <UnitTest name="WithollowedByFilter" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="6959e102-ab5d-11a3-0e92-457b395c8296">
+      <Execution id="1770a039-a167-45f9-9c86-adcb35c6c563" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternCompositeSelect" name="WithollowedByFilter" />
+    </UnitTest>
+    <UnitTest name="WithAtWeekdaysPrepared" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="a200d8e0-bc2e-7f44-b939-4fd61257c626">
+      <Execution id="ab75f3db-86c8-4b41-a888-246bbe1001ae" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternObserverTimerAt" name="WithAtWeekdaysPrepared" />
+    </UnitTest>
+    <UnitTest name="WithStartStopOne" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="5d5d4481-fcb9-7d3b-a82f-868ee3834cea">
+      <Execution id="a8f8bb3b-00c1-460b-b0e0-5504079ae9c2" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternStartStop" name="WithStartStopOne" />
+    </UnitTest>
+    <UnitTest name="WithFollowedBy" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="d9ba1496-9794-5e9d-e8b9-94cc47ce8b91">
+      <Execution id="db084973-55e7-4d36-b843-b4a9bf7d0f82" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternConsumingFilter" name="WithFollowedBy" />
+    </UnitTest>
+    <UnitTest name="WithEverySimple" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="87f93025-2cb2-6eaf-6fa0-44b0da441674">
+      <Execution id="d1eb6e03-c699-417b-addd-73c932762081" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternOperatorEvery" name="WithEverySimple" />
+    </UnitTest>
+    <UnitTest name="WithAddRemoveListener" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="91cce466-6c1a-3237-fa1d-736fc8c7b227">
+      <Execution id="42f45adf-69ea-4da2-9880-23b98cecc91d" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternStartStop" name="WithAddRemoveListener" />
+    </UnitTest>
+    <UnitTest name="WithAndOp" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="dc81b689-3edd-c9fc-c3d3-af17f1773e9d">
+      <Execution id="a588bf3d-a537-436f-ae69-206491539c93" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternConsumingPattern" name="WithAndOp" />
+    </UnitTest>
+    <UnitTest name="WithIntervalSpecExpressionWithProperty" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="584d532e-f95e-65d8-6f4f-413589baf034">
+      <Execution id="47c2312b-9631-484f-a2c2-42c6b4026ac4" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternObserverTimerInterval" name="WithIntervalSpecExpressionWithProperty" />
+    </UnitTest>
+    <UnitTest name="TestPatternDeadPattern" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="d81398be-173a-051d-cf5e-27b82e00626f">
+      <Execution id="99eb5e47-5358-4ff3-9da8-1d641d40def9" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern" name="TestPatternDeadPattern" />
+    </UnitTest>
+    <UnitTest name="WithWithEveryAndTerminationOptimization" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="21c4540e-75ef-757c-45ed-95e22807fc8b">
+      <Execution id="006209c4-af9d-497f-9bc3-efb5b6b744bc" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternOperatorAnd" name="WithWithEveryAndTerminationOptimization" />
+    </UnitTest>
+    <UnitTest name="WithFollowedByFilter" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="e22b2907-06cc-8e91-b522-c32e66365866">
+      <Execution id="687c11d7-38d2-4b44-8013-25073f5d0514" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternUseResult" name="WithFollowedByFilter" />
+    </UnitTest>
+    <UnitTest name="WithNotTimeInterval" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="5127eaad-0d75-57a0-7b02-93b721c3498e">
+      <Execution id="f46cc39a-6215-42bc-9338-132208fddd93" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternOperatorNot" name="WithNotTimeInterval" />
+    </UnitTest>
+    <UnitTest name="WithBooleanExprRemoveConsiderTag" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="7be99b65-b956-b9e4-a68c-fca24156bdc5">
+      <Execution id="d5095296-aa6f-41a1-be76-6e0c93ba412b" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternUseResult" name="WithBooleanExprRemoveConsiderTag" />
+    </UnitTest>
+    <UnitTest name="WithFilterGreaterThen" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="0fbdf991-9713-923a-ade8-985dc350a11f">
+      <Execution id="b0e58ad8-593e-4622-a4b4-68d634a2f59e" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternOperatorFollowedBy" name="WithFilterGreaterThen" />
+    </UnitTest>
+    <UnitTest name="TestPatternExpressionText" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="4cadf76a-30cb-6a51-47ab-40ee555cbad7">
+      <Execution id="8c0288cb-8aed-4564-8d62-b4d6539dcb81" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern" name="TestPatternExpressionText" />
+    </UnitTest>
+    <UnitTest name="WithEveryWithAnd" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="1c22b661-f40a-e214-5d5c-5254b2dcaa8a">
+      <Execution id="7277319e-dd48-4a12-a338-87e166e28404" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternOperatorEvery" name="WithEveryWithAnd" />
+    </UnitTest>
+    <UnitTest name="WithExpression" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="8d1776d8-3757-78fe-df15-877e53a9c9ff">
+      <Execution id="a1b0304f-b645-4824-a322-3379892deafe" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternObserverTimerAt" name="WithExpression" />
+    </UnitTest>
+    <UnitTest name="WithOr" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="db248253-da7e-d8ae-8fd8-0de3e569f587">
+      <Execution id="9bc8ff6a-a09f-4145-acb9-28b76c7d992a" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternConsumingFilter" name="WithOr" />
+    </UnitTest>
+    <UnitTest name="WithOp" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="03e38977-279b-8569-1bbd-a0117e347071">
+      <Execution id="bf671f5c-96f2-4d4b-821f-b5cd04695800" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternGuardWhile" name="WithOp" />
+    </UnitTest>
+    <UnitTest name="WithIntervalSpec" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="5545e7e8-4b56-8986-e342-400cdb37101f">
+      <Execution id="aeaaf893-7cc2-4fe2-a0c0-33d8ec2be00f" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternObserverTimerInterval" name="WithIntervalSpec" />
+    </UnitTest>
+    <UnitTest name="WithIntervalSpecPreparedStmt" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="8182cd20-e8c8-5414-6bfe-67ea8faa7798">
+      <Execution id="594ccb20-ed7a-4084-9c59-6fee4be9a434" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternObserverTimerInterval" name="WithIntervalSpecPreparedStmt" />
+    </UnitTest>
+    <UnitTest name="WithIndexedValueProp" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="b3a5c348-7d28-a3ed-5ea4-e04b93701fdf">
+      <Execution id="aac6f71a-a6c3-452d-89be-8820166f8cbb" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternComplexPropertyAccess" name="WithIndexedValueProp" />
+    </UnitTest>
+    <UnitTest name="WithInvalid" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="7990bc9b-5c2c-0260-827c-6e3c0992508a">
+      <Execution id="893b641c-0287-42be-9c14-f8790e6dd4b7" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternGuardWhile" name="WithInvalid" />
+    </UnitTest>
+    <UnitTest name="WithIndexedValuePropCompile" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="46e2050c-6200-b218-674a-b2137f334d33">
+      <Execution id="faad02ee-b186-440e-9611-30808d13bf23" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternComplexPropertyAccess" name="WithIndexedValuePropCompile" />
+    </UnitTest>
+    <UnitTest name="WithNotWithEvery" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="ea316c66-7134-a5a1-9587-a6f9da39ec9a">
+      <Execution id="2fce08af-9b60-4b6d-a362-4113a4a5ff3f" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternOperatorNot" name="WithNotWithEvery" />
+    </UnitTest>
+    <UnitTest name="WithFollowedOrPermFalse" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="6553fb45-bd07-30d2-0565-5ad2bfe97bee">
+      <Execution id="824e6994-a388-40df-913a-710cae487c18" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternOperatorFollowedBy" name="WithFollowedOrPermFalse" />
+    </UnitTest>
+    <UnitTest name="WithFollowedNotEvery" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="648b52db-4fc2-b0a1-6f01-278cd89d1fe5">
+      <Execution id="6fe991ce-4fcc-43ec-81d9-ff357b9e9e91" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternOperatorFollowedBy" name="WithFollowedNotEvery" />
+    </UnitTest>
+    <UnitTest name="WithEveryDistinctSimple" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="7effbd41-0163-8b4b-41b4-fba79e26712f">
+      <Execution id="ce53eb05-9ce5-4306-a4c7-1b502ab1469b" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternOperatorEveryDistinct" name="WithEveryDistinctSimple" />
+    </UnitTest>
+    <UnitTest name="WithMatchUntilSimple" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="fddc018c-cbc9-5e11-00c7-13dc5f64d84e">
+      <Execution id="4384c9a0-e670-4bbc-8f8e-e6c8e3323b17" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternOperatorMatchUntil" name="WithMatchUntilSimple" />
+    </UnitTest>
+    <UnitTest name="WithSinglePermFalseAndQuit" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="81126c52-a531-994d-547a-9e7770a946b3">
+      <Execution id="25eccc4a-4206-4586-8b47-71d43835fb47" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternOperatorFollowedByMax" name="WithSinglePermFalseAndQuit" />
+    </UnitTest>
+    <UnitTest name="WithEveryDistinctOverFilter" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="1966f85d-ba11-bbac-8345-7308e4d98c0c">
+      <Execution id="509d2c9b-07ee-4d84-969e-8c22cf932604" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternOperatorEveryDistinct" name="WithEveryDistinctOverFilter" />
+    </UnitTest>
+    <UnitTest name="WithNotDefaultTrue" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="a0d2effe-c0eb-f403-55f1-fc37dbf78937">
+      <Execution id="3169440f-1859-4c2c-9554-51c3b7682e29" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternOperatorAnd" name="WithNotDefaultTrue" />
+    </UnitTest>
+    <UnitTest name="WithMonthScoped" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="22b5d76b-18ed-daf8-013f-c25f7f5ad196">
+      <Execution id="8640b7ee-98be-4730-a684-9917a55081c0" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternOperatorEveryDistinct" name="WithMonthScoped" />
+    </UnitTest>
+    <UnitTest name="WithFollowedByWithDistinct" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="473de8b2-e2f5-cd7a-5b4a-5a99dc905ca0">
+      <Execution id="1f29ded6-3b39-4a4e-912b-d77da9cbac4f" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternOperatorEveryDistinct" name="WithFollowedByWithDistinct" />
+    </UnitTest>
+    <UnitTest name="TestPatternGuardTimerWithinOrMax" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="eed63e70-c0b0-c97a-fc10-0ef6c99ffa3b">
+      <Execution id="75a45de0-5360-469a-8616-780331af8875" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern" name="TestPatternGuardTimerWithinOrMax" />
+    </UnitTest>
+    <UnitTest name="WithMonthScoped" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="8e1e7355-b3cf-1e40-e5e8-0e8ec3858c67">
+      <Execution id="cd30f9c1-fd5f-4f14-bce3-faa797e637a4" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternObserverTimerInterval" name="WithMonthScoped" />
+    </UnitTest>
+    <UnitTest name="TestPatternStartLoop" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="0871ef90-a370-8f21-483d-8cbf02a849d6">
+      <Execution id="58cc1327-e93a-49be-8274-1ee2df60c464" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern" name="TestPatternStartLoop" />
+    </UnitTest>
+    <UnitTest name="TestPatternMicrosecondResolution" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="8f5f9ffd-6aaf-764f-9c18-62f69e8cde28">
+      <Execution id="26b0c70d-3213-44e8-a8b2-a8da88d8f108" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePatternWConfig" name="TestPatternMicrosecondResolution" />
+    </UnitTest>
+    <UnitTest name="WithrAndNotAndZeroStart" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="bb53f26d-5a0d-a03b-2db6-94fb94af9fb3">
+      <Execution id="f50d0beb-4603-4e80-aca6-82c5ec5afba6" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternOperatorOr" name="WithrAndNotAndZeroStart" />
+    </UnitTest>
+    <UnitTest name="WithEvery15thMonth" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="77c734fd-abd6-16de-fec2-423e19fdda41">
+      <Execution id="bbe901c3-d25a-4b28-9400-1e1cd8cb518b" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternObserverTimerAt" name="WithEvery15thMonth" />
+    </UnitTest>
+    <UnitTest name="WithRepeatOverDistinct" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="5725e595-3a0e-3ae5-e214-ebdedca98d46">
+      <Execution id="3bb7375a-f6d3-473b-8cd5-0160a38b1514" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternOperatorEveryDistinct" name="WithRepeatOverDistinct" />
+    </UnitTest>
+    <UnitTest name="WithInterval10Min" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="60801d4d-ce4e-d032-d374-8bc7259cd4ec">
+      <Execution id="9480cf2b-1e2e-43e1-b951-61d0e2656a6b" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternGuardTimerWithin" name="WithInterval10Min" />
+    </UnitTest>
+    <UnitTest name="WithOrOp" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="6f428a3f-5ba8-a8b1-8240-1f7da29bfd85">
+      <Execution id="6f239674-7ed4-419d-81d9-e1750c435fc3" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternConsumingPattern" name="WithOrOp" />
+    </UnitTest>
+    <UnitTest name="WithFilterAndSceneTwo" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="62b0cf9a-408b-ce0f-d20c-53b4f5b35894">
+      <Execution id="6346fcb5-603c-4245-b8b1-d751ac035d1c" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternConsumingFilter" name="WithFilterAndSceneTwo" />
+    </UnitTest>
+    <UnitTest name="WithEveryDistinctOverOr" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="31da4611-5ad4-b053-d978-5182afb0863d">
+      <Execution id="bfa6a41e-21f0-4d3d-af3c-698e2064d560" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternOperatorEveryDistinct" name="WithEveryDistinctOverOr" />
+    </UnitTest>
+    <UnitTest name="WithTimerScheduleSimple" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="4b8d7216-4d46-3152-35e4-2457d7def86f">
+      <Execution id="21ad55f8-0bc9-48f8-b4ab-40f4553b2173" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternObserverTimerSchedule" name="WithTimerScheduleSimple" />
+    </UnitTest>
+    <UnitTest name="WithWMilliseconds" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="c54c5e6c-0923-f28f-3009-444282cb01a6">
+      <Execution id="dc4c6c28-9591-47e8-822a-7eb9e3370540" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternObserverTimerAt" name="WithWMilliseconds" />
+    </UnitTest>
+    <UnitTest name="WithUseFilter" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="07e094f8-cab7-7efd-51a4-e11cb9c129c0">
+      <Execution id="81e0e265-211b-4e13-981a-8b92b9b599a1" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternOperatorMatchUntil" name="WithUseFilter" />
+    </UnitTest>
+    <UnitTest name="WithrSimple" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="30567522-1bd6-03aa-f2e0-66e80ed22737">
+      <Execution id="e4e6a00e-8e5a-47c1-94ea-d801ee3ab17f" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternOperatorOr" name="WithrSimple" />
+    </UnitTest>
+    <UnitTest name="WithEveryDistinctOverNot" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="4cfbae13-c00c-cdf1-9f1d-05e224a57c65">
+      <Execution id="f2df0627-2916-4e28-bf56-f9bc7768ab74" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternOperatorEveryDistinct" name="WithEveryDistinctOverNot" />
+    </UnitTest>
+    <UnitTest name="WithFollowedByTimer" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="ba78c801-10e8-9ea3-a283-90a1233c1fea">
+      <Execution id="a3512d73-099a-494f-a032-3e9b766df471" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternOperatorFollowedBy" name="WithFollowedByTimer" />
+    </UnitTest>
+    <UnitTest name="WithTimerScheduleUnlimitedRecurringPeriod" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="b4400542-cd8a-88f7-808b-a727c7553044">
+      <Execution id="92c9e55d-08df-4811-8ddc-377ef30b0093" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternObserverTimerSchedule" name="WithTimerScheduleUnlimitedRecurringPeriod" />
+    </UnitTest>
+    <UnitTest name="WithRFIDZoneEnter" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="c3e32eff-1286-af2f-6f1f-12f6d5cb9341">
+      <Execution id="1430b723-a20e-44b5-8531-e27b755c0d43" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternOperatorFollowedBy" name="WithRFIDZoneEnter" />
+    </UnitTest>
+    <UnitTest name="WithNotOpNotImpacted" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="4f1bc025-36e7-2a05-1d36-41f8e487ba84">
+      <Execution id="f54c8f4a-c62a-4ba7-839f-2383b5df79fa" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternConsumingPattern" name="WithNotOpNotImpacted" />
+    </UnitTest>
+    <UnitTest name="WithEveryFollowedBy" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="3af2944d-7345-e143-4810-9f4896579fa8">
+      <Execution id="4d68bbbb-acea-467b-b14e-9d67f2f900c3" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternOperatorEvery" name="WithEveryFollowedBy" />
+    </UnitTest>
+    <UnitTest name="WithAtWeekdays" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="0db3f6d4-ccaa-2d0f-d2b1-0557146e7c11">
+      <Execution id="203a3b88-2c37-4ac6-aafa-c8258d9f27b5" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternObserverTimerAt" name="WithAtWeekdays" />
+    </UnitTest>
+    <UnitTest name="WithEveryDistinctWithinFollowedBy" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="6631534b-359e-ad69-6c1c-4cc56ff2f052">
+      <Execution id="bab5b98d-c06b-4842-b6e2-7152c909c851" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternOperatorEveryDistinct" name="WithEveryDistinctWithinFollowedBy" />
+    </UnitTest>
+    <UnitTest name="WithRepeatUseTags" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="5f75c856-207a-24e7-07fc-674a1de144d6">
+      <Execution id="832a07fd-37cc-40fa-a270-5b11c781195c" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternOperatorMatchUntil" name="WithRepeatUseTags" />
+    </UnitTest>
+    <UnitTest name="WithTimerWithinOverDistinct" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="a54d7156-29cf-73d8-3a74-16146bff2523">
+      <Execution id="134a330b-e68f-4b65-8d8d-f92bb61c2436" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternOperatorEveryDistinct" name="WithTimerWithinOverDistinct" />
+    </UnitTest>
+    <UnitTest name="WithPatternTypeCacheForRepeat" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="404a23e9-9b5a-a824-6fa0-9b6545c55da0">
+      <Execution id="11be7d2d-d7d7-4d1c-a1c7-0d509ca04bab" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternUseResult" name="WithPatternTypeCacheForRepeat" />
+    </UnitTest>
+    <UnitTest name="WithVariable" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="bf47fc5c-68b3-adbd-3eb0-0120dfc4f40b">
+      <Execution id="06c48ba3-cfa2-4311-8051-23cdd4ec982d" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternGuardWhile" name="WithVariable" />
+    </UnitTest>
+    <UnitTest name="WithIndexedValuePropOM" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="0be8f1a9-bab5-7665-ac90-ffebaa1c880c">
+      <Execution id="7b9a2450-b3aa-4b89-84e8-d9de0e865788" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternComplexPropertyAccess" name="WithIndexedValuePropOM" />
+    </UnitTest>
+    <UnitTest name="WithIntervalSpecExpression" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="a193e079-779c-8c81-b2d1-20524ef25bff">
+      <Execution id="09c1780f-5516-4f13-857a-51011c4b1e3d" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternObserverTimerInterval" name="WithIntervalSpecExpression" />
+    </UnitTest>
+    <UnitTest name="WithInvalid" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="6dc87638-cea9-cad9-d3f8-8c0af29c2f3a">
+      <Execution id="4b517cb0-1f34-49c6-ba75-40ed440d02e7" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternConsumingFilter" name="WithInvalid" />
+    </UnitTest>
+    <UnitTest name="WithNotFollowedBy" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="da829574-a481-b5ac-3437-22c6e6b79c91">
+      <Execution id="4c270083-bb53-4626-810d-0d952553e046" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternOperatorNot" name="WithNotFollowedBy" />
+    </UnitTest>
+    <UnitTest name="WithFollowedEveryMultiple" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="b4f1c817-49bd-61be-5ef4-0ac522271c09">
+      <Execution id="7083cc3a-0bed-4312-a8d6-5e6b69c3bb97" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternOperatorFollowedBy" name="WithFollowedEveryMultiple" />
+    </UnitTest>
+    <UnitTest name="WithObserverTimerScheduleMultiform" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="fc265353-4aaa-18f9-5737-56466fefa4f4">
+      <Execution id="a4566a57-a3e6-4a78-8a0a-1fd1967f2f59" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternObserverTimerSchedule" name="WithObserverTimerScheduleMultiform" />
+    </UnitTest>
+    <UnitTest name="WithAnd" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="9b2be6d2-047c-321a-94d2-33b47cf701ee">
+      <Execution id="1c413921-2303-4eed-a82c-616249eeb3f3" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternConsumingFilter" name="WithAnd" />
+    </UnitTest>
+    <UnitTest name="WithObserverOp" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="f86518d8-ce8e-005b-4b7a-5785f8ad4676">
+      <Execution id="68f03336-19d6-4b31-81a3-9ce1fabfe11f" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternConsumingPattern" name="WithObserverOp" />
+    </UnitTest>
+    <UnitTest name="WithOp" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="bb8c7469-0e49-e2ec-7eb0-f77e20c08faa">
+      <Execution id="369fd155-5992-48fe-b405-8069b1944345" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternObserverTimerAt" name="WithOp" />
+    </UnitTest>
+    <UnitTest name="WithOp" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="191aa86f-0537-7c5a-046e-2378f6d38bf3">
+      <Execution id="967baffa-7461-4eb1-8972-7df05ac443df" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternOperatorNot" name="WithOp" />
+    </UnitTest>
+    <UnitTest name="WithIntervalSpecExpressionWithPropertyArray" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="4a2a0e2b-8753-0323-240e-a21ed8ec3862">
+      <Execution id="2744cbf5-110c-46e1-abed-f61c0b6627e3" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternObserverTimerInterval" name="WithIntervalSpecExpressionWithPropertyArray" />
+    </UnitTest>
+    <UnitTest name="WithFollowedByWithNot" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="a4867831-d341-4f88-ec6b-1ae6e0670053">
+      <Execution id="f2008fdd-5d2f-4dd6-8526-5052edb42b08" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternOperatorFollowedBy" name="WithFollowedByWithNot" />
+    </UnitTest>
+    <UnitTest name="WithExpressionBounds" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="a2c1d6cb-cc77-d03c-074e-be333ab0f4f2">
+      <Execution id="8e7e389e-c3ce-4f74-b43d-02eed311c51c" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternOperatorMatchUntil" name="WithExpressionBounds" />
+    </UnitTest>
+    <UnitTest name="WithEveryFollowedByWithin" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="7d707ca3-8234-edb5-5646-0a1e48a9f6ec">
+      <Execution id="e1cbadb6-7294-48d6-b9da-42a1af93e488" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternOperatorEvery" name="WithEveryFollowedByWithin" />
+    </UnitTest>
+    <UnitTest name="WithPropertyAndSODAAndTimezone" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="7320b796-ee56-5463-a49e-056ed94df26d">
+      <Execution id="aa3c66df-56a1-424c-b9bf-01db40b95ff0" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternObserverTimerAt" name="WithPropertyAndSODAAndTimezone" />
+    </UnitTest>
+    <UnitTest name="WithNumeric" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="e6ce22c7-80ee-879f-5637-cbc748185183">
+      <Execution id="bac86c47-2075-4d30-9609-48f79133a570" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternUseResult" name="WithNumeric" />
+    </UnitTest>
+    <UnitTest name="WithInvalid" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="bb9c4b5c-d162-32c2-f8c8-d84ac6a36c44">
+      <Execution id="5b74730e-85b2-48b5-9fba-0b74a6eb1343" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternOperatorEveryDistinct" name="WithInvalid" />
+    </UnitTest>
+    <UnitTest name="WithOperatorNotWHarness" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="d1199623-4948-ab75-d306-8b6474e820f5">
+      <Execution id="e87d0c89-84ca-4ecc-9d28-f47a2282bc1a" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternOperatorNot" name="WithOperatorNotWHarness" />
+    </UnitTest>
+    <UnitTest name="WithEveryAndNot" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="c9c01814-9ab8-b2b9-06b2-4c938f55dca9">
+      <Execution id="8ae04a03-e1fe-4a05-bbaa-0715af9ea4e2" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternOperatorEvery" name="WithEveryAndNot" />
+    </UnitTest>
+    <UnitTest name="WithOp" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="16767fb2-e428-bc29-355c-551178473d80">
+      <Execution id="2126c1ee-aa77-4c8b-a511-d34a22525ef0" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternOperatorEvery" name="WithOp" />
+    </UnitTest>
+    <UnitTest name="WithBoundRepeatWithNot" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="fccac4b8-3164-e237-cb31-53a8335eb221">
+      <Execution id="973da6d9-b642-492f-8490-c75e8e9fd31c" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternOperatorMatchUntil" name="WithBoundRepeatWithNot" />
+    </UnitTest>
+    <UnitTest name="TestPatternOperatorOperatorMix" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="4447c9ea-66a2-9053-f5fa-2c6cb53fe72a">
+      <Execution id="5349c05d-67ee-4510-bc22-2330e2151e24" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern" name="TestPatternOperatorOperatorMix" />
+    </UnitTest>
+    <UnitTest name="WithUniformEvents" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="79169ea5-ae4f-4ccd-d8b8-7b2c4bec7bde">
+      <Execution id="49662328-3e4d-4598-9986-708905938841" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternOperatorNot" name="WithUniformEvents" />
+    </UnitTest>
+    <UnitTest name="WithObjectId" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="83a16174-a09b-4690-f435-da5a98ca7fa7">
+      <Execution id="4b6e3bd1-85d1-49f8-ad9e-0286b2d70faf" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternUseResult" name="WithObjectId" />
+    </UnitTest>
+    <UnitTest name="WithTimerScheduleJustDate" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="30c3dbce-2942-8039-e95a-e09f1cdd5bdb">
+      <Execution id="19b5fb75-3eb3-4485-9a40-02adbdb26e4d" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternObserverTimerSchedule" name="WithTimerScheduleJustDate" />
+    </UnitTest>
+    <UnitTest name="WithBooleanExprRemoveConsiderArrayTag" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="6d7113b9-c6f7-3e1b-b861-36f8dab21ec4">
+      <Execution id="83a08318-43ea-441c-9875-f9a14d10a4fc" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternUseResult" name="WithBooleanExprRemoveConsiderArrayTag" />
+    </UnitTest>
+    <UnitTest name="WithOpWHarness" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="a68e75ee-1399-4c75-5eba-0ca0c88a4409">
+      <Execution id="747bbd52-f7fe-4be6-b6a4-6e396e962862" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternOperatorFollowedBy" name="WithOpWHarness" />
+    </UnitTest>
+    <UnitTest name="WithperatorOrWHarness" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="35ed4b10-2e41-8c34-439a-8e95cc8af898">
+      <Execution id="2ae31bfa-29d7-4e04-9675-9311c3220c2e" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternOperatorOr" name="WithperatorOrWHarness" />
+    </UnitTest>
+    <UnitTest name="WithInvalid" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="c83200a8-f641-22c9-7f68-50ddbaa78f6a">
+      <Execution id="c462bd1a-b068-441c-8011-aa45c2a8e34f" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternOperatorMatchUntil" name="WithInvalid" />
+    </UnitTest>
+    <UnitTest name="WithTimer" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="d82b2c69-5d35-34f6-bd4e-d1d2b5161453">
+      <Execution id="6abbe49d-c1dd-4aa9-b020-cb1072ca45ca" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternRepeatRouteEvent" name="WithTimer" />
+    </UnitTest>
+    <UnitTest name="WithMemoryRFIDEvent" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="e0e8d6bc-6e5e-90cf-845d-6e42b6bfb5be">
+      <Execution id="bf53670a-d486-40c9-aa93-cbf74216fa78" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternOperatorFollowedBy" name="WithMemoryRFIDEvent" />
+    </UnitTest>
+    <UnitTest name="WithTimerAtSimple" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="c4ef9fd1-7f77-fec0-2a7e-0ffda25b000c">
+      <Execution id="add54816-2f09-405b-a65a-134e478177d0" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternObserverTimerAt" name="WithTimerAtSimple" />
+    </UnitTest>
+    <UnitTest name="WithCronParameter" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="9591dbcc-8613-ce0c-c500-b11efdae22be">
+      <Execution id="0bc34ada-c33f-46bb-9a47-d2fd65f3bf5b" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternObserverTimerAt" name="WithCronParameter" />
+    </UnitTest>
+    <UnitTest name="TestPatternSuperAndInterfaces" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="243c68d4-e2da-2dbc-4b4d-406d78a8bc8a">
+      <Execution id="59988053-c226-4825-a75f-cddec8ae695c" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern" name="TestPatternSuperAndInterfaces" />
+    </UnitTest>
+    <UnitTest name="WithEveryDistinctMultikeyWArray" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="5c7e205d-3709-b63c-c04b-709e8b8c1660">
+      <Execution id="c147d565-498d-4d55-bc17-96d8f5214677" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternOperatorEveryDistinct" name="WithEveryDistinctMultikeyWArray" />
+    </UnitTest>
+    <UnitTest name="WithOp" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="61939726-3358-34bd-b1c2-610de2b720c2">
+      <Execution id="17d8298b-669a-4a95-a0b4-e8c18df4c9aa" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternGuardTimerWithin" name="WithOp" />
+    </UnitTest>
+    <UnitTest name="WithArrayFunctionRepeat" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="447d4c10-c727-eaa2-a98c-306a56d40460">
+      <Execution id="d01800b5-e558-4455-a421-4392e8b2976c" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternOperatorMatchUntil" name="WithArrayFunctionRepeat" />
+    </UnitTest>
+    <UnitTest name="WithSingleMaxSimple" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="d440299a-2814-2e2d-9b47-7a82a652307d">
+      <Execution id="abb3719e-d65e-4b65-9bb5-b89c16c63b52" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternOperatorFollowedByMax" name="WithSingleMaxSimple" />
+    </UnitTest>
+    <UnitTest name="WithTimerScheduleDateWithPeriod" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="ba492e6a-f354-19e5-a089-cbab67941422">
+      <Execution id="a1d42b97-0fb7-42ae-a92b-ffeb674763ae" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternObserverTimerSchedule" name="WithTimerScheduleDateWithPeriod" />
+    </UnitTest>
+    <UnitTest name="WithMultiple" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="98e84f96-9ae9-8c17-ba6c-6c4891627b56">
+      <Execution id="5d7548f4-26b0-4f86-90e3-57da93707614" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternOperatorFollowedByMax" name="WithMultiple" />
+    </UnitTest>
+    <UnitTest name="WithIndexedFilterProp" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="76cc238c-cd4c-8401-9f6d-fd151739c8df">
+      <Execution id="e446c0a0-3f30-4ba2-89af-1733e24108a8" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternComplexPropertyAccess" name="WithIndexedFilterProp" />
+    </UnitTest>
+    <UnitTest name="WithCascade" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="5b5c5bd5-21b9-575a-4bf9-e09492efb0e3">
+      <Execution id="a02e5723-25bb-4105-ae86-ecda7f365f28" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternRepeatRouteEvent" name="WithCascade" />
+    </UnitTest>
+    <UnitTest name="WithWHarness" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="512aa12d-a488-1530-28eb-a8de9d7d5095">
+      <Execution id="e3d969ce-562c-4931-9ac9-c80f6fe7b023" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternOperatorAnd" name="WithWHarness" />
+    </UnitTest>
+    <UnitTest name="WithGuardOp" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="6b543aef-fcc6-b33b-772f-efeb6a6a36d5">
+      <Execution id="903e23fb-49ac-4d4c-bbdf-8774d0100910" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternConsumingPattern" name="WithGuardOp" />
+    </UnitTest>
+    <UnitTest name="WithStatementException" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="505a7aaf-6e64-2075-7b18-9afa425a5b91">
+      <Execution id="b3b80caa-d74c-4866-9fac-721125ed0e7a" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternInvalid" name="WithStatementException" />
+    </UnitTest>
+    <UnitTest name="Withragment" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="8d67d458-5e31-f696-e7b1-1b8748441706">
+      <Execution id="7fa09650-4890-42e4-b418-02bccd7f2fa5" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternCompositeSelect" name="Withragment" />
+    </UnitTest>
+    <UnitTest name="WithUseResult" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="657f5a63-1436-fb5c-f30f-72c6873b7744">
+      <Execution id="5d1064a8-42c5-4cbb-b5e0-dcbb219bcc2e" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternInvalid" name="WithUseResult" />
+    </UnitTest>
+    <UnitTest name="WithOperatorFollowedByMaxInvalid" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="ace03d42-c54a-6484-9684-f4ce56685286">
+      <Execution id="242a6e85-f864-4614-8657-debce453cfb2" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternOperatorFollowedByMax" name="WithOperatorFollowedByMaxInvalid" />
+    </UnitTest>
+    <UnitTest name="WithSimple" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="2c9d4565-a06c-4435-a5c6-116da912e24c">
+      <Execution id="f340900e-cb69-4ed1-883c-55ff4cec3d5c" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternOperatorAnd" name="WithSimple" />
+    </UnitTest>
+    <UnitTest name="TestPatternObserverTimerScheduleTimeZoneEST" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="8588541e-7e60-da19-36d9-378684b519c5">
+      <Execution id="8c3f2d63-2fcd-46fe-b275-32bdc887f814" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePatternWConfig" name="TestPatternObserverTimerScheduleTimeZoneEST" />
+    </UnitTest>
+    <UnitTest name="WithInvalidExpr" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="0b491071-1a55-e437-0bfc-136ec0538771">
+      <Execution id="f31035ab-db01-44d9-acbe-fbaed4d3fef5" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternInvalid" name="WithInvalidExpr" />
+    </UnitTest>
+    <UnitTest name="WithSelectArray" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="e121f581-8d88-4a87-6c99-eec64e1982eb">
+      <Execution id="72d62d4f-2033-4f9d-8480-c243c0a923dd" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternOperatorMatchUntil" name="WithSelectArray" />
+    </UnitTest>
+    <UnitTest name="WithTimerScheduleJustPeriod" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="e063222d-6062-3fc3-0205-93808b530258">
+      <Execution id="a4e57b08-ff61-4000-8572-c80830fb1952" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternObserverTimerSchedule" name="WithTimerScheduleJustPeriod" />
+    </UnitTest>
+    <UnitTest name="WithCombination" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="bbf75a37-81b7-beea-e0b3-b9ab40d9e81c">
+      <Execution id="d867b9bd-c3e9-4345-b807-05b94141ca85" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternConsumingPattern" name="WithCombination" />
+    </UnitTest>
+    <UnitTest name="WithEveryDistinctOverTimerWithin" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="f4bee000-515c-b427-5f8c-f45467819854">
+      <Execution id="af535bef-5b49-42d8-8448-e22f50a08137" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternOperatorEveryDistinct" name="WithEveryDistinctOverTimerWithin" />
+    </UnitTest>
+    <UnitTest name="WithInvalid" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="eb9403bf-835f-8bc7-2159-2de6949de712">
+      <Execution id="0e53df18-ea08-4f11-a193-53003774a1f8" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternConsumingPattern" name="WithInvalid" />
+    </UnitTest>
+    <UnitTest name="WithComplexProperties" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="7e74d633-876f-ec1a-07cf-fdb5d97abef9">
+      <Execution id="39fe6654-cef4-47ef-a9e4-a7ddf58ae624" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternComplexPropertyAccess" name="WithComplexProperties" />
+    </UnitTest>
+    <UnitTest name="WithInterval10MinVariable" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="60bc3806-5d59-1164-edd0-b978654e5a6f">
+      <Execution id="aec9301c-aef9-4f01-b14f-282108df5352" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternGuardTimerWithin" name="WithInterval10MinVariable" />
+    </UnitTest>
+    <UnitTest name="WithGuardWhileSimple" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="66806214-f455-fdce-96e1-e8445c484ffb">
+      <Execution id="1b0c7780-6c9c-45cc-ad15-60fa22c0c763" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternGuardWhile" name="WithGuardWhileSimple" />
+    </UnitTest>
+    <UnitTest name="WithStartStopTwo" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="b88afe70-a82a-e474-9a40-1e75f5f5957d">
+      <Execution id="af4e7ad7-5f94-45e5-acb0-095f1db78f18" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternStartStop" name="WithStartStopTwo" />
+    </UnitTest>
+    <UnitTest name="WithIntervalPrepared" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="af3d92f9-4115-8af8-a835-4c37473e2ad4">
+      <Execution id="19aca507-1ea5-4c6e-9a10-5747a16ec085" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternGuardTimerWithin" name="WithIntervalPrepared" />
+    </UnitTest>
+    <UnitTest name="WithSingle" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="cc724ed3-3d15-fa03-6383-b1275dcc07b6">
+      <Execution id="6bfb320a-ff50-47de-b405-63dc76529da6" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternRepeatRouteEvent" name="WithSingle" />
+    </UnitTest>
+    <UnitTest name="WithPatternNotFollowedBy" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="cf6b9a6d-2d64-3f3e-0445-16be9b4ff5ff">
+      <Execution id="539dcb78-88f3-4945-9e65-ca29c3392df2" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternGuardTimerWithin" name="WithPatternNotFollowedBy" />
+    </UnitTest>
+    <UnitTest name="WithRFIDZoneExit" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="fcb61475-4742-ec31-075f-7a95de1851a6">
+      <Execution id="28073a30-f7f6-4da5-9840-602a719d826d" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternOperatorFollowedBy" name="WithRFIDZoneExit" />
+    </UnitTest>
+    <UnitTest name="WithWithinMayMaxMonthScoped" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="853c5c0e-e61e-6516-f59e-f97635513c48">
+      <Execution id="3578f058-3a35-4c5c-b28e-4758b76c6dea" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternGuardTimerWithin" name="WithWithinMayMaxMonthScoped" />
+    </UnitTest>
+    <UnitTest name="WithOp" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="414caff9-d6a8-fbe4-93da-f50218215302">
+      <Execution id="81311d7f-367b-4c15-915b-fe9e10faaa69" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternOperatorMatchUntil" name="WithOp" />
+    </UnitTest>
+    <UnitTest name="WithEveryDistinctOverFollowedBy" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="fca12cff-29b9-8f6f-082a-9c4f78676746">
+      <Execution id="c35f5671-1f0a-4393-99e1-ef9d09eb4ce9" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternOperatorEveryDistinct" name="WithEveryDistinctOverFollowedBy" />
+    </UnitTest>
+    <UnitTest name="WithMatchUntilOp" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="d32c169c-c244-1e7a-74d8-9343f62e296b">
+      <Execution id="b3a6916e-ae6d-49fc-aac0-9a4ea3fa0e7c" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternConsumingPattern" name="WithMatchUntilOp" />
+    </UnitTest>
+    <UnitTest name="WithEveryOp" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="9a0fce98-87ee-6f82-1c3e-33484e380eee">
+      <Execution id="425369ff-8ea2-4ed9-b81a-56518d96bd82" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternConsumingPattern" name="WithEveryOp" />
+    </UnitTest>
+    <UnitTest name="WithMixed" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="d687cfc2-0d4f-1c92-a9d6-6f00a47f4bb5">
+      <Execution id="4c551fa8-62c9-4e8e-abe9-b6d47b665cfd" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternOperatorFollowedByMax" name="WithMixed" />
+    </UnitTest>
+    <UnitTest name="WithExpireSeenBeforeKey" storage="d:\src\espertech\nesper-8.9.x\tst\nesper.regression.runner\bin\debug\net9.0\nesper.regression.runner.dll" id="b1a1f615-1e76-5c5d-fd25-823ffb3e6e45">
+      <Execution id="6321f7bd-f63f-4a8f-b236-9fb908fb4244" />
+      <TestMethod codeBase="D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll" adapterTypeName="executor://nunit3testexecutor/" className="com.espertech.esper.regressionrun.suite.pattern.TestSuitePattern+TestPatternOperatorEveryDistinct" name="WithExpireSeenBeforeKey" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="f4b2c845-7dbe-9374-d396-9478d9246423" executionId="be63c7aa-90fa-4cb1-a65d-3d81efd3cc67" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="ba78c801-10e8-9ea3-a283-90a1233c1fea" executionId="a3512d73-099a-494f-a032-3e9b766df471" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="447d4c10-c727-eaa2-a98c-306a56d40460" executionId="d01800b5-e558-4455-a421-4392e8b2976c" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="a0d2effe-c0eb-f403-55f1-fc37dbf78937" executionId="3169440f-1859-4c2c-9554-51c3b7682e29" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="eb9403bf-835f-8bc7-2159-2de6949de712" executionId="0e53df18-ea08-4f11-a193-53003774a1f8" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="b4f1c817-49bd-61be-5ef4-0ac522271c09" executionId="7083cc3a-0bed-4312-a8d6-5e6b69c3bb97" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="5c7e205d-3709-b63c-c04b-709e8b8c1660" executionId="c147d565-498d-4d55-bc17-96d8f5214677" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="7e74d633-876f-ec1a-07cf-fdb5d97abef9" executionId="39fe6654-cef4-47ef-a9e4-a7ddf58ae624" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="4a2a0e2b-8753-0323-240e-a21ed8ec3862" executionId="2744cbf5-110c-46e1-abed-f61c0b6627e3" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="b3a5c348-7d28-a3ed-5ea4-e04b93701fdf" executionId="aac6f71a-a6c3-452d-89be-8820166f8cbb" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="9a0fce98-87ee-6f82-1c3e-33484e380eee" executionId="425369ff-8ea2-4ed9-b81a-56518d96bd82" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="7990bc9b-5c2c-0260-827c-6e3c0992508a" executionId="893b641c-0287-42be-9c14-f8790e6dd4b7" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="7effbd41-0163-8b4b-41b4-fba79e26712f" executionId="ce53eb05-9ce5-4306-a4c7-1b502ab1469b" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="4447c9ea-66a2-9053-f5fa-2c6cb53fe72a" executionId="5349c05d-67ee-4510-bc22-2330e2151e24" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="a200d8e0-bc2e-7f44-b939-4fd61257c626" executionId="ab75f3db-86c8-4b41-a888-246bbe1001ae" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="35ed4b10-2e41-8c34-439a-8e95cc8af898" executionId="2ae31bfa-29d7-4e04-9675-9311c3220c2e" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="d1199623-4948-ab75-d306-8b6474e820f5" executionId="e87d0c89-84ca-4ecc-9d28-f47a2282bc1a" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="d9ba1496-9794-5e9d-e8b9-94cc47ce8b91" executionId="db084973-55e7-4d36-b843-b4a9bf7d0f82" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="4f1bc025-36e7-2a05-1d36-41f8e487ba84" executionId="f54c8f4a-c62a-4ba7-839f-2383b5df79fa" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="e22b2907-06cc-8e91-b522-c32e66365866" executionId="687c11d7-38d2-4b44-8013-25073f5d0514" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="5f75c856-207a-24e7-07fc-674a1de144d6" executionId="832a07fd-37cc-40fa-a270-5b11c781195c" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="1c22b661-f40a-e214-5d5c-5254b2dcaa8a" executionId="7277319e-dd48-4a12-a338-87e166e28404" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="ace03d42-c54a-6484-9684-f4ce56685286" executionId="242a6e85-f864-4614-8657-debce453cfb2" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="07e094f8-cab7-7efd-51a4-e11cb9c129c0" executionId="81e0e265-211b-4e13-981a-8b92b9b599a1" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="ae894d23-90fb-9b82-889e-a4de2c60ff06" executionId="8a946e22-fb18-4727-a93c-44699cb26f46" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="6dc87638-cea9-cad9-d3f8-8c0af29c2f3a" executionId="4b517cb0-1f34-49c6-ba75-40ed440d02e7" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="66806214-f455-fdce-96e1-e8445c484ffb" executionId="1b0c7780-6c9c-45cc-ad15-60fa22c0c763" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="c3e32eff-1286-af2f-6f1f-12f6d5cb9341" executionId="1430b723-a20e-44b5-8531-e27b755c0d43" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="bb53f26d-5a0d-a03b-2db6-94fb94af9fb3" executionId="f50d0beb-4603-4e80-aca6-82c5ec5afba6" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="611c1ca4-15b9-a29c-e89b-8fe9fbe3a93c" executionId="52a7f0a6-2b1d-4b2e-b7f4-89cc08a5f572" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="bb8c7469-0e49-e2ec-7eb0-f77e20c08faa" executionId="369fd155-5992-48fe-b405-8069b1944345" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="46e2050c-6200-b218-674a-b2137f334d33" executionId="faad02ee-b186-440e-9611-30808d13bf23" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="a2c1d6cb-cc77-d03c-074e-be333ab0f4f2" executionId="8e7e389e-c3ce-4f74-b43d-02eed311c51c" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="a68e75ee-1399-4c75-5eba-0ca0c88a4409" executionId="747bbd52-f7fe-4be6-b6a4-6e396e962862" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="98e84f96-9ae9-8c17-ba6c-6c4891627b56" executionId="5d7548f4-26b0-4f86-90e3-57da93707614" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="53445149-4f74-3763-1cfe-26e8fd9120b5" executionId="e91d93de-f461-4404-8472-909295f3f70f" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="243c68d4-e2da-2dbc-4b4d-406d78a8bc8a" executionId="59988053-c226-4825-a75f-cddec8ae695c" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="7d707ca3-8234-edb5-5646-0a1e48a9f6ec" executionId="e1cbadb6-7294-48d6-b9da-42a1af93e488" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="f86518d8-ce8e-005b-4b7a-5785f8ad4676" executionId="68f03336-19d6-4b31-81a3-9ce1fabfe11f" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="c83200a8-f641-22c9-7f68-50ddbaa78f6a" executionId="c462bd1a-b068-441c-8011-aa45c2a8e34f" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="414caff9-d6a8-fbe4-93da-f50218215302" executionId="81311d7f-367b-4c15-915b-fe9e10faaa69" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="473de8b2-e2f5-cd7a-5b4a-5a99dc905ca0" executionId="1f29ded6-3b39-4a4e-912b-d77da9cbac4f" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="5725e595-3a0e-3ae5-e214-ebdedca98d46" executionId="3bb7375a-f6d3-473b-8cd5-0160a38b1514" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="bf47fc5c-68b3-adbd-3eb0-0120dfc4f40b" executionId="06c48ba3-cfa2-4311-8051-23cdd4ec982d" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="ea316c66-7134-a5a1-9587-a6f9da39ec9a" executionId="2fce08af-9b60-4b6d-a362-4113a4a5ff3f" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="8d67d458-5e31-f696-e7b1-1b8748441706" executionId="7fa09650-4890-42e4-b418-02bccd7f2fa5" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="c54c5e6c-0923-f28f-3009-444282cb01a6" executionId="dc4c6c28-9591-47e8-822a-7eb9e3370540" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="8182cd20-e8c8-5414-6bfe-67ea8faa7798" executionId="594ccb20-ed7a-4084-9c59-6fee4be9a434" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="512aa12d-a488-1530-28eb-a8de9d7d5095" executionId="e3d969ce-562c-4931-9ac9-c80f6fe7b023" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="fddc018c-cbc9-5e11-00c7-13dc5f64d84e" executionId="4384c9a0-e670-4bbc-8f8e-e6c8e3323b17" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="b4400542-cd8a-88f7-808b-a727c7553044" executionId="92c9e55d-08df-4811-8ddc-377ef30b0093" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="03e38977-279b-8569-1bbd-a0117e347071" executionId="bf671f5c-96f2-4d4b-821f-b5cd04695800" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="83a16174-a09b-4690-f435-da5a98ca7fa7" executionId="4b6e3bd1-85d1-49f8-ad9e-0286b2d70faf" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="e37602d5-09ef-dfd7-efc6-5e5835839270" executionId="353e40cb-1775-475f-85e2-05925bba4fa6" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="6b543aef-fcc6-b33b-772f-efeb6a6a36d5" executionId="903e23fb-49ac-4d4c-bbdf-8774d0100910" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="0871ef90-a370-8f21-483d-8cbf02a849d6" executionId="58cc1327-e93a-49be-8274-1ee2df60c464" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="237f6422-10b3-9c52-567e-038fa127139f" executionId="cc67a076-beb9-4c95-bf26-6bca70465f22" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="5545e7e8-4b56-8986-e342-400cdb37101f" executionId="aeaaf893-7cc2-4fe2-a0c0-33d8ec2be00f" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="e0e8d6bc-6e5e-90cf-845d-6e42b6bfb5be" executionId="bf53670a-d486-40c9-aa93-cbf74216fa78" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="b88afe70-a82a-e474-9a40-1e75f5f5957d" executionId="af4e7ad7-5f94-45e5-acb0-095f1db78f18" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="5d5d4481-fcb9-7d3b-a82f-868ee3834cea" executionId="a8f8bb3b-00c1-460b-b0e0-5504079ae9c2" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="9591dbcc-8613-ce0c-c500-b11efdae22be" executionId="0bc34ada-c33f-46bb-9a47-d2fd65f3bf5b" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="a4867831-d341-4f88-ec6b-1ae6e0670053" executionId="f2008fdd-5d2f-4dd6-8526-5052edb42b08" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="505a7aaf-6e64-2075-7b18-9afa425a5b91" executionId="b3b80caa-d74c-4866-9fac-721125ed0e7a" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="2c9d4565-a06c-4435-a5c6-116da912e24c" executionId="f340900e-cb69-4ed1-883c-55ff4cec3d5c" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="4cfbae13-c00c-cdf1-9f1d-05e224a57c65" executionId="f2df0627-2916-4e28-bf56-f9bc7768ab74" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="21c4540e-75ef-757c-45ed-95e22807fc8b" executionId="006209c4-af9d-497f-9bc3-efb5b6b744bc" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="4b8d7216-4d46-3152-35e4-2457d7def86f" executionId="21ad55f8-0bc9-48f8-b4ab-40f4553b2173" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="16767fb2-e428-bc29-355c-551178473d80" executionId="2126c1ee-aa77-4c8b-a511-d34a22525ef0" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="ba492e6a-f354-19e5-a089-cbab67941422" executionId="a1d42b97-0fb7-42ae-a92b-ffeb674763ae" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="d32c169c-c244-1e7a-74d8-9343f62e296b" executionId="b3a6916e-ae6d-49fc-aac0-9a4ea3fa0e7c" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="f4bee000-515c-b427-5f8c-f45467819854" executionId="af535bef-5b49-42d8-8448-e22f50a08137" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="6959e102-ab5d-11a3-0e92-457b395c8296" executionId="1770a039-a167-45f9-9c86-adcb35c6c563" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="9b2be6d2-047c-321a-94d2-33b47cf701ee" executionId="1c413921-2303-4eed-a82c-616249eeb3f3" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="191aa86f-0537-7c5a-046e-2378f6d38bf3" executionId="967baffa-7461-4eb1-8972-7df05ac443df" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="dc81b689-3edd-c9fc-c3d3-af17f1773e9d" executionId="a588bf3d-a537-436f-ae69-206491539c93" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="404a23e9-9b5a-a824-6fa0-9b6545c55da0" executionId="11be7d2d-d7d7-4d1c-a1c7-0d509ca04bab" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="30c3dbce-2942-8039-e95a-e09f1cdd5bdb" executionId="19b5fb75-3eb3-4485-9a40-02adbdb26e4d" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="8f5f9ffd-6aaf-764f-9c18-62f69e8cde28" executionId="26b0c70d-3213-44e8-a8b2-a8da88d8f108" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="4cadf76a-30cb-6a51-47ab-40ee555cbad7" executionId="8c0288cb-8aed-4564-8d62-b4d6539dcb81" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="d440299a-2814-2e2d-9b47-7a82a652307d" executionId="abb3719e-d65e-4b65-9bb5-b89c16c63b52" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="7be99b65-b956-b9e4-a68c-fca24156bdc5" executionId="d5095296-aa6f-41a1-be76-6e0c93ba412b" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="e121f581-8d88-4a87-6c99-eec64e1982eb" executionId="72d62d4f-2033-4f9d-8480-c243c0a923dd" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="853c5c0e-e61e-6516-f59e-f97635513c48" executionId="3578f058-3a35-4c5c-b28e-4758b76c6dea" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="6f428a3f-5ba8-a8b1-8240-1f7da29bfd85" executionId="6f239674-7ed4-419d-81d9-e1750c435fc3" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="91cce466-6c1a-3237-fa1d-736fc8c7b227" executionId="42f45adf-69ea-4da2-9880-23b98cecc91d" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="e063222d-6062-3fc3-0205-93808b530258" executionId="a4e57b08-ff61-4000-8572-c80830fb1952" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="c4ef9fd1-7f77-fec0-2a7e-0ffda25b000c" executionId="add54816-2f09-405b-a65a-134e478177d0" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="af3d92f9-4115-8af8-a835-4c37473e2ad4" executionId="19aca507-1ea5-4c6e-9a10-5747a16ec085" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="3af2944d-7345-e143-4810-9f4896579fa8" executionId="4d68bbbb-acea-467b-b14e-9d67f2f900c3" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="db248253-da7e-d8ae-8fd8-0de3e569f587" executionId="9bc8ff6a-a09f-4145-acb9-28b76c7d992a" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="6553fb45-bd07-30d2-0565-5ad2bfe97bee" executionId="824e6994-a388-40df-913a-710cae487c18" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="cf6b9a6d-2d64-3f3e-0445-16be9b4ff5ff" executionId="539dcb78-88f3-4945-9e65-ca29c3392df2" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="22b5d76b-18ed-daf8-013f-c25f7f5ad196" executionId="8640b7ee-98be-4730-a684-9917a55081c0" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="79169ea5-ae4f-4ccd-d8b8-7b2c4bec7bde" executionId="49662328-3e4d-4598-9986-708905938841" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="1966f85d-ba11-bbac-8345-7308e4d98c0c" executionId="509d2c9b-07ee-4d84-969e-8c22cf932604" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="60801d4d-ce4e-d032-d374-8bc7259cd4ec" executionId="9480cf2b-1e2e-43e1-b951-61d0e2656a6b" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="5b5c5bd5-21b9-575a-4bf9-e09492efb0e3" executionId="a02e5723-25bb-4105-ae86-ecda7f365f28" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="584d532e-f95e-65d8-6f4f-413589baf034" executionId="47c2312b-9631-484f-a2c2-42c6b4026ac4" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="7320b796-ee56-5463-a49e-056ed94df26d" executionId="aa3c66df-56a1-424c-b9bf-01db40b95ff0" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="30567522-1bd6-03aa-f2e0-66e80ed22737" executionId="e4e6a00e-8e5a-47c1-94ea-d801ee3ab17f" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="d81398be-173a-051d-cf5e-27b82e00626f" executionId="99eb5e47-5358-4ff3-9da8-1d641d40def9" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="648b52db-4fc2-b0a1-6f01-278cd89d1fe5" executionId="6fe991ce-4fcc-43ec-81d9-ff357b9e9e91" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="d82b2c69-5d35-34f6-bd4e-d1d2b5161453" executionId="6abbe49d-c1dd-4aa9-b020-cb1072ca45ca" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="60bc3806-5d59-1164-edd0-b978654e5a6f" executionId="aec9301c-aef9-4f01-b14f-282108df5352" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="81126c52-a531-994d-547a-9e7770a946b3" executionId="25eccc4a-4206-4586-8b47-71d43835fb47" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="fc265353-4aaa-18f9-5737-56466fefa4f4" executionId="a4566a57-a3e6-4a78-8a0a-1fd1967f2f59" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="bb9c4b5c-d162-32c2-f8c8-d84ac6a36c44" executionId="5b74730e-85b2-48b5-9fba-0b74a6eb1343" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="87f93025-2cb2-6eaf-6fa0-44b0da441674" executionId="d1eb6e03-c699-417b-addd-73c932762081" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="0fbdf991-9713-923a-ade8-985dc350a11f" executionId="b0e58ad8-593e-4622-a4b4-68d634a2f59e" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="fca12cff-29b9-8f6f-082a-9c4f78676746" executionId="c35f5671-1f0a-4393-99e1-ef9d09eb4ce9" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="a193e079-779c-8c81-b2d1-20524ef25bff" executionId="09c1780f-5516-4f13-857a-51011c4b1e3d" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="b1a1f615-1e76-5c5d-fd25-823ffb3e6e45" executionId="6321f7bd-f63f-4a8f-b236-9fb908fb4244" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="31da4611-5ad4-b053-d978-5182afb0863d" executionId="bfa6a41e-21f0-4d3d-af3c-698e2064d560" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="8d1776d8-3757-78fe-df15-877e53a9c9ff" executionId="a1b0304f-b645-4824-a322-3379892deafe" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="da829574-a481-b5ac-3437-22c6e6b79c91" executionId="4c270083-bb53-4626-810d-0d952553e046" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="61939726-3358-34bd-b1c2-610de2b720c2" executionId="17d8298b-669a-4a95-a0b4-e8c18df4c9aa" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="d687cfc2-0d4f-1c92-a9d6-6f00a47f4bb5" executionId="4c551fa8-62c9-4e8e-abe9-b6d47b665cfd" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="fcb61475-4742-ec31-075f-7a95de1851a6" executionId="28073a30-f7f6-4da5-9840-602a719d826d" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="e37332f9-887b-18a9-0b70-0369b696f5a4" executionId="2b8a3a22-d892-4280-9fe1-28f7ef2de62f" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="bbf75a37-81b7-beea-e0b3-b9ab40d9e81c" executionId="d867b9bd-c3e9-4345-b807-05b94141ca85" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="e3c3f004-578b-ec70-246b-476494e24061" executionId="66156dd0-0433-4539-996b-30704b34e9a4" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="62b0cf9a-408b-ce0f-d20c-53b4f5b35894" executionId="6346fcb5-603c-4245-b8b1-d751ac035d1c" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="0b491071-1a55-e437-0bfc-136ec0538771" executionId="f31035ab-db01-44d9-acbe-fbaed4d3fef5" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="0ea565f6-abbc-dc5c-0b9a-47c143092495" executionId="23c8c8f2-1c01-4df4-b3d9-5b883d8c8370" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="fccac4b8-3164-e237-cb31-53a8335eb221" executionId="973da6d9-b642-492f-8490-c75e8e9fd31c" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="5127eaad-0d75-57a0-7b02-93b721c3498e" executionId="f46cc39a-6215-42bc-9338-132208fddd93" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="eed63e70-c0b0-c97a-fc10-0ef6c99ffa3b" executionId="75a45de0-5360-469a-8616-780331af8875" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="8e1e7355-b3cf-1e40-e5e8-0e8ec3858c67" executionId="cd30f9c1-fd5f-4f14-bce3-faa797e637a4" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="f59888af-e671-41e4-5b0b-f73de016d1a4" executionId="2c47df35-2a3c-43e6-8ab9-d0eb8e4db207" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="c9c01814-9ab8-b2b9-06b2-4c938f55dca9" executionId="8ae04a03-e1fe-4a05-bbaa-0715af9ea4e2" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="a54d7156-29cf-73d8-3a74-16146bff2523" executionId="134a330b-e68f-4b65-8d8d-f92bb61c2436" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="657f5a63-1436-fb5c-f30f-72c6873b7744" executionId="5d1064a8-42c5-4cbb-b5e0-dcbb219bcc2e" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="8588541e-7e60-da19-36d9-378684b519c5" executionId="8c3f2d63-2fcd-46fe-b275-32bdc887f814" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="6631534b-359e-ad69-6c1c-4cc56ff2f052" executionId="bab5b98d-c06b-4842-b6e2-7152c909c851" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="6d7113b9-c6f7-3e1b-b861-36f8dab21ec4" executionId="83a08318-43ea-441c-9875-f9a14d10a4fc" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="0db3f6d4-ccaa-2d0f-d2b1-0557146e7c11" executionId="203a3b88-2c37-4ac6-aafa-c8258d9f27b5" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="76cc238c-cd4c-8401-9f6d-fd151739c8df" executionId="e446c0a0-3f30-4ba2-89af-1733e24108a8" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="0be8f1a9-bab5-7665-ac90-ffebaa1c880c" executionId="7b9a2450-b3aa-4b89-84e8-d9de0e865788" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="cc3d2b22-81a8-837d-8d4a-9a88dd1283cc" executionId="42b39cc2-e287-4e76-bff0-6720bc59ea20" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="77c734fd-abd6-16de-fec2-423e19fdda41" executionId="bbe901c3-d25a-4b28-9400-1e1cd8cb518b" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="e6ce22c7-80ee-879f-5637-cbc748185183" executionId="bac86c47-2075-4d30-9609-48f79133a570" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="cc724ed3-3d15-fa03-6383-b1275dcc07b6" executionId="6bfb320a-ff50-47de-b405-63dc76529da6" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Failed">
+    <Counters total="143" executed="143" passed="141" failed="2" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>NUnit Adapter 6.0.0.0: Test execution started&#xD;
+Running selected tests in D:\src\Espertech\NEsper-8.9.x\tst\NEsper.Regression.Runner\bin\Debug\net9.0\NEsper.Regression.Runner.dll&#xD;
+   NUnit3TestExecutor discovered 143 of 143 NUnit test cases using Current Discovery mode, Non-Explicit run&#xD;
+NUnit Adapter 6.0.0.0: Test execution complete&#xD;
+</StdOut>
+    </Output>
+  </ResultSummary>
+</TestRun>

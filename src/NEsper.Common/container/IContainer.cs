@@ -8,10 +8,21 @@
 
 using System;
 
+#if NETCOREAPP3_0_OR_GREATER
+using System.Runtime.Loader;
+#endif
+
 namespace com.espertech.esper.container
 {
     public interface IContainer
     {
+#if NETCOREAPP3_0_OR_GREATER
+        /// <summary>
+        /// Gets or sets the assembly load context to be associated with this container.
+        /// </summary>
+        AssemblyLoadContext AssemblyLoadContext { get; set; }
+#endif
+
         /// <summary>
         /// Resolves an object within a container.
         /// </summary>

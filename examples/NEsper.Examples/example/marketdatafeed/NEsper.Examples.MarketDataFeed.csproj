@@ -12,14 +12,14 @@
 
     <ItemGroup Condition="'$(NetCore)'=='true'">
         <PackageReference Include="System.Data.Common" Version="4.3.0" />
-        <PackageReference Include="System.Data.SqlClient" Version="4.9.0" />
+        <PackageReference Include="System.Data.SqlClient" Version="4.9.1" />
     </ItemGroup>
 
 
     <ItemGroup>
-        <PackageReference Include="NLog" Version="6.0.7" />
+        <PackageReference Include="NLog" Version="6.1.2" />
 
-        <PackageReference Include="NUnit" Version="4.4.0" />
+        <PackageReference Include="NUnit" Version="4.5.1" />
     </ItemGroup>
 
     <ItemGroup>

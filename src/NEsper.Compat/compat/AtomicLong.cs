@@ -58,15 +58,7 @@ namespace com.espertech.esper.compat
         /// Increments and returns the previous value.
         /// </summary>
         /// <returns></returns>
-        public long GetAndIncrement()
-        {
-            while (true)
-            {
-                long value = _value;
-                if (Interlocked.CompareExchange(ref _value, value + 1, value) == value)
-                    return value;
-            }
-        }
+        public long GetAndIncrement() => Interlocked.Increment(ref _value) - 1;
 
         /// <summary>
         /// Increments and returns the value.

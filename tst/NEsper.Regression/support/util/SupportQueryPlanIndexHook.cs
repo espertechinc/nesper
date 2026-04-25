@@ -109,14 +109,14 @@ namespace com.espertech.esper.regressionlib.support.util
 	    }
 
 	    public static QueryPlanIndexDescOnExpr AssertOnExprAndReset() {
-	        ClassicAssert.IsTrue(ONEXPRS.Count == 1);
+	        ClassicAssert.AreEqual(ONEXPRS.Count, 1);
 	        var onexp = ONEXPRS[0];
 	        Reset();
 	        return onexp;
 	    }
 
 	    public static void AssertFAFAndReset(string tableName, string indexBackingClassStartsWith) {
-	        ClassicAssert.IsTrue(FAFSNAPSHOTS.Count == 1);
+	        ClassicAssert.AreEqual(FAFSNAPSHOTS.Count, 1);
 	        var fafdesc = FAFSNAPSHOTS[0];
 	        ClassicAssert.AreEqual(tableName, fafdesc.Tables[0].IndexName);
 	        var name = fafdesc.Tables[0].IndexDesc;
@@ -127,7 +127,7 @@ namespace com.espertech.esper.regressionlib.support.util
 	    }
 
 	    public static void AssertJoinOneStreamAndReset(bool unique) {
-	        ClassicAssert.IsTrue(JOINS.Count == 1);
+		    ClassicAssert.AreEqual(JOINS.Count, 1);
 	        var join = JOINS[0];
 	        var first = join.IndexSpecs[1];
 	        var firstName = first.Items.Keys.First();
@@ -137,14 +137,14 @@ namespace com.espertech.esper.regressionlib.support.util
 	    }
 
 	    public static QueryPlanForge AssertJoinAndReset() {
-	        ClassicAssert.IsTrue(JOINS.Count == 1);
+		    ClassicAssert.AreEqual(JOINS.Count, 1);
 	        var join = JOINS[0];
 	        Reset();
 	        return join;
 	    }
 
 	    public static void AssertJoinAllStreamsAndReset(bool unique) {
-	        ClassicAssert.IsTrue(JOINS.Count == 1);
+		    ClassicAssert.AreEqual(JOINS.Count, 1);
 	        var join = JOINS[0];
 	        foreach (var index in join.IndexSpecs) {
 	            var firstName = index.Items.Keys.First();

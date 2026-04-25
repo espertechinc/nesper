@@ -9,7 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-
+using System.Runtime.Loader;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.compat.collections;
@@ -198,6 +198,10 @@ namespace com.espertech.esperio.csv
         [Test]
         public void TestNestedProperties()
         {
+            var myType = typeof(Figure);
+            var myLoader = AssemblyLoadContext.GetLoadContext(myType.Assembly);
+            Console.WriteLine(myLoader);
+            
             var container = ContainerExtensions.CreateDefaultContainer();
 
             var configuration = new Configuration(container);

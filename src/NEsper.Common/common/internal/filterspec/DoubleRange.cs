@@ -15,7 +15,7 @@ namespace com.espertech.esper.common.@internal.filterspec
     /// <summary>
     ///     Holds a range of double values with a minimum (start) value and a maximum (end) value.
     /// </summary>
-    public class DoubleRange : Range
+    public readonly struct DoubleRange : Range
     {
         private readonly int _hashCode;
 
@@ -28,25 +28,24 @@ namespace com.espertech.esper.common.@internal.filterspec
             double? min,
             double? max)
         {
-            Min = min;
-            Max = max;
-
-            if (min != null && max != null) {
-                if (min > max) {
-                    Max = min;
-                    Min = max;
-                }
+            if (min != null && max != null && min > max) {
+                Min = max;
+                Max = min;
+            }
+            else {
+                Min = min;
+                Max = max;
             }
 
             _hashCode = 7;
-            if (min != null) {
+            if (Min != null) {
                 _hashCode = 31 * _hashCode;
-                _hashCode ^= min.GetHashCode();
+                _hashCode ^= Min.GetHashCode();
             }
 
-            if (max != null) {
+            if (Max != null) {
                 _hashCode = 31 * _hashCode;
-                _hashCode ^= max.GetHashCode();
+                _hashCode ^= Max.GetHashCode();
             }
         }
 
@@ -68,15 +67,16 @@ namespace com.espertech.esper.common.@internal.filterspec
 
         public override bool Equals(object other)
         {
-            if (other == this) {
-                return true;
-            }
-
             if (!(other is DoubleRange otherRange)) {
                 return false;
             }
 
-            return otherRange.Max.AsDouble() == Max && otherRange.Min.AsDouble() == Min;
+            return otherRange.Max.AsDouble() == Max.AsDouble() && otherRange.Min.AsDouble() == Min.AsDouble();
+        }
+
+        public bool Equals(DoubleRange other)
+        {
+            return other.Max.AsDouble() == Max.AsDouble() && other.Min.AsDouble() == Min.AsDouble();
         }
 
         public override int GetHashCode()

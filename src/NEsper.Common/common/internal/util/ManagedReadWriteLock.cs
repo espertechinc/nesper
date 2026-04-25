@@ -67,7 +67,7 @@ namespace com.espertech.esper.common.@internal.util
             _name = name;
             Lock = isFair
                 ? new FairReaderWriterLock(LockConstants.DefaultTimeout)
-                : (IReaderWriterLock)new StandardReaderWriterLock(LockConstants.DefaultTimeout);
+                : (IReaderWriterLock)new SlimReaderWriterLock(LockConstants.DefaultTimeout);
         }
 
         public void Dispose()

@@ -38,10 +38,7 @@ namespace com.espertech.esper.compat.threading.locks
         /// <param name="e">The <see cref="TelemetryEventArgs"/> instance containing the event data.</param>
         protected void OnReadLockReleased(TelemetryEventArgs e)
         {
-            if (ReadLockReleased != null)
-            {
-                ReadLockReleased(this, e);
-            }
+            ReadLockReleased?.Invoke(this, e);
         }
 
         /// <summary>
@@ -50,10 +47,7 @@ namespace com.espertech.esper.compat.threading.locks
         /// <param name="e">The <see cref="TelemetryEventArgs"/> instance containing the event data.</param>
         protected void OnWriteLockReleased(TelemetryEventArgs e)
         {
-            if (WriteLockReleased != null)
-            {
-                WriteLockReleased(this, e);
-            }
+            WriteLockReleased?.Invoke(this, e);
         }
 
         /// <summary>
@@ -113,17 +107,13 @@ namespace com.espertech.esper.compat.threading.locks
             _id = Guid.NewGuid().ToString();
             _subLock = subLock;
 
-            do {
-                var telemetryLock = new TelemetryLock(_id, _subLock.ReadLock);
-                telemetryLock.LockReleased += (sender, e) => OnReadLockReleased(e);
-                ReadLock = telemetryLock;
-            } while (false);
+            var readTelemetry = new TelemetryLock(_id, _subLock.ReadLock);
+            readTelemetry.LockReleased += (sender, e) => OnReadLockReleased(e);
+            ReadLock = readTelemetry;
 
-            do {
-                var telemetryLock = new TelemetryLock(_id, _subLock.WriteLock);
-                telemetryLock.LockReleased += (sender, e) => OnWriteLockReleased(e);
-                WriteLock = telemetryLock;
-            } while (false);
+            var writeTelemetry = new TelemetryLock(_id, _subLock.WriteLock);
+            writeTelemetry.LockReleased += (sender, e) => OnWriteLockReleased(e);
+            WriteLock = writeTelemetry;
         }
     }
 }

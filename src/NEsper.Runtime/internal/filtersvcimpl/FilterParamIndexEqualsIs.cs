@@ -42,7 +42,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             }
 
             EventEvaluator evaluator = null;
-            using (ConstantsMapRwLock.ReadLock.Acquire()) {
+            using (ConstantsMapRwLock.ReadLock.AcquireScope()) {
                 evaluator = ConstantsMap.Get(attributeValue);
             }
 

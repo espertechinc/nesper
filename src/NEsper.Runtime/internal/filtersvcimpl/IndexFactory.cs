@@ -40,6 +40,15 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 
             // Handle all EQUAL comparisons
             if (filterOperator == FilterOperator.EQUAL) {
+                if (returnValueType == typeof(int?)) {
+                    return new FilterParamIndexEqualsInt(lookupable, lockFactory.ObtainNew());
+                }
+                if (returnValueType == typeof(long?)) {
+                    return new FilterParamIndexEqualsLong(lookupable, lockFactory.ObtainNew());
+                }
+                if (returnValueType == typeof(double?)) {
+                    return new FilterParamIndexEqualsDouble(lookupable, lockFactory.ObtainNew());
+                }
                 index = new FilterParamIndexEquals(lookupable, lockFactory.ObtainNew());
                 return index;
             }

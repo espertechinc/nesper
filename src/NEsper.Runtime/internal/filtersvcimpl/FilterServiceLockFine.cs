@@ -30,7 +30,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 
         public override void AcquireWriteLock()
         {
-            _lock.WriteLock.Acquire();
+            _lock.WriteLock.AcquireScope();
         }
 
         public override void ReleaseWriteLock()
@@ -40,7 +40,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 
         public override IDictionary<EventTypeIdPair, IDictionary<int, IList<FilterItem[]>>> Get(ISet<int> statementId)
         {
-            using (_lock.ReadLock.Acquire()) {
+            using (_lock.ReadLock.AcquireScope()) {
                 return GetInternal(statementId);
             }
         }
@@ -50,7 +50,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             ICollection<FilterHandle> matches,
             ExprEvaluatorContext ctx)
         {
-            using (_lock.ReadLock.Acquire()) {
+            using (_lock.ReadLock.AcquireScope()) {
                 return EvaluateInternal(theEvent, matches, ctx);
             }
         }
@@ -61,7 +61,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             int statementId,
             ExprEvaluatorContext ctx)
         {
-            using (_lock.ReadLock.Acquire()) {
+            using (_lock.ReadLock.AcquireScope()) {
                 return EvaluateInternal(theEvent, matches, statementId, ctx);
             }
         }

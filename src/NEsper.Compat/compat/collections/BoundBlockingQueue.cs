@@ -30,7 +30,7 @@ namespace com.espertech.esper.compat.collections
         public BoundBlockingQueue(int maxCapacity, int lockTimeout)
         {
             _queue = new LinkedList<T>();
-            _queueLock = new MonitorSpinLock(lockTimeout);
+            _queueLock = new MonitorSlimLock(lockTimeout);
             _queuePopWaitHandle = new AutoResetEvent(false);
             _queuePushWaitHandle = new AutoResetEvent(false);
             _maxCapacity = maxCapacity;

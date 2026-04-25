@@ -9,7 +9,7 @@ namespace com.espertech.esper.compat.magic
 {
     public static class MagicStringDictionaryExtensions
     {
-        private static readonly ILockable FunctionalAtomTableLock = new MonitorSpinLock(60000);
+        private static readonly ILockable FunctionalAtomTableLock = new MonitorSlimLock(60000);
 
         private static readonly IDictionary<Type, FunctionalAtom> FunctionalAtomTable =
             new Dictionary<Type, FunctionalAtom>();

@@ -49,7 +49,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
         protected internal int FilterCountApprox {
             get {
                 var count = 0;
-                using (eventTypesRWLock.ReadLock.Acquire()) {
+                using (eventTypesRWLock.ReadLock.AcquireScope()) {
                     foreach (var entry in eventTypes) {
                         count += entry.Value.FilterCallbackCount;
                         foreach (var index in entry.Value.Indizes) {
@@ -139,7 +139,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             EventType eventType,
             FilterHandleSetNode rootNode)
         {
-            using (eventTypesRWLock.WriteLock.Acquire()) {
+            using (eventTypesRWLock.WriteLock.AcquireScope()) {
                 if (eventTypes.ContainsKey(eventType)) {
                     throw new IllegalStateException("Event type already in index, add not performed, type=" + eventType);
                 }
@@ -150,7 +150,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 
         public void RemoveType(EventType type)
         {
-            using (eventTypesRWLock.WriteLock.Acquire()) {
+            using (eventTypesRWLock.WriteLock.AcquireScope()) {
                 eventTypes.Remove(type);
             }
         }
@@ -162,7 +162,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
         /// <returns>the subtree's root node</returns>
         public FilterHandleSetNode Get(EventType eventType)
         {
-            using (eventTypesRWLock.ReadLock.Acquire()) {
+            using (eventTypesRWLock.ReadLock.AcquireScope()) {
                 return eventTypes.Get(eventType);
             }
         }
@@ -175,7 +175,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
         {
             FilterHandleSetNode rootNode = null;
 
-            using (eventTypesRWLock.ReadLock.Acquire()) {
+            using (eventTypesRWLock.ReadLock.AcquireScope()) {
                 rootNode = eventTypes.Get(eventType);
             }
 

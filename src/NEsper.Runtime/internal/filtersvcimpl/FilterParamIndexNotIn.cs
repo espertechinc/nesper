@@ -112,7 +112,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             }
 
             // Look up in hashtable the set of not-in evaluators
-            using (ReadWriteLock.ReadLock.Acquire()) {
+            using (ReadWriteLock.ReadLock.AcquireScope()) {
                 var evalNotMatching = constantsMap.Get(attributeValue);
 
                 // if all known evaluators are matching, invoke all

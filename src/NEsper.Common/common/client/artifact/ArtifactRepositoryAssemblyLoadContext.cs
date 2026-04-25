@@ -95,6 +95,41 @@ namespace com.espertech.esper.common.client.artifact
             };
         }
 
+        /// <summary>
+        /// Custom AssemblyLoadContext that overrides Load() to intercept assembly resolution
+        /// before the Default ALC fallback. When the same assembly exists in both the Default
+        /// ALC and another ALC (e.g., a test runner's isolation context), the Default fallback
+        /// would silently use the Default copy, causing type identity mismatches. This override
+        /// detects that "split-load" scenario and returns the non-Default copy instead.
+        /// </summary>
+        private class NEsperAssemblyLoadContext : AssemblyLoadContext
+        {
+            public NEsperAssemblyLoadContext(string contextName, bool isCollectable)
+                : base(contextName, isCollectable) { }
+
+            protected override Assembly Load(AssemblyName assemblyName)
+            {
+                var name = assemblyName.Name;
+                var foundInDefault = false;
+                Assembly nonDefaultMatch = null;
+
+                foreach (var a in AppDomain.CurrentDomain.GetAssemblies()) {
+                    if (a.GetName().Name != name) continue;
+                    var alc = GetLoadContext(a);
+                    if (alc == Default) {
+                        foundInDefault = true;
+                    } else if (alc != this) {
+                        nonDefaultMatch = a;
+                    }
+                }
+
+                // Return the non-Default copy only when both exist (split-load scenario).
+                // If the assembly is only in Default, return null so the Default fallback
+                // handles it normally (framework assemblies, etc.).
+                return foundInDefault ? nonDefaultMatch : null;
+            }
+        }
+
         public static AssemblyLoadContext CreateAssemblyLoadContext(
             IArtifactRepository repository,
             AssemblyResolver assemblyResolver,
@@ -102,11 +137,10 @@ namespace com.espertech.esper.common.client.artifact
             bool isCollectable)
         {
             var repositoryReference = new System.WeakReference<IArtifactRepository>(repository);
-            var assemblyLoadContext = new AssemblyLoadContext(contextName, isCollectable);
+            var assemblyLoadContext = new NEsperAssemblyLoadContext(contextName, isCollectable);
             assemblyLoadContext.Resolving += (
                 context,
                 assemblyName) => {
-                //Console.WriteLine("Resolve: {0} {1}", context, assemblyName);
                 using (context.EnterContextualReflection()) {
                     if (repositoryReference.TryGetTarget(out var repositoryInstance)) {
                         var assemblyBaseName = assemblyName.Name;

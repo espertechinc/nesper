@@ -57,6 +57,11 @@ namespace com.espertech.esper.compat.collections
 
         private bool _shuffleOnAccess;
 
+        [NonSerialized]
+        private KeysView _cachedKeysView;
+        [NonSerialized]
+        private ValuesView _cachedValuesView;
+
         /// <summary>
         /// Returns a value indicating if items should be shuffled (pushed to the
         /// head of the list) on access requests.
@@ -307,13 +312,7 @@ namespace com.espertech.esper.compat.collections
         /// <value></value>
         /// <returns>An <see cref="T:System.Collections.Generic.ICollection`1"></see> containing the keys of the object that : <see cref="T:System.Collections.Generic.IDictionary`2"></see>.</returns>
 
-        public ICollection<TK> Keys
-        {
-            get
-            {
-                return _hashList.Select(keyValuePair => keyValuePair.First).ToList();
-            }
-        }
+        public ICollection<TK> Keys => _cachedKeysView ??= new KeysView(_hashList, _hashTable);
 
         /// <summary>
         /// Gets a faster lighter enumeration of keys.
@@ -398,13 +397,7 @@ namespace com.espertech.esper.compat.collections
         /// <value></value>
         /// <returns>An <see cref="T:System.Collections.Generic.ICollection`1"></see> containing the values in the object that : <see cref="T:System.Collections.Generic.IDictionary`2"></see>.</returns>
 
-        public ICollection<TV> Values
-        {
-            get
-            {
-                return _hashList.Select(keyValuePair => keyValuePair.Second).ToList();
-            }
-        }
+        public ICollection<TV> Values => _cachedValuesView ??= new ValuesView(_hashList);
 
         /// <summary>
         /// Gets or sets the value the specified key.
@@ -559,32 +552,15 @@ namespace com.espertech.esper.compat.collections
 
         #region IEnumerable<KeyValuePair<TK, TV>> Members
 
-        /// <summary>
-        /// Returns an enumerator that iterates through the collection.
-        /// </summary>
-        /// <returns>
-        /// A <see cref="T:System.Collections.Generic.IEnumerator`1"></see> that can be used to iterate through the collection.
-        /// </returns>
+        public Enumerator GetEnumerator() => new Enumerator(_hashList);
 
-        public IEnumerator<KeyValuePair<TK, TV>> GetEnumerator()
-        {
-            return _hashList.Select(subPair => new KeyValuePair<TK, TV>(subPair.First, subPair.Second)).GetEnumerator();
-        }
+        IEnumerator<KeyValuePair<TK, TV>> IEnumerable<KeyValuePair<TK, TV>>.GetEnumerator() => GetEnumerator();
 
         #endregion
 
         #region IEnumerable Members
 
-        /// <summary>
-        /// Returns an enumerator that iterates through a collection.
-        /// </summary>
-        /// <returns>
-        /// An <see cref="T:System.Collections.IEnumerator"></see> object that can be used to iterate through the collection.
-        /// </returns>
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
         #endregion
     
@@ -600,6 +576,129 @@ namespace com.espertech.esper.compat.collections
                     })
                     .Aggregate((a, b) => $"{a}, {b}") +
                 "}";
+        }
+
+        public struct Enumerator : IEnumerator<KeyValuePair<TK, TV>>
+        {
+            private readonly LinkedList<Pair<TK, TV>> _list;
+            private LinkedListNode<Pair<TK, TV>> _current;
+
+            internal Enumerator(LinkedList<Pair<TK, TV>> list)
+            {
+                _list = list;
+                _current = null;
+            }
+
+            public bool MoveNext()
+            {
+                _current = _current == null ? _list.First : _current.Next;
+                return _current != null;
+            }
+
+            public KeyValuePair<TK, TV> Current =>
+                new KeyValuePair<TK, TV>(_current.Value.First, _current.Value.Second);
+
+            object IEnumerator.Current => Current;
+
+            public void Reset() => _current = null;
+
+            public void Dispose() { }
+        }
+
+        private sealed class KeysView : ICollection<TK>
+        {
+            private readonly LinkedList<Pair<TK, TV>> _list;
+            private readonly IDictionary<TK, LinkedListNode<Pair<TK, TV>>> _table;
+
+            internal KeysView(
+                LinkedList<Pair<TK, TV>> list,
+                IDictionary<TK, LinkedListNode<Pair<TK, TV>>> table)
+            {
+                _list = list;
+                _table = table;
+            }
+
+            public int Count => _table.Count;
+            public bool Contains(TK item) => _table.ContainsKey(item);
+
+            public IEnumerator<TK> GetEnumerator()
+            {
+                var node = _list.First;
+                while (node != null)
+                {
+                    yield return node.Value.First;
+                    node = node.Next;
+                }
+            }
+
+            IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+            public void CopyTo(TK[] array, int arrayIndex)
+            {
+                var node = _list.First;
+                var i = arrayIndex;
+                while (node != null)
+                {
+                    array[i++] = node.Value.First;
+                    node = node.Next;
+                }
+            }
+
+            public bool IsReadOnly => true;
+
+            public void Add(TK item) => throw new NotSupportedException();
+            public void Clear() => throw new NotSupportedException();
+
+            public bool Remove(TK item) => throw new NotSupportedException();
+        }
+
+        private sealed class ValuesView : ICollection<TV>
+        {
+            private readonly LinkedList<Pair<TK, TV>> _list;
+
+            internal ValuesView(LinkedList<Pair<TK, TV>> list) => _list = list;
+
+            public int Count => _list.Count;
+            public bool IsReadOnly => true;
+
+            public bool Contains(TV item)
+            {
+                var comparer = EqualityComparer<TV>.Default;
+                var node = _list.First;
+                while (node != null)
+                {
+                    if (comparer.Equals(node.Value.Second, item)) return true;
+                    node = node.Next;
+                }
+                return false;
+            }
+
+            public IEnumerator<TV> GetEnumerator()
+            {
+                var node = _list.First;
+                while (node != null)
+                {
+                    yield return node.Value.Second;
+                    node = node.Next;
+                }
+            }
+
+            IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+            public void CopyTo(TV[] array, int arrayIndex)
+            {
+                var node = _list.First;
+                var i = arrayIndex;
+                while (node != null)
+                {
+                    array[i++] = node.Value.Second;
+                    node = node.Next;
+                }
+            }
+
+            public void Add(TV item) => throw new NotSupportedException();
+            public void Clear() => throw new NotSupportedException();
+            public bool Remove(TV item) => throw new NotSupportedException();
         }
     }
 }

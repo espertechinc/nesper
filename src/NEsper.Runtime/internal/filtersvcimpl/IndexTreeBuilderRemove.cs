@@ -65,7 +65,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
         {
             // No remaining filter parameters
             if (currentLevel == @params.Length) {
-                using (currentNode.NodeRWLock.WriteLock.Acquire())
+                using (currentNode.NodeRWLock.WriteLock.AcquireScope())
                 {
                     return currentNode.Remove(filterCallback);
                 }
@@ -79,7 +79,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             }
 
             // Remove from index
-            using (currentNode.NodeRWLock.WriteLock.Acquire())
+            using (currentNode.NodeRWLock.WriteLock.AcquireScope())
             {
                 FilterParamIndexBase indexFound = null;
 
@@ -146,7 +146,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             int currentLevel,
             object filterForValue)
         {
-            using (index.ReadWriteLock.WriteLock.Acquire())
+            using (index.ReadWriteLock.WriteLock.AcquireScope())
             {
                 EventEvaluator eventEvaluator = index.Get(filterForValue);
 

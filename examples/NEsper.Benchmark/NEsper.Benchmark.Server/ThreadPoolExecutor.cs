@@ -27,7 +27,7 @@ namespace NEsper.Benchmark.Server
         {
             _maxSize = maxQueueSize ?? int.MaxValue;
             _eventQueueDepth = 0;
-            _eventMonitor = new MonitorSpinLock(60000);
+            _eventMonitor = new MonitorSlimLock(60000);
             _isHandlingEvents = true;
         }
 

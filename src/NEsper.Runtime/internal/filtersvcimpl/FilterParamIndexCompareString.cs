@@ -27,7 +27,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
     /// </summary>
     public class FilterParamIndexCompareString : FilterParamIndexLookupableBase
     {
-        private readonly IOrderedDictionary<object, EventEvaluator> constantsMap;
+        private readonly OrderedListDictionary<object, EventEvaluator> constantsMap;
         private readonly IReaderWriterLock constantsMapRWLock;
 
         public FilterParamIndexCompareString(
@@ -92,41 +92,18 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             var filterOperator = this.FilterOperator;
 
             // Look up in table
-            using (constantsMapRWLock.ReadLock.Acquire())
+            using (constantsMapRWLock.ReadLock.AcquireScope())
             {
-                // Get the head or tail end of the map depending on comparison type
-                IDictionary<object, EventEvaluator> subMap;
-
-                if ((filterOperator == FilterOperator.GREATER) ||
-                    (filterOperator == FilterOperator.GREATER_OR_EQUAL)) {
-                    // At the head of the map are those with a lower numeric constants
-                    subMap = constantsMap.Head(propertyValue);
+                if (filterOperator == FilterOperator.GREATER || filterOperator == FilterOperator.GREATER_OR_EQUAL) {
+                    int limit = constantsMap.GetHeadIndex(propertyValue, filterOperator == FilterOperator.GREATER_OR_EQUAL);
+                    for (int i = 0; i <= limit; i++) {
+                        constantsMap.ValueAt(i).MatchEvent(theEvent, matches, ctx);
+                    }
                 }
                 else {
-                    subMap = constantsMap.Tail(propertyValue);
-                }
-
-                // All entries in the subMap are elgibile, with an exception
-                EventEvaluator exactEquals = null;
-                if (filterOperator == FilterOperator.LESS) {
-                    exactEquals = constantsMap.Get(propertyValue);
-                }
-
-                foreach (var matcher in subMap.Values) {
-                    // For the LESS comparison type we ignore the exactly equal case
-                    // The subMap is sorted ascending, thus the exactly equals case is the first
-                    if (exactEquals != null) {
-                        exactEquals = null;
-                        continue;
-                    }
-
-                    matcher.MatchEvent(theEvent, matches, ctx);
-                }
-
-                if (filterOperator == FilterOperator.GREATER_OR_EQUAL) {
-                    var matcher = constantsMap.Get(propertyValue);
-                    if (matcher != null) {
-                        matcher.MatchEvent(theEvent, matches, ctx);
+                    int start = constantsMap.GetTailIndex(propertyValue, filterOperator != FilterOperator.LESS);
+                    for (int i = start; i < constantsMap.Count; i++) {
+                        constantsMap.ValueAt(i).MatchEvent(theEvent, matches, ctx);
                     }
                 }
             }

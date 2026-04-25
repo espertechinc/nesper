@@ -73,7 +73,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
                 InstrumentationHelper.Get().QFilterBoolean(this);
             }
 
-            using (ReadWriteLock.ReadLock.Acquire())
+            using (ReadWriteLock.ReadLock.AcquireScope())
             {
                 if (InstrumentationHelper.ENABLED)
                 {

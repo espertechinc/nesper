@@ -40,7 +40,7 @@ namespace com.espertech.esper.compat.magic
         }
 
         #region Collection Factory
-        private readonly ILockable _collectionFactoryTableLock = new MonitorSpinLock(60000);
+        private readonly ILockable _collectionFactoryTableLock = new MonitorSlimLock(60000);
         private readonly IDictionary<Type, Func<object, ICollection<object>>> _collectionFactoryTable =
             new Dictionary<Type, Func<object, ICollection<object>>>();
 
@@ -112,7 +112,7 @@ namespace com.espertech.esper.compat.magic
         #endregion
 
         #region List Factory
-        private readonly ILockable _listFactoryTableLock = new MonitorSpinLock(60000);
+        private readonly ILockable _listFactoryTableLock = new MonitorSlimLock(60000);
         private readonly IDictionary<Type, Func<object, IList<object>>> _listFactoryTable =
             new Dictionary<Type, Func<object, IList<object>>>();
 
@@ -177,7 +177,7 @@ namespace com.espertech.esper.compat.magic
         #endregion
 
         #region Dictionary Factory
-        private readonly ILockable _dictionaryFactoryTableLock = new MonitorSpinLock(60000);
+        private readonly ILockable _dictionaryFactoryTableLock = new MonitorSlimLock(60000);
         private readonly IDictionary<Type, Func<object, IDictionary<object, object>>> _dictionaryFactoryTable =
             new Dictionary<Type, Func<object, IDictionary<object, object>>>();
 
@@ -244,7 +244,7 @@ namespace com.espertech.esper.compat.magic
         #endregion
 
         #region String Dictionary Factory
-        private readonly ILockable _stringDictionaryFactoryTableLock = new MonitorSpinLock(60000);
+        private readonly ILockable _stringDictionaryFactoryTableLock = new MonitorSlimLock(60000);
         private readonly IDictionary<Type, Func<object, IDictionary<string, object>>> _stringDictionaryFactoryTable =
             new Dictionary<Type, Func<object, IDictionary<string, object>>>();
 

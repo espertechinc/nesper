@@ -1955,6 +1955,34 @@ namespace com.espertech.esper.common.@internal.util
             return null;
         }
 
+#if NETCOREAPP3_0_OR_GREATER
+        /// <summary>
+        ///     Resolves a type using the assembly qualified type name.  If the type
+        ///     can not be resolved using a simple Type.GetType() [which many can not],
+        ///     then the method will check all assemblies currently loaded into the
+        ///     AppDomain.
+        /// </summary>
+        /// <param name="assemblyLoadContext">An assembly load context</param>
+        /// <param name="typeName">Name of the assembly qualified type.</param>
+        /// <param name="throwOnError">if set to <c>true</c> [throw on missing].</param>
+        /// <returns></returns>
+        public static Type ResolveType(
+            AssemblyLoadContext assemblyLoadContext,
+            string typeName,
+            bool throwOnError = true)
+        {
+            IEnumerable<Assembly> assemblySearchPath = AssemblySearchPath?.Invoke();
+            assemblySearchPath = assemblySearchPath switch {
+                null when assemblyLoadContext == null => AssemblyLoadContext.Default.Assemblies,
+                null when assemblyLoadContext == AssemblyLoadContext.Default => assemblyLoadContext.Assemblies,
+                null => assemblyLoadContext.Assemblies.Concat(AssemblyLoadContext.Default.Assemblies),
+                _ => assemblySearchPath
+            };
+
+            return ResolveType(typeName, assemblySearchPath, throwOnError);
+        }
+#endif
+        
         /// <summary>
         ///     Resolves a type using the assembly qualified type name.  If the type
         ///     can not be resolved using a simple Type.GetType() [which many can not],

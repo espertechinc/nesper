@@ -88,23 +88,9 @@ namespace com.espertech.esper.compat.threading.locks
         /// <value>
         /// The is writer lock held.
         /// </value>
-        public bool IsWriterLockHeld
-        {
-            get
-            {
-                var hasWriteLock = new bool[] { false };
-
-                WithMainLock(
-                    () =>
-                    {
-                        hasWriteLock[0] =
-                            (_uLockOwner == System.Threading.Thread.CurrentThread.ManagedThreadId) &&
-                            ((_uLockFlags & LockFlags.Exclusive) == LockFlags.Exclusive);
-                    });
-
-                return hasWriteLock[0];
-            }
-        }
+        public bool IsWriterLockHeld => WithMainLock(() =>
+            _uLockOwner == System.Threading.Thread.CurrentThread.ManagedThreadId &&
+            (_uLockFlags & LockFlags.Exclusive) == LockFlags.Exclusive);
 
 #if DEBUG
         /// <summary>
@@ -113,6 +99,26 @@ namespace com.espertech.esper.compat.threading.locks
         /// <value><c>true</c> if TRACE; otherwise, <c>false</c>.</value>
         public bool Trace { get; set; }
 #endif
+
+        /// <summary>
+        /// Executes the action within the mainlock and returns its result.
+        /// </summary>
+        private T WithMainLock<T>(Func<T> action)
+        {
+            var lockTaken = false;
+            try
+            {
+                _uMainLock.Enter(ref lockTaken);
+                if (lockTaken)
+                    return action();
+                throw new TimeoutException("unable to secure main lock");
+            }
+            finally
+            {
+                if (lockTaken)
+                    _uMainLock.Exit();
+            }
+        }
 
         /// <summary>
         /// Executes the action within the mainlock.
@@ -198,6 +204,7 @@ namespace com.espertech.esper.compat.threading.locks
                             (_uLockFlags == LockFlags.Shared))
                         {
                             _uSharedCount++;
+                            _uLockFlags |= LockFlags.Shared;
                             return true;
                         }
 
@@ -211,6 +218,8 @@ namespace com.espertech.esper.compat.threading.locks
                 SlimLock.SmartWait(++ii);
 
                 timeCur = DateTimeHelper.CurrentTimeMillis;
+                if (timeCur >= timeEnd)
+                    throw new TimeoutException("FairReaderWriterLock timeout expired");
             }
         }
 
@@ -267,6 +276,8 @@ namespace com.espertech.esper.compat.threading.locks
                     SlimLock.SmartWait(++ii);
 
                     timeCur = DateTimeHelper.CurrentTimeMillis;
+                    if (timeCur >= timeEnd)
+                        throw new TimeoutException("FairReaderWriterLock timeout expired");
                 }
             }
             finally
