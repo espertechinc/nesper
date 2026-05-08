@@ -107,7 +107,7 @@ namespace com.espertech.esper.container
                     ic => {
                         var baseTypeResolver = ic.Has<TypeResolver>()
                             ? ic.Resolve<TypeResolver>()
-                            : TypeResolverDefault.INSTANCE;
+                            : new TypeResolverDefault();
                         var assemblyResolver = ic.Has<AssemblyResolver>()
                             ? ic.Resolve<AssemblyResolver>()
                             : null;
