@@ -1,6 +1,5 @@
-using System;
+﻿using System;
 using BenchmarkDotNet.Attributes;
-using BenchmarkDotNet.Jobs;
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.compiler.client;
 using com.espertech.esper.runtime.client;
@@ -8,8 +7,7 @@ using com.espertech.esper.runtime.client;
 namespace NEsper.Benchmarks.EndToEnd.Filter;
 
 [MemoryDiagnoser]
-[SimpleJob(RuntimeMoniker.Net80, warmupCount: 3, iterationCount: 10)]
-[SimpleJob(RuntimeMoniker.Net90, warmupCount: 3, iterationCount: 10)]
+[EndToEndJobs]
 public class EqualityFilterBenchmark
 {
     private EPRuntime    _runtime = null!;

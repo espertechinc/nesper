@@ -69,29 +69,31 @@ namespace com.espertech.esper.common.@internal.util.serde
         /// <exception cref="ArgumentNullException"></exception>
         public byte[] SerializeAny(object obj)
         {
-            var stream = new MemoryStream();
-            var writer = new Utf8JsonWriter(stream);
+            using var buffer = new PooledByteBufferWriter();
+            var writer = Utf8JsonWriterPool.Rent(buffer);
+            try {
+                if (obj == null) {
+                    writer.WriteNullValue();
+                }
+                else {
+                    var type = obj.GetType();
+                    var typeName = type.Assembly.IsDynamic
+                        ? type.AssemblyQualifiedName
+                        : type.FullName;
 
-            if (obj == null) {
-                writer.WriteNullValue();
-                return stream.ToArray();
+                    writer.WriteStartObject();
+                    writer.WriteString("__type", typeName);
+                    writer.WritePropertyName("__data");
+                    JsonSerializer.Serialize(writer, obj, _options);
+                    writer.WriteEndObject();
+                }
+
+                writer.Flush();
+                return buffer.ToArray();
             }
-
-            var type = obj.GetType();
-            var typeName = type.Assembly.IsDynamic
-                ? type.AssemblyQualifiedName
-                : type.FullName;
-            
-            //Console.WriteLine("ObjectDefaultConverter: " + typeName);
-            
-            writer.WriteStartObject();
-            writer.WriteString("__type", typeName);
-            writer.WritePropertyName("__data");
-            JsonSerializer.Serialize(writer, obj, _options);
-            writer.WriteEndObject();
-            writer.Flush();
-
-            return stream.ToArray();
+            finally {
+                Utf8JsonWriterPool.Return(writer);
+            }
         }
 
         /// <summary>
@@ -118,8 +120,9 @@ namespace com.espertech.esper.common.@internal.util.serde
                             if (typeElement.ValueKind == JsonValueKind.String) {
                                 var typeName = typeElement.GetString();
                                 var type = _typeResolver.ResolveType(typeName);
-                                var data = dataElement.GetRawText();
-                                return JsonSerializer.Deserialize(data, type, _options);
+                                //var data = dataElement.GetRawText();
+                                //return JsonSerializer.Deserialize(data, type, _options);
+                                return dataElement.Deserialize(type, _options);
                             }
 
                             throw new SerializationException("invalid type representation");

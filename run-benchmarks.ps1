@@ -25,9 +25,18 @@
     Default: "*"  (runs all benchmarks non-interactively)
 
 .PARAMETER Framework
-    Target .NET runtime for BenchmarkDotNet suites.
+    Target .NET runtime for the e2e suite (sets NESPER_BENCH_RUNTIMES, read by
+    EndToEndJobsAttribute) and the BDN host process.  The micro suite defines its
+    runtimes via [SimpleJob] attributes and always runs both.
     Accepted values: net8.0 | net9.0 | both
     Default: "both"
+
+.PARAMETER GC
+    GC mode for the e2e suite (sets NESPER_BENCH_GC, read by EndToEndJobsAttribute).
+    Production deployments typically run Server GC; use "server" or "both" before
+    publishing numbers externally.  The micro suite is unaffected.
+    Accepted values: workstation | server | both
+    Default: "workstation"  (matches the committed baseline in PERF-BENCHMARKS.md)
 
 .PARAMETER OutputDir
     Override the output directory.
@@ -56,6 +65,14 @@
     Run micro + e2e + perforator.
 
 .EXAMPLE
+    .\run-benchmarks.ps1 -Suite e2e -GC server
+    Run end-to-end benchmarks under Server GC (production-representative numbers).
+
+.EXAMPLE
+    .\run-benchmarks.ps1 -Suite e2e -GC both -Filter "*Contended*"
+    Compare Workstation vs Server GC side by side for the contention benchmark.
+
+.EXAMPLE
     .\run-benchmarks.ps1 -DryRun
     List all available benchmark methods without measuring.
 
@@ -68,6 +85,7 @@ param(
     [string]$Suite     = "micro,e2e",
     [string]$Filter    = "*",
     [string]$Framework = "both",
+    [string]$GC        = "workstation",
     [string]$OutputDir = "",
     [switch]$Summary,
     [switch]$DryRun
@@ -115,16 +133,31 @@ if ($Framework -notin $validFrameworks) {
     exit 1
 }
 
+# --- Validate -GC ---------------------------------------------------------------
+
+$validGcModes = @("workstation", "server", "both")
+$GC = $GC.Trim().ToLower()
+if ($GC -notin $validGcModes) {
+    Write-Host "ERROR: Invalid -GC '$GC'.  Use: workstation, server, or both" -ForegroundColor Red
+    exit 1
+}
+# Read by EndToEndJobsAttribute when the e2e suite composes its BDN job matrix.
+$env:NESPER_BENCH_GC = $GC
+
 # Host framework for "dotnet run --framework" (required when project multi-targets).
-# When running both runtimes, net9.0 hosts the BDN process; BDN spawns a net8.0
-# child process internally via --runtimes.
+# When running both runtimes, net9.0 hosts the BDN process; BDN spawns child
+# processes per job-defined runtime internally.
 $hostFramework = if ($Framework -eq "both") { "net9.0" } else { $Framework }
 
-# BDN --runtimes args tell BenchmarkDotNet which runtimes to benchmark.
-$runtimeArgs = switch ($Framework) {
-    "both"   { @("--runtimes", "net8.0", "net9.0") }
-    "net8.0" { @("--runtimes", "net8.0") }
-    "net9.0" { @("--runtimes", "net9.0") }
+# Runtime selection for the e2e suite is job-defined (EndToEndJobsAttribute) and
+# controlled via this env var.  Do NOT pass BDN --runtimes: it does not filter
+# job-defined runtimes, it ADDS an extra default-configured job that pollutes
+# the results table.
+$env:NESPER_BENCH_RUNTIMES = $Framework
+
+# The micro suite defines its runtimes via [SimpleJob] attributes (always both).
+if ($Framework -ne "both" -and "micro" -in $requestedSuites) {
+    Write-Warn "-Framework '$Framework' applies to the e2e suite; micro always runs net8.0 + net9.0 (attribute-defined)."
 }
 
 # --- Project paths (relative to repo root) ------------------------------------
@@ -162,6 +195,7 @@ if ($Summary -or $DryRun) {
     Write-Info "Suites     : $($requestedSuites -join ', ')"
     Write-Info "Filter     : $Filter"
     Write-Info "Framework  : $Framework"
+    Write-Info "GC (e2e)   : $GC"
     Write-Info "Output dir : $baseDir"
     Write-Host ""
 
@@ -223,12 +257,14 @@ function Invoke-BdnSuite {
     New-Item -ItemType Directory -Path $ArtifactsDir -Force | Out-Null
 
     # Arguments forwarded to BenchmarkDotNet (after the "--" separator)
-    $bdnArgs = @("--filter", $Filter, "--artifacts", $ArtifactsDir) + $runtimeArgs
+    $bdnArgs = @("--filter", $Filter, "--artifacts", $ArtifactsDir)
 
     Write-Info "Command : dotnet run --project $Project --framework $hostFramework -c Release -- $($bdnArgs -join ' ')"
     Write-Host ""
 
-    & dotnet run --project $Project --framework $hostFramework -c Release -- @bdnArgs
+    # Out-Host streams benchmark output to the console without letting it leak
+    # into this function's return value (functions return all pipeline output).
+    & dotnet run --project $Project --framework $hostFramework -c Release -- @bdnArgs | Out-Host
 
     $exit = $LASTEXITCODE
     Write-Host ""
@@ -247,8 +283,9 @@ function Invoke-Perforator {
     Write-Info "Output  : $OutputFile"
     Write-Host ""
 
-    # Tee to file and console simultaneously.
-    & dotnet run --project $PerforatorProject -c Release | Tee-Object -FilePath $OutputFile
+    # Tee to file and console simultaneously; Out-Host keeps the function's
+    # return value clean (functions return all pipeline output).
+    & dotnet run --project $PerforatorProject -c Release | Tee-Object -FilePath $OutputFile | Out-Host
 
     $exit = $LASTEXITCODE
     Write-Host ""
@@ -263,6 +300,7 @@ Write-Header "NEsper Benchmark Runner"
 Write-Info "Suites     : $($requestedSuites -join ', ')"
 Write-Info "Filter     : $Filter"
 Write-Info "Framework  : $Framework"
+Write-Info "GC (e2e)   : $GC"
 Write-Info "Output dir : $baseDir"
 Write-Host ""
 
@@ -274,6 +312,7 @@ $manifest = [ordered]@{
     suites       = $requestedSuites
     filter       = $Filter
     framework    = $Framework
+    gcMode       = $GC
     git          = Get-GitMeta
     machine      = Get-MachineMeta
     outputDir    = $baseDir

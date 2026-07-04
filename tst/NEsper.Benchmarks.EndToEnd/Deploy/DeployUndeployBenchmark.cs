@@ -1,7 +1,6 @@
-// PERF_REVIEW: M5 — FilterServiceLockCoarse write-lock blocks all event evaluation during deploy/undeploy
+﻿// PERF_REVIEW: M5 — FilterServiceLockCoarse write-lock blocks all event evaluation during deploy/undeploy
 using System;
 using BenchmarkDotNet.Attributes;
-using BenchmarkDotNet.Jobs;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.compiler.client;
@@ -10,8 +9,7 @@ using com.espertech.esper.runtime.client;
 namespace NEsper.Benchmarks.EndToEnd.Deploy;
 
 [MemoryDiagnoser]
-[SimpleJob(RuntimeMoniker.Net80, warmupCount: 3, iterationCount: 10)]
-[SimpleJob(RuntimeMoniker.Net90, warmupCount: 3, iterationCount: 10)]
+[EndToEndJobs]
 public class DeployUndeployBenchmark
 {
     private EPRuntime  _runtime  = null!;
