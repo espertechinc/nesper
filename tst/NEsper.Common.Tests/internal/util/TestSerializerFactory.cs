@@ -85,5 +85,26 @@ namespace com.espertech.esper.common.@internal.util
             bytes = serializerFactory.Serialize(new[] { serializerFactory.GetSerializer(typeof(int?)) }, new object[] { null });
             ClassicAssert.AreEqual(0, bytes[0].Length);
         }
+
+        [Test]
+        public void TestObjectSerializerNullRoundTrip()
+        {
+            var typeResolver = container.Resolve<TypeResolverProvider>().TypeResolver;
+            var serializer = new ObjectSerializer(typeResolver);
+            ClassicAssert.IsNull(serializer.DeserializeAny(serializer.SerializeAny(null)));
+        }
+
+        [Test]
+        public void TestObjectSerializerReuse()
+        {
+            var typeResolver = container.Resolve<TypeResolverProvider>().TypeResolver;
+            var serializer = new ObjectSerializer(typeResolver);
+
+            // repeated round-trips on one thread exercise the pooled writer reset path
+            for (var i = 0; i < 100; i++) {
+                var value = new MyBean("E" + i);
+                ClassicAssert.AreEqual(value, serializer.DeserializeAny(serializer.SerializeAny(value)));
+            }
+        }
     }
 } // end of namespace

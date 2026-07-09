@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.util
         /// <param name="typeResolver">The type resolver for serialization.</param>
         public SerializableObjectCopier(TypeResolver typeResolver)
         {
-            _typeResolver = typeResolver ?? TypeResolverDefault.INSTANCE;
+            _typeResolver = typeResolver ?? new TypeResolverDefault();
             _serializer = new ObjectSerializer(_typeResolver);
         }
 

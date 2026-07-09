@@ -12,6 +12,7 @@ using System.Text.Json;
 
 using com.espertech.esper.common.client.serde;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.common.@internal.util.serde;
 using com.espertech.esper.compat.io;
 
 namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
@@ -26,6 +27,9 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
         /// </summary>
         public static readonly DIOSerializableObjectSerde INSTANCE = new DIOSerializableObjectSerde();
 
+        // JsonSerializerOptions caches type metadata per instance; must be reused across calls
+        private static readonly JsonSerializerOptions OPTIONS = new JsonSerializerOptions();
+
         private DIOSerializableObjectSerde()
         {
         }
@@ -36,9 +40,7 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
             byte[] pageFullKey,
             EventBeanCollatedWriter writer)
         {
-            var objectBytes = ObjectToByteArr(@object);
-            output.WriteInt(objectBytes.Length);
-            output.Write(objectBytes);
+            SerializeTo(@object, output);
         }
 
         public object Read(
@@ -58,27 +60,33 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
         /// <returns>byte array</returns>
         public static byte[] ObjectToByteArr(object underlying)
         {
-            var stream = new MemoryStream();
-            var writer = new Utf8JsonWriter(stream, default);
+            using var buffer = new PooledByteBufferWriter();
+            SerializeToBuffer(underlying, buffer);
+            return buffer.ToArray();
+        }
 
-            if (underlying == null) {
-                writer.WriteNullValue();
+        private static void SerializeToBuffer(
+            object underlying,
+            PooledByteBufferWriter buffer)
+        {
+            var writer = Utf8JsonWriterPool.Rent(buffer);
+            try {
+                if (underlying == null) {
+                    writer.WriteNullValue();
+                }
+                else {
+                    writer.WriteStartObject();
+                    writer.WriteString("__type", underlying.GetType().FullName);
+                    writer.WritePropertyName("__data");
+                    JsonSerializer.Serialize(writer, underlying, OPTIONS);
+                    writer.WriteEndObject();
+                }
+
+                writer.Flush();
             }
-            else {
-                writer.WriteStartObject();
-                writer.WriteString("__type", underlying.GetType().FullName);
-                writer.WritePropertyName("__data");
-
-                var options = new JsonSerializerOptions();
-                JsonSerializer.Serialize(writer, underlying, options);
-
-                writer.WriteEndObject();
+            finally {
+                Utf8JsonWriterPool.Return(writer);
             }
-
-            writer.Flush();
-            stream.Flush();
-
-            return stream.ToArray();
         }
 
         /// <summary>
@@ -105,7 +113,7 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 
             var type = TypeHelper.ResolveType(typeName);
             var dataElement = document.RootElement.GetProperty("__data");
-            return dataElement.Deserialize(type);
+            return dataElement.Deserialize(type, OPTIONS);
         }
 
         /// <summary>
@@ -118,9 +126,10 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
             object value,
             DataOutput output)
         {
-            var result = ObjectToByteArr(value);
-            output.WriteInt(result.Length);
-            output.Write(result);
+            using var buffer = new PooledByteBufferWriter();
+            SerializeToBuffer(value, buffer);
+            output.WriteInt(buffer.WrittenCount);
+            buffer.WriteTo(output);
         }
 
         /// <summary>

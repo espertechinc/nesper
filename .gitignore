@@ -38,6 +38,7 @@ tst/etc/regression/sqlite/regression.db
 # BenchmarkDotNet output
 BenchmarkDotNet.Artifacts/
 BenchmarkResults/
+benchmark-results/
 
 # AI assistant planning artifacts (belong in .planning/, not docs/)
 docs/superpowers/
