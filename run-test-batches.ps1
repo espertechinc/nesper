@@ -134,6 +134,52 @@ $testResultsDir = Join-Path $PSScriptRoot "TestResults\$runTimestamp"
 New-Item -ItemType Directory -Path $testResultsDir -Force | Out-Null
 Write-Info "Test results directory: $testResultsDir"
 
+# ---- Run metadata (run.json). Lets tools such as tools/test-dashboard tell what this run is and whether it is
+# still alive: pid + processStart identify this PowerShell process, childPid the current "dotnet test".
+$runMeta = [ordered]@{
+    runId            = $runTimestamp
+    status           = 'running'
+    pid              = $PID
+    processStart     = (Get-Process -Id $PID).StartTime.ToString('o')
+    host             = "PowerShell $($PSVersionTable.PSVersion)"
+    startedAt        = $startTime.ToString('o')
+    finishedAt       = $null
+    mode             = $(if ($IsolatedOnly) { 'isolated' } else { 'batches' })
+    framework        = $targetFramework
+    batchFilter      = $BatchName
+    batches          = @()
+    currentBatch     = $null
+    currentLog       = $null
+    childPid         = $null
+    completedBatches = @()
+    stoppedEarly     = $false
+    exitCode         = $null
+    env              = [ordered]@{}
+    git              = $null
+}
+Get-ChildItem Env: | Where-Object { $_.Name -like 'NESPER_*' -or $_.Name -eq 'CONFIGFACTORY_CLASS' -or $_.Name -eq 'esper_logcode' } |
+    ForEach-Object { $runMeta.env[$_.Name] = $_.Value }
+try {
+    $gitBranch = (& git -C $PSScriptRoot rev-parse --abbrev-ref HEAD 2>$null)
+    $gitCommit = (& git -C $PSScriptRoot rev-parse --short HEAD 2>$null)
+    $gitDirty  = [bool](& git -C $PSScriptRoot status --porcelain 2>$null)
+    $runMeta.git = [ordered]@{ branch = "$gitBranch"; commit = "$gitCommit"; dirty = $gitDirty }
+} catch { }
+
+function Save-RunMeta {
+    # Metadata must never fail a test run; retry because a reader may briefly hold the file.
+    $target = Join-Path $testResultsDir 'run.json'
+    $tmp = "$target.tmp"
+    for ($attempt = 0; $attempt -lt 5; $attempt++) {
+        try {
+            [System.IO.File]::WriteAllText($tmp, ($runMeta | ConvertTo-Json -Depth 6))
+            Move-Item -Path $tmp -Destination $target -Force
+            return
+        } catch { Start-Sleep -Milliseconds 100 }
+    }
+}
+Save-RunMeta
+
 # Run isolated tests if requested
 if ($IsolatedOnly) {
     Write-Header "Running Isolated Tests"
@@ -181,6 +227,10 @@ if ($IsolatedOnly) {
     Write-Info ""
     Write-Info "TRX results: $testResultsDir"
 
+    $runMeta.status = 'completed'
+    $runMeta.finishedAt = (Get-Date).ToString('o')
+    $runMeta.exitCode = $(if ($results.Failed -gt 0) { 1 } else { 0 })
+    Save-RunMeta
     exit $(if ($results.Failed -gt 0) { 1 } else { 0 })
 }
 
@@ -200,6 +250,9 @@ try {
     } else {
         $batchesToRun = @($config.batches | Where-Object { $_.enabled -eq $true })
     }
+
+    $runMeta.batches = @($batchesToRun | ForEach-Object { $_.name })
+    Save-RunMeta
 
     Write-Header "NEsper Regression Test Batches"
     Write-Info "Running $($batchesToRun.Count) batch(es) on framework: $targetFramework"
@@ -237,9 +290,37 @@ try {
         Write-Info "Output file: $outputFile"
         Write-Info ""
 
-        # Capture test output to both console and file
-        $testOutput = & dotnet @testArgs 2>&1
-        $exitCode = $LASTEXITCODE
+        # Output is echoed as it arrives and appended to a live log that tools can follow while the batch runs.
+        # The live log is removed once the final output file below has been written.
+        $liveFile = Join-Path $testResultsDir "$batchNameSafe.live.log"
+        $runMeta.currentBatch = $batch.name
+        $runMeta.currentLog = [System.IO.Path]::GetFileName($liveFile)
+        $runMeta.childPid = $null
+        Save-RunMeta
+
+        $lines = New-Object System.Collections.Generic.List[string]
+        $liveStream = New-Object System.IO.FileStream($liveFile, [System.IO.FileMode]::Create, [System.IO.FileAccess]::Write, [System.IO.FileShare]::ReadWrite)
+        $live = New-Object System.IO.StreamWriter($liveStream)
+        $live.AutoFlush = $true
+        $childTries = 0
+        try {
+            & dotnet @testArgs 2>&1 | ForEach-Object {
+                $line = "$_"
+                if ($null -eq $runMeta.childPid -and $childTries -lt 20) {
+                    $childTries++
+                    try {
+                        $child = Get-CimInstance Win32_Process -Filter "ParentProcessId=$PID AND Name='dotnet.exe'" -ErrorAction Stop | Select-Object -First 1
+                        if ($child) { $runMeta.childPid = $child.ProcessId; Save-RunMeta }
+                    } catch { $childTries = 20 }
+                }
+                $lines.Add($line)
+                $live.WriteLine($line)
+                Write-Host $line
+            }
+            $exitCode = $LASTEXITCODE
+        } finally {
+            $live.Dispose()
+        }
         $batchEndTime = Get-Date
         $duration = ($batchEndTime - $batchStartTime).TotalSeconds
 
@@ -261,10 +342,14 @@ Exit Code: $exitCode
 "
 "@
         Set-Content -Path $outputFile -Value $fileHeader
-        Add-Content -Path $outputFile -Value ($testOutput | Out-String)
+        Add-Content -Path $outputFile -Value (($lines -join "`r`n") + "`r`n")
+        Remove-Item -Path $liveFile -ErrorAction SilentlyContinue
 
-        # Parse results from output and display to console
-        $testOutput | ForEach-Object { Write-Host $_ }
+        $runMeta.currentBatch = $null
+        $runMeta.currentLog = $null
+        $runMeta.childPid = $null
+        $runMeta.completedBatches += [ordered]@{ name = $batch.name; exitCode = $exitCode; seconds = [math]::Round($duration, 1) }
+        Save-RunMeta
 
         $batchResult = @{
             Name = $batch.name
@@ -286,6 +371,7 @@ Exit Code: $exitCode
 
             if ($stopOnFailure) {
                 Write-Warning "Stopping test execution due to failure (stopOnFirstFailure=true)"
+                $runMeta.stoppedEarly = $true
                 break
             }
         }
@@ -383,9 +469,22 @@ Detailed Batch Results:
     }
     $summaryLines | Set-Content (Join-Path $testResultsDir "summary.txt")
 
-    # Exit with appropriate code
+    # Record how the run ended, then exit with appropriate code
+    $runMeta.status = 'completed'
+    $runMeta.finishedAt = (Get-Date).ToString('o')
+    $runMeta.exitCode = $(if ($results.Failed -gt 0) { 1 } else { 0 })
+    Save-RunMeta
     exit $(if ($results.Failed -gt 0) { 1 } else { 0 })
 
 } finally {
     Pop-Location
+    if ($runMeta.status -eq 'running') {
+        # Abnormal exit (Ctrl+C or an error): do not leave this run's test host behind, and record how it ended.
+        if ($runMeta.childPid) {
+            try { & taskkill /PID $runMeta.childPid /T /F 2>$null | Out-Null } catch { }
+        }
+        $runMeta.status = 'aborted'
+        $runMeta.finishedAt = (Get-Date).ToString('o')
+        Save-RunMeta
+    }
 }
