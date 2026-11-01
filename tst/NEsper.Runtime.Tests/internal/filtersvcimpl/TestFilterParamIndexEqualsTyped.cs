@@ -116,5 +116,39 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             ClassicAssert.IsNull(index.Get(10));
             ClassicAssert.IsTrue(index.IsEmpty);
         }
+
+        /// <summary>
+        /// A correlated pattern filter such as "IntBoxed = a.IntBoxed" registers a null constant
+        /// when the earlier event's property is null.  It must register, never match, and remove.
+        /// </summary>
+        [Test, RunInApplicationDomain]
+        public void TestNullConstant()
+        {
+            var indexes = new FilterParamIndexLookupableBase[] {
+                new FilterParamIndexEqualsInt(MakeLookupable("IntBoxed"), new SlimReaderWriterLock()),
+                new FilterParamIndexEqualsLong(MakeLookupable("LongBoxed"), new SlimReaderWriterLock()),
+                new FilterParamIndexEqualsDouble(MakeLookupable("DoubleBoxed"), new SlimReaderWriterLock()),
+            };
+
+            foreach (var index in indexes) {
+                ClassicAssert.IsNull(index.Get(null));
+
+                index.Put(null, testEvaluator);
+                ClassicAssert.AreEqual(testEvaluator, index.Get(null));
+                ClassicAssert.AreEqual(1, index.CountExpensive);
+                ClassicAssert.IsFalse(index.IsEmpty);
+
+                testBean.IntBoxed = null;
+                testBean.LongBoxed = null;
+                testBean.DoubleBoxed = null;
+                index.MatchEvent(testEventBean, matchesList, null);
+                ClassicAssert.AreEqual(0, testEvaluator.GetAndResetCountInvoked());
+
+                index.Remove(null);
+                ClassicAssert.IsNull(index.Get(null));
+                ClassicAssert.AreEqual(0, index.CountExpensive);
+                ClassicAssert.IsTrue(index.IsEmpty);
+            }
+        }
     }
 }
