@@ -1,0 +1,570 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NEsper Test Runs</title>
+<style>
+  /* Layout: one column of panels under a sticky run bar; summary first, then batches, failures, history. */
+  :root {
+    --bg: #f4f6f8;
+    --panel: #ffffff;
+    --fg: #1b2530;
+    --muted: #5d6b7a;
+    --line: #dbe1e7;
+    --accent: #1f6f8b;
+    --ok: #1f8a5b;
+    --bad: #c8382f;
+    --warn: #b7791f;
+    --skip: #8a96a3;
+    --stripe: rgba(31, 111, 139, .18);
+    --font: "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, sans-serif;
+    --mono: "Cascadia Mono", Consolas, "SFMono-Regular", Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0f151c; --panel: #17202a; --fg: #e4eaf0; --muted: #93a1b0; --line: #26323f;
+      --accent: #5bb5d1; --ok: #46c08a; --bad: #ef6b60; --warn: #e0a84a; --skip: #6c7a88;
+      --stripe: rgba(91, 181, 209, .22); color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0f151c; --panel: #17202a; --fg: #e4eaf0; --muted: #93a1b0; --line: #26323f;
+    --accent: #5bb5d1; --ok: #46c08a; --bad: #ef6b60; --warn: #e0a84a; --skip: #6c7a88;
+    --stripe: rgba(91, 181, 209, .22); color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--bg); color: var(--fg); font: 14px/1.45 var(--font);
+    padding-block: 0 48px;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+  }
+  .wrap { max-width: 1180px; margin: 0 auto; }
+  h1 { font-size: 17px; margin: 0; letter-spacing: .01em; }
+  h2 { font-size: 12px; text-transform: uppercase; letter-spacing: .09em; color: var(--muted); margin: 0 0 12px; font-weight: 600; }
+  .num { font-variant-numeric: tabular-nums; }
+  button, select { font: inherit; color: inherit; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  /* run bar */
+  .bar { position: sticky; top: 0; z-index: 5; background: var(--bg); border-bottom: 1px solid var(--line); padding: 12px 0; margin-bottom: 18px; }
+  .bar .wrap { display: flex; flex-wrap: wrap; gap: 12px 18px; align-items: center; }
+  .bar .title { display: flex; align-items: center; gap: 10px; margin-right: auto; }
+  .field { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 12px; min-width: 0; }
+  select { background: var(--panel); border: 1px solid var(--line); border-radius: 4px; padding: 5px 8px; max-width: 240px; }
+  .pill { display: inline-flex; align-items: center; gap: 7px; padding: 3px 10px; border-radius: 99px; font-size: 12px; font-weight: 600; border: 1px solid var(--line); background: var(--panel); }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--skip); }
+  .pill.running .dot { background: var(--accent); animation: pulse 1.4s ease-in-out infinite; }
+  .pill.complete.ok .dot { background: var(--ok); }
+  .pill.complete.bad .dot { background: var(--bad); }
+  .pill.stalled .dot, .pill.interrupted .dot { background: var(--warn); }
+  .conn { font-size: 12px; color: var(--muted); }
+  .conn.off { color: var(--bad); }
+  @keyframes pulse { 50% { opacity: .35; transform: scale(.8); } }
+
+  /* panels */
+  .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 16px 18px; margin-bottom: 16px; min-width: 0; }
+  .cols { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; }
+  @media (max-width: 800px) { .cols { grid-template-columns: minmax(0, 1fr); } }
+
+  /* summary */
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0; }
+  .stat { padding: 2px 18px 2px 0; margin-right: 18px; border-right: 1px solid var(--line); min-width: 0; }
+  .stat:last-child { border-right: 0; }
+  .stat .v { font-size: 30px; font-weight: 600; line-height: 1.15; }
+  .stat .l { color: var(--muted); font-size: 12px; margin-top: 2px; }
+  .stat .d { font-size: 12px; margin-top: 2px; }
+  .v.bad { color: var(--bad); } .v.ok { color: var(--ok); } .v.warn { color: var(--warn); }
+  .progress { height: 6px; border-radius: 3px; background: var(--line); margin-top: 16px; overflow: hidden; }
+  .progress > i { display: block; height: 100%; background: var(--accent); transition: width .4s; }
+  .progress-l { color: var(--muted); font-size: 12px; margin-top: 6px; }
+
+  /* batches */
+  .brow { display: grid; grid-template-columns: 130px minmax(60px, 1fr) 120px 70px; gap: 12px; align-items: center; padding: 6px 0; border-top: 1px solid var(--line); }
+  .brow:first-of-type { border-top: 0; }
+  .brow .name { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .brow .counts, .brow .sec { color: var(--muted); font-size: 12px; text-align: right; white-space: nowrap; }
+  .brow.pending .name, .brow.notrun .name { color: var(--muted); font-weight: 400; }
+  .stack { display: flex; height: 12px; border-radius: 2px; overflow: hidden; background: var(--line); }
+  .stack i { display: block; height: 100%; }
+  .stack .p { background: var(--ok); } .stack .f { background: var(--bad); } .stack .s { background: var(--skip); }
+  .stack.running { background: repeating-linear-gradient(135deg, var(--stripe) 0 8px, transparent 8px 16px); background-size: 22px 22px; animation: slide 1s linear infinite; }
+  @keyframes slide { to { background-position: 22px 0; } }
+  @media (max-width: 560px) { .brow { grid-template-columns: 96px minmax(40px, 1fr) 58px; } .brow .counts { display: none; } }
+
+  /* failures */
+  .chips { display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
+  .chip { border: 1px solid var(--line); background: transparent; border-radius: 99px; padding: 3px 11px; cursor: pointer; font-size: 12px; }
+  .chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+  .fail { border-top: 1px solid var(--line); }
+  .fail:first-child { border-top: 0; }
+  .fail summary { list-style: none; cursor: pointer; padding: 7px 0; display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+  .fail summary::-webkit-details-marker { display: none; }
+  .fail .tn { font-family: var(--mono); font-size: 12.5px; overflow-wrap: anywhere; min-width: 0; }
+  .tag { font-size: 11px; font-weight: 600; padding: 1px 7px; border-radius: 3px; border: 1px solid; white-space: nowrap; }
+  .tag.new { color: var(--bad); border-color: var(--bad); }
+  .tag.base { color: var(--warn); border-color: var(--warn); }
+  .tag.batch { color: var(--muted); border-color: var(--line); font-weight: 400; }
+  .fail pre { margin: 0 0 10px; padding: 10px 12px; background: var(--bg); border: 1px solid var(--line); border-radius: 4px; font: 12px/1.45 var(--mono); overflow-x: auto; max-height: 280px; white-space: pre-wrap; overflow-wrap: anywhere; }
+  .reason { color: var(--muted); font-size: 12px; margin: 0 0 6px; }
+  .empty { color: var(--muted); padding: 6px 0; }
+
+  /* compare, slowest, history */
+  .cmp { display: flex; gap: 22px; flex-wrap: wrap; margin-bottom: 8px; }
+  .cmp b { font-size: 22px; font-weight: 600; margin-right: 6px; }
+  .cmp .n { color: var(--muted); font-size: 12px; }
+  .list { font-family: var(--mono); font-size: 12.5px; margin: 6px 0 0; padding: 0; list-style: none; }
+  .list li { padding: 2px 0; overflow-wrap: anywhere; }
+  .slow { display: grid; grid-template-columns: minmax(0, 1fr) 62px; gap: 4px 12px; align-items: center; }
+  .slow .tn { font-family: var(--mono); font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .slow .bg { grid-column: 1 / -1; height: 4px; background: var(--line); border-radius: 2px; margin-bottom: 6px; }
+  .slow .bg i { display: block; height: 100%; background: var(--accent); border-radius: 2px; }
+  .slow .t { text-align: right; color: var(--muted); font-size: 12px; }
+  .hist { display: flex; align-items: flex-end; gap: 6px; height: 120px; overflow-x: auto; padding-bottom: 2px; }
+  .hcol { flex: 0 0 34px; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; height: 100%; cursor: pointer; border: 0; background: none; padding: 0; gap: 4px; }
+  .hcol .bar1 { width: 100%; background: var(--ok); border-radius: 2px 2px 0 0; min-height: 3px; }
+  .hcol.partial .bar1 { background: repeating-linear-gradient(135deg, var(--ok) 0 4px, transparent 4px 8px); }
+  .hcol.hasnew .bar1 { background: var(--bad); }
+  .hcol[aria-current="true"] .bar1 { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .hcol span { font-size: 10px; color: var(--muted); white-space: nowrap; }
+  .hint { color: var(--muted); font-size: 12px; }
+
+  /* batch drill-down */
+  .brow.done { cursor: pointer; }
+  .brow.done:hover .name { color: var(--accent); }
+  .brow.sel { background: var(--bg); margin: 0 -10px; padding-left: 10px; padding-right: 10px; border-radius: 4px; }
+  .thead { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: center; margin-bottom: 10px; }
+  .thead h2 { margin: 0; margin-right: auto; }
+  .search { background: var(--bg); border: 1px solid var(--line); border-radius: 4px; padding: 5px 9px; width: 240px; max-width: 100%; }
+  .trow { border-top: 1px solid var(--line); }
+  .trow:first-child { border-top: 0; }
+  .trow > summary, .trow > .plain { list-style: none; display: grid; grid-template-columns: 14px minmax(0, 1fr) auto 54px; gap: 10px; align-items: baseline; padding: 4px 0; }
+  .trow > summary { cursor: pointer; }
+  .trow > summary::-webkit-details-marker { display: none; }
+  .trow .st { width: 9px; height: 9px; border-radius: 50%; display: inline-block; background: var(--ok); }
+  .trow .st.Failed, .trow .st.Error, .trow .st.Timeout, .trow .st.Aborted { background: var(--bad); }
+  .trow .st.NotExecuted, .trow .st.Skipped, .trow .st.Inconclusive { background: var(--skip); }
+  .trow .tn { font-family: var(--mono); font-size: 12.5px; overflow-wrap: anywhere; min-width: 0; }
+  .trow .t { color: var(--muted); font-size: 12px; text-align: right; }
+  .tlist { max-height: 560px; overflow-y: auto; }
+  .fbody h3 { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 8px 0 4px; font-weight: 600; }
+  .copy { border: 1px solid var(--line); background: transparent; border-radius: 4px; padding: 2px 9px; font-size: 12px; cursor: pointer; margin: 4px 0 6px; }
+  .copy:hover { border-color: var(--accent); color: var(--accent); }
+  .tag.live { color: var(--accent); border-color: var(--accent); }
+  .liveout { margin: 0; padding: 10px 12px; background: var(--bg); border: 1px solid var(--line); border-radius: 4px; font: 12px/1.45 var(--mono); max-height: 260px; overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere; }
+</style>
+</head>
+<body>
+<div class="bar"><div class="wrap">
+  <div class="title"><h1>NEsper test runs</h1><span id="state" class="pill"><i class="dot"></i><span id="stateText">connecting</span></span><span id="runTag" class="tag batch" hidden></span></div>
+  <label class="field" for="runSel">Run <select id="runSel"></select></label>
+  <label class="field" for="baseSel">Compare to <select id="baseSel"></select></label>
+  <span id="conn" class="conn">&nbsp;</span>
+</div></div>
+
+<div class="wrap">
+  <section class="panel" aria-label="Summary">
+    <div class="stats" id="stats"></div>
+    <div class="progress" aria-hidden="true"><i id="prog" style="width:0%"></i></div>
+    <div class="progress-l" id="progL"></div>
+  </section>
+
+  <section class="panel" aria-label="Batches"><h2>Batches</h2><div id="batches"></div></section>
+
+  <section class="panel" id="livePanel" aria-label="Live output" hidden>
+    <h2 id="liveH">Live output</h2>
+    <pre id="liveOut" class="liveout"></pre>
+  </section>
+
+  <section class="panel" id="testsPanel" aria-label="Tests in batch" hidden>
+    <div class="thead">
+      <h2 id="testsH">Tests</h2>
+      <input id="testQ" class="search" type="search" placeholder="Filter by name" aria-label="Filter tests by name">
+      <div class="chips" id="testChips" style="margin:0"></div>
+      <button class="chip" id="testClose" type="button">Close</button>
+    </div>
+    <div id="tests" class="tlist"></div>
+  </section>
+
+  <section class="panel" aria-label="Failures">
+    <h2>Failures</h2>
+    <div class="chips" id="chips"></div>
+    <div id="fails"></div>
+  </section>
+
+  <div class="cols">
+    <section class="panel" aria-label="Comparison"><h2 id="cmpH">Compared with</h2><div id="cmp"><div class="empty">Pick a run to compare against.</div></div></section>
+    <section class="panel" aria-label="Slowest tests"><h2>Slowest tests</h2><div id="slow" class="slow"></div></section>
+  </div>
+
+  <section class="panel" aria-label="History">
+    <h2>History <span class="hint">pass rate per run; hatched = not all batches ran, red = has new failures</span></h2>
+    <div class="hist" id="hist"></div>
+  </section>
+</div>
+
+<script>
+(function () {
+  'use strict';
+  const $ = id => document.getElementById(id);
+  const state = { runs: [], runId: null, baseId: null, detail: null, cmp: null, filter: 'new', serverSkew: 0, batch: null, tests: null, tfilter: 'failed', q: '', open: new Set(), sig: '', testsSig: '' };
+
+  function el(tag, props, ...kids) {
+    const e = document.createElement(tag);
+    if (props) for (const [k, v] of Object.entries(props)) {
+      if (k === 'class') e.className = v; else if (k === 'text') e.textContent = v; else if (k.startsWith('on')) e.addEventListener(k.slice(2), v); else e.setAttribute(k, v);
+    }
+    for (const kid of kids) if (kid != null) e.append(kid.nodeType ? kid : document.createTextNode(kid));
+    return e;
+  }
+  const fmt = n => Number(n || 0).toLocaleString();
+  function dur(sec) {
+    sec = Math.max(0, Math.round(sec));
+    const h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60), s = sec % 60;
+    return h ? `${h}h ${String(m).padStart(2, '0')}m` : m ? `${m}m ${String(s).padStart(2, '0')}s` : `${s}s`;
+  }
+  function when(iso) {
+    const d = new Date(iso);
+    return isNaN(d) ? iso : d.toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+  }
+  async function api(path) {
+    const r = await fetch(path, { cache: 'no-store' });
+    if (!r.ok) throw new Error(path + ' ' + r.status);
+    return r.json();
+  }
+
+  // ---- data
+  async function loadRuns() {
+    const d = await api('/api/runs');
+    state.serverSkew = d.now - Date.now();
+    state.runs = d.runs;
+    if (!state.runs.length) return;
+    if (!state.runId || !state.runs.some(r => r.id === state.runId)) state.runId = state.runs[0].id;
+    if (!state.baseId || !state.runs.some(r => r.id === state.baseId) || state.baseId === state.runId) state.baseId = defaultBase();
+    fillSelects();
+    await loadDetail();
+  }
+  function defaultBase() {
+    const cur = state.runs.find(r => r.id === state.runId);
+    // newest other run that finished every batch
+    const full = state.runs.find(r => r.id !== state.runId && r.state === 'complete' && r.batchesDone >= r.batchesExpected && r.batchesExpected > 1);
+    return (full || state.runs.find(r => r.id !== (cur && cur.id)) || {}).id || '';
+  }
+  async function loadDetail() {
+    if (!state.runId) return;
+    const detail = await api('/api/run?id=' + encodeURIComponent(state.runId));
+    const cmp = state.baseId && state.baseId !== state.runId
+      ? await api(`/api/compare?id=${encodeURIComponent(state.runId)}&base=${encodeURIComponent(state.baseId)}`).catch(() => null) : null;
+    // a refresh that brings nothing new must not rebuild the page (it would collapse what the reader has open)
+    const sig = JSON.stringify([detail, cmp, state.baseId], (k, v) => (k === 'now' || k === 'tail' ? undefined : v));
+    state.detail = detail;
+    state.cmp = cmp;
+    if (sig !== state.sig) { state.sig = sig; render(); }
+    renderLive(detail);
+    await loadTests();
+  }
+
+  async function loadTests() {
+    const d = state.detail;
+    const b = d && state.batch && d.batches.find(x => x.name === state.batch && x.status === 'done');
+    if (!b) { state.tests = null; state.testsSig = ''; renderTests(); return; }
+    try {
+      const tests = (await api(`/api/tests?id=${encodeURIComponent(state.runId)}&batch=${encodeURIComponent(state.batch)}`)).tests;
+      const sig = state.runId + '|' + state.batch + '|' + JSON.stringify(tests);
+      if (sig === state.testsSig && state.tests) return;
+      state.testsSig = sig;
+      state.tests = tests;
+    } catch { state.tests = null; state.testsSig = ''; }
+    renderTests();
+  }
+  function openBatch(name) {
+    state.batch = state.batch === name ? null : name;
+    state.tfilter = 'failed'; state.q = ''; $('testQ').value = '';
+    renderBatches(state.detail);
+    loadTests().then(() => { if (state.batch) $('testsPanel').scrollIntoView({ behavior: 'smooth', block: 'nearest' }); });
+  }
+
+  // ---- selects
+  function runLabel(r) {
+    const t = r.totals;
+    return `${when(r.startedAt)}  ·  ${r.batchesDone}/${r.batchesExpected} batches  ·  ${t.failed} failed${r.state === 'running' ? '  ·  running' : ''}`;
+  }
+  function fillSelects() {
+    const run = $('runSel'), base = $('baseSel');
+    run.replaceChildren(...state.runs.map(r => el('option', { value: r.id, text: runLabel(r) })));
+    run.value = state.runId;
+    base.replaceChildren(el('option', { value: '', text: 'none' }), ...state.runs.filter(r => r.id !== state.runId).map(r => el('option', { value: r.id, text: runLabel(r) })));
+    base.value = state.baseId || '';
+  }
+  $('runSel').addEventListener('change', e => { state.runId = e.target.value; state.batch = null; if (state.baseId === state.runId) state.baseId = defaultBase(); fillSelects(); loadDetail(); });
+  $('baseSel').addEventListener('change', e => { state.baseId = e.target.value; loadDetail(); });
+
+  // ---- rendering
+  function nowMs() { return Date.now() + state.serverSkew; }
+  function elapsedSec(d) {
+    if (d.state === 'running') return (nowMs() - Date.parse(d.startedAt)) / 1000;
+    const end = d.finishedAt ? Date.parse(d.finishedAt) : d.lastActivity;
+    return Math.max(0, (end - Date.parse(d.startedAt)) / 1000);
+  }
+
+  function render() {
+    const d = state.detail;
+    if (!d) return;
+    renderState(d); renderStats(d);
+    once('batches', [d.id, d.state, d.batches, d.live && [d.live.batch, d.live.passed, d.live.failed, d.live.skipped], state.batch], () => renderBatches(d));
+    once('fails', [d.id, d.state, d.failures, d.live && d.live.failures, state.filter], () => renderFails(d));
+    once('cmp', [d.id, state.cmp, state.baseId], () => renderCompare(d));
+    once('slow', [d.id, d.slowest], () => renderSlow(d));
+    once('hist', [state.runs, state.runId], () => renderHist());
+  }
+  // rebuilding a section discards what the reader has open or selected in it, so only do it when its data changed
+  const memo = {};
+  function once(key, val, fn) {
+    const s = JSON.stringify(val);
+    if (memo[key] === s) return;
+    memo[key] = s;
+    fn();
+  }
+
+  function renderLive(d) {
+    const panel = $('livePanel');
+    const live = d && d.live;
+    if (!live) { panel.hidden = true; return; }
+    panel.hidden = false;
+    $('liveH').textContent = `Live output: ${live.batch}`;
+    const out = $('liveOut');
+    if (out.textContent === live.tail) return;
+    const atEnd = out.scrollHeight - out.scrollTop - out.clientHeight < 24;
+    out.textContent = live.tail;
+    if (atEnd) out.scrollTop = out.scrollHeight;
+  }
+
+  function renderState(d) {
+    const p = $('state');
+    const ok = d.totals.newFailed === 0;
+    p.className = 'pill ' + d.state + (d.state === 'complete' ? (ok ? ' ok' : ' bad') : '');
+    const tag = $('runTag'), m = d.meta;
+    if (m) {
+      const g = m.git ? ` · ${m.git.branch}@${m.git.commit}${m.git.dirty ? '+' : ''}` : '';
+      tag.textContent = (m.singleAssembly ? 'single-assembly' : 'default assemblies') + g + (m.framework ? ' · ' + m.framework : '');
+      tag.title = `runner pid ${m.pid}` + (m.childPid ? `, test host launcher pid ${m.childPid}` : '') + (m.env && Object.keys(m.env).length ? '\n' + Object.entries(m.env).map(([k, v]) => k + '=' + v).join('\n') : '');
+      tag.hidden = false;
+    } else tag.hidden = true;
+    $('stateText').textContent = d.state === 'running' ? 'running' : d.state === 'stalled' ? 'no recent output' : d.state === 'interrupted' ? 'interrupted' : ok ? 'passed' : 'new failures';
+  }
+
+  function stat(value, label, cls, delta) {
+    return el('div', { class: 'stat' }, el('div', { class: 'v num ' + (cls || ''), text: value }), el('div', { class: 'l', text: label }), delta ? el('div', { class: 'd num', text: delta }) : null);
+  }
+  function renderStats(d) {
+    const t = d.totals;
+    const exec = t.total - t.skipped;
+    const rate = exec ? (t.passed / exec) * 100 : 0;
+    const base = state.baseId && state.runs.find(r => r.id === state.baseId);
+    let rateDelta = '';
+    if (base && base.totals.total && d.state === 'complete' && base.batchesDone >= base.batchesExpected) {
+      const br = (base.totals.passed / Math.max(1, base.totals.total - base.totals.skipped)) * 100;
+      const diff = rate - br;
+      rateDelta = `${diff >= 0 ? '+' : ''}${diff.toFixed(2)} pts vs ${when(base.startedAt)}`;
+    }
+    $('stats').replaceChildren(
+      stat(fmt(t.passed), `passed of ${fmt(t.total)} tests`, 'ok'),
+      stat(fmt(t.newFailed), 'new failures', t.newFailed ? 'bad' : 'ok', t.baselineFailed ? `+ ${t.baselineFailed} in baseline` : 'none in baseline'),
+      stat(rate.toFixed(2) + '%', 'pass rate (executed)', '', rateDelta),
+      stat(fmt(t.skipped), 'skipped'),
+      stat(dur(elapsedSec(d)), d.state === 'running' ? 'elapsed' : d.state === 'interrupted' ? 'ran before stopping' : 'duration', d.state === 'stalled' || d.state === 'interrupted' ? 'warn' : '')
+    );
+    const pct = d.batchesExpected ? (d.batchesDone / d.batchesExpected) * 100 : 0;
+    $('prog').style.width = pct + '%';
+    $('progL').textContent = d.state === 'interrupted'
+      ? `The run stopped after ${d.batchesDone} of ${d.batchesExpected} batches; no test runner is active. Remaining batches did not run.`
+      : `${d.batchesDone} of ${d.batchesExpected} batches reported` + (d.state === 'running' ? ' (results appear as each batch finishes)' : '');
+  }
+  function tickElapsed() {
+    const d = state.detail;
+    if (!d || d.state !== 'running') return;
+    const v = $('stats').lastChild && $('stats').lastChild.querySelector('.v');
+    if (v) v.textContent = dur(elapsedSec(d));
+    const live = document.querySelector('.brow.running .sec');
+    if (live) live.textContent = dur(sinceLastBatch(d));
+  }
+  function sinceLastBatch(d) {
+    const fins = d.batches.filter(b => b.status === 'done' && b.finish).map(b => Date.parse(b.finish));
+    const from = fins.length ? Math.max(...fins) : Date.parse(d.startedAt);
+    return (nowMs() - from) / 1000;
+  }
+
+  function renderBatches(d) {
+    const max = Math.max(1, ...d.batches.map(b => b.total || 0));
+    $('batches').replaceChildren(...d.batches.map(b => {
+      const row = el('div', { class: 'brow ' + b.status + (b.name === state.batch ? ' sel' : '') });
+      if (b.status === 'done') {
+        row.setAttribute('role', 'button'); row.tabIndex = 0;
+        row.setAttribute('aria-label', `Show tests in ${b.name}`);
+        row.addEventListener('click', () => openBatch(b.name));
+        row.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openBatch(b.name); } });
+      }
+      row.append(el('div', { class: 'name', text: b.name, title: b.name }));
+      const stack = el('div', { class: 'stack' + (b.status === 'running' ? ' running' : '') });
+      if (b.status === 'done') {
+        const w = n => (b.total ? (n / max) * 100 : 0) + '%';
+        const execd = b.total - b.failed - b.skipped;
+        stack.append(el('i', { class: 'p', style: 'width:' + w(execd) }), el('i', { class: 'f', style: 'width:' + w(b.failed) }), el('i', { class: 's', style: 'width:' + w(b.skipped) }));
+      }
+      row.append(stack);
+      row.append(el('div', { class: 'counts num', text: b.status === 'done' ? `${fmt(b.total - b.failed - b.skipped)} ok${b.failed ? ` · ${b.failed} failed` : ''}${b.skipped ? ` · ${b.skipped} skip` : ''}` : b.status === 'running' ? (d.live && d.live.batch === b.name ? `${fmt(d.live.passed)} ok${d.live.failed ? ` · ${d.live.failed} failed` : ''} so far` : 'running') : b.status === 'notrun' ? 'not run' : 'waiting' }));
+      row.append(el('div', { class: 'sec num', text: b.status === 'done' ? dur(b.sec) : b.status === 'running' ? dur(sinceLastBatch(d)) : '' }));
+      return row;
+    }));
+  }
+
+  function renderFails(d) {
+    const all = d.failures;
+    const nw = all.filter(f => !f.baseline), bs = all.filter(f => f.baseline);
+    const lf = (d.live && d.live.failures) || [];
+    const chips = [['new', `New (${nw.length})`], ['baseline', `Baseline (${bs.length})`], ['all', `All (${all.length})`]];
+    if (lf.length) chips.push(['live', `In progress (${lf.length})`]);
+    $('chips').replaceChildren(...chips.map(([k, label]) => el('button', { class: 'chip', 'aria-pressed': String(state.filter === k), text: label, onclick: () => { state.filter = k; renderFails(d); } })));
+    const list = state.filter === 'new' ? nw : state.filter === 'baseline' ? bs : state.filter === 'live' ? lf.map(f => ({ full: f.name, batch: d.live.batch, message: f.detail, live: true })) : all;
+    if (!list.length) {
+      $('fails').replaceChildren(el('div', { class: 'empty', text: state.filter === 'new' ? (d.state === 'running' ? 'No new failures so far.' : 'No new failures.') : 'Nothing here.' }));
+      return;
+    }
+    $('fails').replaceChildren(...list.map(f => {
+      const det = el('details', { class: 'fail' });
+      keepOpen(det, 'f|' + f.batch + '|' + f.full);
+      det.append(el('summary', null,
+        el('span', { class: 'tag ' + (f.live ? 'live' : f.baseline ? 'base' : 'new'), text: f.live ? 'in progress' : f.baseline ? 'baseline' : 'new', title: f.live ? 'Classified as new or baseline when the batch finishes' : '' }),
+        el('span', { class: 'tn', text: f.full }),
+        el('span', { class: 'tag batch', text: f.batch })));
+      det.append(failureBody(f));
+      return det;
+    }));
+  }
+
+  function keepOpen(det, key) {
+    if (state.open.has(key)) det.open = true;
+    det.addEventListener('toggle', () => { if (det.open) state.open.add(key); else state.open.delete(key); });
+  }
+  function setTests(nodes) {
+    const box = $('tests'), top = box.scrollTop;
+    box.replaceChildren(...nodes);
+    box.scrollTop = top;
+  }
+
+  function failureBody(f) {
+    const box = el('div', { class: 'fbody' });
+    if (f.baseline && typeof f.baseline === 'string') box.append(el('p', { class: 'reason', text: 'Known: ' + f.baseline }));
+    const text = [f.full + (f.batch ? '  [' + f.batch + ']' : ''), f.message && 'MESSAGE\n' + f.message, f.stack && 'STACK\n' + f.stack, f.stdout && 'STDOUT\n' + f.stdout].filter(Boolean).join('\n\n');
+    const btn = el('button', { class: 'copy', type: 'button', text: 'Copy details' });
+    btn.addEventListener('click', async () => {
+      try { await navigator.clipboard.writeText(text); btn.textContent = 'Copied'; }
+      catch { const ta = el('textarea'); ta.value = text; document.body.append(ta); ta.select(); try { document.execCommand('copy'); btn.textContent = 'Copied'; } catch { btn.textContent = 'Copy failed'; } ta.remove(); }
+      setTimeout(() => { btn.textContent = 'Copy details'; }, 1500);
+    });
+    box.append(btn);
+    if (f.message) box.append(el('h3', { text: 'Message' }), el('pre', { text: f.message }));
+    if (f.stack) box.append(el('h3', { text: 'Stack trace' }), el('pre', { text: f.stack }));
+    if (f.stdout) box.append(el('h3', { text: 'Captured output' }), el('pre', { text: f.stdout }));
+    if (!f.message && !f.stack && !f.stdout) box.append(el('p', { class: 'reason', text: 'No message or output was recorded in the TRX for this test.' }));
+    return box;
+  }
+
+  function renderTests() {
+    const panel = $('testsPanel');
+    if (!state.batch || !state.detail) { panel.hidden = true; return; }
+    panel.hidden = false;
+    $('testsH').textContent = `Tests in ${state.batch}`;
+    const tests = state.tests;
+    if (!tests) { $('testChips').replaceChildren(); setTests([el('div', { class: 'empty', text: 'Loading...' })]); return; }
+    const isSkip = t => ['NotExecuted', 'Skipped', 'Inconclusive', 'NotRunnable'].includes(t.outcome);
+    const counts = { failed: tests.filter(t => t.failed).length, skipped: tests.filter(isSkip).length, passed: tests.filter(t => t.outcome === 'Passed').length, all: tests.length };
+    const chips = [['failed', `Failed (${counts.failed})`], ['skipped', `Skipped (${counts.skipped})`], ['passed', `Passed (${counts.passed})`], ['all', `All (${counts.all})`]];
+    $('testChips').replaceChildren(...chips.map(([k, label]) => el('button', { class: 'chip', type: 'button', 'aria-pressed': String(state.tfilter === k), text: label, onclick: () => { state.tfilter = k; renderTests(); } })));
+    const q = state.q.trim().toLowerCase();
+    let list = tests.filter(t => state.tfilter === 'all' || (state.tfilter === 'failed' ? t.failed : state.tfilter === 'skipped' ? isSkip(t) : t.outcome === 'Passed'));
+    if (q) list = list.filter(t => t.full.toLowerCase().includes(q));
+    list.sort((a, b) => (b.failed - a.failed) || a.full.localeCompare(b.full));
+    if (!list.length) { setTests([el('div', { class: 'empty', text: q ? 'No tests match.' : state.tfilter === 'failed' ? 'No failed tests in this batch.' : 'Nothing here.' })]); return; }
+    const LIMIT = 400;
+    const rows = list.slice(0, LIMIT).map(t => {
+      const head = [el('i', { class: 'st ' + t.outcome }), el('span', { class: 'tn', text: t.full }),
+        t.failed ? el('span', { class: 'tag ' + (t.baseline ? 'base' : 'new'), text: t.baseline ? 'baseline' : 'new' }) : el('span'),
+        el('span', { class: 't num', text: t.sec >= 1 ? dur(t.sec) : '' })];
+      if (t.failed) {
+        const det = el('details', { class: 'trow' });
+        keepOpen(det, 't|' + state.batch + '|' + t.full);
+        det.append(el('summary', null, ...head), failureBody({ ...t, batch: state.batch }));
+        return det;
+      }
+      return el('div', { class: 'trow' }, el('div', { class: 'plain' }, ...head));
+    });
+    if (list.length > LIMIT) rows.push(el('div', { class: 'hint', text: `Showing ${LIMIT} of ${list.length}. Narrow with the filter.` }));
+    setTests(rows);
+  }
+  $('testQ').addEventListener('input', e => { state.q = e.target.value; renderTests(); });
+  $('testClose').addEventListener('click', () => { state.batch = null; renderBatches(state.detail); renderTests(); });
+
+  function renderCompare(d) {
+    const c = state.cmp;
+    const base = state.runs.find(r => r.id === state.baseId);
+    $('cmpH').textContent = base ? `Compared with ${when(base.startedAt)}` : 'Compared with';
+    if (!c || !base) { $('cmp').replaceChildren(el('div', { class: 'empty', text: 'Pick a run to compare against.' })); return; }
+    const kids = [];
+    kids.push(el('div', { class: 'cmp' },
+      el('div', null, el('b', { class: 'num', style: 'color:var(--' + (c.newlyFailing.length ? 'bad' : 'ok') + ')', text: String(c.newlyFailing.length) }), el('span', { class: 'n', text: 'newly failing' })),
+      el('div', null, el('b', { class: 'num', style: 'color:var(--ok)', text: String(c.fixed.length) }), el('span', { class: 'n', text: 'fixed' })),
+      el('div', null, el('b', { class: 'num', text: String(c.stillFailing) }), el('span', { class: 'n', text: 'still failing' }))));
+    kids.push(el('div', { class: 'hint', text: `Compared over the ${c.comparableBatches.length} batch${c.comparableBatches.length === 1 ? '' : 'es'} both runs have finished.` }));
+    if (c.newlyFailing.length) kids.push(el('ul', { class: 'list' }, ...c.newlyFailing.slice(0, 30).map(f => el('li', { text: '+ ' + f.full }))));
+    if (c.fixed.length) kids.push(el('ul', { class: 'list' }, ...c.fixed.slice(0, 15).map(f => el('li', { text: '− ' + f.full }))), c.fixed.length > 15 ? el('div', { class: 'hint', text: `and ${c.fixed.length - 15} more` }) : null);
+    $('cmp').replaceChildren(...kids);
+  }
+
+  function renderSlow(d) {
+    const max = Math.max(0.001, ...d.slowest.map(t => t.sec));
+    const rows = [];
+    for (const t of d.slowest.slice(0, 10)) {
+      rows.push(el('div', { class: 'tn', text: t.full, title: `${t.full} (${t.batch})` }), el('div', { class: 't num', text: dur(t.sec) }),
+        el('div', { class: 'bg' }, el('i', { style: 'width:' + (t.sec / max) * 100 + '%' })));
+    }
+    $('slow').replaceChildren(...(rows.length ? rows : [el('div', { class: 'empty', text: 'No results yet.' })]));
+  }
+
+  function renderHist() {
+    const runs = [...state.runs].reverse().slice(-24);
+    $('hist').replaceChildren(...runs.map(r => {
+      const t = r.totals, exec = Math.max(1, t.total - t.skipped);
+      const rate = (t.passed / exec) * 100;
+      const partial = r.batchesDone < r.batchesExpected;
+      const h = Math.max(3, ((rate - 80) / 20) * 88); // 80–100% mapped onto the track
+      const b = el('button', { class: 'hcol' + (partial ? ' partial' : '') + (t.newFailed ? ' hasnew' : ''), title: `${when(r.startedAt)}\n${t.passed}/${t.total} passed, ${t.failed} failed (${t.newFailed} new)\n${r.batchesDone}/${r.batchesExpected} batches`, 'aria-current': String(r.id === state.runId), onclick: () => { state.runId = r.id; state.batch = null; if (state.baseId === r.id) state.baseId = defaultBase(); fillSelects(); loadDetail(); } },
+        el('div', { class: 'bar1', style: `height:${Math.min(88, h)}px` }), el('span', { text: new Date(r.startedAt).toLocaleDateString([], { month: 'numeric', day: 'numeric' }) }));
+      return b;
+    }));
+  }
+
+  // ---- live updates
+  let reloadTimer = null;
+  function scheduleReload() {
+    clearTimeout(reloadTimer);
+    reloadTimer = setTimeout(() => loadRuns().catch(showOffline), 250);
+  }
+  function showOffline() { $('conn').textContent = 'server unreachable'; $('conn').className = 'conn off'; }
+  function connect() {
+    const es = new EventSource('/events');
+    es.onopen = () => { $('conn').textContent = 'live'; $('conn').className = 'conn'; scheduleReload(); };
+    es.addEventListener('changed', scheduleReload);
+    es.onerror = () => { $('conn').textContent = 'reconnecting…'; $('conn').className = 'conn off'; };
+  }
+  setInterval(tickElapsed, 1000);
+  setInterval(() => { if (state.detail && state.detail.state === 'running') scheduleReload(); }, 10000); // safety net if an SSE event is missed
+  loadRuns().catch(showOffline);
+  connect();
+})();
+</script>
+</body>
+</html>

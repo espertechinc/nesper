@@ -1,0 +1,9 @@
+{
+  "description": "Failures that predate recent work. Matched against Class.Method (regex). Literal entries from test-batches.json knownFailures are applied as well. Anything failing that matches nothing here is shown as NEW.",
+  "patterns": [
+    { "pattern": "^TestContextInitTerm\\.WithStartEndPatternCorrelated$", "reason": "FilterParamIndexEqualsInt.Unbox NRE on null correlated pattern filter value" },
+    { "pattern": "^TestContextKeySegmentedWInitTermPrioritized\\.WithInitWCorrelatedTermPattern$", "reason": "FilterParamIndexEqualsInt.Unbox NRE on null correlated pattern filter value" },
+    { "pattern": "^TestExprFilterExpressions.*\\.WithPatternFunc(3Stream)?$", "reason": "FilterParamIndexEqualsInt.Unbox NRE on null correlated pattern filter value" },
+    { "pattern": "^TestEPLDataflowAPIInstantiationOptions\\.WithParameterInjectionCallback$", "reason": "assertion: expected \"abc\"" }
+  ]
+}
