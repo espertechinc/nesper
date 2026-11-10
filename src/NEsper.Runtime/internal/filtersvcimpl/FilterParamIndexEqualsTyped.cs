@@ -36,23 +36,49 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             ConstantsMapRwLock = readWriteLock;
         }
 
+        /// <summary>
+        /// Evaluator for a null filter constant, such as a correlated pattern value taken from an
+        /// earlier event whose property is null.  A value-type key cannot hold null, so it is kept
+        /// apart from <see cref="TypedMap"/>.  It never matches an event (null requires "is"), but
+        /// the filter must still be registered and removable.
+        /// </summary>
+        private EventEvaluator _nullEvaluator;
+
         protected abstract T Unbox(object value);
 
         public override EventEvaluator Get(object filterConstant)
         {
+            if (filterConstant == null) {
+                return _nullEvaluator;
+            }
+
             TypedMap.TryGetValue(Unbox(filterConstant), out var ev);
             return ev;
         }
 
-        public override void Put(object filterConstant, EventEvaluator evaluator) =>
+        public override void Put(object filterConstant, EventEvaluator evaluator)
+        {
+            if (filterConstant == null) {
+                _nullEvaluator = evaluator;
+                return;
+            }
+
             TypedMap[Unbox(filterConstant)] = evaluator;
+        }
 
-        public override void Remove(object filterConstant) =>
+        public override void Remove(object filterConstant)
+        {
+            if (filterConstant == null) {
+                _nullEvaluator = null;
+                return;
+            }
+
             TypedMap.Remove(Unbox(filterConstant));
+        }
 
-        public override int CountExpensive => TypedMap.Count;
+        public override int CountExpensive => TypedMap.Count + (_nullEvaluator == null ? 0 : 1);
 
-        public override bool IsEmpty => TypedMap.Count == 0;
+        public override bool IsEmpty => TypedMap.Count == 0 && _nullEvaluator == null;
 
         public override IReaderWriterLock ReadWriteLock => ConstantsMapRwLock;
 
@@ -61,6 +87,12 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             ICollection<int> statementIds,
             ArrayDeque<FilterItem> evaluatorStack)
         {
+            if (_nullEvaluator != null) {
+                evaluatorStack.Add(new FilterItem(Lookupable.Expression, FilterOperator, null, this));
+                _nullEvaluator.GetTraverseStatement(traverse, statementIds, evaluatorStack);
+                evaluatorStack.RemoveLast();
+            }
+
             foreach (var entry in TypedMap) {
                 evaluatorStack.Add(new FilterItem(Lookupable.Expression, FilterOperator, entry.Key, this));
                 entry.Value.GetTraverseStatement(traverse, statementIds, evaluatorStack);
