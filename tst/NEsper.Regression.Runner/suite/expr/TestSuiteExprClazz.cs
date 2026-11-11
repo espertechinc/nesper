@@ -221,6 +221,13 @@ namespace com.espertech.esper.regressionrun.suite.expr
 
             [Test]
             [RunInApplicationDomain]
+            public void WithUseEnumRepeated()
+            {
+                RegressionRunner.Run(_session, ExprClassTypeUse.WithUseEnumRepeated());
+            }
+
+            [Test]
+            [RunInApplicationDomain]
             public void WithConst()
             {
                 RegressionRunner.Run(_session, ExprClassTypeUse.WithConst());

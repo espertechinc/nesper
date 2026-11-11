@@ -11,26 +11,117 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Threading;
 
 namespace com.espertech.esper.compat
 {
     public static class MethodExtensions
     {
-        private static List<MethodInfo> ExtensionMethods;
+        // Extension methods of the non-collectible assemblies, per assembly. Collectible assemblies
+        // (such as those that hold compiled EPL and inlined classes) are never entered here, so the
+        // cache cannot keep their load context alive.
+        private static readonly object CacheLock = new object();
+        private static readonly Dictionary<Assembly, MethodInfo[]> CachedAssemblies =
+            new Dictionary<Assembly, MethodInfo[]>();
+        private static volatile MethodInfo[] _cachedMethods;
+        private static int _assemblyLoadCount;
+        private static int _cachedAssemblyLoadCount = -1;
 
+        static MethodExtensions()
+        {
+            AppDomain.CurrentDomain.AssemblyLoad += (sender, args) => Interlocked.Increment(ref _assemblyLoadCount);
+        }
+
+        /// <summary>
+        /// Returns the extension methods declared by the non-collectible assemblies loaded in the
+        /// application domain. Assemblies loaded after an earlier call are picked up on the next call.
+        /// </summary>
         public static IEnumerable<MethodInfo> GetExtensionMethods()
         {
-            if (ExtensionMethods == null)
-            {
-                ExtensionMethods = AppDomain.CurrentDomain.GetAssemblies()
-                    .SelectMany(
-                        assembly => assembly.GetTypes().Where(t => t.IsDefined(typeof(ExtensionAttribute), true))
-                            .SelectMany(
-                                type => type.GetMethods().Where(m => m.IsDefined(typeof(ExtensionAttribute), true))))
-                    .ToList();
+            var loadCount = Volatile.Read(ref _assemblyLoadCount);
+            var cachedMethods = _cachedMethods;
+            if (cachedMethods != null && loadCount == Volatile.Read(ref _cachedAssemblyLoadCount)) {
+                return cachedMethods;
             }
 
-            return ExtensionMethods;
+            lock (CacheLock) {
+                loadCount = Volatile.Read(ref _assemblyLoadCount);
+                if (_cachedMethods != null && loadCount == _cachedAssemblyLoadCount) {
+                    return _cachedMethods;
+                }
+
+                var changed = _cachedMethods == null;
+                foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies()) {
+                    // Dynamic assemblies can gain types after they are scanned, so they are not cached.
+                    if (assembly.IsCollectible || assembly.IsDynamic || CachedAssemblies.ContainsKey(assembly)) {
+                        continue;
+                    }
+
+                    CachedAssemblies[assembly] = FindExtensionMethods(assembly);
+                    changed = true;
+                }
+
+                if (changed) {
+                    _cachedMethods = CachedAssemblies.Values.SelectMany(methods => methods).ToArray();
+                }
+
+                Volatile.Write(ref _cachedAssemblyLoadCount, loadCount);
+                return _cachedMethods;
+            }
+        }
+
+        /// <summary>
+        /// Returns the extension methods declared by the collectible assemblies that define the given
+        /// types or their generic arguments. These are found on each call and never cached.
+        /// </summary>
+        private static IEnumerable<MethodInfo> GetCollectibleExtensionMethods(IEnumerable<Type> typeSet)
+        {
+            var assemblies = new HashSet<Assembly>();
+            foreach (var type in typeSet) {
+                AddCollectibleAssemblies(assemblies, type);
+            }
+
+            return assemblies.SelectMany(FindExtensionMethods);
+        }
+
+        private static void AddCollectibleAssemblies(
+            ISet<Assembly> assemblies,
+            Type type)
+        {
+            if (type == null || type.IsGenericParameter) {
+                return;
+            }
+
+            if (type.HasElementType) {
+                AddCollectibleAssemblies(assemblies, type.GetElementType());
+                return;
+            }
+
+            if (type.Assembly.IsCollectible) {
+                assemblies.Add(type.Assembly);
+            }
+
+            if (type.IsGenericType) {
+                foreach (var argument in type.GetGenericArguments()) {
+                    AddCollectibleAssemblies(assemblies, argument);
+                }
+            }
+        }
+
+        private static MethodInfo[] FindExtensionMethods(Assembly assembly)
+        {
+            Type[] types;
+            try {
+                types = assembly.GetTypes();
+            }
+            catch (ReflectionTypeLoadException ex) {
+                types = ex.Types.Where(t => t != null).ToArray();
+            }
+
+            return types
+                .Where(t => t.IsDefined(typeof(ExtensionAttribute), true))
+                .SelectMany(t => t.GetMethods().Where(m => m.IsDefined(typeof(ExtensionAttribute), true)))
+                .ToArray();
         }
 
         public static ISet<Type> AddToTypeSet(
@@ -136,6 +227,7 @@ namespace com.espertech.esper.compat
         {
             var typeSet = AddToTypeSet(new HashSet<Type>(), declaringType);
             var extensionMethods = GetExtensionMethods()
+                .Concat(GetCollectibleExtensionMethods(typeSet))
                 .Where(m => m.Name == methodName)
                 .Where(m => IsMatchGenericMethod(m, typeSet))
                 .ToList();
@@ -158,7 +250,11 @@ namespace com.espertech.esper.compat
         
         public static void InvalidateExtensionMethodsCache()
         {
-            ExtensionMethods = null;
+            lock (CacheLock) {
+                CachedAssemblies.Clear();
+                _cachedMethods = null;
+                _cachedAssemblyLoadCount = -1;
+            }
         }
     }
 }
