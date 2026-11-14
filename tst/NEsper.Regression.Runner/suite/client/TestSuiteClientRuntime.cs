@@ -390,6 +390,30 @@ namespace com.espertech.esper.regressionrun.suite.client
             [Test, RunInApplicationDomain]
             public void WithDelegateSeparateThread() =>
                 RegressionRunner.Run(_session, ClientRuntimeSubscriber.WithDelegateSeparateThread());
+
+            [Test, RunInApplicationDomain]
+            public void WithDelegateRemoveStream() =>
+                RegressionRunner.Run(_session, ClientRuntimeSubscriber.WithDelegateRemoveStream());
+
+            [Test, RunInApplicationDomain]
+            public void WithDelegateUnderlying() =>
+                RegressionRunner.Run(_session, ClientRuntimeSubscriber.WithDelegateUnderlying());
+
+            [Test, RunInApplicationDomain]
+            public void WithDelegateMulticastException() =>
+                RegressionRunner.Run(_session, ClientRuntimeSubscriber.WithDelegateMulticastException());
+
+            [Test, RunInApplicationDomain]
+            public void WithDelegateRemoveAndSwap() =>
+                RegressionRunner.Run(_session, ClientRuntimeSubscriber.WithDelegateRemoveAndSwap());
+
+            [Test, RunInApplicationDomain]
+            public void WithDelegateWrongMethodName() =>
+                RegressionRunner.Run(_session, ClientRuntimeSubscriber.WithDelegateWrongMethodName());
+
+            [Test, RunInApplicationDomain]
+            public void WithDelegateFunc() =>
+                RegressionRunner.Run(_session, ClientRuntimeSubscriber.WithDelegateFunc());
         }
 
         /// <summary>
