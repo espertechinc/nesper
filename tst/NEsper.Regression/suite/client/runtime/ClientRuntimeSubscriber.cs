@@ -58,6 +58,14 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             WithDelegateRemoveAndSwap(execs);
             WithDelegateWrongMethodName(execs);
             WithDelegateFunc(execs);
+            WithBatchDeliveryException(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithBatchDeliveryException(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientRuntimeSubscriberBatchDeliveryException());
             return execs;
         }
 
@@ -1507,6 +1515,103 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             public ISet<RegressionFlag> Flags()
             {
                 return Collections.Set(RegressionFlag.OBSERVEROPS);
+            }
+        }
+
+        private class ClientRuntimeSubscriberBatchDeliveryException : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var stmtCols = env.CompileDeploy("@name('s0') select TheString, IntPrimitive from SupportBean").Statement("s0");
+
+                // object subscriber with a row-array 'Update'
+                var objectSubscriber = new DummySubscriberObjectArrThrowsFirst();
+                TryAssertionBatchThrowsFirst(env, stmtCols, objectSubscriber, () => objectSubscriber.Calls);
+
+                // row-array delegates
+                var calls = 0;
+                TryAssertionBatchThrowsFirst(
+                    env, stmtCols,
+                    new Action<object[][], object[][]>((insertStream, removeStream) => ThrowOnFirst(ref calls)),
+                    () => calls);
+                calls = 0;
+                TryAssertionBatchThrowsFirst(
+                    env, stmtCols,
+                    new Action<EPStatement, object[][], object[][]>((statement, insertStream, removeStream) => ThrowOnFirst(ref calls)),
+                    () => calls);
+
+                // map-array delegates
+                calls = 0;
+                TryAssertionBatchThrowsFirst(
+                    env, stmtCols,
+                    new Action<IDictionary<string, object>[], IDictionary<string, object>[]>((insertStream, removeStream) => ThrowOnFirst(ref calls)),
+                    () => calls);
+                calls = 0;
+                TryAssertionBatchThrowsFirst(
+                    env, stmtCols,
+                    new Action<EPStatement, IDictionary<string, object>[], IDictionary<string, object>[]>(
+                        (statement, insertStream, removeStream) => ThrowOnFirst(ref calls)),
+                    () => calls);
+                env.UndeployAll();
+
+                // typed-array delegates
+                var stmtUnd = env.CompileDeploy("@name('s0') select * from SupportBean").Statement("s0");
+                calls = 0;
+                TryAssertionBatchThrowsFirst(
+                    env, stmtUnd,
+                    new Action<SupportBean[], SupportBean[]>((insertStream, removeStream) => ThrowOnFirst(ref calls)),
+                    () => calls);
+                calls = 0;
+                TryAssertionBatchThrowsFirst(
+                    env, stmtUnd,
+                    new Action<EPStatement, SupportBean[], SupportBean[]>((statement, insertStream, removeStream) => ThrowOnFirst(ref calls)),
+                    () => calls);
+                env.UndeployAll();
+            }
+
+            private static void ThrowOnFirst(ref int calls)
+            {
+                calls++;
+                if (calls == 1) {
+                    throw new EPRuntimeException("subscriber-generated");
+                }
+            }
+
+            private static void TryAssertionBatchThrowsFirst(
+                RegressionEnvironment env,
+                EPStatement stmt,
+                object subscriber,
+                Func<int> calls)
+            {
+                stmt.SetSubscriber(subscriber);
+
+                // the exception is handled by the subscriber exception handling and not thrown to the sender
+                Assert.DoesNotThrow(() => env.SendEventBean(new SupportBean("E1", 1)));
+                ClassicAssert.AreEqual(1, calls.Invoke());
+
+                // the next event is still delivered
+                Assert.DoesNotThrow(() => env.SendEventBean(new SupportBean("E2", 2)));
+                ClassicAssert.AreEqual(2, calls.Invoke());
+            }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.OBSERVEROPS);
+            }
+        }
+
+        public class DummySubscriberObjectArrThrowsFirst
+        {
+            public int Calls { get; private set; }
+
+            public void Update(
+                object[][] insertStream,
+                object[][] removeStream)
+            {
+                Calls++;
+                if (Calls == 1) {
+                    throw new EPRuntimeException("DummySubscriberObjectArrThrowsFirst-generated");
+                }
             }
         }
 

@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using com.espertech.esper.common.client;
@@ -50,6 +51,9 @@ namespace com.espertech.esper.runtime.@internal.subscriber
             }
             catch (TargetInvocationException e) {
                 ResultDeliveryStrategyImpl.Handle(_statement.Name, Log, e, parameters, _subscriber, _fastMethod);
+            }
+            catch (Exception e) {
+                ResultDeliveryStrategyImpl.HandleThrowable(Log, e, parameters, _subscriber, _fastMethod);
             }
         }
     }

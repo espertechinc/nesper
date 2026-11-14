@@ -414,6 +414,10 @@ namespace com.espertech.esper.regressionrun.suite.client
             [Test, RunInApplicationDomain]
             public void WithDelegateFunc() =>
                 RegressionRunner.Run(_session, ClientRuntimeSubscriber.WithDelegateFunc());
+
+            [Test, RunInApplicationDomain]
+            public void WithBatchDeliveryException() =>
+                RegressionRunner.Run(_session, ClientRuntimeSubscriber.WithBatchDeliveryException());
         }
 
         /// <summary>

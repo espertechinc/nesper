@@ -51,6 +51,9 @@ namespace com.espertech.esper.runtime.@internal.subscriber
             catch (TargetInvocationException e) {
                 ResultDeliveryStrategyImpl.Handle(_statement.Name, Log, e, parameters, _subscriber, _fastMethod);
             }
+            catch (Exception e) {
+                ResultDeliveryStrategyImpl.HandleThrowable(Log, e, parameters, _subscriber, _fastMethod);
+            }
         }
     }
 } // end of namespace

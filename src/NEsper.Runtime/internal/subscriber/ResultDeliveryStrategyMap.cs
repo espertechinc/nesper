@@ -76,6 +76,9 @@ namespace com.espertech.esper.runtime.@internal.subscriber
             catch (TargetInvocationException e) {
                 ResultDeliveryStrategyImpl.Handle(_statement.Name, Log, e, paramList, _subscriber, _fastMethod);
             }
+            catch (Exception e) {
+                ResultDeliveryStrategyImpl.HandleThrowable(Log, e, paramList, _subscriber, _fastMethod);
+            }
         }
 
         internal DataMap[] Convert(EventBean[] events)
