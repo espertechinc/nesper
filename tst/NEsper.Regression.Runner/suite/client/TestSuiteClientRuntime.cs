@@ -378,6 +378,18 @@ namespace com.espertech.esper.regressionrun.suite.client
 
             [Test]
             public void WithBindings() => RegressionRunner.Run(_session, ClientRuntimeSubscriber.WithBindings());
+
+            [Test, RunInApplicationDomain]
+            public void WithDelegateBindings() =>
+                RegressionRunner.Run(_session, ClientRuntimeSubscriber.WithDelegateBindings());
+
+            [Test, RunInApplicationDomain]
+            public void WithDelegateInvalid() =>
+                RegressionRunner.Run(_session, ClientRuntimeSubscriber.WithDelegateInvalid());
+
+            [Test, RunInApplicationDomain]
+            public void WithDelegateSeparateThread() =>
+                RegressionRunner.Run(_session, ClientRuntimeSubscriber.WithDelegateSeparateThread());
         }
 
         /// <summary>
