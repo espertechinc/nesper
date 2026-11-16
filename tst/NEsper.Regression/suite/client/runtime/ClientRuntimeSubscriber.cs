@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -14,6 +15,8 @@ using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.concurrency;
+using com.espertech.esper.compat.threading;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.subscriber;
@@ -46,6 +49,86 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             WithPerformanceSyntheticUndelivered(execs);
             WithPerformanceSynthetic(execs);
             WithAddRemove(execs);
+            WithDelegateBindings(execs);
+            WithDelegateInvalid(execs);
+            WithDelegateSeparateThread(execs);
+            WithDelegateRemoveStream(execs);
+            WithDelegateUnderlying(execs);
+            WithDelegateMulticastException(execs);
+            WithDelegateRemoveAndSwap(execs);
+            WithDelegateWrongMethodName(execs);
+            WithDelegateFunc(execs);
+            WithBatchDeliveryException(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithBatchDeliveryException(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientRuntimeSubscriberBatchDeliveryException());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithDelegateRemoveStream(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientRuntimeSubscriberDelegateRemoveStream());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithDelegateUnderlying(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientRuntimeSubscriberDelegateUnderlying());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithDelegateMulticastException(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientRuntimeSubscriberDelegateMulticastException());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithDelegateRemoveAndSwap(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientRuntimeSubscriberDelegateRemoveAndSwap());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithDelegateWrongMethodName(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientRuntimeSubscriberDelegateWrongMethodName());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithDelegateFunc(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientRuntimeSubscriberDelegateFunc());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithDelegateBindings(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientRuntimeSubscriberDelegateBindings());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithDelegateInvalid(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientRuntimeSubscriberDelegateInvalid());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithDelegateSeparateThread(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientRuntimeSubscriberDelegateSeparateThread());
             return execs;
         }
 
@@ -1102,6 +1185,433 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 Assert.That(end - start, Is.LessThan(1000));
 
                 env.UndeployAll();
+            }
+        }
+
+        private class ClientRuntimeSubscriberDelegateBindings : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var stmt = env.CompileDeploy("@name('s0') select TheString, IntPrimitive from SupportBean").Statement("s0");
+
+                // typed columns
+                var typed = new List<object[]>();
+                stmt.Subscriber = new Action<string, int>((theString, intPrimitive) => typed.Add(new object[] { theString, intPrimitive }));
+                env.SendEventBean(new SupportBean("E1", 1));
+                EPAssertionUtil.AssertEqualsExactOrder(new object[][] { new object[] { "E1", 1 } }, typed.ToArray());
+
+                // typed columns with widening
+                var widened = new List<object[]>();
+                stmt.SetSubscriber(new Action<string, long>((theString, intPrimitive) => widened.Add(new object[] { theString, intPrimitive })));
+                env.SendEventBean(new SupportBean("E2", 2));
+                EPAssertionUtil.AssertEqualsExactOrder(new object[][] { new object[] { "E2", 2L } }, widened.ToArray());
+
+                // map row
+                var maps = new List<IDictionary<string, object>>();
+                stmt.SetSubscriber(new Action<IDictionary<string, object>>(row => maps.Add(row)));
+                env.SendEventBean(new SupportBean("E3", 3));
+                ClassicAssert.AreEqual(1, maps.Count);
+                EPAssertionUtil.AssertPropsMap(maps[0], FIELDS, "E3", 3);
+
+                // object-array row
+                var rows = new List<object[]>();
+                stmt.SetSubscriber(new Action<object[]>(row => rows.Add(row)));
+                env.SendEventBean(new SupportBean("E4", 4));
+                EPAssertionUtil.AssertEqualsExactOrder(new object[][] { new object[] { "E4", 4 } }, rows.ToArray());
+
+                // statement as the first parameter
+                var statements = new List<EPStatement>();
+                var withStmt = new List<object[]>();
+                stmt.SetSubscriber(
+                    new Action<EPStatement, string, int>(
+                        (statement, theString, intPrimitive) => {
+                            statements.Add(statement);
+                            withStmt.Add(new object[] { theString, intPrimitive });
+                        }));
+                env.SendEventBean(new SupportBean("E5", 5));
+                EPAssertionUtil.AssertEqualsExactOrder(new object[][] { new object[] { "E5", 5 } }, withStmt.ToArray());
+                ClassicAssert.AreEqual(1, statements.Count);
+                ClassicAssert.AreSame(stmt, statements[0]);
+
+                // statement and map row
+                var mapsWStmt = new List<IDictionary<string, object>>();
+                stmt.SetSubscriber(
+                    new Action<EPStatement, IDictionary<string, object>>(
+                        (statement, row) => {
+                            ClassicAssert.AreSame(stmt, statement);
+                            mapsWStmt.Add(row);
+                        }));
+                env.SendEventBean(new SupportBean("E6", 6));
+                ClassicAssert.AreEqual(1, mapsWStmt.Count);
+                EPAssertionUtil.AssertPropsMap(mapsWStmt[0], FIELDS, "E6", 6);
+
+                // row arrays (insert and remove stream)
+                var rowArrays = new List<object[][]>();
+                stmt.SetSubscriber(new Action<object[][], object[][]>((insertStream, removeStream) => rowArrays.Add(insertStream)));
+                env.SendEventBean(new SupportBean("E7", 7));
+                ClassicAssert.AreEqual(1, rowArrays.Count);
+                EPAssertionUtil.AssertEqualsExactOrder(new object[][] { new object[] { "E7", 7 } }, rowArrays[0]);
+
+                // explicit method name
+                var named = new List<string>();
+                stmt.SetSubscriber(new Action<string, int>((theString, intPrimitive) => named.Add(theString)), "Invoke");
+                env.SendEventBean(new SupportBean("E8", 8));
+                EPAssertionUtil.AssertEqualsExactOrder(new object[] { "E8" }, named.ToArray());
+
+                // multicast delegate: every target receives the row
+                var first = new List<string>();
+                var second = new List<string>();
+                var multicast = new Action<string, int>((theString, intPrimitive) => first.Add(theString));
+                multicast += (theString, intPrimitive) => second.Add(theString);
+                stmt.SetSubscriber(multicast);
+                env.SendEventBean(new SupportBean("E9", 9));
+                EPAssertionUtil.AssertEqualsExactOrder(new object[] { "E9" }, first.ToArray());
+                EPAssertionUtil.AssertEqualsExactOrder(new object[] { "E9" }, second.ToArray());
+
+                // a delegate subscriber is returned as set
+                ClassicAssert.AreSame(multicast, stmt.Subscriber);
+
+                env.UndeployAll();
+            }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.OBSERVEROPS);
+            }
+        }
+
+        private class ClientRuntimeSubscriberDelegateInvalid : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var stmt = env.CompileDeploy("@name('s0') select * from SupportBean").Statement("s0");
+                TryInvalid(
+                    new Action<SupportMarketDataBean>(bean => { }),
+                    stmt,
+                    "Subscriber method named 'Invoke' for parameter number 1 is not assignable, expecting type 'com.espertech.esper.common.internal.support.SupportBean' but found type 'com.espertech.esper.regressionlib.support.bean.SupportMarketDataBean'");
+                TryInvalid(
+                    new Action<SupportBean, int>((bean, value) => { }),
+                    stmt,
+                    "No suitable subscriber method named 'Invoke' found, expecting a method that takes 1 parameter of type com.espertech.esper.common.internal.support.SupportBean");
+                env.UndeployAll();
+            }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.OBSERVEROPS);
+            }
+        }
+
+        private class ClientRuntimeSubscriberDelegateSeparateThread : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var stmt = env.CompileDeploy("@name('s0') select TheString as c0 from SupportBean").Statement("s0");
+
+                var latch = new CountDownLatch(1);
+                IList<string> values = new List<string>();
+                stmt.Subscriber = new Action<string>(
+                    value => {
+                        values.Add(value);
+                        latch.CountDown();
+                    });
+
+                var executorService = Executors.NewSingleThreadExecutor();
+                executorService.Submit(() => env.SendEventBean(new SupportBean("hello", 1)));
+                ClassicAssert.IsTrue(latch.Await(TimeSpan.FromSeconds(10)));
+                executorService.Shutdown();
+
+                ClassicAssert.AreEqual(1, values.Count);
+                ClassicAssert.AreEqual("hello", values[0]);
+
+                env.UndeployAll();
+            }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.RUNTIMEOPS);
+            }
+        }
+
+        private class ClientRuntimeSubscriberDelegateRemoveStream : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var stmt = env
+                    .CompileDeploy("@name('s0') select irstream TheString, IntPrimitive from SupportBean#length(1)")
+                    .Statement("s0");
+
+                // a typed delegate has no 'UpdateRStream' counterpart: it receives the insert stream only
+                var typed = new List<object[]>();
+                stmt.SetSubscriber(new Action<string, int>((theString, intPrimitive) => typed.Add(new object[] { theString, intPrimitive })));
+                env.SendEventBean(new SupportBean("E1", 1));
+                env.SendEventBean(new SupportBean("E2", 2));
+                EPAssertionUtil.AssertEqualsExactOrder(
+                    new object[][] { new object[] { "E1", 1 }, new object[] { "E2", 2 } },
+                    typed.ToArray());
+
+                // a row-array delegate receives both streams
+                var insertStreams = new List<object[][]>();
+                var removeStreams = new List<object[][]>();
+                stmt.SetSubscriber(
+                    new Action<object[][], object[][]>(
+                        (insertStream, removeStream) => {
+                            insertStreams.Add(insertStream);
+                            removeStreams.Add(removeStream);
+                        }));
+                env.SendEventBean(new SupportBean("E3", 3));
+                ClassicAssert.AreEqual(1, insertStreams.Count);
+                EPAssertionUtil.AssertEqualsExactOrder(new object[][] { new object[] { "E3", 3 } }, insertStreams[0]);
+                EPAssertionUtil.AssertEqualsExactOrder(new object[][] { new object[] { "E2", 2 } }, removeStreams[0]);
+
+                env.UndeployAll();
+            }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.OBSERVEROPS);
+            }
+        }
+
+        private class ClientRuntimeSubscriberDelegateUnderlying : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var stmt = env.CompileDeploy("@name('s0') select * from SupportBean").Statement("s0");
+
+                var beans = new List<SupportBean>();
+                stmt.SetSubscriber(new Action<SupportBean>(bean => beans.Add(bean)));
+                var sent = new SupportBean("E1", 1);
+                env.SendEventBean(sent);
+                ClassicAssert.AreEqual(1, beans.Count);
+                ClassicAssert.AreSame(sent, beans[0]);
+
+                env.UndeployAll();
+            }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.OBSERVEROPS);
+            }
+        }
+
+        private class ClientRuntimeSubscriberDelegateMulticastException : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var stmt = env.CompileDeploy("@name('s0') select TheString, IntPrimitive from SupportBean").Statement("s0");
+
+                var first = new List<string>();
+                var last = new List<string>();
+                var multicast = new Action<string, int>((theString, intPrimitive) => first.Add(theString));
+                multicast += (theString, intPrimitive) => throw new EPRuntimeException("delegate-generated");
+                multicast += (theString, intPrimitive) => last.Add(theString);
+                stmt.SetSubscriber(multicast);
+
+                // the exception is logged by the subscriber exception handling and does not reach the sender;
+                // targets after the throwing one are not invoked
+                Assert.DoesNotThrow(() => env.SendEventBean(new SupportBean("E1", 1)));
+                EPAssertionUtil.AssertEqualsExactOrder(new object[] { "E1" }, first.ToArray());
+                ClassicAssert.AreEqual(0, last.Count);
+
+                // delivery continues for subsequent events
+                Assert.DoesNotThrow(() => env.SendEventBean(new SupportBean("E2", 2)));
+                EPAssertionUtil.AssertEqualsExactOrder(new object[] { "E1", "E2" }, first.ToArray());
+                ClassicAssert.AreEqual(0, last.Count);
+
+                env.UndeployAll();
+            }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.OBSERVEROPS);
+            }
+        }
+
+        private class ClientRuntimeSubscriberDelegateRemoveAndSwap : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var stmt = env.CompileDeploy("@name('s0') select TheString, IntPrimitive from SupportBean").Statement("s0");
+
+                // set, then remove
+                var received = new List<string>();
+                var action = new Action<string, int>((theString, intPrimitive) => received.Add(theString));
+                stmt.Subscriber = action;
+                env.SendEventBean(new SupportBean("E1", 1));
+                stmt.Subscriber = null;
+                ClassicAssert.IsNull(stmt.Subscriber);
+                env.SendEventBean(new SupportBean("E2", 2));
+                EPAssertionUtil.AssertEqualsExactOrder(new object[] { "E1" }, received.ToArray());
+
+                // swap delegate to object subscriber
+                stmt.Subscriber = action;
+                env.SendEventBean(new SupportBean("E3", 3));
+                var objectSubscriber = new SubscriberFields();
+                stmt.Subscriber = objectSubscriber;
+                env.SendEventBean(new SupportBean("E4", 4));
+                EPAssertionUtil.AssertEqualsExactOrder(new object[] { "E1", "E3" }, received.ToArray());
+                EPAssertionUtil.AssertEqualsExactOrder(
+                    new object[][] { new object[] { "E4", 4 } },
+                    objectSubscriber.GetAndResetIndicate().ToArray());
+
+                // and back
+                stmt.Subscriber = action;
+                env.SendEventBean(new SupportBean("E5", 5));
+                EPAssertionUtil.AssertEqualsExactOrder(new object[] { "E1", "E3", "E5" }, received.ToArray());
+                ClassicAssert.AreEqual(0, objectSubscriber.GetAndResetIndicate().Count);
+
+                env.UndeployAll();
+            }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.OBSERVEROPS);
+            }
+        }
+
+        private class ClientRuntimeSubscriberDelegateWrongMethodName : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var stmt = env.CompileDeploy("@name('s0') select TheString, IntPrimitive from SupportBean").Statement("s0");
+                try {
+                    stmt.SetSubscriber(new Action<string, int>((theString, intPrimitive) => { }), "Update");
+                    Assert.Fail();
+                }
+                catch (EPSubscriberException ex) {
+                    ClassicAssert.AreEqual("Subscriber object does not provide a public method by name 'Update'", ex.Message);
+                }
+
+                env.UndeployAll();
+            }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.OBSERVEROPS);
+            }
+        }
+
+        private class ClientRuntimeSubscriberDelegateFunc : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var stmt = env.CompileDeploy("@name('s0') select TheString, IntPrimitive from SupportBean").Statement("s0");
+
+                // a delegate with a return value is accepted; the return value is ignored
+                var received = new List<object[]>();
+                stmt.SetSubscriber(
+                    new Func<string, int, object>(
+                        (theString, intPrimitive) => {
+                            received.Add(new object[] { theString, intPrimitive });
+                            return "ignored";
+                        }));
+                env.SendEventBean(new SupportBean("E1", 1));
+                EPAssertionUtil.AssertEqualsExactOrder(new object[][] { new object[] { "E1", 1 } }, received.ToArray());
+
+                env.UndeployAll();
+            }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.OBSERVEROPS);
+            }
+        }
+
+        private class ClientRuntimeSubscriberBatchDeliveryException : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var stmtCols = env.CompileDeploy("@name('s0') select TheString, IntPrimitive from SupportBean").Statement("s0");
+
+                // object subscriber with a row-array 'Update'
+                var objectSubscriber = new DummySubscriberObjectArrThrowsFirst();
+                TryAssertionBatchThrowsFirst(env, stmtCols, objectSubscriber, () => objectSubscriber.Calls);
+
+                // row-array delegates
+                var calls = 0;
+                TryAssertionBatchThrowsFirst(
+                    env, stmtCols,
+                    new Action<object[][], object[][]>((insertStream, removeStream) => ThrowOnFirst(ref calls)),
+                    () => calls);
+                calls = 0;
+                TryAssertionBatchThrowsFirst(
+                    env, stmtCols,
+                    new Action<EPStatement, object[][], object[][]>((statement, insertStream, removeStream) => ThrowOnFirst(ref calls)),
+                    () => calls);
+
+                // map-array delegates
+                calls = 0;
+                TryAssertionBatchThrowsFirst(
+                    env, stmtCols,
+                    new Action<IDictionary<string, object>[], IDictionary<string, object>[]>((insertStream, removeStream) => ThrowOnFirst(ref calls)),
+                    () => calls);
+                calls = 0;
+                TryAssertionBatchThrowsFirst(
+                    env, stmtCols,
+                    new Action<EPStatement, IDictionary<string, object>[], IDictionary<string, object>[]>(
+                        (statement, insertStream, removeStream) => ThrowOnFirst(ref calls)),
+                    () => calls);
+                env.UndeployAll();
+
+                // typed-array delegates
+                var stmtUnd = env.CompileDeploy("@name('s0') select * from SupportBean").Statement("s0");
+                calls = 0;
+                TryAssertionBatchThrowsFirst(
+                    env, stmtUnd,
+                    new Action<SupportBean[], SupportBean[]>((insertStream, removeStream) => ThrowOnFirst(ref calls)),
+                    () => calls);
+                calls = 0;
+                TryAssertionBatchThrowsFirst(
+                    env, stmtUnd,
+                    new Action<EPStatement, SupportBean[], SupportBean[]>((statement, insertStream, removeStream) => ThrowOnFirst(ref calls)),
+                    () => calls);
+                env.UndeployAll();
+            }
+
+            private static void ThrowOnFirst(ref int calls)
+            {
+                calls++;
+                if (calls == 1) {
+                    throw new EPRuntimeException("subscriber-generated");
+                }
+            }
+
+            private static void TryAssertionBatchThrowsFirst(
+                RegressionEnvironment env,
+                EPStatement stmt,
+                object subscriber,
+                Func<int> calls)
+            {
+                stmt.SetSubscriber(subscriber);
+
+                // the exception is handled by the subscriber exception handling and not thrown to the sender
+                Assert.DoesNotThrow(() => env.SendEventBean(new SupportBean("E1", 1)));
+                ClassicAssert.AreEqual(1, calls.Invoke());
+
+                // the next event is still delivered
+                Assert.DoesNotThrow(() => env.SendEventBean(new SupportBean("E2", 2)));
+                ClassicAssert.AreEqual(2, calls.Invoke());
+            }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.OBSERVEROPS);
+            }
+        }
+
+        public class DummySubscriberObjectArrThrowsFirst
+        {
+            public int Calls { get; private set; }
+
+            public void Update(
+                object[][] insertStream,
+                object[][] removeStream)
+            {
+                Calls++;
+                if (Calls == 1) {
+                    throw new EPRuntimeException("DummySubscriberObjectArrThrowsFirst-generated");
+                }
             }
         }
 

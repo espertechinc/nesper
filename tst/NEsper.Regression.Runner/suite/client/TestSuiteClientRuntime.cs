@@ -378,6 +378,46 @@ namespace com.espertech.esper.regressionrun.suite.client
 
             [Test]
             public void WithBindings() => RegressionRunner.Run(_session, ClientRuntimeSubscriber.WithBindings());
+
+            [Test, RunInApplicationDomain]
+            public void WithDelegateBindings() =>
+                RegressionRunner.Run(_session, ClientRuntimeSubscriber.WithDelegateBindings());
+
+            [Test, RunInApplicationDomain]
+            public void WithDelegateInvalid() =>
+                RegressionRunner.Run(_session, ClientRuntimeSubscriber.WithDelegateInvalid());
+
+            [Test, RunInApplicationDomain]
+            public void WithDelegateSeparateThread() =>
+                RegressionRunner.Run(_session, ClientRuntimeSubscriber.WithDelegateSeparateThread());
+
+            [Test, RunInApplicationDomain]
+            public void WithDelegateRemoveStream() =>
+                RegressionRunner.Run(_session, ClientRuntimeSubscriber.WithDelegateRemoveStream());
+
+            [Test, RunInApplicationDomain]
+            public void WithDelegateUnderlying() =>
+                RegressionRunner.Run(_session, ClientRuntimeSubscriber.WithDelegateUnderlying());
+
+            [Test, RunInApplicationDomain]
+            public void WithDelegateMulticastException() =>
+                RegressionRunner.Run(_session, ClientRuntimeSubscriber.WithDelegateMulticastException());
+
+            [Test, RunInApplicationDomain]
+            public void WithDelegateRemoveAndSwap() =>
+                RegressionRunner.Run(_session, ClientRuntimeSubscriber.WithDelegateRemoveAndSwap());
+
+            [Test, RunInApplicationDomain]
+            public void WithDelegateWrongMethodName() =>
+                RegressionRunner.Run(_session, ClientRuntimeSubscriber.WithDelegateWrongMethodName());
+
+            [Test, RunInApplicationDomain]
+            public void WithDelegateFunc() =>
+                RegressionRunner.Run(_session, ClientRuntimeSubscriber.WithDelegateFunc());
+
+            [Test, RunInApplicationDomain]
+            public void WithBatchDeliveryException() =>
+                RegressionRunner.Run(_session, ClientRuntimeSubscriber.WithBatchDeliveryException());
         }
 
         /// <summary>

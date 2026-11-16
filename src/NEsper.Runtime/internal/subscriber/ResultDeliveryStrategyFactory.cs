@@ -62,7 +62,8 @@ namespace com.espertech.esper.runtime.@internal.subscriber
             }
 
             if (methodName == null) {
-                methodName = "Update";
+                // a delegate is invoked through its "Invoke" method
+                methodName = subscriber is Delegate ? "Invoke" : "Update";
             }
 
             // sort by presence of EPStatement as the first parameter
@@ -86,7 +87,7 @@ namespace com.espertech.esper.runtime.@internal.subscriber
 
             // none found
             if (updateMethods.Count == 0) {
-                var message = "Subscriber object does not provide a public method by name 'Update'";
+                var message = "Subscriber object does not provide a public method by name '" + methodName + "'";
                 throw new ResultDeliveryStrategyInvalidException(message);
             }
 
@@ -216,7 +217,7 @@ namespace com.espertech.esper.runtime.@internal.subscriber
             if (subscriptionMethod == null) {
                 if (updateMethods.Count > 1) {
                     var parametersDesc = TypeHelper.GetParameterAsString(selectClauseTypes);
-                    var message = "No suitable subscriber method named 'Update' found, expecting a method that takes " +
+                    var message = "No suitable subscriber method named '" + methodName + "' found, expecting a method that takes " +
                                   selectClauseTypes.Length + " parameter of type " + parametersDesc;
                     throw new ResultDeliveryStrategyInvalidException(message);
                 }
@@ -226,12 +227,12 @@ namespace com.espertech.esper.runtime.@internal.subscriber
                 var parametersDescNormalized = TypeHelper.GetParameterAsString(selectClauseTypes);
                 if (parametersNormalized.Length != selectClauseTypes.Length) {
                     if (selectClauseTypes.Length > 0) {
-                        var message = "No suitable subscriber method named 'Update' found, expecting a method that takes " +
+                        var message = "No suitable subscriber method named '" + methodName + "' found, expecting a method that takes " +
                                       selectClauseTypes.Length + " parameter of type " + parametersDescNormalized;
                         throw new ResultDeliveryStrategyInvalidException(message);
                     }
                     else {
-                        var message = "No suitable subscriber method named 'Update' found, expecting a method that takes no parameters";
+                        var message = "No suitable subscriber method named '" + methodName + "' found, expecting a method that takes no parameters";
                         throw new ResultDeliveryStrategyInvalidException(message);
                     }
                 }
@@ -240,14 +241,14 @@ namespace com.espertech.esper.runtime.@internal.subscriber
                     var boxedExpressionType = selectClauseTypes[i].GetBoxedType();
                     var boxedParameterType = parametersNormalized[i].GetBoxedType();
                     if (boxedExpressionType != null && !boxedExpressionType.IsAssignmentCompatible(boxedParameterType)) {
-                        var message = "Subscriber method named 'Update' for parameter number " + (i + 1) + " is not assignable, " +
+                        var message = "Subscriber method named '" + methodName + "' for parameter number " + (i + 1) + " is not assignable, " +
                                       "expecting type '" + selectClauseTypes[i].GetParameterAsString() + "' but found type '"
                                       + parametersNormalized[i].GetParameterAsString() + "'";
                         throw new ResultDeliveryStrategyInvalidException(message);
                     }
                 }
 
-                throw new ResultDeliveryStrategyInvalidException("No suitable subscriber method named 'Update' found");
+                throw new ResultDeliveryStrategyInvalidException("No suitable subscriber method named '" + methodName + "' found");
             }
 
             var parameterTypes = subscriptionMethod.GetParameterTypes();

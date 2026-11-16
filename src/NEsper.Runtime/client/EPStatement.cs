@@ -55,7 +55,9 @@ namespace com.espertech.esper.runtime.client
         bool IsDestroyed { get; }
 
         /// <summary>
-        ///     Returns the current subscriber instance that receives statement results.
+        ///     Returns or sets the current subscriber instance that receives statement results.
+        ///     The subscriber may be an object providing an "Update" method, or a delegate
+        ///     (see <see cref="SetSubscriber(object)" />).
         /// </summary>
         /// <returns>subscriber object, or null to indicate that no subscriber is attached</returns>
         object Subscriber { get; set; }
@@ -99,6 +101,13 @@ namespace com.espertech.esper.runtime.client
         ///         Only a single subscriber may be set for a statement. If this method is invoked twice
         ///         any previously-set subscriber is no longer used.
         ///     </para>
+        ///     <para>
+        ///         The subscriber may be an object with a public "Update" method, or a delegate
+        ///         (for example <c>Action&lt;string, int&gt;</c>), in which case the delegate's "Invoke"
+        ///         method is used. A delegate accepts the same parameter shapes as an "Update" method:
+        ///         one parameter per select-clause column, a single <c>IDictionary&lt;string, object&gt;</c>
+        ///         or <c>object[]</c> row, or any of these preceded by an <see cref="EPStatement" /> parameter.
+        ///     </para>
         /// </summary>
         /// <param name="subscriber">to attach, or null to remove the previously set subscriber</param>
         /// <throws>
@@ -116,7 +125,7 @@ namespace com.espertech.esper.runtime.client
         ///     </para>
         /// </summary>
         /// <param name="subscriber">to attach, or null to remove the previously set subscriber</param>
-        /// <param name="methodName">the name of the method to invoke, or null for the "update" method</param>
+        /// <param name="methodName">the name of the method to invoke, or null for the "Update" method (the "Invoke" method when the subscriber is a delegate)</param>
         /// <throws>
         ///     EPSubscriberException if the subscriber does not provide the methods needed to receive statement results
         /// </throws>
