@@ -23,9 +23,6 @@ namespace com.espertech.esper.common.@internal.epl.historical.common
     public interface HistoricalEventViewable : Viewable,
         AgentInstanceMgmtCallback
     {
-#if INHERITED
-        EventType EventType { get; }
-#endif
 
         /// <summary>
         ///     Returns true if the parameters expressions to the historical require other stream's data,

@@ -343,33 +343,6 @@ namespace com.espertech.esper.common.@internal.util
             var decimalWrappers = InitWrappingConversions<decimal, decimal?>();
             var bigIntWrappers = InitWrappingConversions<BigInteger, BigInteger?>();
 
-#if false
-	// Initialize the map of widening conversions
-            var wideningConversions = new HashSet<Type>(byteWrappers);
-            WIDENING_CONVERSIONS.Put(typeof(short), new HashSet<Type>(wideningConversions));
-            WIDENING_CONVERSIONS.Put(typeof(short?), new HashSet<Type>(wideningConversions));
-
-	wideningConversions.AddAll (shortWrappers);
-	wideningConversions.AddAll (charWrappers);
-            WIDENING_CONVERSIONS.Put(typeof(int), new HashSet<Type>(wideningConversions));
-            WIDENING_CONVERSIONS.Put(typeof(int?), new HashSet<Type>(wideningConversions));
-
-	wideningConversions.AddAll (intWrappers);
-            WIDENING_CONVERSIONS.Put(typeof(long), new HashSet<Type>(wideningConversions));
-            WIDENING_CONVERSIONS.Put(typeof(long?), new HashSet<Type>(wideningConversions));
-
-wideningConversions.AddAll (longWrappers);
-            WIDENING_CONVERSIONS.Put(typeof(float), new HashSet<Type>(wideningConversions));
-            WIDENING_CONVERSIONS.Put(typeof(float?), new HashSet<Type>(wideningConversions));
-
-wideningConversions.AddAll (floatWrappers);
-            WIDENING_CONVERSIONS.Put(typeof(double), new HashSet<Type>(wideningConversions));
-            WIDENING_CONVERSIONS.Put(typeof(double?), new HashSet<Type>(wideningConversions));
-
-            wideningConversions.AddAll(doubleWrappers);
-            WIDENING_CONVERSIONS.Put(typeof(decimal), new HashSet<Type>(wideningConversions));
-            WIDENING_CONVERSIONS.Put(typeof(decimal?), new HashSet<Type>(wideningConversions));
-#endif
         }
 
         private static void AddWideningConversion<T>(params Type[] sourceTypes)

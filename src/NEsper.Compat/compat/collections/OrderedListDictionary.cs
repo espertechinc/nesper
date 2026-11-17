@@ -858,30 +858,4 @@ namespace com.espertech.esper.compat.collections
         }
     }
 
-#if false
-    public class DebugCount
-    {
-        public static int TailCount;
-        public static int GetTailIndexCount;
-        public static int TryGetValueCount;
-        public static int GetTailCount;
-        public static int GetEnumeratorCount;
-        public static int IndexSetCount;
-        public static int IndexGetCount;
-
-        public static string DebugString()
-        {
-            StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.AppendFormat("TailCount: {0}", TailCount);
-            stringBuilder.AppendFormat(", GetTailIndexCount: {0}", GetTailIndexCount);
-            stringBuilder.AppendFormat(", TryGetValueCount: {0}", TryGetValueCount);
-            stringBuilder.AppendFormat(", GetEnumeratorCount: {0}", GetEnumeratorCount);
-            stringBuilder.AppendFormat(", GetTailCount: {0}", GetTailCount);
-            stringBuilder.AppendFormat(", IndexGetCount: {0}", IndexGetCount);
-            stringBuilder.AppendFormat(", IndexSetCount: {0}", IndexSetCount);
-
-            return stringBuilder.ToString();
-        }
-    }
-#endif
 }

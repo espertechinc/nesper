@@ -172,32 +172,6 @@ namespace com.espertech.esper.common.@internal.epl.annotation
                 return false;
             }
 
-#if false
-// Don't know if Castle will create a real proxy or a fake proxy - TODO
-            if (!(other is EPLAnnotationInvocationHandler handler)) {
-                return false;
-            }
-
-            var that = (EPLAnnotationInvocationHandler) handler;
-            if (annotationClass != null
-                ? !annotationClass.Equals(that.annotationClass)
-                : that.annotationClass != null) {
-                return false;
-            }
-
-            foreach (KeyValuePair<string, object> entry in attributes) {
-                if (!that.attributes.ContainsKey(entry.Key)) {
-                    return false;
-                }
-
-                object thisValue = entry.Value;
-                object thatValue = that.attributes.Get(entry.Key);
-                if (thisValue != null ? !thisValue.Equals(thatValue) : thatValue != null) {
-                    return false;
-                }
-            }
-#endif
-
             return true;
         }
 

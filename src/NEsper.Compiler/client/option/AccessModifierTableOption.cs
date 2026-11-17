@@ -16,15 +16,4 @@ namespace com.espertech.esper.compiler.client.option
     public delegate NameAccessModifier AccessModifierTableOption(
         AccessModifierTableContext env);
 
-#if DEPRECATED_INTERFACE
-    public interface AccessModifierTableOption
-    {
-        /// <summary>
-        ///     Returns the access modifier for the table
-        /// </summary>
-        /// <param name="env">information about the statement</param>
-        /// <returns>modifier</returns>
-        NameAccessModifier GetValue(AccessModifierTableContext env);
-    }
-#endif
 } // end of namespace

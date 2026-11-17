@@ -35,12 +35,6 @@ namespace com.espertech.esper.runtime.@internal.kernel.thread
         /// <param name="timerUnit">unit of work</param>
         void SubmitTimerWork(IRunnable timerUnit);
 
-#if INHERITED
-        /// <summary>Returns true for inbound threading enabled. </summary>
-        /// <value>indicator</value>
-        bool IsInboundThreading { get; }
-#endif
-
         /// <summary>Submit inbound work unit. </summary>
         /// <value>unit of work</value>
         void SubmitInbound(IRunnable unit);

@@ -139,18 +139,6 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                 classScope,
                 propertyNode => propertyNode.GetterBlock.BlockReturn(MEMBER_AGGREGATIONSVC));
 
-#if DEFINED_IN_BASECLASS
-            instance.Properties.AddProperty(
-                typeof(ExprEvaluatorContext),
-                "ExprEvaluatorContext",
-                GetType(),
-                classScope,
-                node => {
-                    node.GetterBlock.BlockReturn(MEMBER_EXPREVALCONTEXT);
-                    node.SetterBlock.AssignMember(NAME_EXPREVALCONTEXT, Ref("value"));
-                });
-#endif
-            
             instance.Properties.AddProperty(
                 typeof(bool),
                 "HasHavingClause",

@@ -48,19 +48,6 @@ namespace com.espertech.esper.compat
             return ticks / TICKS_PER_MILLI;
         }
 
-#if false
-        /// <summary>
-        /// Converts ticks to nanoseconds
-        /// </summary>
-        /// <param name="ticks"></param>
-        /// <returns></returns>
-
-        public static long TicksToNanos(long ticks)
-        {
-            return NANOS_PER_TICK * ticks;
-        }
-#endif
-
         /// <summary>
         /// Converts microseconds to ticks
         /// </summary>

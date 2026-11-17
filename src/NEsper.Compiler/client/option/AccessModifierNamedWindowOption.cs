@@ -16,15 +16,4 @@ namespace com.espertech.esper.compiler.client.option
     public delegate NameAccessModifier AccessModifierNamedWindowOption(
         AccessModifierNamedWindowContext env);
 
-#if DEPRECATED_INTERFACE
-    public interface AccessModifierNamedWindowOption
-    {
-        /// <summary>
-        ///     Returns the access modifier for the named window
-        /// </summary>
-        /// <param name="env">information about the statement</param>
-        /// <returns>modifier</returns>
-        NameAccessModifier GetValue(AccessModifierNamedWindowContext env);
-    }
-#endif
 } // end of namespace

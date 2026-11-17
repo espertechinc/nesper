@@ -15,10 +15,6 @@ namespace com.espertech.esper.runtime.@internal.statementlifesvc
     {
         void AddStatement(EPStatementSPI stmt);
 
-#if INHERITED
-        StatementContext GetStatementContextById(int statementId);
-#endif
-
         EPStatementSPI GetStatementById(int statementId);
 
         void RemoveStatement(int statementId);

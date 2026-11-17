@@ -1052,9 +1052,6 @@ namespace com.espertech.esper.common.@internal.@event.core
                     var isMapped = asType.IsGenericStringDictionary();
                     if (isMapped) {
                         componentType = asType.GetDictionaryValueType();
-#if NOT_IN_JAVA
-                        componentType = typeof(object); // Cannot determine the type at runtime
-#endif
                 }
 
                     var isFragment = asType.IsFragmentableType();

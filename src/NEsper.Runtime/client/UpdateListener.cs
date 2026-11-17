@@ -46,13 +46,6 @@ namespace com.espertech.esper.runtime.client
             object sender,
             UpdateEventArgs eventArgs);
 
-#if DEPRECATED
-        void Update(
-            EventBean[] newEvents,
-            EventBean[] oldEvents,
-            EPStatement statement,
-            EPRuntime runtime);
-#endif
     }
 
     public class DelegateUpdateListener : UpdateListener

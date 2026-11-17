@@ -17,15 +17,4 @@ namespace com.espertech.esper.compiler.client.option
     public delegate NameAccessModifier AccessModifierVariableOption(
         AccessModifierVariableContext env);
 
-#if DEPRECATED_INTERFACE
-    public interface AccessModifierVariableOption
-    {
-        /// <summary>
-        ///     Returns the access modifier for the variable
-        /// </summary>
-        /// <param name="env">information about the statement</param>
-        /// <returns>modifier</returns>
-        NameAccessModifier GetValue(AccessModifierVariableContext env);
-    }
-#endif
 } // end of namespace

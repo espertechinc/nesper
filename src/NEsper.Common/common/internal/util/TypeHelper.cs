@@ -1998,11 +1998,7 @@ namespace com.espertech.esper.common.@internal.util
         {
             var assemblySearchPath = AssemblySearchPath?.Invoke();
             if (assemblySearchPath == null) {
-#if NETCOREAPP3_0_OR_GREATER
                 assemblySearchPath = AssemblyLoadContext.Default.Assemblies.ToList();
-#else
-                assemblySearchPath = AppDomain.CurrentDomain.GetAssemblies();
-#endif
             }
 
             return ResolveType(typeName, assemblySearchPath, throwOnError);
@@ -3401,17 +3397,6 @@ namespace com.espertech.esper.common.@internal.util
 
         public static string GetDefaultTypeName(this Type type)
         {
-#if false
-            if (type.IsNullable())
-            {
-                // Nullables have been causing problems because their names arent properly
-                // unique.  We generally dont want nullables automatically binding to public
-                // namespaces, so be sure to provide an opaque name when they are automatically
-                // bound so we can find them.
-
-                return string.Format("__NULLABLE_{0}", Nullable.GetUnderlyingType(type).Name);
-            }
-#endif
 
             return type.FullName;
         }

@@ -22,32 +22,4 @@ namespace com.espertech.esper.common.@internal.@event.json
             object underlying);
     }
 
-#if NOT_USED
-    public class ProxyJsonSerializer : IJsonSerializer
-    {
-        public Action<JsonSerializationContext, object> ProcSerialize { get; set; }
-        public ProxyJsonSerializer()
-        {
-        }
-
-        public ProxyJsonSerializer(Action<JsonSerializationContext, object> procSerialize)
-        {
-            ProcSerialize = procSerialize;
-        }
-
-        public void Serialize(
-            JsonSerializationContext context,
-            object value)
-        {
-            ProcSerialize.Invoke(context, value);
-        }
-
-        public bool TryGetProperty(
-            string name,
-            out object value)
-        {
-            
-        }
-    }
-#endif
 }

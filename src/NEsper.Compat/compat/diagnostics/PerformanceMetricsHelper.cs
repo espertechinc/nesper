@@ -15,48 +15,12 @@ namespace com.espertech.esper.compat.diagnostics
     {
         public static ProcessThread GetProcessThread()
         {
-#if NETCOREAPP3_0_OR_GREATER
             return null;
-#else
-            var processThread = ProcessThreadHelper.GetProcessThread();
-            if (processThread != null) {
-                return null; // known issue in windows
-                // throw new IllegalStateException("processThread could not be determined");
-            }
-
-            return processThread;
-#endif
         }
 
         public static void ExecCpuBound(Func<PerformanceExecutionContext, bool> cpuAction)
         {
-#if NETCOREAPP3_0_OR_GREATER
             throw new NotSupportedException("cpu bound execution not supported");
-#else
-            var executionContext = new PerformanceExecutionContext();
-
-            var processThread = GetProcessThread();
-            if (processThread == null) {
-                throw new IllegalStateException("unable to acquire process thread; check platform");
-            }
-
-            executionContext.InitialUserTime = processThread.UserProcessorTime;
-            executionContext.InitialPrivTime = processThread.PrivilegedProcessorTime;
-            executionContext.InitialTotalTime = processThread.TotalProcessorTime;
-
-            executionContext.CurrentUserTime = executionContext.InitialUserTime;
-            executionContext.CurrentPrivTime = executionContext.InitialPrivTime;
-            executionContext.CurrentTotalTime = executionContext.InitialTotalTime;
-
-            bool continuation = true;
-            while (continuation)
-            {
-                continuation = cpuAction.Invoke(executionContext);
-                executionContext.CurrentUserTime = processThread.UserProcessorTime;
-                executionContext.CurrentPrivTime = processThread.PrivilegedProcessorTime;
-                executionContext.CurrentTotalTime = processThread.TotalProcessorTime;
-            }
-#endif
         }
 
         /// <summary>

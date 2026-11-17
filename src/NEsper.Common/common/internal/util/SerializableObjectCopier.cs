@@ -62,29 +62,9 @@ namespace com.espertech.esper.common.@internal.util
         /// <throws>TypeLoadException if the de-serialize fails</throws>
         public T Copy<T>(T orig)
         {
-#if NET6_0_OR_GREATER
             var serialized = _serializer.SerializeAny(orig);
             var deserialized = _serializer.DeserializeAny(serialized);
             return (T)deserialized;
-#else
-            // Create the formatter
-            var formatter = new BinaryFormatter();
-            formatter.FilterLevel = TypeFilterLevel.Full;
-            formatter.AssemblyFormat = FormatterAssemblyStyle.Full;
-            formatter.TypeFormat = FormatterTypeStyle.TypesAlways;
-            formatter.Context = new StreamingContext(StreamingContextStates.Clone, _typeResolver);
-            formatter.Binder = new TypeSerializationBinder();
-            formatter.SurrogateSelector = new TypeSurrogateSelector();
-
-            using (var stream = new MemoryStream()) {
-                // Serialize the object graph to the stream
-                formatter.Serialize(stream, orig);
-                // Rewind the stream
-                stream.Seek(0, SeekOrigin.Begin);
-                // Deserialize the object graph from the stream
-                return (T)formatter.Deserialize(stream);
-            }
-#endif
         }
 
         public static IObjectCopier GetInstance(TypeResolver typeResolver)
