@@ -141,26 +141,6 @@ namespace com.espertech.esper.compat.magic
             AddOrUpdateProperty(ciName, _ciPropertyTable, prop);
             AddOrUpdateProperty(csName, _csPropertyTable, prop);
 
-#if false
-            var ciProp = _ciPropertyTable.Get(ciName);
-            if (ciProp != null) {
-                ciProp.Next = prop;
-            }
-            else {
-                _ciPropertyTable[ciName] = prop;
-            }
-
-            // It is possible for a property that is case sensitive to
-            // exist in csPropertyTable, but not ciPropertyTable.  That's
-            // the nature of case sensitive versus case insensitive.
-            var csProp = _csPropertyTable.Get(csName);
-            if (csProp != null) {
-                csProp.Next = prop;
-            }
-            else {
-                _csPropertyTable[csName] = prop;
-            }
-#endif
         }
 
         /// <summary>

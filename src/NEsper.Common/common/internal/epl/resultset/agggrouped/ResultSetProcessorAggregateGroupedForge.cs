@@ -141,20 +141,6 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                 classScope,
                 property => property.GetterBlock.BlockReturn(MEMBER_AGGREGATIONSVC));
             
-#if DEFINED_IN_BASECLASS
-            instance.Properties.AddProperty(
-                typeof(ExprEvaluatorContext),
-                "ExprEvaluatorContext",
-                GetType(),
-                classScope,
-                property => {
-                    property
-                        .GetterBlock
-                        .Debug("ResultSetProcessorAggregateGroupedForge.InstanceCodegen")
-                        .BlockReturn(MEMBER_EXPREVALCONTEXT);
-                });
-#endif
-            
             instance.Properties.AddProperty(
                 typeof(bool),
                 "HasHavingClause",

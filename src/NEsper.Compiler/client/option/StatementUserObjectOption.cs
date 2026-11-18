@@ -15,18 +15,4 @@ namespace com.espertech.esper.compiler.client.option
 
     public delegate object StatementUserObjectOption(StatementUserObjectContext env);
 
-#if DEPRECATED_INTERFACE
-    public interface StatementUserObjectOption
-    {
-        /// <summary>
-        ///     Returns the user object to assign to a statement at compilation-time.
-        ///     <para />
-        ///     Implementations would typically interrogate the context object EPL expression
-        ///     or module and module item information and determine the right user object to assign.
-        /// </summary>
-        /// <param name="env">the statement's compile context</param>
-        /// <returns>user object or null if none needs to be assigned</returns>
-        object GetValue(StatementUserObjectContext env);
-    }
-#endif
 } // end of namespace

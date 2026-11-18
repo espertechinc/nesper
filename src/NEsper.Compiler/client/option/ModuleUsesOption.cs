@@ -16,15 +16,4 @@ namespace com.espertech.esper.compiler.client.option
 
     public delegate ISet<string> ModuleUsesOption(ModuleUsesContext env);
 
-#if DEPRECATED_INTERFACE
-    public interface ModuleUsesOption
-    {
-        /// <summary>
-        ///     Returns the module-uses to use or null if none is assigned.
-        /// </summary>
-        /// <param name="env">the module compile context</param>
-        /// <returns>module-uses or null if none needs to be assigned</returns>
-        ISet<string> GetValue(ModuleUsesContext env);
-    }
-#endif
 } // end of namespace

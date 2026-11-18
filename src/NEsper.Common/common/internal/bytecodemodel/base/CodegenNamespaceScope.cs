@@ -116,15 +116,6 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             return InstanceField(instance, unshared);
         }
 
-#if DEPRECATED
-        public CodegenExpressionField AddFieldUnshared<T>(
-            bool isFinal,
-            CodegenExpression initCtorScoped)
-        {
-            return AddFieldUnshared(isFinal, typeof(T), initCtorScoped);
-        }
-#endif
-
         public CodegenExpressionInstanceField AddDefaultFieldUnshared(
             bool isFinal,
             Type type,
@@ -136,20 +127,6 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
                 type,
                 initCtorScoped);
         }
-
-#if DEPRECATED
-        public CodegenExpressionField AddFieldUnshared(
-            bool isFinal,
-            Type type,
-            CodegenExpression initCtorScoped)
-        {
-            if (FieldsClassName == null) {
-                throw new IllegalStateException("No fields class name");
-            }
-
-            return Field(AddFieldUnsharedInternal(isFinal, type, initCtorScoped));
-        }
-#endif
 
         public CodegenExpressionInstanceField AddOrGetInstanceFieldSharable(
             CodegenExpression instance,

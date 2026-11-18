@@ -17,16 +17,4 @@ namespace com.espertech.esper.compiler.client.option
 	public delegate NameAccessModifier AccessModifierInlinedClassOption(
 		AccessModifierInlinedClassContext env);
 	
-#if DEPRECATED_INTERFACE
-
-	public interface AccessModifierInlinedClassOption
-	{
-		/// <summary>
-		/// Returns the access modifier for the inlined-class
-		/// </summary>
-		/// <param name="env">information about the statement</param>
-		/// <returns>modifier</returns>
-		NameAccessModifier GetValue(AccessModifierInlinedClassContext env);
-	}
-#endif
 } // end of namespace

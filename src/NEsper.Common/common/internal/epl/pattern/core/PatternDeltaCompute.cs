@@ -10,16 +10,7 @@ using com.espertech.esper.common.@internal.filterspec;
 
 namespace com.espertech.esper.common.@internal.epl.pattern.core
 {
-#if DEPRECATED_INTERFACE
-    public interface PatternDeltaCompute
-    {
-        long ComputeDelta(
-            MatchedEventMap beginState,
-            PatternAgentInstanceContext context);
-    }
-#else
     public delegate long PatternDeltaCompute(
         MatchedEventMap beginState,
         PatternAgentInstanceContext context);
-#endif
 } // end of namespace

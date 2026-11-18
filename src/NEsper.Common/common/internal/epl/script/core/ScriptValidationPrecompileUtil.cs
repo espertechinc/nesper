@@ -71,13 +71,6 @@ namespace com.espertech.esper.common.@internal.epl.script.core
 
             scriptCompiler.VerifyScript(dialect, script);
 
-#if false
-            ExpressionScriptCompiled compiledBuf = JSR223Helper
-                .VerifyCompileScript(script.Name, script.Expression, dialect);
-
-            script.CompiledBuf = compiledBuf;
-#endif
-
             if (script.ParameterNames.Length != 0) {
                 var parameters = new HashSet<string>();
                 foreach (var param in script.ParameterNames) {

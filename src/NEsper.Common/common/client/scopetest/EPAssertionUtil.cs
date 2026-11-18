@@ -98,18 +98,6 @@ namespace com.espertech.esper.common.client.scopetest
             AssertEqualsExactOrder(expected, actualArray);
         }
 
-#if DEPRECATED
-        /// <summary>Compare the enumerator-returned events against the expected events </summary>
-        /// <param name="expected">is the expected values</param>
-        /// <param name="actual">is the actual values</param>
-        public static void AssertEqualsExactOrder(
-            EventBean[] expected,
-            IEnumerator<EventBean> actual)
-        {
-            AssertEqualsExactOrder((object[]) expected, actual);
-        }
-#endif
-
         /// <summary>Compare the underlying events returned by the enumerator to the expected values. </summary>
         /// <param name="expected">is the expected values</param>
         /// <param name="actual">is the actual values</param>

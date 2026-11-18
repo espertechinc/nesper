@@ -299,23 +299,6 @@ namespace com.espertech.esper.common.client.configuration.common
                         configDBRef.MetadataOrigin = parsed;
                         break;
                     }
-#if NOT_SUPPORTED
-                    // NOTE: How does this translate in a world based on ADO.NET
-                    //        Does it translate at all?
-                    case "sql-types-mapping":
-                        var sqlType = GetRequiredAttribute(subElement, "sql-type");
-                        var javaType = GetRequiredAttribute(subElement, "java-type");
-                        int sqlTypeInt;
-                        try {
-                            sqlTypeInt = Int32.Parse(sqlType);
-                        }
-                        catch (FormatException ex) {
-                            throw new ConfigurationException("Error converting sql type '" + sqlType + "' to integer SqlTypes constant");
-                        }
-
-                        configDBRef.AddSqlTypesBinding(sqlTypeInt, javaType);
-                        break;
-#endif
                     case "expiry-time-cache":
                         var maxAge = GetRequiredAttribute(subElement, "max-age-seconds");
                         var purgeInterval = GetRequiredAttribute(subElement, "purge-interval-seconds");

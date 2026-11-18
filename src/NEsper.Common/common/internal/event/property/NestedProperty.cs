@@ -123,17 +123,6 @@ namespace com.espertech.esper.common.@internal.@event.property
                         return null;
                     }
                     
-#if DEPRECATED
-                    // Map cannot be used to further nest as the type cannot be determined
-                    if (clazz.IsGenericDictionary()) {
-                        return null;
-                    }
-
-                    if (clazz.IsArray) {
-                        return null;
-                    }
-#endif
-
                     eventType = beanEventTypeFactory.GetCreateBeanType(clazz, publicFields);
                 }
 

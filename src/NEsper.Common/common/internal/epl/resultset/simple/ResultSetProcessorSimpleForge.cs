@@ -80,14 +80,6 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
                 property => property.GetterBlock.BlockReturn(Constant(optionalHavingNode != null)));
             ResultSetProcessorUtil.EvaluateHavingClauseCodegen(optionalHavingNode, classScope, instance);
         
-#if DEFINED_IN_BASECLASS
-            instance.Properties.AddProperty(
-                typeof(ExprEvaluatorContext),
-                "ExprEvaluatorContext",
-                GetType(),
-                classScope,
-                property => property.GetterBlock.BlockReturn(MEMBER_EXPREVALCONTEXT));
-#endif
         }
 
         public override void ProcessViewResultCodegen(

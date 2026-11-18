@@ -27,9 +27,6 @@ namespace com.espertech.esper.common.@internal.epl.script.core
             ImportService importService,
             ScriptCompiler scriptingCompiler)
         {
-#if NOT_USED
-            ExpressionScriptCompiled compiled;
-#endif
             if (optionalPrecompiled != null) {
                 return optionalPrecompiled;
             }

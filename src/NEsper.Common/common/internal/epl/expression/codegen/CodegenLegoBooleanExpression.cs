@@ -181,18 +181,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
             CheckBoolEvalType(evaluationType);
             block.DeclareVar(evaluationType, PASS_NAME, expression);
 
-#if DEPRECATED
-            CodegenExpression condition;
-            var passCheck = Not(Unbox(Ref(PASS_NAME), evaluationType));
-            if (evaluationType.CanNotBeNull()) {
-                condition = passCheck;
-            }
-            else {
-                condition = And(NotEqualsNull(Ref(PASS_NAME)), passCheck);
-            }
-#else
             var condition = ExprDotMethod(ConstantFalse(), "Equals", Ref(PASS_NAME));
-#endif
 
             block.CommentFullLine("CodegenDoIfNotNullAndNotPass");
 
@@ -234,18 +223,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
 
             block.DeclareVar(evaluationType, PASS_NAME, expression);
 
-#if DEPRECATED
-            CodegenExpression condition;
-            var passCheck = Not(Unbox(Ref(PASS_NAME), evaluationType));
-            if (evaluationType.CanNotBeNull()) {
-                condition = passCheck;
-            }
-            else {
-                condition = Or(EqualsNull(Ref(PASS_NAME)), passCheck);
-            }
-#else
             var condition = Not(ExprDotMethod(ConstantTrue(), "Equals", Ref(PASS_NAME)));
-#endif
 
             block.CommentFullLine("CodegenDoIfNullOrNotPass");
 

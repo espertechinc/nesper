@@ -20,10 +20,6 @@ namespace com.espertech.esper.common.@internal.settings
 
         TimeAbacus TimeAbacus { get; }
 
-#if DEPRECATED
-        ClassForNameProvider ClassForNameProvider { get; }
-#endif
-
         TypeResolver TypeResolver { get; }
 
         Type ResolveType(

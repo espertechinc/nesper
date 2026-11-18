@@ -11,20 +11,10 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 
 namespace com.espertech.esper.common.@internal.epl.updatehelper
 {
-#if DEPRECATED_INTERFACE
-    public interface EventBeanUpdateHelperWCopy
-    {
-        EventBean UpdateWCopy(
-            EventBean matchingEvent,
-            EventBean[] eventsPerStream,
-            ExprEvaluatorContext exprEvaluatorContext);
-    }
-#else
 
     public delegate EventBean EventBeanUpdateHelperWCopy(
         EventBean matchingEvent,
         EventBean[] eventsPerStream,
         ExprEvaluatorContext exprEvaluatorContext);
 
-#endif
 } // end of namespace

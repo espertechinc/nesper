@@ -178,37 +178,6 @@ namespace com.espertech.esper.common.@internal.util
         {
             constant.RenderAny(writer);
 
-#if false
-            if (constant == null) {
-                writer.Write("null");
-                return;
-            }
-
-            if (constant is string ||
-                constant is char) {
-                writer.Write('\"');
-                writer.Write(constant.ToString());
-                writer.Write('\"');
-            }
-            else if (constant is long) {
-                writer.Write(constant + "L");
-            }
-            else if (constant is double) {
-                writer.Write(constant + "d");
-            }
-            else if (constant is float) {
-                writer.Write(constant + "f");
-            }
-            else if (constant is decimal) {
-                writer.Write(constant + "m");
-            }
-            else if (constant is bool asBool) {
-                writer.Write(asBool ? "true" : "false");
-            }
-            else {
-                writer.Write(constant.ToString());
-            }
-#endif
         }
 
         /// <summary>

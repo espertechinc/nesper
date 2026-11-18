@@ -16,19 +16,10 @@ namespace com.espertech.esper.compat.diagnostics
 {
     public static class ProcessThreadHelper
     {
-#if NETCOREAPP3_0_OR_GREATER
-#else
-        [DllImport("Kernel32.dll", EntryPoint = "GetCurrentThreadId", ExactSpelling = true)]
-        public static extern int GetCurrentWin32ThreadId();
-#endif
         
         public static ProcessThread GetProcessThread()
         {
-#if NETCOREAPP3_0_OR_GREATER
             return null;
-#else
-            return GetProcessThread(GetCurrentWin32ThreadId());
-#endif
         }
 
         public static ProcessThread GetProcessThread(int threadId)

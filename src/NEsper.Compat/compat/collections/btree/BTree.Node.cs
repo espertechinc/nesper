@@ -629,35 +629,5 @@ namespace com.espertech.esper.compat.collections.btree
             }
         }
 
-#if false
-        public interface Mutable<T>
-        {
-            T Value { get; set; }
-            T Get();
-            void Set(T value);
-        }
-
-        public class MutableImpl<T> : Mutable<T>
-        {
-            private Func<T> accessor;
-            private Action<T> mutator;
-
-            public MutableImpl(Func<T> accessor,
-                Action<T> mutator)
-            {
-                this.accessor = accessor;
-                this.mutator = mutator;
-            }
-
-            public T Value {
-                get => accessor();
-                set => mutator(value);
-            }
-
-            public T Get() => accessor();
-
-            public void Set(T value) => mutator(value);
-        }
-        #endif
     }
 }

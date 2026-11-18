@@ -147,26 +147,6 @@ namespace com.espertech.esper.common.@internal.rettype
 
             var containerType = typeof(ICollection<>).MakeGenericType(collectionComponentType);
 
-#if false
-            // Have not yet deduced the black magic of why and when we decide the type of
-            // collection.  It's not entirely clear and is a work-in-progress.
-            // TODO: fix the general determinism of this algorithm.
-            
-            if (collectionComponentType == typeof(object)) {
-                containerType = typeof(ICollection<object>);
-            } else if (collectionType == null) {
-                containerType = typeof(ICollection<object>);
-            } else if (collectionType == typeof(EventBean)) {
-                // WTF
-                containerType = typeof(ICollection<object>);
-                //containerType = typeof(ICollection<EventBean>);
-            } else if (collectionComponentType == typeof(object[])) {
-                containerType = typeof(ICollection<object[]>);
-            } else {
-                containerType = typeof(ICollection<object>);
-            }
-#endif
-
             return new EPChainableTypeClass(containerType);
         }
 

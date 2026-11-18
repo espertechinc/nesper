@@ -13,19 +13,4 @@ namespace com.espertech.esper.runtime.client.option
     /// </summary>
     public delegate string StatementNameRuntimeOption(StatementNameRuntimeContext env);
 
-#if DEPRECATED_INTERFACE
-    public interface StatementNameRuntimeOption
-    {
-        /// <summary>
-        /// Returns the statement name to assign to a newly-deployed statement.
-        /// <para />Implementations would typically interrogate the context object EPL expression
-        /// or module and module item information and determine the right statement name to assign.
-        /// <para />When using HA the returned object must implement the Serializable interface.
-        /// </summary>
-        /// <param name="env">the statement's deployment context</param>
-        /// <returns>statement name or null if none needs to be assigned</returns>
-        string GetStatementName(StatementNameRuntimeContext env);
-    }
-#endif
-
 } // end of namespace

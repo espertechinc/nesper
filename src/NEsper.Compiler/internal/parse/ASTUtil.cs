@@ -265,28 +265,6 @@ namespace com.espertech.esper.compiler.@internal.parse
         {
             var unescapeEscapableResult = UnescapeEscapableStr(classIdentCtx.escapableStr(), ".");
             
-#if NOT_FUNCTIONAL
-            var genericArgsList = classIdentCtx.classIdentifierGenericArgs();
-            if (genericArgsList != null) {
-                var genericArgRender = new StringBuilder();
-                var genericArgDelimiter = "";
-                genericArgRender.Append('<');
-
-                // Render all of the generic argument elements.
-                var genericArgElements = genericArgsList.classIdentifierGenericArgsList().classIdentifier();
-                foreach (var genericArgElement in genericArgElements) {
-                    var genericArgResult = UnescapeClassIdent(genericArgElement);
-                    genericArgRender.Append(genericArgDelimiter);
-                    genericArgRender.Append(genericArgResult);
-                    genericArgDelimiter = ",";
-                }
-                
-                genericArgRender.Append('>');
-
-                unescapeEscapableResult += genericArgRender.ToString();
-            }
-#endif
-
             return unescapeEscapableResult;
         }
 

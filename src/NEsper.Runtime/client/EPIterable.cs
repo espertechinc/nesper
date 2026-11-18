@@ -19,26 +19,6 @@ namespace com.espertech.esper.runtime.client
     /// </summary>
     public interface EPIterable : IEnumerable<EventBean>
     {
-#if DEPRECATED
-        /// <summary>
-        ///     Returns a concurrency-unsafe enumerator over events representing statement results (pull API).
-        ///     <para>
-        ///         The enumerator is useful for applications that are single-threaded, or that coordinate the iterating thread
-        ///         with event processing threads that use the sendEvent method using application code locks or synchronization.
-        ///     </para>
-        ///     <para>
-        ///         The enumerator returned by this method does not make any guarantees towards correctness of
-        ///         results and fail-behavior, if your application processes events into the runtime instance
-        ///         using the sendEvent method by multiple threads.
-        ///     </para>
-        ///     <para>
-        ///         Use the SafeEnumerator method for concurrency-safe iteration. Note the safe enumerator requires
-        ///         applications to explicitly close the safe enumerator when done iterating.
-        ///     </para>
-        /// </summary>
-        /// <returns>event enumerator</returns>
-        IEnumerator<EventBean> GetEnumerator();
-#endif
 
         /// <summary>
         ///     Returns a concurrency-safe enumerator that iterates over events representing statement results (pull API)

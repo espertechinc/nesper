@@ -83,20 +83,6 @@ namespace NEsper.Avro.Core
                     return unionTypes.First();
                 }
 
-#if NOT_NEEDED
-                var allNumeric = true;
-                foreach (var unioned in unionTypes)
-                {
-                    if (!TypeHelper.IsTypeNumeric(unioned))
-                    {
-                        allNumeric = false;
-                    }
-                }
-                if (allNumeric)
-                {
-                    return typeof(Number);
-                }
-#endif
                 return typeof(object);
             }
             else if (fieldSchema.Tag == Schema.Type.Record) {
