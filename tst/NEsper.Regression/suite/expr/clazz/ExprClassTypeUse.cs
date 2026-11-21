@@ -21,6 +21,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
         {
             var execs = new List<RegressionExecution>();
             WithUseEnum(execs);
+            WithUseEnumRepeated(execs);
             WithConst(execs);
             WithInnerClass(execs);
             WithNewKeyword(execs);
@@ -52,6 +53,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
         {
             execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ExprClassTypeUseEnum());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithUseEnumRepeated(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprClassTypeUseEnumRepeated());
             return execs;
         }
 
@@ -116,30 +124,54 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
             }
         }
 
+        private const string MyLevelText =
+            "public enum MyLevel {\n" +
+            "  HIGH, MEDIUM, LOW\n" +
+            "}\n" +
+            "public static class MyLevelExtensions {\n" +
+            "  public static int GetLevelCode(this MyLevel value) {\n" +
+            "    switch(value) {\n" +
+            "        case MyLevel.HIGH: return 3;\n" +
+            "        case MyLevel.MEDIUM: return 2;\n" +
+            "        case MyLevel.LOW: return 1;\n" +
+            "        default: throw new System.ArgumentException(nameof(value));\n" +
+            "    }\n" +
+            "  }\n" +
+            "}";
+
         private class ExprClassTypeUseEnum : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
-                var text = "public enum MyLevel {\n" +
-                           "  HIGH, MEDIUM, LOW\n" +
-                           "}\n" +
-                           "public static class MyLevelExtensions {\n" +
-                           "  public static int GetLevelCode(this MyLevel value) {\n" +
-                           "    switch(value) {\n" +
-                           "        case MyLevel.HIGH: return 3;\n" +
-                           "        case MyLevel.MEDIUM: return 2;\n" +
-                           "        case MyLevel.LOW: return 1;\n" +
-                           "        default: throw new System.ArgumentException(nameof(value));\n" +
-                           "    }\n" +
-                           "  }\n" +
-                           "}";
-                var epl = EscapeClass(text) +
+                var epl = EscapeClass(MyLevelText) +
                           "@name('s0') select MyLevel.MEDIUM.GetLevelCode() as c0 from SupportBean";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendSBAssert(env, "E1", 0, 2);
 
                 env.UndeployAll();
+            }
+        }
+
+        /// <summary>
+        /// Compiles an inlined enum with an extension method twice. Each compile loads a new assembly, so the
+        /// second lookup must find an extension method whose assembly loaded after an earlier lookup.
+        /// </summary>
+        private class ExprClassTypeUseEnumRepeated : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                for (var i = 0; i < 2; i++) {
+                    // Distinct names: recompiling the same inlined class name in one runtime fails with CS0433.
+                    var levelName = "MyLevel" + i;
+                    var epl = EscapeClass(MyLevelText.Replace("MyLevel", levelName)) +
+                              "@name('s0') select " + levelName + ".MEDIUM.GetLevelCode() as c0 from SupportBean";
+                    env.CompileDeploy(epl).AddListener("s0");
+
+                    SendSBAssert(env, "E1", 0, 2);
+
+                    env.UndeployAll();
+                }
             }
         }
 
